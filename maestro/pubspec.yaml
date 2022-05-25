@@ -1,0 +1,15 @@
+name: maestro
+description: LeanCode UI automated test driver
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+
+dependencies:
+  args:
+  http:
+dev_dependencies:
+
+executables:
+  maestro:
