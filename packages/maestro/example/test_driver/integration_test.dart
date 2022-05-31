@@ -1,5 +1,5 @@
 import 'package:integration_test/integration_test_driver.dart';
-import 'package:maestro/automator.dart';
+import 'package:maestro/maestro.dart';
 
 Future<void> main() async {
   print('Waiting for automator server');
