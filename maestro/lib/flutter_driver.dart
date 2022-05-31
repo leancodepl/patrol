@@ -1,6 +1,8 @@
 import 'dart:io';
 
 Future<void> runTests(String driver, String target) async {
+  print('Running tests...');
+
   final res = await Process.run(
     'flutter',
     [
@@ -20,6 +22,8 @@ Future<void> runTests(String driver, String target) async {
 }
 
 Future<void> runTestsWithOutput(String driver, String target) async {
+  print('Running tests with output...');
+
   final res = await Process.start(
     'flutter',
     [
@@ -31,7 +35,7 @@ Future<void> runTestsWithOutput(String driver, String target) async {
     ],
   );
 
-  final _sub = res.stdout.listen((e) => print(systemEncoding.decode(e)));
+  final sub = res.stdout.listen((e) => print(systemEncoding.decode(e)));
   await res.exitCode;
-  await _sub.cancel();
+  await sub.cancel();
 }
