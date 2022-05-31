@@ -1,5 +1,7 @@
 name: maestro
-description: LeanCode UI automated test driver
+description: >
+  Simple, easy-to-learn, Flutter-native UI Testing framework eliminating
+  limitations of flutter-driver
 version: 0.0.1
 homepage: https://github.com/leancodepl/maestro
 
