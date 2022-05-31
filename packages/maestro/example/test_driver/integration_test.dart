@@ -7,6 +7,7 @@ Future<void> main() async {
   while (!await Automator.instance.isRunning()) {}
   print('Automator server is running, starting test drive');
   try {
+    print('here 0');
     await integrationDriver();
   } finally {
     print('Stopping automator server');

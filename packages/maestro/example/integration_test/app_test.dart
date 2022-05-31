@@ -5,9 +5,11 @@ import 'package:integration_test/integration_test.dart';
 import 'package:maestro/maestro.dart';
 
 void main() {
+  print('here 1');
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final automator = Automator.instance;
-  Automator.init();
+
+  print('here 2');
 
   testWidgets("go home and come back", (WidgetTester tester) async {
     counterText() =>

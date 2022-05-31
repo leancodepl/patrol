@@ -1,20 +1,41 @@
 import 'dart:async';
 import 'dart:io';
 
-Future<void> installServerApp() async {
+import 'package:maestro_cli/src/paths.dart';
+import 'package:path/path.dart' as path;
+
+Future<void> installApps() async {
   print('Installing instrumentation server...');
 
-  final res = await Process.run(
+  final pubCache = getApkInstallPath();
+
+  var result = await Process.run(
     'adb',
     [
       'install',
-      Platform.script.resolve('../assets/server.apk').toFilePath(),
+      path.join(pubCache, 'server.apk'),
     ],
   );
-  final err = res.stderr as String;
 
+  var err = result.stderr as String;
   if (err.isNotEmpty) {
-    print(res.stderr);
+    print('Failed to install server');
+    print(result.stderr);
+    throw Error();
+  }
+
+  result = await Process.run(
+    'adb',
+    [
+      'install',
+      path.join(pubCache, 'instrumentation.apk'),
+    ],
+  );
+
+  err = result.stderr as String;
+  if (err.isNotEmpty) {
+    print('Failed to install instrumentation');
+    print(result.stderr);
     throw Error();
   }
 
