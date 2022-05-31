@@ -13,7 +13,21 @@ class Automator {
   // ignore: prefer_constructors_over_static_methods
   static Automator get instance => _instance ??= Automator._();
 
-  static void init({int port = 8081}) => instance._port = port;
+  static void init({int port = 8081, bool verbose = false}) {
+    instance._port = port;
+
+    logging.Logger.root.onRecord.listen((event) {
+      // ignore: avoid_print
+      print('${event.loggerName}: ${event.message}');
+    });
+
+    logging.hierarchicalLoggingEnabled = true;
+    if (verbose) {
+      instance._logger.level = logging.Level.ALL;
+    } else {
+      instance._logger.level = logging.Level.INFO;
+    }
+  }
 
   final _client = http.Client();
   final _logger = logging.Logger('Automator');
@@ -62,10 +76,14 @@ class Automator {
   Future<void> pressDoubleRecentApps() => _wrap('pressDoubleRecentApps');
 
   Future<void> _wrap(String action) async {
+    _logger.fine('executing action $action');
+
     final response = await _client.post(Uri.parse('$_baseUri/$action'));
 
     if (response.statusCode != 200) {
-      print('action $action failed with status code ${response.statusCode}');
+      _logger.warning(
+        'action $action failed with status code ${response.statusCode}',
+      );
     }
   }
 }

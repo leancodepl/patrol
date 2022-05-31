@@ -5,7 +5,7 @@ import 'package:maestro_cli/src/paths.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps() async {
-  print('Installing instrumentation server...');
+  print('Installing server...');
 
   final pubCache = getApkInstallPath();
 
@@ -17,12 +17,16 @@ Future<void> installApps() async {
     ],
   );
 
+  print('Server installed');
+
   var err = result.stderr as String;
   if (err.isNotEmpty) {
     print('Failed to install server');
     print(result.stderr);
     throw Error();
   }
+
+  print('Installing instrumentation...');
 
   result = await Process.run(
     'adb',
@@ -39,7 +43,7 @@ Future<void> installApps() async {
     throw Error();
   }
 
-  print('Instrumentation server installed');
+  print('Instrumentation installed');
 }
 
 Future<void> forwardPorts(int port) async {
@@ -72,6 +76,8 @@ Future<void> runServer() async {
       'pl.leancode.automatorserver.test/androidx.test.runner.AndroidJUnitRunner',
     ],
   );
+
+  print('Instrumentation server started');
 
   unawaited(
     res.exitCode.then((code) {
