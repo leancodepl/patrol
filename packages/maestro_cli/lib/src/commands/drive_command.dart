@@ -19,7 +19,7 @@ class DriveCommand extends Command<int> {
       ..addOption(
         'target',
         abbr: 't',
-        defaultsTo: 'main.dart',
+        mandatory: true,
         help: 'Dart file to run.',
       )
       ..addOption(
@@ -38,15 +38,14 @@ class DriveCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    var host = argResults?['host'] as String?;
-    host ??= 'localhost';
+    final host = argResults?['host'] as String;
 
-    final portStr = argResults?['port'] as String? ?? 'xd';
+    final portStr = argResults?['port'] as String;
     final port = int.parse(portStr);
 
-    final target = argResults?['target'] as String? ?? 'xd';
+    final target = argResults?['target'] as String;
 
-    final driver = argResults?['driver'] as String? ?? 'xd';
+    final driver = argResults?['driver'] as String;
 
     final options = MaestroDriveOptions(
       host: host,
@@ -56,7 +55,7 @@ class DriveCommand extends Command<int> {
     );
 
     try {
-      await installServerApp();
+      await installApps();
       await forwardPorts(options.port);
       await runServer();
       await runTestsWithOutput(options.driver, options.target);
