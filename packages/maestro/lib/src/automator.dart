@@ -13,7 +13,7 @@ class Automator {
   // ignore: prefer_constructors_over_static_methods
   static Automator get instance => _instance ??= Automator._();
 
-  static void init([int port = 8081]) => instance._port = port;
+  static void init({int port = 8081}) => instance._port = port;
 
   final _client = http.Client();
   final _logger = logging.Logger('Automator');
