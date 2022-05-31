@@ -4,6 +4,8 @@ class Automator {
   Automator._();
 
   static Automator? _instance;
+
+  // ignore: prefer_constructors_over_static_methods
   static Automator get instance => _instance ??= Automator._();
 
   static void init([int port = 8081]) => instance._port = port;

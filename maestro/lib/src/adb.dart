@@ -51,10 +51,9 @@ Future<void> runServer() async {
     ],
   );
 
-  res.exitCode.then((code) {
-    if (code != 0) {
-      print('Instrumentation server exited with code $code');
-      throw Error();
-    }
-  });
+  final code = await res.exitCode;
+  if (code != 0) {
+    print('Instrumentation server exited with code $code');
+    throw Error();
+  }
 }
