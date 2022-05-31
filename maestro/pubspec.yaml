@@ -1,7 +1,7 @@
 name: maestro
 description: >
   Simple, easy-to-learn, Flutter-native UI Testing framework eliminating
-  limitations of flutter-driver
+  limitations of flutter_driver
 version: 0.0.1
 homepage: https://github.com/leancodepl/maestro
 
