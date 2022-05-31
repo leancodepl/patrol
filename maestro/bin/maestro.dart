@@ -27,6 +27,7 @@ Future<int> main(List<String> args) async {
   await runTestsWithOutput(driver, target);
 
   Automator.init(port);
+  await Automator.instance.pressHome();
   await Automator.instance.stop();
 
   return 0;
