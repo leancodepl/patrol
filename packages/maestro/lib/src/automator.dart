@@ -1,5 +1,10 @@
 import 'package:http/http.dart' as http;
+import 'package:logging/logging.dart' as logging;
 
+/// Provides functionality to control the device.
+///
+/// Communicates over HTTP with the Maestro server app running on the target
+/// device.
 class Automator {
   Automator._();
 
@@ -11,38 +16,50 @@ class Automator {
   static void init([int port = 8081]) => instance._port = port;
 
   final _client = http.Client();
+  final _logger = logging.Logger('Automator');
+
   late final int _port;
   String get _baseUri => 'http://localhost:$_port';
 
   Future<bool> isRunning() async {
     try {
       final res = await _client.get(Uri.parse('$_baseUri/healthCheck'));
-      print(res.body);
-      print(res.statusCode);
+      _logger.info(
+        'status code: ${res.statusCode}, response body:\n ${res.body}',
+      );
       return res.statusCode == 200;
-    } catch (e) {
-      print(e);
+    } catch (err, st) {
+      _logger.warning(err, st);
       return false;
     }
   }
 
+  /// Stops the instrumentation server.
   Future<void> stop() async {
     try {
-      print('Stopping instrumentation server...');
+      _logger.info('stopping instrumentation server...');
       await _client.post(Uri.parse('$_baseUri/stop'));
-    } catch (e) {
-      print(e);
+    } catch (err, st) {
+      _logger.warning(err, st);
     } finally {
-      print('Instrumentation server stopped');
+      _logger.info('instrumentation server stopped');
     }
   }
 
-  Future<void> pressHome() async =>
-      _client.post(Uri.parse('$_baseUri/pressHome'));
+  /// Presses the home button.
+  ///
+  /// See also:
+  /// * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#presshome>, which is used on Android
+  Future<void> pressHome() => _client.post(Uri.parse('$_baseUri/pressHome'));
 
-  Future<void> pressRecentApps() async =>
+  /// Presses the recent apps button.
+  ///
+  /// See also:
+  /// * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>, which is used on Android
+  Future<void> pressRecentApps() =>
       _client.post(Uri.parse('$_baseUri/pressRecentApps'));
 
-  Future<void> pressDoubleRecentApps() async =>
+  /// Double presses the recent apps button.
+  Future<void> pressDoubleRecentApps() =>
       _client.post(Uri.parse('$_baseUri/pressDoubleRecentApps'));
 }
