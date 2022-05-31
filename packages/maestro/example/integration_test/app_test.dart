@@ -19,8 +19,6 @@ void main() {
     await tester.pumpWidget(const app.MyApp());
     await tester.pumpAndSettle();
 
-    //app.main();
-
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
     expect(findCounterText().data, '1');
@@ -36,6 +34,10 @@ void main() {
 
     await automator.pressDoubleRecentApps();
     print('after press recent apps 2');
+
+    await Future.delayed(const Duration(seconds: 2), () {
+      print('await for 2 seconds');
+    });
 
     expect(findCounterText().data, '1');
     await tester.tap(find.byType(FloatingActionButton));
