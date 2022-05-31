@@ -4,12 +4,13 @@ version: 0.0.1
 homepage:
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  args:
-  http:
-dev_dependencies:
+  args: ^2.3.1
+  http: ^0.13.4
 
+dev_dependencies:
+  leancode_lint: ^1.2.1
 executables:
   maestro:
