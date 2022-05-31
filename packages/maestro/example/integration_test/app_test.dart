@@ -5,42 +5,45 @@ import 'package:integration_test/integration_test.dart';
 import 'package:maestro/maestro.dart';
 
 void main() {
-  print('here 1');
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  Automator.init();
+  Automator.init(verbose: true);
   final automator = Automator.instance;
 
-  print('here 2');
-
   testWidgets("go home and come back", (WidgetTester tester) async {
-    counterText() =>
-        tester.firstElement(find.byKey(const ValueKey('counterText'))).widget
-            as Text;
+    Text findCounterText() {
+      return tester
+          .firstElement(find.byKey(const ValueKey('counterText')))
+          .widget as Text;
+    }
 
-    app.main();
+    await tester.pumpWidget(const app.MyApp());
     await tester.pumpAndSettle();
+
+    //app.main();
 
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
-    expect(counterText().data, '1');
+    expect(findCounterText().data, '1');
 
     await automator.pressHome();
+    print('after press home 1');
+
     await automator.pressDoubleRecentApps();
+    print('after press recent apps 1');
 
-    await tester.pumpAndSettle();
-    expect(counterText().data, '1');
+    await automator.pressHome();
+    print('after press home 2');
+
+    await automator.pressDoubleRecentApps();
+    print('after press recent apps 2');
+
+    expect(findCounterText().data, '1');
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
-    expect(counterText().data, '2');
+    expect(findCounterText().data, '2');
 
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
-    expect(counterText().data, '3');
-
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-    expect(counterText().data, '4');
-
-    print('here 3');
+    expect(findCounterText().data, '3');
   });
 }
