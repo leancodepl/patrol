@@ -7,6 +7,7 @@ import 'package:maestro/maestro.dart';
 void main() {
   print('here 1');
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  Automator.init();
   final automator = Automator.instance;
 
   print('here 2');
@@ -31,5 +32,15 @@ void main() {
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pumpAndSettle();
     expect(counterText().data, '2');
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    expect(counterText().data, '3');
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    expect(counterText().data, '4');
+
+    print('here 3');
   });
 }

@@ -50,16 +50,22 @@ class Automator {
   ///
   /// See also:
   /// * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#presshome>, which is used on Android
-  Future<void> pressHome() => _client.post(Uri.parse('$_baseUri/pressHome'));
+  Future<void> pressHome() => _wrap('pressHome');
 
   /// Presses the recent apps button.
   ///
   /// See also:
   /// * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>, which is used on Android
-  Future<void> pressRecentApps() =>
-      _client.post(Uri.parse('$_baseUri/pressRecentApps'));
+  Future<void> pressRecentApps() => _wrap('pressRecentApps');
 
   /// Double presses the recent apps button.
-  Future<void> pressDoubleRecentApps() =>
-      _client.post(Uri.parse('$_baseUri/pressDoubleRecentApps'));
+  Future<void> pressDoubleRecentApps() => _wrap('pressDoubleRecentApps');
+
+  Future<void> _wrap(String action) async {
+    final response = await _client.post(Uri.parse('$_baseUri/$action'));
+
+    if (response.statusCode != 200) {
+      print('action $action failed with status code ${response.statusCode}');
+    }
+  }
 }
