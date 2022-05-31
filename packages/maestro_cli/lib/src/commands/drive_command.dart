@@ -19,7 +19,7 @@ class DriveCommand extends Command<int> {
       ..addOption(
         'target',
         abbr: 't',
-        mandatory: true,
+        defaultsTo: 'main.dart',
         help: 'Dart file to run.',
       )
       ..addOption(
@@ -41,18 +41,12 @@ class DriveCommand extends Command<int> {
     var host = argResults?['host'] as String?;
     host ??= 'localhost';
 
-    final portStr = argResults?['port'] as String? ?? '8081';
+    final portStr = argResults?['port'] as String? ?? 'xd';
     final port = int.parse(portStr);
 
-    final target = argResults?['target'] as String?;
-    if (target == null) {
-      throw ArgumentError('Missing target argument');
-    }
+    final target = argResults?['target'] as String? ?? 'xd';
 
-    final driver = argResults?['driver'] as String?;
-    if (driver == null) {
-      throw ArgumentError('Missing driver argument');
-    }
+    final driver = argResults?['driver'] as String? ?? 'xd';
 
     final options = MaestroDriveOptions(
       host: host,
