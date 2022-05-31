@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "maestro (empty)",
+      "cwd": "packages/maestro_cli",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "maestro (target + driver)",
+      "cwd": "packages/maestro_cli",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "drive",
+        "--target",
+        "main.dart",
+        "--driver",
+        "test_driver/integration_test.dart"
+      ]
+    }
+  ]
+}

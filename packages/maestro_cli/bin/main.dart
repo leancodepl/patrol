@@ -1,60 +1,63 @@
-import 'package:args/args.dart';
+import 'dart:io';
+
 // import 'package:maestro/automator.dart';
-import 'package:maestro_cli/src/adb.dart';
-import 'package:maestro_cli/src/flutter_driver.dart';
-import 'package:maestro_cli/src/version.dart';
+import 'package:maestro_cli/src/command_runner.dart';
 
 Future<int> main(List<String> args) async {
-  final argParser = ArgParser();
-  final driveParser = _generateDriveParser();
+  final exitCode = await maestroCommandRunner(args);
 
-  argParser.addCommand('drive', driveParser);
+  exit(exitCode);
 
-  print('Maestro by LeanCode | v$maestroVersion');
+  // final argParser = ArgParser();
+  // final driveParser = _generateDriveParser();
 
-  final argResults = argParser.parse(args);
-  if (argResults.command?.name != 'drive') {
-    return 1;
-  }
+  // argParser.addCommand('drive', driveParser);
 
-  final port = int.parse(argResults.command!['port'] as String);
-  final target = argResults.command!['target'] as String;
-  final driver = argResults.command!['driver'] as String;
+  // print('Maestro by LeanCode | v$maestroVersion');
 
-  await installServerApp();
-  await forwardPorts(port);
-  await runServer();
-  await runTestsWithOutput(driver, target);
+  // final argResults = argParser.parse(args);
+  // if (argResults.command?.name != 'drive') {
+  //   return 1;
+  // }
 
-  // Automator.init(port);
-  // await Automator.instance.pressHome();
-  // await Automator.instance.stop();
+  // final port = int.parse(argResults.command!['port'] as String);
+  // final target = argResults.command!['target'] as String;
+  // final driver = argResults.command!['driver'] as String;
+
+  // await installServerApp();
+  // await forwardPorts(port);
+  // await runServer();
+  // await runTestsWithOutput(driver, target);
+
+  // // Automator.init(port);
+  // // await Automator.instance.pressHome();
+  // // await Automator.instance.stop();
 
   return 0;
 }
 
-ArgParser _generateDriveParser() {
-  final driveParser = ArgParser();
+// ArgParser _generateDriveParser() {
+//   final driveParser = ArgParser();
 
-  return driveParser
-    ..addOption(
-      'port',
-      abbr: 'p',
-      defaultsTo: '8081',
-    )
-    ..addOption(
-      'host',
-      abbr: 'h',
-      defaultsTo: 'localhost',
-    )
-    ..addOption(
-      'target',
-      abbr: 't',
-      mandatory: true,
-    )
-    ..addOption(
-      'driver',
-      abbr: 'd',
-      mandatory: true,
-    );
-}
+//   return driveParser
+//     ..addOption(
+//       'port',
+//       abbr: 'p',
+//       defaultsTo: '8081',
+//     )
+//     ..addOption(
+//       'host',
+//       abbr: 'h',
+//       defaultsTo: 'localhost',
+//     )
+//     ..addOption(
+//       'target',
+//       abbr: 't',
+//       mandatory: true,
+//     )
+//     ..addOption(
+//       'driver',
+//       abbr: 'd',
+//       mandatory: true,
+//     );
+// }
