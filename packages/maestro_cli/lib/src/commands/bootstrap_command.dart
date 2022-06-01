@@ -13,15 +13,13 @@ class BootstrapCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final homePath = getHomePath();
-    final pubCachePath = getApkInstallPath();
-    print('boostrap running!');
-    print('home directory: $homePath');
-    print('pub cache: $pubCachePath');
+    final artifactPath = getArtifactPath();
 
-    final currentDirectory = Directory.current.path;
+    print('Downloading artifacts to $artifactPath ...');
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    print('Writing default config file...');
     final contents = MaestroConfig.defaultConfig().toToml();
-
     File('maestro.toml').writeAsStringSync(contents);
 
     return 0;
