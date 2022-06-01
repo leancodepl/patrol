@@ -25,6 +25,13 @@ class MaestroConfig {
 
   final BootstrapConfig bootstrapConfig;
   final DriveConfig driveConfig;
+
+  String toToml() {
+    final bootstrapToml = bootstrapConfig.toToml();
+    final driveToml = driveConfig.toToml();
+
+    return '$bootstrapToml\n$driveToml';
+  }
 }
 
 class BootstrapConfig {
@@ -52,7 +59,9 @@ class BootstrapConfig {
   final String artifactPath;
 
   String toToml() {
-    final config = {'artifactPath': artifactPath};
+    final config = {
+      'bootstrap': {'artifactPath': artifactPath},
+    };
 
     return TomlDocument.fromMap(config).toString();
   }
@@ -109,10 +118,12 @@ class DriveConfig {
 
   String toToml() {
     final config = {
-      'host': host,
-      'port': port,
-      'target': target,
-      'driver': driver,
+      'drive': {
+        'host': host,
+        'port': port,
+        'target': target,
+        'driver': driver,
+      }
     };
 
     return TomlDocument.fromMap(config).toString();
