@@ -2,65 +2,27 @@ import 'package:toml/toml.dart';
 
 class MaestroConfig {
   const MaestroConfig({
-    required this.bootstrapConfig,
+    required this.artifactPath,
     required this.driveConfig,
   });
 
   factory MaestroConfig.defaultConfig() {
     return MaestroConfig(
-      bootstrapConfig: BootstrapConfig.defaultConfig(),
+      artifactPath: r'$HOME/.maestro',
       driveConfig: DriveConfig.defaultConfig(),
     );
-  }
-
-  factory MaestroConfig.fromToml(String toml) {
-    final bootstrapConfig = BootstrapConfig.fromToml(toml);
-    final driveConfig = DriveConfig.fromToml(toml);
-
-    return MaestroConfig(
-      bootstrapConfig: bootstrapConfig,
-      driveConfig: driveConfig,
-    );
-  }
-
-  final BootstrapConfig bootstrapConfig;
-  final DriveConfig driveConfig;
-
-  String toToml() {
-    final bootstrapToml = bootstrapConfig.toToml();
-    final driveToml = driveConfig.toToml();
-
-    return '$bootstrapToml\n$driveToml';
-  }
-}
-
-class BootstrapConfig {
-  const BootstrapConfig({required this.artifactPath});
-
-  factory BootstrapConfig.fromToml(String toml) {
-    final config = TomlDocument.parse(toml).toMap();
-
-    final dynamic artifactPath = config['artifactPath'];
-
-    if (artifactPath is! String) {
-      throw ArgumentError('`artifactPath` field is not a string');
-    }
-
-    return BootstrapConfig(artifactPath: artifactPath);
-  }
-
-  factory BootstrapConfig.defaultConfig() {
-    return const BootstrapConfig(artifactPath: r'$HOME/.maestro');
   }
 
   /// Directory to which artifacts will be downloaded.
   ///
   /// If the directory does not exist, it will be created.
   final String artifactPath;
+  final DriveConfig driveConfig;
 
   String toToml() {
     final config = {
-      'bootstrap': {'artifactPath': artifactPath},
+      'artifact_path': artifactPath,
+      'drive': driveConfig.toMap(),
     };
 
     return TomlDocument.fromMap(config).toString();
@@ -107,7 +69,7 @@ class DriveConfig {
       host: 'localhost',
       port: 8081,
       target: 'integration_test/app_test.dart',
-      driver: 'test_driver/integration_test.dartt',
+      driver: 'test_driver/integration_test.dart',
     );
   }
 
@@ -116,16 +78,12 @@ class DriveConfig {
   final String target;
   final String driver;
 
-  String toToml() {
-    final config = {
-      'drive': {
-        'host': host,
-        'port': port,
-        'target': target,
-        'driver': driver,
-      }
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'host': host,
+      'port': port,
+      'target': target,
+      'driver': driver,
     };
-
-    return TomlDocument.fromMap(config).toString();
   }
 }

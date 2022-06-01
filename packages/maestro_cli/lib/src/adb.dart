@@ -7,7 +7,7 @@ import 'package:path/path.dart' as path;
 Future<void> installApps() async {
   print('Installing server...');
 
-  final pubCache = getApkInstallPath();
+  final pubCache = getArtifactPath();
 
   var result = await Process.run(
     'adb',
