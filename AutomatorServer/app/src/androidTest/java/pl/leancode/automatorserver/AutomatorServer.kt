@@ -1,6 +1,5 @@
 package pl.leancode.automatorserver
 
-
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger

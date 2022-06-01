@@ -15,9 +15,7 @@ class ServerInstrumentation {
     var isStopped = false
     var server: Http4kServer? = null
 
-    fun startMjpegServer() {
-
-    }
+    fun startMjpegServer() {}
 
     fun startServer() {
         val app = routes(
