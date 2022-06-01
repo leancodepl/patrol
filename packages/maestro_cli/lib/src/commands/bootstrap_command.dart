@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/logging.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:maestro_cli/src/paths.dart';
 
@@ -15,10 +16,10 @@ class BootstrapCommand extends Command<int> {
   Future<int> run() async {
     final artifactPath = getArtifactPath();
 
-    print('Downloading artifacts to $artifactPath ...');
+    info('Downloading artifacts to $artifactPath ...');
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    print('Writing default config file...');
+    info('Writing default config file...');
     final contents = MaestroConfig.defaultConfig().toToml();
     File('maestro.toml').writeAsStringSync(contents);
 

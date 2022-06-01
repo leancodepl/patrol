@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:maestro_cli/src/logging.dart';
 import 'package:maestro_cli/src/paths.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps() async {
-  print('Installing server...');
+  info('Installing server...');
 
   final artifactPath = getArtifactPath();
 
@@ -17,16 +18,16 @@ Future<void> installApps() async {
     ],
   );
 
-  print('Server installed');
+  success('Server installed');
 
   var err = result.stderr as String;
   if (err.isNotEmpty) {
-    print('Failed to install server');
-    print(result.stderr);
+    error('Failed to install server');
+    info(result.stderr.toString());
     throw Error();
   }
 
-  print('Installing instrumentation...');
+  info('Installing instrumentation...');
 
   result = await Process.run(
     'adb',
@@ -38,12 +39,12 @@ Future<void> installApps() async {
 
   err = result.stderr as String;
   if (err.isNotEmpty) {
-    print('Failed to install instrumentation');
-    print(result.stderr);
+    error('Failed to install instrumentation');
+    info(result.stderr.toString());
     throw Error();
   }
 
-  print('Instrumentation installed');
+  success('Instrumentation installed');
 }
 
 Future<void> forwardPorts(int port) async {
@@ -58,13 +59,13 @@ Future<void> forwardPorts(int port) async {
   final err = res.stderr as String;
 
   if (err.isNotEmpty) {
-    print(res.stderr);
+    info(res.stderr.toString());
     throw Error();
   }
 }
 
 Future<void> runServer() async {
-  print('Starting instrumentation server...');
+  info('Starting instrumentation server...');
 
   final res = await Process.start(
     'adb',
@@ -77,13 +78,17 @@ Future<void> runServer() async {
     ],
   );
 
-  print('Instrumentation server started');
+  success('Instrumentation server started');
 
   unawaited(
     res.exitCode.then((code) {
+      final msg = 'Instrumentation server exited with code $code';
+
       if (code != 0) {
-        print('Instrumentation server exited with code $code');
+        error(msg);
         throw Error();
+      } else {
+        info(msg);
       }
     }),
   );
