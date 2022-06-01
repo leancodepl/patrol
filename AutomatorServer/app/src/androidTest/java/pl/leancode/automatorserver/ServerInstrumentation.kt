@@ -1,9 +1,6 @@
 package pl.leancode.automatorserver
 
-import android.os.Handler
-import android.os.Looper
 import org.http4k.core.Method
-import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.bind
@@ -16,7 +13,7 @@ import kotlin.concurrent.schedule
 
 class ServerInstrumentation {
     var isStopped = false
-    var server : Http4kServer? = null
+    var server: Http4kServer? = null
 
     fun startMjpegServer() {
 
