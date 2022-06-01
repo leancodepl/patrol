@@ -7,13 +7,13 @@ import 'package:path/path.dart' as path;
 Future<void> installApps() async {
   print('Installing server...');
 
-  final pubCache = getArtifactPath();
+  final artifactPath = getArtifactPath();
 
   var result = await Process.run(
     'adb',
     [
       'install',
-      path.join(pubCache, 'server.apk'),
+      path.join(artifactPath, 'server.apk'),
     ],
   );
 
@@ -32,7 +32,7 @@ Future<void> installApps() async {
     'adb',
     [
       'install',
-      path.join(pubCache, 'instrumentation.apk'),
+      path.join(artifactPath, 'instrumentation.apk'),
     ],
   );
 
