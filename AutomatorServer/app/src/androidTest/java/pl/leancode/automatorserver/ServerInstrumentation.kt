@@ -15,8 +15,6 @@ class ServerInstrumentation {
     var isStopped = false
     var server: Http4kServer? = null
 
-    fun startMjpegServer() {}
-
     fun startServer() {
         val app = routes(
             "healthCheck" bind Method.GET to {
