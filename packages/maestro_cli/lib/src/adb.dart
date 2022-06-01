@@ -6,7 +6,7 @@ import 'package:maestro_cli/src/paths.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps() async {
-  info('Installing server...');
+  log.info('Installing server...');
 
   final artifactPath = getArtifactPath();
 
@@ -18,16 +18,18 @@ Future<void> installApps() async {
     ],
   );
 
-  success('Server installed');
+  var stderr = result.stderr as String;
+  if (stderr.isNotEmpty) {
+    log
+      ..severe('Failed to install server')
+      ..info(stderr);
 
-  var err = result.stderr as String;
-  if (err.isNotEmpty) {
-    error('Failed to install server');
-    info(result.stderr.toString());
     throw Error();
   }
 
-  info('Installing instrumentation...');
+  log
+    ..info('Server installed')
+    ..info('Installing instrumentation...');
 
   result = await Process.run(
     'adb',
@@ -37,14 +39,15 @@ Future<void> installApps() async {
     ],
   );
 
-  err = result.stderr as String;
-  if (err.isNotEmpty) {
-    error('Failed to install instrumentation');
-    info(result.stderr.toString());
+  stderr = result.stderr as String;
+  if (stderr.isNotEmpty) {
+    log
+      ..severe('Failed to install instrumentation')
+      ..info(stderr);
     throw Error();
   }
 
-  success('Instrumentation installed');
+  log.info('Instrumentation installed');
 }
 
 Future<void> forwardPorts(int port) async {
@@ -56,16 +59,16 @@ Future<void> forwardPorts(int port) async {
       'tcp:$port',
     ],
   );
-  final err = res.stderr as String;
 
-  if (err.isNotEmpty) {
-    info(res.stderr.toString());
+  final stderr = res.stderr as String;
+  if (stderr.isNotEmpty) {
+    log.info(stderr);
     throw Error();
   }
 }
 
 Future<void> runServer() async {
-  info('Starting instrumentation server...');
+  log.info('Starting instrumentation server...');
 
   final res = await Process.start(
     'adb',
@@ -78,17 +81,17 @@ Future<void> runServer() async {
     ],
   );
 
-  success('Instrumentation server started');
+  log.info('Instrumentation server started');
 
   unawaited(
     res.exitCode.then((code) {
       final msg = 'Instrumentation server exited with code $code';
 
       if (code != 0) {
-        error(msg);
+        log.severe(msg);
         throw Error();
       } else {
-        info(msg);
+        log.info(msg);
       }
     }),
   );
