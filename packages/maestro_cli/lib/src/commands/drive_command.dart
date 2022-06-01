@@ -31,7 +31,7 @@ class DriveCommand extends Command<int> {
   }
 
   @override
-  String get description => 'Drives the app using flutter_driver.';
+  String get description => 'Drive the app using flutter_driver.';
 
   @override
   String get name => 'drive';

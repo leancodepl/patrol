@@ -7,7 +7,7 @@ import 'package:maestro_cli/src/logging.dart';
 ///
 /// Prints standard output of "flutter drive".
 Future<void> runTests(String driver, String target) async {
-  info('Running tests...');
+  log.info('Running tests...');
 
   final res = await Process.run(
     'flutter',
@@ -22,7 +22,7 @@ Future<void> runTests(String driver, String target) async {
 
   final stderr = res.stderr as String;
   if (stderr.isNotEmpty) {
-    error(stderr);
+    log.severe(stderr);
     throw Error();
   }
 }
@@ -32,7 +32,7 @@ Future<void> runTests(String driver, String target) async {
 ///
 /// Prints standard output of "flutter drive".
 Future<void> runTestsWithOutput(String driver, String target) async {
-  info('Running tests with output...');
+  log.info('Running tests with output...');
 
   final res = await Process.start(
     'flutter',
@@ -46,7 +46,12 @@ Future<void> runTestsWithOutput(String driver, String target) async {
   );
 
   final sub = res.stdout.listen((msg) {
-    info('driver: ${systemEncoding.decode(msg)}');
+    final text = 'driver: ${systemEncoding.decode(msg)}';
+    if (text.contains('I/flutter')) {
+      log.info(text);
+    } else {
+      log.fine(text);
+    }
   });
 
   await res.exitCode;
