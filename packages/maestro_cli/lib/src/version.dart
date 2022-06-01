@@ -1,1 +1,1 @@
-const maestroVersion = '0.0.1';
+const maestroVersion = '0.0.2';
