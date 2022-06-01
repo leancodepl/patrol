@@ -6,6 +6,26 @@ class MaestroConfig {
     required this.driveConfig,
   });
 
+  factory MaestroConfig.fromToml(String toml) {
+    final config = TomlDocument.parse(toml).toMap();
+
+    final dynamic artifactPath = config['artifact_path'];
+    final dynamic driveConfig = config['drive'];
+
+    if (artifactPath is! String) {
+      throw ArgumentError('`artifact_path` field is not a string');
+    }
+
+    if (driveConfig is! Map<String, dynamic>) {
+      throw ArgumentError('`drive` field is not a map');
+    }
+
+    return MaestroConfig(
+      artifactPath: artifactPath,
+      driveConfig: DriveConfig.fromMap(driveConfig),
+    );
+  }
+
   factory MaestroConfig.defaultConfig() {
     return MaestroConfig(
       artifactPath: r'$HOME/.maestro',
@@ -37,13 +57,11 @@ class DriveConfig {
     required this.driver,
   });
 
-  factory DriveConfig.fromToml(String toml) {
-    final config = TomlDocument.parse(toml).toMap();
-
-    final dynamic host = config['host'];
-    final dynamic port = config['port'];
-    final dynamic target = config['target'];
-    final dynamic driver = config['driver'];
+  factory DriveConfig.fromMap(Map<String, dynamic> toml) {
+    final dynamic host = toml['host'];
+    final dynamic port = toml['port'];
+    final dynamic target = toml['target'];
+    final dynamic driver = toml['driver'];
 
     if (host is! String) {
       throw ArgumentError('`host` field is not a string');

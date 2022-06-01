@@ -9,7 +9,7 @@ class BootstrapCommand extends Command<int> {
   String get name => 'bootstrap';
 
   @override
-  String get description => 'Downloading artifacts and creates default config.';
+  String get description => 'Downloads artifacts and creates default config.';
 
   @override
   Future<int> run() async {
