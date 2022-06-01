@@ -37,7 +37,9 @@ Future<void> runTestsWithOutput(String driver, String target) async {
     ],
   );
 
-  final sub = res.stdout.listen((msg) => info(systemEncoding.decode(msg)));
+  final sub = res.stdout.listen((msg) {
+    info('driver: ${systemEncoding.decode(msg)}');
+  });
   await res.exitCode;
   await sub.cancel();
 }
