@@ -1,6 +1,0 @@
-include: package:leancode_lint/analysis_options_package.yaml
-
-linter:
-  rules:
-    dartpublic_member_api_docs: false # TODO: not needed in the beginning
-    avoid_print: false # TODO: migrate to Logger

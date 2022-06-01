@@ -1,12 +1,11 @@
 package pl.leancode.automatorserver
 
-import android.os.SystemClock
+
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 class AutomatorServer {
