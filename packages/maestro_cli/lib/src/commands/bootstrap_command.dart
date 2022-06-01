@@ -10,16 +10,17 @@ class BootstrapCommand extends Command<int> {
   String get name => 'bootstrap';
 
   @override
-  String get description => 'Downloads artifacts and creates default config.';
+  String get description =>
+      'Download artifacts and create default config file.';
 
   @override
   Future<int> run() async {
     final artifactPath = getArtifactPath();
 
-    info('Downloading artifacts to $artifactPath ...');
+    log.info('Downloading artifacts to $artifactPath ...');
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    info('Writing default config file...');
+    log.info('Writing default config file...');
     final contents = MaestroConfig.defaultConfig().toToml();
     File('maestro.toml').writeAsStringSync(contents);
 
