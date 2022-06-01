@@ -1,8 +1,7 @@
-[bootstrap]
-artifactPath = '$HOME/.maestro'
+artifact_path = '$HOME/.maestro'
 
 [drive]
 host = 'localhost'
 port = 8081
 target = 'integration_test/app_test.dart'
-driver = 'test_driver/integration_test.dartt'
+driver = 'test_driver/integration_test.dart'

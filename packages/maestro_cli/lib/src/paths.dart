@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-String getApkInstallPath() {
+String getArtifactPath() {
   final home = getHomePath();
   final installPath = path.join(home, '.maestro');
 
