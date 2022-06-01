@@ -4,15 +4,16 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    compileSdkVersion 32
+
+    namespace 'pl.leancode.automatorserver'
 
     defaultConfig {
         applicationId "pl.leancode.automatorserver"
         minSdkVersion 26
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -33,7 +34,6 @@ android {
     packagingOptions {
         exclude 'META-INF/*'
     }
-    namespace 'pl.leancode.automatorserver'
 }
 
 dependencies {
