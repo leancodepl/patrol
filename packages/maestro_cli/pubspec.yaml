@@ -10,6 +10,7 @@ dependencies:
   args: ^2.3.1
   logging: ^1.0.2
   path: ^1.8.2
+  toml: ^0.13.1
 
 dev_dependencies:
   leancode_lint: ^1.2.1
