@@ -3,7 +3,7 @@
 import 'package:ansi_styles/ansi_styles.dart';
 import 'package:logging/logging.dart';
 
-final log = Logger('maestro');
+final log = Logger('');
 
 /// Sets up the global logger.
 ///
@@ -15,14 +15,39 @@ final log = Logger('maestro');
 void setUpLogger({required bool verbose}) {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((log) {
+    final fmtLog = _formatLog(log);
+
     if (log.level >= Level.SEVERE) {
-      print(AnsiStyles.red(log.message));
+      print(AnsiStyles.red(fmtLog));
     } else if (log.level >= Level.WARNING) {
-      print(AnsiStyles.yellow(log.message));
+      print(AnsiStyles.yellow(fmtLog));
     } else if (log.level >= Level.INFO) {
-      print(AnsiStyles.white(log.message));
+      print(AnsiStyles.white(fmtLog));
     } else if (log.level >= Level.FINE && verbose) {
-      print(AnsiStyles.grey(log.message));
+      print(AnsiStyles.grey(fmtLog));
     }
   });
+}
+
+/// Copied from
+/// https://github.com/leancodepl/logging_bugfender/blob/master/lib/src/print_strategy.dart.
+String _formatLog(LogRecord record) {
+  final log = StringBuffer()
+    ..writeAll(
+      <String>[
+        // '[${record.level.name}]',
+        if (record.loggerName.isNotEmpty) '${record.loggerName}:',
+        record.message,
+      ],
+      ' ',
+    );
+
+  if (record.error != null) {
+    log.write('\n${record.error}');
+  }
+  if (record.stackTrace != null) {
+    log.write('\n${record.stackTrace}');
+  }
+
+  return log.toString();
 }
