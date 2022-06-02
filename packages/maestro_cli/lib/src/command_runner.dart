@@ -1,5 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/commands/bootstrap_command.dart';
+import 'package:maestro_cli/src/commands/clean_command.dart';
 import 'package:maestro_cli/src/commands/drive_command.dart';
 import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/common/paths.dart';
@@ -26,6 +27,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand());
     addCommand(DriveCommand());
+    addCommand(CleanCommand());
 
     argParser.addFlag('verbose', abbr: 'v', help: 'Increase logging.');
   }
@@ -34,14 +36,21 @@ class MaestroCommandRunner extends CommandRunner<int> {
   Future<int?> run(Iterable<String> args) async {
     final results = argParser.parse(args);
     final verbose = results['verbose'] as bool;
+    final help = results['help'] as bool;
     setUpLogger(verbose: verbose);
 
-    if (!areArtifactsPresent()) {
-      log.info('Downloading artifacts...');
-      await downloadArtifacts();
+    if (!results.arguments.contains('clean') && !help) {
+      await _ensureArtifactsArePresent();
     }
-    log.info('Artifacts downloaded.');
 
     return super.run(args);
   }
+}
+
+Future<void> _ensureArtifactsArePresent() async {
+  if (!areArtifactsPresent()) {
+    log.info('Downloading artifacts...');
+    await downloadArtifacts();
+  }
+  log.info('Artifacts downloaded');
 }
