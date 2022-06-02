@@ -1,7 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/commands/bootstrap_command.dart';
 import 'package:maestro_cli/src/commands/drive_command.dart';
-import 'package:maestro_cli/src/logging.dart';
+import 'package:maestro_cli/src/common/logging.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();

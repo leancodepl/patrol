@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:maestro_cli/src/logging.dart';
+import 'package:maestro_cli/src/common/common.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
@@ -18,9 +18,8 @@ Future<void> runTests(String driver, String target) async {
     ],
   );
 
-  final stderr = res.stderr as String;
-  if (stderr.isNotEmpty) {
-    log.severe(stderr);
+  if (res.stdErr.isNotEmpty) {
+    log.severe(res.stdErr);
     throw Error();
   }
 }

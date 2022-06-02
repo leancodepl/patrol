@@ -1,57 +1,33 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:maestro_cli/src/logging.dart';
-import 'package:maestro_cli/src/paths.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps() async {
-  log.info('Installing server...');
-
-  final artifactPath = getArtifactPath();
-
-  var result = await Process.run(
-    'adb',
-    [
-      'install',
-      path.join(artifactPath, 'server.apk'),
-    ],
-  );
-
-  var stderr = result.stderr as String;
-  if (stderr.isNotEmpty) {
-    log
-      ..severe('Failed to install server')
-      ..info(stderr);
-
-    throw Error();
+  try {
+    log.info('Installing server...');
+    await _installApk('server.apk');
+  } catch (err) {
+    log.severe('Failed to install server');
+    rethrow;
   }
 
-  log
-    ..info('Server installed')
-    ..info('Installing instrumentation...');
+  log.info('Server installed');
 
-  result = await Process.run(
-    'adb',
-    [
-      'install',
-      path.join(artifactPath, 'instrumentation.apk'),
-    ],
-  );
-
-  stderr = result.stderr as String;
-  if (stderr.isNotEmpty) {
-    log
-      ..severe('Failed to install instrumentation')
-      ..info(stderr);
-    throw Error();
+  try {
+    log.info('Installing instrumentation...');
+    await _installApk('instrumentation.apk');
+  } catch (err) {
+    log.severe('Failed to install instrumentation');
+    rethrow;
   }
 
   log.info('Instrumentation installed');
 }
 
 Future<void> forwardPorts(int port) async {
-  final res = await Process.run(
+  final result = await Process.run(
     'adb',
     [
       'forward',
@@ -60,9 +36,8 @@ Future<void> forwardPorts(int port) async {
     ],
   );
 
-  final stderr = res.stderr as String;
-  if (stderr.isNotEmpty) {
-    log.info(stderr);
+  if (result.stdErr.isNotEmpty) {
+    log.info(result.stdErr);
     throw Error();
   }
 }
@@ -95,4 +70,20 @@ Future<void> runServer() async {
       }
     }),
   );
+}
+
+Future<void> _installApk(String name) async {
+  final artifactPath = getArtifactPath();
+
+  final result = await Process.run(
+    'adb',
+    [
+      'install',
+      path.join(artifactPath, name),
+    ],
+  );
+
+  if (result.stdErr.isNotEmpty) {
+    throw Exception(result.stdErr);
+  }
 }

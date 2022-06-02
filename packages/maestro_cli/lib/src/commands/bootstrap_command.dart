@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:maestro_cli/src/logging.dart';
+import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
-import 'package:maestro_cli/src/paths.dart';
+import 'package:maestro_cli/src/common/paths.dart';
 
 class BootstrapCommand extends Command<int> {
   @override
