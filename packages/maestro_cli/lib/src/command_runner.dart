@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/commands/bootstrap_command.dart';
 import 'package:maestro_cli/src/commands/clean_command.dart';
@@ -11,10 +13,13 @@ Future<int> maestroCommandRunner(List<String> args) async {
     final exitCode = await runner.run(args) ?? 0;
     return exitCode;
   } on UsageException catch (err) {
-    log.severe(null, err.message);
+    log.severe(err.message);
     return 1;
   } on FormatException catch (err) {
-    log.severe(null, err.message);
+    log.severe(err.message);
+    return 1;
+  } on FileSystemException catch (err) {
+    log.severe('${err.message} ${err.path}');
     return 1;
   }
 }
