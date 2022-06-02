@@ -11,43 +11,32 @@ void main() {
   Automator.init(verbose: true);
   final automator = Automator.instance;
 
-  testWidgets("go home and come back", (WidgetTester tester) async {
-    Text findCounterText() {
-      return tester
-          .firstElement(find.byKey(const ValueKey('counterText')))
-          .widget as Text;
-    }
+  testWidgets(
+    "counter state is the same after going to Home and switching apps",
+    (WidgetTester tester) async {
+      Text findCounterText() {
+        return tester
+            .firstElement(find.byKey(const ValueKey('counterText')))
+            .widget as Text;
+      }
 
-    await tester.pumpWidget(const app.MyApp());
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(const app.MyApp());
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-    expect(findCounterText().data, '1');
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      expect(findCounterText().data, '1');
 
-    await automator.pressHome();
-    print('after press home 1');
+      await automator.pressHome();
+      print('after press home 1');
 
-    await automator.pressDoubleRecentApps();
-    print('after press recent apps 1');
+      await automator.pressDoubleRecentApps();
+      print('after press recent apps 1');
 
-    await automator.pressHome();
-    print('after press home 2');
-
-    await automator.pressDoubleRecentApps();
-    print('after press recent apps 2');
-
-    await Future.delayed(const Duration(seconds: 2), () {
-      print('await for 2 seconds');
-    });
-
-    expect(findCounterText().data, '1');
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-    expect(findCounterText().data, '2');
-
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-    expect(findCounterText().data, '3');
-  });
+      expect(findCounterText().data, '1');
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      expect(findCounterText().data, '2');
+    },
+  );
 }
