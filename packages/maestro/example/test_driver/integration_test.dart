@@ -1,6 +1,7 @@
 import 'package:integration_test/integration_test_driver.dart';
 import 'package:maestro/maestro.dart';
 
+// Runs on our machine. Knows nothing about the app being tested.
 Future<void> main() async {
   print('Waiting for automator server');
   Automator.init(verbose: true);
