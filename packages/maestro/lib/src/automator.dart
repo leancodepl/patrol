@@ -75,6 +75,8 @@ class Automator {
   /// Double presses the recent apps button.
   Future<void> pressDoubleRecentApps() => _wrap('pressDoubleRecentApps');
 
+  Future<void> openNotifications() => _wrap('openNotifications');
+
   Future<void> _wrap(String action) async {
     _logger.fine('executing action $action');
 
