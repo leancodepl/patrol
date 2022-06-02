@@ -1,53 +1,33 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:maestro_cli/src/paths.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps() async {
-  print('Installing server...');
-
-  final pubCache = getApkInstallPath();
-
-  var result = await Process.run(
-    'adb',
-    [
-      'install',
-      path.join(pubCache, 'server.apk'),
-    ],
-  );
-
-  print('Server installed');
-
-  var err = result.stderr as String;
-  if (err.isNotEmpty) {
-    print('Failed to install server');
-    print(result.stderr);
-    throw Error();
+  try {
+    log.info('Installing server...');
+    await _installApk('server.apk');
+  } catch (err) {
+    log.severe('Failed to install server');
+    rethrow;
   }
 
-  print('Installing instrumentation...');
+  log.info('Server installed');
 
-  result = await Process.run(
-    'adb',
-    [
-      'install',
-      path.join(pubCache, 'instrumentation.apk'),
-    ],
-  );
-
-  err = result.stderr as String;
-  if (err.isNotEmpty) {
-    print('Failed to install instrumentation');
-    print(result.stderr);
-    throw Error();
+  try {
+    log.info('Installing instrumentation...');
+    await _installApk('instrumentation.apk');
+  } catch (err) {
+    log.severe('Failed to install instrumentation');
+    rethrow;
   }
 
-  print('Instrumentation installed');
+  log.info('Instrumentation installed');
 }
 
 Future<void> forwardPorts(int port) async {
-  final res = await Process.run(
+  final result = await Process.run(
     'adb',
     [
       'forward',
@@ -55,16 +35,15 @@ Future<void> forwardPorts(int port) async {
       'tcp:$port',
     ],
   );
-  final err = res.stderr as String;
 
-  if (err.isNotEmpty) {
-    print(res.stderr);
+  if (result.stdErr.isNotEmpty) {
+    log.info(result.stdErr);
     throw Error();
   }
 }
 
 Future<void> runServer() async {
-  print('Starting instrumentation server...');
+  log.info('Starting instrumentation server...');
 
   final res = await Process.start(
     'adb',
@@ -77,14 +56,34 @@ Future<void> runServer() async {
     ],
   );
 
-  print('Instrumentation server started');
+  log.info('Instrumentation server started');
 
   unawaited(
     res.exitCode.then((code) {
+      final msg = 'Instrumentation server exited with code $code';
+
       if (code != 0) {
-        print('Instrumentation server exited with code $code');
+        log.severe(msg);
         throw Error();
+      } else {
+        log.info(msg);
       }
     }),
   );
+}
+
+Future<void> _installApk(String name) async {
+  final artifactPath = getArtifactPath();
+
+  final result = await Process.run(
+    'adb',
+    [
+      'install',
+      path.join(artifactPath, name),
+    ],
+  );
+
+  if (result.stdErr.isNotEmpty) {
+    throw Exception(result.stdErr);
+  }
 }
