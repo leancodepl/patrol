@@ -4,8 +4,6 @@ import 'package:maestro_cli/src/logging.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
-///
-/// Prints standard output of "flutter drive".
 Future<void> runTests(String driver, String target) async {
   log.info('Running tests...');
 
