@@ -12,8 +12,8 @@ void main() {
   final automator = Automator.instance;
 
   testWidgets(
-    "counter state is the same after going to Home and switching apps",
-    (WidgetTester tester) async {
+    'counter state is the same after going to Home and switching apps',
+    (tester) async {
       Text findCounterText() {
         return tester
             .firstElement(find.byKey(const ValueKey('counterText')))
