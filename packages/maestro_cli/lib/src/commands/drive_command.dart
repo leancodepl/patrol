@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/adb.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/common/constants.dart';
 import 'package:maestro_cli/src/flutter_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
