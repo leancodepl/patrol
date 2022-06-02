@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/logging.dart';
-import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:maestro_cli/src/common/paths.dart';
+import 'package:maestro_cli/src/maestro_config.dart';
 
 class BootstrapCommand extends Command<int> {
   @override
@@ -15,9 +15,7 @@ class BootstrapCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final artifactPath = getArtifactPath();
-
-    log.info('Downloading artifacts to $artifactPath ...');
+    log.info('Downloading artifacts to $artifactsPath ...');
     await Future<void>.delayed(const Duration(seconds: 1));
 
     log.info('Writing default config file...');
