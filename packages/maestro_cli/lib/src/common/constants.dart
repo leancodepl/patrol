@@ -3,6 +3,9 @@ const configFileName = 'maestro.toml';
 /// Version of Maestro CLI.
 const version = '0.0.3';
 
+const maestroPackage = 'maestro_test';
+const maestroCliPackage = 'maestro_cli';
+
 class TestDriverDirectory {
   static const defaultTestFileContents = '''
 import 'package:integration_test/integration_test_driver.dart';

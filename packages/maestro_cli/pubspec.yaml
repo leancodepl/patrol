@@ -11,6 +11,7 @@ dependencies:
   args: ^2.3.1
   http: ^0.13.4
   logging: ^1.0.2
+  mason_logger: ^0.1.0-dev.10
   path: ^1.8.2
   toml: ^0.13.1
 dev_dependencies:
