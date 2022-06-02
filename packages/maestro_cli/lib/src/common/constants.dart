@@ -1,15 +1,15 @@
 const configFileName = 'maestro.toml';
 
-/// Version of Maestro CLI.
+/// Version of Maestro CLI. Must be kept in sync with pubspec.yaml.
 const version = '0.0.3';
 
-const maestroPackage = 'maestro_test';
+const maestroPackage = 'maestro';
 const maestroCliPackage = 'maestro_cli';
 
 class TestDriverDirectory {
   static const defaultTestFileContents = '''
 import 'package:integration_test/integration_test_driver.dart';
-import 'package:maestro/maestro.dart';
+import 'package:$maestroPackage/$maestroPackage.dart';
 
 // Runs on our machine. Knows nothing about the app being tested.
 Future<void> main() async {
