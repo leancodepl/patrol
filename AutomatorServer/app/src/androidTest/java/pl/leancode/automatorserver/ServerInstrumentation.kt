@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import com.orhanobut.logger.Logger
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
@@ -18,9 +19,11 @@ class ServerInstrumentation {
     fun startServer() {
         val app = routes(
             "healthCheck" bind Method.GET to {
+                Logger.i("Health check")
                 Response(OK)
             },
             "stop" bind Method.POST to {
+                Logger.i("Stopping server")
                 stopServer()
                 Response(OK)
             },
