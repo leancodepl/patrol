@@ -7,7 +7,7 @@ import 'package:path/path.dart' as path;
 Future<void> installApps() async {
   try {
     log.info('Installing server...');
-    await _installApk('server.apk');
+    await _installApk(serverArtifactFile);
   } catch (err) {
     log.severe('Failed to install server');
     rethrow;
@@ -17,7 +17,7 @@ Future<void> installApps() async {
 
   try {
     log.info('Installing instrumentation...');
-    await _installApk('instrumentation.apk');
+    await _installApk(instrumentationArtifactFile);
   } catch (err) {
     log.severe('Failed to install instrumentation');
     rethrow;
@@ -73,13 +73,11 @@ Future<void> runServer() async {
 }
 
 Future<void> _installApk(String name) async {
-  final artifactPath = getArtifactPath();
-
   final result = await Process.run(
     'adb',
     [
       'install',
-      path.join(artifactPath, name),
+      path.join(artifactsPath, name),
     ],
   );
 
