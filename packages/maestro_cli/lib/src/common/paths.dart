@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
+const serverApkFileName = 'server.apk';
+const instrumentationApkFileName = 'instrumentation.apk';
+
 String getArtifactPath() {
   final home = getHomePath();
   final installPath = path.join(home, '.maestro');
@@ -11,6 +14,18 @@ String getArtifactPath() {
   }
 
   return installPath;
+}
+
+bool areArtifactsPresent() {
+  final artifactPath = getArtifactPath();
+
+  final serverApk = File(path.join(artifactPath, serverApkFileName));
+
+  final instrumentationApk = File(
+    path.join(artifactPath, instrumentationApkFileName),
+  );
+
+  return serverApk.existsSync() && instrumentationApk.existsSync();
 }
 
 String getHomePath() {
