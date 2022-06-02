@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:maestro/maestro.dart';
 
+// Runs on target device.
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   Automator.init(verbose: true);
