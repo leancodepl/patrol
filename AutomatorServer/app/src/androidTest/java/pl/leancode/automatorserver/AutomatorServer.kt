@@ -17,6 +17,7 @@ class AutomatorServer {
             Logger.i("Starting server")
             try {
                 serverInstrumentation!!.startServer()
+                Logger.i("Server started")
                 while (!serverInstrumentation!!.isStopped) {
                 }
             } catch (e: Exception) {
