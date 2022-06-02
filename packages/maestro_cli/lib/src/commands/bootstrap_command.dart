@@ -22,7 +22,7 @@ class BootstrapCommand extends Command<int> {
       return 1;
     }
 
-    _createConfigFile();
+    await _createConfigFile();
 
     _createDefaultIntegrationTestFile();
 
@@ -32,25 +32,47 @@ class BootstrapCommand extends Command<int> {
   }
 }
 
-void _createConfigFile() {
-  log.info('Writing default maestro.toml config file...');
-  final contents = MaestroConfig.defaultConfig().toToml();
-  File('maestro.toml').writeAsStringSync(contents);
+Future<void> _createConfigFile() async {
+  final progress = log.progress('Creating default maestro.toml config file');
+
+  try {
+    final contents = MaestroConfig.defaultConfig().toToml();
+    await File('maestro.toml').writeAsString(contents);
+  } catch (err, st) {
+    progress.fail('Failed to create default maestro.toml config file');
+    log.severe(null, err, st);
+    return;
+  }
+
+  progress.complete('Created default maestro.toml config file');
 }
 
 void _createDefaultIntegrationTestFile() {
-  log.info('Writing default test_driver/integration_test.dart');
-  final testDriverDir = Directory('test_driver');
-  if (!testDriverDir.existsSync()) {
-    testDriverDir.createSync();
+  final progress = log.progress(
+    'Creating default test_driver/integration_test.dart file',
+  );
+
+  try {
+    final testDriverDir = Directory('test_driver');
+    if (!testDriverDir.existsSync()) {
+      testDriverDir.createSync();
+    }
+
+    final testDriverFile = File('test_driver/integration_test.dart');
+    if (!testDriverFile.existsSync()) {
+      testDriverFile.writeAsStringSync(
+        TestDriverDirectory.defaultTestFileContents,
+      );
+    }
+  } catch (err, st) {
+    progress.fail(
+      'Failed to create default test_driver/integration_test.dart file,',
+    );
+    log.severe(null, err, st);
+    return;
   }
 
-  final testDriverFile = File('test_driver/integration_test.dart');
-  if (!testDriverFile.existsSync()) {
-    testDriverFile.writeAsStringSync(
-      TestDriverDirectory.defaultTestFileContents,
-    );
-  }
+  progress.complete('Created default test_driver/integration_test.dart file');
 }
 
 Future<void> _addMaestroToPubspec() async {
