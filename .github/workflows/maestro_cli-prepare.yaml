@@ -28,7 +28,7 @@ jobs:
         run: dart pub get
 
       - name: dart analyze
-        run: dart analyze --no-fatal-infos
+        run: dart analyze
 
       # We don't have any tests, yet.
       # - name: dart test
