@@ -39,6 +39,10 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.pressDoubleRecentApps()
                 Response(OK)
             },
+            "openNotifications" bind Method.POST to {
+                UIAutomatorInstrumentation.instance.openNotifications()
+                Response(OK)
+            }
         )
         server = app.asServer(Netty(8081)).start()
     }
