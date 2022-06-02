@@ -5,6 +5,8 @@ import 'package:maestro_cli/src/common/constants.dart';
 import 'package:maestro_cli/src/common/paths.dart' as paths;
 import 'package:path/path.dart' as path;
 
+
+
 /// Returns true if artifacts for the current [version] are present in
 /// `artifactPath`, false otherwise.
 bool areArtifactsPresent() {
