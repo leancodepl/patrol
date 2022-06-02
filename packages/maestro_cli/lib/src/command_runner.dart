@@ -48,9 +48,17 @@ class MaestroCommandRunner extends CommandRunner<int> {
 }
 
 Future<void> _ensureArtifactsArePresent() async {
-  if (!areArtifactsPresent()) {
-    log.info('Downloading artifacts...');
-    await downloadArtifacts();
+  if (areArtifactsPresent()) {
+    return;
   }
-  log.info('Artifacts downloaded');
+
+  final progress = log.progress('Downloading artifacts');
+  try {
+    await downloadArtifacts();
+  } catch (err, st) {
+    progress.fail('Failed to download artifacts');
+    log.severe(null, err, st);
+  }
+
+  progress.complete('Downloaded artifacts');
 }

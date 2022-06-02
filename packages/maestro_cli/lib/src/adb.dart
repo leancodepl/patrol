@@ -5,28 +5,29 @@ import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps() async {
+  final progress1 = log.progress('Installing server');
   try {
-    log.info('Installing server...');
     await _installApk(serverArtifactFile);
   } catch (err) {
-    log.severe('Failed to install server');
+    progress1.fail('Failed to install server');
     rethrow;
   }
+  progress1.complete('Installed server');
 
-  log.info('Server installed');
-
+  final progress2 = log.progress('Installing instrumentation');
   try {
-    log.info('Installing instrumentation...');
     await _installApk(instrumentationArtifactFile);
   } catch (err) {
-    log.severe('Failed to install instrumentation');
+    progress2.fail('Failed to install instrumentation');
     rethrow;
   }
 
-  log.info('Instrumentation installed');
+  progress2.complete('Installed instrumentation');
 }
 
 Future<void> forwardPorts(int port) async {
+  final progress = log.progress('Forwarding ports');
+
   final result = await Process.run(
     'adb',
     [
@@ -37,13 +38,16 @@ Future<void> forwardPorts(int port) async {
   );
 
   if (result.stdErr.isNotEmpty) {
-    log.info(result.stdErr);
+    progress.fail('Failed to forward ports');
+    log.severe(result.stdErr);
     throw Error();
   }
+
+  progress.complete('Forwarded ports');
 }
 
 Future<void> runServer() async {
-  log.info('Starting instrumentation server...');
+  final progress = log.progress('Starting instrumentation server');
 
   final res = await Process.start(
     'adb',
@@ -55,8 +59,6 @@ Future<void> runServer() async {
       'pl.leancode.automatorserver.test/androidx.test.runner.AndroidJUnitRunner',
     ],
   );
-
-  log.info('Instrumentation server started');
 
   unawaited(
     res.exitCode.then((code) {
@@ -70,6 +72,8 @@ Future<void> runServer() async {
       }
     }),
   );
+
+  progress.complete('Started instrumentation server');
 }
 
 Future<void> _installApk(String name) async {

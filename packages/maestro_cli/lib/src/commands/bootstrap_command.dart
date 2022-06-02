@@ -26,7 +26,7 @@ class BootstrapCommand extends Command<int> {
 
     _createDefaultIntegrationTestFile();
 
-    _addMaestroToPubspec();
+    await _addMaestroToPubspec();
 
     return 0;
   }
@@ -53,18 +53,21 @@ void _createDefaultIntegrationTestFile() {
   }
 }
 
-void _addMaestroToPubspec() {
-  log.info('Adding maestro to dev_dependencies in pubspec.yaml');
+Future<void> _addMaestroToPubspec() async {
+  final progress = log.progress('Adding $maestroPackage to dev_dependencies');
 
-  final result = Process.runSync(
+  await Future<void>.delayed(const Duration(seconds: 1));
+
+  final result = await Process.run(
     'flutter',
-    ['pub', 'add', 'maestro', '--dev'],
+    ['pub', 'add', maestroPackage, '--dev'],
   );
 
   if (result.exitCode != 0) {
-    log
-      ..severe('Failed to add maestro to pubspec.yaml.')
-      ..severe(result.stderr);
+    progress.fail('Failed to add $maestroPackage to dev_dependencies');
+    log.severe(result.stderr);
     return;
   }
+
+  progress.complete('Added $maestroPackage to dev_dependencies');
 }
