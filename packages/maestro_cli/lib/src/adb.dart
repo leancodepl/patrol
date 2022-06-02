@@ -81,7 +81,7 @@ Future<void> _installApk(String name) async {
     'adb',
     [
       'install',
-      path.join(artifactsPath, name),
+      path.join(artifactPath, name),
     ],
   );
 

@@ -2,21 +2,21 @@ import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/commands/bootstrap_command.dart';
 import 'package:maestro_cli/src/commands/clean_command.dart';
 import 'package:maestro_cli/src/commands/drive_command.dart';
-import 'package:maestro_cli/src/common/logging.dart';
-import 'package:maestro_cli/src/common/paths.dart';
+import 'package:maestro_cli/src/common/common.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
 
-  var exitCode = 0;
   try {
-    exitCode = await runner.run(args) ?? 0;
+    final exitCode = await runner.run(args) ?? 0;
+    return exitCode;
   } on UsageException catch (err) {
-    log.severe('Error: ${err.message}');
-    exitCode = 1;
+    log.severe(null, err.message);
+    return 1;
+  } on FormatException catch (err) {
+    log.severe(null, err.message);
+    return 1;
   }
-
-  return exitCode;
 }
 
 class MaestroCommandRunner extends CommandRunner<int> {
@@ -34,13 +34,21 @@ class MaestroCommandRunner extends CommandRunner<int> {
 
   @override
   Future<int?> run(Iterable<String> args) async {
+    await setUpLogger();
+
     final results = argParser.parse(args);
+
     final verbose = results['verbose'] as bool;
     final help = results['help'] as bool;
-    setUpLogger(verbose: verbose);
+    await setUpLogger(verbose: verbose);
 
-    if (!results.arguments.contains('clean') && !help) {
-      await _ensureArtifactsArePresent();
+    try {
+      if (!results.arguments.contains('clean') && !help) {
+        await _ensureArtifactsArePresent();
+      }
+    } catch (err, st) {
+      log.severe(null, err, st);
+      return 1;
     }
 
     return super.run(args);
@@ -55,9 +63,9 @@ Future<void> _ensureArtifactsArePresent() async {
   final progress = log.progress('Downloading artifacts');
   try {
     await downloadArtifacts();
-  } catch (err, st) {
+  } catch (_) {
     progress.fail('Failed to download artifacts');
-    log.severe(null, err, st);
+    rethrow;
   }
 
   progress.complete('Downloaded artifacts');

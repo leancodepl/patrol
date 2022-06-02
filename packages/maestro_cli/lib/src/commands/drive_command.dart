@@ -78,7 +78,7 @@ class DriveCommand extends Command<int> {
       await runServer();
       await runTestsWithOutput(options.driver, options.target);
     } catch (err, st) {
-      log.severe('failure', err, st);
+      log.severe(null, err, st);
       return 1;
     }
 
