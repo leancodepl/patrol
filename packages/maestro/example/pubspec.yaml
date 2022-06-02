@@ -1,6 +1,5 @@
 name: example
 description: A new Flutter project.
-
 publish_to: "none"
 version: 1.0.0+1
 
@@ -8,21 +7,18 @@ environment:
   sdk: ">=2.16.2 <3.0.0"
 
 dependencies:
+  cupertino_icons: ^1.0.4
   flutter:
     sdk: flutter
-
-  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
-  http:
+  leancode_lint: ^1.2.1
   maestro:
     path: ../
-  process_run: 0.12.3+2
 
 flutter:
   uses-material-design: true
