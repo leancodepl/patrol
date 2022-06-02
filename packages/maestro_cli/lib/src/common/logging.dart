@@ -1,9 +1,21 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:ansi_styles/ansi_styles.dart';
 import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart' as mason_logger;
+
+export 'package:mason_logger/mason_logger.dart' show Progress;
 
 final log = Logger('');
+
+extension LoggerX on Logger {
+  /// Writes progress message to stdout.
+  mason_logger.Progress progress(String message) {
+    return mason_logger.Progress(message, stdout);
+  }
+}
 
 /// Sets up the global logger.
 ///

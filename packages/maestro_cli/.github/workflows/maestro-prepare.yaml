@@ -1,0 +1,43 @@
+name: maestro prepare
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/maestro
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v1
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.FLUTTER_HOME }}/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: ${{ runner.os }}-pub-
+
+      - name: flutter version
+        run: flutter --version
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter analyze
+        run: flutter analyze --no-fatal-infos
+
+      # We don't have any tests, yet.
+      # - name: flutter test
+      #   run: flutter test
+
+      - name: flutter format
+        run: flutter format --set-exit-if-changed .
