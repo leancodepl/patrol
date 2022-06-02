@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/adb.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/constants.dart';
 import 'package:maestro_cli/src/flutter_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
@@ -77,8 +78,8 @@ class DriveCommand extends Command<int> {
       await forwardPorts(options.port);
       await runServer();
       await runTestsWithOutput(options.driver, options.target);
-    } catch (_) {
-      // log error and stacktrace when in verbose mode
+    } catch (err, st) {
+      log.severe('failure', err, st);
       return 1;
     }
 
