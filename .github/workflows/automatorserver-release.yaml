@@ -1,0 +1,37 @@
+name: automatorserver release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "automatorserver-v*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: AutomatorServer
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Build server.apk
+        run: |
+          ./gradlew assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk server.apk
+
+      - name: Build instrumentation.apk
+        run: |
+          ./gradlew assembleDebugAndroidTest
+          mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk instrumentation.apk
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "AutomatorServer ${{github.ref_name}}"
+          files: |
+            server.apk
+            instrumentation.apk
