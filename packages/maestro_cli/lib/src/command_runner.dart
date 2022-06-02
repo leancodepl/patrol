@@ -31,13 +31,17 @@ class MaestroCommandRunner extends CommandRunner<int> {
   }
 
   @override
-  Future<int?> run(Iterable<String> args) {
+  Future<int?> run(Iterable<String> args) async {
     final results = argParser.parse(args);
     final verbose = results['verbose'] as bool;
     setUpLogger(verbose: verbose);
 
+    if (!areArtifactsPresent()) {
+      log.info('Downloading artifacts...');
+      await downloadArtifacts();
+    }
+    log.info('Artifacts downloaded.');
+
     return super.run(args);
   }
 }
-
-
