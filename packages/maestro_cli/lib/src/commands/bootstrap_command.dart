@@ -68,9 +68,7 @@ Future<void> _createDefaultIntegrationTestFile() async {
 
     final testDriverFile = File(testDriverFileRelativePath);
     if (!testDriverFile.existsSync()) {
-      await testDriverFile.writeAsString(
-        TestDriverDirectory.defaultTestFileContents,
-      );
+      await testDriverFile.writeAsString(driverFileContent);
     }
   } catch (err, st) {
     progress.fail('Failed to create default $testDriverFileRelativePath');

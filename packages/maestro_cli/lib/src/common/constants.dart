@@ -1,16 +1,15 @@
-const configFileName = 'maestro.toml';
-
-const driverDirName = 'test_driver';
-const driverFileName = 'integration_test.dart';
-
 /// Version of Maestro CLI. Must be kept in sync with pubspec.yaml.
 const version = '0.0.3';
 
 const maestroPackage = 'maestro';
 const maestroCliPackage = 'maestro_cli';
 
-class TestDriverDirectory {
-  static const defaultTestFileContents = '''
+const configFileName = 'maestro.toml';
+
+const driverDirName = 'test_driver';
+const driverFileName = 'integration_test.dart';
+
+const driverFileContent = '''
 import 'package:integration_test/integration_test_driver.dart';
 import 'package:$maestroPackage/$maestroPackage.dart';
 
@@ -28,4 +27,3 @@ Future<void> main() async {
   }
 }
 ''';
-}
