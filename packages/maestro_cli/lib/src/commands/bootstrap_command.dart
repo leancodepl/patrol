@@ -35,23 +35,23 @@ class BootstrapCommand extends Command<int> {
 bool _hasPubspec() => File('pubspec.yaml').existsSync();
 
 Future<void> _createConfigFile() async {
-  final file = File('maestro.toml');
+  final file = File(configFileName);
   if (file.existsSync()) {
-    throw const FileSystemException('Already exists', 'maestro.toml');
+    throw const FileSystemException('Already exists', configFileName);
   }
 
-  final progress = log.progress('Creating default maestro.toml config file');
+  final progress = log.progress('Creating default $configFileName config file');
 
   try {
     final contents = MaestroConfig.defaultConfig().toToml();
-    await File('maestro.toml').writeAsString(contents);
+    await File(configFileName).writeAsString(contents);
   } catch (err, st) {
-    progress.fail('Failed to create default maestro.toml config file');
+    progress.fail('Failed to create default $configFileName config file');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default maestro.toml config file');
+  progress.complete('Created default $configFileName config file');
 }
 
 Future<void> _createDefaultIntegrationTestFile() async {
