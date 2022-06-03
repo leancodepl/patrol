@@ -13,11 +13,11 @@ class MaestroConfig {
     final dynamic driveConfig = config['drive'];
 
     if (artifactPath is! String) {
-      throw ArgumentError('`artifact_path` field is not a string');
+      throw const FormatException('`artifact_path` field is not a string');
     }
 
     if (driveConfig is! Map<String, dynamic>) {
-      throw ArgumentError('`drive` field is not a map');
+      throw const FormatException('`drive` field is not a map');
     }
 
     return MaestroConfig(
@@ -64,19 +64,19 @@ class DriveConfig {
     final dynamic driver = toml['driver'];
 
     if (host is! String) {
-      throw ArgumentError('`host` field is not a string');
+      throw const FormatException('`host` field is not a string');
     }
 
     if (port is! int) {
-      throw ArgumentError('`port` field is not an int');
+      throw const FormatException('`port` field is not an int');
     }
 
     if (target is! String) {
-      throw ArgumentError('`target` field is not a string');
+      throw const FormatException('`target` field is not a string');
     }
 
     if (driver is! String) {
-      throw ArgumentError('`driver` field is not a string');
+      throw const FormatException('`driver` field is not a string');
     }
 
     return DriveConfig(host: host, port: port, target: target, driver: driver);

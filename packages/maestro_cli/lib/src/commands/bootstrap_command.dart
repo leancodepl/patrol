@@ -37,8 +37,7 @@ bool _hasPubspec() => File('pubspec.yaml').existsSync();
 Future<void> _createConfigFile() async {
   final file = File('maestro.toml');
   if (file.existsSync()) {
-    log.severe('maestro.toml already exists.');
-    throw Error();
+    throw const FileSystemException('Already exists', 'maestro.toml');
   }
 
   final progress = log.progress('Creating default maestro.toml config file');

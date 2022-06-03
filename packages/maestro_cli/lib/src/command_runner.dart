@@ -19,8 +19,11 @@ Future<int> maestroCommandRunner(List<String> args) async {
   } on FormatException catch (err) {
     log.severe(err.message);
     return 1;
-  } on FileSystemException catch (err) {
-    log.severe('${err.message} ${err.path}');
+  } on FileSystemException catch (err, st) {
+    log.severe('${err.message}: ${err.path}', err, st);
+    return 1;
+  } catch (err, st) {
+    log.severe(null, err, st);
     return 1;
   }
 }
@@ -75,7 +78,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
-    return null;
+    return super.run(args);
   }
 
   Future<void> _ensureArtifactsArePresent() async {

@@ -19,8 +19,7 @@ Future<void> runTests(String driver, String target) async {
   );
 
   if (res.stdErr.isNotEmpty) {
-    log.severe(res.stdErr);
-    throw Error();
+    throw Exception(res.stdErr);
   }
 }
 

@@ -8,18 +8,23 @@ class CleanCommand extends Command<int> {
   String get name => 'clean';
 
   @override
-  String get description => 'Remove all downloaded artifacts.';
+  String get description => 'Delete all downloaded artifacts.';
 
   @override
   Future<int> run() async {
-    final progress = log.progress('Removing $artifactPath');
+    final progress = log.progress('Deleting $artifactPath');
 
     try {
-      await Directory(artifactPath).delete(recursive: true);
-    } catch (err, st) {
-      progress.fail('Failed to remove $artifactPath');
-      log.severe(null, err, st);
-      return 1;
+      final dir = Directory(artifactPath);
+      if (!dir.existsSync()) {
+        progress.complete("Nothing to clean, $artifactPath doesn't exist");
+        return 1;
+      }
+
+      await dir.delete(recursive: true);
+    } catch (err) {
+      progress.fail('Failed to delete $artifactPath');
+      rethrow;
     }
 
     progress.complete('Deleted $artifactPath');

@@ -39,8 +39,7 @@ Future<void> forwardPorts(int port) async {
 
   if (result.stdErr.isNotEmpty) {
     progress.fail('Failed to forward ports');
-    log.severe(result.stdErr);
-    throw Error();
+    throw Exception(result.stdErr);
   }
 
   progress.complete('Forwarded ports');
@@ -49,24 +48,30 @@ Future<void> forwardPorts(int port) async {
 Future<void> runServer() async {
   final progress = log.progress('Starting instrumentation server');
 
-  final res = await Process.start(
-    'adb',
-    [
-      'shell',
-      'am',
-      'instrument',
-      '-w',
-      'pl.leancode.automatorserver.test/androidx.test.runner.AndroidJUnitRunner',
-    ],
-  );
+  Process process;
+  try {
+    process = await Process.start(
+      'adb',
+      [
+        'shell',
+        'am',
+        'instrument',
+        '-w',
+        'pl.leancode.automatorserver.test/androidx.test.runner.AndroidJUnitRunner',
+      ],
+    );
+  } catch (err) {
+    progress.fail('Failed to start instrumentation server');
+    rethrow;
+  }
 
   unawaited(
-    res.exitCode.then((code) {
+    process.exitCode.then((code) {
       final msg = 'Instrumentation server exited with code $code';
 
       if (code != 0) {
         log.severe(msg);
-        throw Error();
+        throw Exception(msg);
       } else {
         log.info(msg);
       }
