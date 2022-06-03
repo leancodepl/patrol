@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# deploy uploads a file to Azure Storage
+
+artifact="${1:-}"
+
+if [ -z "$artifact" ]; then
+  echo "File to be uploaded was not passed as the first argument"
+  exit 1
+fi
+
+mime="$(file -b --mime-type $artifact)"
+
+if [ -z "$AZURE_STORAGE_URL" ]; then
+    echo "AZURE_STORAGE_URL is not set"
+    exit 1
+fi
+
+if [ -z "$AZURE_SAS_TOKEN" ]; then
+    echo "AZURE_SAS_TOKEN is not set"
+    exit 1
+fi
+
+curl --location -g --request PUT "$AZURE_STORAGE_URL/$artifact?$AZURE_SAS_TOKEN" \
+    --header "x-ms-blob-type: BlockBlob" \
+    --header "Content-Type: $mime" \
+    --data-binary "@$PWD/$artifact"

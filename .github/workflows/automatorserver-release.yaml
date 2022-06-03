@@ -18,6 +18,7 @@ jobs:
       SERVER_FILE: server-${{ github.ref_name }}.apk
       INSTRUMENTATION_FILE: instrumentation-${{ github.ref_name }}.apk
       AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
+      AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
 
     steps:
       - name: Clone repository
@@ -43,7 +44,5 @@ jobs:
 
       - name: Upload artifacts to Azure Storage
         run: |
-          curl --location -g --request PUT "$AZURE_STORAGE_URL/$SERVER_FILE?${{ secrets.AZURE_SAS_TOKEN_QS }}" \
-          --header 'x-ms-blob-type: BlockBlob' \
-          --header 'Content-Type: image/jpg' \
-          --data-binary "@$PWD/$SERVER_FILE.jpg"
+          ./deploy "$SERVER_FILE"
+          ./deploy "$INSTRUMENTATION_FILE"
