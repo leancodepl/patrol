@@ -44,7 +44,7 @@ class DriveCommand extends Command<int> {
     dynamic host = argResults?['host'];
     host ??= config.driveConfig.host;
     if (host is! String) {
-      throw const FormatException('`host` argument is not a string XDXD');
+      throw const FormatException('`host` argument is not a string');
     }
 
     dynamic portStr = argResults?['port'];
