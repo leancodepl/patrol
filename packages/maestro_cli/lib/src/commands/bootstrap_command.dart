@@ -24,10 +24,9 @@ class BootstrapCommand extends Command<int> {
     }
 
     await _createConfigFile();
-
-    await _createDefaultIntegrationTestFile();
-
     await _addMaestroToPubspec();
+    await _createDefaultTestDriverFile();
+    await _createDefaultIntegrationTestFile();
 
     return 0;
   }
@@ -55,28 +54,52 @@ Future<void> _createConfigFile() async {
   progress.complete('Created default $configFileName');
 }
 
-Future<void> _createDefaultIntegrationTestFile() async {
-  final testDriverFileRelativePath = path.join(driverDirName, driverFileName);
+Future<void> _createDefaultTestDriverFile() async {
+  final relativeFilePath = path.join(driverDirName, driverFileName);
 
-  final progress = log.progress('Creating default $testDriverFileRelativePath');
+  final progress = log.progress('Creating default $relativeFilePath');
 
   try {
-    final testDriverDir = Directory(driverDirName);
-    if (!testDriverDir.existsSync()) {
-      await testDriverDir.create();
+    final dir = Directory(driverDirName);
+    if (!dir.existsSync()) {
+      await dir.create();
     }
 
-    final testDriverFile = File(testDriverFileRelativePath);
-    if (!testDriverFile.existsSync()) {
-      await testDriverFile.writeAsString(driverFileContent);
+    final file = File(relativeFilePath);
+    if (!file.existsSync()) {
+      await file.writeAsString(driverFileContent);
     }
   } catch (err, st) {
-    progress.fail('Failed to create default $testDriverFileRelativePath');
+    progress.fail('Failed to create default $relativeFilePath');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default $testDriverFileRelativePath');
+  progress.complete('Created default $relativeFilePath');
+}
+
+Future<void> _createDefaultIntegrationTestFile() async {
+  final relativeFilePath = path.join(testDirName, testFileName);
+
+  final progress = log.progress('Creating default $relativeFilePath');
+
+  try {
+    final dir = Directory(testDirName);
+    if (!dir.existsSync()) {
+      await dir.create();
+    }
+
+    final file = File(relativeFilePath);
+    if (!file.existsSync()) {
+      await file.writeAsString(testFileContent);
+    }
+  } catch (err, st) {
+    progress.fail('Failed to create default $relativeFilePath');
+    log.severe(null, err, st);
+    return;
+  }
+
+  progress.complete('Created default $relativeFilePath');
 }
 
 Future<void> _addMaestroToPubspec() async {
