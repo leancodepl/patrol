@@ -14,24 +14,36 @@ jobs:
       run:
         working-directory: AutomatorServer
 
+    env:
+      SERVER_FILE: server-${{ github.ref_name }}.apk
+      INSTRUMENTATION_FILE: instrumentation-${{ github.ref_name }}.apk
+      AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - name: Build server.apk
+      - name: Build server APK
         run: |
           ./gradlew assembleDebug
-          mv app/build/outputs/apk/debug/app-debug.apk server.apk
+          mv app/build/outputs/apk/debug/app-debug.apk $SERVER_FILE
 
-      - name: Build instrumentation.apk
+      - name: Build instrumentation APK
         run: |
           ./gradlew assembleDebugAndroidTest
-          mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk instrumentation.apk
+          mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
 
-      - name: Create release
+      - name: Create release on GitHub Actions
         uses: softprops/action-gh-release@v1
         with:
-          name: "AutomatorServer ${{github.ref_name}}"
+          name: "AutomatorServer ${{ github.ref_name }}"
           files: |
-            server.apk
-            instrumentation.apk
+            $SERVER_FILE
+            $INSTRUMENTATION_FILE
+
+      - name: Upload artifacts to Azure Storage
+        run: |
+          curl --location -g --request PUT "$AZURE_STORAGE_URL/$SERVER_FILE?${{ secrets.AZURE_SAS_TOKEN_QS }}" \
+          --header 'x-ms-blob-type: BlockBlob' \
+          --header 'Content-Type: image/jpg' \
+          --data-binary "@$PWD/$SERVER_FILE.jpg"
