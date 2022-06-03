@@ -24,7 +24,7 @@ class BootstrapCommand extends Command<int> {
 
     await _createConfigFile();
 
-    _createDefaultIntegrationTestFile();
+    await _createDefaultIntegrationTestFile();
 
     await _addMaestroToPubspec();
 
@@ -55,7 +55,7 @@ Future<void> _createConfigFile() async {
   progress.complete('Created default maestro.toml config file');
 }
 
-void _createDefaultIntegrationTestFile() {
+Future<void> _createDefaultIntegrationTestFile() async {
   final progress = log.progress(
     'Creating default test_driver/integration_test.dart file',
   );
@@ -63,12 +63,12 @@ void _createDefaultIntegrationTestFile() {
   try {
     final testDriverDir = Directory('test_driver');
     if (!testDriverDir.existsSync()) {
-      testDriverDir.createSync();
+      await testDriverDir.create();
     }
 
     final testDriverFile = File('test_driver/integration_test.dart');
     if (!testDriverFile.existsSync()) {
-      testDriverFile.writeAsStringSync(
+      await testDriverFile.writeAsString(
         TestDriverDirectory.defaultTestFileContents,
       );
     }
@@ -85,8 +85,6 @@ void _createDefaultIntegrationTestFile() {
 
 Future<void> _addMaestroToPubspec() async {
   final progress = log.progress('Adding $maestroPackage to dev_dependencies');
-
-  await Future<void>.delayed(const Duration(seconds: 1));
 
   final result = await Process.run(
     'flutter',
