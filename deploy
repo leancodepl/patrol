@@ -10,19 +10,20 @@ if [ -z "$artifact" ]; then
   exit 1
 fi
 
-mime="$(file -b --mime-type $artifact)"
+mime="$(file -b --mime-type "$artifact")"
 
-if [ -z "$AZURE_STORAGE_URL" ]; then
+if [ -z "${AZURE_STORAGE_URL:-}" ]; then
     echo "AZURE_STORAGE_URL is not set"
     exit 1
 fi
 
-if [ -z "$AZURE_SAS_TOKEN" ]; then
+if [ -z "${AZURE_SAS_TOKEN:-}" ]; then
     echo "AZURE_SAS_TOKEN is not set"
     exit 1
 fi
 
-curl --location -g --request PUT "$AZURE_STORAGE_URL/$artifact?$AZURE_SAS_TOKEN" \
+url="$AZURE_STORAGE_URL/$artifact?$AZURE_SAS_TOKEN"
+curl --location -g --request PUT "$url" \
     --header "x-ms-blob-type: BlockBlob" \
     --header "Content-Type: $mime" \
     --data-binary "@$PWD/$artifact"
