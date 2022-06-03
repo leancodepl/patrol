@@ -41,26 +41,24 @@ Future<void> _createConfigFile() async {
     throw const FileSystemException('Already exists', configFileName);
   }
 
-  final progress = log.progress('Creating default $configFileName config file');
+  final progress = log.progress('Creating default $configFileName');
 
   try {
     final contents = MaestroConfig.defaultConfig().toToml();
     await File(configFileName).writeAsString(contents);
   } catch (err, st) {
-    progress.fail('Failed to create default $configFileName config file');
+    progress.fail('Failed to create default $configFileName');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default $configFileName config file');
+  progress.complete('Created default $configFileName');
 }
 
 Future<void> _createDefaultIntegrationTestFile() async {
   final testDriverFileRelativePath = path.join(driverDirName, driverFileName);
 
-  final progress = log.progress(
-    'Creating default $testDriverFileRelativePath file',
-  );
+  final progress = log.progress('Creating default $testDriverFileRelativePath');
 
   try {
     final testDriverDir = Directory(driverDirName);
@@ -75,14 +73,12 @@ Future<void> _createDefaultIntegrationTestFile() async {
       );
     }
   } catch (err, st) {
-    progress.fail(
-      'Failed to create default $testDriverFileRelativePath file,',
-    );
+    progress.fail('Failed to create default $testDriverFileRelativePath');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default $testDriverFileRelativePath file');
+  progress.complete('Created default $testDriverFileRelativePath');
 }
 
 Future<void> _addMaestroToPubspec() async {
