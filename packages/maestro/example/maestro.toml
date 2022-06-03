@@ -1,5 +1,3 @@
-artifact_path = '$HOME/.maestro'
-
 [drive]
 host = 'localhost'
 port = 8081
