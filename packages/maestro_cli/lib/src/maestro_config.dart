@@ -1,10 +1,7 @@
 import 'package:toml/toml.dart';
 
 class MaestroConfig {
-  const MaestroConfig({
-    required this.artifactPath,
-    required this.driveConfig,
-  });
+  const MaestroConfig({required this.driveConfig});
 
   factory MaestroConfig.fromToml(String toml) {
     final config = TomlDocument.parse(toml).toMap();
@@ -20,28 +17,19 @@ class MaestroConfig {
       throw ArgumentError('`drive` field is not a map');
     }
 
-    return MaestroConfig(
-      artifactPath: artifactPath,
-      driveConfig: DriveConfig.fromMap(driveConfig),
-    );
+    return MaestroConfig(driveConfig: DriveConfig.fromMap(driveConfig));
   }
 
   factory MaestroConfig.defaultConfig() {
     return MaestroConfig(
-      artifactPath: r'$HOME/.maestro',
       driveConfig: DriveConfig.defaultConfig(),
     );
   }
 
-  /// Directory to which artifacts will be downloaded.
-  ///
-  /// If the directory does not exist, it will be created.
-  final String artifactPath;
   final DriveConfig driveConfig;
 
   String toToml() {
     final config = {
-      'artifact_path': artifactPath,
       'drive': driveConfig.toMap(),
     };
 
