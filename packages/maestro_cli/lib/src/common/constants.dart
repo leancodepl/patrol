@@ -1,5 +1,8 @@
 const configFileName = 'maestro.toml';
 
+const driverDirName = 'test_driver';
+const driverFileName = 'integration_test.dart';
+
 /// Version of Maestro CLI. Must be kept in sync with pubspec.yaml.
 const version = '0.0.3';
 

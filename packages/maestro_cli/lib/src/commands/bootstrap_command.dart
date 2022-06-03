@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/constants.dart';
 import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
+import 'package:path/path.dart' as path;
 
 class BootstrapCommand extends Command<int> {
   @override
@@ -55,17 +56,19 @@ Future<void> _createConfigFile() async {
 }
 
 Future<void> _createDefaultIntegrationTestFile() async {
+  final testDriverFileRelativePath = path.join(driverDirName, driverFileName);
+
   final progress = log.progress(
-    'Creating default test_driver/integration_test.dart file',
+    'Creating default $testDriverFileRelativePath file',
   );
 
   try {
-    final testDriverDir = Directory('test_driver');
+    final testDriverDir = Directory(driverDirName);
     if (!testDriverDir.existsSync()) {
       await testDriverDir.create();
     }
 
-    final testDriverFile = File('test_driver/integration_test.dart');
+    final testDriverFile = File(testDriverFileRelativePath);
     if (!testDriverFile.existsSync()) {
       await testDriverFile.writeAsString(
         TestDriverDirectory.defaultTestFileContents,
@@ -73,13 +76,13 @@ Future<void> _createDefaultIntegrationTestFile() async {
     }
   } catch (err, st) {
     progress.fail(
-      'Failed to create default test_driver/integration_test.dart file,',
+      'Failed to create default $testDriverFileRelativePath file,',
     );
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default test_driver/integration_test.dart file');
+  progress.complete('Created default $testDriverFileRelativePath file');
 }
 
 Future<void> _addMaestroToPubspec() async {
