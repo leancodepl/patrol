@@ -15,7 +15,7 @@ class BootstrapCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    if (!File('pubspec.yaml').existsSync()) {
+    if (!_hasPubspec()) {
       log.severe(
         'No pubspec.yaml found. Maestro must be run from Flutter project root.',
       );
@@ -32,7 +32,15 @@ class BootstrapCommand extends Command<int> {
   }
 }
 
+bool _hasPubspec() => File('pubspec.yaml').existsSync();
+
 Future<void> _createConfigFile() async {
+  final file = File('maestro.toml');
+  if (file.existsSync()) {
+    log.severe('maestro.toml already exists.');
+    throw Error();
+  }
+
   final progress = log.progress('Creating default maestro.toml config file');
 
   try {
