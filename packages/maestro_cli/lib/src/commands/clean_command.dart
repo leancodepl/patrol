@@ -1,15 +1,14 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-
-import '../common/common.dart';
+import 'package:maestro_cli/src/common/common.dart';
 
 class CleanCommand extends Command<int> {
   @override
   String get name => 'clean';
 
   @override
-  String get description => 'Remove all downloaded artifacts';
+  String get description => 'Remove all downloaded artifacts.';
 
   @override
   Future<int> run() async {

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/commands/bootstrap_command.dart';
 import 'package:maestro_cli/src/commands/clean_command.dart';
+import 'package:maestro_cli/src/commands/config_command.dart';
 import 'package:maestro_cli/src/commands/drive_command.dart';
 import 'package:maestro_cli/src/common/common.dart';
 
@@ -32,6 +33,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand());
     addCommand(DriveCommand());
+    addCommand(ConfigCommand());
     addCommand(CleanCommand());
 
     argParser

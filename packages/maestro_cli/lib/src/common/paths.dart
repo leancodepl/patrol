@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
+const maestroArtifactPathEnv = 'MAESTRO_ARTIFACT_PATH';
+
 String get serverArtifact => 'server-$version';
 String get instrumentationArtifact => 'instrumentation-$version';
 
@@ -25,11 +27,15 @@ String get instrumentationArtifactPath {
   return path.join(artifactPath, instrumentationArtifactFile);
 }
 
+bool get artifactPathSetFromEnv {
+  return Platform.environment.containsKey(maestroArtifactPathEnv);
+}
+
 String get artifactPath {
   final env = Platform.environment;
   String p;
-  if (env.containsKey('MAESTRO_ARTIFACT_PATH')) {
-    p = env['MAESTRO_ARTIFACT_PATH']!;
+  if (env.containsKey(maestroArtifactPathEnv)) {
+    p = env[maestroArtifactPathEnv]!;
   } else {
     p = _defaultArtifactPath;
   }
