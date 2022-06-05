@@ -90,6 +90,17 @@ void main() {
 
 ```
 
+## Release process
+
+1. Create a [git annotated tag][annotated_tag]:
+
+```
+git tag -a "maestro_cli-v0.0.4" -m "Release notes go here"
+```
+
+2. Push it! GitHub Actions will take care of the rest.
+
 [pub_badge]: https://img.shields.io/pub/v/maestro.svg
 [pub_link]: https://pub.dartlang.org/packages/maestro
 [ui_automator]: https://developer.android.com/training/testing/other-components/ui-automator
+[annotated_tag]: https://git-scm.com/book/en/v2/Git-Basics-Tagging#_annotated_tags
