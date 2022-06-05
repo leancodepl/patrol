@@ -1,0 +1,106 @@
+name: maestro_cli publish
+
+on:
+  push:
+    tags:
+      - "maestro_cli-v*"
+
+jobs:
+  publish_cli:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/maestro_cli
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.17.0
+
+      - name: Download pub.dev credentials
+        env:
+          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.pub-cache
+          echo $CREDENTIALS > ~/.pub-cache/credentials.json
+
+      # Not yet.
+      # - name: Publish
+      #   run: dart pub publish -f
+
+  publish_server:
+    runs-on: ubuntu-latest
+    needs: publish_cli
+
+    defaults:
+      run:
+        working-directory: AutomatorServer
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          # see https://github.com/actions/virtual-environments/issues/1717#issuecomment-702780142
+          ref: ${{ github.ref }}
+
+      - name: Set version, metadata, and artifact names
+        run: |
+          tag=${{ github.ref_name }}
+          prefix=maestro_cli-v
+          version=${tag#"$prefix"}
+          echo "version: $version"
+          server_file="server-$version.apk"
+          echo "server file: $server_file"
+          instrumentation_file="instrumentation-$version.apk"
+          echo "instrumentation file: $instrumentation_file"
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
+          echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
+          # set whether is prerelease
+          is_prerelease=false
+          if [[ "$version" == 0.* ]]; then
+            is_prerelease=true
+          fi
+          echo "IS_PRERELEASE=$is_prerelease" >> $GITHUB_ENV
+          echo "is_prerelease: $is_prerelease"
+          # set release notes
+          tag_message="$(git tag -l --format='%(contents)' "$tag")"
+          echo "$tag_message" > release_notes.txt
+          echo "tag message: $tag_message"
+
+      - name: Build server APK
+        run: |
+          echo "server file: $SERVER_FILE"
+          ./gradlew assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk $SERVER_FILE
+
+      - name: Build instrumentation APK
+        run: |
+          echo "instrumentation file: $INSTRUMENTATION_FILE"
+          ./gradlew assembleDebugAndroidTest
+          mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "maestro_cli-v${{ env.VERSION }}"
+          body_path: AutomatorServer/release_notes.txt
+          prerelease: ${{ env.IS_PRERELEASE }}
+          fail_on_unmatched_files: true
+          # see https://github.com/softprops/action-gh-release/issues/158
+          files: |
+            AutomatorServer/${{ env.SERVER_FILE }}
+            AutomatorServer/${{ env.INSTRUMENTATION_FILE }}
+
+      - name: Upload artifacts to Azure Storage
+        env:
+          AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
+          AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
+        run: |
+          ./deploy ${{ env.SERVER_FILE }}
+          ./deploy ${{ env.INSTRUMENTATION_FILE }}
