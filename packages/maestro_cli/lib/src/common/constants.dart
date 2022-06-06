@@ -2,6 +2,7 @@
 const version = '0.0.7';
 
 const maestroPackage = 'maestro';
+const integrationTestPackage = 'integration_test';
 const maestroCliPackage = 'maestro_cli';
 
 const configFileName = 'maestro.toml';
