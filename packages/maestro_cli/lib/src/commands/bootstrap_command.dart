@@ -54,6 +54,24 @@ Future<void> _createConfigFile() async {
   progress.complete('Created default $configFileName');
 }
 
+Future<void> _addMaestroToPubspec() async {
+  final progress = log.progress('Adding $maestroPackage to dev_dependencies');
+
+  final result = await Process.run(
+    'flutter',
+    ['pub', 'add', maestroPackage, '--dev'],
+    runInShell: true,
+  );
+
+  if (result.exitCode != 0) {
+    progress.fail('Failed to add $maestroPackage to dev_dependencies');
+    log.severe(result.stderr);
+    return;
+  }
+
+  progress.complete('Added $maestroPackage to dev_dependencies');
+}
+
 Future<void> _createDefaultTestDriverFile() async {
   final relativeFilePath = path.join(driverDirName, driverFileName);
 
@@ -100,21 +118,4 @@ Future<void> _createDefaultIntegrationTestFile() async {
   }
 
   progress.complete('Created default $relativeFilePath');
-}
-
-Future<void> _addMaestroToPubspec() async {
-  final progress = log.progress('Adding $maestroPackage to dev_dependencies');
-
-  final result = await Process.run(
-    'flutter',
-    ['pub', 'add', maestroPackage, '--dev'],
-  );
-
-  if (result.exitCode != 0) {
-    progress.fail('Failed to add $maestroPackage to dev_dependencies');
-    log.severe(result.stderr);
-    return;
-  }
-
-  progress.complete('Added $maestroPackage to dev_dependencies');
 }
