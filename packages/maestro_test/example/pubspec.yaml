@@ -17,7 +17,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   leancode_lint: ^1.2.1
-  maestro:
+  maestro_test:
     path: ../
 
 flutter:

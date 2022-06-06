@@ -1,0 +1,32 @@
+name: maestro_test publish
+
+on:
+  push:
+    tags: ["maestro_test-v*"]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/maestro_test
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.17.0
+
+      - name: Download pub.dev credentials
+        env:
+          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.pub-cache
+          echo $CREDENTIALS > ~/.pub-cache/credentials.json
+
+      - name: Publish
+        run: dart pub publish -f

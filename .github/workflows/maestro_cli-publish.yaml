@@ -2,8 +2,7 @@ name: maestro_cli publish
 
 on:
   push:
-    tags:
-      - "maestro_cli-v*"
+    tags: ["maestro_cli-v*"]
 
 jobs:
   publish_cli:
@@ -15,7 +14,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
@@ -29,11 +28,10 @@ jobs:
           mkdir -p ~/.pub-cache
           echo $CREDENTIALS > ~/.pub-cache/credentials.json
 
-      # Not yet.
-      # - name: Publish
-      #   run: dart pub publish -f
+      - name: Publish
+        run: dart pub publish -f
 
-  publish_server:
+  upload_artifacts:
     runs-on: ubuntu-latest
     needs: publish_cli
 

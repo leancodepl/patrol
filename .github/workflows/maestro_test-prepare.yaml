@@ -1,4 +1,4 @@
-name: maestro prepare
+name: maestro_test prepare
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro
+        working-directory: packages/maestro_test
 
     steps:
       - name: Clone repository
