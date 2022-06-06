@@ -4,7 +4,7 @@ import 'package:maestro_cli/src/common/common.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
-Future<void> runTests(String driver, String target) async {
+Future<void> runTests(String driver, String target, {String? device}) async {
   log.info('Running tests...');
 
   final res = await Process.run(
@@ -15,6 +15,10 @@ Future<void> runTests(String driver, String target) async {
       driver,
       '--target',
       target,
+      if (device != null) ...[
+        '--device-id',
+        device,
+      ],
     ],
     runInShell: true,
   );
@@ -28,7 +32,11 @@ Future<void> runTests(String driver, String target) async {
 /// drive is done.
 ///
 /// Prints standard output of "flutter drive".
-Future<void> runTestsWithOutput(String driver, String target) async {
+Future<void> runTestsWithOutput(
+  String driver,
+  String target, {
+  String? device,
+}) async {
   log.info('Running tests with output...');
 
   final res = await Process.start(
@@ -39,11 +47,15 @@ Future<void> runTestsWithOutput(String driver, String target) async {
       driver,
       '--target',
       target,
+      if (device != null) ...[
+        '--device-id',
+        device,
+      ],
     ],
     runInShell: true,
   );
 
-  final sub = res.stdout.listen((msg) {
+  final stdOutSub = res.stdout.listen((msg) {
     final text = 'driver: ${systemEncoding.decode(msg)}';
     if (text.contains('I/flutter')) {
       log.info(text);
@@ -52,6 +64,19 @@ Future<void> runTestsWithOutput(String driver, String target) async {
     }
   });
 
-  await res.exitCode;
-  await sub.cancel();
+  final stdErrSub = res.stderr.listen((msg) {
+    final text = 'driver: ${systemEncoding.decode(msg)}';
+    log.severe(text);
+  });
+
+  final exitCode = await res.exitCode;
+  await stdOutSub.cancel();
+  await stdErrSub.cancel();
+
+  final msg = 'flutter_driver exited with code $exitCode';
+  if (exitCode == 0) {
+    log.info(msg);
+  } else {
+    log.severe(msg);
+  }
 }

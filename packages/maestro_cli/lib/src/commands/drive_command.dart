@@ -27,6 +27,10 @@ class DriveCommand extends Command<int> {
         'driver',
         abbr: 'd',
         help: 'Dart file which starts flutter_driver.',
+      )
+      ..addOption(
+        'device',
+        help: 'Serial number of ADB device to use.',
       );
   }
 
@@ -65,6 +69,8 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`driver` argument is not a string');
     }
 
+    final device = argResults?['device'] as String?;
+
     final options = MaestroDriveOptions(
       host: host,
       port: int.parse(portStr),
@@ -72,10 +78,14 @@ class DriveCommand extends Command<int> {
       driver: driver,
     );
 
-    await adb.installApps();
-    await adb.forwardPorts(options.port);
-    await adb.runServer();
-    await flutter_driver.runTestsWithOutput(options.driver, options.target);
+    await adb.installApps(device: device);
+    await adb.forwardPorts(options.port, device: device);
+    await adb.runServer(device: device);
+    await flutter_driver.runTestsWithOutput(
+      options.driver,
+      options.target,
+      device: device,
+    );
 
     return 0;
   }
