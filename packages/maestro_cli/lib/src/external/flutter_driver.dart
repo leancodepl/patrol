@@ -16,6 +16,7 @@ Future<void> runTests(String driver, String target) async {
       '--target',
       target,
     ],
+    runInShell: true,
   );
 
   if (res.stdErr.isNotEmpty) {

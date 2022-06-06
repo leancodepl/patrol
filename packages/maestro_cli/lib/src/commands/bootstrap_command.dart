@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:maestro_cli/src/common/constants.dart';
-import 'package:maestro_cli/src/common/logging.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:path/path.dart' as path;
 
@@ -25,6 +24,7 @@ class BootstrapCommand extends Command<int> {
 
     await _createConfigFile();
     await _addMaestroToPubspec();
+    await _addIntegrationTestToPubspec();
     await _createDefaultTestDriverFile();
     await _createDefaultIntegrationTestFile();
 
@@ -37,7 +37,8 @@ bool _hasPubspec() => File('pubspec.yaml').existsSync();
 Future<void> _createConfigFile() async {
   final file = File(configFileName);
   if (file.existsSync()) {
-    throw const FileSystemException('Already exists', configFileName);
+    file.deleteSync();
+    log.info('Deleted existing $configFileName');
   }
 
   final progress = log.progress('Creating default $configFileName');
@@ -55,21 +56,49 @@ Future<void> _createConfigFile() async {
 }
 
 Future<void> _addMaestroToPubspec() async {
-  final progress = log.progress('Adding $maestroPackage to dev_dependencies');
+  const package = maestroPackage;
+
+  final progress = log.progress('Adding $package to dev_dependencies');
 
   final result = await Process.run(
     'flutter',
-    ['pub', 'add', maestroPackage, '--dev'],
+    ['pub', 'add', package, '--dev'],
     runInShell: true,
   );
 
   if (result.exitCode != 0) {
-    progress.fail('Failed to add $maestroPackage to dev_dependencies');
-    log.severe(result.stderr);
-    return;
+    if (result.stdErr.contains('is already in "dev_dependencies"')) {
+      progress.complete('$package is already in dev_dependencies');
+    } else {
+      progress.fail('Failed to add $package to dev_dependencies');
+      log.severe(result.stderr);
+    }
+  } else {
+    progress.complete('Added $package to dev_dependencies');
   }
+}
 
-  progress.complete('Added $maestroPackage to dev_dependencies');
+Future<void> _addIntegrationTestToPubspec() async {
+  const package = integrationTestPackage;
+
+  final progress = log.progress('Adding $package to dev_dependencies');
+
+  final result = await Process.run(
+    'flutter',
+    ['pub', 'add', package, '--dev', '--sdk', 'flutter'],
+    runInShell: true,
+  );
+
+  if (result.exitCode != 0) {
+    if (result.stdErr.contains('is already in "dev_dependencies"')) {
+      progress.complete('$package is already in dev_dependencies');
+    } else {
+      progress.fail('Failed to add $package to dev_dependencies');
+      log.severe(result.stderr);
+    }
+  } else {
+    progress.complete('Added $package to dev_dependencies');
+  }
 }
 
 Future<void> _createDefaultTestDriverFile() async {

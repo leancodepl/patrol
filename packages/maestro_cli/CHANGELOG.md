@@ -1,14 +1,18 @@
+## 0.0.7
+
+- Fix a few bugs.
+
 ## 0.0.6
 
-- Fix `maestro bootstrap` on Windows crashing with ProcessException
+- Fix `maestro bootstrap` on Windows crashing with ProcessException.
 
 ## 0.0.5
 
-- Make versions match AutomatorServer
+- Make versions match AutomatorServer.
 
 ## 0.0.4
 
-- Nothing
+- Nothing.
 
 ## 0.0.3
 
