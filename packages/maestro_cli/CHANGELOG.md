@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Fix a few bugs
+
 ## 0.0.6
 
 - Fix `maestro bootstrap` on Windows crashing with ProcessException
