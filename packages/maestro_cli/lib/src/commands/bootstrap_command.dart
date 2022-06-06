@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/constants.dart';
 import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
+import 'package:path/path.dart' as path;
 
 class BootstrapCommand extends Command<int> {
   @override
@@ -15,7 +16,7 @@ class BootstrapCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    if (!File('pubspec.yaml').existsSync()) {
+    if (!_hasPubspec()) {
       log.severe(
         'No pubspec.yaml found. Maestro must be run from Flutter project root.',
       );
@@ -23,62 +24,86 @@ class BootstrapCommand extends Command<int> {
     }
 
     await _createConfigFile();
-
-    _createDefaultIntegrationTestFile();
-
     await _addMaestroToPubspec();
+    await _createDefaultTestDriverFile();
+    await _createDefaultIntegrationTestFile();
 
     return 0;
   }
 }
 
+bool _hasPubspec() => File('pubspec.yaml').existsSync();
+
 Future<void> _createConfigFile() async {
-  final progress = log.progress('Creating default maestro.toml config file');
+  final file = File(configFileName);
+  if (file.existsSync()) {
+    throw const FileSystemException('Already exists', configFileName);
+  }
+
+  final progress = log.progress('Creating default $configFileName');
 
   try {
     final contents = MaestroConfig.defaultConfig().toToml();
-    await File('maestro.toml').writeAsString(contents);
+    await File(configFileName).writeAsString(contents);
   } catch (err, st) {
-    progress.fail('Failed to create default maestro.toml config file');
+    progress.fail('Failed to create default $configFileName');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default maestro.toml config file');
+  progress.complete('Created default $configFileName');
 }
 
-void _createDefaultIntegrationTestFile() {
-  final progress = log.progress(
-    'Creating default test_driver/integration_test.dart file',
-  );
+Future<void> _createDefaultTestDriverFile() async {
+  final relativeFilePath = path.join(driverDirName, driverFileName);
+
+  final progress = log.progress('Creating default $relativeFilePath');
 
   try {
-    final testDriverDir = Directory('test_driver');
-    if (!testDriverDir.existsSync()) {
-      testDriverDir.createSync();
+    final dir = Directory(driverDirName);
+    if (!dir.existsSync()) {
+      await dir.create();
     }
 
-    final testDriverFile = File('test_driver/integration_test.dart');
-    if (!testDriverFile.existsSync()) {
-      testDriverFile.writeAsStringSync(
-        TestDriverDirectory.defaultTestFileContents,
-      );
+    final file = File(relativeFilePath);
+    if (!file.existsSync()) {
+      await file.writeAsString(driverFileContent);
     }
   } catch (err, st) {
-    progress.fail(
-      'Failed to create default test_driver/integration_test.dart file,',
-    );
+    progress.fail('Failed to create default $relativeFilePath');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default test_driver/integration_test.dart file');
+  progress.complete('Created default $relativeFilePath');
+}
+
+Future<void> _createDefaultIntegrationTestFile() async {
+  final relativeFilePath = path.join(testDirName, testFileName);
+
+  final progress = log.progress('Creating default $relativeFilePath');
+
+  try {
+    final dir = Directory(testDirName);
+    if (!dir.existsSync()) {
+      await dir.create();
+    }
+
+    final file = File(relativeFilePath);
+    if (!file.existsSync()) {
+      await file.writeAsString(testFileContent);
+    }
+  } catch (err, st) {
+    progress.fail('Failed to create default $relativeFilePath');
+    log.severe(null, err, st);
+    return;
+  }
+
+  progress.complete('Created default $relativeFilePath');
 }
 
 Future<void> _addMaestroToPubspec() async {
   final progress = log.progress('Adding $maestroPackage to dev_dependencies');
-
-  await Future<void>.delayed(const Duration(seconds: 1));
 
   final result = await Process.run(
     'flutter',

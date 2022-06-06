@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ansi_styles/ansi_styles.dart';
@@ -17,6 +18,8 @@ extension LoggerX on Logger {
   }
 }
 
+StreamSubscription<void>? _sub;
+
 /// Sets up the global logger.
 ///
 /// We use 4 log levels:
@@ -24,9 +27,11 @@ extension LoggerX on Logger {
 /// - [Level.WARNING], printed in yellow
 /// - [Level.INFO], printed in white
 /// - [Level.FINE], printed in grey and only when [verbose] is true
-void setUpLogger({required bool verbose}) {
+Future<void> setUpLogger({bool verbose = false}) async {
   Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen((log) {
+
+  await _sub?.cancel();
+  _sub = Logger.root.onRecord.listen((log) {
     final fmtLog = _formatLog(log);
 
     if (log.level >= Level.SEVERE) {
@@ -44,21 +49,38 @@ void setUpLogger({required bool verbose}) {
 /// Copied from
 /// https://github.com/leancodepl/logging_bugfender/blob/master/lib/src/print_strategy.dart.
 String _formatLog(LogRecord record) {
-  final log = StringBuffer()
-    ..writeAll(
-      <String>[
-        // '[${record.level.name}]',
-        if (record.loggerName.isNotEmpty) '${record.loggerName}:',
-        record.message,
-      ],
-      ' ',
-    );
+  final hasName = record.loggerName.isNotEmpty;
+  final hasMessage = record.message != 'null' && record.message.isNotEmpty;
 
-  if (record.error != null) {
-    log.write('\n${record.error}');
+  final hasTopLine = hasName || hasMessage;
+  final hasError = record.error != null;
+  final hasStackTrace = record.stackTrace != null;
+
+  final log = StringBuffer();
+
+  if (hasTopLine) {
+    log.writeAll(
+      <String>[
+        if (hasName) '${record.loggerName}: ',
+        if (hasMessage) record.message,
+      ],
+    );
   }
-  if (record.stackTrace != null) {
-    log.write('\n${record.stackTrace}');
+
+  if (hasTopLine && hasError) {
+    log.write('\n');
+  }
+
+  if (hasError) {
+    log.write(record.error);
+  }
+
+  if (hasError && hasStackTrace) {
+    log.write('\n');
+  }
+
+  if (hasStackTrace) {
+    log.write(record.stackTrace);
   }
 
   return log.toString();
