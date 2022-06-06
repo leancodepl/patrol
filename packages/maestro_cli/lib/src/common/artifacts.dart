@@ -26,6 +26,10 @@ Future<void> _downloadArtifact(String artifact) async {
   final uri = paths.getUriForArtifact(artifact);
   final response = await http.get(uri);
 
+  if (response.statusCode != 200) {
+    throw HttpException('Failed to download file from $uri');
+  }
+
   final p = path.join(paths.artifactPath, '$artifact.apk');
   createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
 }
