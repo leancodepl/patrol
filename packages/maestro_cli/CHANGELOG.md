@@ -1,3 +1,12 @@
+## 0.0.5
+
+- Make versions match AutomatorServer
+
+
+## 0.0.4
+
+- Nothing
+
 ## 0.0.3
 
 - Add support for `maestro.toml` config file.
