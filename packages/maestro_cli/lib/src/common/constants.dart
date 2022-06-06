@@ -1,9 +1,9 @@
 /// Version of Maestro CLI. Must be kept in sync with pubspec.yaml.
 const version = '0.0.7';
 
-const maestroPackage = 'maestro';
-const integrationTestPackage = 'integration_test';
+const maestroPackage = 'maestro_test';
 const maestroCliPackage = 'maestro_cli';
+const integrationTestPackage = 'integration_test';
 
 const configFileName = 'maestro.toml';
 
@@ -32,16 +32,16 @@ Future<void> main() async {
 const testDirName = 'integration_test';
 const testFileName = 'app_test.dart';
 const testFileContent = '''
-// TODO: This is an example file. Use it as a base to create your own
-// Maestro-powered test.
-
-import 'package:example/main.dart' as app; // TODO: replace with your app.dart
+import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:maestro/maestro.dart';
+import 'package:$maestroPackage/$maestroPackage.dart';
 
-// Runs on the target device.
+// This is an example file. Use it as a base to create your own Maestro-powered
+// test.
+//
+// It runs on target device.
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -51,29 +51,47 @@ void main() {
   testWidgets(
     'counter state is the same after going to Home and switching apps',
     (tester) async {
-      Text findCounterText() {
-        return tester
-            .firstElement(find.byKey(const ValueKey('counterText')))
-            .widget as Text;
+      /// Find the first Text widget whose content is a String which represents
+      /// a num.
+      Text? findCounterText() {
+        final textWidgets = find.byType(Text);
+        final foundElements = textWidgets.evaluate();
+
+        for (final element in foundElements) {
+          final textWidget = element.widget as Text;
+          final text = textWidget.data;
+          if (text == null) {
+            continue;
+          }
+
+          final number = num.tryParse(text);
+          if (number != null) {
+            return textWidget;
+          }
+        }
+
+        return null;
       }
 
-      await tester.pumpWidget(const app.MyApp());
+      await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
-      expect(findCounterText().data, '1');
+      expect(findCounterText()!.data, '1');
 
       await automator.pressHome();
-      print('after press home 1');
 
       await automator.pressDoubleRecentApps();
-      print('after press recent apps 1');
 
-      expect(findCounterText().data, '1');
+      expect(findCounterText()!.data, '1');
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
-      expect(findCounterText().data, '2');
+      expect(findCounterText()!.data, '2');
+
+      await automator.pressHome();
+
+      await automator.openNotifications();
     },
   );
 }
