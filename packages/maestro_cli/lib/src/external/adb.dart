@@ -35,6 +35,7 @@ Future<void> forwardPorts(int port) async {
       'tcp:$port',
       'tcp:$port',
     ],
+    runInShell: true,
   );
 
   if (result.stdErr.isNotEmpty) {
@@ -88,6 +89,7 @@ Future<void> _installApk(String name) async {
       'install',
       path.join(artifactPath, name),
     ],
+    runInShell: true,
   );
 
   if (result.stdErr.isNotEmpty) {
