@@ -6,12 +6,7 @@ class MaestroConfig {
   factory MaestroConfig.fromToml(String toml) {
     final config = TomlDocument.parse(toml).toMap();
 
-    final dynamic artifactPath = config['artifact_path'];
     final dynamic driveConfig = config['drive'];
-
-    if (artifactPath is! String) {
-      throw const FormatException('`artifact_path` field is not a string');
-    }
 
     if (driveConfig is! Map<String, dynamic>) {
       throw const FormatException('`drive` field is not a map');
