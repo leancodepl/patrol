@@ -59,7 +59,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
     await setUpLogger(verbose: verboseFlag);
 
     if (versionFlag) {
-      log.info('maestro v$version');
+      log.info('maestro_cli v$version');
       return 0;
     }
 
