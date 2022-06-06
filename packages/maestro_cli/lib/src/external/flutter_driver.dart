@@ -40,6 +40,7 @@ Future<void> runTestsWithOutput(String driver, String target) async {
       '--target',
       target,
     ],
+    runInShell: true,
   );
 
   final sub = res.stdout.listen((msg) {

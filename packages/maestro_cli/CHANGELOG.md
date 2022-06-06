@@ -1,3 +1,7 @@
+## 0.0.8
+
+- Fix `maestro drive` on Windows crashing with ProcessException.
+
 ## 0.0.7
 
 - Fix a few bugs.
