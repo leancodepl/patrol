@@ -34,7 +34,7 @@ $ maestro drive
 
 ## Package
 
-The `maestro_test` package builds on top of `flutter_driver` to make it easy to
+`maestro_test` package builds on top of `flutter_driver` to make it easy to
 control the native device. It does this by using Android's
 [UIAutomator][ui_automator] library.
 

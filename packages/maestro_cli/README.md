@@ -1,8 +1,9 @@
 # maestro_cli
 
-Command-line tool for [maestro_test][pub_link_test].
-
 [![maestro_cli on pub.dev][pub_badge]][pub_link]
+[![code style][pub_badge_style]][pub_badge_link]
+
+Command-line tool to make working with [maestro_test][pub_link_test] easier.
 
 ## Installation
 
@@ -19,9 +20,11 @@ $ dart pub global activate maestro_cli
 3. Go to `packages/maestro_cli`.
 4. Run `dart pub global activate --source path .`
 
-Now you can should be able to run `maestro` in your terminal. If you can't and
-the error is something along the lines of "command not found", make sure that
-you've added appropriate directories to PATH:
+### Troubleshooting
+
+If you can't run `maestro` from the terminal and the error is something along
+the lines of "command not found", make sure that you've added appropriate
+directories to PATH:
 
 - on Unix-like systems, add `$HOME/.pub-cache/bin`
 - on Windows, add `%USERPROFILE%\AppData\Local\Pub\Cache\bin`
@@ -57,3 +60,7 @@ Run `maestro bootstrap` to automatically do 1, 2, 3, 4, and most of 5.
 [pub_badge]: https://img.shields.io/pub/v/maestro_cli.svg
 [pub_link]: https://pub.dartlang.org/packages/maestro_cli
 [pub_link_test]: https://pub.dartlang.org/packages/maestro_test
+[pub_badge]: https://img.shields.io/pub/v/maestro_cli.svg
+[pub_link]: https://pub.dartlang.org/packages/maestro_cli
+[pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
+[pub_badge_link]: https://pub.dartlang.org/packages/lean_code_lint
