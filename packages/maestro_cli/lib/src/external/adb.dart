@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
-Future<void> installApps() async {
+Future<void> installApps({String? device}) async {
   final progress1 = log.progress('Installing server');
   try {
-    await _installApk(serverArtifactFile);
+    await _installApk(serverArtifactFile, device: device);
   } catch (err) {
     progress1.fail('Failed to install server');
     rethrow;
@@ -16,7 +16,7 @@ Future<void> installApps() async {
 
   final progress2 = log.progress('Installing instrumentation');
   try {
-    await _installApk(instrumentationArtifactFile);
+    await _installApk(instrumentationArtifactFile, device: device);
   } catch (err) {
     progress2.fail('Failed to install instrumentation');
     rethrow;
@@ -25,12 +25,16 @@ Future<void> installApps() async {
   progress2.complete('Installed instrumentation');
 }
 
-Future<void> forwardPorts(int port) async {
+Future<void> forwardPorts(int port, {String? device}) async {
   final progress = log.progress('Forwarding ports');
 
   final result = await Process.run(
     'adb',
     [
+      if (device != null) ...[
+        '-s',
+        device,
+      ],
       'forward',
       'tcp:$port',
       'tcp:$port',
@@ -46,7 +50,7 @@ Future<void> forwardPorts(int port) async {
   progress.complete('Forwarded ports');
 }
 
-Future<void> runServer() async {
+Future<void> runServer({String? device}) async {
   final progress = log.progress('Starting instrumentation server');
 
   Process process;
@@ -54,6 +58,10 @@ Future<void> runServer() async {
     process = await Process.start(
       'adb',
       [
+        if (device != null) ...[
+          '-s',
+          device,
+        ],
         'shell',
         'am',
         'instrument',
@@ -82,10 +90,14 @@ Future<void> runServer() async {
   progress.complete('Started instrumentation server');
 }
 
-Future<void> _installApk(String name) async {
+Future<void> _installApk(String name, {String? device}) async {
   final result = await Process.run(
     'adb',
     [
+      if (device != null) ...[
+        '-s',
+        device,
+      ],
       'install',
       path.join(artifactPath, name),
     ],

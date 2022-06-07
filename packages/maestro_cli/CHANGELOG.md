@@ -1,3 +1,8 @@
+## 0.0.9
+
+- Add `--device` option for `maestro drive`, which allows you to specify the
+  device to use. Devices can be obtained using `adb devices`.
+
 ## 0.0.8
 
 - Fix `maestro drive` on Windows crashing with ProcessException.
