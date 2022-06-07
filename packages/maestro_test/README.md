@@ -13,7 +13,7 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.0.4
+  maestro_test: ^0.0.5
 ```
 
 ### Usage
@@ -66,3 +66,4 @@ void main() {
 [pub_link]: https://pub.dartlang.org/packages/maestro_test
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
 [pub_badge_link]: https://pub.dartlang.org/packages/lean_code_lint
+[ui_automator]: https://developer.android.com/training/testing/other-components/ui-automator
