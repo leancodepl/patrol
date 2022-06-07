@@ -94,11 +94,3 @@ jobs:
           files: |
             AutomatorServer/${{ env.SERVER_FILE }}
             AutomatorServer/${{ env.INSTRUMENTATION_FILE }}
-
-      - name: Upload artifacts to Azure Storage
-        env:
-          AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
-          AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
-        run: |
-          ./deploy ${{ env.SERVER_FILE }}
-          ./deploy ${{ env.INSTRUMENTATION_FILE }}
