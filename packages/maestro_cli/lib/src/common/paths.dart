@@ -15,7 +15,7 @@ String get instrumentationArtifactFile => '$instrumentationArtifact.apk';
 /// `server-1.0.0`.
 Uri getUriForArtifact(String artifact) {
   return Uri.parse(
-    'https://lncdmaestrostorage.blob.core.windows.net/artifacts/$artifact.apk',
+    'https://github.com/leancodepl/maestro/releases/download/maestro_cli-v$version/$artifact.apk',
   );
 }
 
