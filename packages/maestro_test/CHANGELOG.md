@@ -1,3 +1,7 @@
+## 0.0.5
+
+- Update broken link in README.
+
 ## 0.0.4
 
 - Update README.
