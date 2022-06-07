@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Update README.
+
 ## 0.0.3
 
 - Rename from `maestro` to `maestro_test`.
