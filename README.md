@@ -4,8 +4,8 @@ Simple, easy-to-learn, Flutter-native UI testing framework eliminating
 limitations of `flutter_driver`.
 
 [![maestro_test on pub.dev][pub_badge_test]][pub_link_test]
-
 [![maestro_cli on pub.dev][pub_badge_cli]][pub_link_cli]
+[![code style][pub_badge_style]][pub_badge_link]
 
 ## CLI
 
@@ -34,7 +34,7 @@ $ maestro drive
 
 ## Package
 
-The `maestro_test` package builds on top of `flutter_driver` to make it easy to
+`maestro_test` package builds on top of `flutter_driver` to make it easy to
 control the native device. It does this by using Android's
 [UIAutomator][ui_automator] library.
 
@@ -103,9 +103,11 @@ git tag -a "maestro_cli-v0.0.4" -m "Release notes go here"
 
 2. Push it! GitHub Actions will take care of the rest.
 
-[pub_badge_test]: https://img.shields.io/pub/v/maestro_test.svg
+[pub_badge_test]: https://img.shields.io/pub/v/maestro_test?label=maestro_test
 [pub_link_test]: https://pub.dartlang.org/packages/maestro_test
-[pub_badge_cli]: https://img.shields.io/pub/v/maestro_cli.svg
+[pub_badge_cli]: https://img.shields.io/pub/v/maestro_cli?label=maestro_cli
+[pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
+[pub_badge_link]: https://pub.dartlang.org/packages/lean_code_lint
 [pub_link_cli]: https://pub.dartlang.org/packages/maestro_cli
 [ui_automator]: https://developer.android.com/training/testing/other-components/ui-automator
 [annotated_tag]: https://git-scm.com/book/en/v2/Git-Basics-Tagging#_annotated_tags
