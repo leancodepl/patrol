@@ -8,6 +8,11 @@ jobs:
   main:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: [2.16.0, stable]
+
     defaults:
       run:
         working-directory: packages/maestro_cli
@@ -19,7 +24,7 @@ jobs:
       - name: Install Dart
         uses: dart-lang/setup-dart@v1.3
         with:
-          sdk: stable
+          sdk: ${{ matrix.sdk }}
 
       - name: dart version
         run: dart --version
