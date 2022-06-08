@@ -67,9 +67,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
-    if (!results.arguments.contains('clean') &&
-        !results.arguments.contains('doctor') &&
-        !results.arguments.contains('help')) {
+    if (_commandRequiresArtifacts(results.arguments)) {
       try {
         await _ensureArtifactsArePresent();
       } catch (err, st) {
@@ -82,20 +80,26 @@ class MaestroCommandRunner extends CommandRunner<int> {
 
     return super.run(args);
   }
+}
 
-  Future<void> _ensureArtifactsArePresent() async {
-    if (areArtifactsPresent()) {
-      return;
-    }
+bool _commandRequiresArtifacts(List<String> arguments) {
+  return !arguments.contains('clean') &&
+      !arguments.contains('doctor') &&
+      !arguments.contains('help');
+}
 
-    final progress = log.progress('Downloading artifacts');
-    try {
-      await downloadArtifacts();
-    } catch (_) {
-      progress.fail('Failed to download artifacts');
-      rethrow;
-    }
-
-    progress.complete('Downloaded artifacts');
+Future<void> _ensureArtifactsArePresent() async {
+  if (areArtifactsPresent()) {
+    return;
   }
+
+  final progress = log.progress('Downloading artifacts');
+  try {
+    await downloadArtifacts();
+  } catch (_) {
+    progress.fail('Failed to download artifacts');
+    rethrow;
+  }
+
+  progress.complete('Downloaded artifacts');
 }
