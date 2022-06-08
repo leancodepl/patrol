@@ -1,4 +1,4 @@
-import 'package:PROJECT_NAME/app.dart';
+import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';
@@ -16,7 +16,7 @@ void main() {
   testWidgets(
     'counter state is the same after going to Home and switching apps',
     (tester) async {
-      await tester.pumpWidget(App());
+      await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
       await automator.pressHome();
