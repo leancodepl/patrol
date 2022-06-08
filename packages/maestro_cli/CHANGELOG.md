@@ -1,3 +1,9 @@
+## 0.1.0
+
+- Add `--template` option for `maestro bootstrap`
+- Add `--flavor` options for `maestro drive`
+- Rename `maestro config` to `maestro doctor`
+
 ## 0.0.9
 
 - Add `--device` option for `maestro drive`, which allows you to specify the

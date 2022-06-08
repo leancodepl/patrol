@@ -31,11 +31,11 @@ Future<void> _downloadArtifact(String artifact) async {
   }
 
   final p = path.join(paths.artifactPath, '$artifact.apk');
-  createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
+  _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
 }
 
-/// Create a file at [fullPath],recursively creating non-existent directories.
-File createFileRecursively(String fullPath) {
+/// Create a file at [fullPath], recursively creating non-existent directories.
+File _createFileRecursively(String fullPath) {
   final dirPath = path.dirname(fullPath);
   Directory(dirPath).createSync(recursive: true);
   return File(fullPath)..createSync();

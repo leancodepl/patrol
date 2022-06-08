@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:maestro_cli/src/commands/bootstrap_command.dart';
-import 'package:maestro_cli/src/commands/clean_command.dart';
-import 'package:maestro_cli/src/commands/config_command.dart';
-import 'package:maestro_cli/src/commands/drive_command.dart';
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
+import 'package:maestro_cli/src/features/clean/clean_command.dart';
+import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
+import 'package:maestro_cli/src/features/drive/drive_command.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
@@ -36,7 +36,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand());
     addCommand(DriveCommand());
-    addCommand(ConfigCommand());
+    addCommand(DoctorCommand());
     addCommand(CleanCommand());
 
     argParser
@@ -67,7 +67,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
-    if (!results.arguments.contains('clean')) {
+    if (_commandRequiresArtifacts(results.arguments)) {
       try {
         await _ensureArtifactsArePresent();
       } catch (err, st) {
@@ -80,20 +80,26 @@ class MaestroCommandRunner extends CommandRunner<int> {
 
     return super.run(args);
   }
+}
 
-  Future<void> _ensureArtifactsArePresent() async {
-    if (areArtifactsPresent()) {
-      return;
-    }
+bool _commandRequiresArtifacts(List<String> arguments) {
+  return !arguments.contains('clean') &&
+      !arguments.contains('doctor') &&
+      !arguments.contains('help');
+}
 
-    final progress = log.progress('Downloading artifacts');
-    try {
-      await downloadArtifacts();
-    } catch (_) {
-      progress.fail('Failed to download artifacts');
-      rethrow;
-    }
-
-    progress.complete('Downloaded artifacts');
+Future<void> _ensureArtifactsArePresent() async {
+  if (areArtifactsPresent()) {
+    return;
   }
+
+  final progress = log.progress('Downloading artifacts');
+  try {
+    await downloadArtifacts();
+  } catch (_) {
+    progress.fail('Failed to download artifacts');
+    rethrow;
+  }
+
+  progress.complete('Downloaded artifacts');
 }
