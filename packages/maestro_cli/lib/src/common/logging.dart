@@ -14,7 +14,7 @@ final log = Logger('');
 extension LoggerX on Logger {
   /// Writes progress message to stdout.
   mason_logger.Progress progress(String message) {
-    return mason_logger.Progress(message, stdout);
+    return mason_logger.Progress(message, stdout, stderr);
   }
 }
 
