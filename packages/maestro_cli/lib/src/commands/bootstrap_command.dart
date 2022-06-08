@@ -6,6 +6,15 @@ import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:path/path.dart' as path;
 
 class BootstrapCommand extends Command<int> {
+  BootstrapCommand() {
+    argParser.addOption(
+      'for',
+      help: 'Project type to bootstrap for',
+      defaultsTo: 'generic',
+      allowed: ['generic', 'counter'],
+    );
+  }
+
   @override
   String get name => 'bootstrap';
 
