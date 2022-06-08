@@ -126,7 +126,14 @@ void main() {
   testWidgets(
     'counter state is the same after going to Home and switching apps',
     (tester) async {
-      await tester.pumpWidget(App());
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            appBar: AppBar(title: const Text('app')),
+            backgroundColor: Colors.blue,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await automator.pressHome();
