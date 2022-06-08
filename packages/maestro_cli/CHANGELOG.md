@@ -2,6 +2,7 @@
 
 - Add `--template` option for `maestro bootstrap`
 - Add `--flavor` options for `maestro drive`
+- Rename `maestro config` to `maestro doctor`
 
 ## 0.0.9
 

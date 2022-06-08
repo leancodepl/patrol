@@ -4,7 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:maestro_cli/src/features/clean/clean_command.dart';
-import 'package:maestro_cli/src/features/config/config_command.dart';
+import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
@@ -36,7 +36,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand());
     addCommand(DriveCommand());
-    addCommand(ConfigCommand());
+    addCommand(DoctorCommand());
     addCommand(CleanCommand());
 
     argParser
@@ -67,7 +67,9 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
-    if (!results.arguments.contains('clean')) {
+    if (!results.arguments.contains('clean') &&
+        !results.arguments.contains('doctor') &&
+        !results.arguments.contains('help')) {
       try {
         await _ensureArtifactsArePresent();
       } catch (err, st) {
