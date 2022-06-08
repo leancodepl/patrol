@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Fix links to `package:leancode_lint` in README
+
 ## 0.1.0
 
 - Add `--template` option for `maestro bootstrap`

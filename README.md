@@ -107,7 +107,7 @@ git tag -a "maestro_cli-v0.0.4" -m "Release notes go here"
 [pub_link_test]: https://pub.dartlang.org/packages/maestro_test
 [pub_badge_cli]: https://img.shields.io/pub/v/maestro_cli?label=maestro_cli
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
-[pub_badge_link]: https://pub.dartlang.org/packages/lean_code_lint
+[pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
 [pub_link_cli]: https://pub.dartlang.org/packages/maestro_cli
 [ui_automator]: https://developer.android.com/training/testing/other-components/ui-automator
 [annotated_tag]: https://git-scm.com/book/en/v2/Git-Basics-Tagging#_annotated_tags

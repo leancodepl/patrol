@@ -65,5 +65,5 @@ void main() {
 [pub_badge]: https://img.shields.io/pub/v/maestro_test.svg
 [pub_link]: https://pub.dartlang.org/packages/maestro_test
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
-[pub_badge_link]: https://pub.dartlang.org/packages/lean_code_lint
+[pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
 [ui_automator]: https://developer.android.com/training/testing/other-components/ui-automator
