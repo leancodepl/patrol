@@ -64,10 +64,9 @@ Future<void> _createConfigFile() async {
   try {
     final contents = MaestroConfig.defaultConfig().toToml();
     await File(configFileName).writeAsString(contents);
-  } catch (err, st) {
+  } catch (err) {
     progress.fail('Failed to create default $configFileName');
-    log.severe(null, err, st);
-    return;
+    rethrow;
   }
 
   progress.complete('Created default $configFileName');

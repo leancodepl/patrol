@@ -38,6 +38,7 @@ class DriveConfig {
     required this.port,
     required this.target,
     required this.driver,
+    this.flavor,
   });
 
   factory DriveConfig.fromMap(Map<String, dynamic> toml) {
@@ -45,6 +46,7 @@ class DriveConfig {
     final dynamic port = toml['port'];
     final dynamic target = toml['target'];
     final dynamic driver = toml['driver'];
+    final dynamic flavor = toml['flavor'];
 
     if (host is! String) {
       throw const FormatException('`host` field is not a string');
@@ -62,7 +64,19 @@ class DriveConfig {
       throw const FormatException('`driver` field is not a string');
     }
 
-    return DriveConfig(host: host, port: port, target: target, driver: driver);
+    if (flavor != null) {
+      if (flavor is! String) {
+        throw const FormatException('`flavor` field is not a string');
+      }
+    }
+
+    return DriveConfig(
+      host: host,
+      port: port,
+      target: target,
+      driver: driver,
+      flavor: flavor as String?,
+    );
   }
 
   factory DriveConfig.defaultConfig() {
@@ -78,6 +92,7 @@ class DriveConfig {
   final int port;
   final String target;
   final String driver;
+  final String? flavor;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -85,6 +100,7 @@ class DriveConfig {
       'port': port,
       'target': target,
       'driver': driver,
+      if (flavor != null) 'flavor': flavor,
     };
   }
 }

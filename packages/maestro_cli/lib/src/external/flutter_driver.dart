@@ -4,20 +4,29 @@ import 'package:maestro_cli/src/common/common.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
-Future<void> runTests(String driver, String target, {String? device}) async {
+Future<void> runTests(
+  String driver,
+  String target, {
+  String? device,
+  String? flavor,
+}) async {
   log.info('Running tests...');
 
   final res = await Process.run(
     'flutter',
     [
       'drive',
-      '--driver',
-      driver,
       '--target',
       target,
+      '--driver',
+      driver,
       if (device != null) ...[
         '--device-id',
         device,
+      ],
+      if (flavor != null) ...[
+        '--flavor',
+        flavor,
       ],
     ],
     runInShell: true,
@@ -36,6 +45,7 @@ Future<void> runTestsWithOutput(
   String driver,
   String target, {
   String? device,
+  String? flavor,
 }) async {
   log.info('Running tests with output...');
 
@@ -43,13 +53,17 @@ Future<void> runTestsWithOutput(
     'flutter',
     [
       'drive',
-      '--driver',
-      driver,
       '--target',
       target,
+      '--driver',
+      driver,
       if (device != null) ...[
         '--device-id',
         device,
+      ],
+      if (flavor != null) ...[
+        '--flavor',
+        flavor,
       ],
     ],
     runInShell: true,
