@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:maestro_cli/src/commands/bootstrap_command.dart';
-import 'package:maestro_cli/src/commands/clean_command.dart';
-import 'package:maestro_cli/src/commands/config_command.dart';
-import 'package:maestro_cli/src/commands/drive_command.dart';
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
+import 'package:maestro_cli/src/features/clean/clean_command.dart';
+import 'package:maestro_cli/src/features/config/config_command.dart';
+import 'package:maestro_cli/src/features/drive/drive_command.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();

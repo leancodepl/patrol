@@ -1,6 +1,6 @@
 import 'package:args/command_runner.dart';
 
-import '../common/common.dart';
+import '../../common/common.dart';
 
 class ConfigCommand extends Command<int> {
   @override
