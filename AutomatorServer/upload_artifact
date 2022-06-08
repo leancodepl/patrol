@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# deploy uploads a file to Azure Storage.
+# upload_artifact uploads a file to Azure Storage.
 
 artifact="${1:-}"
 

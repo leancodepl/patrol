@@ -5,6 +5,16 @@ on:
     tags: ["maestro_cli-v*"]
 
 jobs:
+  check_versions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Check if versions are defined consistently
+        run: ./check_versions
+
   publish_cli:
     runs-on: ubuntu-latest
 
@@ -19,7 +29,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 2.17.0
+          sdk: 2.16.0
 
       - name: Download pub.dev credentials
         env:
@@ -100,5 +110,5 @@ jobs:
           AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
           AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
         run: |
-          ./deploy ${{ env.SERVER_FILE }}
-          ./deploy ${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact ${{ env.SERVER_FILE }}
+          ./upload_artifact ${{ env.INSTRUMENTATION_FILE }}
