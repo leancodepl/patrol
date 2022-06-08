@@ -3,6 +3,20 @@ import 'package:maestro_cli/src/common/constants.dart';
 abstract class AppTestTemplate {
   const AppTestTemplate();
 
+  factory AppTestTemplate.fromTemplateName({
+    required String templateName,
+    required String projetName,
+  }) {
+    switch (templateName) {
+      case 'counter':
+        return const CounterTemplate();
+      case 'generic':
+        return GenericTemplate(name: projetName);
+      default:
+        throw Exception('Unknown template: $templateName');
+    }
+  }
+
   String get code;
 }
 

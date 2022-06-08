@@ -1,14 +1,16 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/app_test_template.dart';
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/external/pubspec.dart' as pubspec;
 import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:path/path.dart' as path;
 
 class BootstrapCommand extends Command<int> {
   BootstrapCommand() {
     argParser.addOption(
-      'for',
+      'template',
       help: 'Project type to bootstrap for',
       defaultsTo: 'generic',
       allowed: ['generic', 'counter'],
@@ -24,12 +26,17 @@ class BootstrapCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    final dynamic templateName = argResults?['template'];
+    if (templateName is! String) {
+      throw const FormatException('`template` argument is not a string');
+    }
+
     _ensureHasPubspec();
     await _createConfigFile();
     await _addMaestroToPubspec();
     await _addIntegrationTestToPubspec();
     await _createDefaultTestDriverFile();
-    await _createDefaultIntegrationTestFile();
+    await _createDefaultIntegrationTestFile(templateName);
 
     return 0;
   }
@@ -136,10 +143,17 @@ Future<void> _createDefaultTestDriverFile() async {
   progress.complete('Created default $relativeFilePath');
 }
 
-Future<void> _createDefaultIntegrationTestFile() async {
+Future<void> _createDefaultIntegrationTestFile(String templateName) async {
   final relativeFilePath = path.join(testDirName, testFileName);
 
   final progress = log.progress('Creating default $relativeFilePath');
+
+  final projectName = pubspec.getName();
+
+  final template = AppTestTemplate.fromTemplateName(
+    templateName: templateName,
+    projetName: projectName,
+  );
 
   try {
     final dir = Directory(testDirName);
@@ -149,7 +163,7 @@ Future<void> _createDefaultIntegrationTestFile() async {
 
     final file = File(relativeFilePath);
     if (!file.existsSync()) {
-      await file.writeAsString(testFileContent);
+      await file.writeAsString(template.code);
     }
   } catch (err, st) {
     progress.fail('Failed to create default $relativeFilePath');
