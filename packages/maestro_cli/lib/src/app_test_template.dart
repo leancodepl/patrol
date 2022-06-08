@@ -8,14 +8,17 @@ abstract class AppTestTemplate {
     required String projetName,
   }) {
     switch (templateName) {
-      case 'counter':
+      case counter:
         return const CounterTemplate();
-      case 'generic':
+      case generic:
         return GenericTemplate(name: projetName);
       default:
         throw Exception('Unknown template: $templateName');
     }
   }
+
+  static const counter = 'counter';
+  static const generic = 'generic';
 
   String get code;
 }

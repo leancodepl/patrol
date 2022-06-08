@@ -12,8 +12,8 @@ class BootstrapCommand extends Command<int> {
     argParser.addOption(
       'template',
       help: 'Project type to bootstrap for',
-      defaultsTo: 'generic',
-      allowed: ['generic', 'counter'],
+      defaultsTo: AppTestTemplate.generic,
+      allowed: [AppTestTemplate.generic, AppTestTemplate.counter],
     );
   }
 
