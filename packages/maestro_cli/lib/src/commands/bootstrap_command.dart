@@ -24,13 +24,7 @@ class BootstrapCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    if (!_hasPubspec()) {
-      log.severe(
-        'No pubspec.yaml found. Maestro must be run from Flutter project root.',
-      );
-      return 1;
-    }
-
+    _ensureHasPubspec();
     await _createConfigFile();
     await _addMaestroToPubspec();
     await _addIntegrationTestToPubspec();
@@ -41,7 +35,15 @@ class BootstrapCommand extends Command<int> {
   }
 }
 
-bool _hasPubspec() => File('pubspec.yaml').existsSync();
+void _ensureHasPubspec() {
+  final pubspecExists = File('pubspec.yaml').existsSync();
+
+  if (!pubspecExists) {
+    throw Exception(
+      'No pubspec.yaml found. Maestro must be run from Flutter project root.',
+    );
+  }
+}
 
 Future<void> _createConfigFile() async {
   final file = File(configFileName);
