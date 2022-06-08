@@ -31,14 +31,18 @@ class DriveCommand extends Command<int> {
       ..addOption(
         'device',
         help: 'Serial number of ADB device to use.',
+      )
+      ..addOption(
+        'flavor',
+        help: 'Flavor of the app to run.',
       );
   }
 
   @override
-  String get description => 'Drive the app using flutter_driver.';
+  String get name => 'drive';
 
   @override
-  String get name => 'drive';
+  String get description => 'Drive the app using flutter_driver.';
 
   @override
   Future<int> run() async {
@@ -69,38 +73,24 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`driver` argument is not a string');
     }
 
+    dynamic flavor = argResults?['flavor'];
+    flavor ??= config.driveConfig.flavor;
+    if (flavor is! String) {
+      throw const FormatException('`flavor` argument is not a string');
+    }
+
     final device = argResults?['device'] as String?;
 
-    final options = MaestroDriveOptions(
-      host: host,
-      port: int.parse(portStr),
-      target: target,
-      driver: driver,
-    );
-
     await adb.installApps(device: device);
-    await adb.forwardPorts(options.port, device: device);
+    await adb.forwardPorts(int.parse(portStr), device: device);
     await adb.runServer(device: device);
     await flutter_driver.runTestsWithOutput(
-      options.driver,
-      options.target,
+      driver,
+      target,
       device: device,
+      flavor: flavor,
     );
 
     return 0;
   }
-}
-
-class MaestroDriveOptions {
-  const MaestroDriveOptions({
-    required this.host,
-    required this.port,
-    required this.target,
-    required this.driver,
-  });
-
-  final String host;
-  final int port;
-  final String target;
-  final String driver;
 }

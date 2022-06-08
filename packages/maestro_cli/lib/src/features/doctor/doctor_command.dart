@@ -1,10 +1,10 @@
 import 'package:args/command_runner.dart';
 
-import '../common/common.dart';
+import '../../common/common.dart';
 
-class ConfigCommand extends Command<int> {
+class DoctorCommand extends Command<int> {
   @override
-  String get name => 'config';
+  String get name => 'doctor';
 
   @override
   String get description => 'Show configuration.';
