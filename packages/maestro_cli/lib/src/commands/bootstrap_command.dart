@@ -130,9 +130,7 @@ Future<void> _createDefaultTestDriverFile() async {
     }
 
     final file = File(relativeFilePath);
-    if (!file.existsSync()) {
-      await file.writeAsString(driverFileContent);
-    }
+    await file.writeAsString(driverFileContent);
   } catch (err, st) {
     progress.fail('Failed to create default $relativeFilePath');
     log.severe(null, err, st);
@@ -161,9 +159,7 @@ Future<void> _createDefaultIntegrationTestFile(String templateName) async {
     }
 
     final file = File(relativeFilePath);
-    if (!file.existsSync()) {
-      await file.writeAsString(template.code);
-    }
+    await file.writeAsString(template.code);
   } catch (err, st) {
     progress.fail('Failed to create default $relativeFilePath');
     log.severe(null, err, st);
