@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# check_versions checks whether the version of maestro_cli is defined
+# consistently across all the places. Exits with code 0 versions if are
+# consistent, exits with non-zero code otherwise.
+
+declare -A versions
+
+checkPubspecVersion() {
+    local path
+    local version
+
+    path="./packages/maestro_cli/pubspec.yaml"
+    version=$(grep version "$path" | xargs | cut -d ' ' -f 2)
+    versions[pubspec]="$version"
+}
+
+checkEmbeddedVersion() {
+    local path
+    local version
+
+    path="./packages/maestro_cli/lib/src/common/constants.dart"
+    version=$(grep 'const version' "$path" | cut -d\' -f 2)
+    versions[embedded]="$version"
+}
+
+# checkChangelogVersion checks whether the first line of CHANGELOG.md contains a
+# h2 element with the version.
+checkChangelogVersion() {
+    local path
+    local version
+    
+    path="./packages/maestro_cli/CHANGELOG.md"
+    version=$(head -n 1 $path | cut -d ' ' -f 2)
+    versions[changelog]="$version"
+}
+
+checkApkVersion() {
+    local path
+    local version
+    
+    path="./AutomatorServer/app/build.gradle"
+    version=$(grep versionName "$path" | xargs | cut -d ' ' -f 2)
+    versions[apk]="$version"
+}
+
+
+checkPubspecVersion
+checkEmbeddedVersion
+checkChangelogVersion
+checkApkVersion
+
+exitCode=0
+previousVersion=""
+previousValue=""
+for version in "${!versions[@]}"; do
+    value="${versions[$version]}"
+    if [ -z "$previousVersion" ]; then
+        previousVersion="$version"
+        previousValue="$value"
+    fi
+
+    echo "$version: $value"
+    if [[ "$previousValue" != "$value" ]]; then
+        exitCode=1
+    fi
+    previousVersion="$version"
+    previousValue="$value"
+done
+
+exit "$exitCode"
