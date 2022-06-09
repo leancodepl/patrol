@@ -108,14 +108,14 @@ Future<void> instrument({
     runInShell: true,
   );
 
-  process.stdout.listen((data) {
+  final stdoutSub = process.stdout.listen((data) {
     final text = systemEncoding.decode(data);
     if (onStdout != null) {
       onStdout(text);
     }
   });
 
-  process.stderr.listen((data) {
+  final stderrSub = process.stderr.listen((data) {
     final text = systemEncoding.decode(data);
     if (onStderr != null) {
       onStderr(text);
@@ -123,6 +123,9 @@ Future<void> instrument({
   });
 
   final code = await process.exitCode;
+
+  await stdoutSub.cancel();
+  await stderrSub.cancel();
 
   if (code != 0) {
     throw Exception('Instrumentation server exited with code $code');
