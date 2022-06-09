@@ -161,7 +161,7 @@ packages:
       name: mason_logger
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.0-dev.10"
+    version: "0.1.0-dev.11"
   matcher:
     dependency: transitive
     description:
@@ -210,7 +210,7 @@ packages:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.0"
+    version: "4.4.0"
   pool:
     dependency: transitive
     description:
@@ -225,6 +225,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
   shelf:
     dependency: transitive
     description:
@@ -329,7 +336,7 @@ packages:
       name: toml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.1"
+    version: "0.12.0"
   typed_data:
     dependency: transitive
     description:

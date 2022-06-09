@@ -1,3 +1,8 @@
+## 0.1.1
+
+- Set minimum Dart version to 2.16.
+- Fix links to `package:leancode_lint` in README
+
 ## 0.1.0
 
 - Add `--template` option for `maestro bootstrap`
