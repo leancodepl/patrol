@@ -27,6 +27,6 @@ class AdbInstallFailedUpdateIncompatible implements Exception {
 
   @override
   String toString() {
-    return 'AdbInstallFailedUpdateIncompatible{packageName: $packageName, message: $message}';
+    return 'AdbInstallFailedUpdateIncompatible(packageName: $packageName, message: $message)';
   }
 }
