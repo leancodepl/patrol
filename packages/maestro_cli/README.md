@@ -1,7 +1,7 @@
 # maestro_cli
 
-[![maestro_cli on pub.dev][pub_badge]][pub_link] [![code
-style][pub_badge_style]][pub_badge_link]
+[![maestro_cli on pub.dev][pub_badge]][pub_link]
+[![codestyle][pub_badge_style]][pub_badge_link]
 
 Command-line tool to make working with [maestro_test][pub_link_test] easier.
 
