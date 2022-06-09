@@ -56,16 +56,10 @@ previousVersion=""
 previousValue=""
 for version in "${!versions[@]}"; do
     value="${versions[$version]}"
-    if [ -z "$previousVersion" ]; then
-        previousVersion="$version"
-        previousValue="$value"
-    fi
-
     echo "$version: $value"
-    if [[ "$previousValue" != "$value" ]]; then
+    if [[ "$previousValue" ]] && [[ "$previousValue" != "$value" ]]; then
         exitCode=1
     fi
-    previousVersion="$version"
     previousValue="$value"
 done
 
