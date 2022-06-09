@@ -6,6 +6,7 @@ on:
 
 jobs:
   main:
+    name: Flutter ${{ matrix.channel }}${{ matrix.version }}
     runs-on: ubuntu-latest
 
     strategy:

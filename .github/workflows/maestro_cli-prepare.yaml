@@ -6,6 +6,7 @@ on:
 
 jobs:
   main:
+    name: Dart ${{ matrix.sdk }}
     runs-on: ubuntu-latest
 
     strategy:
