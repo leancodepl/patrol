@@ -7,6 +7,8 @@ environment:
   sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
+  adb:
+    path: /Users/bartek/dev/leancode/maestro/packages/adb
   ansi_styles: ^0.3.2+1
   args: ^2.3.1
   http: ^0.13.4
