@@ -11,10 +11,6 @@ on:
     paths:
       - "packages/adb/**"
 
-on:
-  workflow_dispatch:
-  pull_request:
-
 jobs:
   main:
     name: Dart ${{ matrix.sdk }}
