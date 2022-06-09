@@ -1,8 +1,15 @@
 name: maestro_cli prepare
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+    ignore-tags: ["maestro_cli-v*"]
+    paths:
+      - "packages/maestro_cli/**"
   pull_request:
+    branches: [main]
+    paths:
+      - "packages/maestro_cli/**"
 
 jobs:
   main:

@@ -1,8 +1,15 @@
 name: maestro_test prepare
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [main]
+    ignore-tags: ["maestro_test-v*"]
+    paths:
+      - "packages/maestro_test/**"
   pull_request:
+    branches: [main]
+    paths:
+      - "packages/maestro_test/**"
 
 jobs:
   main:

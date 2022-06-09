@@ -1,6 +1,17 @@
 name: adb prepare
 
 on:
+  push:
+    branches: [main]
+    ignore-tags: ["adb-v*"]
+    paths:
+      - "packages/adb/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "packages/adb/**"
+
+on:
   workflow_dispatch:
   pull_request:
 
