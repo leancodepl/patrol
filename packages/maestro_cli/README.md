@@ -1,7 +1,7 @@
 # maestro_cli
 
-[![maestro_cli on pub.dev][pub_badge]][pub_link]
-[![code style][pub_badge_style]][pub_badge_link]
+[![maestro_cli on pub.dev][pub_badge]][pub_link] [![code
+style][pub_badge_style]][pub_badge_link]
 
 Command-line tool to make working with [maestro_test][pub_link_test] easier.
 
@@ -63,4 +63,4 @@ Run `maestro bootstrap` to automatically do 1, 2, 3, 4, and most of 5.
 [pub_badge]: https://img.shields.io/pub/v/maestro_cli.svg
 [pub_link]: https://pub.dartlang.org/packages/maestro_cli
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
-[pub_badge_link]: https://pub.dartlang.org/packages/lean_code_lint
+[pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint

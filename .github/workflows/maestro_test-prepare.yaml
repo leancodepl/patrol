@@ -6,7 +6,16 @@ on:
 
 jobs:
   main:
+    name: Flutter ${{ matrix.channel }}${{ matrix.version }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: 2.10.5
+          - channel: stable
+          - channel: beta
 
     defaults:
       run:
@@ -18,6 +27,9 @@ jobs:
 
       - name: Install Flutter
         uses: subosito/flutter-action@v1
+        with:
+          channel: ${{ matrix.channel }}
+          flutter-version: ${{ matrix.version }}
 
       - name: Cache pub dependencies
         uses: actions/cache@v2
@@ -39,5 +51,18 @@ jobs:
       # - name: flutter test
       #   run: flutter test
 
-      - name: flutter format
+      - name: flutter format (example app)
+        working-directory: ./packages/maestro_test/example
+        run: flutter format --set-exit-if-changed .
+
+      - name: flutter pub get (example app)
+        working-directory: ./packages/maestro_test/example
+        run: flutter pub get
+
+      - name: flutter analyze (example app)
+        working-directory: ./packages/maestro_test/example
+        run: flutter analyze --no-fatal-infos
+
+      - name: flutter format (example app)
+        working-directory: ./packages/maestro_test/example
         run: flutter format --set-exit-if-changed .

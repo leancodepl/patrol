@@ -1,3 +1,8 @@
+## 0.0.6
+
+- Set minimum Dart version to 2.16.
+- Fix links to `package:leancode_lint` in README
+
 ## 0.0.5
 
 - Update broken link in README.
