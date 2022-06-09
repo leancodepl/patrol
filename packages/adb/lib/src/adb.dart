@@ -110,16 +110,12 @@ Future<void> instrument({
 
   final stdoutSub = process.stdout.listen((data) {
     final text = systemEncoding.decode(data);
-    if (onStdout != null) {
-      onStdout(text);
-    }
+    onStdout?.call(text);
   });
 
   final stderrSub = process.stderr.listen((data) {
     final text = systemEncoding.decode(data);
-    if (onStderr != null) {
-      onStderr(text);
-    }
+    onStderr?.call(text);
   });
 
   final code = await process.exitCode;
