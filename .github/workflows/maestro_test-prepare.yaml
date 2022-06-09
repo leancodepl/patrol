@@ -51,5 +51,14 @@ jobs:
       # - name: flutter test
       #   run: flutter test
 
-      - name: flutter format
-        run: flutter format --set-exit-if-changed .
+      - name: flutter format (example app)
+        run: cd example && flutter format --set-exit-if-changed .
+
+      - name: flutter pub get (example app)
+        run: cd example && flutter pub get
+
+      - name: flutter analyze (example app)
+        run: cd example && flutter analyze --no-fatal-infos
+
+      - name: flutter format (example app)
+        run: cd example && flutter format --set-exit-if-changed .

@@ -4,10 +4,10 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.2 <3.0.0"
+  sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
-  cupertino_icons: ^1.0.4
+  cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
 
@@ -16,7 +16,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  leancode_lint: ^1.2.1
+  leancode_lint: ^1.1.0
   maestro_test:
     path: ../
 

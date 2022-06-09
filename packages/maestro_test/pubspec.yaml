@@ -13,5 +13,5 @@ dependencies:
   logging: ^1.0.2
 
 dev_dependencies:
-  leancode_lint: ^1.2.1
+  leancode_lint: ^1.1.0
   test: ^1.21.1
