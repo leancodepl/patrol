@@ -109,6 +109,7 @@ class GenericTemplate extends AppTestTemplate {
   static const dummyProjectName = 'PROJECT_NAME';
   static const _basicCode = '''
 import 'package:$dummyProjectName/app.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';

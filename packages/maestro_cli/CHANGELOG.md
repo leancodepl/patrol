@@ -1,3 +1,8 @@
+## 0.1.2
+
+- Fix typo in generated `integration_test/app_test.dart`.
+- Depend on [package:adb](https://pub.dev/packages/adb).
+
 ## 0.1.1
 
 - Set minimum Dart version to 2.16.

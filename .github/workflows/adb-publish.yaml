@@ -1,8 +1,8 @@
-name: maestro_test publish
+name: adb publish
 
 on:
   push:
-    tags: ["maestro_test-v*"]
+    tags: ["adb-v*"]
 
 jobs:
   main:
@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro_test
+        working-directory: packages/adb
 
     steps:
       - name: Clone repository
@@ -31,7 +31,7 @@ jobs:
       - name: Set version data
         run: |
           tag=${{ github.ref_name }}
-          prefix=maestro_test-v
+          prefix=adb-v
           version=${tag#"$prefix"}
           echo "version: $version"
           echo "VERSION=$version" >> $GITHUB_ENV
@@ -53,6 +53,6 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          name: "maestro_test-v${{ env.VERSION }}"
-          body_path: packages/maestro_test/release_notes.txt
+          name: "adb-v${{ env.VERSION }}"
+          body_path: packages/adb/release_notes.txt
           prerelease: ${{ env.IS_PRERELEASE }}
