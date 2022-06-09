@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # check_versions checks whether the version of maestro_cli is defined
-# consistently across all the places. Exits with code 0 versions if are
+# consistently across all the places. Exits with code 0 if versions are
 # consistent, exits with non-zero code otherwise.
 
 declare -A versions
