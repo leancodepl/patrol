@@ -15,7 +15,12 @@ $ dart pub global activate maestro_cli
 
 ### From git
 
-1. Make sure that you have Dart >= 2.17 installed (it comes with Flutter 3).
+1. Make sure that you have Dart >= 2.16 installed.
+
+   ```
+   $ dart --version
+   ```
+
 2. Clone the repo.
 3. Go to `packages/maestro_cli`.
 4. Run `dart pub global activate --source path .`
