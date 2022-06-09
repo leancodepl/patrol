@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:adb/adb.dart' as adb;
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:path/path.dart' as path;
 
 Future<void> installApps({String? device}) async {
   final progress1 = log.progress('Installing server');
   try {
-    await adb.forceInstallApk(serverArtifactFile, device: device);
+    final p = path.join(artifactPath, serverArtifactFile);
+    await adb.forceInstallApk(p, device: device);
   } catch (err) {
     progress1.fail('Failed to install server');
     rethrow;
@@ -15,7 +17,8 @@ Future<void> installApps({String? device}) async {
 
   final progress2 = log.progress('Installing instrumentation');
   try {
-    await adb.forceInstallApk(instrumentationArtifactFile, device: device);
+    final p = path.join(artifactPath, instrumentationArtifactFile);
+    await adb.forceInstallApk(p, device: device);
   } catch (err) {
     progress2.fail('Failed to install instrumentation');
     rethrow;
@@ -45,11 +48,13 @@ Future<void> runServer({String? device}) async {
   final progress = log.progress('Starting instrumentation server');
 
   try {
-    await adb.instrument(
-      packageName: 'pl.leancode.automatorserver.test',
-      intentClass: 'androidx.test.runner.AndroidJUnitRunner',
-      onStdout: log.info,
-      onStderr: log.severe,
+    unawaited(
+      adb.instrument(
+        packageName: 'pl.leancode.automatorserver.test',
+        intentClass: 'androidx.test.runner.AndroidJUnitRunner',
+        onStdout: log.info,
+        onStderr: log.severe,
+      ),
     );
   } catch (err) {
     progress.fail('Failed to start instrumentation server');
