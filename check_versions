@@ -42,7 +42,6 @@ checkChangelogVersion
 checkApkVersion
 
 exitCode=0
-previousVersion=""
 previousValue=""
 for version in "${!versions[@]}"; do
     value="${versions[$version]}"
