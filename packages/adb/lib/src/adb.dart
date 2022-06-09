@@ -107,6 +107,7 @@ Future<void> instrument({
       '-w',
       '$packageName/$intentClass',
     ],
+    runInShell: true,
   );
 
   process.stdout.listen((data) {
