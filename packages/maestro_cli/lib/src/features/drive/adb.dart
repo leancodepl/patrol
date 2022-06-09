@@ -5,26 +5,26 @@ import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps({String? device}) async {
-  final progress1 = log.progress('Installing server');
+  final serverInstallProgress = log.progress('Installing server');
   try {
     final p = path.join(artifactPath, serverArtifactFile);
     await adb.forceInstallApk(p, device: device);
   } catch (err) {
-    progress1.fail('Failed to install server');
+    serverInstallProgress.fail('Failed to install server');
     rethrow;
   }
-  progress1.complete('Installed server');
+  serverInstallProgress.complete('Installed server');
 
-  final progress2 = log.progress('Installing instrumentation');
+  final instrumentInstallProgress = log.progress('Installing instrumentation');
   try {
     final p = path.join(artifactPath, instrumentationArtifactFile);
     await adb.forceInstallApk(p, device: device);
   } catch (err) {
-    progress2.fail('Failed to install instrumentation');
+    instrumentInstallProgress.fail('Failed to install instrumentation');
     rethrow;
   }
 
-  progress2.complete('Installed instrumentation');
+  instrumentInstallProgress.complete('Installed instrumentation');
 }
 
 Future<void> forwardPorts(int port, {String? device}) async {
