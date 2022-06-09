@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "40.0.0"
+  adb:
+    dependency: "direct main"
+    description:
+      path: "/Users/bartek/dev/leancode/maestro/packages/adb"
+      relative: false
+    source: path
+    version: "0.0.1"
   analyzer:
     dependency: transitive
     description:
