@@ -92,9 +92,7 @@ Future<void> instrument({
   void Function(String)? onStdout,
   void Function(String)? onStderr,
 }) async {
-  Process process;
-
-  process = await Process.start(
+  final process = await Process.start(
     'adb',
     [
       if (device != null) ...[

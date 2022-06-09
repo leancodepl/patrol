@@ -83,7 +83,7 @@ class DriveCommand extends Command<int> {
 
     await adb.installApps(device: device);
     await adb.forwardPorts(int.parse(portStr), device: device);
-    await adb.runServer(device: device);
+    adb.runServer(device: device);
     await flutter_driver.runTestsWithOutput(
       driver,
       target,

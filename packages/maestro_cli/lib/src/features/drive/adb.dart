@@ -44,22 +44,11 @@ Future<void> forwardPorts(int port, {String? device}) async {
   progress.complete('Forwarded ports');
 }
 
-Future<void> runServer({String? device}) async {
-  final progress = log.progress('Starting instrumentation server');
-
-  try {
-    unawaited(
-      adb.instrument(
-        packageName: 'pl.leancode.automatorserver.test',
-        intentClass: 'androidx.test.runner.AndroidJUnitRunner',
-        onStdout: log.info,
-        onStderr: log.severe,
-      ),
-    );
-  } catch (err) {
-    progress.fail('Failed to start instrumentation server');
-    rethrow;
-  }
-
-  progress.complete('Started instrumentation server');
+void runServer({String? device}) {
+  adb.instrument(
+    packageName: 'pl.leancode.automatorserver.test',
+    intentClass: 'androidx.test.runner.AndroidJUnitRunner',
+    onStdout: log.info,
+    onStderr: log.severe,
+  );
 }
