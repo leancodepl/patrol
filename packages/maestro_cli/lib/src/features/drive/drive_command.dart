@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/external/adb.dart' as adb;
 import 'package:maestro_cli/src/external/flutter_driver.dart' as flutter_driver;
+import 'package:maestro_cli/src/features/drive/adb.dart' as adb;
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -83,7 +83,7 @@ class DriveCommand extends Command<int> {
 
     await adb.installApps(device: device);
     await adb.forwardPorts(int.parse(portStr), device: device);
-    await adb.runServer(device: device);
+    adb.runServer(device: device);
     await flutter_driver.runTestsWithOutput(
       driver,
       target,

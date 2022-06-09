@@ -1,15 +1,15 @@
-name: maestro_cli prepare
+name: adb prepare
 
 on:
   push:
     branches: [main]
-    ignore-tags: ["maestro_cli-v*"]
+    ignore-tags: ["adb-v*"]
     paths:
-      - "packages/maestro_cli/**"
+      - "packages/adb/**"
   pull_request:
     branches: [main]
     paths:
-      - "packages/maestro_cli/**"
+      - "packages/adb/**"
 
 jobs:
   main:
@@ -23,14 +23,14 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro_cli
+        working-directory: packages/adb
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
 
       - name: Install Dart
-        uses: dart-lang/setup-dart@v1.3
+        uses: dart-lang/setup-dart@v1
         with:
           sdk: ${{ matrix.sdk }}
 
@@ -43,9 +43,8 @@ jobs:
       - name: dart analyze
         run: dart analyze
 
-      # We don't have any tests, yet.
-      # - name: dart test
-      #   run: dart test
+      - name: dart test
+        run: dart test
 
       - name: dart format
         run: dart format --set-exit-if-changed .

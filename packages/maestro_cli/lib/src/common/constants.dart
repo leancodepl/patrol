@@ -1,5 +1,5 @@
 /// Version of Maestro CLI. Must be kept in sync with pubspec.yaml.
-const version = '0.1.1';
+const version = '0.1.2';
 
 const maestroPackage = 'maestro_test';
 const maestroCliPackage = 'maestro_cli';
@@ -14,7 +14,7 @@ const driverFileContent = '''
 import 'package:integration_test/integration_test_driver.dart';
 import 'package:$maestroPackage/$maestroPackage.dart';
 
-// Runs on the your machine. Knows nothing about the app being tested.
+// Runs on your machine. Knows nothing about the app being tested.
 
 Future<void> main() async {
   print('Waiting for automator server');
