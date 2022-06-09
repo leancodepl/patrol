@@ -17,6 +17,7 @@ jobs:
 
   publish_cli:
     runs-on: ubuntu-latest
+    needs: check_versions
 
     defaults:
       run:
