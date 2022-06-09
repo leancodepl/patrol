@@ -52,13 +52,17 @@ jobs:
       #   run: flutter test
 
       - name: flutter format (example app)
-        run: cd example && flutter format --set-exit-if-changed .
+        working-directory: ./packages/maestro_test/example
+        run: flutter format --set-exit-if-changed .
 
       - name: flutter pub get (example app)
-        run: cd example && flutter pub get
+        working-directory: ./packages/maestro_test/example
+        run: flutter pub get
 
       - name: flutter analyze (example app)
-        run: cd example && flutter analyze --no-fatal-infos
+        working-directory: ./packages/maestro_test/example
+        run: flutter analyze --no-fatal-infos
 
       - name: flutter format (example app)
-        run: cd example && flutter format --set-exit-if-changed .
+        working-directory: ./packages/maestro_test/example
+        run: flutter format --set-exit-if-changed .
