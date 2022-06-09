@@ -8,18 +8,12 @@ set -euo pipefail
 declare -A versions
 
 checkPubspecVersion() {
-    local path
-    local version
-
     path="./packages/maestro_cli/pubspec.yaml"
     version=$(grep version "$path" | xargs | cut -d ' ' -f 2)
     versions[pubspec]="$version"
 }
 
 checkEmbeddedVersion() {
-    local path
-    local version
-
     path="./packages/maestro_cli/lib/src/common/constants.dart"
     version=$(grep 'const version' "$path" | cut -d\' -f 2)
     versions[embedded]="$version"
@@ -27,19 +21,13 @@ checkEmbeddedVersion() {
 
 # checkChangelogVersion checks whether the first line of CHANGELOG.md contains a
 # h2 element with the version.
-checkChangelogVersion() {
-    local path
-    local version
-    
+checkChangelogVersion() {    
     path="./packages/maestro_cli/CHANGELOG.md"
     version=$(head -n 1 $path | cut -d ' ' -f 2)
     versions[changelog]="$version"
 }
 
-checkApkVersion() {
-    local path
-    local version
-    
+checkApkVersion() {    
     path="./AutomatorServer/app/build.gradle"
     version=$(grep versionName "$path" | xargs | cut -d ' ' -f 2)
     versions[apk]="$version"
