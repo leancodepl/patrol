@@ -57,7 +57,7 @@ jobs:
           # see https://github.com/actions/virtual-environments/issues/1717#issuecomment-702780142
           ref: ${{ github.ref }}
 
-      - name: Set version, metadata, and artifact names
+      - name: Set version data and artifact names
         run: |
           tag=${{ github.ref_name }}
           prefix=maestro_cli-v
