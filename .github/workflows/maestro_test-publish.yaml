@@ -28,5 +28,31 @@ jobs:
           mkdir -p ~/.pub-cache
           echo $CREDENTIALS > ~/.pub-cache/credentials.json
 
+      - name: Set version data
+        run: |
+          tag=${{ github.ref_name }}
+          prefix=maestro_test-v
+          version=${tag#"$prefix"}
+          echo "version: $version"
+          echo "VERSION=$version" >> $GITHUB_ENV
+          # set whether is prerelease
+          is_prerelease=false
+          if [[ "$version" == 0.* ]]; then
+            is_prerelease=true
+          fi
+          echo "IS_PRERELEASE=$is_prerelease" >> $GITHUB_ENV
+          echo "is_prerelease: $is_prerelease"
+          # set release notes
+          tag_message="$(git tag -l --format='%(contents)' "$tag")"
+          echo "$tag_message" > release_notes.txt
+          echo "tag message: $tag_message"
+
       - name: Publish
         run: dart pub publish -f
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "maestro_test-v${{ env.VERSION }}"
+          body_path: packages/maestro_test/release_notes.txt
+          prerelease: ${{ env.IS_PRERELEASE }}
