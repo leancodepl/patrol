@@ -43,7 +43,7 @@ class Automator {
       );
       return res.statusCode == 200;
     } catch (err, st) {
-      _logger.warning(err, st);
+      _logger.warning("failed to call isRunning()", err, st);
       return false;
     }
   }
@@ -54,7 +54,7 @@ class Automator {
       _logger.info('stopping instrumentation server...');
       await _client.post(Uri.parse('$_baseUri/stop'));
     } catch (err, st) {
-      _logger.warning(err, st);
+      _logger.warning("failed to call stop()", err, st);
     } finally {
       _logger.info('instrumentation server stopped');
     }
