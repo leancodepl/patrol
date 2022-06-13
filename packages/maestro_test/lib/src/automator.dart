@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' as logging;
+import 'package:maestro_test/maestro_test.dart';
 
 /// Provides functionality to control the device.
 ///
@@ -90,6 +93,22 @@ class Automator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
   Future<void> openNotifications() => _wrap('openNotifications');
+
+  /// Returns a list of native UI controls that are currently visible on screen.
+  Future<List<NativeWidget>> getNativeWidgets({
+    required Conditions conditions,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$_baseUri/nativeWidgets'),
+      body: conditions.toJson(),
+    );
+
+    final nativeWidgets = json.decode(response.body) as List<dynamic>;
+
+    return nativeWidgets
+        .map((dynamic e) => NativeWidget.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 
   Future<void> _wrap(String action) async {
     _logger.fine('executing action $action');

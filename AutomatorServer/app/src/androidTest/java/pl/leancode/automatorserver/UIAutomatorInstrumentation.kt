@@ -3,6 +3,7 @@ package pl.leancode.automatorserver
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
@@ -10,35 +11,45 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 
+enum class NativeWidgetClass(`class`: Class<out Any>, name: String) {
+    Text(TextView::class.java, "Text"),
+    TextField(EditText::class.java, "TextField"),
+    Button(Button::class.java, "Button")
+}
+
 @Serializable
-data class NativeTextField(
-    val text: String?,
-    val contentDescription: String?,
-    val focused: Boolean?,
-    val enabled: Boolean?,
+data class Conditions(
+    val `class`: String? = null,
+    val enabled: Boolean? = null,
+    val focused: Boolean? = null,
+    val text: String? = null,
+    val textContains: String? = null,
+    val contentDescription: String? = null,
 ) {
-    companion object {
-        fun fromUiObject(obj: UiObject2): NativeTextField {
-            return NativeTextField(
-                text = obj.text,
-                contentDescription = obj.contentDescription,
-                focused = obj.isFocused,
-                enabled = obj.isEnabled,
+    fun isEmpty(): Boolean {
+        return (
+            `class` == null &&
+                enabled == null &&
+                focused == null &&
+                text == null &&
+                textContains == null &&
+                contentDescription == null
             )
-        }
     }
 }
 
 @Serializable
-data class NativeButton(
+data class NativeWidget(
+    val className: String?,
     val text: String?,
     val contentDescription: String?,
     val focused: Boolean?,
     val enabled: Boolean?,
 ) {
     companion object {
-        fun fromUiObject(obj: UiObject2): NativeButton {
-            return NativeButton(
+        fun fromUiObject(obj: UiObject2): NativeWidget {
+            return NativeWidget(
+                className = obj.className,
                 text = obj.text,
                 contentDescription = obj.contentDescription,
                 focused = obj.isFocused,
@@ -87,16 +98,42 @@ class UIAutomatorInstrumentation {
         Logger.d("After press double recent apps")
     }
 
-    fun getNativeTextField(index: Int): NativeTextField {
-        return getNativeTextFields()[index]
+    fun getNativeWidget(index: Int, conditions: Conditions): NativeWidget {
+        return getNativeWidgets(conditions)[index]
     }
 
-    fun getNativeTextFields(): List<NativeTextField> {
+    fun getNativeWidgets(conditions: Conditions): List<NativeWidget> {
         val device = getDevice()
 
-        val selector = By.clazz(EditText::class.java)
+        if (conditions.isEmpty()) {
+            return arrayListOf()
+        }
 
-        return device.findObjects(selector).map { NativeTextField.fromUiObject(it) }
+        var selector = By.clazz(EditText::class.java)
+
+        selector = selector.apply {
+            conditions.enabled?.let {
+                enabled(it)
+            }
+
+            conditions.focused?.let {
+                focused(it)
+            }
+
+            conditions.text?.let {
+                text(it)
+            }
+
+            conditions.textContains?.let {
+                textContains(it)
+            }
+
+            conditions.contentDescription?.let {
+                desc(it)
+            }
+        }
+
+        return device.findObjects(selector).map { NativeWidget.fromUiObject(it) }
     }
 
     fun setNativeTextField(index: Int, text: String) {
@@ -107,18 +144,6 @@ class UIAutomatorInstrumentation {
 
         uiObject.click()
         uiObject.text = text
-    }
-
-    fun getNativeButton(index: Int): NativeButton {
-        return getNativeButtons()[index]
-    }
-
-    fun getNativeButtons(): List<NativeButton> {
-        val device = getDevice()
-
-        val selector = By.clazz(Button::class.java)
-
-        return device.findObjects(selector).map { NativeButton.fromUiObject(it) }
     }
 
     fun setNativeButton(index: Int) {

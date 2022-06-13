@@ -21,7 +21,7 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
-data class GetNativeTextField(val index: Int? = null)
+data class GetNativeWidget(val index: Int? = null)
 
 @Serializable
 data class SetNativeTextField(val index: Int, val text: String)
@@ -71,19 +71,19 @@ class ServerInstrumentation {
             },
 
             // TextFields
-            "nativeTextField" bind GET to {
+            "nativeWidgets" bind GET to {
                 val reqBody = try {
-                    Json.decodeFromString<GetNativeTextField>(it.bodyString())
+                    Json.decodeFromString<GetNativeWidget>(it.bodyString())
                 } catch (err: Exception) {
                     return@to Response(BAD_REQUEST)
                 }
 
                 if (reqBody.index == null) {
-                    val textFields = UIAutomatorInstrumentation.instance.getNativeTextFields()
+                    val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets()
                     Response(OK).body(Json.encodeToString(textFields))
                 } else {
                     val textField =
-                        UIAutomatorInstrumentation.instance.getNativeTextField(reqBody.index)
+                        UIAutomatorInstrumentation.instance.getNativeWidget(reqBody.index)
                     Response(OK).body(Json.encodeToString(textField))
                 }
             },
