@@ -161,7 +161,7 @@ class UIAutomatorInstrumentation {
         val device = getDevice()
 
         device.executeShellCommand(cmd)
-        SystemClock.sleep(500)
+        SystemClock.sleep(1000)
     }
 
     companion object {

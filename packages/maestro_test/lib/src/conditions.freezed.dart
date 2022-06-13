@@ -12,11 +12,40 @@ part of 'conditions.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 Conditions _$ConditionsFromJson(Map<String, dynamic> json) {
   return _Conditions.fromJson(json);
 }
+
+/// @nodoc
+class _$ConditionsTearOff {
+  const _$ConditionsTearOff();
+
+  _Conditions call(
+      {String? className,
+      bool? enabled,
+      bool? focused,
+      String? text,
+      String? textContains,
+      String? contentDescription}) {
+    return _Conditions(
+      className: className,
+      enabled: enabled,
+      focused: focused,
+      text: text,
+      textContains: textContains,
+      contentDescription: contentDescription,
+    );
+  }
+
+  Conditions fromJson(Map<String, Object?> json) {
+    return Conditions.fromJson(json);
+  }
+}
+
+/// @nodoc
+const $Conditions = _$ConditionsTearOff();
 
 /// @nodoc
 mixin _$Conditions {
@@ -94,11 +123,10 @@ class _$ConditionsCopyWithImpl<$Res> implements $ConditionsCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$$_ConditionsCopyWith<$Res>
-    implements $ConditionsCopyWith<$Res> {
-  factory _$$_ConditionsCopyWith(
-          _$_Conditions value, $Res Function(_$_Conditions) then) =
-      __$$_ConditionsCopyWithImpl<$Res>;
+abstract class _$ConditionsCopyWith<$Res> implements $ConditionsCopyWith<$Res> {
+  factory _$ConditionsCopyWith(
+          _Conditions value, $Res Function(_Conditions) then) =
+      __$ConditionsCopyWithImpl<$Res>;
   @override
   $Res call(
       {String? className,
@@ -110,14 +138,14 @@ abstract class _$$_ConditionsCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ConditionsCopyWithImpl<$Res> extends _$ConditionsCopyWithImpl<$Res>
-    implements _$$_ConditionsCopyWith<$Res> {
-  __$$_ConditionsCopyWithImpl(
-      _$_Conditions _value, $Res Function(_$_Conditions) _then)
-      : super(_value, (v) => _then(v as _$_Conditions));
+class __$ConditionsCopyWithImpl<$Res> extends _$ConditionsCopyWithImpl<$Res>
+    implements _$ConditionsCopyWith<$Res> {
+  __$ConditionsCopyWithImpl(
+      _Conditions _value, $Res Function(_Conditions) _then)
+      : super(_value, (v) => _then(v as _Conditions));
 
   @override
-  _$_Conditions get _value => super._value as _$_Conditions;
+  _Conditions get _value => super._value as _Conditions;
 
   @override
   $Res call({
@@ -128,7 +156,7 @@ class __$$_ConditionsCopyWithImpl<$Res> extends _$ConditionsCopyWithImpl<$Res>
     Object? textContains = freezed,
     Object? contentDescription = freezed,
   }) {
-    return _then(_$_Conditions(
+    return _then(_Conditions(
       className: className == freezed
           ? _value.className
           : className // ignore: cast_nullable_to_non_nullable
@@ -193,7 +221,7 @@ class _$_Conditions implements _Conditions {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Conditions &&
+            other is _Conditions &&
             const DeepCollectionEquality().equals(other.className, className) &&
             const DeepCollectionEquality().equals(other.enabled, enabled) &&
             const DeepCollectionEquality().equals(other.focused, focused) &&
@@ -204,7 +232,6 @@ class _$_Conditions implements _Conditions {
                 .equals(other.contentDescription, contentDescription));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -217,8 +244,8 @@ class _$_Conditions implements _Conditions {
 
   @JsonKey(ignore: true)
   @override
-  _$$_ConditionsCopyWith<_$_Conditions> get copyWith =>
-      __$$_ConditionsCopyWithImpl<_$_Conditions>(this, _$identity);
+  _$ConditionsCopyWith<_Conditions> get copyWith =>
+      __$ConditionsCopyWithImpl<_Conditions>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -228,30 +255,30 @@ class _$_Conditions implements _Conditions {
 
 abstract class _Conditions implements Conditions {
   const factory _Conditions(
-      {final String? className,
-      final bool? enabled,
-      final bool? focused,
-      final String? text,
-      final String? textContains,
-      final String? contentDescription}) = _$_Conditions;
+      {String? className,
+      bool? enabled,
+      bool? focused,
+      String? text,
+      String? textContains,
+      String? contentDescription}) = _$_Conditions;
 
   factory _Conditions.fromJson(Map<String, dynamic> json) =
       _$_Conditions.fromJson;
 
   @override
-  String? get className => throw _privateConstructorUsedError;
+  String? get className;
   @override
-  bool? get enabled => throw _privateConstructorUsedError;
+  bool? get enabled;
   @override
-  bool? get focused => throw _privateConstructorUsedError;
+  bool? get focused;
   @override
-  String? get text => throw _privateConstructorUsedError;
+  String? get text;
   @override
-  String? get textContains => throw _privateConstructorUsedError;
+  String? get textContains;
   @override
-  String? get contentDescription => throw _privateConstructorUsedError;
+  String? get contentDescription;
   @override
   @JsonKey(ignore: true)
-  _$$_ConditionsCopyWith<_$_Conditions> get copyWith =>
+  _$ConditionsCopyWith<_Conditions> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -12,11 +12,38 @@ part of 'native_widget.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 NativeWidget _$NativeWidgetFromJson(Map<String, dynamic> json) {
   return _NativeWidget.fromJson(json);
 }
+
+/// @nodoc
+class _$NativeWidgetTearOff {
+  const _$NativeWidgetTearOff();
+
+  _NativeWidget call(
+      {String? className,
+      String? text,
+      String? contentDescription,
+      bool? enabled,
+      bool? focused}) {
+    return _NativeWidget(
+      className: className,
+      text: text,
+      contentDescription: contentDescription,
+      enabled: enabled,
+      focused: focused,
+    );
+  }
+
+  NativeWidget fromJson(Map<String, Object?> json) {
+    return NativeWidget.fromJson(json);
+  }
+}
+
+/// @nodoc
+const $NativeWidget = _$NativeWidgetTearOff();
 
 /// @nodoc
 mixin _$NativeWidget {
@@ -87,11 +114,11 @@ class _$NativeWidgetCopyWithImpl<$Res> implements $NativeWidgetCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$$_NativeWidgetCopyWith<$Res>
+abstract class _$NativeWidgetCopyWith<$Res>
     implements $NativeWidgetCopyWith<$Res> {
-  factory _$$_NativeWidgetCopyWith(
-          _$_NativeWidget value, $Res Function(_$_NativeWidget) then) =
-      __$$_NativeWidgetCopyWithImpl<$Res>;
+  factory _$NativeWidgetCopyWith(
+          _NativeWidget value, $Res Function(_NativeWidget) then) =
+      __$NativeWidgetCopyWithImpl<$Res>;
   @override
   $Res call(
       {String? className,
@@ -102,15 +129,14 @@ abstract class _$$_NativeWidgetCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_NativeWidgetCopyWithImpl<$Res>
-    extends _$NativeWidgetCopyWithImpl<$Res>
-    implements _$$_NativeWidgetCopyWith<$Res> {
-  __$$_NativeWidgetCopyWithImpl(
-      _$_NativeWidget _value, $Res Function(_$_NativeWidget) _then)
-      : super(_value, (v) => _then(v as _$_NativeWidget));
+class __$NativeWidgetCopyWithImpl<$Res> extends _$NativeWidgetCopyWithImpl<$Res>
+    implements _$NativeWidgetCopyWith<$Res> {
+  __$NativeWidgetCopyWithImpl(
+      _NativeWidget _value, $Res Function(_NativeWidget) _then)
+      : super(_value, (v) => _then(v as _NativeWidget));
 
   @override
-  _$_NativeWidget get _value => super._value as _$_NativeWidget;
+  _NativeWidget get _value => super._value as _NativeWidget;
 
   @override
   $Res call({
@@ -120,7 +146,7 @@ class __$$_NativeWidgetCopyWithImpl<$Res>
     Object? enabled = freezed,
     Object? focused = freezed,
   }) {
-    return _then(_$_NativeWidget(
+    return _then(_NativeWidget(
       className: className == freezed
           ? _value.className
           : className // ignore: cast_nullable_to_non_nullable
@@ -178,7 +204,7 @@ class _$_NativeWidget implements _NativeWidget {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_NativeWidget &&
+            other is _NativeWidget &&
             const DeepCollectionEquality().equals(other.className, className) &&
             const DeepCollectionEquality().equals(other.text, text) &&
             const DeepCollectionEquality()
@@ -187,7 +213,6 @@ class _$_NativeWidget implements _NativeWidget {
             const DeepCollectionEquality().equals(other.focused, focused));
   }
 
-  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -199,8 +224,8 @@ class _$_NativeWidget implements _NativeWidget {
 
   @JsonKey(ignore: true)
   @override
-  _$$_NativeWidgetCopyWith<_$_NativeWidget> get copyWith =>
-      __$$_NativeWidgetCopyWithImpl<_$_NativeWidget>(this, _$identity);
+  _$NativeWidgetCopyWith<_NativeWidget> get copyWith =>
+      __$NativeWidgetCopyWithImpl<_NativeWidget>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
@@ -210,27 +235,27 @@ class _$_NativeWidget implements _NativeWidget {
 
 abstract class _NativeWidget implements NativeWidget {
   const factory _NativeWidget(
-      {final String? className,
-      final String? text,
-      final String? contentDescription,
-      final bool? enabled,
-      final bool? focused}) = _$_NativeWidget;
+      {String? className,
+      String? text,
+      String? contentDescription,
+      bool? enabled,
+      bool? focused}) = _$_NativeWidget;
 
   factory _NativeWidget.fromJson(Map<String, dynamic> json) =
       _$_NativeWidget.fromJson;
 
   @override
-  String? get className => throw _privateConstructorUsedError;
+  String? get className;
   @override
-  String? get text => throw _privateConstructorUsedError;
+  String? get text;
   @override
-  String? get contentDescription => throw _privateConstructorUsedError;
+  String? get contentDescription;
   @override
-  bool? get enabled => throw _privateConstructorUsedError;
+  bool? get enabled;
   @override
-  bool? get focused => throw _privateConstructorUsedError;
+  bool? get focused;
   @override
   @JsonKey(ignore: true)
-  _$$_NativeWidgetCopyWith<_$_NativeWidget> get copyWith =>
+  _$NativeWidgetCopyWith<_NativeWidget> get copyWith =>
       throw _privateConstructorUsedError;
 }
