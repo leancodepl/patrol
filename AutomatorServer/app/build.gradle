@@ -38,11 +38,10 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
 
-    androidTestImplementation 'com.orhanobut:logger:2.2.0'
     androidTestImplementation platform("org.http4k:http4k-bom:4.25.14.0")
     androidTestImplementation "org.http4k:http4k-core"
     androidTestImplementation "org.http4k:http4k-server-netty"

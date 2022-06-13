@@ -1,6 +1,5 @@
 package pl.leancode.automatorserver
 
-import com.orhanobut.logger.Logger
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
@@ -9,6 +8,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
+
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -20,12 +20,12 @@ class ServerInstrumentation {
         val app = routes(
             "healthCheck" bind Method.GET to {
                 Logger.i("Health check")
-                Response(OK)
+                Response(OK).body("All is good.")
             },
             "stop" bind Method.POST to {
                 Logger.i("Stopping server")
                 stopServer()
-                Response(OK)
+                Response(OK).body("Server stopped")
             },
             "pressHome" bind Method.POST to {
                 UIAutomatorInstrumentation.instance.pressHome()
@@ -41,6 +41,15 @@ class ServerInstrumentation {
             },
             "openNotifications" bind Method.POST to {
                 UIAutomatorInstrumentation.instance.openNotifications()
+                Response(OK)
+            },
+            "nativeTextField" bind Method.GET to {
+                UIAutomatorInstrumentation.instance.getNativeTextField()
+                Response(OK)
+            },
+            "nativeTextField" bind Method.POST to {
+                val text = it.bodyString()
+                UIAutomatorInstrumentation.instance.setNativeTextField(text)
                 Response(OK)
             }
         )

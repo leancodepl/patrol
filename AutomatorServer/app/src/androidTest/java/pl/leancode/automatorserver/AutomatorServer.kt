@@ -1,8 +1,6 @@
 package pl.leancode.automatorserver
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.Logger
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -10,8 +8,6 @@ import org.junit.runner.RunWith
 class AutomatorServer {
     @Test
     fun startServer() {
-        Logger.addLogAdapter(AndroidLogAdapter())
-
         if (serverInstrumentation == null) {
             serverInstrumentation = ServerInstrumentation.instance
             Logger.i("Starting server")
@@ -22,7 +18,7 @@ class AutomatorServer {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Logger.w("Exception thrown: ", e)
+                Logger.e("Exception thrown: ", e)
             }
         }
     }

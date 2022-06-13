@@ -1,9 +1,10 @@
 package pl.leancode.automatorserver
 
 import android.os.SystemClock
+import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
-import com.orhanobut.logger.Logger
+import androidx.test.uiautomator.*
+
 
 class UIAutomatorInstrumentation {
     private fun getDevice(): UiDevice {
@@ -34,6 +35,27 @@ class UIAutomatorInstrumentation {
         device.pressRecentApps()
         SystemClock.sleep(1000);
         Logger.i("After press double recent apps")
+    }
+
+    fun getNativeTextField() {
+        val device = getDevice()
+
+        val selector = UiSelector().className(EditText::class.java).instance(0)
+        val emailInput = device.findObject(selector)
+
+        Logger.i("text: ${emailInput.text}")
+        Logger.i("content description: ${emailInput.contentDescription}")
+    }
+
+    fun setNativeTextField(text: String) {
+        val device = getDevice()
+
+        val selector = UiSelector().className(EditText::class.java).instance(0)
+        val emailInput = device.findObject(selector)
+
+        emailInput.click()
+        emailInput.text = text
+        Logger.i("setting native text field to $text")
     }
 
     fun openNotifications() {
