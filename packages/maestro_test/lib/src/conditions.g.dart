@@ -8,7 +8,7 @@ part of 'conditions.dart';
 
 _$_Conditions _$$_ConditionsFromJson(Map<String, dynamic> json) =>
     _$_Conditions(
-      clazz: json['clazz'] as String?,
+      className: json['className'] as String?,
       enabled: json['enabled'] as bool?,
       focused: json['focused'] as bool?,
       text: json['text'] as String?,
@@ -18,7 +18,7 @@ _$_Conditions _$$_ConditionsFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$_ConditionsToJson(_$_Conditions instance) =>
     <String, dynamic>{
-      'clazz': instance.clazz,
+      'className': instance.className,
       'enabled': instance.enabled,
       'focused': instance.focused,
       'text': instance.text,

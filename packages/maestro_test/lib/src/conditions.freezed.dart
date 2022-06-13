@@ -20,7 +20,7 @@ Conditions _$ConditionsFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Conditions {
-  String? get clazz => throw _privateConstructorUsedError;
+  String? get className => throw _privateConstructorUsedError;
   bool? get enabled => throw _privateConstructorUsedError;
   bool? get focused => throw _privateConstructorUsedError;
   String? get text => throw _privateConstructorUsedError;
@@ -39,7 +39,7 @@ abstract class $ConditionsCopyWith<$Res> {
           Conditions value, $Res Function(Conditions) then) =
       _$ConditionsCopyWithImpl<$Res>;
   $Res call(
-      {String? clazz,
+      {String? className,
       bool? enabled,
       bool? focused,
       String? text,
@@ -57,7 +57,7 @@ class _$ConditionsCopyWithImpl<$Res> implements $ConditionsCopyWith<$Res> {
 
   @override
   $Res call({
-    Object? clazz = freezed,
+    Object? className = freezed,
     Object? enabled = freezed,
     Object? focused = freezed,
     Object? text = freezed,
@@ -65,9 +65,9 @@ class _$ConditionsCopyWithImpl<$Res> implements $ConditionsCopyWith<$Res> {
     Object? contentDescription = freezed,
   }) {
     return _then(_value.copyWith(
-      clazz: clazz == freezed
-          ? _value.clazz
-          : clazz // ignore: cast_nullable_to_non_nullable
+      className: className == freezed
+          ? _value.className
+          : className // ignore: cast_nullable_to_non_nullable
               as String?,
       enabled: enabled == freezed
           ? _value.enabled
@@ -101,7 +101,7 @@ abstract class _$$_ConditionsCopyWith<$Res>
       __$$_ConditionsCopyWithImpl<$Res>;
   @override
   $Res call(
-      {String? clazz,
+      {String? className,
       bool? enabled,
       bool? focused,
       String? text,
@@ -121,7 +121,7 @@ class __$$_ConditionsCopyWithImpl<$Res> extends _$ConditionsCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? clazz = freezed,
+    Object? className = freezed,
     Object? enabled = freezed,
     Object? focused = freezed,
     Object? text = freezed,
@@ -129,9 +129,9 @@ class __$$_ConditionsCopyWithImpl<$Res> extends _$ConditionsCopyWithImpl<$Res>
     Object? contentDescription = freezed,
   }) {
     return _then(_$_Conditions(
-      clazz: clazz == freezed
-          ? _value.clazz
-          : clazz // ignore: cast_nullable_to_non_nullable
+      className: className == freezed
+          ? _value.className
+          : className // ignore: cast_nullable_to_non_nullable
               as String?,
       enabled: enabled == freezed
           ? _value.enabled
@@ -161,7 +161,7 @@ class __$$_ConditionsCopyWithImpl<$Res> extends _$ConditionsCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_Conditions implements _Conditions {
   const _$_Conditions(
-      {this.clazz,
+      {this.className,
       this.enabled,
       this.focused,
       this.text,
@@ -172,7 +172,7 @@ class _$_Conditions implements _Conditions {
       _$$_ConditionsFromJson(json);
 
   @override
-  final String? clazz;
+  final String? className;
   @override
   final bool? enabled;
   @override
@@ -186,7 +186,7 @@ class _$_Conditions implements _Conditions {
 
   @override
   String toString() {
-    return 'Conditions(clazz: $clazz, enabled: $enabled, focused: $focused, text: $text, textContains: $textContains, contentDescription: $contentDescription)';
+    return 'Conditions(className: $className, enabled: $enabled, focused: $focused, text: $text, textContains: $textContains, contentDescription: $contentDescription)';
   }
 
   @override
@@ -194,7 +194,7 @@ class _$_Conditions implements _Conditions {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Conditions &&
-            const DeepCollectionEquality().equals(other.clazz, clazz) &&
+            const DeepCollectionEquality().equals(other.className, className) &&
             const DeepCollectionEquality().equals(other.enabled, enabled) &&
             const DeepCollectionEquality().equals(other.focused, focused) &&
             const DeepCollectionEquality().equals(other.text, text) &&
@@ -208,7 +208,7 @@ class _$_Conditions implements _Conditions {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(clazz),
+      const DeepCollectionEquality().hash(className),
       const DeepCollectionEquality().hash(enabled),
       const DeepCollectionEquality().hash(focused),
       const DeepCollectionEquality().hash(text),
@@ -228,7 +228,7 @@ class _$_Conditions implements _Conditions {
 
 abstract class _Conditions implements Conditions {
   const factory _Conditions(
-      {final String? clazz,
+      {final String? className,
       final bool? enabled,
       final bool? focused,
       final String? text,
@@ -239,7 +239,7 @@ abstract class _Conditions implements Conditions {
       _$_Conditions.fromJson;
 
   @override
-  String? get clazz => throw _privateConstructorUsedError;
+  String? get className => throw _privateConstructorUsedError;
   @override
   bool? get enabled => throw _privateConstructorUsedError;
   @override

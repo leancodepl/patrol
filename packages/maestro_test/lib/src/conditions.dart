@@ -6,7 +6,7 @@ part 'conditions.g.dart';
 @freezed
 class Conditions with _$Conditions {
   const factory Conditions({
-    String? clazz,
+    String? className,
     bool? enabled,
     bool? focused,
     String? text,

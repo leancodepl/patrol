@@ -3,40 +3,12 @@ package pl.leancode.automatorserver
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
-
-enum class NativeWidgetClass(`class`: Class<out Any>, name: String) {
-    Text(TextView::class.java, "Text"),
-    TextField(EditText::class.java, "TextField"),
-    Button(Button::class.java, "Button")
-}
-
-@Serializable
-data class Conditions(
-    val `class`: String? = null,
-    val enabled: Boolean? = null,
-    val focused: Boolean? = null,
-    val text: String? = null,
-    val textContains: String? = null,
-    val contentDescription: String? = null,
-) {
-    fun isEmpty(): Boolean {
-        return (
-            `class` == null &&
-                enabled == null &&
-                focused == null &&
-                text == null &&
-                textContains == null &&
-                contentDescription == null
-            )
-    }
-}
 
 @Serializable
 data class NativeWidget(
@@ -98,37 +70,33 @@ class UIAutomatorInstrumentation {
         Logger.d("After press double recent apps")
     }
 
-    fun getNativeWidget(index: Int, conditions: Conditions): NativeWidget {
-        return getNativeWidgets(conditions)[index]
-    }
-
-    fun getNativeWidgets(conditions: Conditions): List<NativeWidget> {
+    fun getNativeWidgets(query: WidgetsQuery): List<NativeWidget> {
         val device = getDevice()
 
-        if (conditions.isEmpty()) {
+        if (query.isEmpty()) {
             return arrayListOf()
         }
 
-        var selector = By.clazz(EditText::class.java)
+        var selector = By.clazz(query.clazz())
 
         selector = selector.apply {
-            conditions.enabled?.let {
+            query.enabled?.let {
                 enabled(it)
             }
 
-            conditions.focused?.let {
+            query.focused?.let {
                 focused(it)
             }
 
-            conditions.text?.let {
+            query.text?.let {
                 text(it)
             }
 
-            conditions.textContains?.let {
+            query.textContains?.let {
                 textContains(it)
             }
 
-            conditions.contentDescription?.let {
+            query.contentDescription?.let {
                 desc(it)
             }
         }
@@ -146,7 +114,7 @@ class UIAutomatorInstrumentation {
         uiObject.text = text
     }
 
-    fun setNativeButton(index: Int) {
+    fun tap(index: Int) {
         val device = getDevice()
 
         val selector = UiSelector().className(Button::class.java).instance(index)

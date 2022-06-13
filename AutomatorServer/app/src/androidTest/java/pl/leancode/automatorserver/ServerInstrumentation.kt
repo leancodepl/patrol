@@ -2,6 +2,7 @@ package pl.leancode.automatorserver
 
 import androidx.test.uiautomator.UiObjectNotFoundException
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -21,16 +22,45 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
-data class GetNativeWidget(val index: Int? = null)
+data class TapCommand(val index: Int)
 
 @Serializable
-data class SetNativeTextField(val index: Int, val text: String)
+data class EnterTextCommand(val index: Int, val text: String)
+
+const val TextClass = "com.android.widget.Text"
+const val TextFieldClass = "com.android.widget.EditText"
+const val ButtonClass = "com.android.widget.Button"
 
 @Serializable
-data class GetNativeButton(val index: Int? = null)
+data class WidgetsQuery(
+    val className: String? = null,
+    val enabled: Boolean? = null,
+    val focused: Boolean? = null,
+    val text: String? = null,
+    val textContains: String? = null,
+    val contentDescription: String? = null,
+) {
+    fun isEmpty(): Boolean {
+        return (
+            className == null &&
+                clazz() == null &&
+                enabled == null &&
+                focused == null &&
+                text == null &&
+                textContains == null &&
+                contentDescription == null
+            )
+    }
 
-@Serializable
-data class SetNativeButton(val index: Int)
+    fun clazz(): String? {
+        return when (className) {
+            "Text" -> TextClass
+            "TextField" -> TextFieldClass
+            "Button" -> ButtonClass
+            else -> null
+        }
+    }
+}
 
 class ServerInstrumentation {
     var running = false
@@ -69,60 +99,45 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.openNotifications()
                 Response(OK)
             },
-
-            // TextFields
-            "nativeWidgets" bind GET to {
-                val reqBody = try {
-                    Json.decodeFromString<GetNativeWidget>(it.bodyString())
-                } catch (err: Exception) {
-                    return@to Response(BAD_REQUEST)
-                }
-
-                if (reqBody.index == null) {
-                    val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets()
-                    Response(OK).body(Json.encodeToString(textFields))
-                } else {
-                    val textField =
-                        UIAutomatorInstrumentation.instance.getNativeWidget(reqBody.index)
-                    Response(OK).body(Json.encodeToString(textField))
-                }
-            },
-            "nativeTextField" bind POST to {
-                val data = Json.decodeFromString<SetNativeTextField>(it.bodyString())
-
-                UIAutomatorInstrumentation.instance.setNativeTextField(data.index, data.text)
-                Response(OK)
-            },
-
-            // Buttons
-            "nativeButton" bind GET to {
-                val reqBody = Json.decodeFromString<GetNativeButton>(it.bodyString())
-
-                if (reqBody.index == null) {
-                    val textFields = UIAutomatorInstrumentation.instance.getNativeButtons()
-                    Response(OK).body(Json.encodeToString(textFields))
-                } else {
-                    val textField =
-                        UIAutomatorInstrumentation.instance.getNativeButton(reqBody.index)
-                    Response(OK).body(Json.encodeToString(textField))
-                }
-            },
-            "nativeButton" bind POST to {
-                val data = try {
-                    Json.decodeFromString<SetNativeButton>(it.bodyString())
-                } catch (err: Exception) {
-                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
-                }
-
+            "tap" bind POST to {
                 try {
-                    UIAutomatorInstrumentation.instance.setNativeButton(data.index)
+                    val body = Json.decodeFromString<TapCommand>(it.bodyString())
+                    UIAutomatorInstrumentation.instance.tap(body.index)
                     Response(OK)
+                } catch (err: SerializationException) {
+                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
                 } catch (err: UiObjectNotFoundException) {
                     return@to Response(NOT_FOUND)
                 } catch (err: Exception) {
                     return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
                 }
-            }
+            },
+            "enterText" bind POST to {
+                try {
+                    val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
+                    UIAutomatorInstrumentation.instance.setNativeTextField(body.index, body.text)
+                    Response(OK)
+                } catch (err: SerializationException) {
+                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
+                } catch (err: UiObjectNotFoundException) {
+                    return@to Response(NOT_FOUND)
+                } catch (err: Exception) {
+                    return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
+                }
+            },
+            "getNativeWidgets" bind POST to {
+                try {
+                    val body = Json.decodeFromString<WidgetsQuery>(it.bodyString())
+                    val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets(body)
+                    Response(OK).body(Json.encodeToString(textFields))
+                } catch (err: SerializationException) {
+                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
+                } catch (err: UiObjectNotFoundException) {
+                    return@to Response(NOT_FOUND)
+                } catch (err: Exception) {
+                    return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
+                }
+            },
         )
         server = app.asServer(Netty(8081)).start()
     }

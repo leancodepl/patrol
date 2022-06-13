@@ -94,6 +94,32 @@ class Automator {
   ///    which is used on Android
   Future<void> openNotifications() => _wrap('openNotifications');
 
+  /// Taps at the [index]-th visible button.
+  Future<void> tap(int index) async {
+    try {
+      await _client.post(
+        Uri.parse('$_baseUri/tap'),
+        body: jsonEncode({'index': index}),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (err, st) {
+      _logger.warning('failed to call enterText()', err, st);
+    }
+  }
+
+  /// Enters text to the [index]-th visible text field.
+  Future<void> enterText(int index) async {
+    try {
+      await _client.post(
+        Uri.parse('$_baseUri/enterText'),
+        body: jsonEncode('index: $index'),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (err, st) {
+      _logger.warning('failed to call enterText()', err, st);
+    }
+  }
+
   /// Returns a list of native UI controls that are currently visible on screen.
   Future<List<NativeWidget>> getNativeWidgets({
     required Conditions conditions,
