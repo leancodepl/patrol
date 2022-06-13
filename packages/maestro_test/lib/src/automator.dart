@@ -43,7 +43,7 @@ class Automator {
       );
       return res.statusCode == 200;
     } catch (err, st) {
-      _logger.warning("failed to call isRunning()", err, st);
+      _logger.warning('failed to call isRunning()', err, st);
       return false;
     }
   }
@@ -54,27 +54,41 @@ class Automator {
       _logger.info('stopping instrumentation server...');
       await _client.post(Uri.parse('$_baseUri/stop'));
     } catch (err, st) {
-      _logger.warning("failed to call stop()", err, st);
+      _logger.warning('failed to call stop()', err, st);
     } finally {
       _logger.info('instrumentation server stopped');
     }
   }
 
+  /// Presses the back button.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
+  ///    which is used on Android.
+  Future<void> pressBack() => _wrap('pressBack');
+
   /// Presses the home button.
   ///
   /// See also:
-  /// * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#presshome>, which is used on Android
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#presshome>,
+  ///    which is used on Android
   Future<void> pressHome() => _wrap('pressHome');
 
   /// Presses the recent apps button.
   ///
   /// See also:
-  /// * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>, which is used on Android
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>,
+  ///    which is used on Android
   Future<void> pressRecentApps() => _wrap('pressRecentApps');
 
   /// Double presses the recent apps button.
   Future<void> pressDoubleRecentApps() => _wrap('pressDoubleRecentApps');
 
+  /// Opens the notification shade.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
+  ///    which is used on Android
   Future<void> openNotifications() => _wrap('openNotifications');
 
   Future<void> _wrap(String action) async {
