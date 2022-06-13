@@ -27,9 +27,19 @@ void main() {
         conditions: const Conditions(className: TextClass),
       );
 
+      await automator.enableDarkMode();
+      await automator.disableDarkMode();
+      await automator.enableDarkMode();
+
       await automator.pressHome();
 
       await automator.openNotifications();
+
+      await automator.disableWifi();
+      await automator.enableWifi();
+
+      await automator.disableCelluar();
+      await automator.enableWifi();
     },
   );
 }

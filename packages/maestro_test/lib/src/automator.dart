@@ -137,7 +137,7 @@ class Automator {
     required Conditions conditions,
   }) async {
     final response = await _client.post(
-      Uri.parse('$_baseUri/nativeWidgets'),
+      Uri.parse('$_baseUri/getNativeWidgets'),
       body: conditions.toJson(),
     );
 

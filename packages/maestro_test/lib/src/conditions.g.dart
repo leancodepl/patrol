@@ -16,12 +16,20 @@ _$_Conditions _$$_ConditionsFromJson(Map<String, dynamic> json) =>
       contentDescription: json['contentDescription'] as String?,
     );
 
-Map<String, dynamic> _$$_ConditionsToJson(_$_Conditions instance) =>
-    <String, dynamic>{
-      'className': instance.className,
-      'enabled': instance.enabled,
-      'focused': instance.focused,
-      'text': instance.text,
-      'textContains': instance.textContains,
-      'contentDescription': instance.contentDescription,
-    };
+Map<String, dynamic> _$$_ConditionsToJson(_$_Conditions instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('className', instance.className);
+  writeNotNull('enabled', instance.enabled);
+  writeNotNull('focused', instance.focused);
+  writeNotNull('text', instance.text);
+  writeNotNull('textContains', instance.textContains);
+  writeNotNull('contentDescription', instance.contentDescription);
+  return val;
+}

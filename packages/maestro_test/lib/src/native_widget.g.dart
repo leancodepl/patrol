@@ -15,11 +15,19 @@ _$_NativeWidget _$$_NativeWidgetFromJson(Map<String, dynamic> json) =>
       focused: json['focused'] as bool?,
     );
 
-Map<String, dynamic> _$$_NativeWidgetToJson(_$_NativeWidget instance) =>
-    <String, dynamic>{
-      'className': instance.className,
-      'text': instance.text,
-      'contentDescription': instance.contentDescription,
-      'enabled': instance.enabled,
-      'focused': instance.focused,
-    };
+Map<String, dynamic> _$$_NativeWidgetToJson(_$_NativeWidget instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('className', instance.className);
+  writeNotNull('text', instance.text);
+  writeNotNull('contentDescription', instance.contentDescription);
+  writeNotNull('enabled', instance.enabled);
+  writeNotNull('focused', instance.focused);
+  return val;
+}

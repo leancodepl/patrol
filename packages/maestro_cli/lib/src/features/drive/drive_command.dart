@@ -75,7 +75,7 @@ class DriveCommand extends Command<int> {
 
     dynamic flavor = argResults?['flavor'];
     flavor ??= config.driveConfig.flavor;
-    if (flavor is! String) {
+    if (flavor != null && flavor is! String) {
       throw const FormatException('`flavor` argument is not a string');
     }
 
@@ -88,7 +88,7 @@ class DriveCommand extends Command<int> {
       driver,
       target,
       device: device,
-      flavor: flavor,
+      flavor: flavor as String?,
     );
 
     return 0;
