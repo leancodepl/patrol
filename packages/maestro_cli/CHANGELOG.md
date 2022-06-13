@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Fix a bug which made `flavor` option required.
+
 ## 0.1.2
 
 - Fix typo in generated `integration_test/app_test.dart`.
