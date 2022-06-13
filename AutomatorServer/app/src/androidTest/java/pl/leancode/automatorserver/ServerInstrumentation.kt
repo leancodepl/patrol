@@ -27,9 +27,9 @@ data class TapCommand(val index: Int)
 @Serializable
 data class EnterTextCommand(val index: Int, val text: String)
 
-const val TextClass = "com.android.widget.Text"
-const val TextFieldClass = "com.android.widget.EditText"
-const val ButtonClass = "com.android.widget.Button"
+const val TextClass = "android.widget.TextView"
+const val TextFieldClass = "android.widget.EditText"
+const val ButtonClass = "android.widget.Button"
 
 @Serializable
 data class WidgetsQuery(
@@ -137,6 +137,30 @@ class ServerInstrumentation {
                 } catch (err: Exception) {
                     return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
                 }
+            },
+            "enableDarkMode" bind POST to {
+                UIAutomatorInstrumentation.instance.enableDarkMode()
+                Response(OK)
+            },
+            "disableDarkMode" bind POST to {
+                UIAutomatorInstrumentation.instance.disableDarkMode()
+                Response(OK)
+            },
+            "enableWifi" bind POST to {
+                UIAutomatorInstrumentation.instance.enableWifi()
+                Response(OK)
+            },
+            "disableWifi" bind POST to {
+                UIAutomatorInstrumentation.instance.disableWifi()
+                Response(OK)
+            },
+            "enableCelluar" bind POST to {
+                UIAutomatorInstrumentation.instance.enableCelluar()
+                Response(OK)
+            },
+            "disableCelluar" bind POST to {
+                UIAutomatorInstrumentation.instance.disableCelluar()
+                Response(OK)
             },
         )
         server = app.asServer(Netty(8081)).start()

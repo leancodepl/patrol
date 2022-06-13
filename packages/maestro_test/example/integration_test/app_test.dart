@@ -21,8 +21,6 @@ void main() {
 
       await automator.pressHome();
 
-      find.byElementType(type)
-
       await automator.pressDoubleRecentApps();
 
       await automator.getNativeWidgets(

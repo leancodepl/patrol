@@ -94,6 +94,18 @@ class Automator {
   ///    which is used on Android
   Future<void> openNotifications() => _wrap('openNotifications');
 
+  Future<void> enableDarkMode() => _wrap('enableDarkMode');
+
+  Future<void> disableDarkMode() => _wrap('disableDarkMode');
+
+  Future<void> enableWifi() => _wrap('enableWifi');
+
+  Future<void> disableWifi() => _wrap('disableWifi');
+
+  Future<void> enableCelluar() => _wrap('enableCelluar');
+
+  Future<void> disableCelluar() => _wrap('disableCelluar');
+
   /// Taps at the [index]-th visible button.
   Future<void> tap(int index) async {
     try {

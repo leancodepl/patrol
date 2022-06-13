@@ -70,10 +70,35 @@ class UIAutomatorInstrumentation {
         Logger.d("After press double recent apps")
     }
 
+    fun enableDarkMode() {
+        executeShellCommand("cmd uimode night yes")
+    }
+
+    fun disableDarkMode() {
+        executeShellCommand("cmd uimode night no")
+    }
+
+    fun disableWifi() {
+        executeShellCommand("svc wifi disable")
+    }
+
+    fun enableWifi() {
+        executeShellCommand("svc wifi enable")
+    }
+
+    fun disableCelluar() {
+        executeShellCommand("svc data disable")
+    }
+
+    fun enableCelluar() {
+        executeShellCommand("svc data enable")
+    }
+
     fun getNativeWidgets(query: WidgetsQuery): List<NativeWidget> {
         val device = getDevice()
 
         if (query.isEmpty()) {
+            Logger.i("Query is empty")
             return arrayListOf()
         }
 
@@ -125,7 +150,18 @@ class UIAutomatorInstrumentation {
 
     fun openNotifications() {
         val device = getDevice()
+
+        Logger.d("Before open notifications")
         device.openNotification()
+        Logger.d("After open notifications")
+        SystemClock.sleep(1000)
+    }
+
+    private fun executeShellCommand(cmd: String) {
+        val device = getDevice()
+
+        device.executeShellCommand(cmd)
+        SystemClock.sleep(500)
     }
 
     companion object {
