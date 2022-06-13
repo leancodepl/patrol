@@ -1,5 +1,8 @@
 package pl.leancode.automatorserver
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
@@ -9,8 +12,21 @@ import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
 
+
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlinx.serialization.json.*
+import org.http4k.core.Body
+
+@Serializable
+data class GetNativeTextField(val index: Int? = null)
+
+@Serializable
+data class SetNativeTextField(val index: Int, val text: String)
+
+@Serializable
+data class SetNativeButton(val index: Int)
+
 
 class ServerInstrumentation {
     var running = false
@@ -46,12 +62,27 @@ class ServerInstrumentation {
                 Response(OK)
             },
             "nativeTextField" bind Method.GET to {
-                UIAutomatorInstrumentation.instance.getNativeTextField()
-                Response(OK)
+                val reqBody = Json.decodeFromString<GetNativeTextField>(it.bodyString())
+
+                if (reqBody.index == null) {
+                    val textFields = UIAutomatorInstrumentation.instance.getNativeTextFields()
+                    Response(OK).body(Json.encodeToString(textFields))
+                } else {
+                    val textField =
+                        UIAutomatorInstrumentation.instance.getNativeTextField(reqBody.index)
+                    Response(OK).body(Json.encodeToString(textField))
+                }
             },
             "nativeTextField" bind Method.POST to {
-                val text = it.bodyString()
-                UIAutomatorInstrumentation.instance.setNativeTextField(text)
+                val data = Json.decodeFromString<SetNativeTextField>(it.bodyString())
+
+                UIAutomatorInstrumentation.instance.setNativeTextField(data.index, data.text)
+                Response(OK)
+            },
+            "nativeButton" bind Method.POST to {
+                val data = Json.decodeFromString<SetNativeButton>(it.bodyString())
+
+                UIAutomatorInstrumentation.instance.setNativeButton(data.index)
                 Response(OK)
             }
         )
