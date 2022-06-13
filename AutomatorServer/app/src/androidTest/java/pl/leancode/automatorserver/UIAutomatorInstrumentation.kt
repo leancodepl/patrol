@@ -1,6 +1,7 @@
 package pl.leancode.automatorserver
 
 import android.os.SystemClock
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -26,35 +27,62 @@ data class NativeTextField(
     }
 }
 
+@Serializable
+data class NativeButton(
+    val text: String?,
+    val contentDescription: String?,
+    val focused: Boolean?,
+    val enabled: Boolean?,
+) {
+    companion object {
+        fun fromUiObject(obj: UiObject2): NativeButton {
+            return NativeButton(
+                text = obj.text,
+                contentDescription = obj.contentDescription,
+                focused = obj.isFocused,
+                enabled = obj.isEnabled,
+            )
+        }
+    }
+}
+
 class UIAutomatorInstrumentation {
     private fun getDevice(): UiDevice {
         return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
+    fun pressBack() {
+        val device = getDevice()
+        Logger.d("Before press back")
+        device.pressBack()
+        Logger.d("After press back")
+        SystemClock.sleep(1000);
+    }
+
     fun pressHome() {
         val device = getDevice();
-        Logger.i("Before press home")
+        Logger.d("Before press home")
         device.pressHome()
         SystemClock.sleep(1000);
-        Logger.i("After press home")
+        Logger.d("After press home")
     }
 
     fun pressRecentApps() {
         val device = getDevice()
-        Logger.i("Before press recent apps")
+        Logger.d("Before press recent apps")
         device.pressRecentApps()
         SystemClock.sleep(1000);
-        Logger.i("Before press recent apps")
+        Logger.d("Before press recent apps")
     }
 
     fun pressDoubleRecentApps() {
         val device = getDevice()
-        Logger.i("Before press double recent apps")
+        Logger.d("Before press double recent apps")
         device.pressRecentApps()
         SystemClock.sleep(1000);
         device.pressRecentApps()
         SystemClock.sleep(1000);
-        Logger.i("After press double recent apps")
+        Logger.d("After press double recent apps")
     }
 
     fun getNativeTextField(index: Int): NativeTextField {
@@ -77,7 +105,18 @@ class UIAutomatorInstrumentation {
 
         uiObject.click()
         uiObject.text = text
-        Logger.i("setting native text field to $text")
+    }
+
+    fun getNativeButton(index: Int): NativeButton {
+        return getNativeButtons()[index]
+    }
+
+    fun getNativeButtons(): List<NativeButton> {
+        val device = getDevice()
+
+        val selector = By.clazz(Button::class.java)
+
+        return device.findObjects(selector).map { NativeButton.fromUiObject(it) }
     }
 
     fun setNativeButton(index: Int) {
@@ -87,7 +126,6 @@ class UIAutomatorInstrumentation {
         val uiObject = device.findObject(selector)
 
         uiObject.click()
-        Logger.i("Tapped button at index $index")
     }
 
     fun openNotifications() {
