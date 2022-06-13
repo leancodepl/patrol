@@ -1,11 +1,13 @@
 package pl.leancode.automatorserver
 
 import android.os.SystemClock
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.*
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -56,14 +58,14 @@ class UIAutomatorInstrumentation {
         Logger.d("Before press back")
         device.pressBack()
         Logger.d("After press back")
-        SystemClock.sleep(1000);
+        SystemClock.sleep(1000)
     }
 
     fun pressHome() {
-        val device = getDevice();
+        val device = getDevice()
         Logger.d("Before press home")
         device.pressHome()
-        SystemClock.sleep(1000);
+        SystemClock.sleep(1000)
         Logger.d("After press home")
     }
 
@@ -71,7 +73,7 @@ class UIAutomatorInstrumentation {
         val device = getDevice()
         Logger.d("Before press recent apps")
         device.pressRecentApps()
-        SystemClock.sleep(1000);
+        SystemClock.sleep(1000)
         Logger.d("Before press recent apps")
     }
 
@@ -79,9 +81,9 @@ class UIAutomatorInstrumentation {
         val device = getDevice()
         Logger.d("Before press double recent apps")
         device.pressRecentApps()
-        SystemClock.sleep(1000);
+        SystemClock.sleep(1000)
         device.pressRecentApps()
-        SystemClock.sleep(1000);
+        SystemClock.sleep(1000)
         Logger.d("After press double recent apps")
     }
 

@@ -4,24 +4,21 @@ import androidx.test.uiautomator.UiObjectNotFoundException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-
+import kotlinx.serialization.json.Json
+import org.http4k.core.Method.GET
+import org.http4k.core.Method.POST
 import org.http4k.core.Response
+import org.http4k.core.Status.Companion.BAD_REQUEST
+import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
+import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
-
-
+import java.util.Timer
 import kotlin.concurrent.schedule
-import kotlinx.serialization.json.*
-import org.http4k.core.Method.*
-import org.http4k.core.Status.Companion.BAD_REQUEST
-import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
-import org.http4k.core.Status.Companion.NOT_FOUND
-import java.util.*
-import kotlin.Exception
 
 @Serializable
 data class GetNativeTextField(val index: Int? = null)
@@ -34,7 +31,6 @@ data class GetNativeButton(val index: Int? = null)
 
 @Serializable
 data class SetNativeButton(val index: Int)
-
 
 class ServerInstrumentation {
     var running = false
