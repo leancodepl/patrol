@@ -13,10 +13,12 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class ServerInstrumentation {
-    var isStopped = false
+    var running = false
     var server: Http4kServer? = null
 
-    fun startServer() {
+    fun start() {
+        running = true
+
         val app = routes(
             "healthCheck" bind Method.GET to {
                 Logger.i("Health check")
@@ -24,7 +26,7 @@ class ServerInstrumentation {
             },
             "stop" bind Method.POST to {
                 Logger.i("Stopping server")
-                stopServer()
+                stop()
                 Response(OK).body("Server stopped")
             },
             "pressHome" bind Method.POST to {
@@ -56,10 +58,10 @@ class ServerInstrumentation {
         server = app.asServer(Netty(8081)).start()
     }
 
-    private fun stopServer() {
+    private fun stop() {
         Timer("SettingUp", false).schedule(1000) {
             server?.stop()
-            isStopped = true
+            running = false
         }
     }
 
