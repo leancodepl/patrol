@@ -43,7 +43,7 @@ class Automator {
     String action, [
     Map<String, dynamic> body = const <String, dynamic>{},
   ]) async {
-    _logger.fine('executing action $action');
+    _logger.fine('executing action "$action"');
 
     final response = await _client.post(
       Uri.parse('$_baseUri/$action'),
@@ -51,10 +51,11 @@ class Automator {
       headers: {'Content-Type': 'application/json'},
     ).timeout(const Duration(seconds: 5));
 
-    if (response.successful) {
-      _logger.warning('action $action failed with code ${response.statusCode}');
+    if (!response.successful) {
+      _logger
+          .warning('action "$action" failed with code ${response.statusCode}');
     } else {
-      _logger.fine('action $action succeeded');
+      _logger.fine('action "$action" succeeded');
     }
 
     return response;
