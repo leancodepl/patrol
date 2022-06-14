@@ -1,3 +1,9 @@
+## 0.1.3
+
+- Fix a bug which made `flavor` option required.
+- Add `--debug` flag to `maestro drive`, which allows to use default,
+  non-versioned artifacts from `$MAESTRO_ARTIFACT_PATH`.
+
 ## 0.1.2
 
 - Fix typo in generated `integration_test/app_test.dart`.

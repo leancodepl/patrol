@@ -26,6 +26,18 @@ void main() {
       await automator.pressHome();
 
       await automator.openNotifications();
+
+      await automator.enableWifi();
+      await automator.disableWifi();
+      await automator.enableWifi();
+
+      await automator.enableCelluar();
+      await automator.disableCelluar();
+      await automator.enableCelluar();
+
+      await automator.enableDarkMode();
+      await automator.disableDarkMode();
+      await automator.enableDarkMode();
     },
   );
 }
