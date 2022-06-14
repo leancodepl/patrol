@@ -46,7 +46,8 @@ class MaestroCommandRunner extends CommandRunner<int> {
         help: 'Increase logging.',
         negatable: false,
       )
-      ..addFlag('version', help: 'Show version.', negatable: false);
+      ..addFlag('version', help: 'Show version.', negatable: false)
+      ..addFlag('debug', help: 'Use default, non-versioned artifacts.');
   }
 
   @override
@@ -56,6 +57,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
     final verboseFlag = results['verbose'] as bool;
     final helpFlag = results['help'] as bool;
     final versionFlag = results['version'] as bool;
+    final debugFlag = results['debug'] as bool;
     await setUpLogger(verbose: verboseFlag);
 
     if (versionFlag) {
@@ -67,9 +69,13 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
+    if (debugFlag) {
+      log.info('Using debug artifacts');
+    }
+
     if (_commandRequiresArtifacts(results.arguments)) {
       try {
-        await _ensureArtifactsArePresent();
+        await _ensureArtifactsArePresent(debugFlag);
       } catch (err, st) {
         log.severe(null, err, st);
         return 1;
@@ -88,9 +94,17 @@ bool _commandRequiresArtifacts(List<String> arguments) {
       !arguments.contains('help');
 }
 
-Future<void> _ensureArtifactsArePresent() async {
-  if (areArtifactsPresent()) {
-    return;
+Future<void> _ensureArtifactsArePresent(bool debug) async {
+  if (debug) {
+    if (areDebugArtifactsPresent()) {
+      return;
+    } else {
+      throw Exception('Debug artifacts are not present.');
+    }
+  } else {
+    if (areArtifactsPresent()) {
+      return;
+    }
   }
 
   final progress = log.progress('Downloading artifacts');

@@ -46,6 +46,12 @@ class DriveCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    
+    print('drive name: ${argResults?.name}');
+    print('drive command: ${argResults?.command}');
+    print('drive options: ${argResults?.options}');
+    print('drive rest: ${argResults?.rest}');
+
     final toml = File(configFileName).readAsStringSync();
     final config = MaestroConfig.fromToml(toml);
 
@@ -81,7 +87,10 @@ class DriveCommand extends Command<int> {
 
     final device = argResults?['device'] as String?;
 
-    await adb.installApps(device: device);
+    final debugFlag = argResults?['debug'] as bool?;
+    print('debugFlag: $debugFlag');
+
+    await adb.installApps(device: device, debug: true);
     await adb.forwardPorts(int.parse(portStr), device: device);
     adb.runServer(device: device);
     await flutter_driver.runTestsWithOutput(
