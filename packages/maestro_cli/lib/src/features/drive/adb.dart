@@ -54,6 +54,7 @@ void runServer({String? device}) {
   adb.instrument(
     packageName: 'pl.leancode.automatorserver.test',
     intentClass: 'androidx.test.runner.AndroidJUnitRunner',
+    device: device,
     onStdout: log.info,
     onStderr: log.severe,
   );

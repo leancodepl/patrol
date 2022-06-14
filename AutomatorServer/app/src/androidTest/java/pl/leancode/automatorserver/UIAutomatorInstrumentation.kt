@@ -6,7 +6,6 @@ import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
@@ -112,8 +111,6 @@ class UIAutomatorInstrumentation {
         }
 
         var selector = By.clazz(query.clazz())
-
-
 
         selector = selector.apply {
             query.enabled?.let {

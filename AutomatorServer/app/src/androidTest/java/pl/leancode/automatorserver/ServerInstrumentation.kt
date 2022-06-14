@@ -6,6 +6,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.http4k.core.Filter
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
@@ -70,7 +71,7 @@ class ServerInstrumentation {
         server?.stop()
         running = true
 
-        val app = routes(
+        val router = routes(
             "healthCheck" bind GET to {
                 Logger.i("Health check")
                 Response(OK).body("All is good.")
@@ -100,43 +101,19 @@ class ServerInstrumentation {
                 Response(OK)
             },
             "tap" bind POST to {
-                try {
-                    val body = Json.decodeFromString<TapCommand>(it.bodyString())
-                    UIAutomatorInstrumentation.instance.tap(body.index)
-                    Response(OK)
-                } catch (err: SerializationException) {
-                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
-                } catch (err: UiObjectNotFoundException) {
-                    return@to Response(NOT_FOUND)
-                } catch (err: Exception) {
-                    return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
-                }
+                val body = Json.decodeFromString<TapCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.tap(body.index)
+                Response(OK)
             },
             "enterText" bind POST to {
-                try {
-                    val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
-                    UIAutomatorInstrumentation.instance.setNativeTextField(body.index, body.text)
-                    Response(OK)
-                } catch (err: SerializationException) {
-                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
-                } catch (err: UiObjectNotFoundException) {
-                    return@to Response(NOT_FOUND)
-                } catch (err: Exception) {
-                    return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
-                }
+                val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.setNativeTextField(body.index, body.text)
+                Response(OK)
             },
             "getNativeWidgets" bind POST to {
-                try {
-                    val body = Json.decodeFromString<WidgetsQuery>(it.bodyString())
-                    val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets(body)
-                    Response(OK).body(Json.encodeToString(textFields))
-                } catch (err: SerializationException) {
-                    return@to Response(BAD_REQUEST).body(err.stackTraceToString())
-                } catch (err: UiObjectNotFoundException) {
-                    return@to Response(NOT_FOUND)
-                } catch (err: Exception) {
-                    return@to Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
-                }
+                val body = Json.decodeFromString<WidgetsQuery>(it.bodyString())
+                val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets(body)
+                Response(OK).body(Json.encodeToString(textFields))
             },
             "enableDarkMode" bind POST to {
                 UIAutomatorInstrumentation.instance.enableDarkMode()
@@ -163,7 +140,11 @@ class ServerInstrumentation {
                 Response(OK)
             },
         )
-        server = app.asServer(Netty(8081)).start()
+
+        server = router.withFilter(printer)
+            .withFilter(catcher)
+            .asServer(Netty(8081))
+            .start()
     }
 
     private fun stop() {
@@ -177,5 +158,32 @@ class ServerInstrumentation {
 
     companion object {
         val instance = ServerInstrumentation()
+    }
+}
+
+val printer = Filter { next ->
+    { request ->
+        val startTime = System.currentTimeMillis()
+        val response = next(request)
+        val latency = System.currentTimeMillis() - startTime
+        Logger.i("${request.method} ${request.uri} took $latency ms")
+        response
+    }
+}
+
+val catcher = Filter { next ->
+    { request ->
+        try {
+            next(request)
+        } catch (err: SerializationException) {
+            Logger.e("caught SerializationException")
+            Response(BAD_REQUEST).body(err.stackTraceToString())
+        } catch (err: UiObjectNotFoundException) {
+            Logger.e("caught UiObjectNotFoundException")
+            Response(NOT_FOUND)
+        } catch (err: Exception) {
+            Logger.e("caught Exception")
+            Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
+        }
     }
 }

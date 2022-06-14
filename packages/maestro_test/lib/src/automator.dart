@@ -48,7 +48,7 @@ class Automator {
       Uri.parse('$_baseUri/$action'),
       body: jsonEncode(body),
       headers: {'Content-Type': 'application/json'},
-    ).timeout(Duration(seconds: 5));
+    ).timeout(const Duration(seconds: 5));
 
     if (response.statusCode != 200) {
       _logger.warning('action $action failed with code ${response.statusCode}');
@@ -141,7 +141,10 @@ class Automator {
 
   /// Enters text to the [index]-th visible text field.
   Future<void> enterText(int index, String text) {
-    return _wrapPost('tap', <String, dynamic>{'index': index, 'text': text});
+    return _wrapPost(
+      'enterText',
+      <String, dynamic>{'index': index, 'text': text},
+    );
   }
 
   /// Returns a list of native UI controls that are currently visible on screen.
