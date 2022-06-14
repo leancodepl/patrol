@@ -6,6 +6,7 @@ import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
@@ -36,19 +37,27 @@ class UIAutomatorInstrumentation {
         return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
+    private fun executeShellCommand(cmd: String) {
+        val device = getDevice()
+        device.executeShellCommand(cmd)
+        delay()
+    }
+
+    private fun delay() = SystemClock.sleep(1000)
+
     fun pressBack() {
         val device = getDevice()
         Logger.d("Before press back")
         device.pressBack()
         Logger.d("After press back")
-        SystemClock.sleep(1000)
+        delay()
     }
 
     fun pressHome() {
         val device = getDevice()
         Logger.d("Before press home")
         device.pressHome()
-        SystemClock.sleep(1000)
+        delay()
         Logger.d("After press home")
     }
 
@@ -56,17 +65,17 @@ class UIAutomatorInstrumentation {
         val device = getDevice()
         Logger.d("Before press recent apps")
         device.pressRecentApps()
-        SystemClock.sleep(1000)
-        Logger.d("Before press recent apps")
+        delay()
+        Logger.d("After press recent apps")
     }
 
     fun pressDoubleRecentApps() {
         val device = getDevice()
         Logger.d("Before press double recent apps")
         device.pressRecentApps()
-        SystemClock.sleep(1000)
+        delay()
         device.pressRecentApps()
-        SystemClock.sleep(1000)
+        delay()
         Logger.d("After press double recent apps")
     }
 
@@ -103,6 +112,8 @@ class UIAutomatorInstrumentation {
         }
 
         var selector = By.clazz(query.clazz())
+
+
 
         selector = selector.apply {
             query.enabled?.let {
@@ -154,14 +165,7 @@ class UIAutomatorInstrumentation {
         Logger.d("Before open notifications")
         device.openNotification()
         Logger.d("After open notifications")
-        SystemClock.sleep(1000)
-    }
-
-    private fun executeShellCommand(cmd: String) {
-        val device = getDevice()
-
-        device.executeShellCommand(cmd)
-        SystemClock.sleep(1000)
+        delay()
     }
 
     companion object {
