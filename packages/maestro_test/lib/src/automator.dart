@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' as logging;
 import 'package:maestro_test/maestro_test.dart';
+import 'package:maestro_test/src/extensions.dart';
 
 /// Provides functionality to control the device.
 ///
@@ -50,7 +51,7 @@ class Automator {
       headers: {'Content-Type': 'application/json'},
     ).timeout(const Duration(seconds: 5));
 
-    if (response.statusCode != 200) {
+    if (response.successful) {
       _logger.warning('action $action failed with code ${response.statusCode}');
     } else {
       _logger.fine('action $action succeeded');
@@ -66,7 +67,7 @@ class Automator {
       _logger.info(
         'status code: ${res.statusCode}, response body:\n ${res.body}',
       );
-      return res.statusCode == 200;
+      return res.successful;
     } catch (err, st) {
       _logger.warning('failed to call isRunning()', err, st);
       return false;
