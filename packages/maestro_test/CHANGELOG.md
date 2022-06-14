@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Fix minor logging bug.
+
 ## 0.1.0
 
 - Add basic means of controlling platform-native Widgets (`TextView`,
