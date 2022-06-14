@@ -67,6 +67,7 @@ class ServerInstrumentation {
     var server: Http4kServer? = null
 
     fun start() {
+        server?.stop()
         running = true
 
         val app = routes(
