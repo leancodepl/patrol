@@ -75,7 +75,6 @@ class ServerInstrumentation {
                 Response(OK).body("All is good.")
             },
             "stop" bind POST to {
-                Logger.i("Stopping server")
                 stop()
                 Response(OK).body("Server stopped")
             },

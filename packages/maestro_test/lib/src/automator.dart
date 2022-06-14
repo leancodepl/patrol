@@ -120,11 +120,11 @@ class Automator {
   }
 
   /// Enters text to the [index]-th visible text field.
-  Future<void> enterText(int index) async {
+  Future<void> enterText(int index, String text) async {
     try {
       await _client.post(
         Uri.parse('$_baseUri/enterText'),
-        body: jsonEncode('index: $index'),
+        body: jsonEncode({'index': index, 'text': text}),
         headers: {'Content-Type': 'application/json'},
       );
     } catch (err, st) {

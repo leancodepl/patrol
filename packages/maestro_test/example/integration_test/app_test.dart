@@ -27,6 +27,10 @@ void main() {
       //   conditions: const Conditions(className: TextClass),
       // );
 
+      await automator.tap(1);
+
+      await automator.enterText(0);
+
       await automator.pressHome();
 
       await automator.openNotifications();
