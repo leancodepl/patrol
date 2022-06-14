@@ -6,10 +6,18 @@ import 'package:maestro_cli/src/common/paths.dart' as paths;
 import 'package:path/path.dart' as path;
 
 /// Returns true if artifacts for the current [version] are present in
-/// `artifactPath`, false otherwise.
+/// `$MAESTRO_ARTIFACT_PATH`, false otherwise.
 bool areArtifactsPresent() {
   final serverApk = File(paths.serverArtifactPath);
   final instrumentationApk = File(paths.instrumentationArtifactPath);
+
+  return serverApk.existsSync() && instrumentationApk.existsSync();
+}
+
+/// Same as [areArtifactsPresent] but looks for unversioned artifacts instead.
+bool areDebugArtifactsPresent() {
+  final serverApk = File(paths.debugServerArtifactPath);
+  final instrumentationApk = File(paths.debugInstrumentationArtifactPath);
 
   return serverApk.existsSync() && instrumentationApk.existsSync();
 }

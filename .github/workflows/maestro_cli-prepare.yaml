@@ -6,10 +6,12 @@ on:
     ignore-tags: ["maestro_cli-v*"]
     paths:
       - "packages/maestro_cli/**"
+      - "AutomatorServer/**"
   pull_request:
     branches: [main]
     paths:
       - "packages/maestro_cli/**"
+      - "AutomatorServer/**"
 
 jobs:
   main:
@@ -49,3 +51,11 @@ jobs:
 
       - name: dart format
         run: dart format --set-exit-if-changed .
+
+      - name: ktlint check
+        working-directory: ./AutomatorServer
+        run: ./gradlew ktlintCheck
+
+      - name: ktlint format
+        working-directory: ./AutomatorServer
+        run: ./gradlew ktlintFormat

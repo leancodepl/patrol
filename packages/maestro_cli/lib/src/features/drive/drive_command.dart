@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/external/flutter_driver.dart' as flutter_driver;
 import 'package:maestro_cli/src/features/drive/adb.dart' as adb;
@@ -75,20 +76,20 @@ class DriveCommand extends Command<int> {
 
     dynamic flavor = argResults?['flavor'];
     flavor ??= config.driveConfig.flavor;
-    if (flavor is! String) {
+    if (flavor != null && flavor is! String) {
       throw const FormatException('`flavor` argument is not a string');
     }
 
     final device = argResults?['device'] as String?;
 
-    await adb.installApps(device: device);
+    await adb.installApps(device: device, debug: debug);
     await adb.forwardPorts(int.parse(portStr), device: device);
     adb.runServer(device: device);
     await flutter_driver.runTestsWithOutput(
       driver,
       target,
       device: device,
-      flavor: flavor,
+      flavor: flavor as String?,
     );
 
     return 0;

@@ -4,10 +4,13 @@ import 'package:adb/adb.dart' as adb;
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
-Future<void> installApps({String? device}) async {
+Future<void> installApps({String? device, bool debug = false}) async {
   final serverInstallProgress = log.progress('Installing server');
   try {
-    final p = path.join(artifactPath, serverArtifactFile);
+    final p = path.join(
+      artifactPath,
+      debug ? debugServerArtifactFile : serverArtifactFile,
+    );
     await adb.forceInstallApk(p, device: device);
   } catch (err) {
     serverInstallProgress.fail('Failed to install server');
@@ -17,7 +20,10 @@ Future<void> installApps({String? device}) async {
 
   final instrumentInstallProgress = log.progress('Installing instrumentation');
   try {
-    final p = path.join(artifactPath, instrumentationArtifactFile);
+    final p = path.join(
+      artifactPath,
+      debug ? debugInstrumentationArtifactFile : instrumentationArtifactFile,
+    );
     await adb.forceInstallApk(p, device: device);
   } catch (err) {
     instrumentInstallProgress.fail('Failed to install instrumentation');
@@ -48,6 +54,7 @@ void runServer({String? device}) {
   adb.instrument(
     packageName: 'pl.leancode.automatorserver.test',
     intentClass: 'androidx.test.runner.AndroidJUnitRunner',
+    device: device,
     onStdout: log.info,
     onStderr: log.severe,
   );
