@@ -30,6 +30,7 @@ class CounterTemplate extends AppTestTemplate {
   String get code => _code;
 
   static const _code = '''
+// ignore_for_file: avoid_print
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -108,6 +109,7 @@ class GenericTemplate extends AppTestTemplate {
 
   static const dummyProjectName = 'PROJECT_NAME';
   static const _basicCode = '''
+// ignore_for_file: avoid_print
 import 'package:$dummyProjectName/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

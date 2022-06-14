@@ -177,12 +177,15 @@ val catcher = Filter { next ->
             next(request)
         } catch (err: SerializationException) {
             Logger.e("caught SerializationException")
+            err.printStackTrace()
             Response(BAD_REQUEST).body(err.stackTraceToString())
         } catch (err: UiObjectNotFoundException) {
             Logger.e("caught UiObjectNotFoundException")
+            err.printStackTrace()
             Response(NOT_FOUND)
         } catch (err: Exception) {
             Logger.e("caught Exception")
+            err.printStackTrace()
             Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
         }
     }
