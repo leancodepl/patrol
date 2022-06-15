@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -29,12 +30,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  var _counter = 0;
+  final _notificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _notificationsPlugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
+    );
+  }
 
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+  }
+
+  void _showNotification() {
+    _notificationsPlugin.show(
+      1,
+      'Maestro example',
+      'Hello there!',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'main',
+          'Default notification channel',
+        ),
+      ),
+    );
   }
 
   @override
@@ -55,6 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
               key: const ValueKey('counterText'),
               style: Theme.of(context).textTheme.headline4,
             ),
+            TextButton(
+              onPressed: _showNotification,
+              child: const Text('Show notification'),
+            )
           ],
         ),
       ),
