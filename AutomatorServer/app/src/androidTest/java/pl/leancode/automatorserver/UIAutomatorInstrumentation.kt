@@ -36,9 +36,14 @@ class UIAutomatorInstrumentation {
     fun configure() {
         val configurator = Configurator.getInstance()
         configurator.waitForSelectorTimeout = 2000
-        Logger.i("waitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
-        Logger.i("waitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
-        Logger.i("keyInjectionDelay: ${configurator.keyInjectionDelay} ms")
+        Logger.i("Android UiAutomator configuration:")
+        Logger.i("\twaitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
+        Logger.i("\twaitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
+        Logger.i("\tkeyInjectionDelay: ${configurator.keyInjectionDelay} ms")
+        Logger.i("\tactionAcknowledgmentTimeout: ${configurator.actionAcknowledgmentTimeout} ms")
+        Logger.i("\tscrollAcknowledgmentTimeout: ${configurator.scrollAcknowledgmentTimeout} ms")
+        Logger.i("\ttoolType: ${configurator.toolType}")
+        Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
 
     private fun getDevice(): UiDevice {
