@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Add support for enabling/disabling Bluetooth.
+
 ## 0.1.2
 
 - Be more noisy when an error occurs.
