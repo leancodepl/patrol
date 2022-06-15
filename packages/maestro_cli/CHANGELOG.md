@@ -1,3 +1,8 @@
+## 0.1.4
+
+- Be more noisy when an error occurs.
+- Change waiting timeout for native widgets from 10s to 2s.
+
 ## 0.1.3
 
 - Fix a bug which made `flavor` option required.
