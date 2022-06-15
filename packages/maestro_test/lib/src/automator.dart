@@ -136,6 +136,12 @@ class Automator {
   /// Disables celluar (aka mobile data connection).
   Future<void> disableCelluar() => _wrapPost('disableCelluar');
 
+  /// Enables bluetooth.
+  Future<void> enableBluetooth() => _wrapPost('enableBluetooth');
+
+  /// Disables bluetooth
+  Future<void> disableBluetooth() => _wrapPost('disableBluetooth');
+
   /// Taps at the [index]-th visible button.
   Future<void> tap(int index) {
     return _wrapPost('tap', <String, dynamic>{'index': index});
