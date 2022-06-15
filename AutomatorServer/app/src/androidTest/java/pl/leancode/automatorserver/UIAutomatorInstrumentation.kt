@@ -46,12 +46,12 @@ class UIAutomatorInstrumentation {
         Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
 
-    private fun getDevice(): UiDevice {
+    private fun getUiDevice(): UiDevice {
         return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
     private fun executeShellCommand(cmd: String) {
-        val device = getDevice()
+        val device = getUiDevice()
         device.executeShellCommand(cmd)
         delay()
     }
@@ -59,7 +59,7 @@ class UIAutomatorInstrumentation {
     private fun delay() = SystemClock.sleep(1000)
 
     fun pressBack() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press back")
         device.pressBack()
         Logger.d("After press back")
@@ -67,7 +67,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressHome() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press home")
         device.pressHome()
         delay()
@@ -75,7 +75,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressRecentApps() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press recent apps")
         device.pressRecentApps()
         delay()
@@ -83,7 +83,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressDoubleRecentApps() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press double recent apps")
         device.pressRecentApps()
         delay()
@@ -109,7 +109,7 @@ class UIAutomatorInstrumentation {
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
     fun getNativeWidgets(query: WidgetsQuery): List<NativeWidget> {
-        val device = getDevice()
+        val device = getUiDevice()
 
         if (query.isEmpty()) {
             Logger.i("Query is empty")
@@ -144,7 +144,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun tap(index: Int) {
-        val device = getDevice()
+        val device = getUiDevice()
 
         val selector = UiSelector().className(Button::class.java).instance(index)
         val uiObject = device.findObject(selector)
@@ -153,7 +153,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun enterText(index: Int, text: String) {
-        val device = getDevice()
+        val device = getUiDevice()
 
         val selector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = device.findObject(selector)
@@ -163,7 +163,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun openNotifications() {
-        val device = getDevice()
+        val device = getUiDevice()
 
         Logger.d("Before open notifications")
         device.openNotification()
