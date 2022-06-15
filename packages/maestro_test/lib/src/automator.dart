@@ -52,8 +52,8 @@ class Automator {
     ).timeout(const Duration(seconds: 5));
 
     if (!response.successful) {
-      _logger
-          .warning('action "$action" failed with code ${response.statusCode}');
+      final msg = 'action "$action" failed with code ${response.statusCode}';
+      throw Exception('$msg\n${response.body}');
     } else {
       _logger.fine('action "$action" succeeded');
     }

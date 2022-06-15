@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Be more noisy when an error occurs.
+
 ## 0.1.1
 
 - Fix minor logging bug.
