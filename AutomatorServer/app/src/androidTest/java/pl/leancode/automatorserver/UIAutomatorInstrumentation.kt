@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
@@ -32,12 +33,25 @@ data class NativeWidget(
 }
 
 class UIAutomatorInstrumentation {
-    private fun getDevice(): UiDevice {
+    fun configure() {
+        val configurator = Configurator.getInstance()
+        configurator.waitForSelectorTimeout = 2000
+        Logger.i("Android UiAutomator configuration:")
+        Logger.i("\twaitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
+        Logger.i("\twaitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
+        Logger.i("\tkeyInjectionDelay: ${configurator.keyInjectionDelay} ms")
+        Logger.i("\tactionAcknowledgmentTimeout: ${configurator.actionAcknowledgmentTimeout} ms")
+        Logger.i("\tscrollAcknowledgmentTimeout: ${configurator.scrollAcknowledgmentTimeout} ms")
+        Logger.i("\ttoolType: ${configurator.toolType}")
+        Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
+    }
+
+    private fun getUiDevice(): UiDevice {
         return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
     private fun executeShellCommand(cmd: String) {
-        val device = getDevice()
+        val device = getUiDevice()
         device.executeShellCommand(cmd)
         delay()
     }
@@ -45,7 +59,7 @@ class UIAutomatorInstrumentation {
     private fun delay() = SystemClock.sleep(1000)
 
     fun pressBack() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press back")
         device.pressBack()
         Logger.d("After press back")
@@ -53,7 +67,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressHome() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press home")
         device.pressHome()
         delay()
@@ -61,7 +75,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressRecentApps() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press recent apps")
         device.pressRecentApps()
         delay()
@@ -69,7 +83,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressDoubleRecentApps() {
-        val device = getDevice()
+        val device = getUiDevice()
         Logger.d("Before press double recent apps")
         device.pressRecentApps()
         delay()
@@ -78,32 +92,24 @@ class UIAutomatorInstrumentation {
         Logger.d("After press double recent apps")
     }
 
-    fun enableDarkMode() {
-        executeShellCommand("cmd uimode night yes")
-    }
+    fun enableDarkMode() = executeShellCommand("cmd uimode night yes")
 
-    fun disableDarkMode() {
-        executeShellCommand("cmd uimode night no")
-    }
+    fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
-    fun disableWifi() {
-        executeShellCommand("svc wifi disable")
-    }
+    fun disableWifi() = executeShellCommand("svc wifi disable")
 
-    fun enableWifi() {
-        executeShellCommand("svc wifi enable")
-    }
+    fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun disableCelluar() {
-        executeShellCommand("svc data disable")
-    }
+    fun disableCelluar() = executeShellCommand("svc data disable")
 
-    fun enableCelluar() {
-        executeShellCommand("svc data enable")
-    }
+    fun enableCelluar() = executeShellCommand("svc data enable")
+
+    fun enableBluetooth() = executeShellCommand("svc bluetooth enable")
+
+    fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
     fun getNativeWidgets(query: WidgetsQuery): List<NativeWidget> {
-        val device = getDevice()
+        val device = getUiDevice()
 
         if (query.isEmpty()) {
             Logger.i("Query is empty")
@@ -137,8 +143,17 @@ class UIAutomatorInstrumentation {
         return device.findObjects(selector).map { NativeWidget.fromUiObject(it) }
     }
 
-    fun setNativeTextField(index: Int, text: String) {
-        val device = getDevice()
+    fun tap(index: Int) {
+        val device = getUiDevice()
+
+        val selector = UiSelector().className(Button::class.java).instance(index)
+        val uiObject = device.findObject(selector)
+
+        uiObject.click()
+    }
+
+    fun enterText(index: Int, text: String) {
+        val device = getUiDevice()
 
         val selector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = device.findObject(selector)
@@ -147,17 +162,8 @@ class UIAutomatorInstrumentation {
         uiObject.text = text
     }
 
-    fun tap(index: Int) {
-        val device = getDevice()
-
-        val selector = UiSelector().className(Button::class.java).instance(index)
-        val uiObject = device.findObject(selector)
-
-        uiObject.click()
-    }
-
     fun openNotifications() {
-        val device = getDevice()
+        val device = getUiDevice()
 
         Logger.d("Before open notifications")
         device.openNotification()

@@ -69,6 +69,7 @@ class ServerInstrumentation {
 
     fun start() {
         server?.stop()
+        UIAutomatorInstrumentation.instance.configure()
         running = true
 
         val router = routes(
@@ -107,7 +108,7 @@ class ServerInstrumentation {
             },
             "enterText" bind POST to {
                 val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.setNativeTextField(body.index, body.text)
+                UIAutomatorInstrumentation.instance.enterText(body.index, body.text)
                 Response(OK)
             },
             "getNativeWidgets" bind POST to {
@@ -139,10 +140,18 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.disableCelluar()
                 Response(OK)
             },
+            "enableBluetooth" bind POST to {
+                UIAutomatorInstrumentation.instance.enableBluetooth()
+                Response(OK)
+            },
+            "disableBluetooth" bind POST to {
+                UIAutomatorInstrumentation.instance.disableBluetooth()
+                Response(OK)
+            }
         )
 
-        server = router.withFilter(printer)
-            .withFilter(catcher)
+        server = router.withFilter(catcher)
+            .withFilter(printer)
             .asServer(Netty(8081))
             .start()
     }
@@ -163,10 +172,12 @@ class ServerInstrumentation {
 
 val printer = Filter { next ->
     { request ->
+        val requestName = "${request.method} ${request.uri}"
+        Logger.i("$requestName started")
         val startTime = System.currentTimeMillis()
         val response = next(request)
         val latency = System.currentTimeMillis() - startTime
-        Logger.i("${request.method} ${request.uri} took $latency ms")
+        Logger.i("$requestName took $latency ms")
         response
     }
 }
@@ -176,16 +187,13 @@ val catcher = Filter { next ->
         try {
             next(request)
         } catch (err: SerializationException) {
-            Logger.e("caught SerializationException")
-            err.printStackTrace()
+            Logger.e("caught SerializationException", err)
             Response(BAD_REQUEST).body(err.stackTraceToString())
         } catch (err: UiObjectNotFoundException) {
-            Logger.e("caught UiObjectNotFoundException")
-            err.printStackTrace()
-            Response(NOT_FOUND)
+            Logger.e("caught UiObjectNotFoundException", err)
+            Response(NOT_FOUND).body(err.stackTraceToString())
         } catch (err: Exception) {
-            Logger.e("caught Exception")
-            err.printStackTrace()
+            Logger.e("caught Exception", err)
             Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
         }
     }

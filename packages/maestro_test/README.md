@@ -13,7 +13,7 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.1.0
+  maestro_test: ^0.1.2
 ```
 
 ### Usage
