@@ -34,6 +34,7 @@ const val ButtonClass = "android.widget.Button"
 
 @Serializable
 data class WidgetsQuery(
+    val fullyQualifiedName: String? = null,
     val className: String? = null,
     val enabled: Boolean? = null,
     val focused: Boolean? = null,
@@ -43,7 +44,8 @@ data class WidgetsQuery(
 ) {
     fun isEmpty(): Boolean {
         return (
-            className == null &&
+            fullyQualifiedName == null &&
+                className == null &&
                 clazz() == null &&
                 enabled == null &&
                 focused == null &&

@@ -18,7 +18,11 @@ data class NativeWidget(
     val contentDescription: String?,
     val focused: Boolean?,
     val enabled: Boolean?,
-) {
+    val childCount: Int?,
+    val resourceName: String?,
+    val applicationPackage: String?,
+    val children: List<NativeWidget>?,
+    ) {
     companion object {
         fun fromUiObject(obj: UiObject2): NativeWidget {
             return NativeWidget(
@@ -27,6 +31,10 @@ data class NativeWidget(
                 contentDescription = obj.contentDescription,
                 focused = obj.isFocused,
                 enabled = obj.isEnabled,
+                childCount = obj.childCount,
+                resourceName = obj.resourceName,
+                applicationPackage = obj.applicationPackage,
+                children = obj.children?.map { fromUiObject(it) },
             )
         }
     }
@@ -116,7 +124,12 @@ class UIAutomatorInstrumentation {
             return arrayListOf()
         }
 
-        var selector = By.clazz(query.clazz())
+        var selector = if (query.fullyQualifiedName != null) {
+            Logger.i("Selector for fully qualified name ${query.fullyQualifiedName}")
+            By.clazz(query.fullyQualifiedName)
+        } else {
+            By.clazz(query.clazz())
+        }
 
         selector = selector.apply {
             query.enabled?.let {
@@ -140,7 +153,9 @@ class UIAutomatorInstrumentation {
             }
         }
 
-        return device.findObjects(selector).map { NativeWidget.fromUiObject(it) }
+        return device.findObjects(selector).map {
+            NativeWidget.fromUiObject(it)
+        }
     }
 
     fun tap(index: Int) {
