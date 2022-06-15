@@ -137,16 +137,6 @@ class UIAutomatorInstrumentation {
         return device.findObjects(selector).map { NativeWidget.fromUiObject(it) }
     }
 
-    fun setNativeTextField(index: Int, text: String) {
-        val device = getDevice()
-
-        val selector = UiSelector().className(EditText::class.java).instance(index)
-        val uiObject = device.findObject(selector)
-
-        uiObject.click()
-        uiObject.text = text
-    }
-
     fun tap(index: Int) {
         val device = getDevice()
 
@@ -154,6 +144,16 @@ class UIAutomatorInstrumentation {
         val uiObject = device.findObject(selector)
 
         uiObject.click()
+    }
+
+    fun enterText(index: Int, text: String) {
+        val device = getDevice()
+
+        val selector = UiSelector().className(EditText::class.java).instance(index)
+        val uiObject = device.findObject(selector)
+
+        uiObject.click()
+        uiObject.text = text
     }
 
     fun openNotifications() {
