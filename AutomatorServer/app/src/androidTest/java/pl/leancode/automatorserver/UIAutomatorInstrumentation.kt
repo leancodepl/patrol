@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import android.app.UiAutomation
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.EditText
@@ -50,9 +51,14 @@ class UIAutomatorInstrumentation {
         return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
+    private fun getUiAutomation(): UiAutomation {
+        return InstrumentationRegistry.getInstrumentation().uiAutomation
+    }
+
     private fun executeShellCommand(cmd: String) {
-        val device = getDevice()
-        device.executeShellCommand(cmd)
+        val uiAutomation = getUiAutomation()
+
+        uiAutomation.executeShellCommand(cmd)
         delay()
     }
 
