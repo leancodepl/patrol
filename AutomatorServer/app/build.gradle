@@ -8,14 +8,14 @@ apply plugin: "kotlinx-serialization"
 
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 31
 
     namespace "pl.leancode.automatorserver"
 
     defaultConfig {
         applicationId "pl.leancode.automatorserver"
         minSdkVersion 26
-        targetSdkVersion 32
+        targetSdkVersion 31
         versionCode 1
         versionName "0.1.4"
 
