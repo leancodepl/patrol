@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
@@ -32,6 +33,14 @@ data class NativeWidget(
 }
 
 class UIAutomatorInstrumentation {
+    fun configure() {
+        val configurator = Configurator.getInstance()
+        configurator.waitForSelectorTimeout = 2000
+        Logger.i("waitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
+        Logger.i("waitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
+        Logger.i("keyInjectionDelay: ${configurator.keyInjectionDelay} ms")
+    }
+
     private fun getDevice(): UiDevice {
         return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
@@ -78,29 +87,21 @@ class UIAutomatorInstrumentation {
         Logger.d("After press double recent apps")
     }
 
-    fun enableDarkMode() {
-        executeShellCommand("cmd uimode night yes")
-    }
+    fun enableDarkMode() = executeShellCommand("cmd uimode night yes")
 
-    fun disableDarkMode() {
-        executeShellCommand("cmd uimode night no")
-    }
+    fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
-    fun disableWifi() {
-        executeShellCommand("svc wifi disable")
-    }
+    fun disableWifi() = executeShellCommand("svc wifi disable")
 
-    fun enableWifi() {
-        executeShellCommand("svc wifi enable")
-    }
+    fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun disableCelluar() {
-        executeShellCommand("svc data disable")
-    }
+    fun disableCelluar() = executeShellCommand("svc data disable")
 
-    fun enableCelluar() {
-        executeShellCommand("svc data enable")
-    }
+    fun enableCelluar() = executeShellCommand("svc data enable")
+
+    fun enableBluetooth() = executeShellCommand("svc bluetooth enable")
+
+    fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
     fun getNativeWidgets(query: WidgetsQuery): List<NativeWidget> {
         val device = getDevice()

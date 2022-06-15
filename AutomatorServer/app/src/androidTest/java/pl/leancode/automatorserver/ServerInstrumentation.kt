@@ -69,6 +69,7 @@ class ServerInstrumentation {
 
     fun start() {
         server?.stop()
+        UIAutomatorInstrumentation.instance.configure()
         running = true
 
         val router = routes(
@@ -139,6 +140,14 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.disableCelluar()
                 Response(OK)
             },
+            "enableBluetooth" bind POST to {
+                UIAutomatorInstrumentation.instance.enableBluetooth()
+                Response(OK)
+            },
+            "disableBluetooth" bind POST to {
+                UIAutomatorInstrumentation.instance.disableBluetooth()
+                Response(OK)
+            }
         )
 
         server = router.withFilter(catcher)
