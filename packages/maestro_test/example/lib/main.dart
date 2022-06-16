@@ -82,6 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
               key: const ValueKey('counterText'),
               style: Theme.of(context).textTheme.headline4,
             ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headline4,
+            ),
             TextButton(
               onPressed: _showNotification,
               child: const Text('Show notification'),
