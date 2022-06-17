@@ -7,8 +7,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
+import junit.framework.TestCase.assertTrue
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,7 +25,7 @@ data class NativeWidget(
     val resourceName: String?,
     val applicationPackage: String?,
     val children: List<NativeWidget>?,
-    ) {
+) {
     companion object {
         fun fromUiObject(obj: UiObject2): NativeWidget {
             return NativeWidget(
@@ -184,6 +187,22 @@ class UIAutomatorInstrumentation {
         device.openNotification()
         Logger.d("After open notifications")
         delay()
+    }
+
+    fun tapOnNotification() {
+        val device = getUiDevice()
+        device.wait(Until.hasObject(By.pkg("com.android.systemui")), 2000)
+
+        val notificationStackScroller = UiSelector()
+            .packageName("com.android.systemui")
+            .resourceId("com.android.systemui:id/notification_stack_scroller")
+        val notificationStackScrollerUiObject: UiObject = device.findObject(notificationStackScroller)
+        assertTrue(notificationStackScrollerUiObject.exists())
+
+        val notiSelectorUiObject = notificationStackScrollerUiObject.getChild(UiSelector().index(0))
+        assertTrue(notiSelectorUiObject.exists())
+
+        notiSelectorUiObject.click()
     }
 
     companion object {

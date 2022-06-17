@@ -10,6 +10,8 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  const host = String.fromEnvironment('MAESTRO_HOST');
+  print('host: $host');
   Automator.init(verbose: true);
   final automator = Automator.instance;
 
