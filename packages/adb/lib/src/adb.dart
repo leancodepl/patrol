@@ -104,12 +104,12 @@ Future<void> instrument({
       'am',
       'instrument',
       '-w',
-      '$packageName/$intentClass',
       for (final arg in arguments.entries) ...[
         '-e',
         arg.key,
         arg.value,
       ],
+      '$packageName/$intentClass',
     ],
     runInShell: true,
   );

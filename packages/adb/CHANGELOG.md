@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Fix wrong order of arguments for `instrument()`
+
 ## 0.0.3
 
 - Make it possible to pass arguments to `instrument()` method
