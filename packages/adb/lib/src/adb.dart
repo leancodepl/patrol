@@ -91,6 +91,7 @@ Future<void> instrument({
   String? device,
   void Function(String)? onStdout,
   void Function(String)? onStderr,
+  Map<String, String> arguments = const {},
 }) async {
   final process = await Process.start(
     'adb',
@@ -104,6 +105,11 @@ Future<void> instrument({
       'instrument',
       '-w',
       '$packageName/$intentClass',
+      for (final arg in arguments.entries) ...[
+        '-e',
+        arg.key,
+        arg.value,
+      ],
     ],
     runInShell: true,
   );
