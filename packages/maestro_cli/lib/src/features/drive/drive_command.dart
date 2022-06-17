@@ -87,7 +87,7 @@ class DriveCommand extends Command<int> {
 
     final device = argResults?['device'] as String?;
 
-    await adb.installApps(device: device, debug: debug);
+    await adb.installApps(device: device, debug: debugFlag);
     await adb.forwardPorts(port, device: device);
     adb.runServer(device: device, port: portStr);
     await flutter_driver.runTestsWithOutput(
@@ -95,6 +95,7 @@ class DriveCommand extends Command<int> {
       target: target,
       host: host,
       port: portStr,
+      verbose: verboseFlag,
       device: device,
       flavor: flavor as String?,
     );

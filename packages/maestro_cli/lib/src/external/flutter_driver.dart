@@ -39,12 +39,17 @@ Future<void> runTestsWithOutput({
   required String target,
   required String port,
   required String host,
+  required bool verbose,
   String? device,
   String? flavor,
 }) async {
   log.info('Running tests with output...');
 
-  final env = {'MAESTRO_HOST': host, 'MAESTRO_PORT': port};
+  final env = {
+    'MAESTRO_HOST': host,
+    'MAESTRO_PORT': port,
+    'MAESTRO_VERBOSE': verbose.toString(),
+  };
 
   final result = await Process.start(
     'flutter',
