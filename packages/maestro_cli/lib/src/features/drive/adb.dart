@@ -50,12 +50,16 @@ Future<void> forwardPorts(int port, {String? device}) async {
   progress.complete('Forwarded ports');
 }
 
-void runServer({String? device}) {
+void runServer({
+  required String? device,
+  required String port,
+}) {
   adb.instrument(
     packageName: 'pl.leancode.automatorserver.test',
     intentClass: 'androidx.test.runner.AndroidJUnitRunner',
     device: device,
     onStdout: log.info,
     onStderr: log.severe,
+    arguments: {'MAESTRO_PORT': port},
   );
 }

@@ -152,11 +152,7 @@ class ServerInstrumentation {
             }
         )
 
-        val port = UIAutomatorInstrumentation.instance.port
-        if (port == null) {
-            Logger.e("Could not start server: port is null")
-            return
-        }
+        val port = UIAutomatorInstrumentation.instance.port ?: throw Exception("Could not start server: port is null")
 
         Logger.i("Starting server on port $port")
 
