@@ -9,26 +9,19 @@ Future<void> runTests(
   String target, {
   String? device,
   String? flavor,
+  Map<String, String> dartDefines = const <String, String>{},
 }) async {
   log.info('Running tests...');
 
   final res = await Process.run(
     'flutter',
-    [
-      'drive',
-      '--target',
-      target,
-      '--driver',
-      driver,
-      if (device != null) ...[
-        '--device-id',
-        device,
-      ],
-      if (flavor != null) ...[
-        '--flavor',
-        flavor,
-      ],
-    ],
+    _flutterDriveArguments(
+      driver: driver,
+      target: target,
+      device: device,
+      flavor: flavor,
+      dartDefines: {'MAESTRO_HOST': 'localhost', 'MAESTRO_PORT': '8081'},
+    ),
     runInShell: true,
   );
 
@@ -41,35 +34,32 @@ Future<void> runTests(
 /// drive is done.
 ///
 /// Prints standard output of "flutter drive".
-Future<void> runTestsWithOutput(
-  String driver,
-  String target, {
+Future<void> runTestsWithOutput({
+  required String driver,
+  required String target,
+  required String port,
+  required String host,
   String? device,
   String? flavor,
 }) async {
   log.info('Running tests with output...');
 
-  final res = await Process.start(
+  final env = {'MAESTRO_HOST': host, 'MAESTRO_PORT': port};
+
+  final result = await Process.start(
     'flutter',
-    [
-      'drive',
-      '--target',
-      target,
-      '--driver',
-      driver,
-      if (device != null) ...[
-        '--device-id',
-        device,
-      ],
-      if (flavor != null) ...[
-        '--flavor',
-        flavor,
-      ],
-    ],
+    _flutterDriveArguments(
+      driver: driver,
+      target: target,
+      device: device,
+      flavor: flavor,
+      dartDefines: env,
+    ),
+    environment: env,
     runInShell: true,
   );
 
-  final stdOutSub = res.stdout.listen((msg) {
+  final stdOutSub = result.stdout.listen((msg) {
     final text = 'driver: ${systemEncoding.decode(msg)}';
     if (text.contains('I/flutter')) {
       log.info(text);
@@ -78,12 +68,12 @@ Future<void> runTestsWithOutput(
     }
   });
 
-  final stdErrSub = res.stderr.listen((msg) {
+  final stdErrSub = result.stderr.listen((msg) {
     final text = 'driver: ${systemEncoding.decode(msg)}';
     log.severe(text);
   });
 
-  final exitCode = await res.exitCode;
+  final exitCode = await result.exitCode;
   await stdOutSub.cancel();
   await stdErrSub.cancel();
 
@@ -93,4 +83,32 @@ Future<void> runTestsWithOutput(
   } else {
     log.severe(msg);
   }
+}
+
+List<String> _flutterDriveArguments({
+  required String driver,
+  required String target,
+  String? device,
+  String? flavor,
+  Map<String, String> dartDefines = const <String, String>{},
+}) {
+  return [
+    'drive',
+    '--driver',
+    driver,
+    '--target',
+    target,
+    if (device != null) ...[
+      '--device-id',
+      device,
+    ],
+    if (flavor != null) ...[
+      '--flavor',
+      flavor,
+    ],
+    for (final dartDefine in dartDefines.entries) ...[
+      '--dart-define',
+      '${dartDefine.key}=${dartDefine.value}',
+    ]
+  ];
 }

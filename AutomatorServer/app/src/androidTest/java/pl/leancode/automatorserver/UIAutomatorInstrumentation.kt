@@ -1,5 +1,7 @@
 package pl.leancode.automatorserver
 
+import android.app.Instrumentation
+import android.os.Bundle
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.EditText
@@ -57,9 +59,12 @@ class UIAutomatorInstrumentation {
         Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
 
-    private fun getUiDevice(): UiDevice {
-        return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    }
+    private fun getUiDevice(): UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    private fun getArguments(): Bundle = InstrumentationRegistry.getArguments()
+
+    val port: Int?
+        get() = getArguments().getString("MAESTRO_PORT")?.toInt()
 
     private fun executeShellCommand(cmd: String) {
         val device = getUiDevice()

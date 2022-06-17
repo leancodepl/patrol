@@ -152,9 +152,17 @@ class ServerInstrumentation {
             }
         )
 
+        val port = UIAutomatorInstrumentation.instance.port
+        if (port == null) {
+            Logger.e("Could not start server: port is null")
+            return
+        }
+
+        Logger.i("Starting server on port $port")
+
         server = router.withFilter(catcher)
             .withFilter(printer)
-            .asServer(Netty(8081))
+            .asServer(Netty(port))
             .start()
     }
 

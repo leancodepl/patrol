@@ -10,15 +10,17 @@ import 'package:maestro_test/src/extensions.dart';
 /// Communicates over HTTP with the Maestro server app running on the target
 /// device.
 class Automator {
-  Automator._();
+  final String host;
+  final String port;
+  final bool verbose;
 
-  static Automator? _instance;
-
-  // ignore: prefer_constructors_over_static_methods
-  static Automator get instance => _instance ??= Automator._();
-
-  static void init({int port = 8081, bool verbose = false}) {
-    instance._port = port;
+  /// Creates a new [Automator] instance.
+  Automator({
+    this.host = const String.fromEnvironment('MAESTRO_HOST'),
+    this.port = const String.fromEnvironment('MAESTRO_PORT'),
+    this.verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true',
+  }) {
+    print('new Automator(host: $host, port: $port, verbose: $verbose)');
 
     logging.Logger.root.onRecord.listen((event) {
       // ignore: avoid_print
@@ -27,17 +29,16 @@ class Automator {
 
     logging.hierarchicalLoggingEnabled = true;
     if (verbose) {
-      instance._logger.level = logging.Level.ALL;
+      _logger.level = logging.Level.ALL;
     } else {
-      instance._logger.level = logging.Level.INFO;
+      _logger.level = logging.Level.INFO;
     }
   }
 
   final _client = http.Client();
   final _logger = logging.Logger('Automator');
 
-  late final int _port;
-  String get _baseUri => 'http://localhost:$_port';
+  String get _baseUri => 'http://$host:$port';
 
   Future<http.Response> _wrapPost(
     String action, [
