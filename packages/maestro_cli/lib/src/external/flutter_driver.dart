@@ -4,29 +4,34 @@ import 'package:maestro_cli/src/common/common.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
-Future<void> runTests(
-  String driver,
-  String target, {
+Future<void> runTests({
+  required String driver,
+  required String target,
+  required String port,
+  required String host,
+  required bool verbose,
   String? device,
   String? flavor,
-  Map<String, String> dartDefines = const <String, String>{},
 }) async {
   log.info('Running tests...');
 
-  final res = await Process.run(
+  final env = _dartDefines(host: host, port: port, verbose: verbose);
+
+  final result = await Process.run(
     'flutter',
     _flutterDriveArguments(
       driver: driver,
       target: target,
       device: device,
       flavor: flavor,
-      dartDefines: {'MAESTRO_HOST': 'localhost', 'MAESTRO_PORT': '8081'},
+      dartDefines: env,
     ),
+    environment: env,
     runInShell: true,
   );
 
-  if (res.stdErr.isNotEmpty) {
-    throw Exception(res.stdErr);
+  if (result.stdErr.isNotEmpty) {
+    throw Exception(result.stdErr);
   }
 }
 
@@ -45,11 +50,7 @@ Future<void> runTestsWithOutput({
 }) async {
   log.info('Running tests with output...');
 
-  final env = {
-    'MAESTRO_HOST': host,
-    'MAESTRO_PORT': port,
-    'MAESTRO_VERBOSE': verbose.toString(),
-  };
+  final env = _dartDefines(host: host, port: port, verbose: verbose);
 
   final result = await Process.start(
     'flutter',
@@ -90,12 +91,24 @@ Future<void> runTestsWithOutput({
   }
 }
 
+Map<String, String> _dartDefines({
+  required String host,
+  required String port,
+  required bool verbose,
+}) {
+  return {
+    'MAESTRO_HOST': host,
+    'MAESTRO_PORT': port,
+    'MAESTRO_VERBOSE': verbose.toString(),
+  };
+}
+
 List<String> _flutterDriveArguments({
   required String driver,
   required String target,
   String? device,
   String? flavor,
-  Map<String, String> dartDefines = const <String, String>{},
+  Map<String, String> dartDefines = const {},
 }) {
   return [
     'drive',
