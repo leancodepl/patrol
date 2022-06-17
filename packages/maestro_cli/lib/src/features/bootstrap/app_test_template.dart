@@ -44,8 +44,7 @@ import 'package:$maestroPackage/$maestroPackage.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  Automator.init(verbose: true);
-  final automator = Automator.instance;
+  final maestro = Maestro.forTest();
 
   testWidgets(
     'counter state is the same after going to Home and switching apps',
@@ -79,18 +78,20 @@ void main() {
       await tester.pumpAndSettle();
       expect(findCounterText()!.data, '1');
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.pressDoubleRecentApps();
+      await maestro.pressDoubleRecentApps();
 
       expect(findCounterText()!.data, '1');
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
       expect(findCounterText()!.data, '2');
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.openNotifications();
+      await maestro.openNotifications();
+
+      await maestro.pressBack();
     },
   );
 }
@@ -123,8 +124,7 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  Automator.init(verbose: true);
-  final automator = Automator.instance;
+  final maestro = Maestro.forTest();
 
   testWidgets(
     'counter state is the same after going to Home and switching apps',
@@ -139,13 +139,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.pressDoubleRecentApps();
+      await maestro.pressDoubleRecentApps();
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.openNotifications();
+      await maestro.openNotifications();
+
+      await maestro.pressBack();
     },
   );
 }
