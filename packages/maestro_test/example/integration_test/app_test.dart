@@ -34,10 +34,6 @@ void main() {
       await maestro.disableCelluar();
       await maestro.enableCelluar();
 
-      await maestro.enableBluetooth();
-      await maestro.disableBluetooth();
-      await maestro.enableBluetooth();
-
       await maestro.enableDarkMode();
       await maestro.disableDarkMode();
       await maestro.enableDarkMode();
