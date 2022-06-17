@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/drive/constants.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
@@ -97,9 +98,9 @@ Map<String, String> _dartDefines({
   required bool verbose,
 }) {
   return {
-    'MAESTRO_HOST': host,
-    'MAESTRO_PORT': port,
-    'MAESTRO_VERBOSE': verbose.toString(),
+    envHostKey: host,
+    envPortKey: port,
+    envVerboseKey: verbose.toString(),
   };
 }
 
@@ -110,6 +111,23 @@ List<String> _flutterDriveArguments({
   String? flavor,
   Map<String, String> dartDefines = const {},
 }) {
+  for (final dartDefine in dartDefines.entries) {
+    final key = dartDefine.key;
+    final value = dartDefine.value;
+
+    if (key.contains(' ') || key.contains('=')) {
+      throw FormatException(
+        '--dart-define key "$value" contains whitespace or "="',
+      );
+    }
+
+    if (value.contains(' ') || value.contains('=')) {
+      throw FormatException(
+        '--dart-define value "$value" contains whitespace or "="',
+      );
+    }
+  }
+
   return [
     'drive',
     '--driver',

@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/external/flutter_driver.dart' as flutter_driver;
 import 'package:maestro_cli/src/features/drive/adb.dart' as adb;
+import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
+    as flutter_driver;
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:adb/adb.dart' as adb;
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps({String? device, bool debug = false}) async {
@@ -60,6 +61,6 @@ void runServer({
     device: device,
     onStdout: log.info,
     onStderr: log.severe,
-    arguments: {'MAESTRO_PORT': port},
+    arguments: {envPortKey: port},
   );
 }
