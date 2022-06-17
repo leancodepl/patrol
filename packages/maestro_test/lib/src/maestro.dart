@@ -40,7 +40,7 @@ class Maestro {
   final bool verbose;
 
   final _client = http.Client();
-  final _logger = logging.Logger('Automator');
+  final _logger = logging.Logger('Maestro');
 
   String get _baseUri => 'http://$host:$port';
 
