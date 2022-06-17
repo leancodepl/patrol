@@ -161,9 +161,16 @@ class Maestro {
   /// Disables bluetooth
   Future<void> disableBluetooth() => _wrapPost('disableBluetooth');
 
-  /// Taps at the [index]-th visible button.
+  /// Taps on the [index]-th visible button.
   Future<void> tap(int index) {
     return _wrapPost('tap', <String, dynamic>{'index': index});
+  }
+
+  /// Taps on the [index]-th visible notification.
+  ///
+  /// You must call [openNotifications] first.
+  Future<void> tapOnNotification(int index) {
+    return _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
   }
 
   /// Enters text to the [index]-th visible text field.

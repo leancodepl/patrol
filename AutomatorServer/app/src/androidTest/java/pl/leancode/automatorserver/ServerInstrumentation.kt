@@ -26,6 +26,9 @@ import kotlin.concurrent.schedule
 data class TapCommand(val index: Int)
 
 @Serializable
+data class TapOnNotificationCommand(val index: Int)
+
+@Serializable
 data class EnterTextCommand(val index: Int, val text: String)
 
 const val TextClass = "android.widget.TextView"
@@ -101,6 +104,11 @@ class ServerInstrumentation {
             },
             "openNotifications" bind POST to {
                 UIAutomatorInstrumentation.instance.openNotifications()
+                Response(OK)
+            },
+            "tapOnNotification" bind POST to {
+                val body = Json.decodeFromString<TapOnNotificationCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.tapOnNotification(body.index)
                 Response(OK)
             },
             "tap" bind POST to {

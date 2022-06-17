@@ -25,6 +25,8 @@ void main() {
       await maestro.pressHome();
 
       await maestro.openNotifications();
+      await maestro.tapOnNotification(0);
+      await maestro.pressBack();
 
       await maestro.enableWifi();
       await maestro.disableWifi();

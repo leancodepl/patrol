@@ -97,7 +97,6 @@ class DriveCommand extends Command<int> {
       port: portStr,
       device: device,
       flavor: flavor as String?,
-      
     );
 
     return 0;

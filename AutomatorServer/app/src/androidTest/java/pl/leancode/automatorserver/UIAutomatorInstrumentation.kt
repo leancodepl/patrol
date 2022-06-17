@@ -1,6 +1,5 @@
 package pl.leancode.automatorserver
 
-import android.app.Instrumentation
 import android.os.Bundle
 import android.os.SystemClock
 import android.widget.Button
@@ -194,17 +193,17 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun tapOnNotification() {
+    fun tapOnNotification(index: Int) {
         val device = getUiDevice()
         device.wait(Until.hasObject(By.pkg("com.android.systemui")), 2000)
 
         val notificationStackScroller = UiSelector()
             .packageName("com.android.systemui")
             .resourceId("com.android.systemui:id/notification_stack_scroller")
-        val notificationStackScrollerUiObject: UiObject = device.findObject(notificationStackScroller)
+        val notificationStackScrollerUiObject = device.findObject(notificationStackScroller)
         assertTrue(notificationStackScrollerUiObject.exists())
 
-        val notiSelectorUiObject = notificationStackScrollerUiObject.getChild(UiSelector().index(0))
+        val notiSelectorUiObject = notificationStackScrollerUiObject.getChild(UiSelector().index(index))
         assertTrue(notiSelectorUiObject.exists())
 
         notiSelectorUiObject.click()
