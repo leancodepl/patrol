@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' as logging;
@@ -9,19 +10,41 @@ import 'package:maestro_test/src/extensions.dart';
 ///
 /// Communicates over HTTP with the Maestro server app running on the target
 /// device.
-class Automator {
+class Maestro {
+  /// Creates a new [Maestro] instance for use in the driver file (on test
+  /// host).
+  Maestro.forDriver()
+      : host = Platform.environment['MAESTRO_HOST']!,
+        port = Platform.environment['MAESTRO_PORT']!,
+        verbose = Platform.environment['MAESTRO_VERBOSE'] == 'true' {
+    print(
+      'Creating Maestro driver instance. Host: $host, port: $port, verbose: $verbose',
+    );
+    _setUpLogger();
+  }
+
+  /// Creates a new [Maestro] instance for use in testing environment (on target
+  /// device).
+  Maestro.forTest()
+      : host = const String.fromEnvironment('MAESTRO_HOST'),
+        port = const String.fromEnvironment('MAESTRO_PORT'),
+        verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true' {
+    print(
+      'Creating Maestro test instance. Host: $host, port: $port, verbose: $verbose',
+    );
+    _setUpLogger();
+  }
+
   final String host;
   final String port;
   final bool verbose;
 
-  /// Creates a new [Automator] instance.
-  Automator({
-    this.host = const String.fromEnvironment('MAESTRO_HOST'),
-    this.port = const String.fromEnvironment('MAESTRO_PORT'),
-    this.verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true',
-  }) {
-    print('new Automator(host: $host, port: $port, verbose: $verbose)');
+  final _client = http.Client();
+  final _logger = logging.Logger('Automator');
 
+  String get _baseUri => 'http://$host:$port';
+
+  void _setUpLogger() {
     logging.Logger.root.onRecord.listen((event) {
       // ignore: avoid_print
       print('${event.loggerName}: ${event.message}');
@@ -34,11 +57,6 @@ class Automator {
       _logger.level = logging.Level.INFO;
     }
   }
-
-  final _client = http.Client();
-  final _logger = logging.Logger('Automator');
-
-  String get _baseUri => 'http://$host:$port';
 
   Future<http.Response> _wrapPost(
     String action, [
@@ -67,7 +85,7 @@ class Automator {
     try {
       final res = await _client.get(Uri.parse('$_baseUri/healthCheck'));
       _logger.info(
-        'status code: ${res.statusCode}, response body:\n ${res.body}',
+        'status code: ${res.statusCode}, response body: ${res.body}',
       );
       return res.successful;
     } catch (err, st) {
