@@ -13,7 +13,7 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.1.3
+  maestro_test: ^0.1.4
 ```
 
 ### Usage
@@ -27,8 +27,7 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  Automator.init(verbose: true);
-  final automator = Automator.instance;
+  final maestro = Maestro.forTest();
 
   testWidgets(
     "counter state is the same after going to Home and switching apps",
@@ -46,16 +45,17 @@ void main() {
       await tester.pumpAndSettle();
       expect(findCounterText().data, '1');
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.pressDoubleRecentApps();
+      await maestro.pressDoubleRecentApps();
 
       expect(findCounterText().data, '1');
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
       expect(findCounterText().data, '2');
 
-      await automator.openNotifications();
+      await maestro.openNotifications();
+      await maestro.pressBack();
     },
   );
 }

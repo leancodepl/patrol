@@ -5,11 +5,13 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
+  flutter: ">=2.10.0 <4.0.0"
 
 dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
+  flutter_local_notifications: ^10.0.0-dev.14
 
 dev_dependencies:
   flutter_test:

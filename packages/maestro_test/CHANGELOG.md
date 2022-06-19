@@ -1,3 +1,8 @@
+## 0.1.4
+
+- Allow for running on many devices simultaneously.
+- Rename class `Automator` to `Maestro`.
+
 ## 0.1.3
 
 - Add support for enabling/disabling Bluetooth.

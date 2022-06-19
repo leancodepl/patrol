@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:adb/adb.dart' as adb;
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:path/path.dart' as path;
 
 Future<void> installApps({String? device, bool debug = false}) async {
@@ -50,12 +51,16 @@ Future<void> forwardPorts(int port, {String? device}) async {
   progress.complete('Forwarded ports');
 }
 
-void runServer({String? device}) {
+void runServer({
+  required String? device,
+  required String port,
+}) {
   adb.instrument(
     packageName: 'pl.leancode.automatorserver.test',
     intentClass: 'androidx.test.runner.AndroidJUnitRunner',
     device: device,
     onStdout: log.info,
     onStderr: log.severe,
+    arguments: {envPortKey: port},
   );
 }

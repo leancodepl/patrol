@@ -10,8 +10,7 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  Automator.init(verbose: true);
-  final automator = Automator.instance;
+  final maestro = Maestro.forTest();
 
   testWidgets(
     'counter state is the same after going to Home and switching apps',
@@ -19,25 +18,27 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.pressDoubleRecentApps();
+      await maestro.pressDoubleRecentApps();
 
-      await automator.pressHome();
+      await maestro.pressHome();
 
-      await automator.openNotifications();
+      await maestro.openNotifications();
+      await maestro.tapOnNotification(0);
+      await maestro.pressBack();
 
-      await automator.enableWifi();
-      await automator.disableWifi();
-      await automator.enableWifi();
+      await maestro.enableWifi();
+      await maestro.disableWifi();
+      await maestro.enableWifi();
 
-      await automator.enableCelluar();
-      await automator.disableCelluar();
-      await automator.enableCelluar();
+      await maestro.enableCelluar();
+      await maestro.disableCelluar();
+      await maestro.enableCelluar();
 
-      await automator.enableDarkMode();
-      await automator.disableDarkMode();
-      await automator.enableDarkMode();
+      await maestro.enableDarkMode();
+      await maestro.disableDarkMode();
+      await maestro.enableDarkMode();
     },
   );
 }

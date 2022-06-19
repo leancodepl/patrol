@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 class AutomatorServer {
     @Test
     fun startServer() {
-        Logger.i("Starting server")
+        Logger.i("Starting server...")
 
         val serverInstrumentation = ServerInstrumentation.instance
         try {
@@ -20,5 +20,7 @@ class AutomatorServer {
             e.printStackTrace()
             Logger.e("Exception thrown: ", e)
         }
+
+        Logger.i("Server stopped")
     }
 }

@@ -3,9 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'native_widget.freezed.dart';
 part 'native_widget.g.dart';
 
-const TextClass = 'Text';
-const TextFieldClass = 'TextField';
-const ButtonClass = 'Button';
+const textClass = 'Text';
+const textFieldClass = 'TextField';
+const buttonClass = 'Button';
 
 @freezed
 class NativeWidget with _$NativeWidget {

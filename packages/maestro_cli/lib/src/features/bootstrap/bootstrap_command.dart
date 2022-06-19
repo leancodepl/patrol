@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/external/pubspec.dart' as pubspec;
 import 'package:maestro_cli/src/features/bootstrap/app_test_template.dart';
+import 'package:maestro_cli/src/features/bootstrap/pubspec.dart' as pubspec;
 import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:path/path.dart' as path;
 

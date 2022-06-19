@@ -1,3 +1,8 @@
+## 0.1.5
+
+- Allow for running on many devices simultaneously.
+- A usual portion of smaller improvements and bug fixes.
+
 ## 0.1.4
 
 - Be more noisy when an error occurs.

@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/external/flutter_driver.dart' as flutter_driver;
 import 'package:maestro_cli/src/features/drive/adb.dart' as adb;
+import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
+    as flutter_driver;
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -62,6 +63,11 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`port` argument is not a string');
     }
 
+    final port = int.tryParse(portStr);
+    if (port == null) {
+      throw const FormatException('`port` cannot be parsed into an integer');
+    }
+
     dynamic target = argResults?['target'];
     target ??= config.driveConfig.target;
     if (target is! String) {
@@ -82,12 +88,15 @@ class DriveCommand extends Command<int> {
 
     final device = argResults?['device'] as String?;
 
-    await adb.installApps(device: device, debug: debug);
-    await adb.forwardPorts(int.parse(portStr), device: device);
-    adb.runServer(device: device);
+    await adb.installApps(device: device, debug: debugFlag);
+    await adb.forwardPorts(port, device: device);
+    adb.runServer(device: device, port: portStr);
     await flutter_driver.runTestsWithOutput(
-      driver,
-      target,
+      driver: driver,
+      target: target,
+      host: host,
+      port: portStr,
+      verbose: verboseFlag,
       device: device,
       flavor: flavor as String?,
     );

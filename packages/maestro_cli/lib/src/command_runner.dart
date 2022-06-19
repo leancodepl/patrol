@@ -28,7 +28,8 @@ Future<int> maestroCommandRunner(List<String> args) async {
   }
 }
 
-bool debug = false;
+bool debugFlag = false;
+bool verboseFlag = false;
 
 class MaestroCommandRunner extends CommandRunner<int> {
   MaestroCommandRunner()
@@ -56,10 +57,10 @@ class MaestroCommandRunner extends CommandRunner<int> {
   Future<int?> run(Iterable<String> args) async {
     await setUpLogger(); // argParser.parse() can fail, so we setup logger early
     final results = argParser.parse(args);
-    final verboseFlag = results['verbose'] as bool;
+    verboseFlag = results['verbose'] as bool;
     final helpFlag = results['help'] as bool;
     final versionFlag = results['version'] as bool;
-    debug = results['debug'] as bool;
+    debugFlag = results['debug'] as bool;
 
     await setUpLogger(verbose: verboseFlag);
 
@@ -72,13 +73,13 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
-    if (debug) {
-      log.info('Using debug artifacts');
+    if (debugFlag) {
+      log.info('Debug mode enabled. Non-versioned artifacts will be used.');
     }
 
     if (_commandRequiresArtifacts(results.arguments)) {
       try {
-        await _ensureArtifactsArePresent(debug);
+        await _ensureArtifactsArePresent(debugFlag);
       } catch (err, st) {
         log.severe(null, err, st);
         return 1;

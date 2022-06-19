@@ -28,6 +28,10 @@ StreamSubscription<void>? _sub;
 /// - [Level.INFO], printed in white
 /// - [Level.FINE], printed in grey and only when [verbose] is true
 Future<void> setUpLogger({bool verbose = false}) async {
+  if (verbose) {
+    print('Verbose mode enabled');
+  }
+
   Logger.root.level = Level.ALL;
 
   await _sub?.cancel();
