@@ -5,14 +5,14 @@ import 'package:maestro_test/maestro_test.dart';
 Future<void> main() async {
   final maestro = Maestro.forDriver();
   while (!await maestro.isRunning()) {
-    print('Waiting for automator server...');
+    print('Waiting for maestro automation server...');
     await Future<void>.delayed(const Duration(seconds: 1));
   }
-  print('Automator server is running, starting test drive');
+  print('Maestro automation server is running, starting test drive');
   try {
     await integrationDriver();
   } finally {
-    print('Stopping automator server');
+    print('Stopping Maestro automation server');
     await maestro.stop();
   }
 }
