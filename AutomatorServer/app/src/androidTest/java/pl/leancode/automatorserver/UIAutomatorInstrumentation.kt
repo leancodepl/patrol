@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import android.os.Bundle
 import android.os.SystemClock
 import android.widget.Button
 import android.widget.EditText
@@ -9,6 +10,8 @@ import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
+import junit.framework.TestCase.assertTrue
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,6 +21,10 @@ data class NativeWidget(
     val contentDescription: String?,
     val focused: Boolean?,
     val enabled: Boolean?,
+    val childCount: Int?,
+    val resourceName: String?,
+    val applicationPackage: String?,
+    val children: List<NativeWidget>?,
 ) {
     companion object {
         fun fromUiObject(obj: UiObject2): NativeWidget {
@@ -27,6 +34,10 @@ data class NativeWidget(
                 contentDescription = obj.contentDescription,
                 focused = obj.isFocused,
                 enabled = obj.isEnabled,
+                childCount = obj.childCount,
+                resourceName = obj.resourceName,
+                applicationPackage = obj.applicationPackage,
+                children = obj.children?.map { fromUiObject(it) },
             )
         }
     }
@@ -46,9 +57,12 @@ class UIAutomatorInstrumentation {
         Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
 
-    private fun getUiDevice(): UiDevice {
-        return UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-    }
+    private fun getUiDevice(): UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+
+    private fun getArguments(): Bundle = InstrumentationRegistry.getArguments()
+
+    val port: Int?
+        get() = getArguments().getString("MAESTRO_PORT")?.toInt()
 
     private fun executeShellCommand(cmd: String) {
         val device = getUiDevice()
@@ -116,7 +130,12 @@ class UIAutomatorInstrumentation {
             return arrayListOf()
         }
 
-        var selector = By.clazz(query.clazz())
+        var selector = if (query.fullyQualifiedName != null) {
+            Logger.i("Selector for fully qualified name ${query.fullyQualifiedName}")
+            By.clazz(query.fullyQualifiedName)
+        } else {
+            By.clazz(query.clazz())
+        }
 
         selector = selector.apply {
             query.enabled?.let {
@@ -140,7 +159,9 @@ class UIAutomatorInstrumentation {
             }
         }
 
-        return device.findObjects(selector).map { NativeWidget.fromUiObject(it) }
+        return device.findObjects(selector).map {
+            NativeWidget.fromUiObject(it)
+        }
     }
 
     fun tap(index: Int) {
@@ -169,6 +190,22 @@ class UIAutomatorInstrumentation {
         device.openNotification()
         Logger.d("After open notifications")
         delay()
+    }
+
+    fun tapOnNotification(index: Int) {
+        val device = getUiDevice()
+        device.wait(Until.hasObject(By.pkg("com.android.systemui")), 2000)
+
+        val notificationStackScroller = UiSelector()
+            .packageName("com.android.systemui")
+            .resourceId("com.android.systemui:id/notification_stack_scroller")
+        val notificationStackScrollerUiObject = device.findObject(notificationStackScroller)
+        assertTrue(notificationStackScrollerUiObject.exists())
+
+        val notiSelectorUiObject = notificationStackScrollerUiObject.getChild(UiSelector().index(index))
+        assertTrue(notiSelectorUiObject.exists())
+
+        notiSelectorUiObject.click()
     }
 
     companion object {

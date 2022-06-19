@@ -26,6 +26,9 @@ import kotlin.concurrent.schedule
 data class TapCommand(val index: Int)
 
 @Serializable
+data class TapOnNotificationCommand(val index: Int)
+
+@Serializable
 data class EnterTextCommand(val index: Int, val text: String)
 
 const val TextClass = "android.widget.TextView"
@@ -34,6 +37,7 @@ const val ButtonClass = "android.widget.Button"
 
 @Serializable
 data class WidgetsQuery(
+    val fullyQualifiedName: String? = null,
     val className: String? = null,
     val enabled: Boolean? = null,
     val focused: Boolean? = null,
@@ -43,7 +47,8 @@ data class WidgetsQuery(
 ) {
     fun isEmpty(): Boolean {
         return (
-            className == null &&
+            fullyQualifiedName == null &&
+                className == null &&
                 clazz() == null &&
                 enabled == null &&
                 focused == null &&
@@ -101,6 +106,11 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.openNotifications()
                 Response(OK)
             },
+            "tapOnNotification" bind POST to {
+                val body = Json.decodeFromString<TapOnNotificationCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.tapOnNotification(body.index)
+                Response(OK)
+            },
             "tap" bind POST to {
                 val body = Json.decodeFromString<TapCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.tap(body.index)
@@ -150,9 +160,13 @@ class ServerInstrumentation {
             }
         )
 
+        val port = UIAutomatorInstrumentation.instance.port ?: throw Exception("Could not start server: port is null")
+
+        Logger.i("Starting server on port $port")
+
         server = router.withFilter(catcher)
             .withFilter(printer)
-            .asServer(Netty(8081))
+            .asServer(Netty(port))
             .start()
     }
 
