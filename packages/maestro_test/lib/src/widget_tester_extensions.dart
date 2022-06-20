@@ -7,7 +7,7 @@ extension WidgetTesterX on WidgetTester {
   /// into a [num].
   Text? findTextWithNumber() {
     final textWidgets = find.byType(Text);
-    
+
     final foundElements = textWidgets.evaluate();
 
     for (final element in foundElements) {
