@@ -24,4 +24,3 @@ dev_dependencies:
   freezed: ^1.1.1
   json_serializable: ^6.2.0
   leancode_lint: ^1.1.0
-  test: ^1.21.1
