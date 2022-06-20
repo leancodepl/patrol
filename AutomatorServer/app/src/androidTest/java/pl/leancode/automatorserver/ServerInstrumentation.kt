@@ -44,6 +44,7 @@ data class WidgetsQuery(
     val text: String? = null,
     val textContains: String? = null,
     val contentDescription: String? = null,
+    val resourceName: String? = null,
 ) {
     fun isEmpty(): Boolean {
         return (
@@ -54,7 +55,8 @@ data class WidgetsQuery(
                 focused == null &&
                 text == null &&
                 textContains == null &&
-                contentDescription == null
+                contentDescription == null &&
+                resourceName == null
             )
     }
 
