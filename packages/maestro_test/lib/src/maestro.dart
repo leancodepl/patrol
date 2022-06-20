@@ -35,8 +35,13 @@ class Maestro {
     _setUpLogger();
   }
 
+  /// Host on which Maestro server instrumentation is running.
   final String host;
+
+  /// Port on [host] on which Maestro server instrumentation is running.
   final String port;
+
+  /// Whether to print more logs.
   final bool verbose;
 
   final _client = http.Client();
