@@ -22,7 +22,7 @@ class BootstrapCommand extends Command<int> {
 
   @override
   String get description =>
-      'Create default config and test files and add maestro as a dev dependency';
+      'Create default config and test files and add maestro as a dev dependency.';
 
   @override
   Future<int> run() async {

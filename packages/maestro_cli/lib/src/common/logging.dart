@@ -43,7 +43,7 @@ Future<void> setUpLogger({bool verbose = false}) async {
     } else if (log.level >= Level.WARNING) {
       print(AnsiStyles.yellow(fmtLog));
     } else if (log.level >= Level.INFO) {
-      print(AnsiStyles.white(fmtLog));
+      print(fmtLog);
     } else if (log.level >= Level.FINE && verbose) {
       print(AnsiStyles.grey(fmtLog));
     }
