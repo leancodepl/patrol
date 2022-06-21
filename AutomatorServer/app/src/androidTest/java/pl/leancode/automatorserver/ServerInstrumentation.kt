@@ -44,7 +44,15 @@ data class WidgetsQuery(
     val text: String? = null,
     val textContains: String? = null,
     val contentDescription: String? = null,
+<<<<<<< Updated upstream
     val resourceName: String? = null,
+=======
+    val contentDescriptionContains: String? = null,
+    val contentDescriptionStartsWith: String? = null,
+    val contentDescriptionEndsWith: String? = null,
+    val pkg: String? = null,
+    val resourceId: String? = null,
+>>>>>>> Stashed changes
 ) {
     fun isEmpty(): Boolean {
         return (
@@ -56,7 +64,15 @@ data class WidgetsQuery(
                 text == null &&
                 textContains == null &&
                 contentDescription == null &&
+<<<<<<< Updated upstream
                 resourceName == null
+=======
+                contentDescriptionContains == null &&
+                contentDescriptionStartsWith == null &&
+                contentDescriptionEndsWith == null &&
+                pkg == null &&
+                resourceId == null
+>>>>>>> Stashed changes
             )
     }
 
@@ -118,6 +134,11 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.tap(body.index)
                 Response(OK)
             },
+            "tap2" bind POST to {
+                val body = Json.decodeFromString<WidgetsQuery>(it.bodyString())
+                UIAutomatorInstrumentation.instance.tap(body)
+                Response(OK)
+            },
             "enterText" bind POST to {
                 val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.enterText(body.index, body.text)
@@ -162,7 +183,8 @@ class ServerInstrumentation {
             }
         )
 
-        val port = UIAutomatorInstrumentation.instance.port ?: throw Exception("Could not start server: port is null")
+        val port = UIAutomatorInstrumentation.instance.port
+            ?: throw Exception("Could not start server: port is null")
 
         Logger.i("Starting server on port $port")
 

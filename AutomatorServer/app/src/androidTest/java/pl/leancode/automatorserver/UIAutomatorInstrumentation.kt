@@ -2,6 +2,7 @@ package pl.leancode.automatorserver
 
 import android.os.Bundle
 import android.os.SystemClock
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -57,7 +58,8 @@ class UIAutomatorInstrumentation {
         Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
 
-    private fun getUiDevice(): UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+    private fun getUiDevice(): UiDevice =
+        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     private fun getArguments(): Bundle = InstrumentationRegistry.getArguments()
 
@@ -164,8 +166,13 @@ class UIAutomatorInstrumentation {
                 desc(it)
             }
 
+<<<<<<< Updated upstream
             query.resourceName?.let {
                 res(it)
+=======
+            query.contentDescriptionContains?.let {
+                descContains(it)
+>>>>>>> Stashed changes
             }
         }
 
@@ -180,6 +187,64 @@ class UIAutomatorInstrumentation {
         val selector = UiSelector().className(Button::class.java).instance(index)
         val uiObject = device.findObject(selector)
 
+        uiObject.click()
+    }
+
+    fun tap(query: WidgetsQuery) {
+        val device = getUiDevice()
+
+        var selector = UiSelector();
+
+        if (query.textContains != null) {
+            selector = selector.textContains(query.textContains)
+        }
+
+        if (query.contentDescriptionContains != null) {
+            selector = selector.descriptionContains(query.contentDescriptionContains)
+        }
+
+        // selector = selector.apply {
+        //     query.className?.let {
+        //         className(it)
+        //         Logger.d("Class name: $it")
+        //     }
+        //
+        //     query.enabled?.let {
+        //         enabled(it)
+        //         Logger.d("Enabled: $it")
+        //     }
+        //
+        //     query.focused?.let {
+        //         focused(it)
+        //         Logger.d("Focused: $it")
+        //     }
+        //
+        //     query.text?.let {
+        //         text(it)
+        //         Logger.d("Text: $it")
+        //     }
+        //
+        //     query.textContains?.let {
+        //         textContains(it)
+        //         Logger.d("Text contains: $it")
+        //     }
+        //
+        //     query.contentDescription?.let {
+        //         description(it)
+        //         Logger.d("Content description: $it")
+        //     }
+        //
+        //     query.contentDescriptionContains?.let {
+        //         descriptionContains(it)
+        //         Logger.d("Content description contains: $it")
+        //     }
+        // }
+
+        Logger.d("Selector: $selector")
+
+        val uiObject = device.findObject(selector)
+
+        Logger.d("Clicking on UIObject with text ${uiObject.text}")
         uiObject.click()
     }
 
@@ -212,7 +277,10 @@ class UIAutomatorInstrumentation {
         val notificationStackScrollerUiObject = device.findObject(notificationStackScroller)
         assertTrue(notificationStackScrollerUiObject.exists())
 
-        val notiSelectorUiObject = notificationStackScrollerUiObject.getChild(UiSelector().index(index))
+        Logger.d("notificationStackController child count: ${notificationStackScrollerUiObject.childCount}")
+
+        val notiSelectorUiObject =
+            notificationStackScrollerUiObject.getChild(UiSelector().index(index))
         assertTrue(notiSelectorUiObject.exists())
 
         notiSelectorUiObject.click()
