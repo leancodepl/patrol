@@ -121,14 +121,7 @@ class UIAutomatorInstrumentation {
     fun enableBluetooth() = executeShellCommand("svc bluetooth enable")
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
-
-    fun getNativeWidget(query: SelectorQuery): NativeWidget {
-        val device = getUiDevice()
-        val selector = query.toBySelector()
-        val uiObject2 = device.findObject(selector)
-        return NativeWidget.fromUiObject(uiObject2)
-    }
-
+    
     fun getNativeWidgets(query: SelectorQuery): List<NativeWidget> {
         val device = getUiDevice()
         val selector = query.toBySelector()
