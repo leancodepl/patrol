@@ -2,7 +2,6 @@ package pl.leancode.automatorserver
 
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -166,18 +165,9 @@ class UIAutomatorInstrumentation {
                 desc(it)
             }
 
-<<<<<<< Updated upstream
-            query.resourceName?.let {
-                res(it)
-=======
-            query.contentDescriptionContains?.let {
-                descContains(it)
->>>>>>> Stashed changes
+            return device.findObjects(selector).map {
+                NativeWidget.fromUiObject(it)
             }
-        }
-
-        return device.findObjects(selector).map {
-            NativeWidget.fromUiObject(it)
         }
     }
 
@@ -192,53 +182,7 @@ class UIAutomatorInstrumentation {
 
     fun tap(query: WidgetsQuery) {
         val device = getUiDevice()
-
-        var selector = UiSelector();
-
-        if (query.textContains != null) {
-            selector = selector.textContains(query.textContains)
-        }
-
-        if (query.contentDescriptionContains != null) {
-            selector = selector.descriptionContains(query.contentDescriptionContains)
-        }
-
-        // selector = selector.apply {
-        //     query.className?.let {
-        //         className(it)
-        //         Logger.d("Class name: $it")
-        //     }
-        //
-        //     query.enabled?.let {
-        //         enabled(it)
-        //         Logger.d("Enabled: $it")
-        //     }
-        //
-        //     query.focused?.let {
-        //         focused(it)
-        //         Logger.d("Focused: $it")
-        //     }
-        //
-        //     query.text?.let {
-        //         text(it)
-        //         Logger.d("Text: $it")
-        //     }
-        //
-        //     query.textContains?.let {
-        //         textContains(it)
-        //         Logger.d("Text contains: $it")
-        //     }
-        //
-        //     query.contentDescription?.let {
-        //         description(it)
-        //         Logger.d("Content description: $it")
-        //     }
-        //
-        //     query.contentDescriptionContains?.let {
-        //         descriptionContains(it)
-        //         Logger.d("Content description contains: $it")
-        //     }
-        // }
+        val selector = query.toUiSelector()
 
         Logger.d("Selector: $selector")
 

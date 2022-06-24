@@ -188,9 +188,9 @@ class Maestro {
 
   /// Returns a list of native UI controls that are currently visible on screen.
   Future<List<NativeWidget>> getNativeWidgets({
-    required Conditions conditions,
+    required Selector selector,
   }) async {
-    final response = await _wrapPost('getNativeWidgets', conditions.toJson());
+    final response = await _wrapPost('getNativeWidgets', selector.toJson());
 
     final nativeWidgets = json.decode(response.body) as List<dynamic>;
     return nativeWidgets

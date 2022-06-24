@@ -1,6 +1,7 @@
 package pl.leancode.automatorserver
 
 import androidx.test.uiautomator.UiObjectNotFoundException
+import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
@@ -31,58 +32,90 @@ data class TapOnNotificationCommand(val index: Int)
 @Serializable
 data class EnterTextCommand(val index: Int, val text: String)
 
-const val TextClass = "android.widget.TextView"
-const val TextFieldClass = "android.widget.EditText"
-const val ButtonClass = "android.widget.Button"
-
 @Serializable
 data class WidgetsQuery(
-    val fullyQualifiedName: String? = null,
+    val text: String? = null,
+    val textStartsWith: String? = null,
+    val textContains: String? = null,
     val className: String? = null,
+    val contentDescription: String? = null,
+    val contentDescriptionStartsWith: String? = null,
+    val contentDescriptionContains: String? = null,
+    val resourceId: String? = null,
+    val instance: Int? = null,
     val enabled: Boolean? = null,
     val focused: Boolean? = null,
-    val text: String? = null,
-    val textContains: String? = null,
-    val contentDescription: String? = null,
-<<<<<<< Updated upstream
-    val resourceName: String? = null,
-=======
-    val contentDescriptionContains: String? = null,
-    val contentDescriptionStartsWith: String? = null,
-    val contentDescriptionEndsWith: String? = null,
     val pkg: String? = null,
-    val resourceId: String? = null,
->>>>>>> Stashed changes
 ) {
     fun isEmpty(): Boolean {
         return (
-            fullyQualifiedName == null &&
+            text == null &&
+                textStartsWith == null &&
+                textContains == null &&
                 className == null &&
-                clazz() == null &&
+                contentDescription == null &&
+                contentDescriptionStartsWith == null &&
+                contentDescriptionContains == null &&
+                resourceId == null &&
+                instance == null &&
                 enabled == null &&
                 focused == null &&
-                text == null &&
-                textContains == null &&
-                contentDescription == null &&
-<<<<<<< Updated upstream
-                resourceName == null
-=======
-                contentDescriptionContains == null &&
-                contentDescriptionStartsWith == null &&
-                contentDescriptionEndsWith == null &&
-                pkg == null &&
-                resourceId == null
->>>>>>> Stashed changes
+                pkg == null
             )
     }
 
-    fun clazz(): String? {
-        return when (className) {
-            "Text" -> TextClass
-            "TextField" -> TextFieldClass
-            "Button" -> ButtonClass
-            else -> null
+    fun toUiSelector(): UiSelector {
+        val selector = UiSelector()
+
+        if (text != null) {
+            selector.text(text)
         }
+
+        if (textStartsWith != null) {
+            selector.textStartsWith(textStartsWith)
+        }
+
+        if (textContains != null) {
+            selector.textContains(textContains)
+        }
+
+        if (className != null) {
+            selector.className(className)
+        }
+
+        if (contentDescription != null) {
+            selector.description(contentDescription)
+        }
+
+        if (contentDescriptionStartsWith != null) {
+            selector.descriptionStartsWith(contentDescriptionStartsWith)
+        }
+
+        if (contentDescriptionContains != null) {
+            selector.descriptionContains(contentDescriptionContains)
+        }
+
+        if (resourceId != null) {
+            selector.resourceId(resourceId)
+        }
+
+        if (instance != null) {
+            selector.instance(instance)
+        }
+
+        if (enabled != null) {
+            selector.enabled(enabled)
+        }
+
+        if (focused != null) {
+            selector.focused(focused)
+        }
+
+        if (pkg != null) {
+            selector.packageName(pkg)
+        }
+
+        return selector
     }
 }
 
