@@ -27,10 +27,10 @@ import kotlin.concurrent.schedule
 
 @Serializable
 data class SwipeCommand(
-    var startX: Int,
-    var startY: Int,
-    var endX: Int,
-    var endY: Int,
+    var startX: Float,
+    var startY: Float,
+    var endX: Float,
+    var endY: Float,
     var steps: Int,
 )
 

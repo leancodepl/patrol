@@ -12,6 +12,7 @@ import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import junit.framework.TestCase.assertTrue
 import kotlinx.serialization.Serializable
+import kotlin.math.roundToInt
 
 @Serializable
 data class NativeWidget(
@@ -152,21 +153,24 @@ class UIAutomatorInstrumentation {
     }
 
     fun swipe(swipe: SwipeCommand) {
-        if (swipe.startX !in 0..1) {
+        if (swipe.startX !in 0f..1f) {
             throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")
         }
-        
-        if (swipe.startY !in 0..1) {
+
+        if (swipe.startY !in 0f..1f) {
             throw IllegalArgumentException("startY represents a percentage and must be between 0 and 1")
         }
 
         val device = getUiDevice()
-        val startX = device.displayWidth * swipe.startX
-        val startY = device.displayHeight * swipe.startY
-        val endX = device.displayWidth * swipe.endX
-        val endY = device.displayHeight * swipe.endY
+        val startX = (device.displayWidth * swipe.startX).roundToInt()
+        val startY = (device.displayHeight * swipe.startY).roundToInt()
+        val endX = (device.displayWidth * swipe.endX).roundToInt()
+        val endY = (device.displayHeight * swipe.endY).roundToInt()
 
-        device.swipe(startX, startY, endX, endY, swipe.steps)
+        val successful = device.swipe(startX, startY, endX, endY, swipe.steps)
+        if (!successful) {
+            throw IllegalArgumentException("Swipe failed")
+        }
     }
 
     fun openNotifications() {
