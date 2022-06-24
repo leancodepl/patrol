@@ -11,23 +11,27 @@ const configFileName = 'maestro.toml';
 const driverDirName = 'test_driver';
 const driverFileName = 'integration_test.dart';
 const driverFileContent = '''
+// ignore_for_file: avoid_print
 import 'package:integration_test/integration_test_driver.dart';
-import 'package:$maestroPackage/$maestroPackage.dart';
+import 'package:maestro_test/maestro_test.dart';
 
-// Runs on your machine. Knows nothing about the app being tested.
+// Runs on our machine. Knows nothing about the app being tested.
 
 Future<void> main() async {
-  print('Waiting for automator server');
-  Automator.init(verbose: true);
-  while (!await Automator.instance.isRunning()) {}
-  print('Automator server is running, starting test drive');
+  final maestro = Maestro.forDriver();
+  while (!await maestro.isRunning()) {
+    print('Waiting for maestro automation server...');
+    await Future<void>.delayed(const Duration(seconds: 1));
+  }
+  print('Maestro automation server is running, starting test drive');
   try {
     await integrationDriver();
   } finally {
-    print('Stopping automator server');
-    await Automator.instance.stop();
+    print('Stopping Maestro automation server');
+    await maestro.stop();
   }
 }
+
 ''';
 
 const testDirName = 'integration_test';
