@@ -12,6 +12,9 @@ abstract class WidgetClasses {
 
   /// Maps to the native Buttonwidget for the underlying platform.
   String get button;
+
+  /// Maps to the native Switch/Toggle widget for the underlying platform.
+  String get toggle;
 }
 
 class _AndroidWidgetClasses extends WidgetClasses {
@@ -23,6 +26,9 @@ class _AndroidWidgetClasses extends WidgetClasses {
 
   @override
   String get textField => 'com.android.EditText';
+
+  @override
+  String get toggle => 'android.widget.Switch';
 }
 
 @freezed

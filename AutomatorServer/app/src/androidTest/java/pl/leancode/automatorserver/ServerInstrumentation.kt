@@ -1,5 +1,7 @@
 package pl.leancode.automatorserver
 
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
@@ -116,6 +118,113 @@ data class SelectorQuery(
         }
 
         return selector
+    }
+
+    fun toBySelector(): BySelector {
+        if (isEmpty()) {
+            throw IllegalArgumentException("SelectorQuery is empty")
+        }
+
+        var matchedText = false
+        var matchedTextStartsWith = false
+        var matchedTextContains = false
+        var matchedClassName = false
+        var matchedContentDescription = false
+        var matchedContentDescriptionStartsWith = false
+        var matchedContentDescriptionContains = false
+        var matchedResourceId = false
+        var matchedEnabled = false
+        var matchedFocused = false
+        var matchedPkg = false
+
+        var bySelector = if (text != null) {
+            matchedText = true
+            By.text(text)
+        } else if (textStartsWith != null) {
+            matchedTextStartsWith = true
+            By.textStartsWith(textStartsWith)
+        } else if (textContains != null) {
+            matchedTextContains = true
+            By.textContains(textContains)
+        } else if (className != null) {
+            matchedClassName = true
+            By.clazz(className)
+        } else if (contentDescription != null) {
+            matchedContentDescription = true
+            By.desc(contentDescription)
+        } else if (contentDescriptionStartsWith != null) {
+            matchedContentDescriptionStartsWith = true
+            By.descStartsWith(contentDescriptionStartsWith)
+        } else if (contentDescriptionContains != null) {
+            matchedContentDescriptionContains = true
+            By.descContains(contentDescriptionContains)
+        } else if (resourceId != null) {
+            matchedResourceId = true
+            By.res(resourceId)
+        } else if (instance != null) {
+            throw IllegalArgumentException("instance() argument is not supported for BySelector")
+        } else if (enabled != null) {
+            matchedEnabled = true
+            By.enabled(enabled)
+        } else if (focused != null) {
+            matchedFocused = true
+            By.focused(focused)
+        } else if (pkg != null) {
+            matchedPkg = true
+            By.pkg(pkg)
+        } else {
+            throw IllegalArgumentException("SelectorQuery is empty")
+        }
+
+        if (!matchedText && text != null) {
+            bySelector = By.copy(bySelector).text(text)
+        }
+
+        if (!matchedTextStartsWith && textStartsWith != null) {
+            bySelector = By.copy(bySelector).textStartsWith(textStartsWith)
+        }
+
+        if (!matchedTextContains && textContains != null) {
+            bySelector = By.copy(bySelector).textContains(textContains)
+        }
+
+        if (!matchedClassName && className != null) {
+            bySelector = By.copy(bySelector).clazz(className)
+        }
+
+        if (!matchedContentDescription && contentDescription != null) {
+            bySelector = By.copy(bySelector).desc(contentDescription)
+        }
+
+        if (!matchedContentDescriptionStartsWith && contentDescriptionStartsWith != null) {
+            bySelector = By.copy(bySelector).descStartsWith(contentDescriptionStartsWith)
+        }
+
+        if (!matchedContentDescriptionContains && contentDescriptionContains != null) {
+            bySelector = By.copy(bySelector).descContains(contentDescriptionContains)
+        }
+
+        if (!matchedResourceId && resourceId != null) {
+            bySelector = By.copy(bySelector).res(resourceId)
+        }
+
+        if (instance != null) {
+            throw IllegalArgumentException("instance() argument is not supported for BySelector")
+        }
+
+        if (!matchedEnabled && enabled != null) {
+            bySelector = bySelector.enabled(enabled)
+        }
+
+        if (!matchedFocused && focused != null) {
+            bySelector = bySelector.focused(focused)
+        }
+
+        if (!matchedPkg && pkg != null) {
+            bySelector = bySelector.pkg(pkg)
+        }
+
+        return bySelector
     }
 }
 

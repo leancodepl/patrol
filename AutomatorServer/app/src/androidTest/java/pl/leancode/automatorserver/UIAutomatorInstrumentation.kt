@@ -124,13 +124,16 @@ class UIAutomatorInstrumentation {
 
     fun getNativeWidget(query: SelectorQuery): NativeWidget {
         val device = getUiDevice()
-        val obj = device.findObject(By.text(query.text))
-        return NativeWidget.fromUiObject(obj)
+        val selector = query.toBySelector()
+        val uiObject2 = device.findObject(selector)
+        return NativeWidget.fromUiObject(uiObject2)
     }
 
     fun getNativeWidgets(query: SelectorQuery): List<NativeWidget> {
-        Logger.d("getNativeWidgets is not implemented")
-        return arrayListOf()
+        val device = getUiDevice()
+        val selector = query.toBySelector()
+        val uiObjects2 = device.findObjects(selector)
+        return uiObjects2.map { NativeWidget.fromUiObject(it) }
     }
 
     fun tap(query: SelectorQuery) {
