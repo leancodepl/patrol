@@ -16,7 +16,7 @@ _$_Selector _$$_SelectorFromJson(Map<String, dynamic> json) => _$_Selector(
           json['contentDescriptionStartsWith'] as String?,
       contentDescriptionContains: json['contentDescriptionContains'] as String?,
       resourceId: json['resourceId'] as String?,
-      instance: json['instance'] as String?,
+      instance: json['instance'] as int?,
       enabled: json['enabled'] as bool?,
       focused: json['focused'] as bool?,
       packageName: json['packageName'] as String?,

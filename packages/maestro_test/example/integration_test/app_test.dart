@@ -25,7 +25,8 @@ void main() {
       await maestro.pressHome();
 
       await maestro.openNotifications();
-      await maestro.tapOnNotification(0);
+      await maestro.tap(const Selector(text: 'Bluetooth'));
+      await maestro.tap(const Selector(text: 'Bluetooth'));
       await maestro.pressBack();
 
       await maestro.enableWifi();

@@ -2,7 +2,6 @@ package pl.leancode.automatorserver
 
 import android.os.Bundle
 import android.os.SystemClock
-import android.widget.Button
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -123,64 +122,18 @@ class UIAutomatorInstrumentation {
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
-    fun getNativeWidget(query: WidgetsQuery): NativeWidget {
+    fun getNativeWidget(query: SelectorQuery): NativeWidget {
         val device = getUiDevice()
         val obj = device.findObject(By.text(query.text))
         return NativeWidget.fromUiObject(obj)
     }
 
-    fun getNativeWidgets(query: WidgetsQuery): List<NativeWidget> {
-        val device = getUiDevice()
-
-        if (query.isEmpty()) {
-            Logger.i("Query is empty")
-            return arrayListOf()
-        }
-
-        var selector = if (query.fullyQualifiedName != null) {
-            Logger.i("Selector for fully qualified name ${query.fullyQualifiedName}")
-            By.clazz(query.fullyQualifiedName)
-        } else {
-            By.clazz(query.clazz())
-        }
-
-        selector = selector.apply {
-            query.enabled?.let {
-                enabled(it)
-            }
-
-            query.focused?.let {
-                focused(it)
-            }
-
-            query.text?.let {
-                text(it)
-            }
-
-            query.textContains?.let {
-                textContains(it)
-            }
-
-            query.contentDescription?.let {
-                desc(it)
-            }
-
-            return device.findObjects(selector).map {
-                NativeWidget.fromUiObject(it)
-            }
-        }
+    fun getNativeWidgets(query: SelectorQuery): List<NativeWidget> {
+        Logger.d("getNativeWidgets is not implemented")
+        return arrayListOf()
     }
 
-    fun tap(index: Int) {
-        val device = getUiDevice()
-
-        val selector = UiSelector().className(Button::class.java).instance(index)
-        val uiObject = device.findObject(selector)
-
-        uiObject.click()
-    }
-
-    fun tap(query: WidgetsQuery) {
+    fun tap(query: SelectorQuery) {
         val device = getUiDevice()
         val selector = query.toUiSelector()
 

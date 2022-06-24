@@ -31,7 +31,7 @@ class _$SelectorTearOff {
       String? contentDescriptionStartsWith,
       String? contentDescriptionContains,
       String? resourceId,
-      String? instance,
+      int? instance,
       bool? enabled,
       bool? focused,
       String? packageName}) {
@@ -70,7 +70,7 @@ mixin _$Selector {
       throw _privateConstructorUsedError;
   String? get contentDescriptionContains => throw _privateConstructorUsedError;
   String? get resourceId => throw _privateConstructorUsedError;
-  String? get instance => throw _privateConstructorUsedError;
+  int? get instance => throw _privateConstructorUsedError;
   bool? get enabled => throw _privateConstructorUsedError;
   bool? get focused => throw _privateConstructorUsedError;
   String? get packageName => throw _privateConstructorUsedError;
@@ -94,7 +94,7 @@ abstract class $SelectorCopyWith<$Res> {
       String? contentDescriptionStartsWith,
       String? contentDescriptionContains,
       String? resourceId,
-      String? instance,
+      int? instance,
       bool? enabled,
       bool? focused,
       String? packageName});
@@ -159,7 +159,7 @@ class _$SelectorCopyWithImpl<$Res> implements $SelectorCopyWith<$Res> {
       instance: instance == freezed
           ? _value.instance
           : instance // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
       enabled: enabled == freezed
           ? _value.enabled
           : enabled // ignore: cast_nullable_to_non_nullable
@@ -190,7 +190,7 @@ abstract class _$SelectorCopyWith<$Res> implements $SelectorCopyWith<$Res> {
       String? contentDescriptionStartsWith,
       String? contentDescriptionContains,
       String? resourceId,
-      String? instance,
+      int? instance,
       bool? enabled,
       bool? focused,
       String? packageName});
@@ -256,7 +256,7 @@ class __$SelectorCopyWithImpl<$Res> extends _$SelectorCopyWithImpl<$Res>
       instance: instance == freezed
           ? _value.instance
           : instance // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
       enabled: enabled == freezed
           ? _value.enabled
           : enabled // ignore: cast_nullable_to_non_nullable
@@ -310,7 +310,7 @@ class _$_Selector implements _Selector {
   @override
   final String? resourceId;
   @override
-  final String? instance;
+  final int? instance;
   @override
   final bool? enabled;
   @override
@@ -387,7 +387,7 @@ abstract class _Selector implements Selector {
       String? contentDescriptionStartsWith,
       String? contentDescriptionContains,
       String? resourceId,
-      String? instance,
+      int? instance,
       bool? enabled,
       bool? focused,
       String? packageName}) = _$_Selector;
@@ -411,7 +411,7 @@ abstract class _Selector implements Selector {
   @override
   String? get resourceId;
   @override
-  String? get instance;
+  int? get instance;
   @override
   bool? get enabled;
   @override

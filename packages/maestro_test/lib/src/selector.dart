@@ -36,7 +36,7 @@ class Selector with _$Selector {
     String? contentDescriptionStartsWith,
     String? contentDescriptionContains,
     String? resourceId,
-    String? instance,
+    int? instance,
     bool? enabled,
     bool? focused,
     String? packageName,

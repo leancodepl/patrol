@@ -33,7 +33,7 @@ data class TapOnNotificationCommand(val index: Int)
 data class EnterTextCommand(val index: Int, val text: String)
 
 @Serializable
-data class WidgetsQuery(
+data class SelectorQuery(
     val text: String? = null,
     val textStartsWith: String? = null,
     val textContains: String? = null,
@@ -65,54 +65,54 @@ data class WidgetsQuery(
     }
 
     fun toUiSelector(): UiSelector {
-        val selector = UiSelector()
+        var selector = UiSelector()
 
         if (text != null) {
-            selector.text(text)
+            selector = selector.text(text)
         }
 
         if (textStartsWith != null) {
-            selector.textStartsWith(textStartsWith)
+            selector = selector.textStartsWith(textStartsWith)
         }
 
         if (textContains != null) {
-            selector.textContains(textContains)
+            selector = selector.textContains(textContains)
         }
 
         if (className != null) {
-            selector.className(className)
+            selector = selector.className(className)
         }
 
         if (contentDescription != null) {
-            selector.description(contentDescription)
+            selector = selector.description(contentDescription)
         }
 
         if (contentDescriptionStartsWith != null) {
-            selector.descriptionStartsWith(contentDescriptionStartsWith)
+            selector = selector.descriptionStartsWith(contentDescriptionStartsWith)
         }
 
         if (contentDescriptionContains != null) {
-            selector.descriptionContains(contentDescriptionContains)
+            selector = selector.descriptionContains(contentDescriptionContains)
         }
 
         if (resourceId != null) {
-            selector.resourceId(resourceId)
+            selector = selector.resourceId(resourceId)
         }
 
         if (instance != null) {
-            selector.instance(instance)
+            selector = selector.instance(instance)
         }
 
         if (enabled != null) {
-            selector.enabled(enabled)
+            selector = selector.enabled(enabled)
         }
 
         if (focused != null) {
-            selector.focused(focused)
+            selector = selector.focused(focused)
         }
 
         if (pkg != null) {
-            selector.packageName(pkg)
+            selector = selector.packageName(pkg)
         }
 
         return selector
@@ -163,12 +163,7 @@ class ServerInstrumentation {
                 Response(OK)
             },
             "tap" bind POST to {
-                val body = Json.decodeFromString<TapCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.tap(body.index)
-                Response(OK)
-            },
-            "tap2" bind POST to {
-                val body = Json.decodeFromString<WidgetsQuery>(it.bodyString())
+                val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
                 UIAutomatorInstrumentation.instance.tap(body)
                 Response(OK)
             },
@@ -178,7 +173,7 @@ class ServerInstrumentation {
                 Response(OK)
             },
             "getNativeWidgets" bind POST to {
-                val body = Json.decodeFromString<WidgetsQuery>(it.bodyString())
+                val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
                 val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets(body)
                 Response(OK).body(Json.encodeToString(textFields))
             },

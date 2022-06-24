@@ -166,9 +166,11 @@ class Maestro {
   /// Disables bluetooth
   Future<void> disableBluetooth() => _wrapPost('disableBluetooth');
 
-  /// Taps on the [index]-th visible button.
-  Future<void> tap(int index) {
-    return _wrapPost('tap', <String, dynamic>{'index': index});
+  /// Taps on the native widget specified by [selector].
+  ///
+  /// If the native widget is not found, an exception is thrown.
+  Future<void> tap(Selector selector) {
+    return _wrapPost('tap', selector.toJson());
   }
 
   /// Taps on the [index]-th visible notification.
