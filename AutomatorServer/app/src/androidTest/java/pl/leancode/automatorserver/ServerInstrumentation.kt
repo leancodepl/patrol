@@ -26,7 +26,13 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
-data class TapCommand(val index: Int)
+data class SwipeCommand(
+    var startX: Int,
+    var startY: Int,
+    var endX: Int,
+    var endY: Int,
+    var steps: Int,
+)
 
 @Serializable
 data class TapOnNotificationCommand(val index: Int)
@@ -279,6 +285,11 @@ class ServerInstrumentation {
             "enterText" bind POST to {
                 val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.enterText(body.index, body.text)
+                Response(OK)
+            },
+            "swipe" bind POST to {
+                val body = Json.decodeFromString<SwipeCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.swipe(body)
                 Response(OK)
             },
             "getNativeWidgets" bind POST to {

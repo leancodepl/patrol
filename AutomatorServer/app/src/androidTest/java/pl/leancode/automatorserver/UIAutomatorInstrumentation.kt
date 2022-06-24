@@ -121,7 +121,7 @@ class UIAutomatorInstrumentation {
     fun enableBluetooth() = executeShellCommand("svc bluetooth enable")
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
-    
+
     fun getNativeWidgets(query: SelectorQuery): List<NativeWidget> {
         val device = getUiDevice()
         val selector = query.toBySelector()
@@ -149,6 +149,24 @@ class UIAutomatorInstrumentation {
 
         uiObject.click()
         uiObject.text = text
+    }
+
+    fun swipe(swipe: SwipeCommand) {
+        if (swipe.startX !in 0..1) {
+            throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")
+        }
+        
+        if (swipe.startY !in 0..1) {
+            throw IllegalArgumentException("startY represents a percentage and must be between 0 and 1")
+        }
+
+        val device = getUiDevice()
+        val startX = device.displayWidth * swipe.startX
+        val startY = device.displayHeight * swipe.startY
+        val endX = device.displayWidth * swipe.endX
+        val endY = device.displayHeight * swipe.endY
+
+        device.swipe(startX, startY, endX, endY, swipe.steps)
     }
 
     fun openNotifications() {
