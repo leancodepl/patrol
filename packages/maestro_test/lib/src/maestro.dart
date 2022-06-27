@@ -143,6 +143,15 @@ class Maestro {
   ///    which is used on Android
   Future<void> openNotifications() => _wrapPost('openNotifications');
 
+  /// Returns the first, topmost visible notification.
+  ///
+  /// Notification shade must be opened at the time of calling of this method
+  /// for example by using [openNotifications].
+  Future<Notification> getFirstNotification() async {
+    final notifications = await getNotifications();
+    return notifications[0];
+  }
+
   /// Returns notifications that are visible in the notification shade.
   ///
   /// Notification shade must be opened at the time of calling of this method
