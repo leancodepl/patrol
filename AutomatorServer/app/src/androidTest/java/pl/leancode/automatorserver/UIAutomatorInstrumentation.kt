@@ -208,21 +208,10 @@ class UIAutomatorInstrumentation {
 
     fun tapOnNotification(index: Int) {
         val device = getUiDevice()
-        device.wait(Until.hasObject(By.pkg("com.android.systemui")), 2000)
 
-        val notificationStackScroller = UiSelector()
-            .packageName("com.android.systemui")
-            .resourceId("com.android.systemui:id/notification_stack_scroller")
-        val notificationStackScrollerUiObject = device.findObject(notificationStackScroller)
-        assertTrue(notificationStackScrollerUiObject.exists())
-
-        Logger.d("notificationStackController child count: ${notificationStackScrollerUiObject.childCount}")
-
-        val notiSelectorUiObject =
-            notificationStackScrollerUiObject.getChild(UiSelector().index(index))
-        assertTrue(notiSelectorUiObject.exists())
-
-        notiSelectorUiObject.click()
+        val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
+        val obj = device.findObject(query.toUiSelector())
+        obj.click()
     }
 
     companion object {

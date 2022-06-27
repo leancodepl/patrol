@@ -24,7 +24,7 @@ void main() {
         );
       }
 
-      await maestro.pressBack(); // hide notifications
+      await maestro.tapOnNotification(index: 1);
     },
   );
 }

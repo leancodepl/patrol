@@ -168,7 +168,7 @@ class Maestro {
   /// Taps on the [index]-th visible notification.
   ///
   /// You must call [openNotifications] first.
-  Future<void> tapOnNotification(int index) {
+  Future<void> tapOnNotification({int index = 0}) {
     return _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
   }
 
