@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' as logging;
 import 'package:maestro_test/maestro_test.dart';
 import 'package:maestro_test/src/extensions.dart';
+import 'package:maestro_test/src/notification.dart';
 
 /// Provides functionality to control the device.
 ///
@@ -142,6 +143,26 @@ class Maestro {
   ///    which is used on Android
   Future<void> openNotifications() => _wrapPost('openNotifications');
 
+  /// Returns notifications that are visible in the notification shade.
+  ///
+  /// Notification shade must be opened at the time of calling of this method
+  /// for example by using [openNotifications].
+  Future<List<Notification>> getNotifications() async {
+    final response = await _wrapPost('getNotifications');
+
+    final notifications = json.decode(response.body) as List<dynamic>;
+    return notifications
+        .map((dynamic e) => Notification.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Taps on the [index]-th visible notification.
+  ///
+  /// You must call [openNotifications] first.
+  Future<void> tapOnNotification(int index) {
+    return _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
+  }
+
   /// Enables dark mode.
   Future<void> enableDarkMode() => _wrapPost('enableDarkMode');
 
@@ -171,13 +192,6 @@ class Maestro {
   /// If the native widget is not found, an exception is thrown.
   Future<void> tap(Selector selector) {
     return _wrapPost('tap', selector.toJson());
-  }
-
-  /// Taps on the [index]-th visible notification.
-  ///
-  /// You must call [openNotifications] first.
-  Future<void> tapOnNotification(int index) {
-    return _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
   }
 
   /// Enters text to the [index]-th visible text field.
