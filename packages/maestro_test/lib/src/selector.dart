@@ -17,7 +17,7 @@ abstract class WidgetClasses {
   String get toggle;
 }
 
-class _AndroidWidgetClasses extends WidgetClasses {
+class _AndroidWidgetClasses implements WidgetClasses {
   @override
   String get button => 'com.android.Button';
 
