@@ -272,6 +272,10 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.openNotifications()
                 Response(OK)
             },
+            "getNotifications" bind POST to {
+                val notifications = UIAutomatorInstrumentation.instance.getNotifications()
+                Response(OK).body(Json.encodeToString(notifications))
+            },
             "tapOnNotification" bind POST to {
                 val body = Json.decodeFromString<TapOnNotificationCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.tapOnNotification(body.index)

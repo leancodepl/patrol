@@ -15,6 +15,13 @@ import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
 @Serializable
+data class Notification(
+    val appName: String,
+    val title: String,
+    val content: String,
+)
+
+@Serializable
 data class NativeWidget(
     val className: String?,
     val text: String?,
@@ -180,6 +187,23 @@ class UIAutomatorInstrumentation {
         device.openNotification()
         Logger.d("After open notifications")
         delay()
+    }
+
+    fun getNotifications(): List<Notification> {
+        val widgets = getNativeWidgets(
+            query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content"),
+        )
+
+        val notifications = mutableListOf<Notification>()
+        for (widget in widgets) {
+            // Tested and working on API 30. May require changes for other OS versions.
+            val appName = widget.children?.get(0)?.children?.get(1)?.text
+            val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
+            val content = widget.children?.get(1)?.children?.get(1)?.text
+            notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
+        }
+
+        return notifications
     }
 
     fun tapOnNotification(index: Int) {
