@@ -154,6 +154,8 @@ class UIAutomatorInstrumentation {
 
         uiObject.click()
         uiObject.text = text
+
+        pressBack() // Hide keyboard.
     }
 
     fun swipe(swipe: SwipeCommand) {

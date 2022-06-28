@@ -163,8 +163,7 @@ class Maestro {
 
   /// Returns the first, topmost visible notification.
   ///
-  /// Notification shade must be opened at the time of calling of this method
-  /// for example by using [openNotifications].
+  /// Notification shade will be opened automatically using [openNotifications].
   Future<Notification> getFirstNotification() async {
     await openNotifications();
 
@@ -174,9 +173,10 @@ class Maestro {
 
   /// Returns notifications that are visible in the notification shade.
   ///
-  /// Notification shade must be opened at the time of calling of this method
-  /// for example by using [openNotifications].
+  /// Notification shade will be opened automatically using [openNotifications].
   Future<List<Notification>> getNotifications() async {
+    await openNotifications();
+
     final response = await _wrapGet('getNotifications');
 
     final notifications = json.decode(response.body) as List<dynamic>;
@@ -187,9 +187,11 @@ class Maestro {
 
   /// Taps on the [index]-th visible notification.
   ///
-  /// You must call [openNotifications] first.
-  Future<void> tapOnNotification({int index = 0}) {
-    return _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
+  /// Notification shade will be opened automatically using [openNotifications].
+  Future<void> tapOnNotification({int index = 0}) async {
+    await openNotifications();
+
+    await _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
   }
 
   /// Enables dark mode.
