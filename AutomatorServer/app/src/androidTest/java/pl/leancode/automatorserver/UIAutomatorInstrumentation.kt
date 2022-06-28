@@ -206,6 +206,8 @@ class UIAutomatorInstrumentation {
         if (!successful) {
             throw IllegalArgumentException("Swipe failed")
         }
+
+        delay()
     }
 
     fun openHalfNotificationShade() {
@@ -270,6 +272,8 @@ class UIAutomatorInstrumentation {
         val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
         val obj = device.findObject(query.toUiSelector())
         obj.click()
+
+        delay()
     }
 
     companion object {

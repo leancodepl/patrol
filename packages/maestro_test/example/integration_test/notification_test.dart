@@ -23,7 +23,7 @@ void main() {
       await maestro.tapOnNotification(index: 1);
 
       await maestro.openHalfNotificationShade();
-      await maestro.tap(const Selector(textContains: '2'));
+      await maestro.tap(const Selector(textContains: 'ID=2'));
     },
   );
 }
