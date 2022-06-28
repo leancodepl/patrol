@@ -137,7 +137,6 @@ class UIAutomatorInstrumentation {
     fun tap(query: SelectorQuery) {
         val device = getUiDevice()
         val selector = query.toUiSelector()
-
         Logger.d("Selector: $selector")
 
         val uiObject = device.findObject(selector)
@@ -148,9 +147,27 @@ class UIAutomatorInstrumentation {
 
     fun enterText(index: Int, text: String) {
         val device = getUiDevice()
-
         val selector = UiSelector().className(EditText::class.java).instance(index)
+        Logger.d("Selector: $selector")
+
         val uiObject = device.findObject(selector)
+
+        Logger.d("Entering text into UIObject with text ${uiObject.text}")
+
+        uiObject.click()
+        uiObject.text = text
+
+        pressBack() // Hide keyboard.
+    }
+
+    fun enterText(query: SelectorQuery, text: String) {
+        val device = getUiDevice()
+        val selector = query.toUiSelector()
+        Logger.d("Selector: $selector")
+
+        val uiObject = device.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
+
+        Logger.d("Entering text into UIObject with text ${uiObject.text}")
 
         uiObject.click()
         uiObject.text = text

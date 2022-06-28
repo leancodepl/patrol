@@ -40,7 +40,10 @@ data class SwipeCommand(
 data class TapOnNotificationCommand(val index: Int)
 
 @Serializable
-data class EnterTextCommand(val index: Int, val text: String)
+data class EnterTextByIndexCommand(val index: Int, val text: String)
+
+@Serializable
+data class EnterTextBySelectorCommand(val selector: SelectorQuery, val text: String)
 
 @Serializable
 data class SelectorQuery(
@@ -288,9 +291,14 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.tap(body)
                 Response(OK)
             },
-            "enterText" bind POST to {
-                val body = Json.decodeFromString<EnterTextCommand>(it.bodyString())
+            "enterTextByIndex" bind POST to {
+                val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.enterText(body.index, body.text)
+                Response(OK)
+            },
+            "enterTextBySelector" bind POST to {
+                val body = Json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.enterText(body.selector, body.text)
                 Response(OK)
             },
             "swipe" bind POST to {

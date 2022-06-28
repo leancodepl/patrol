@@ -45,6 +45,9 @@ class Maestro {
   /// Whether to print more logs.
   final bool verbose;
 
+  /// Timeout for HTTP requests to Maestro automation server.
+  final timeout = const Duration(seconds: 10);
+
   final _client = http.Client();
   final _logger = logging.Logger('Maestro');
 
@@ -70,7 +73,7 @@ class Maestro {
     final response = await _client.get(
       Uri.parse('$_baseUri/$action'),
       headers: {'Content-Type': 'application/json'},
-    ).timeout(const Duration(seconds: 5));
+    ).timeout(timeout);
 
     if (!response.successful) {
       final msg = '$action: failed with code ${response.statusCode}';
@@ -92,7 +95,7 @@ class Maestro {
       Uri.parse('$_baseUri/$action'),
       body: jsonEncode(body),
       headers: {'Content-Type': 'application/json'},
-    ).timeout(const Duration(seconds: 5));
+    ).timeout(timeout);
 
     if (!response.successful) {
       final msg = '$action: failed with code ${response.statusCode}';
@@ -219,10 +222,17 @@ class Maestro {
     return _wrapPost('tap', selector.toJson());
   }
 
-  /// Enters text to the [index]-th visible text field.
-  Future<void> enterText(String text, {required int index}) {
+  Future<void> enterText(Selector selector, {required String text}) {
     return _wrapPost(
-      'enterText',
+      'enterTextBySelector',
+      <String, dynamic>{'selector': selector.toJson(), 'text': text},
+    );
+  }
+
+  /// Enters text to the [index]-th visible text field.
+  Future<void> enterTextByIndex(String text, {required int index}) {
+    return _wrapPost(
+      'enterTextByIndex',
       <String, dynamic>{'index': index, 'text': text},
     );
   }
