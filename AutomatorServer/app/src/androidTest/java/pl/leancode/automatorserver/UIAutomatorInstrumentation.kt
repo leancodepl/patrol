@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.Until
-import junit.framework.TestCase.assertTrue
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
@@ -18,7 +15,7 @@ import kotlin.math.roundToInt
 data class Notification(
     val appName: String,
     val title: String,
-    val content: String,
+    val content: String
 )
 
 @Serializable
@@ -31,7 +28,7 @@ data class NativeWidget(
     val childCount: Int?,
     val resourceName: String?,
     val applicationPackage: String?,
-    val children: List<NativeWidget>?,
+    val children: List<NativeWidget>?
 ) {
     companion object {
         fun fromUiObject(obj: UiObject2): NativeWidget {
@@ -44,7 +41,7 @@ data class NativeWidget(
                 childCount = obj.childCount,
                 resourceName = obj.resourceName,
                 applicationPackage = obj.applicationPackage,
-                children = obj.children?.map { fromUiObject(it) },
+                children = obj.children?.map { fromUiObject(it) }
             )
         }
     }
@@ -191,7 +188,7 @@ class UIAutomatorInstrumentation {
 
     fun getNotifications(): List<Notification> {
         val widgets = getNativeWidgets(
-            query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content"),
+            query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content")
         )
 
         val notifications = mutableListOf<Notification>()

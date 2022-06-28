@@ -31,7 +31,7 @@ data class SwipeCommand(
     var startY: Float,
     var endX: Float,
     var endY: Float,
-    var steps: Int,
+    var steps: Int
 )
 
 @Serializable
@@ -53,7 +53,7 @@ data class SelectorQuery(
     val instance: Int? = null,
     val enabled: Boolean? = null,
     val focused: Boolean? = null,
-    val pkg: String? = null,
+    val pkg: String? = null
 ) {
     fun isEmpty(): Boolean {
         return (
@@ -272,7 +272,7 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.openNotifications()
                 Response(OK)
             },
-            "getNotifications" bind POST to {
+            "getNotifications" bind GET to {
                 val notifications = UIAutomatorInstrumentation.instance.getNotifications()
                 Response(OK).body(Json.encodeToString(notifications))
             },

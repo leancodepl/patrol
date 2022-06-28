@@ -64,6 +64,24 @@ class Maestro {
     }
   }
 
+  Future<http.Response> _wrapGet(String action) async {
+    _logger.fine('executing action "$action"');
+
+    final response = await _client.get(
+      Uri.parse('$_baseUri/$action'),
+      headers: {'Content-Type': 'application/json'},
+    ).timeout(const Duration(seconds: 5));
+
+    if (!response.successful) {
+      final msg = 'action "$action" failed with code ${response.statusCode}';
+      throw Exception('$msg\n${response.body}');
+    } else {
+      _logger.fine('action "$action" succeeded');
+    }
+
+    return response;
+  }
+
   Future<http.Response> _wrapPost(
     String action, [
     Map<String, dynamic> body = const <String, dynamic>{},
@@ -148,6 +166,8 @@ class Maestro {
   /// Notification shade must be opened at the time of calling of this method
   /// for example by using [openNotifications].
   Future<Notification> getFirstNotification() async {
+    await openNotifications();
+
     final notifications = await getNotifications();
     return notifications[0];
   }
@@ -157,7 +177,7 @@ class Maestro {
   /// Notification shade must be opened at the time of calling of this method
   /// for example by using [openNotifications].
   Future<List<Notification>> getNotifications() async {
-    final response = await _wrapPost('getNotifications');
+    final response = await _wrapGet('getNotifications');
 
     final notifications = json.decode(response.body) as List<dynamic>;
     return notifications
