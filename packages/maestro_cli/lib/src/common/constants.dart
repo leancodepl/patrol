@@ -31,7 +31,6 @@ Future<void> main() async {
     await maestro.stop();
   }
 }
-
 ''';
 
 const testDirName = 'integration_test';
