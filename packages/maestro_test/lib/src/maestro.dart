@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' as logging;
+import 'package:logging/logging.dart';
 import 'package:maestro_test/maestro_test.dart';
 import 'package:maestro_test/src/extensions.dart';
 import 'package:maestro_test/src/notification.dart';
@@ -18,10 +19,10 @@ class Maestro {
       : host = Platform.environment['MAESTRO_HOST']!,
         port = Platform.environment['MAESTRO_PORT']!,
         verbose = Platform.environment['MAESTRO_VERBOSE'] == 'true' {
-    print(
+    _setUpLogger();
+    _logger.info(
       'Creating Maestro driver instance. Host: $host, port: $port, verbose: $verbose',
     );
-    _setUpLogger();
   }
 
   /// Creates a new [Maestro] instance for use in testing environment (on target
@@ -30,7 +31,7 @@ class Maestro {
       : host = const String.fromEnvironment('MAESTRO_HOST'),
         port = const String.fromEnvironment('MAESTRO_PORT'),
         verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true' {
-    print(
+    _logger.info(
       'Creating Maestro test instance. Host: $host, port: $port, verbose: $verbose',
     );
     _setUpLogger();
@@ -53,18 +54,63 @@ class Maestro {
 
   String get _baseUri => 'http://$host:$port';
 
-  void _setUpLogger() {
-    logging.Logger.root.onRecord.listen((event) {
-      // ignore: avoid_print
-      print('${event.loggerName}: ${event.message}');
-    });
-
-    logging.hierarchicalLoggingEnabled = true;
+  /// Sets up the global logger.
+  ///
+  /// We use 4 log levels:
+  /// - [Level.SEVERE], printed in red
+  /// - [Level.WARNING], printed in yellow
+  /// - [Level.INFO], printed in white
+  /// - [Level.FINE], printed in grey and only when [verbose] is true
+  Future<void> _setUpLogger({bool verbose = false}) async {
     if (verbose) {
-      _logger.level = logging.Level.ALL;
-    } else {
-      _logger.level = logging.Level.INFO;
+      // ignore: avoid_print
+      print('Verbose mode enabled. More logs will be printed.');
     }
+
+    Logger.root.level = Level.ALL;
+
+    // ignore: avoid_print
+    Logger.root.onRecord.listen((log) => print(_formatLog(log)));
+  }
+
+  /// Copied from
+  /// https://github.com/leancodepl/logging_bugfender/blob/master/lib/src/print_strategy.dart.
+  String _formatLog(LogRecord record) {
+    final hasName = record.loggerName.isNotEmpty;
+    final hasMessage = record.message != 'null' && record.message.isNotEmpty;
+
+    final hasTopLine = hasName || hasMessage;
+    final hasError = record.error != null;
+    final hasStackTrace = record.stackTrace != null;
+
+    final log = StringBuffer();
+
+    if (hasTopLine) {
+      log.writeAll(
+        <String>[
+          if (hasName) '${record.loggerName}: ',
+          if (hasMessage) record.message,
+        ],
+      );
+    }
+
+    if (hasTopLine && hasError) {
+      log.write('\n');
+    }
+
+    if (hasError) {
+      log.write(record.error);
+    }
+
+    if (hasError && hasStackTrace) {
+      log.write('\n');
+    }
+
+    if (hasStackTrace) {
+      log.write(record.stackTrace);
+    }
+
+    return log.toString();
   }
 
   Future<http.Response> _wrapGet(String action) async {
@@ -107,8 +153,10 @@ class Maestro {
     return response;
   }
 
+  /// Performs a simple system health check.
+  ///
   /// Returns whether the Maestro automation server is running on target device.
-  Future<bool> isRunning() async {
+  Future<bool> healthCheck() async {
     try {
       final res = await _client.get(Uri.parse('$_baseUri/healthCheck'));
       _logger.info(

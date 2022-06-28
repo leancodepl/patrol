@@ -141,7 +141,7 @@ class UIAutomatorInstrumentation {
 
         val uiObject = device.findObject(selector)
 
-        Logger.d("Clicking on UIObject with text ${uiObject.text}")
+        Logger.d("Clicking on UIObject ${uiObject.text}")
         uiObject.click()
     }
 
@@ -151,9 +151,6 @@ class UIAutomatorInstrumentation {
         Logger.d("Selector: $selector")
 
         val uiObject = device.findObject(selector)
-
-        Logger.d("Entering text into UIObject with text ${uiObject.text}")
-
         uiObject.click()
         uiObject.text = text
 
@@ -166,9 +163,6 @@ class UIAutomatorInstrumentation {
         Logger.d("Selector: $selector")
 
         val uiObject = device.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
-
-        Logger.d("Entering text into UIObject with text ${uiObject.text}")
-
         uiObject.click()
         uiObject.text = text
 

@@ -4,7 +4,7 @@ import 'package:maestro_test/maestro_test.dart';
 // Runs on our machine. Knows nothing about the app being tested.
 Future<void> main() async {
   final maestro = Maestro.forDriver();
-  while (!await maestro.isRunning()) {
+  while (!await maestro.healthCheck()) {
     print('Waiting for maestro automation server...');
     await Future<void>.delayed(const Duration(seconds: 1));
   }
