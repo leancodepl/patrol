@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _notificationsPlugin.initialize(
+      
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       ),
@@ -50,9 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _showNotification() {
+  void _showNotification({required int id}) {
     _notificationsPlugin.show(
-      1,
+      id,
       'Maestro example',
       'Hello there!',
       const NotificationDetails(
@@ -87,9 +88,13 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             TextButton(
-              onPressed: _showNotification,
-              child: const Text('Show notification'),
-            )
+              onPressed: () => _showNotification(id: 1),
+              child: const Text('Show notification with ID=1'),
+            ),
+            TextButton(
+              onPressed: () => _showNotification(id: 2),
+              child: const Text('Show notification with ID=2'),
+            ),
           ],
         ),
       ),

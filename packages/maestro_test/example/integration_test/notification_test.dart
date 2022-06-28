@@ -13,11 +13,10 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Show notification'));
+      await tester.tap(find.textContaining('ID=1'));
+      await tester.tap(find.textContaining('ID=2'));
 
-      final notifications = await maestro.getNotifications();
-
-      notifications.forEach(print);
+      (await maestro.getNotifications()).forEach(print);
 
       await maestro.tapOnNotification(index: 1);
     },

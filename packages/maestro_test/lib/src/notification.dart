@@ -15,9 +15,4 @@ class Notification with _$Notification {
 
   factory Notification.fromJson(Map<String, dynamic> json) =>
       _$NotificationFromJson(json);
-
-  @override
-  String toString() {
-    return 'Notification(appName: $appName, title: $title, content: $content)';
-  }
 }
