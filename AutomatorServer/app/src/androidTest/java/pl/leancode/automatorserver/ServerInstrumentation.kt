@@ -9,6 +9,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.http4k.core.ContentType
 import org.http4k.core.Filter
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
@@ -17,6 +18,7 @@ import org.http4k.core.Status.Companion.BAD_REQUEST
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.OK
+import org.http4k.filter.ServerFilters
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
@@ -340,8 +342,10 @@ class ServerInstrumentation {
 
         Logger.i("Starting server on port $port")
 
-        server = router.withFilter(catcher)
+        server = router
+            .withFilter(catcher)
             .withFilter(printer)
+            .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
             .asServer(Netty(port))
             .start()
     }

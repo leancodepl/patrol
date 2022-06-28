@@ -65,7 +65,7 @@ class Maestro {
   }
 
   Future<http.Response> _wrapGet(String action) async {
-    _logger.fine('executing action "$action"');
+    _logger.fine('$action: executing...');
 
     final response = await _client.get(
       Uri.parse('$_baseUri/$action'),
@@ -73,10 +73,10 @@ class Maestro {
     ).timeout(const Duration(seconds: 5));
 
     if (!response.successful) {
-      final msg = 'action "$action" failed with code ${response.statusCode}';
+      final msg = '$action: failed with code ${response.statusCode}';
       throw Exception('$msg\n${response.body}');
     } else {
-      _logger.fine('action "$action" succeeded');
+      _logger.fine('$action: succeeded');
     }
 
     return response;
@@ -86,7 +86,7 @@ class Maestro {
     String action, [
     Map<String, dynamic> body = const <String, dynamic>{},
   ]) async {
-    _logger.fine('executing action "$action"');
+    _logger.fine('$action: executing...');
 
     final response = await _client.post(
       Uri.parse('$_baseUri/$action'),
@@ -95,10 +95,10 @@ class Maestro {
     ).timeout(const Duration(seconds: 5));
 
     if (!response.successful) {
-      final msg = 'action "$action" failed with code ${response.statusCode}';
+      final msg = '$action: failed with code ${response.statusCode}';
       throw Exception('$msg\n${response.body}');
     } else {
-      _logger.fine('action "$action" succeeded');
+      _logger.fine('$action: succeeded');
     }
 
     return response;
