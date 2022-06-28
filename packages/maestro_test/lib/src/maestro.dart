@@ -215,7 +215,7 @@ class Maestro {
   /// Enables bluetooth.
   Future<void> enableBluetooth() => _wrapPost('enableBluetooth');
 
-  /// Disables bluetooth
+  /// Disables bluetooth.
   Future<void> disableBluetooth() => _wrapPost('disableBluetooth');
 
   /// Taps on the native widget specified by [selector].

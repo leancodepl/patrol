@@ -38,10 +38,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _notificationsPlugin.initialize(
-      
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       ),
+      onDidReceiveNotificationResponse: (notificationResponse) {
+        print('tapped notification with ID ${notificationResponse.id}');
+      },
     );
   }
 
@@ -55,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _notificationsPlugin.show(
       id,
       'Maestro example',
-      'Hello there!',
+      'Hello there! This notification has ID=$id',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'main',

@@ -13,12 +13,15 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.textContaining('ID=1'));
-      await tester.tap(find.textContaining('ID=2'));
+      await tester.tap(find.textContaining('ID=1')); // appears on top
+      await tester.tap(find.textContaining('ID=2')); // also appears on top
 
       (await maestro.getNotifications()).forEach(print);
 
       await maestro.tapOnNotification(index: 1);
+
+      await maestro.openNotifications();
+      await maestro.tap(const Selector(textContains: '2'));
     },
   );
 }
