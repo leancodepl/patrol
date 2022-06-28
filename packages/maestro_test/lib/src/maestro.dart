@@ -220,7 +220,7 @@ class Maestro {
   }
 
   /// Enters text to the [index]-th visible text field.
-  Future<void> enterText(int index, String text) {
+  Future<void> enterText(String text, {required int index}) {
     return _wrapPost(
       'enterText',
       <String, dynamic>{'index': index, 'text': text},
