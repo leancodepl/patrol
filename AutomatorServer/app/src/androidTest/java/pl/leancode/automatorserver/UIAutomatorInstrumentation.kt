@@ -50,7 +50,10 @@ data class NativeWidget(
 class UIAutomatorInstrumentation {
     fun configure() {
         val configurator = Configurator.getInstance()
-        configurator.waitForSelectorTimeout = 2000
+        configurator.waitForSelectorTimeout = 5000
+        configurator.waitForIdleTimeout = 5000
+        configurator.keyInjectionDelay = 50
+
         Logger.i("Android UiAutomator configuration:")
         Logger.i("\twaitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
         Logger.i("\twaitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
@@ -158,7 +161,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun enterText(index: Int, text: String) {
-        Logger.d("enterText()");
+        Logger.d("enterText()")
 
         val device = getUiDevice()
         val selector = UiSelector().className(EditText::class.java).instance(index)
@@ -172,7 +175,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun enterText(query: SelectorQuery, text: String) {
-        Logger.d("enterText()");
+        Logger.d("enterText()")
 
         val device = getUiDevice()
         val selector = query.toUiSelector()
@@ -186,7 +189,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun swipe(swipe: SwipeCommand) {
-        Logger.d("swipe()");
+        Logger.d("swipe()")
 
         if (swipe.startX !in 0f..1f) {
             throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")
@@ -211,7 +214,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun openHalfNotificationShade() {
-        Logger.d("openHalfNotificationShade()");
+        Logger.d("openHalfNotificationShade()")
 
         val device = getUiDevice()
 
@@ -222,7 +225,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun openFullNotificationShade() {
-        Logger.d("openFullNotificationShade()");
+        Logger.d("openFullNotificationShade()")
 
         val device = getUiDevice()
 
@@ -242,7 +245,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun getNotifications(): List<Notification> {
-        Logger.d("getNotifications()");
+        Logger.d("getNotifications()")
 
         openHalfNotificationShade()
 
@@ -263,7 +266,7 @@ class UIAutomatorInstrumentation {
     }
 
     fun tapOnNotification(index: Int) {
-        Logger.d("tapOnNotification()");
+        Logger.d("tapOnNotification()")
 
         openHalfNotificationShade()
 

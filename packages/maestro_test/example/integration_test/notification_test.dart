@@ -13,8 +13,6 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await maestro.healthCheck();
-
       await tester.tap(find.textContaining('ID=1')); // appears on top
       await tester.tap(find.textContaining('ID=2')); // also appears on top
 

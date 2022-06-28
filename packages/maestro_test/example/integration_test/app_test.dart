@@ -13,7 +13,7 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await maestro.healthCheck();
+      await maestro.isRunning();
 
       await maestro.openFullNotificationShade();
       await maestro.tap(const Selector(text: 'Bluetooth'));

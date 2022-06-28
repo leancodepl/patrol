@@ -241,7 +241,7 @@ data class SelectorQuery(
 
 class ServerInstrumentation {
     var running = false
-    var server: Http4kServer? = null
+    private var server: Http4kServer? = null
 
     fun start() {
         server?.stop()
@@ -249,13 +249,12 @@ class ServerInstrumentation {
         running = true
 
         val router = routes(
-            "healthCheck" bind GET to {
-                Logger.i("Health check")
+            "isRunning" bind GET to {
                 Response(OK).body("All is good.")
             },
             "stop" bind POST to {
                 stop()
-                Response(OK).body("Server stopped")
+                Response(OK).body("Server stopped.")
             },
             "pressBack" bind POST to {
                 UIAutomatorInstrumentation.instance.pressBack()

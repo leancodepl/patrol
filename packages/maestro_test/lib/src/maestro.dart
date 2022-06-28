@@ -156,9 +156,9 @@ class Maestro {
   /// Performs a simple system health check.
   ///
   /// Returns whether the Maestro automation server is running on target device.
-  Future<bool> healthCheck() async {
+  Future<bool> isRunning() async {
     try {
-      final res = await _client.get(Uri.parse('$_baseUri/healthCheck'));
+      final res = await _client.get(Uri.parse('$_baseUri/isRunning'));
       _logger.info(
         'status code: ${res.statusCode}, response body: ${res.body}',
       );
