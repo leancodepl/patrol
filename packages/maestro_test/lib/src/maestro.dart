@@ -163,20 +163,16 @@ class Maestro {
 
   /// Returns the first, topmost visible notification.
   ///
-  /// Notification shade will be opened automatically using [openNotifications].
+  /// Notification shade will be opened automatically.
   Future<Notification> getFirstNotification() async {
-    await openNotifications();
-
     final notifications = await getNotifications();
     return notifications[0];
   }
 
   /// Returns notifications that are visible in the notification shade.
   ///
-  /// Notification shade will be opened automatically using [openNotifications].
+  /// Notification shade will be opened automatically.
   Future<List<Notification>> getNotifications() async {
-    await openNotifications();
-
     final response = await _wrapGet('getNotifications');
 
     final notifications = json.decode(response.body) as List<dynamic>;
@@ -187,10 +183,8 @@ class Maestro {
 
   /// Taps on the [index]-th visible notification.
   ///
-  /// Notification shade will be opened automatically using [openNotifications].
+  /// Notification shade will be opened automatically.
   Future<void> tapOnNotification({int index = 0}) async {
-    await openNotifications();
-
     await _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
   }
 

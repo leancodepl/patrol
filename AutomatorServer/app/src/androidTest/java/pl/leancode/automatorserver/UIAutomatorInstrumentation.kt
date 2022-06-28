@@ -189,6 +189,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun getNotifications(): List<Notification> {
+        openNotifications()
+
         val widgets = getNativeWidgets(
             query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content")
         )
@@ -206,6 +208,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun tapOnNotification(index: Int) {
+        openNotifications()
+
         val device = getUiDevice()
 
         val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
