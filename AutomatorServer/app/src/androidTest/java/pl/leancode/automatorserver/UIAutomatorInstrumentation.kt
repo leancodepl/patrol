@@ -78,6 +78,8 @@ class UIAutomatorInstrumentation {
     private fun delay() = SystemClock.sleep(1000)
 
     fun pressBack() {
+        Logger.d("pressBack")
+
         val device = getUiDevice()
         Logger.d("Before press back")
         device.pressBack()
@@ -86,6 +88,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressHome() {
+        Logger.d("pressHome()")
+
         val device = getUiDevice()
         Logger.d("Before press home")
         device.pressHome()
@@ -94,6 +98,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressRecentApps() {
+        Logger.d("pressRecentApps()")
+
         val device = getUiDevice()
         Logger.d("Before press recent apps")
         device.pressRecentApps()
@@ -102,6 +108,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun pressDoubleRecentApps() {
+        Logger.d("pressDoubleRecentApps()")
+
         val device = getUiDevice()
         Logger.d("Before press double recent apps")
         device.pressRecentApps()
@@ -128,6 +136,8 @@ class UIAutomatorInstrumentation {
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
     fun getNativeWidgets(query: SelectorQuery): List<NativeWidget> {
+        Logger.d("getNativeWidgets()")
+
         val device = getUiDevice()
         val selector = query.toBySelector()
         val uiObjects2 = device.findObjects(selector)
@@ -135,6 +145,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun tap(query: SelectorQuery) {
+        Logger.d("tap()")
+
         val device = getUiDevice()
         val selector = query.toUiSelector()
         Logger.d("Selector: $selector")
@@ -146,6 +158,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun enterText(index: Int, text: String) {
+        Logger.d("enterText()");
+
         val device = getUiDevice()
         val selector = UiSelector().className(EditText::class.java).instance(index)
         Logger.d("Selector: $selector")
@@ -158,6 +172,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun enterText(query: SelectorQuery, text: String) {
+        Logger.d("enterText()");
+
         val device = getUiDevice()
         val selector = query.toUiSelector()
         Logger.d("Selector: $selector")
@@ -170,6 +186,8 @@ class UIAutomatorInstrumentation {
     }
 
     fun swipe(swipe: SwipeCommand) {
+        Logger.d("swipe()");
+
         if (swipe.startX !in 0f..1f) {
             throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")
         }
@@ -190,7 +208,9 @@ class UIAutomatorInstrumentation {
         }
     }
 
-    fun openNotifications() {
+    fun openHalfNotificationShade() {
+        Logger.d("openHalfNotificationShade()");
+
         val device = getUiDevice()
 
         Logger.d("Before open notifications")
@@ -199,8 +219,30 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
+    fun openFullNotificationShade() {
+        Logger.d("openFullNotificationShade()");
+
+        val device = getUiDevice()
+
+        openHalfNotificationShade()
+
+        val startX = (device.displayWidth * 0.5).roundToInt()
+        val startY = (device.displayHeight * 0.3).roundToInt()
+        val endX = (device.displayWidth * 0.5).roundToInt()
+        val endY = (device.displayHeight * 0.9).roundToInt()
+
+        val successful = device.swipe(startX, startY, endX, endY, 3)
+        if (!successful) {
+            throw IllegalArgumentException("Swipe failed")
+        }
+
+        delay()
+    }
+
     fun getNotifications(): List<Notification> {
-        openNotifications()
+        Logger.d("getNotifications()");
+
+        openHalfNotificationShade()
 
         val widgets = getNativeWidgets(
             query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content")
@@ -219,7 +261,9 @@ class UIAutomatorInstrumentation {
     }
 
     fun tapOnNotification(index: Int) {
-        openNotifications()
+        Logger.d("tapOnNotification()");
+
+        openHalfNotificationShade()
 
         val device = getUiDevice()
 

@@ -15,16 +15,12 @@ void main() {
 
       await maestro.healthCheck();
 
-      await maestro.pressHome();
-
-      await maestro.pressDoubleRecentApps();
-
-      await maestro.pressHome();
-
-      await maestro.openNotifications();
+      await maestro.openFullNotificationShade();
       await maestro.tap(const Selector(text: 'Bluetooth'));
       await maestro.tap(const Selector(text: 'Bluetooth'));
       await maestro.pressBack();
+
+      await maestro.openHalfNotificationShade();
 
       await maestro.enableWifi();
       await maestro.disableWifi();
@@ -37,6 +33,8 @@ void main() {
       await maestro.enableDarkMode();
       await maestro.disableDarkMode();
       await maestro.enableDarkMode();
+
+      await maestro.pressBack();
     },
   );
 }

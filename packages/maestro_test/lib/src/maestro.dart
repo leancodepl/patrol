@@ -210,7 +210,16 @@ class Maestro {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
-  Future<void> openNotifications() => _wrapPost('openNotifications');
+  Future<void> openHalfNotificationShade() =>
+      _wrapPost('openHalfNotificationShade');
+
+  /// Opens the notification shade (equivalent of by swiping down 2 times).
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
+  ///    which is used on Android
+  Future<void> openFullNotificationShade() =>
+      _wrapPost('openFullNotificationShade');
 
   /// Returns the first, topmost visible notification.
   ///
@@ -257,12 +266,6 @@ class Maestro {
   /// Disables celluar (aka mobile data connection).
   Future<void> disableCelluar() => _wrapPost('disableCelluar');
 
-  /// Enables bluetooth.
-  Future<void> enableBluetooth() => _wrapPost('enableBluetooth');
-
-  /// Disables bluetooth.
-  Future<void> disableBluetooth() => _wrapPost('disableBluetooth');
-
   /// Taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
@@ -270,6 +273,9 @@ class Maestro {
     return _wrapPost('tap', selector.toJson());
   }
 
+  /// Enters text to the native widget specified by [selector].
+  ///
+  /// The native widget specified by selector must be an EditText on Android.
   Future<void> enterText(Selector selector, {required String text}) {
     return _wrapPost(
       'enterTextBySelector',
@@ -285,10 +291,9 @@ class Maestro {
     );
   }
 
-  /// Returns a list of native UI controls that are currently visible on screen.
-  Future<List<NativeWidget>> getNativeWidgets({
-    required Selector selector,
-  }) async {
+  /// Returns a list of native UI controls, specified by [selector], which are
+  /// currently visible on screen.
+  Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
     final response = await _wrapPost('getNativeWidgets', selector.toJson());
 
     final nativeWidgets = json.decode(response.body) as List<dynamic>;
