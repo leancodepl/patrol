@@ -1,7 +1,25 @@
+## 0.2.0
+
+- Introduce `Selector` class, which can be passed into `Maestro.tap(selector)`.
+- Add more platform functionality:
+
+  - `Maestro.enableWifi()` and `Maestro.disableWifi()`
+  - `Maestro.enableCellular()` and `Maestro.disableCellular()`
+  - `Maestro.enableDarkMode()` and `Maestro.disableDarkMode()`
+  - `Maestro.getNotifications()`, `Maestro.getFirstNotification()`, and
+    `Maestro.tapOnNotification(int index)`
+
+- Make `Maestro.forTest()` automatically call
+  `IntegrationTestWidgetsFlutterBinding.ensureInitialized()`
+- Fix many smaller issues.
+
 ## 0.1.4
 
 - Allow for running on many devices simultaneously.
 - Rename class `Automator` to `Maestro`.
+- Simpified test-side initialization. Now all you need is `Maestro.forTest()`.
+- Simpified driver-side initialization. Now all you need is
+  `Maestro.forDriver()`.
 
 ## 0.1.3
 

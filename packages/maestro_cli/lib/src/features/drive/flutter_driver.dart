@@ -67,7 +67,7 @@ Future<void> runTestsWithOutput({
   );
 
   final stdOutSub = result.stdout.listen((msg) {
-    final text = 'driver: ${systemEncoding.decode(msg)}';
+    final text = 'driver: ${systemEncoding.decode(msg)}'.trim();
     if (text.contains('I/flutter')) {
       log.info(text);
     } else {
@@ -76,7 +76,7 @@ Future<void> runTestsWithOutput({
   });
 
   final stdErrSub = result.stderr.listen((msg) {
-    final text = 'driver: ${systemEncoding.decode(msg)}';
+    final text = 'driver: ${systemEncoding.decode(msg)}'.trim();
     log.severe(text);
   });
 

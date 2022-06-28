@@ -1,3 +1,8 @@
+## 0.2.0
+
+- Add support for new features in [maestro_test
+  0.2.0](https://pub.dev/packages/maestro_test/changelog#020)
+
 ## 0.1.5
 
 - Allow for running on many devices simultaneously.

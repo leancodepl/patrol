@@ -13,7 +13,7 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.1.4
+  maestro_test: ^0.2.0
 ```
 
 ### Usage
@@ -26,7 +26,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final maestro = Maestro.forTest();
 
   testWidgets(
