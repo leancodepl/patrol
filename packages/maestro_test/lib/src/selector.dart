@@ -19,13 +19,13 @@ abstract class WidgetClasses {
 
 class _AndroidWidgetClasses implements WidgetClasses {
   @override
-  String get button => 'com.android.Button';
+  String get button => 'android.widget.Button';
 
   @override
-  String get text => 'com.android.TextView';
+  String get text => 'android.widget.TextView';
 
   @override
-  String get textField => 'com.android.EditText';
+  String get textField => 'android.widget.EditText';
 
   @override
   String get toggle => 'android.widget.Switch';

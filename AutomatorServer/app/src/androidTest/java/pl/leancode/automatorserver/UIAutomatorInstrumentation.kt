@@ -31,7 +31,7 @@ data class NativeWidget(
     val children: List<NativeWidget>?
 ) {
     companion object {
-        fun fromUiObject(obj: UiObject2): NativeWidget {
+        fun fromUiObject2(obj: UiObject2): NativeWidget {
             return NativeWidget(
                 className = obj.className,
                 text = obj.text,
@@ -41,7 +41,7 @@ data class NativeWidget(
                 childCount = obj.childCount,
                 resourceName = obj.resourceName,
                 applicationPackage = obj.applicationPackage,
-                children = obj.children?.map { fromUiObject(it) }
+                children = obj.children?.map { fromUiObject2(it) }
             )
         }
     }
@@ -131,7 +131,7 @@ class UIAutomatorInstrumentation {
         val device = getUiDevice()
         val selector = query.toBySelector()
         val uiObjects2 = device.findObjects(selector)
-        return uiObjects2.map { NativeWidget.fromUiObject(it) }
+        return uiObjects2.map { NativeWidget.fromUiObject2(it) }
     }
 
     fun tap(query: SelectorQuery) {
