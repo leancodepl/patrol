@@ -1,3 +1,16 @@
+## 0.2.0
+
+- Introduce `Selector` class, which can be passed into `Maestro.tap(selector)`.
+- Add more platform functionality:
+
+  - `Maestro.enableWifi()` and `Maestro.disableWifi()`
+  - `Maestro.enableCellular()` and `Maestro.disableCellular()`
+  - `Maestro.enableDarkMode()` and `Maestro.disableDarkMode()`
+  - `Maestro.getNotifications()`, `Maestro.getFirstNotification()`, and
+    `Maestro.tapOnNotification(int index)`
+
+- Fix many smaller issues.
+
 ## 0.1.4
 
 - Allow for running on many devices simultaneously.
