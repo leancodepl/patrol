@@ -15,14 +15,9 @@ void main() {
 
       await tester.tap(find.text('Show notification'));
 
-      await maestro.openNotifications();
       final notifications = await maestro.getNotifications();
 
-      for (final notification in notifications) {
-        print(
-          '${notification.appName}: ${notification.title}, ${notification.content}',
-        );
-      }
+      notifications.forEach(print);
 
       await maestro.tapOnNotification(index: 1);
     },
