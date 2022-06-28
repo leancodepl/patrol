@@ -1,5 +1,5 @@
 [drive]
 host = 'localhost'
-port = 8082
+port = 8081
 target = 'integration_test/app_test.dart'
 driver = 'test_driver/integration_test.dart'

@@ -3,11 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
-// This is an example file. Use it as a base to create your own Maestro-powered
-// test.
-//
-// It runs on target device.
-
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final maestro = Maestro.forTest();
@@ -18,15 +13,14 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await maestro.pressHome();
+      await maestro.isRunning();
 
-      await maestro.pressDoubleRecentApps();
-
-      await maestro.pressHome();
-
-      await maestro.openNotifications();
-      await maestro.tapOnNotification(0);
+      await maestro.openFullNotificationShade();
+      await maestro.tap(const Selector(text: 'Bluetooth'));
+      await maestro.tap(const Selector(text: 'Bluetooth'));
       await maestro.pressBack();
+
+      await maestro.openHalfNotificationShade();
 
       await maestro.enableWifi();
       await maestro.disableWifi();
@@ -39,6 +33,8 @@ void main() {
       await maestro.enableDarkMode();
       await maestro.disableDarkMode();
       await maestro.enableDarkMode();
+
+      await maestro.pressBack();
     },
   );
 }
