@@ -76,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('scaffold'),
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -99,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Text('Show notification with ID=2'),
           ),
           Container(
-            key: const ValueKey('box 1'),
+            key: const ValueKey('box1'),
             color: Colors.grey,
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -107,18 +108,18 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 const Text('box 1'),
                 ListTile(
-                  key: const Key('tile 1'),
+                  key: const Key('tile1'),
                   title: const Text('Add'),
                   trailing: IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, key: Key('icon1')),
                     onPressed: _incrementCounter,
                   ),
                 ),
                 ListTile(
-                  key: const Key('tile 2'),
+                  key: const Key('tile2'),
                   title: const Text('Subtract'),
                   trailing: IconButton(
-                    icon: const Icon(Icons.remove),
+                    icon: const Icon(Icons.remove, key: Key('icon2')),
                     onPressed: _decrementCounter,
                   ),
                 ),
@@ -127,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           const SizedBox(height: 16),
           Container(
-            key: const ValueKey('box 2'),
+            key: const ValueKey('box2'),
             color: Colors.grey,
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -135,18 +136,18 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 const Text('box 2'),
                 ListTile(
-                  key: const Key('tile 1'),
+                  key: const Key('tile1'),
                   title: const Text('Add'),
                   trailing: IconButton(
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add, key: Key('icon1')),
                     onPressed: _incrementCounter,
                   ),
                 ),
                 ListTile(
-                  key: const Key('tile 2'),
+                  key: const Key('tile2'),
                   title: const Text('Subtract'),
                   trailing: IconButton(
-                    icon: const Icon(Icons.remove),
+                    icon: const Icon(Icons.remove, key: Key('icon2')),
                     onPressed: _decrementCounter,
                   ),
                 ),

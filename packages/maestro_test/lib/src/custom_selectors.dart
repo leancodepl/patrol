@@ -43,38 +43,68 @@ import 'package:flutter_test/flutter_test.dart';
 ///  ```
 Finder $(String expression) {
   final parts = expression.split(' ');
+  print('Expression parts: $parts');
 
   final finders = <Finder>[];
   for (final part in parts) {
     if (part.alphanumeric) {
+      print('part $part is alphanumeric');
       finders.add(find.text(part));
       continue;
     }
 
+    if (part == '>') {
+      // TODO: hacky
+      continue;
+    }
+
     // If part is not alphanumeric, it should have a specifier in the front.
-    final possibleSpecifier = part.substring(0, 1);
+    final possibleSpecifierType = part.substring(0, 1);
+    final possibleSpecifierValue = part.substring(1);
 
     // Match by Widget's class.
-    if (possibleSpecifier == '.') {
+    if (possibleSpecifierType == '.') {
       throw UnimplementedError('Class specifier is not implemented yet');
     }
 
     // Match by Widget's key.
-    if (possibleSpecifier == '#') {
-      finders.add(find.byKey(ValueKey(possibleSpecifier)));
+    if (possibleSpecifierType == '#') {
+      finders.add(find.byKey(ValueKey(possibleSpecifierValue)));
       continue;
     }
 
-    throw Exception('unknown specifier: $possibleSpecifier');
+    throw Exception('unknown specifier type: $possibleSpecifierType');
   }
 
-  return finders[0];
+  if (finders.length < 2) {
+    return finders.first;
+  }
+
+  final finderResult = find.descendant(
+    matching: finders.last,
+    of: _findDescendant(finders, finders.length - 2),
+  );
+
+  return finderResult;
+}
+
+Finder _findDescendant(List<Finder> finders, int index) {
+  final of = index == 1 ? finders.first : _findDescendant(finders, index - 1);
+
+  return find.descendant(
+    matching: finders[index],
+    of: of,
+  );
 }
 
 extension _StringX on String {
   bool get alphanumeric {
     for (final rune in runes) {
-      if (rune < 48 || rune > 90) {
+      final isAlphanumeric = (rune >= 48 && rune <= 57) ||
+          (rune >= 65 && rune <= 90) ||
+          (rune >= 97 && rune <= 122);
+
+      if (!isAlphanumeric) {
         return false;
       }
     }
