@@ -53,6 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _decrementCounter() {
+    setState(() {
+      _counter--;
+    });
+  }
+
   void _showNotification({required int id}) {
     _notificationsPlugin.show(
       id,
@@ -73,32 +79,81 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text(
+            'You have pushed the button this many times:',
+          ),
+          Text(
+            '$_counter',
+            key: const ValueKey('counterText'),
+            style: Theme.of(context).textTheme.headline4,
+          ),
+          TextButton(
+            onPressed: () => _showNotification(id: 1),
+            child: const Text('Show notification with ID=1'),
+          ),
+          TextButton(
+            onPressed: () => _showNotification(id: 2),
+            child: const Text('Show notification with ID=2'),
+          ),
+          Container(
+            key: const ValueKey('box 1'),
+            color: Colors.grey,
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('box 1'),
+                ListTile(
+                  key: const Key('tile 1'),
+                  title: const Text('Add'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: _incrementCounter,
+                  ),
+                ),
+                ListTile(
+                  key: const Key('tile 2'),
+                  title: const Text('Subtract'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: _decrementCounter,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              key: const ValueKey('counterText'),
-              style: Theme.of(context).textTheme.headline4,
+          ),
+          const SizedBox(height: 16),
+          Container(
+            key: const ValueKey('box 2'),
+            color: Colors.grey,
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('box 2'),
+                ListTile(
+                  key: const Key('tile 1'),
+                  title: const Text('Add'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add),
+                    onPressed: _incrementCounter,
+                  ),
+                ),
+                ListTile(
+                  key: const Key('tile 2'),
+                  title: const Text('Subtract'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove),
+                    onPressed: _decrementCounter,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            TextButton(
-              onPressed: () => _showNotification(id: 1),
-              child: const Text('Show notification with ID=1'),
-            ),
-            TextButton(
-              onPressed: () => _showNotification(id: 2),
-              child: const Text('Show notification with ID=2'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
