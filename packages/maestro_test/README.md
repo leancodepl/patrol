@@ -1,11 +1,14 @@
 # maestro_test
 
-[![maestro_test on pub.dev][pub_badge]][pub_link]
-[![code style][pub_badge_style]][pub_badge_link]
+[![maestro_test on pub.dev][pub_badge]][pub_link] [![code
+style][pub_badge_style]][pub_badge_link]
 
 `maestro_test` package builds on top of `flutter_driver` to make it easy to
 control the native device from Dart. It does this by using Android's
 [UIAutomator][ui_automator] library.
+
+It also provides a new custom selector system to make writing Flutter widget
+tests more concisce, and writing them faster & more fun.
 
 ### Installation
 
@@ -28,30 +31,21 @@ import 'package:maestro_test/maestro_test.dart';
 void main() {
   final maestro = Maestro.forTest();
 
-  testWidgets(
+  maestroTest(
     "counter state is the same after going to Home and switching apps",
     (WidgetTester tester) async {
-      Text findCounterText() {
-        return tester
-            .firstElement(find.byKey(const ValueKey('counterText')))
-            .widget as Text;
-      }
-
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      expect(findCounterText().data, '1');
+      await $(FloatingActionButton).tap();
+      expect($(#counterText), '1');
 
       await maestro.pressHome();
-
       await maestro.pressDoubleRecentApps();
 
-      expect(findCounterText().data, '1');
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      expect(findCounterText().data, '2');
+      expect($(#counterText), '1');
+      await $(FloatingActionButton).tap();
+      expect($(#counterText), '2');
 
       await maestro.openNotifications();
       await maestro.pressBack();

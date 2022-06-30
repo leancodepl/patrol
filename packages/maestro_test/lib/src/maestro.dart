@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:integration_test/integration_test.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:logging/logging.dart';
 import 'package:maestro_test/maestro_test.dart';
@@ -20,6 +21,7 @@ class Maestro {
     _logger.info(
       'Creating Maestro test instance. Host: $host, port: $port, verbose: $verbose',
     );
+    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
     _setUpLogger();
   }
 

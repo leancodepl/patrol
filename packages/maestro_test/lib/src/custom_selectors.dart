@@ -92,6 +92,22 @@ class MaestroTester {
 
   final WidgetTester tester;
 
+  Future<void> pump(
+    Widget widget, [
+    Duration? pumpWidgetDuration,
+    EnginePhase pumpWidgetPhase = EnginePhase.sendSemanticsUpdate,
+    Duration pumpAndSettleDuration = const Duration(milliseconds: 100),
+    Duration pumpAndSettleTimeout = const Duration(minutes: 10),
+    EnginePhase pumpAndSettlePhase = EnginePhase.sendSemanticsUpdate,
+  ]) async {
+    await tester.pumpWidget(widget, pumpWidgetDuration, pumpWidgetPhase);
+    await tester.pumpAndSettle(
+      pumpAndSettleDuration,
+      pumpAndSettlePhase,
+      pumpAndSettleTimeout,
+    );
+  }
+
   MaestroFinder call(dynamic matching, [String? chainer, dynamic of]) {
     return MaestroFinder(
       _createFinder(matching),

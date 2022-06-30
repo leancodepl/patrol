@@ -11,11 +11,13 @@ environment:
 
 dependencies:
   flutter:
-    sdk: flutter 
+    sdk: flutter
   flutter_test:
     sdk: flutter
   freezed_annotation: ^1.1.0
   http: ^0.13.4
+  integration_test:
+    sdk: flutter
   json_annotation: ^4.5.0
   logging: ^1.0.2
 
