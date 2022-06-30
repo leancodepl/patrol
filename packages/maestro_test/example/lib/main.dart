@@ -1,5 +1,5 @@
+import 'package:example/notifications_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,21 +31,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var _counter = 0;
-  final _notificationsPlugin = FlutterLocalNotificationsPlugin();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _notificationsPlugin.initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      ),
-      onDidReceiveNotificationResponse: (notificationResponse) {
-        print('tapped notification with ID ${notificationResponse.id}');
-      },
-    );
-  }
 
   void _incrementCounter([int value = 1]) {
     final newValue = _counter + value;
@@ -61,20 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter = newValue;
     });
-  }
-
-  void _showNotification({required int id}) {
-    _notificationsPlugin.show(
-      id,
-      'Maestro example',
-      'Hello there! This notification has ID=$id',
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'main',
-          'Default notification channel',
-        ),
-      ),
-    );
   }
 
   @override
@@ -94,14 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
             '$_counter',
             key: const ValueKey('counterText'),
             style: Theme.of(context).textTheme.headline4,
-          ),
-          TextButton(
-            onPressed: () => _showNotification(id: 1),
-            child: const Text('Show notification with ID=1'),
-          ),
-          TextButton(
-            onPressed: () => _showNotification(id: 2),
-            child: const Text('Show notification with ID=2'),
           ),
           Container(
             key: const ValueKey('box1'),
@@ -162,6 +125,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const NotificationsScreen(),
+              ),
+            ),
+            child: const Text('Open notifications screen'),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
