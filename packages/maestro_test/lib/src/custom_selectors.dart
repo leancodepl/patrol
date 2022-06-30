@@ -1,122 +1,117 @@
-// import 'package:flutter/foundation.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-// /// A helper method that makes it easy to find Flutter widgets in tests. You
-// /// give us the String expression, and we give you the Widget you're looking
-// /// for.
-// ///
-// /// There are 3 "type specifiers":
-// /// - `.` matches Widget by type.
-// ///
-// ///     Example:
-// ///     ```dart
-// ///     final textField = $('.TextField');
-// ///     textField.enterText('user@example.com');
-// ///     ```
-// ///
-// /// - `#` matches Widget by ValueKey.
-// ///
-// ///     Example:
-// ///     ```dart
-// ///     final textField = $('#emailTextField');
-// ///     textField.enterText('user@example.com');
-// ///     ```
-// /// - raw text matches Widget by the text it contains.
-// ///
-// ///     Example:
-// ///     ```dart
-// ///     final textField = $('Enter email address');
-// ///     textField.enterText('user@example.com');
-// ///     ```
-// ///
-// /// ### Chaining
-// ///
-// /// Selectors can be chained, which allows you to write more expressive test
-// /// code.
-// ///
-// /// Taps on a Widget of type IconButton which is the descendant of a Widget with
-// /// ValueKey with value
-// /// ```dart
-// ///  final passwordVisibilityToggle = $('#passwordTextField > .IconButton');
-// ///  passwordVisibilityToggle.tap();
-// ///  ```
-// Finder $(String expression) {
-//   final parts = expression.split(' ');
-//   print('Expression parts: $parts');
+/// Signature for callback to [maestroTest].
+typedef MaestroTesterCallback = Future<void> Function(
+  MaestroTester maestroTester,
+);
 
-//   final finders = <Finder>[];
-//   for (final part in parts) {
-//     if (part.alphanumeric) {
-//       print('part $part is alphanumeric');
-//       finders.add(find.text(part));
-//       continue;
-//     }
+late final MaestroTester $;
 
-//     if (part == '>') {
-//       // TODO: hacky
-//       continue;
-//     }
+const With = 'with';
 
-//     // If part is not alphanumeric, it should have a specifier in the front.
-//     final possibleSpecifierType = part.substring(0, 1);
-//     final possibleSpecifierValue = part.substring(1);
+void maestroTest(
+  String description,
+  MaestroTesterCallback callback,
+) {
+  return testWidgets(description, (tester) async {
+    final maestroTester = MaestroTester(tester);
+    $ = maestroTester;
+    await callback(maestroTester);
+  });
+}
 
-//     // Match by Widget's class.
-//     if (possibleSpecifierType == '.') {
-//       throw UnimplementedError('Class specifier is not implemented yet');
-//     }
+class MaestroFinder {
+  MaestroFinder(this.finder, this.tester);
 
-//     // Match by Widget's key.
-//     if (possibleSpecifierType == '#') {
-//       finders.add(find.byKey(ValueKey(possibleSpecifierValue)));
-//       continue;
-//     }
+  final Finder finder;
+  final WidgetTester tester;
 
-//     throw Exception('unknown specifier type: $possibleSpecifierType');
-//   }
+  Future<void> tap({bool andSettle = false}) async {
+    await tester.tap(finder);
 
-//   if (finders.length < 2) {
-//     return finders.first;
-//   }
+    if (andSettle) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
+  }
 
-//   final finderResult = find.descendant(
-//     matching: finders.last,
-//     of: _findDescendant(finders, finders.length - 2),
-//   );
+  MaestroFinder $(dynamic matching, [String? chainer, dynamic of]) {
+    if ((chainer == null) != (of == null)) {
+      throw ArgumentError(
+        '`chainer` and `of` must be both null or both non-null',
+      );
+    }
 
-//   return finderResult;
-// }
+    final isComplex = chainer != null && of != null;
 
-// Finder _findDescendant(List<Finder> finders, int index) {
-//   final of = index == 1 ? finders.first : _findDescendant(finders, index - 1);
+    if (isComplex && chainer != 'with') {
+      throw ArgumentError('chainer must be "with"');
+    }
 
-//   return find.descendant(
-//     matching: finders[index],
-//     of: of,
-//   );
-// }
+    if (!isComplex) {
+      return MaestroFinder(
+        find.descendant(of: finder, matching: _createFinder(matching)),
+        tester,
+      );
+    }
 
-// extension _StringX on String {
-//   bool get alphanumeric {
-//     for (final rune in runes) {
-//       final isAlphanumeric = (rune >= 48 && rune <= 57) ||
-//           (rune >= 65 && rune <= 90) ||
-//           (rune >= 97 && rune <= 122);
+    return MaestroFinder(
+      find.descendant(
+        of: finder,
+        matching: find.ancestor(
+          of: _createFinder(of),
+          matching: _createFinder(matching),
+        ),
+      ),
+      tester,
+    );
+  }
+}
 
-//       if (!isAlphanumeric) {
-//         return false;
-//       }
-//     }
+class MaestroTester {
+  MaestroTester(this.tester);
 
-//     return true;
-//   }
-// }
+  final WidgetTester tester;
 
-// /// Powerful custom selectors extending the default Flutter [Finder].
-// extension MaestroFinders on Finder {
-//   /// See [$].
-//   Finder? $(String expression) {
-//     return null;
-//   }
-// }
+  MaestroFinder call(dynamic matching, [String? chainer, dynamic of]) {
+    return MaestroFinder(
+      _createFinder(matching),
+      tester,
+    );
+  }
+}
+
+/// [expression] must be either [Type] or a String.
+///
+/// If [expression] is a String, then it must start with '#' (which represents
+/// ValueKey).
+Finder _createFinder(dynamic expression) {
+  if (expression is Type) {
+    return find.byType(expression);
+  }
+
+  if (expression is String) {
+    if (expression.startsWith('#')) {
+      final specifierValue = expression.substring(1);
+      return find.byKey(Key(specifierValue));
+    }
+
+    return find.text(expression);
+  }
+
+  throw ArgumentError('expression must be of type `Type` or `String`');
+}
+
+/* void main() {
+  // final sel = $('#scaffold > #box1 > #tile2 > #icon2'); // old
+  $('#scaffold').$('#box1').$('#tile2').$('#icon2').tap(); // new
+
+  // selects the first scrollable with a Text descendant
+  $(Scrollable, 'with', Text);
+
+  // taps on a the first Button inside the first Scrollable
+  $(Scrollable).$(Button).tap();
+}
+ */

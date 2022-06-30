@@ -5,7 +5,6 @@ import 'package:logging/logging.dart' as logging;
 import 'package:logging/logging.dart';
 import 'package:maestro_test/maestro_test.dart';
 import 'package:maestro_test/src/extensions.dart';
-import 'package:maestro_test/src/notification.dart';
 
 /// Provides functionality to control the device.
 ///
