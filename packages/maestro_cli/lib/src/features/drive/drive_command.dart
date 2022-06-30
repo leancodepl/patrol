@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:adb/adb.dart' as adb;
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/features/drive/adb.dart' as adb;
+import 'package:maestro_cli/src/features/drive/adb.dart' as driverAdb;
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/maestro_config.dart';
@@ -87,20 +88,26 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final device = argResults?['device'] as String?;
+    final devicesStr = argResults?['devices'] as String?;
 
-    await adb.installApps(device: device, debug: debugFlag);
-    await adb.forwardPorts(port, device: device);
-    adb.runServer(device: device, port: portStr);
-    await flutter_driver.runTestsWithOutput(
-      driver: driver,
-      target: target,
-      host: host,
-      port: portStr,
-      verbose: verboseFlag,
-      device: device,
-      flavor: flavor as String?,
-    );
+    final devices = devicesStr != null && devicesStr != 'all'
+        ? devicesStr.split(',').toList()
+        : await adb.devices();
+
+    for (final device in devices) {
+      await driverAdb.installApps(device: device, debug: debugFlag);
+      await driverAdb.forwardPorts(port, device: device);
+      driverAdb.runServer(device: device, port: portStr);
+      await flutter_driver.runTestsWithOutput(
+        driver: driver,
+        target: target,
+        host: host,
+        port: portStr,
+        verbose: verboseFlag,
+        device: device,
+        flavor: flavor as String?,
+      );
+    }
 
     return 0;
   }
