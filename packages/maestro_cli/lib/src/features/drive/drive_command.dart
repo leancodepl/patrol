@@ -39,6 +39,10 @@ class DriveCommand extends Command<int> {
         'devices',
         help: 'List of devices to drive the app on.',
         allowed: ['all', ...devices],
+      )
+      ..addFlag(
+        'parallel',
+        help: 'Run tests on devices in parallel.',
       );
   }
 
