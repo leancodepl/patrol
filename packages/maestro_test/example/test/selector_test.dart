@@ -67,7 +67,7 @@ void main() {
     final sel1V2 = $(#box1).$(#tile2).$(#icon2);
     final sel1V3 = $(#box1).$(#tile2).$(IconButton);
     final sel2 = $(#box1).$(ListTile, With, #icon1);
-    final sel3 = $(Scaffold).$(ListTile, With, 'Add');
+    final sel3 = $(ListTile, With, 'Add');
 
     await sel1V1.tap();
     expect(find.text('-1'), findsOneWidget);

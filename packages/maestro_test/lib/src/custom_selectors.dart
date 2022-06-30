@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:maestro_test/src/extensions.dart';
 
 /// Signature for callback to [maestroTest].
 typedef MaestroTesterCallback = Future<void> Function(
@@ -22,7 +23,7 @@ void maestroTest(
 }
 
 class MaestroFinder {
-  MaestroFinder(this.finder, this.tester);
+  MaestroFinder({required this.finder, required this.tester});
 
   final Finder finder;
   final WidgetTester tester;
@@ -57,37 +58,12 @@ class MaestroFinder {
   }
 
   MaestroFinder $(dynamic matching, [String? chainer, dynamic of]) {
-    if ((chainer == null) != (of == null)) {
-      throw ArgumentError(
-        '`chainer` and `of` must be both null or both non-null',
-      );
-    }
-
-    final isComplex = chainer != null && of != null;
-
-    if (isComplex && chainer != With) {
-      throw ArgumentError('chainer must be "with"');
-    }
-
-    if (!isComplex) {
-      return MaestroFinder(
-        find.descendant(
-          of: finder,
-          matching: _createFinder(matching),
-        ),
-        tester,
-      );
-    }
-
-    return MaestroFinder(
-      find.descendant(
-        of: finder,
-        matching: find.ancestor(
-          of: _createFinder(of),
-          matching: _createFinder(matching),
-        ),
-      ),
-      tester,
+    return _$(
+      matching: matching,
+      chainer: chainer,
+      of: of,
+      tester: tester,
+      initialFinder: finder,
     );
   }
 }
@@ -114,10 +90,12 @@ class MaestroTester {
   }
 
   MaestroFinder call(dynamic matching, [String? chainer, dynamic of]) {
-    // TODO: add support for chainer and of
-    return MaestroFinder(
-      _createFinder(matching),
-      tester,
+    return _$(
+      matching: matching,
+      chainer: chainer,
+      of: of,
+      tester: tester,
+      initialFinder: null,
     );
   }
 }
@@ -148,20 +126,66 @@ Finder _createFinder(dynamic expression) {
   );
 }
 
-extension SymbolX on Symbol {
-  String get name {
-    final symbol = toString();
-    return symbol.substring(8, symbol.length - 2);
+bool _isComplex(String? chainer, dynamic of) {
+  if ((chainer == null) != (of == null)) {
+    throw ArgumentError(
+      '`chainer` and `of` must be both null or both non-null',
+    );
   }
+
+  final isComplex = chainer != null && of != null;
+
+  if (isComplex && chainer != With) {
+    throw ArgumentError('chainer must be "with"');
+  }
+
+  return isComplex;
 }
 
-/* void main() { // final sel = $('#scaffold > #box1 > #tile2 > #icon2'); // old
-  $('#scaffold').$('#box1').$('#tile2').$('#icon2').tap(); // new
+MaestroFinder _$({
+  required dynamic matching,
+  required String? chainer,
+  required dynamic of,
+  required WidgetTester tester,
+  required Finder? initialFinder,
+}) {
+  final isComplex = _isComplex(chainer, of);
 
-  // selects the first scrollable with a Text descendant $(Scrollable, 'with',
-  Text);
+  if (initialFinder == null) {
+    if (isComplex) {
+      return MaestroFinder(
+        tester: tester,
+        finder: find.ancestor(
+          of: _createFinder(of),
+          matching: _createFinder(matching),
+        ),
+      );
+    }
 
-  // taps on a the first Button inside the first Scrollable
-  $(Scrollable).$(Button).tap();
+    return MaestroFinder(
+      tester: tester,
+      finder: _createFinder(matching),
+    );
+  }
+
+  if (isComplex) {
+    return MaestroFinder(
+      tester: tester,
+      finder: find.descendant(
+        of: initialFinder,
+        matching: find.ancestor(
+          of: _createFinder(of),
+          matching: _createFinder(matching),
+        ),
+      ),
+    );
+  }
+
+  return MaestroFinder(
+    tester: tester,
+    finder: find.descendant(
+      of: initialFinder,
+      matching: _createFinder(matching),
+    ),
+  );
 }
- */

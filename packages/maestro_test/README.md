@@ -22,37 +22,60 @@ dev_dependencies:
 ### Usage
 
 ```dart
-// integration_test/app_test.dart
-import 'package:example/app.dart';
+// example/integration_test/example_test.dart
+import 'package:example/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    "counter state is the same after going to Home and switching apps",
-    (WidgetTester tester) async {
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
+    'counter state is the same after going to Home and switching apps',
+    (tester) async {
+      await tester.pumpWidgetAndSettle(const MyApp());
 
       await $(FloatingActionButton).tap();
-      expect($(#counterText), '1');
+      expect($(#counterText).text, '1');
 
       await maestro.pressHome();
       await maestro.pressDoubleRecentApps();
 
-      expect($(#counterText), '1');
+      expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
-      expect($(#counterText), '2');
+      expect($(#counterText).text, '2');
 
-      await maestro.openNotifications();
+      await maestro.openHalfNotificationShade();
       await maestro.pressBack();
     },
   );
 }
+```
 
+### Custom selectors
+
+```dart
+import 'package:example/main.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:maestro_test/maestro_test.dart';
+
+void main() {
+  maestroTest(
+    'counter state is the same after going to Home and switching apps',
+    (tester) async {
+      await tester.pumpWidgetAndSettle(const MyApp());
+
+      // Find widget with text 'Log in' which is a descendant of widget with key
+      // box1 which is a descendant of a Scaffold widget and tap on it.
+      await $(Scaffold).$(#box1).$('Log in').tap();
+
+      // Selects the first scrollable which has a Text descendant
+      $(Scrollable, With, Text);
+    },
+  );
+}
 ```
 
 [pub_badge]: https://img.shields.io/pub/v/maestro_test.svg
