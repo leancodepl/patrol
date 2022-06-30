@@ -75,6 +75,8 @@ class MaestroFinder {
 
   /// If this [MaestroFinder] matches a [Text] widget, then this method returns
   /// its data.
+  ///
+  /// Otherwise it throws an error.
   String? get text {
     return (finder.evaluate().first.widget as Text).data;
   }
@@ -144,7 +146,7 @@ Finder _createFinder(dynamic expression) {
   }
 
   throw ArgumentError(
-    'expression must be of type `Type`, `Symbol`, or `String`',
+    'expression must be of type `Type`, `Symbol`, `String`, or `Pattern`',
   );
 }
 
