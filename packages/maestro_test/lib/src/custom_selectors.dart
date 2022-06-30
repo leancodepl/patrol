@@ -9,8 +9,29 @@ typedef MaestroTesterCallback = Future<void> Function(
 
 late final MaestroTester $;
 
-const With = 'with';
+const withDescendant = Chainers.withDescendant;
 
+/// Specifies a relation between two [Widget]s.
+enum Chainers {
+  /// It signals to Maestro custom selector system that a "widget_1 CONTAINS
+  /// widget_2" check should be performed.
+  withDescendant,
+}
+
+/// Like [testWidgets], but with Maestro custom selector support.
+///
+/// ### Using the default [WidgetTester]
+/// If you need to do something using Flutter's [WidgetTester], you can access
+/// it like this:
+///
+/// ```dart
+/// maestroTest(
+///    'increase counter text',
+///    (maestroTester) async {
+///      await maestroTester.tester.tap(find.byIcon(Icons.add));
+///    },
+/// );
+/// ```
 void maestroTest(
   String description,
   MaestroTesterCallback callback,
@@ -52,12 +73,13 @@ class MaestroFinder {
     }
   }
 
-  /// If this [MaestroFinder] matches a [Text] widget, then this method returns its data.
+  /// If this [MaestroFinder] matches a [Text] widget, then this method returns
+  /// its data.
   String? get text {
     return (finder.evaluate().first.widget as Text).data;
   }
 
-  MaestroFinder $(dynamic matching, [String? chainer, dynamic of]) {
+  MaestroFinder $(dynamic matching, [Chainers? chainer, dynamic of]) {
     return _$(
       matching: matching,
       chainer: chainer,
@@ -89,7 +111,7 @@ class MaestroTester {
     );
   }
 
-  MaestroFinder call(dynamic matching, [String? chainer, dynamic of]) {
+  MaestroFinder call(dynamic matching, [Chainers? chainer, dynamic of]) {
     return _$(
       matching: matching,
       chainer: chainer,
@@ -126,7 +148,7 @@ Finder _createFinder(dynamic expression) {
   );
 }
 
-bool _isComplex(String? chainer, dynamic of) {
+bool _isComplex(Chainers? chainer, dynamic of) {
   if ((chainer == null) != (of == null)) {
     throw ArgumentError(
       '`chainer` and `of` must be both null or both non-null',
@@ -135,7 +157,7 @@ bool _isComplex(String? chainer, dynamic of) {
 
   final isComplex = chainer != null && of != null;
 
-  if (isComplex && chainer != With) {
+  if (isComplex && chainer != Chainers.withDescendant) {
     throw ArgumentError('chainer must be "with"');
   }
 
@@ -144,7 +166,7 @@ bool _isComplex(String? chainer, dynamic of) {
 
 MaestroFinder _$({
   required dynamic matching,
-  required String? chainer,
+  required Chainers? chainer,
   required dynamic of,
   required WidgetTester tester,
   required Finder? initialFinder,

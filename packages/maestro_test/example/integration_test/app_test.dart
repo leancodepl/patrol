@@ -1,17 +1,13 @@
 import 'package:example/main.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   final maestro = Maestro.forTest();
 
-  testWidgets(
+  maestroTest(
     'counter state is the same after going to Home and switching apps',
     (tester) async {
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
-
-      await maestro.isRunning();
+      await tester.pumpWidgetAndSettle(const MyApp());
 
       await maestro.openFullNotificationShade();
       await maestro.tap(const Selector(text: 'Bluetooth'));
