@@ -51,6 +51,11 @@ class MaestroFinder {
     }
   }
 
+  /// If this [MaestroFinder] matches a [Text] widget, then this method returns its data.
+  String? get text {
+    return (finder.evaluate().first.widget as Text).data;
+  }
+
   MaestroFinder $(dynamic matching, [String? chainer, dynamic of]) {
     if ((chainer == null) != (of == null)) {
       throw ArgumentError(
@@ -145,12 +150,11 @@ extension SymbolX on Symbol {
   }
 }
 
-/* void main() {
-  // final sel = $('#scaffold > #box1 > #tile2 > #icon2'); // old
+/* void main() { // final sel = $('#scaffold > #box1 > #tile2 > #icon2'); // old
   $('#scaffold').$('#box1').$('#tile2').$('#icon2').tap(); // new
 
-  // selects the first scrollable with a Text descendant
-  $(Scrollable, 'with', Text);
+  // selects the first scrollable with a Text descendant $(Scrollable, 'with',
+  Text);
 
   // taps on a the first Button inside the first Scrollable
   $(Scrollable).$(Button).tap();
