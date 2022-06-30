@@ -47,15 +47,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _incrementCounter() {
+  void _incrementCounter([int value = 1]) {
+    final newValue = _counter + value;
+    print('incrementing counter by $value (to $newValue)');
     setState(() {
-      _counter++;
+      _counter = newValue;
     });
   }
 
-  void _decrementCounter() {
+  void _decrementCounter([int value = 1]) {
+    final newValue = _counter - value;
+    print('decrementing counter by $value (to $newValue)');
     setState(() {
-      _counter--;
+      _counter = newValue;
     });
   }
 
@@ -108,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 const Text('box 1'),
                 ListTile(
+                  onTap: () => _incrementCounter(10),
                   key: const Key('tile1'),
                   title: const Text('Add'),
                   trailing: IconButton(
@@ -116,6 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 ListTile(
+                  onTap: () => _decrementCounter(10),
                   key: const Key('tile2'),
                   title: const Text('Subtract'),
                   trailing: IconButton(
@@ -136,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 const Text('box 2'),
                 ListTile(
+                  onTap: () => _incrementCounter(10),
                   key: const Key('tile1'),
                   title: const Text('Add'),
                   trailing: IconButton(
@@ -144,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 ListTile(
+                  onTap: () => _decrementCounter(10),
                   key: const Key('tile2'),
                   title: const Text('Subtract'),
                   trailing: IconButton(
