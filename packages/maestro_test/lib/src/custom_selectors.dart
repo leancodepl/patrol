@@ -114,6 +114,7 @@ class MaestroTester {
   }
 
   MaestroFinder call(dynamic matching, [String? chainer, dynamic of]) {
+    // TODO: add support for chainer and of
     return MaestroFinder(
       _createFinder(matching),
       tester,
@@ -136,6 +137,10 @@ Finder _createFinder(dynamic expression) {
 
   if (expression is String) {
     return find.text(expression);
+  }
+
+  if (expression is Pattern) {
+    return find.textContaining(expression);
   }
 
   throw ArgumentError(
