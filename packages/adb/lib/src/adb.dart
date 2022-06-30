@@ -4,6 +4,11 @@ import 'dart:io';
 import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 
+/// Installs the APK file (which has to be on [path]) to the connected device.
+///
+/// If there is more than 1 device, decide which one to use by passing [device].
+///
+/// Throws if there are no active devices.
 Future<ProcessResult> install(
   String path, {
   String? device,
@@ -32,6 +37,12 @@ Future<ProcessResult> install(
   return result;
 }
 
+/// Uninstalls the app identified by [packageName] from the the connected
+/// device.
+///
+/// If there is more than 1 device, decide which one to use by passing [device].
+///
+/// Thorws if there are no active devices.
 Future<ProcessResult> uninstall(
   String packageName, {
   String? device,
@@ -57,6 +68,10 @@ Future<ProcessResult> uninstall(
 }
 
 /// Sets up port forwarding.
+///
+/// If there is more than 1 device, decide which one to use by passing [device].
+///
+/// Throws if there are no active devices.
 ///
 /// See also:
 ///  * https://developer.android.com/studio/command-line/adb#forwardports
@@ -85,6 +100,14 @@ Future<void> forwardPorts({
   }
 }
 
+/// Runs instrumentation test specified by [packageName] and [intentClass].
+///
+/// If there is more than 1 device, decide which one to use by passing [device].
+///
+/// Throws if there are no active devices.
+///
+/// See also:
+///  * https://developer.android.com/studio/test/command-line#run-tests-with-adb
 Future<void> instrument({
   required String packageName,
   required String intentClass,
@@ -134,10 +157,9 @@ Future<void> instrument({
   }
 }
 
-/// Installs APK from [path].
-///
-/// If the install fails because of INSTALL_FAILED_UPDATE_INCOMPATIBLE, it's
-/// reinstalled.
+/// Like [install], but if the install fails because of
+/// INSTALL_FAILED_UPDATE_INCOMPATIBLE, the app is uninstalled and installed
+/// again.
 Future<void> forceInstallApk(String path, {String? device}) async {
   try {
     await install(path, device: device);

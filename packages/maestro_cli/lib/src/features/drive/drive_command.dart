@@ -31,12 +31,13 @@ class DriveCommand extends Command<int> {
         help: 'Dart file which starts flutter_driver.',
       )
       ..addOption(
-        'device',
-        help: 'Serial number of ADB device to use.',
-      )
-      ..addOption(
         'flavor',
         help: 'Flavor of the app to run.',
+      )
+      ..addOption(
+        'devices',
+        help: 'List of devices to drive the app on.',
+        allowed: ['all', ...devices],
       );
   }
 
