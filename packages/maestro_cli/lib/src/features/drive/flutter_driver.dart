@@ -14,7 +14,11 @@ Future<void> runTests({
   String? device,
   String? flavor,
 }) async {
-  log.info('Running tests...');
+  if (device != null) {
+    log.info('Running tests on $device...');
+  } else {
+    log.info('Running tests...');
+  }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
 
@@ -49,7 +53,11 @@ Future<void> runTestsWithOutput({
   String? device,
   String? flavor,
 }) async {
-  log.info('Running tests with output...');
+  if (device != null) {
+    log.info('Running tests with output on $device...');
+  } else {
+    log.info('Running tests with output...');
+  }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
 

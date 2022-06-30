@@ -35,7 +35,7 @@ class DriveCommand extends Command<int> {
         'flavor',
         help: 'Flavor of the app to run.',
       )
-      ..addOption(
+      ..addMultiOption(
         'devices',
         help: 'List of devices to drive the app on.',
         allowed: ['all', ...devices],
@@ -88,11 +88,9 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final devicesStr = argResults?['devices'] as String?;
+    final devicesArg = argResults?['devices'] as List<String>?;
 
-    final devices = devicesStr != null && devicesStr != 'all'
-        ? devicesStr.split(',').toList()
-        : await adb.devices();
+    final devices = await _parseDevices(devicesArg);
 
     for (final device in devices) {
       await driverAdb.installApps(device: device, debug: debugFlag);
@@ -110,5 +108,32 @@ class DriveCommand extends Command<int> {
     }
 
     return 0;
+  }
+
+  Future<List<String>> _parseDevices(List<String>? devicesArg) async {
+    if (devicesArg == null || devicesArg.isEmpty) {
+      final adbDevices = await adb.devices();
+
+      if (adbDevices.isEmpty) {
+        throw Exception('No devices attached');
+      }
+
+      if (adbDevices.length > 1) {
+        final firstDevice = adbDevices.first;
+        log.info(
+          'More than 1 device attached. Running only on the first one ($firstDevice)',
+        );
+
+        return [firstDevice];
+      }
+
+      return adbDevices;
+    }
+
+    if (devicesArg.contains('all')) {
+      return adb.devices();
+    }
+
+    return devicesArg;
   }
 }
