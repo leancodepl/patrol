@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart' as logging;
@@ -13,20 +12,8 @@ import 'package:maestro_test/src/notification.dart';
 /// Communicates over HTTP with the Maestro server app running on the target
 /// device.
 class Maestro {
-  /// Creates a new [Maestro] instance for use in the driver file (on test
-  /// host).
-  Maestro.forDriver()
-      : host = Platform.environment['MAESTRO_HOST']!,
-        port = Platform.environment['MAESTRO_PORT']!,
-        verbose = Platform.environment['MAESTRO_VERBOSE'] == 'true' {
-    _setUpLogger();
-    _logger.info(
-      'Creating Maestro driver instance. Host: $host, port: $port, verbose: $verbose',
-    );
-  }
-
-  /// Creates a new [Maestro] instance for use in testing environment (on target
-  /// device).
+  /// Creates a new [Maestro] instance for use in testing environment (on the
+  /// target device).
   Maestro.forTest()
       : host = const String.fromEnvironment('MAESTRO_HOST'),
         port = const String.fromEnvironment('MAESTRO_PORT'),
@@ -153,9 +140,8 @@ class Maestro {
     return response;
   }
 
-  /// Performs a simple system health check.
-  ///
-  /// Returns whether the Maestro automation server is running on target device.
+  /// Returns whether the Maestro automation server is running on the target
+  /// device.
   Future<bool> isRunning() async {
     try {
       final res = await _client.get(Uri.parse('$_baseUri/isRunning'));
@@ -166,18 +152,6 @@ class Maestro {
     } catch (err, st) {
       _logger.warning('failed to call isRunning()', err, st);
       return false;
-    }
-  }
-
-  /// Stops the instrumentation server.
-  Future<void> stop() async {
-    try {
-      _logger.info('stopping instrumentation server...');
-      await _client.post(Uri.parse('$_baseUri/stop'));
-    } catch (err, st) {
-      _logger.warning('failed to call stop()', err, st);
-    } finally {
-      _logger.info('instrumentation server stopped');
     }
   }
 
