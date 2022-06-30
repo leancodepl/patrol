@@ -5,8 +5,9 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   maestroTest('Counter increments smoke test', (tester) async {
-    await tester.tester.pumpWidget(const MyApp());
+    await tester.pumpWidgetAndSettle(const MyApp());
 
+    // equivalent of $(ListTile).tap()
     await tester.tester.tap(
       find.descendant(
         of: find.byType(ListTile).first,
@@ -15,10 +16,9 @@ void main() {
     );
     await tester.tester.pump();
 
-    // Verify that our counter has incremented.
     expect(find.text('1'), findsOneWidget);
 
-    // equivalent of $('#box1 > .ListTile > .IconButton');
+    // equivalent of $(#box1).$(ListTile).$(IconButton).tap();
     await tester.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
@@ -32,7 +32,7 @@ void main() {
 
     expect(find.text('2'), findsOneWidget);
 
-    // equivalent of $('#box1 > #tile2 > .IconButton');
+    // equivalent of $(#box1).$(#tile2).$(IconButton).tap();
     await tester.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
@@ -46,7 +46,7 @@ void main() {
 
     expect(find.text('1'), findsOneWidget);
 
-    // equivalent of $('.Scaffold > #box1 > .ListTile > .IconButton');
+    // equivalent of $(Scaffold).$(#box1).$(ListTile).$(IconButton);
     await tester.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),

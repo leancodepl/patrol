@@ -92,7 +92,7 @@ class MaestroTester {
 
   final WidgetTester tester;
 
-  Future<void> pump(
+  Future<void> pumpWidgetAndSettle(
     Widget widget, [
     Duration? pumpWidgetDuration,
     EnginePhase pumpWidgetPhase = EnginePhase.sendSemanticsUpdate,
