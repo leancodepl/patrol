@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:adb/adb.dart' as adb;
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
@@ -8,7 +9,9 @@ import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
-  final runner = MaestroCommandRunner();
+  final devices = await adb.devices();
+
+  final runner = MaestroCommandRunner(devices: devices);
 
   try {
     final exitCode = await runner.run(args) ?? 0;
@@ -32,13 +35,13 @@ bool debugFlag = false;
 bool verboseFlag = false;
 
 class MaestroCommandRunner extends CommandRunner<int> {
-  MaestroCommandRunner()
+  MaestroCommandRunner({required List<String> devices})
       : super(
           'maestro',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
     addCommand(BootstrapCommand());
-    addCommand(DriveCommand());
+    addCommand(DriveCommand(devices));
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
 

@@ -9,7 +9,7 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand() {
+  DriveCommand(List<String> devices) {
     argParser
       ..addOption(
         'host',

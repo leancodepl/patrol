@@ -11,9 +11,9 @@ packages:
   adb:
     dependency: "direct main"
     description:
-      name: adb
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "/Users/bartek/dev/leancode/maestro/packages/adb"
+      relative: false
+    source: path
     version: "0.0.4"
   analyzer:
     dependency: transitive
