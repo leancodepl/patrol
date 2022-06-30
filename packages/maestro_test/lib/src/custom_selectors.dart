@@ -27,8 +27,22 @@ class MaestroFinder {
   final Finder finder;
   final WidgetTester tester;
 
-  Future<void> tap({bool andSettle = false}) async {
-    await tester.tap(finder);
+  Future<void> tap({bool andSettle = true, int index = 0}) async {
+    await tester.tap(finder.at(index));
+
+    if (andSettle) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
+  }
+
+  Future<void> enterText(
+    String text, {
+    bool andSettle = true,
+    int index = 0,
+  }) async {
+    await tester.enterText(finder.at(index), text);
 
     if (andSettle) {
       await tester.pumpAndSettle();
@@ -46,13 +60,16 @@ class MaestroFinder {
 
     final isComplex = chainer != null && of != null;
 
-    if (isComplex && chainer != 'with') {
+    if (isComplex && chainer != With) {
       throw ArgumentError('chainer must be "with"');
     }
 
     if (!isComplex) {
       return MaestroFinder(
-        find.descendant(of: finder, matching: _createFinder(matching)),
+        find.descendant(
+          of: finder,
+          matching: _createFinder(matching),
+        ),
         tester,
       );
     }
@@ -92,16 +109,24 @@ Finder _createFinder(dynamic expression) {
     return find.byType(expression);
   }
 
-  if (expression is String) {
-    if (expression.startsWith('#')) {
-      final specifierValue = expression.substring(1);
-      return find.byKey(Key(specifierValue));
-    }
+  if (expression is Symbol) {
+    return find.byKey(Key(expression.name));
+  }
 
+  if (expression is String) {
     return find.text(expression);
   }
 
-  throw ArgumentError('expression must be of type `Type` or `String`');
+  throw ArgumentError(
+    'expression must be of type `Type`, `Symbol`, or `String`',
+  );
+}
+
+extension SymbolX on Symbol {
+  String get name {
+    final symbol = toString();
+    return symbol.substring(8, symbol.length - 2);
+  }
 }
 
 /* void main() {

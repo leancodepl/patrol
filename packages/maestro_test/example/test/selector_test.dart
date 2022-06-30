@@ -18,7 +18,7 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('1'), findsOneWidget);
 
-    // equivalent of #('#box1 > .ListTile > .IconButton');
+    // equivalent of $('#box1 > .ListTile > .IconButton');
     await tester.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
@@ -63,10 +63,10 @@ void main() {
 
     expect(find.text('0'), findsOneWidget);
 
-    final sel1V1 = $(Scaffold).$('#box1').$('#tile2').$('#icon2');
-    final sel1V2 = $('#box1').$('#tile2').$('#icon2');
-    final sel1V3 = $('#box1').$('#tile2').$(IconButton);
-    final sel2 = $('#box1').$(ListTile, With, '#icon1');
+    final sel1V1 = $(Scaffold).$(#box1).$(#tile2).$(#icon2);
+    final sel1V2 = $(#box1).$(#tile2).$(#icon2);
+    final sel1V3 = $(#box1).$(#tile2).$(IconButton);
+    final sel2 = $(#box1).$(ListTile, With, #icon1);
     final sel3 = $(Scaffold).$(ListTile, With, 'Add');
 
     await sel1V1.tap();
@@ -78,10 +78,19 @@ void main() {
     await sel1V3.tap();
     expect(find.text('-3'), findsOneWidget);
 
+    await sel1V3.tap();
+    expect(find.text('-4'), findsOneWidget);
+
+    await sel1V3.tap();
+    expect(find.text('-5'), findsOneWidget);
+
+    await sel1V3.tap();
+    expect(find.text('-6'), findsOneWidget);
+
     await sel2.tap();
-    expect(find.text('7'), findsOneWidget);
+    expect(find.text('4'), findsOneWidget);
 
     await sel3.tap();
-    expect(find.text('8'), findsOneWidget);
+    expect(find.text('14'), findsOneWidget);
   });
 }
