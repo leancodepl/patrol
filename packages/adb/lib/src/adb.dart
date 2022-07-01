@@ -1,9 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:adb/adb.dart';
 import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 
+/// Installs the APK file (which has to be on [path]) to the attached device.
+///
+/// If there is more than 1 device attached, decide which one to use by passing
+/// [device].
+///
+/// Throws if there are no devices attached.
 Future<ProcessResult> install(
   String path, {
   String? device,
@@ -32,6 +39,12 @@ Future<ProcessResult> install(
   return result;
 }
 
+/// Uninstalls the app identified by [packageName] from the the attached device.
+///
+/// If there is more than 1 device attached, decide which one to use by passing
+/// [device].
+///
+/// Thorws if there are no devices attached.
 Future<ProcessResult> uninstall(
   String packageName, {
   String? device,
@@ -56,7 +69,12 @@ Future<ProcessResult> uninstall(
   return result;
 }
 
-/// Sets up port forwarding.
+/// Sets up port forwarding on the attached device.
+///
+/// If there is more than 1 device attached, decide which one to use by passing
+/// [device].
+///
+/// Throws if there are no devices attached.
 ///
 /// See also:
 ///  * https://developer.android.com/studio/command-line/adb#forwardports
@@ -85,6 +103,16 @@ Future<void> forwardPorts({
   }
 }
 
+/// Runs instrumentation test specified by [packageName] and [intentClass] on
+/// the attached device.
+///
+/// If there is more than 1 device attached, decide which one to use by passing
+/// [device].
+///
+/// Throws if there are no devices attached.
+///
+/// See also:
+///  * https://developer.android.com/studio/test/command-line#run-tests-with-adb
 Future<void> instrument({
   required String packageName,
   required String intentClass,
@@ -134,10 +162,9 @@ Future<void> instrument({
   }
 }
 
-/// Installs APK from [path].
-///
-/// If the install fails because of INSTALL_FAILED_UPDATE_INCOMPATIBLE, it's
-/// reinstalled.
+/// Like [install], but if the install fails because of
+/// INSTALL_FAILED_UPDATE_INCOMPATIBLE, the app is uninstalled and installed
+/// again.
 Future<void> forceInstallApk(String path, {String? device}) async {
   try {
     await install(path, device: device);
@@ -145,4 +172,37 @@ Future<void> forceInstallApk(String path, {String? device}) async {
     await uninstall(err.packageName, device: device);
     await install(path, device: device);
   }
+}
+
+/// Returns the list of currently attached devices.
+///
+/// See also:
+///  * https://developer.android.com/studio/command-line/adb#devicestatus
+Future<List<String>> devices() async {
+  final result = await Process.run(
+    'adb',
+    ['devices'],
+    runInShell: true,
+  );
+
+  if (result.stdErr.isNotEmpty) {
+    throw Exception(result.stdErr);
+  }
+
+  final lines = result.stdOut.split('\n')
+    ..removeAt(0)
+    ..removeWhere((element) => element.trim().isEmpty);
+
+  final devices = <String>[];
+  for (final line in lines) {
+    final parts = line.trim().split('\t');
+
+    if (parts.isEmpty) {
+      continue;
+    }
+
+    devices.add(parts.first);
+  }
+
+  return devices;
 }
