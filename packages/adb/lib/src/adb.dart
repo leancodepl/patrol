@@ -6,7 +6,7 @@ import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 import 'package:adb/src/internals.dart';
 
-/// Provides Dart interface to common `adb` functionality.
+/// Provides Dart interface for common `adb` functionality.
 ///
 /// See also:
 ///  * https://developer.android.com/studio/command-line/adb
