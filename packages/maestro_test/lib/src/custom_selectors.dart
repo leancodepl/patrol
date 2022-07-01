@@ -40,7 +40,7 @@ void maestroTest(
   });
 }
 
-class MaestroFinder {
+class MaestroFinder extends Finder {
   MaestroFinder({required this.finder, required this.tester});
 
   final Finder finder;
@@ -87,6 +87,14 @@ class MaestroFinder {
       parentFinder: finder,
     );
   }
+
+  @override
+  Iterable<Element> apply(Iterable<Element> candidates) {
+    return finder.apply(candidates);
+  }
+
+  @override
+  String get description => finder.description;
 }
 
 class MaestroTester {

@@ -16,7 +16,7 @@ void main() {
     );
     await $.tester.pump();
 
-    expect(find.text('1'), findsOneWidget);
+    expect($('1'), findsOneWidget);
 
     // equivalent of $(#box1).$(ListTile).$(IconButton).tap();
     await $.tester.tap(
@@ -30,7 +30,7 @@ void main() {
     );
     await $.tester.pump();
 
-    expect(find.text('2'), findsOneWidget);
+    expect($('2'), findsOneWidget);
 
     // equivalent of $(#box1).$(#tile2).$(IconButton).tap();
     await $.tester.tap(
@@ -44,7 +44,7 @@ void main() {
     );
     await $.tester.pump();
 
-    expect(find.text('1'), findsOneWidget);
+    expect($('1'), findsOneWidget);
 
     // equivalent of $(Scaffold).$(#box1).$(ListTile).$(IconButton).tap();
     await $.tester.tap(
@@ -61,7 +61,7 @@ void main() {
     );
     await $.tester.pump();
 
-    expect(find.text('0'), findsOneWidget);
+    expect($('0'), findsOneWidget);
 
     final sel1V1 = $(Scaffold).$(#box1).$(#tile2).$(#icon2);
     final sel1V2 = $(#box1).$(#tile2).$(#icon2);
@@ -70,27 +70,27 @@ void main() {
     final sel3 = $(ListTile, withDescendant, 'Add');
 
     await sel1V1.tap();
-    expect(find.text('-1'), findsOneWidget);
+    expect($('-1'), findsOneWidget);
 
     await sel1V2.tap();
-    expect(find.text('-2'), findsOneWidget);
+    expect($('-2'), findsOneWidget);
 
     await sel1V3.tap();
-    expect(find.text('-3'), findsOneWidget);
+    expect($('-3'), findsOneWidget);
 
     await sel1V3.tap();
-    expect(find.text('-4'), findsOneWidget);
+    expect($('-4'), findsOneWidget);
 
     await sel1V3.tap();
-    expect(find.text('-5'), findsOneWidget);
+    expect($('-5'), findsOneWidget);
 
     await sel1V3.tap();
-    expect(find.text('-6'), findsOneWidget);
+    expect($('-6'), findsOneWidget);
 
     await sel2.tap();
-    expect(find.text('4'), findsOneWidget);
+    expect($('4'), findsOneWidget);
 
     await sel3.tap();
-    expect(find.text('14'), findsOneWidget);
+    expect($('14'), findsOneWidget);
   });
 }
