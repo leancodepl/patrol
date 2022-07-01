@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/extensions.dart';
+import 'package:meta/meta.dart';
 
 /// Signature for callback to [maestroTest].
 typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
@@ -23,18 +24,18 @@ enum Chainer {
 /// ```dart
 /// maestroTest(
 ///    'increase counter text',
-///    (maestroTester) async {
-///      await maestroTester.tester.tap(find.byIcon(Icons.add));
+///    ($) async {
+///      await $.tester.tap(find.byIcon(Icons.add));
 ///    },
 /// );
 /// ```
+@isTest
 void maestroTest(
   String description,
   MaestroTesterCallback callback,
 ) {
   return testWidgets(description, (widgetTester) async {
-    final $ = MaestroTester(widgetTester);
-    await callback($);
+    await callback(MaestroTester(widgetTester));
   });
 }
 
