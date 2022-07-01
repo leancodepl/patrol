@@ -51,25 +51,24 @@ jobs:
       - name: flutter pub get
         run: flutter pub get
 
+      - name: flutter format
+        run: flutter format .
+
       - name: flutter analyze
         run: flutter analyze --no-fatal-infos
-
-      # We don't have any tests, yet.
-      # - name: flutter test
-      #   run: flutter test
-
-      - name: flutter format (example app)
-        working-directory: ./packages/maestro_test/example
-        run: flutter format --set-exit-if-changed .
 
       - name: flutter pub get (example app)
         working-directory: ./packages/maestro_test/example
         run: flutter pub get
 
+      - name: flutter format (example app)
+        working-directory: ./packages/maestro_test/example
+        run: flutter format --set-exit-if-changed .
+
       - name: flutter analyze (example app)
         working-directory: ./packages/maestro_test/example
         run: flutter analyze --no-fatal-infos
 
-      - name: flutter format (example app)
+      - name: flutter test (example app)
         working-directory: ./packages/maestro_test/example
-        run: flutter format --set-exit-if-changed .
+        run: flutter test
