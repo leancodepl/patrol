@@ -9,10 +9,10 @@ typedef MaestroTesterCallback = Future<void> Function(
 
 late final MaestroTester $;
 
-const withDescendant = Chainers.withDescendant;
+const withDescendant = Chainer.withDescendant;
 
 /// Specifies a relation between two [Widget]s.
-enum Chainers {
+enum Chainer {
   /// It signals to Maestro custom selector system that a "widget_1 CONTAINS
   /// widget_2" check should be performed.
   withDescendant,
@@ -81,7 +81,7 @@ class MaestroFinder {
     return (finder.evaluate().first.widget as Text).data;
   }
 
-  MaestroFinder $(dynamic matching, [Chainers? chainer, dynamic of]) {
+  MaestroFinder $(dynamic matching, [Chainer? chainer, dynamic of]) {
     return _$(
       matching: matching,
       chainer: chainer,
@@ -113,7 +113,7 @@ class MaestroTester {
     );
   }
 
-  MaestroFinder call(dynamic matching, [Chainers? chainer, dynamic of]) {
+  MaestroFinder call(dynamic matching, [Chainer? chainer, dynamic of]) {
     return _$(
       matching: matching,
       chainer: chainer,
@@ -150,7 +150,7 @@ Finder _createFinder(dynamic expression) {
   );
 }
 
-bool _isComplex(Chainers? chainer, dynamic of) {
+bool _isComplex(Chainer? chainer, dynamic of) {
   if ((chainer == null) != (of == null)) {
     throw ArgumentError(
       '`chainer` and `of` must be both null or both non-null',
@@ -159,7 +159,7 @@ bool _isComplex(Chainers? chainer, dynamic of) {
 
   final isComplex = chainer != null && of != null;
 
-  if (isComplex && chainer != Chainers.withDescendant) {
+  if (isComplex && chainer != Chainer.withDescendant) {
     throw ArgumentError('chainer must be "with"');
   }
 
@@ -168,7 +168,7 @@ bool _isComplex(Chainers? chainer, dynamic of) {
 
 MaestroFinder _$({
   required dynamic matching,
-  required Chainers? chainer,
+  required Chainer? chainer,
   required dynamic of,
   required WidgetTester tester,
   required Finder? initialFinder,
