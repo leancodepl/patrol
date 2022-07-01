@@ -71,8 +71,8 @@ void main() {
       // box1 which is a descendant of a Scaffold widget and tap on it.
       await $(Scaffold).$(#box1).$('Log in').tap();
 
-      // Selects the first scrollable which has a Text descendant
-      $(Scrollable, With, Text);
+      // Selects the first Scrollable which has a Text descendant
+      $(Scrollable).withDescendant(Text);
     },
   );
 }

@@ -1,11 +1,11 @@
 # Maestro
 
 Simple, easy-to-learn, Flutter-native UI testing framework eliminating
-limitations of `flutter_driver`.
+limitations and improving experience of `flutter_driver` and `flutter_test`.
 
-[![maestro_test on pub.dev][pub_badge_test]][pub_link_test]
-[![maestro_cli on pub.dev][pub_badge_cli]][pub_link_cli]
-[![code style][pub_badge_style]][pub_badge_link]
+[![maestro_test on pub.dev][pub_badge_test]][pub_link_test] [![maestro_cli on
+pub.dev][pub_badge_cli]][pub_link_cli] [![code
+style][pub_badge_style]][pub_badge_link]
 
 ## CLI
 
@@ -34,9 +34,14 @@ $ maestro drive
 
 ## Package
 
-`maestro_test` package builds on top of `flutter_driver` to make it easy to
-control the native device. It does this by using Android's
-[UIAutomator][ui_automator] library.
+`maestro_test` package builds on top of `flutter_driver` and `flutter_test`. It
+makes it easy to:
+
+- control the native device features, such as switching between apps or enabling
+  Wi-Fi
+
+- write widget tests in a new, consice way using powerful [custom
+  selectors][custom_selectors]
 
 ### Installation
 
@@ -49,49 +54,7 @@ dev_dependencies:
 
 ### Usage
 
-```dart
-// integration_test/app_test.dart
-import 'package:example/app.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:maestro_test/maestro_test.dart';
-
-void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  Automator.init(verbose: true);
-  final automator = Automator.instance;
-
-  testWidgets(
-    "counter state is the same after going to Home and switching apps",
-    (WidgetTester tester) async {
-      Text findCounterText() {
-        return tester
-            .firstElement(find.byKey(const ValueKey('counterText')))
-            .widget as Text;
-      }
-
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      expect(findCounterText().data, '1');
-
-      await automator.pressHome();
-
-      await automator.pressDoubleRecentApps();
-
-      expect(findCounterText().data, '1');
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      expect(findCounterText().data, '2');
-
-      await automator.openNotifications();
-    },
-  );
-}
-
-```
+See README of [package:maestro_test][]
 
 ## Release process
 
@@ -111,3 +74,4 @@ git tag -a "maestro_cli-v0.0.4" -m "Release notes go here"
 [pub_link_cli]: https://pub.dartlang.org/packages/maestro_cli
 [ui_automator]: https://developer.android.com/training/testing/other-components/ui-automator
 [annotated_tag]: https://git-scm.com/book/en/v2/Git-Basics-Tagging#_annotated_tags
+[custom_selectors]: https://github.com/leancodepl/maestro/tree/feature/custom_selectors/packages/maestro_test#custom-selectors
