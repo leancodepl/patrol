@@ -142,8 +142,12 @@ Finder _createFinder(dynamic expression) {
     return find.textContaining(expression);
   }
 
+  if (expression is IconData) {
+    return find.byIcon(expression);
+  }
+
   throw ArgumentError(
-    'expression must be of type `Type`, `Symbol`, `String`, or `Pattern`',
+    'expression must be of type `Type`, `Symbol`, `String`, `Pattern`, or `IconData`',
   );
 }
 

@@ -7,7 +7,7 @@ void main() {
   maestroTest('Counter increments smoke test', ($) async {
     await $.pumpWidgetAndSettle(const MyApp());
 
-    // equivalent of $(ListTile).tap()
+    // equivalent of await $(ListTile).$(Icons.add).tap();
     await $.tester.tap(
       find.descendant(
         of: find.byType(ListTile).first,
