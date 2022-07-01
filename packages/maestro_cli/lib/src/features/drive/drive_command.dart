@@ -97,18 +97,20 @@ class DriveCommand extends Command<int> {
     final devices = await _parseDevices(devicesArg);
 
     for (final device in devices) {
-      await driverAdb.installApps(device: device, debug: debugFlag);
-      await driverAdb.forwardPorts(port, device: device);
-      driverAdb.runServer(device: device, port: portStr);
-      await flutter_driver.runTestsWithOutput(
-        driver: driver,
-        target: target,
-        host: host,
-        port: portStr,
-        verbose: verboseFlag,
-        device: device,
-        flavor: flavor as String?,
-      );
+      Future<void> runTest() async {
+        await driverAdb.installApps(device: device, debug: debugFlag);
+        await driverAdb.forwardPorts(port, device: device);
+        driverAdb.runServer(device: device, port: portStr);
+        await flutter_driver.runTestsWithOutput(
+          driver: driver,
+          target: target,
+          host: host,
+          port: portStr,
+          verbose: verboseFlag,
+          device: device,
+          flavor: flavor as String?,
+        );
+      }
     }
 
     return 0;
