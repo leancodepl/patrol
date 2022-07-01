@@ -1,11 +1,14 @@
 # maestro_test
 
-[![maestro_test on pub.dev][pub_badge]][pub_link]
-[![code style][pub_badge_style]][pub_badge_link]
+[![maestro_test on pub.dev][pub_badge]][pub_link] [![code
+style][pub_badge_style]][pub_badge_link]
 
 `maestro_test` package builds on top of `flutter_driver` to make it easy to
 control the native device from Dart. It does this by using Android's
 [UIAutomator][ui_automator] library.
+
+It also provides a new custom selector system to make writing Flutter widget
+tests more concisce, and writing them faster & more fun.
 
 ### Installation
 
@@ -13,52 +16,66 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.2.0
+  maestro_test: ^0.3.0
 ```
 
 ### Usage
 
 ```dart
-// integration_test/app_test.dart
-import 'package:example/app.dart';
+// example/integration_test/example_test.dart
+import 'package:example/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   final maestro = Maestro.forTest();
 
-  testWidgets(
-    "counter state is the same after going to Home and switching apps",
-    (WidgetTester tester) async {
-      Text findCounterText() {
-        return tester
-            .firstElement(find.byKey(const ValueKey('counterText')))
-            .widget as Text;
-      }
+  maestroTest(
+    'counter state is the same after going to Home and going back',
+    ($) async {
+      await tester.pumpWidgetAndSettle(const MyApp());
 
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      expect(findCounterText().data, '1');
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
 
       await maestro.pressHome();
-
       await maestro.pressDoubleRecentApps();
 
-      expect(findCounterText().data, '1');
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      expect(findCounterText().data, '2');
+      expect($(#counterText).text, '1');
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '2');
 
-      await maestro.openNotifications();
+      await maestro.openHalfNotificationShade();
       await maestro.pressBack();
     },
   );
 }
+```
 
+### Custom selectors
+
+```dart
+import 'package:example/main.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:maestro_test/maestro_test.dart';
+
+void main() {
+  maestroTest(
+    'counter state is the same after going to Home and switching apps',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+
+      // Find widget with text 'Log in' which is a descendant of widget with key
+      // box1 which is a descendant of a Scaffold widget and tap on it.
+      await $(Scaffold).$(#box1).$('Log in').tap();
+
+      // Selects the first Scrollable which has a Text descendant
+      $(Scrollable).withDescendant(Text);
+    },
+  );
+}
 ```
 
 [pub_badge]: https://img.shields.io/pub/v/maestro_test.svg

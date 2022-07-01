@@ -1,3 +1,6 @@
+## 0.3.0
+- Add selector engine
+
 ## 0.2.0
 
 - Introduce `Selector` class, which can be passed into `Maestro.tap(selector)`.

@@ -37,9 +37,13 @@ Map<String, dynamic> _$$_SelectorToJson(_$_Selector instance) {
   writeNotNull('className', instance.className);
   writeNotNull('contentDescription', instance.contentDescription);
   writeNotNull(
-      'contentDescriptionStartsWith', instance.contentDescriptionStartsWith,);
+    'contentDescriptionStartsWith',
+    instance.contentDescriptionStartsWith,
+  );
   writeNotNull(
-      'contentDescriptionContains', instance.contentDescriptionContains,);
+    'contentDescriptionContains',
+    instance.contentDescriptionContains,
+  );
   writeNotNull('resourceId', instance.resourceId);
   writeNotNull('instance', instance.instance);
   writeNotNull('enabled', instance.enabled);

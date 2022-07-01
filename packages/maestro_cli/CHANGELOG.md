@@ -1,3 +1,8 @@
+## 0.3.0
+
+- Add support for new features in [maestro_test
+  0.3.0](https://pub.dev/packages/maestro_test/changelog#030)
+
 ## 0.2.0
 
 - Add support for new features in [maestro_test
