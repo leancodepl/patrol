@@ -7,8 +7,6 @@ typedef MaestroTesterCallback = Future<void> Function(
   MaestroTester maestroTester,
 );
 
-late final MaestroTester $;
-
 const withDescendant = Chainer.withDescendant;
 
 /// Specifies a relation between two [Widget]s.
@@ -38,7 +36,6 @@ void maestroTest(
 ) {
   return testWidgets(description, (tester) async {
     final maestroTester = MaestroTester(tester);
-    $ = maestroTester;
     await callback(maestroTester);
   });
 }

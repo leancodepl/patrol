@@ -6,8 +6,8 @@ void main() {
 
   maestroTest(
     'sends a notification and taps on it',
-    (tester) async {
-      await tester.pumpWidgetAndSettle(const MyApp());
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
 
       await $('Open notifications screen').tap();
 

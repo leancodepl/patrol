@@ -4,22 +4,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 void main() {
-  maestroTest('Counter increments smoke test', (tester) async {
-    await tester.pumpWidgetAndSettle(const MyApp());
+  maestroTest('Counter increments smoke test', ($) async {
+    await $.pumpWidgetAndSettle(const MyApp());
 
     // equivalent of $(ListTile).tap()
-    await tester.tester.tap(
+    await $.tester.tap(
       find.descendant(
         of: find.byType(ListTile).first,
         matching: find.byIcon(Icons.add),
       ),
     );
-    await tester.tester.pump();
+    await $.tester.pump();
 
     expect(find.text('1'), findsOneWidget);
 
     // equivalent of $(#box1).$(ListTile).$(IconButton).tap();
-    await tester.tester.tap(
+    await $.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
         of: find.descendant(
@@ -28,12 +28,12 @@ void main() {
         ),
       ),
     );
-    await tester.tester.pump();
+    await $.tester.pump();
 
     expect(find.text('2'), findsOneWidget);
 
     // equivalent of $(#box1).$(#tile2).$(IconButton).tap();
-    await tester.tester.tap(
+    await $.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
         of: find.descendant(
@@ -42,12 +42,12 @@ void main() {
         ),
       ),
     );
-    await tester.tester.pump();
+    await $.tester.pump();
 
     expect(find.text('1'), findsOneWidget);
 
     // equivalent of $(Scaffold).$(#box1).$(ListTile).$(IconButton);
-    await tester.tester.tap(
+    await $.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
         of: find.descendant(
@@ -59,7 +59,7 @@ void main() {
         ),
       ),
     );
-    await tester.tester.pump();
+    await $.tester.pump();
 
     expect(find.text('0'), findsOneWidget);
 
