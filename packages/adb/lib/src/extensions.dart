@@ -5,9 +5,4 @@ extension ProcessResultX on ProcessResult {
   ///
   /// If [stderr] is not a String, this will crash.
   String get stdErr => this.stderr as String;
-
-  /// A shortcut to avoid typing `as String` every time.
-  ///
-  /// If [stdout] is not a String, this will crash.
-  String get stdOut => this.stdout as String;
 }
