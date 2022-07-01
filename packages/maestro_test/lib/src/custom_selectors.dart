@@ -84,7 +84,7 @@ class MaestroFinder {
       chainer: chainer,
       of: of,
       tester: tester,
-      initialFinder: finder,
+      parentFinder: finder,
     );
   }
 }
@@ -116,7 +116,7 @@ class MaestroTester {
       chainer: chainer,
       of: of,
       tester: tester,
-      initialFinder: null,
+      parentFinder: null,
     );
   }
 }
@@ -168,11 +168,11 @@ MaestroFinder _$({
   required Chainer? chainer,
   required dynamic of,
   required WidgetTester tester,
-  required Finder? initialFinder,
+  required Finder? parentFinder,
 }) {
   final isComplex = _isComplex(chainer, of);
 
-  if (initialFinder == null) {
+  if (parentFinder == null) {
     if (isComplex) {
       return MaestroFinder(
         tester: tester,
@@ -193,7 +193,7 @@ MaestroFinder _$({
     return MaestroFinder(
       tester: tester,
       finder: find.descendant(
-        of: initialFinder,
+        of: parentFinder,
         matching: find.ancestor(
           of: _createFinder(of),
           matching: _createFinder(matching),
@@ -205,7 +205,7 @@ MaestroFinder _$({
   return MaestroFinder(
     tester: tester,
     finder: find.descendant(
-      of: initialFinder,
+      of: parentFinder,
       matching: _createFinder(matching),
     ),
   );
