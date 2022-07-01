@@ -33,7 +33,7 @@ void main() {
 
   maestroTest(
     'counter state is the same after going to Home and switching apps',
-    (tester) async {
+    ($) async {
       await tester.pumpWidgetAndSettle(const MyApp());
 
       await $(FloatingActionButton).tap();
@@ -64,8 +64,8 @@ import 'package:maestro_test/maestro_test.dart';
 void main() {
   maestroTest(
     'counter state is the same after going to Home and switching apps',
-    (tester) async {
-      await tester.pumpWidgetAndSettle(const MyApp());
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
 
       // Find widget with text 'Log in' which is a descendant of widget with key
       // box1 which is a descendant of a Scaffold widget and tap on it.

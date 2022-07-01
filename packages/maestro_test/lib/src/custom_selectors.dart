@@ -34,8 +34,8 @@ void maestroTest(
   String description,
   MaestroTesterCallback callback,
 ) {
-  return testWidgets(description, (tester) async {
-    final maestroTester = MaestroTester(tester);
+  return testWidgets(description, (widgetTester) async {
+    final maestroTester = MaestroTester(widgetTester);
     await callback(maestroTester);
   });
 }
