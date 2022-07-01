@@ -3,9 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/extensions.dart';
 
 /// Signature for callback to [maestroTest].
-typedef MaestroTesterCallback = Future<void> Function(
-  MaestroTester maestroTester,
-);
+typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 const withDescendant = Chainer.withDescendant;
 
@@ -35,8 +33,8 @@ void maestroTest(
   MaestroTesterCallback callback,
 ) {
   return testWidgets(description, (widgetTester) async {
-    final maestroTester = MaestroTester(widgetTester);
-    await callback(maestroTester);
+    final $ = MaestroTester(widgetTester);
+    await callback($);
   });
 }
 
@@ -129,10 +127,6 @@ class MaestroTester {
   }
 }
 
-/// [expression] must be either [Type] or a String.
-///
-/// If [expression] is a String, then it must start with '#' (which represents
-/// ValueKey).
 Finder _createFinder(dynamic expression) {
   if (expression is Type) {
     return find.byType(expression);
