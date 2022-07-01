@@ -46,7 +46,7 @@ void main() {
 
     expect(find.text('1'), findsOneWidget);
 
-    // equivalent of $(Scaffold).$(#box1).$(ListTile).$(IconButton);
+    // equivalent of $(Scaffold).$(#box1).$(ListTile).$(IconButton).tap();
     await $.tester.tap(
       find.descendant(
         matching: find.byType(IconButton),
