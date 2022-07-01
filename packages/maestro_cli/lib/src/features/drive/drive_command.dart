@@ -4,7 +4,7 @@ import 'package:adb/adb.dart' as adb;
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/features/drive/adb.dart' as driverAdb;
+import 'package:maestro_cli/src/features/drive/adb.dart' as drive_adb;
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/maestro_config.dart';
@@ -42,7 +42,7 @@ class DriveCommand extends Command<int> {
       )
       ..addFlag(
         'parallel',
-        help: 'Run tests on devices in parallel.',
+        help: '(experimental) Run tests on devices in parallel.',
       );
   }
 
@@ -93,27 +93,85 @@ class DriveCommand extends Command<int> {
     }
 
     final devicesArg = argResults?['devices'] as List<String>?;
-
     final devices = await _parseDevices(devicesArg);
 
-    for (final device in devices) {
-      Future<void> runTest() async {
-        await driverAdb.installApps(device: device, debug: debugFlag);
-        await driverAdb.forwardPorts(port, device: device);
-        driverAdb.runServer(device: device, port: portStr);
+    final parallel = argResults?['parallel'] as bool? ?? false;
+
+    if (parallel) {
+      await _runTestsInParallel(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        verbose: verboseFlag,
+        devices: devices,
+        flavor: flavor as String?,
+      );
+    } else {
+      await _runTestsSequentially(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        verbose: verboseFlag,
+        devices: devices,
+        flavor: flavor as String?,
+      );
+    }
+
+    return 0;
+  }
+
+  Future<void> _runTestsInParallel({
+    required String driver,
+    required String target,
+    required String host,
+    required int port,
+    required bool verbose,
+    required List<String> devices,
+    required String? flavor,
+  }) async {
+    await Future.wait(
+      devices.map((device) async {
+        await drive_adb.installApps(device: device, debug: debugFlag);
+        await drive_adb.forwardPorts(port, device: device);
+        drive_adb.runServer(device: device, port: port);
         await flutter_driver.runTestsWithOutput(
           driver: driver,
           target: target,
           host: host,
-          port: portStr,
+          port: port,
           verbose: verboseFlag,
           device: device,
-          flavor: flavor as String?,
+          flavor: flavor,
         );
-      }
-    }
+      }),
+    );
+  }
 
-    return 0;
+  Future<void> _runTestsSequentially({
+    required String driver,
+    required String target,
+    required String host,
+    required int port,
+    required bool verbose,
+    required List<String> devices,
+    required String? flavor,
+  }) async {
+    for (final device in devices) {
+      await drive_adb.installApps(device: device, debug: debugFlag);
+      await drive_adb.forwardPorts(port, device: device);
+      drive_adb.runServer(device: device, port: port);
+      await flutter_driver.runTestsWithOutput(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        verbose: verboseFlag,
+        device: device,
+        flavor: flavor,
+      );
+    }
   }
 
   Future<List<String>> _parseDevices(List<String>? devicesArg) async {

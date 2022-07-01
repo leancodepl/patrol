@@ -53,7 +53,7 @@ Future<void> forwardPorts(int port, {String? device}) async {
 
 void runServer({
   required String? device,
-  required String port,
+  required int port,
 }) {
   adb.instrument(
     packageName: 'pl.leancode.automatorserver.test',
@@ -61,6 +61,6 @@ void runServer({
     device: device,
     onStdout: log.info,
     onStderr: log.severe,
-    arguments: {envPortKey: port},
+    arguments: {envPortKey: port.toString()},
   );
 }
