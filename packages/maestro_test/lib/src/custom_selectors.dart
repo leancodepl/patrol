@@ -76,13 +76,21 @@ class MaestroFinder extends Finder {
     return (finder.evaluate().first.widget as Text).data;
   }
 
-  MaestroFinder $(dynamic matching, [Chainer? chainer, dynamic of]) {
+  MaestroFinder $(dynamic matching) {
     return _$(
       matching: matching,
-      chainer: chainer,
-      of: of,
       tester: tester,
       parentFinder: finder,
+    );
+  }
+
+  MaestroFinder withDescendant(dynamic matching) {
+    return MaestroFinder(
+      tester: tester,
+      finder: find.ancestor(
+        of: _createFinder(matching),
+        matching: finder,
+      ),
     );
   }
 
@@ -116,11 +124,9 @@ class MaestroTester {
     );
   }
 
-  MaestroFinder call(dynamic matching, [Chainer? chainer, dynamic of]) {
+  MaestroFinder call(dynamic matching) {
     return _$(
       matching: matching,
-      chainer: chainer,
-      of: of,
       tester: tester,
       parentFinder: null,
     );
@@ -149,66 +155,23 @@ Finder _createFinder(dynamic expression) {
   );
 }
 
-bool _isComplex(Chainer? chainer, dynamic of) {
-  if ((chainer == null) != (of == null)) {
-    throw ArgumentError(
-      '`chainer` and `of` must be both null or both non-null',
-    );
-  }
-
-  final isComplex = chainer != null && of != null;
-
-  if (isComplex && chainer != Chainer.withDescendant) {
-    throw ArgumentError('chainer must be "with"');
-  }
-
-  return isComplex;
-}
-
 MaestroFinder _$({
   required dynamic matching,
-  required Chainer? chainer,
-  required dynamic of,
   required WidgetTester tester,
   required Finder? parentFinder,
 }) {
-  final isComplex = _isComplex(chainer, of);
-
-  if (parentFinder == null) {
-    if (isComplex) {
-      return MaestroFinder(
-        tester: tester,
-        finder: find.ancestor(
-          of: _createFinder(of),
-          matching: _createFinder(matching),
-        ),
-      );
-    }
-
-    return MaestroFinder(
-      tester: tester,
-      finder: _createFinder(matching),
-    );
-  }
-
-  if (isComplex) {
+  if (parentFinder != null) {
     return MaestroFinder(
       tester: tester,
       finder: find.descendant(
         of: parentFinder,
-        matching: find.ancestor(
-          of: _createFinder(of),
-          matching: _createFinder(matching),
-        ),
+        matching: _createFinder(matching),
       ),
     );
   }
 
   return MaestroFinder(
     tester: tester,
-    finder: find.descendant(
-      of: parentFinder,
-      matching: _createFinder(matching),
-    ),
+    finder: _createFinder(matching),
   );
 }
