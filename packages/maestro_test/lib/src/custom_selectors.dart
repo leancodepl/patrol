@@ -6,15 +6,6 @@ import 'package:meta/meta.dart';
 /// Signature for callback to [maestroTest].
 typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
-const withDescendant = Chainer.withDescendant;
-
-/// Specifies a relation between two [Widget]s.
-enum Chainer {
-  /// It signals to Maestro custom selector system that a "widget_1 CONTAINS
-  /// widget_2" check should be performed.
-  withDescendant,
-}
-
 /// Like [testWidgets], but with Maestro custom selector support.
 ///
 /// ### Using the default [WidgetTester]
