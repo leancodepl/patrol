@@ -32,7 +32,7 @@ void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'counter state is the same after going to Home and switching apps',
+    'counter state is the same after going to Home and going back',
     ($) async {
       await tester.pumpWidgetAndSettle(const MyApp());
 
