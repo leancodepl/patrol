@@ -1,5 +1,6 @@
 ## 0.1.0
 
+- Make API a bit more object-oriented to enable testing
 - Add support for `adb devices`
 
 ## 0.0.4

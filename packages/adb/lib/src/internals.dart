@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:adb/src/extensions.dart';
 
-class Adb {
+class AdbInternals {
+  const AdbInternals();
+
   Future<String> devices() async {
     final result = await Process.run(
       'adb',
