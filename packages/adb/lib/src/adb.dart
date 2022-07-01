@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:adb/adb.dart';
 import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
+import 'package:adb/src/process.dart' as process;
 
 /// Installs the APK file (which has to be on [path]) to the attached device.
 ///
@@ -179,17 +180,9 @@ Future<void> forceInstallApk(String path, {String? device}) async {
 /// See also:
 ///  * https://developer.android.com/studio/command-line/adb#devicestatus
 Future<List<String>> devices() async {
-  final result = await Process.run(
-    'adb',
-    ['devices'],
-    runInShell: true,
-  );
+  final stdOut = await process.Adb().devices();
 
-  if (result.stdErr.isNotEmpty) {
-    throw Exception(result.stdErr);
-  }
-
-  final lines = result.stdOut.split('\n')
+  final lines = stdOut.split('\n')
     ..removeAt(0)
     ..removeWhere((element) => element.trim().isEmpty);
 
