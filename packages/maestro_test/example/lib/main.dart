@@ -63,11 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Text(
             '$_counter',
-            key: const ValueKey('counterText'),
+            key: const Key('counterText'),
             style: Theme.of(context).textTheme.headline4,
           ),
           Container(
-            key: const ValueKey('box1'),
+            key: const Key('box1'),
             color: Colors.grey,
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           const SizedBox(height: 16),
           Container(
-            key: const ValueKey('box2'),
+            key: const Key('box2'),
             color: Colors.grey,
             padding: const EdgeInsets.all(8),
             child: Column(
