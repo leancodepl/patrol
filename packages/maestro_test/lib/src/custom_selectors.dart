@@ -23,11 +23,22 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 @isTest
 void maestroTest(
   String description,
-  MaestroTesterCallback callback,
-) {
-  return testWidgets(description, (widgetTester) async {
-    await callback(MaestroTester(widgetTester));
-  });
+  MaestroTesterCallback callback, {
+  bool? skip,
+  Timeout? timeout,
+  bool semanticsEnabled = true,
+  TestVariant<Object?> variant = const DefaultTestVariant(),
+  dynamic tags,
+}) {
+  return testWidgets(
+    description,
+    (widgetTester) => callback(MaestroTester(widgetTester)),
+    skip: skip,
+    timeout: timeout,
+    semanticsEnabled: semanticsEnabled,
+    variant: variant,
+    tags: tags,
+  );
 }
 
 class MaestroFinder extends Finder {
