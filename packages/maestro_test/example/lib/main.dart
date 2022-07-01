@@ -1,5 +1,5 @@
+import 'package:example/notifications_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,74 +31,109 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var _counter = 0;
-  final _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  @override
-  void initState() {
-    super.initState();
-
-    _notificationsPlugin.initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-      ),
-      onDidReceiveNotificationResponse: (notificationResponse) {
-        print('tapped notification with ID ${notificationResponse.id}');
-      },
-    );
-  }
-
-  void _incrementCounter() {
+  void _incrementCounter([int value = 1]) {
+    final newValue = _counter + value;
+    print('incrementing counter by $value (to $newValue)');
     setState(() {
-      _counter++;
+      _counter = newValue;
     });
   }
 
-  void _showNotification({required int id}) {
-    _notificationsPlugin.show(
-      id,
-      'Maestro example',
-      'Hello there! This notification has ID=$id',
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'main',
-          'Default notification channel',
-        ),
-      ),
-    );
+  void _decrementCounter([int value = 1]) {
+    final newValue = _counter - value;
+    print('decrementing counter by $value (to $newValue)');
+    setState(() {
+      _counter = newValue;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('scaffold'),
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text(
+            'You have pushed the button this many times:',
+          ),
+          Text(
+            '$_counter',
+            key: const Key('counterText'),
+            style: Theme.of(context).textTheme.headline4,
+          ),
+          Container(
+            key: const Key('box1'),
+            color: Colors.grey,
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('box 1'),
+                ListTile(
+                  onTap: () => _incrementCounter(10),
+                  key: const Key('tile1'),
+                  title: const Text('Add'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add, key: Key('icon1')),
+                    onPressed: _incrementCounter,
+                  ),
+                ),
+                ListTile(
+                  onTap: () => _decrementCounter(10),
+                  key: const Key('tile2'),
+                  title: const Text('Subtract'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove, key: Key('icon2')),
+                    onPressed: _decrementCounter,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              key: const ValueKey('counterText'),
-              style: Theme.of(context).textTheme.headline4,
+          ),
+          const SizedBox(height: 16),
+          Container(
+            key: const Key('box2'),
+            color: Colors.grey,
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('box 2'),
+                ListTile(
+                  onTap: () => _incrementCounter(10),
+                  key: const Key('tile1'),
+                  title: const Text('Add'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add, key: Key('icon1')),
+                    onPressed: _incrementCounter,
+                  ),
+                ),
+                ListTile(
+                  onTap: () => _decrementCounter(10),
+                  key: const Key('tile2'),
+                  title: const Text('Subtract'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.remove, key: Key('icon2')),
+                    onPressed: _decrementCounter,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const NotificationsScreen(),
+              ),
             ),
-            TextButton(
-              onPressed: () => _showNotification(id: 1),
-              child: const Text('Show notification with ID=1'),
-            ),
-            TextButton(
-              onPressed: () => _showNotification(id: 2),
-              child: const Text('Show notification with ID=2'),
-            ),
-          ],
-        ),
+            child: const Text('Open notifications screen'),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
