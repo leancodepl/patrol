@@ -71,10 +71,8 @@ void main() {
     );
   });
 
-  group('finds widget by parent', () {
-    maestroTest('simple parent', ($) async {
-      await $.pumpWidgetAndSettle(
-        MaterialApp(
+  group('smoke tests', () {
+    Widget app() => MaterialApp(
           key: const Key('app'),
           home: Column(
             children: [
@@ -86,10 +84,13 @@ void main() {
                 key: Key('sizedbox'),
                 child: Text('Hello 2', key: Key('helloText')),
               ),
+              const SizedBox(child: Icon(Icons.code)),
             ],
           ),
-        ),
-      );
+        );
+
+    maestroTest('finds by parent', ($) async {
+      await $.pumpWidgetAndSettle(app());
 
       expect($(MaterialApp).$(Text), findsNWidgets(2));
       expect($(MaterialApp).$(#helloText), findsNWidgets(2));
@@ -101,6 +102,13 @@ void main() {
       expect($(MaterialApp).$(Container).$(Text), findsOneWidget);
       expect($(MaterialApp).$(Container).$('Hello 1'), findsOneWidget);
       expect($(MaterialApp).$(SizedBox).$('Hello 2'), findsOneWidget);
+    });
+
+    maestroTest('finds by parent and with descendant', ($) async {
+      await $.pumpWidgetAndSettle(app());
+
+      expect($(SizedBox).withDescendant(Text), findsOneWidget);
+      expect($(Column).withDescendant('Hello 2'), findsOneWidget);
     });
   });
 }

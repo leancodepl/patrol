@@ -42,9 +42,7 @@ void maestroTest(
 }
 
 class MaestroFinder extends MatchFinder {
-  MaestroFinder({required this.finder, required this.tester}) {
-    print('Created MaestroFinder with finder: $this');
-  }
+  MaestroFinder({required this.finder, required this.tester});
 
   final Finder finder;
   final WidgetTester tester;
