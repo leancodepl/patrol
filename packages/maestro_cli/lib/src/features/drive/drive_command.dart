@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:adb/adb.dart' as adb;
+import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
@@ -176,7 +176,7 @@ class DriveCommand extends Command<int> {
 
   Future<List<String>> _parseDevices(List<String>? devicesArg) async {
     if (devicesArg == null || devicesArg.isEmpty) {
-      final adbDevices = await adb.devices();
+      final adbDevices = await const Adb().devices();
 
       if (adbDevices.isEmpty) {
         throw Exception('No devices attached');
@@ -195,7 +195,7 @@ class DriveCommand extends Command<int> {
     }
 
     if (devicesArg.contains('all')) {
-      return adb.devices();
+      return const Adb().devices();
     }
 
     return devicesArg;

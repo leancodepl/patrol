@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
-  adb: ^0.0.4
+  adb: ^0.1.0
   ansi_styles: ^0.3.2+1
   args: ^2.3.1
   http: ^0.13.4
@@ -19,10 +19,6 @@ dependencies:
 dev_dependencies:
   leancode_lint: ^1.1.0
   test: ^1.21.1
-
-dependency_overrides:
-  adb:
-    path: /Users/bartek/dev/leancode/maestro/packages/adb
 
 executables:
   maestro: main

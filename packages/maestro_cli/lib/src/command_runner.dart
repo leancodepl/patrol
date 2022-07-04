@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:adb/adb.dart' as adb;
+import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
@@ -9,7 +9,7 @@ import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
-  final devices = await adb.devices();
+  final devices = await const Adb().devices();
 
   final runner = MaestroCommandRunner(devices: devices);
 

@@ -11,10 +11,10 @@ packages:
   adb:
     dependency: "direct main"
     description:
-      path: "/Users/bartek/dev/leancode/maestro/packages/adb"
-      relative: false
-    source: path
-    version: "0.0.4"
+      name: adb
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   analyzer:
     dependency: transitive
     description:
@@ -190,6 +190,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  mocktail:
+    dependency: transitive
+    description:
+      name: mocktail
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   node_preamble:
     dependency: transitive
     description:
