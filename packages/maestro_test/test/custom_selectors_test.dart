@@ -16,7 +16,7 @@ void main() {
     maestroTest('key', ($) async {
       await $.pumpWidgetAndSettle(
         const MaterialApp(
-          home: Text('Hello', key: ValueKey('hello')),
+          home: Text('Hello', key: Key('hello')),
         ),
       );
       expect($(#hello), findsOneWidget);
@@ -69,5 +69,31 @@ void main() {
         expect($($($($('Hello')))), findsOneWidget);
       },
     );
+  });
+
+  group('finds widget by parent', () {
+    maestroTest('simple parent', ($) async {
+      await $.pumpWidgetAndSettle(
+        const MaterialApp(
+          key: Key('app'),
+          home: Scaffold(body: Text('Hello', key: Key('hello'))),
+        ),
+      );
+
+      expect($(MaterialApp), findsOneWidget);
+      expect($(#xd).$(#hello), findsOneWidget);
+
+      expect(
+        find.descendant(
+          of: find.byType(MaterialApp),
+          matching: find.byType(Text),
+        ),
+        findsOneWidget,
+      );
+
+      //expect($(MaterialApp).$(Text), findsOneWidget);
+      //expect($(MaterialApp).$('Text'), findsOneWidget);
+      //expect($(MaterialApp).$(#hello), findsOneWidget);
+    });
   });
 }
