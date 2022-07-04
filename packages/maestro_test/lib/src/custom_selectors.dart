@@ -156,10 +156,6 @@ class MaestroTester {
 }
 
 Finder _createFinder(dynamic expression) {
-  if (expression is MaestroFinder) {
-    return expression.finder;
-  }
-
   if (expression is Type) {
     return find.byType(expression);
   }
@@ -180,8 +176,12 @@ Finder _createFinder(dynamic expression) {
     return find.byIcon(expression);
   }
 
+  if (expression is MaestroFinder) {
+    return expression.finder;
+  }
+
   throw ArgumentError(
-    'expression must be of type `MaestroFinder`, `Type`, `Symbol`, `String`, `Pattern`, or `IconData`',
+    'expression must be of type `Type`, `Symbol`, `String`, `Pattern`, `IconData`, or `MaestroFinder`',
   );
 }
 

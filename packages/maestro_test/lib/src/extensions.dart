@@ -8,6 +8,7 @@ extension IsOk on http.Response {
 
 extension SymbolX on Symbol {
   String get name {
+    // Kinda hacky but works well. Might require adjustements on the web though.
     final symbol = toString();
     return symbol.substring(8, symbol.length - 2);
   }
