@@ -1,12 +1,13 @@
 name: adb
 description: Simple wrapper for adb.
-version: 0.0.4
+version: 0.1.0
 homepage: https://github.com/leancodepl/maestro
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
+  mocktail: ^0.3.0
   path: ^1.8.0
 
 dev_dependencies:
