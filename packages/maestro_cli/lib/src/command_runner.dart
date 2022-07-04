@@ -6,6 +6,8 @@ import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:maestro_cli/src/features/clean/clean_command.dart';
 import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
+import 'package:maestro_cli/src/features/update/update_command.dart';
+import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
@@ -41,6 +43,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
     addCommand(DriveCommand());
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
+    addCommand(UpdateCommand());
 
     argParser
       ..addFlag(
@@ -77,6 +80,10 @@ class MaestroCommandRunner extends CommandRunner<int> {
       log.info('Debug mode enabled. Non-versioned artifacts will be used.');
     }
 
+    if (!_isUpdateCommand(results.arguments)) {
+      await _checkIfUsingLatestVersion();
+    }
+
     if (_commandRequiresArtifacts(results.arguments)) {
       try {
         await _ensureArtifactsArePresent(debugFlag);
@@ -96,6 +103,28 @@ bool _commandRequiresArtifacts(List<String> arguments) {
   return !arguments.contains('clean') &&
       !arguments.contains('doctor') &&
       !arguments.contains('help');
+}
+
+bool _isUpdateCommand(List<String> arguments) {
+  return arguments.contains('update');
+}
+
+Future<void> _checkIfUsingLatestVersion() async {
+  final pubUpdater = PubUpdater();
+
+  final latestVersion = await pubUpdater.getLatestVersion(maestroCliPackage);
+  final isLatestVersion = await pubUpdater.isUpToDate(
+    packageName: maestroCliPackage,
+    currentVersion: version,
+  );
+
+  if (!isLatestVersion) {
+    log
+      ..info(
+        'Newer version of $maestroCliPackage is available ($latestVersion)',
+      )
+      ..info('Run `maestro update` to update');
+  }
 }
 
 Future<void> _ensureArtifactsArePresent(bool debug) async {
