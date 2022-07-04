@@ -41,12 +41,34 @@ void maestroTest(
   );
 }
 
+/// A decorator around [Finder] that provides Maestro _custom selector_ (also
+/// known as `$`).
+///
+///
 class MaestroFinder extends MatchFinder {
+  /// Creates a new [MaestroFinder] with the given [finder] and [tester].
+  ///
+  /// Usually, you won't use this constructor directly. Instead, you'll use the
+  /// [MaestroTester] (which is provided by [MaestroTesterCallback] in
+  /// [maestroTest]) and [MaestroFinder.$].
   MaestroFinder({required this.finder, required this.tester});
 
+  /// Finder that this [MaestroFinder] wraps.
   final Finder finder;
+
+  /// Widget tester that this [MaestroFinder] wraps.
   final WidgetTester tester;
 
+  /// Taps on the widget resolved by this finder.
+  ///
+  /// If more than one widget is found, the [index]-th widget is tapped, instead
+  /// of throwing an exception (like [WidgetTester.tap] does).
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
+  /// you want to disable this behavior, pass `false` to [andSettle].
+  ///
+  /// See also:
+  ///  - [WidgetController.tap] (which [WidgetTester] extends from)
   Future<void> tap({bool andSettle = true, int index = 0}) async {
     await tester.tap(finder.at(index));
 
@@ -57,6 +79,18 @@ class MaestroFinder extends MatchFinder {
     }
   }
 
+  /// Enters text into the widget resolved by this finder.
+  ///
+  /// If more than one widget is found, [text] in entered into the [index]-th
+  /// widget, instead of throwing an exception (like [WidgetTester.enterText]
+  /// does).
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after
+  /// entering text. If you want to disable this behavior, pass `false` to
+  /// [andSettle].
+  ///
+  /// See also:
+  ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
     bool andSettle = true,
@@ -79,6 +113,8 @@ class MaestroFinder extends MatchFinder {
     return (finder.evaluate().first.widget as Text).data;
   }
 
+  /// Returns a [MaestroFinder] that looks for [matching] in descendants of this
+  /// [MaestroFinder].
   MaestroFinder $(dynamic matching) {
     return _$(
       matching: matching,
@@ -116,11 +152,49 @@ class MaestroFinder extends MatchFinder {
   }
 }
 
+/// A [MaestroFinder] wraps a [WidgetTester].
+///
+/// This is a [callable
+/// class](https://dart.dev/guides/language/language-tour#callable-classes),
+/// which means that you can call it like a method.
 class MaestroTester {
-  MaestroTester(this.tester);
+  /// Creates a new [MaestroTester] with the given WidgetTester [tester].
+  ///
+  /// Usually, you won't to directly create instance of this class. Instead,
+  /// you'll use the Instead, you'll use the [MaestroTester] which is provided
+  /// by [MaestroTesterCallback] in [maestroTest], like this:
+  ///
+  /// ```dart
+  /// import 'package:maestro_test/maestro_test.dart';
+  ///
+  /// void main() {
+  ///   maestroTest('Counter increments smoke test', (maestroTester) async {
+  ///     await maestroTester.pumpWidgetAndSettle(const MyApp());
+  ///     await maestroTester(#startAppButton).tap();
+  ///   });
+  /// }
+  /// ```
+  ///
+  /// To make test code more concise, `maestroTester` variable is usually called
+  /// `$`, like this:
+  ///
+  /// ```dart
+  /// import 'package:maestro_test/maestro_test.dart';
+  /// void main() {
+  ///   maestroTest('Counter increments smoke test', ($) async {
+  ///     await $.pumpWidgetAndSettle(const MyApp());
+  ///     await $(#startAppButton).tap();
+  ///   });
+  /// }
+  /// ```
+  ///
+  const MaestroTester(this.tester);
 
   final WidgetTester tester;
 
+  /// Returns a [MaestroFinder] that matches [matching].
+  ///
+  /// Refer to
   MaestroFinder call(dynamic matching) {
     return _$(
       matching: matching,
@@ -165,6 +239,18 @@ class MaestroTester {
   }
 }
 
+/// Creates a [Finder] from [expression].
+///
+/// The [Finder] that this method returns depends on the type of [expression].
+/// Supported [expression] types are:
+/// - [Type], which translates to [CommonFinders.byType]
+/// - [Symbol], which translates to [CommonFinders.byKey]
+/// - [String], which translates to [CommonFinders.text]
+/// - [Pattern], which translates to [CommonFinders.textContaining]. Example
+///   [Pattern] is a [RegExp].
+/// - [IconData], which translates to [CommonFinders.byIcon]
+/// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder] passed
+///   as [expression] resolves to.
 Finder _createFinder(dynamic expression) {
   if (expression is Type) {
     return find.byType(expression);

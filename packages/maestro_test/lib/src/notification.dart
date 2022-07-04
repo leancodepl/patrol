@@ -13,6 +13,7 @@ class Notification with _$Notification {
     required String content,
   }) = _Notification;
 
+  /// Creates a new [Notification] from JSON.
   factory Notification.fromJson(Map<String, dynamic> json) =>
       _$NotificationFromJson(json);
 }

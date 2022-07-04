@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:maestro_test/src/custom_selectors.dart';
 
 part 'selector.freezed.dart';
 part 'selector.g.dart';
@@ -31,8 +32,13 @@ class _AndroidWidgetClasses implements WidgetClasses {
   String get toggle => 'android.widget.Switch';
 }
 
+/// Matches widgets on the underlying native platform.
+///
+/// This *does not* match Flutter widgets. If you want to use Maestro's _custom
+/// selector_, see [MaestroTester] and [MaestroFinder].
 @freezed
 class Selector with _$Selector {
+  /// Creates a new [Selector].
   const factory Selector({
     String? text,
     String? textStartsWith,
@@ -48,6 +54,7 @@ class Selector with _$Selector {
     String? packageName,
   }) = _Selector;
 
+  /// Creates a new [Selector] from JSON.
   factory Selector.fromJson(Map<String, dynamic> json) =>
       _$SelectorFromJson(json);
 }
