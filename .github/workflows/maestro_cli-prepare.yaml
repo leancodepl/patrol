@@ -2,13 +2,13 @@ name: maestro_cli prepare
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     ignore-tags: ["maestro_cli-v*"]
     paths:
       - "packages/maestro_cli/**"
       - "AutomatorServer/**"
   pull_request:
-    branches: [main]
+    branches: [mamasterin]
     paths:
       - "packages/maestro_cli/**"
       - "AutomatorServer/**"

@@ -2,12 +2,12 @@ name: adb prepare
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     ignore-tags: ["adb-v*"]
     paths:
       - "packages/adb/**"
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - "packages/adb/**"
 
