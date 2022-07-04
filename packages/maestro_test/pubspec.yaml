@@ -3,7 +3,7 @@ description: >
   Simple, easy-to-learn, Flutter-native UI testing framework eliminating
   limitations of flutter_driver
 version: 0.3.0
-homepage: https://github.com/leancodepl/maestro/tree/main/packages/maestro_test
+homepage: https://github.com/leancodepl/maestro/tree/master/packages/maestro_test
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
