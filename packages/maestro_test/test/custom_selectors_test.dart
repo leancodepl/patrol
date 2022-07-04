@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors.dart';
+import 'package:maestro_test/src/custom_selectors/custom_selectors.dart';
 
 void main() {
   group('finds widget by', () {

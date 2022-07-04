@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:maestro_test/src/custom_selectors.dart';
+import 'package:maestro_test/src/custom_selectors/custom_selectors.dart';
 
 part 'selector.freezed.dart';
 part 'selector.g.dart';
