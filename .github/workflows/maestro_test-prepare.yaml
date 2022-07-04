@@ -57,6 +57,9 @@ jobs:
       - name: flutter analyze
         run: flutter analyze --no-fatal-infos
 
+      - name: flutter test
+        run: flutter test
+
       - name: flutter pub get (example app)
         working-directory: ./packages/maestro_test/example
         run: flutter pub get
