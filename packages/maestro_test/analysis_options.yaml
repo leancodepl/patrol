@@ -1,1 +1,6 @@
 include: package:leancode_lint/analysis_options_package.yaml
+
+analyzer:
+  exclude:
+    - lib/**/*.freezed.dart
+    - lib/**/*.g.dart

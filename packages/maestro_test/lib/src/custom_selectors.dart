@@ -123,6 +123,10 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
+  /// Returns a [MaestroFinder] that this method was called on.
+  ///
+  /// Checks whether the [Widget] that this [MaestroFinder] was called on has
+  /// [matching] as a descendant.
   MaestroFinder withDescendant(dynamic matching) {
     return MaestroFinder(
       tester: tester,
@@ -154,42 +158,43 @@ class MaestroFinder extends MatchFinder {
 
 /// A [MaestroFinder] wraps a [WidgetTester].
 ///
-/// This is a [callable
-/// class](https://dart.dev/guides/language/language-tour#callable-classes),
-/// which means that you can call it like a method.
+/// Usually, you won't create a [MaestroFinder] instance directly. Instead,
+/// you'll use the [MaestroTester] which is provided by [MaestroTesterCallback]
+/// in [maestroTest], like this:
+///
+/// ```dart
+/// import 'package:maestro_test/maestro_test.dart';
+///
+/// void main() {
+///   maestroTest('Counter increments smoke test', (maestroTester) async {
+///     await maestroTester.pumpWidgetAndSettle(const MyApp());
+///     await maestroTester(#startAppButton).tap();
+///   });
+/// }
+/// ```
+///
+/// To make test code more concise, `maestroTester` variable is usually called
+/// `$`, like this:
+///
+/// ```dart
+/// import 'package:maestro_test/maestro_test.dart';
+/// void main() {
+///   maestroTest('Counter increments smoke test', ($) async {
+///     await $.pumpWidgetAndSettle(const MyApp());
+///     await $(#startAppButton).tap();
+///   });
+/// }
+/// ```
+/// You can call [MaestroTester] just like a normal method, because it is a
+/// [callable class][callable-class].
+///
+/// [callable-class]:
+/// https://dart.dev/guides/language/language-tour#callable-classes
 class MaestroTester {
   /// Creates a new [MaestroTester] with the given WidgetTester [tester].
-  ///
-  /// Usually, you won't to directly create instance of this class. Instead,
-  /// you'll use the Instead, you'll use the [MaestroTester] which is provided
-  /// by [MaestroTesterCallback] in [maestroTest], like this:
-  ///
-  /// ```dart
-  /// import 'package:maestro_test/maestro_test.dart';
-  ///
-  /// void main() {
-  ///   maestroTest('Counter increments smoke test', (maestroTester) async {
-  ///     await maestroTester.pumpWidgetAndSettle(const MyApp());
-  ///     await maestroTester(#startAppButton).tap();
-  ///   });
-  /// }
-  /// ```
-  ///
-  /// To make test code more concise, `maestroTester` variable is usually called
-  /// `$`, like this:
-  ///
-  /// ```dart
-  /// import 'package:maestro_test/maestro_test.dart';
-  /// void main() {
-  ///   maestroTest('Counter increments smoke test', ($) async {
-  ///     await $.pumpWidgetAndSettle(const MyApp());
-  ///     await $(#startAppButton).tap();
-  ///   });
-  /// }
-  /// ```
-  ///
   const MaestroTester(this.tester);
 
+  /// Widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
 
   /// Returns a [MaestroFinder] that matches [matching].
@@ -213,10 +218,11 @@ class MaestroTester {
   }
 
   /// See [WidgetTester.pumpAndSettle].
-  Future<void> pumpAndSettle(
-      [Duration duration = const Duration(milliseconds: 100),
-      EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-      Duration timeout = const Duration(minutes: 10)]) async {
+  Future<void> pumpAndSettle([
+    Duration duration = const Duration(milliseconds: 100),
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+    Duration timeout = const Duration(minutes: 10),
+  ]) async {
     await tester.pumpAndSettle();
   }
 
