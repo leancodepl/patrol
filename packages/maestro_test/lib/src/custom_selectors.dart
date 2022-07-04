@@ -111,6 +111,33 @@ class MaestroTester {
 
   final WidgetTester tester;
 
+  MaestroFinder call(dynamic matching) {
+    return _$(
+      matching: matching,
+      tester: tester,
+      parentFinder: null,
+    );
+  }
+
+  /// See [WidgetTester.pumpWidget].
+  Future<void> pumpWidget(
+    Widget widget, [
+    Duration? duration,
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+  ]) async {
+    await tester.pumpWidget(widget, duration, phase);
+  }
+
+  /// See [WidgetTester.pumpAndSettle].
+  Future<void> pumpAndSettle(
+      [Duration duration = const Duration(milliseconds: 100),
+      EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+      Duration timeout = const Duration(minutes: 10)]) async {
+    await tester.pumpAndSettle();
+  }
+
+  /// A convenience method combining [WidgetTester.pumpWidget] and
+  /// [WidgetTester.pumpAndSettle].
   Future<void> pumpWidgetAndSettle(
     Widget widget, [
     Duration? pumpWidgetDuration,
@@ -124,14 +151,6 @@ class MaestroTester {
       pumpAndSettleDuration,
       pumpAndSettlePhase,
       pumpAndSettleTimeout,
-    );
-  }
-
-  MaestroFinder call(dynamic matching) {
-    return _$(
-      matching: matching,
-      tester: tester,
-      parentFinder: null,
     );
   }
 }
