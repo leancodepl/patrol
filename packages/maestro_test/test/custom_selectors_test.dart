@@ -74,26 +74,33 @@ void main() {
   group('finds widget by parent', () {
     maestroTest('simple parent', ($) async {
       await $.pumpWidgetAndSettle(
-        const MaterialApp(
-          key: Key('app'),
-          home: Scaffold(body: Text('Hello', key: Key('hello'))),
+        MaterialApp(
+          key: const Key('app'),
+          home: Column(
+            children: [
+              Container(
+                key: const Key('container'),
+                child: const Text('Hello 1', key: Key('helloText')),
+              ),
+              const SizedBox(
+                key: Key('sizedbox'),
+                child: Text('Hello 2', key: Key('helloText')),
+              ),
+            ],
+          ),
         ),
       );
 
-      expect($(MaterialApp), findsOneWidget);
-      expect($(#xd).$(#hello), findsOneWidget);
+      expect($(MaterialApp).$(Text), findsNWidgets(2));
+      expect($(MaterialApp).$(#helloText), findsNWidgets(2));
+      expect($(Container).$(Text), findsOneWidget);
+      expect($(SizedBox).$(Text), findsOneWidget);
+      expect($(Container).$('Hello 2'), findsNothing);
+      expect($(SizedBox).$('Hello 1'), findsNothing);
 
-      expect(
-        find.descendant(
-          of: find.byType(MaterialApp),
-          matching: find.byType(Text),
-        ),
-        findsOneWidget,
-      );
-
-      //expect($(MaterialApp).$(Text), findsOneWidget);
-      //expect($(MaterialApp).$('Text'), findsOneWidget);
-      //expect($(MaterialApp).$(#hello), findsOneWidget);
+      expect($(MaterialApp).$(Container).$(Text), findsOneWidget);
+      expect($(MaterialApp).$(Container).$('Hello 1'), findsOneWidget);
+      expect($(MaterialApp).$(SizedBox).$('Hello 2'), findsOneWidget);
     });
   });
 }

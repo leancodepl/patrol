@@ -41,8 +41,10 @@ void maestroTest(
   );
 }
 
-class MaestroFinder extends Finder {
-  MaestroFinder({required this.finder, required this.tester});
+class MaestroFinder extends MatchFinder {
+  MaestroFinder({required this.finder, required this.tester}) {
+    print('Created MaestroFinder with finder: $this');
+  }
 
   final Finder finder;
   final WidgetTester tester;
@@ -83,7 +85,7 @@ class MaestroFinder extends Finder {
     return _$(
       matching: matching,
       tester: tester,
-      parentFinder: finder,
+      parentFinder: this,
     );
   }
 
@@ -98,12 +100,22 @@ class MaestroFinder extends Finder {
   }
 
   @override
+  Iterable<Element> evaluate() {
+    return finder.evaluate();
+  }
+
+  @override
   Iterable<Element> apply(Iterable<Element> candidates) {
     return finder.apply(candidates);
   }
 
   @override
   String get description => finder.description;
+
+  @override
+  bool matches(Element candidate) {
+    return (finder as MatchFinder).matches(candidate);
+  }
 }
 
 class MaestroTester {
