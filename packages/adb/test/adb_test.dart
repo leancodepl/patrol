@@ -15,10 +15,6 @@ void main() {
       adb = Adb(adbInternals: mockAdbInternals);
     });
 
-    test('First Test', () {
-      expect(2 + 2, 4);
-    });
-
     test('empty list when no devices attaced', () async {
       const output = '''
 List of devices attached

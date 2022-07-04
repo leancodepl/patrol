@@ -12,7 +12,7 @@ import 'package:adb/src/internals.dart';
 ///  * https://developer.android.com/studio/command-line/adb
 class Adb {
   /// Creates [Adb] instance.
-  Adb({AdbInternals adbInternals = const AdbInternals()})
+  const Adb({AdbInternals adbInternals = const AdbInternals()})
       : _adbInternals = adbInternals;
 
   final AdbInternals _adbInternals;
