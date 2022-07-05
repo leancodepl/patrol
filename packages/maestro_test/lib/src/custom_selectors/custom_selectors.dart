@@ -8,6 +8,11 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 /// Like [testWidgets], but with Maestro custom selector support.
 ///
+///
+/// ### Custom selectors
+///
+/// Custom selectors greatly simplify writing widget tests.
+///
 /// ### Using the default [WidgetTester]
 /// If you need to do something using Flutter's [WidgetTester], you can access
 /// it like this:
@@ -115,6 +120,17 @@ class MaestroFinder extends MatchFinder {
 
   /// Returns a [MaestroFinder] that looks for [matching] in descendants of this
   /// [MaestroFinder].
+  ///
+  /// The [Finder] that this method returns depends on the type of [matching].
+  /// Supported [matching] types are:
+  /// - [Type], which translates to [CommonFinders.byType]
+  /// - [Symbol], which translates to [CommonFinders.byKey]
+  /// - [String], which translates to [CommonFinders.text]
+  /// - [Pattern], which translates to [CommonFinders.textContaining]. Example
+  ///   [Pattern] is a [RegExp].
+  /// - [IconData], which translates to [CommonFinders.byIcon]
+  /// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder]
+  ///   passed as [matching] resolves to.
   MaestroFinder $(dynamic matching) {
     return _$(
       matching: matching,
@@ -247,16 +263,7 @@ class MaestroTester {
 
 /// Creates a [Finder] from [expression].
 ///
-/// The [Finder] that this method returns depends on the type of [expression].
-/// Supported [expression] types are:
-/// - [Type], which translates to [CommonFinders.byType]
-/// - [Symbol], which translates to [CommonFinders.byKey]
-/// - [String], which translates to [CommonFinders.text]
-/// - [Pattern], which translates to [CommonFinders.textContaining]. Example
-///   [Pattern] is a [RegExp].
-/// - [IconData], which translates to [CommonFinders.byIcon]
-/// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder] passed
-///   as [expression] resolves to.
+/// To learn more about rules, see [MaestroFinder.$].
 Finder _createFinder(dynamic expression) {
   if (expression is Type) {
     return find.byType(expression);
