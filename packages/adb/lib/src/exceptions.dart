@@ -5,6 +5,8 @@ class AdbInstallFailedUpdateIncompatible implements Exception {
     required this.message,
   });
 
+  /// Creates a new instance of [AdbInstallFailedUpdateIncompatible] from
+  /// [stderr].
   factory AdbInstallFailedUpdateIncompatible.fromStdErr(String stderr) {
     final str = stderr;
 

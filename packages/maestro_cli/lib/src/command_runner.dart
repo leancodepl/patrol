@@ -83,7 +83,8 @@ class MaestroCommandRunner extends CommandRunner<int> {
       log.info('Debug mode enabled. Non-versioned artifacts will be used.');
     }
 
-    if (!_isUpdateCommand(results.command?.name)) {
+    if (!(results.command?.name == 'update') &&
+        !(results.command?.name == 'doctor')) {
       await _checkIfUsingLatestVersion();
     }
 
