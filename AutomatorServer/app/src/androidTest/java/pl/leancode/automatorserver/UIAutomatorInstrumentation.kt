@@ -156,7 +156,21 @@ class UIAutomatorInstrumentation {
 
         val uiObject = device.findObject(selector)
 
-        Logger.d("Clicking on UIObject ${uiObject.text}")
+        Logger.d("Clicking on UIObject with text: ${uiObject.text}")
+        uiObject.click()
+    }
+
+    fun doubleTap(query: SelectorQuery) {
+        Logger.d("doubleTap()")
+
+        val device = getUiDevice()
+        val selector = query.toUiSelector()
+        Logger.d("Selector: $selector")
+
+        val uiObject = device.findObject(selector)
+
+        Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
+        uiObject.click()
         uiObject.click()
     }
 
