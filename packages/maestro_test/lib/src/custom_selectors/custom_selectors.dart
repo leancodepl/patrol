@@ -136,12 +136,16 @@ class MaestroTester {
   //// A convenience method combining [WidgetTester.dragUntilVisible] and
   /// [WidgetTester.pumpAndSettle].
   ///
+  /// Specify [index] to select on which [finder] to tap. It defaults to the
+  /// first finder.
+  ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
-  Future<void> dragUntilVisible(
+  Future dragUntilVisible(
     Finder finder,
     Finder view,
     Offset moveStep, {
+    int index = 0,
     int maxIteration = 50,
     Duration dragDuration = const Duration(milliseconds: 50),
     Duration pumpDuration = const Duration(milliseconds: 100),
@@ -149,7 +153,7 @@ class MaestroTester {
     Duration pumpTimeout = const Duration(minutes: 10),
   }) async {
     await tester.dragUntilVisible(
-      finder,
+      finder.at(index),
       view,
       moveStep,
       maxIteration: maxIteration,
