@@ -4,8 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:logging/logging.dart';
-import 'package:maestro_test/maestro_test.dart';
 import 'package:maestro_test/src/extensions.dart';
+import 'package:maestro_test/src/native/native_widget.dart';
+import 'package:maestro_test/src/native/notification.dart';
+import 'package:maestro_test/src/native/selector.dart';
 
 /// Provides functionality to control the device.
 ///
