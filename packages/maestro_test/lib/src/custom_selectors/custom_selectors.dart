@@ -8,7 +8,6 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 /// Like [testWidgets], but with Maestro custom selector support.
 ///
-///
 /// ### Custom selectors
 ///
 /// Custom selectors greatly simplify writing widget tests.
@@ -44,6 +43,109 @@ void maestroTest(
     variant: variant,
     tags: tags,
   );
+}
+
+/// [MaestroTester] wraps a [WidgetTester].
+///
+/// Usually, you won't create a [MaestroFinder] instance directly. Instead,
+/// you'll use the [MaestroTester] which is provided by [MaestroTesterCallback]
+/// in [maestroTest], like this:
+///
+/// ```dart
+/// import 'package:maestro_test/maestro_test.dart';
+///
+/// void main() {
+///   maestroTest('Counter increments smoke test', (maestroTester) async {
+///     await maestroTester.pumpWidgetAndSettle(const MyApp());
+///     await maestroTester(#startAppButton).tap();
+///   });
+/// }
+/// ```
+///
+/// To make test code more concise, `maestroTester` variable is usually called
+/// `$`, like this:
+///
+/// ```dart
+/// import 'package:maestro_test/maestro_test.dart';
+/// void main() {
+///   maestroTest('Counter increments smoke test', ($) async {
+///     await $.pumpWidgetAndSettle(const MyApp());
+///     await $(#startAppButton).tap();
+///   });
+/// }
+/// ```
+/// You can call [MaestroTester] just like a normal method, because it is a
+/// [callable class][callable-class].
+///
+/// [callable-class]:
+/// https://dart.dev/guides/language/language-tour#callable-classes
+class MaestroTester {
+  /// Creates a new [MaestroTester] with the given WidgetTester [tester].
+  const MaestroTester(this.tester);
+
+  /// Widget tester that this [MaestroTester] wraps.
+  final WidgetTester tester;
+
+  /// Returns a [MaestroFinder] that matches [matching].
+  ///
+  /// Refer to
+  MaestroFinder call(dynamic matching) {
+    return _$(
+      matching: matching,
+      tester: tester,
+      parentFinder: null,
+    );
+  }
+
+  /// See [WidgetTester.pumpWidget].
+  Future<void> pumpWidget(
+    Widget widget, [
+    Duration? duration,
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+  ]) async {
+    await tester.pumpWidget(widget, duration, phase);
+  }
+
+  /// See [WidgetTester.pumpAndSettle].
+  Future<void> pumpAndSettle([
+    Duration duration = const Duration(milliseconds: 100),
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+    Duration timeout = const Duration(minutes: 10),
+  ]) async {
+    await tester.pumpAndSettle();
+  }
+
+  /// A convenience method combining [WidgetTester.pumpWidget] and
+  /// [WidgetTester.pumpAndSettle].
+  Future<void> pumpWidgetAndSettle(
+    Widget widget, [
+    Duration? pumpWidgetDuration,
+    EnginePhase pumpWidgetPhase = EnginePhase.sendSemanticsUpdate,
+    Duration pumpAndSettleDuration = const Duration(milliseconds: 100),
+    Duration pumpAndSettleTimeout = const Duration(minutes: 10),
+    EnginePhase pumpAndSettlePhase = EnginePhase.sendSemanticsUpdate,
+  ]) async {
+    await tester.pumpWidget(widget, pumpWidgetDuration, pumpWidgetPhase);
+    await tester.pumpAndSettle(
+      pumpAndSettleDuration,
+      pumpAndSettlePhase,
+      pumpAndSettleTimeout,
+    );
+  }
+
+  /// A shortcut for typing [WidgetTester.dragUntilVisible].
+  ///
+  /// See also:
+  ///  - [WidgetController.dragUntilVisible].
+  Future<void> dragUntilVisible(
+    Finder finder,
+    Finder view,
+    Offset moveStep, {
+    int maxIteration = 50,
+    Duration duration = const Duration(milliseconds: 50),
+  }) async {
+    await tester.dragUntilVisible(finder, view, moveStep);
+  }
 }
 
 /// A decorator around [Finder] that provides Maestro _custom selector_ (also
@@ -167,109 +269,6 @@ class MaestroFinder extends MatchFinder {
   @override
   bool matches(Element candidate) {
     return (finder as MatchFinder).matches(candidate);
-  }
-}
-
-/// A [MaestroFinder] wraps a [WidgetTester].
-///
-/// Usually, you won't create a [MaestroFinder] instance directly. Instead,
-/// you'll use the [MaestroTester] which is provided by [MaestroTesterCallback]
-/// in [maestroTest], like this:
-///
-/// ```dart
-/// import 'package:maestro_test/maestro_test.dart';
-///
-/// void main() {
-///   maestroTest('Counter increments smoke test', (maestroTester) async {
-///     await maestroTester.pumpWidgetAndSettle(const MyApp());
-///     await maestroTester(#startAppButton).tap();
-///   });
-/// }
-/// ```
-///
-/// To make test code more concise, `maestroTester` variable is usually called
-/// `$`, like this:
-///
-/// ```dart
-/// import 'package:maestro_test/maestro_test.dart';
-/// void main() {
-///   maestroTest('Counter increments smoke test', ($) async {
-///     await $.pumpWidgetAndSettle(const MyApp());
-///     await $(#startAppButton).tap();
-///   });
-/// }
-/// ```
-/// You can call [MaestroTester] just like a normal method, because it is a
-/// [callable class][callable-class].
-///
-/// [callable-class]:
-/// https://dart.dev/guides/language/language-tour#callable-classes
-class MaestroTester {
-  /// Creates a new [MaestroTester] with the given WidgetTester [tester].
-  const MaestroTester(this.tester);
-
-  /// Widget tester that this [MaestroTester] wraps.
-  final WidgetTester tester;
-
-  /// Returns a [MaestroFinder] that matches [matching].
-  ///
-  /// Refer to
-  MaestroFinder call(dynamic matching) {
-    return _$(
-      matching: matching,
-      tester: tester,
-      parentFinder: null,
-    );
-  }
-
-  /// See [WidgetTester.pumpWidget].
-  Future<void> pumpWidget(
-    Widget widget, [
-    Duration? duration,
-    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-  ]) async {
-    await tester.pumpWidget(widget, duration, phase);
-  }
-
-  /// See [WidgetTester.pumpAndSettle].
-  Future<void> pumpAndSettle([
-    Duration duration = const Duration(milliseconds: 100),
-    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-    Duration timeout = const Duration(minutes: 10),
-  ]) async {
-    await tester.pumpAndSettle();
-  }
-
-  /// A convenience method combining [WidgetTester.pumpWidget] and
-  /// [WidgetTester.pumpAndSettle].
-  Future<void> pumpWidgetAndSettle(
-    Widget widget, [
-    Duration? pumpWidgetDuration,
-    EnginePhase pumpWidgetPhase = EnginePhase.sendSemanticsUpdate,
-    Duration pumpAndSettleDuration = const Duration(milliseconds: 100),
-    Duration pumpAndSettleTimeout = const Duration(minutes: 10),
-    EnginePhase pumpAndSettlePhase = EnginePhase.sendSemanticsUpdate,
-  ]) async {
-    await tester.pumpWidget(widget, pumpWidgetDuration, pumpWidgetPhase);
-    await tester.pumpAndSettle(
-      pumpAndSettleDuration,
-      pumpAndSettlePhase,
-      pumpAndSettleTimeout,
-    );
-  }
-
-  /// A shortcut for typing [WidgetTester.dragUntilVisible].
-  ///
-  /// See also:
-  ///  - [WidgetController.dragUntilVisible].
-  Future<void> dragUntilVisible(
-    Finder finder,
-    Finder view,
-    Offset moveStep, {
-    int maxIteration = 50,
-    Duration duration = const Duration(milliseconds: 50),
-  }) async {
-    await tester.dragUntilVisible(finder, view, moveStep);
   }
 }
 
