@@ -133,7 +133,8 @@ class MaestroTester {
     );
   }
 
-  /// A shortcut for typing [WidgetTester.dragUntilVisible].
+  //// A convenience method combining [WidgetTester.dragUntilVisible] and
+  /// [WidgetTester.pumpAndSettle].
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
@@ -142,9 +143,20 @@ class MaestroTester {
     Finder view,
     Offset moveStep, {
     int maxIteration = 50,
-    Duration duration = const Duration(milliseconds: 50),
+    Duration dragDuration = const Duration(milliseconds: 50),
+    Duration pumpDuration = const Duration(milliseconds: 100),
+    EnginePhase pumpPhase = EnginePhase.sendSemanticsUpdate,
+    Duration pumpTimeout = const Duration(minutes: 10),
   }) async {
-    await tester.dragUntilVisible(finder, view, moveStep);
+    await tester.dragUntilVisible(
+      finder,
+      view,
+      moveStep,
+      maxIteration: maxIteration,
+      duration: dragDuration,
+    );
+
+    await tester.pumpAndSettle(pumpDuration, pumpPhase, pumpTimeout);
   }
 }
 
