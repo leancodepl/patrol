@@ -48,8 +48,6 @@ void maestroTest(
 
 /// A decorator around [Finder] that provides Maestro _custom selector_ (also
 /// known as `$`).
-///
-///
 class MaestroFinder extends MatchFinder {
   /// Creates a new [MaestroFinder] with the given [finder] and [tester].
   ///
@@ -258,6 +256,20 @@ class MaestroTester {
       pumpAndSettlePhase,
       pumpAndSettleTimeout,
     );
+  }
+
+  /// A shortcut for typing [WidgetTester.dragUntilVisible].
+  ///
+  /// See also:
+  ///  - [WidgetController.dragUntilVisible].
+  Future<void> dragUntilVisible(
+    Finder finder,
+    Finder view,
+    Offset moveStep, {
+    int maxIteration = 50,
+    Duration duration = const Duration(milliseconds: 50),
+  }) async {
+    await tester.dragUntilVisible(finder, view, moveStep);
   }
 }
 
