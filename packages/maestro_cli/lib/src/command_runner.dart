@@ -123,7 +123,7 @@ Future<void> _checkIfUsingLatestVersion() async {
       ..info(
         'Newer version of $maestroCliPackage is available ($latestVersion)',
       )
-      ..info('Run `maestro update` to update');
+      ..info('Run `$maestroCliPackage ${UpdateCommand().name}` to update');
   }
 }
 
