@@ -1,15 +1,16 @@
 import 'dart:io';
 
+import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/features/drive/adb.dart' as adb;
+import 'package:maestro_cli/src/features/drive/adb.dart' as drive_adb;
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand() {
+  DriveCommand(List<String> devices) {
     argParser
       ..addOption(
         'host',
@@ -31,12 +32,17 @@ class DriveCommand extends Command<int> {
         help: 'Dart file which starts flutter_driver.',
       )
       ..addOption(
-        'device',
-        help: 'Serial number of ADB device to use.',
-      )
-      ..addOption(
         'flavor',
         help: 'Flavor of the app to run.',
+      )
+      ..addMultiOption(
+        'devices',
+        help: 'List of devices to drive the app on.',
+        allowed: ['all', ...devices],
+      )
+      ..addFlag(
+        'parallel',
+        help: '(experimental) Run tests on devices in parallel.',
       );
   }
 
@@ -86,21 +92,112 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final device = argResults?['device'] as String?;
+    final devicesArg = argResults?['devices'] as List<String>?;
+    final devices = await _parseDevices(devicesArg);
 
-    await adb.installApps(device: device, debug: debugFlag);
-    await adb.forwardPorts(port, device: device);
-    adb.runServer(device: device, port: portStr);
-    await flutter_driver.runTestsWithOutput(
-      driver: driver,
-      target: target,
-      host: host,
-      port: portStr,
-      verbose: verboseFlag,
-      device: device,
-      flavor: flavor as String?,
-    );
+    final parallel = argResults?['parallel'] as bool? ?? false;
+
+    if (parallel) {
+      await _runTestsInParallel(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        verbose: verboseFlag,
+        devices: devices,
+        flavor: flavor as String?,
+      );
+    } else {
+      await _runTestsSequentially(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        verbose: verboseFlag,
+        devices: devices,
+        flavor: flavor as String?,
+      );
+    }
 
     return 0;
+  }
+
+  Future<void> _runTestsInParallel({
+    required String driver,
+    required String target,
+    required String host,
+    required int port,
+    required bool verbose,
+    required List<String> devices,
+    required String? flavor,
+  }) async {
+    await Future.wait(
+      devices.map((device) async {
+        await drive_adb.installApps(device: device, debug: debugFlag);
+        await drive_adb.forwardPorts(port, device: device);
+        drive_adb.runServer(device: device, port: port);
+        await flutter_driver.runTestsWithOutput(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          verbose: verboseFlag,
+          device: device,
+          flavor: flavor,
+        );
+      }),
+    );
+  }
+
+  Future<void> _runTestsSequentially({
+    required String driver,
+    required String target,
+    required String host,
+    required int port,
+    required bool verbose,
+    required List<String> devices,
+    required String? flavor,
+  }) async {
+    for (final device in devices) {
+      await drive_adb.installApps(device: device, debug: debugFlag);
+      await drive_adb.forwardPorts(port, device: device);
+      drive_adb.runServer(device: device, port: port);
+      await flutter_driver.runTestsWithOutput(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        verbose: verboseFlag,
+        device: device,
+        flavor: flavor,
+      );
+    }
+  }
+
+  Future<List<String>> _parseDevices(List<String>? devicesArg) async {
+    if (devicesArg == null || devicesArg.isEmpty) {
+      final adbDevices = await const Adb().devices();
+
+      if (adbDevices.isEmpty) {
+        throw Exception('No devices attached');
+      }
+
+      if (adbDevices.length > 1) {
+        final firstDevice = adbDevices.first;
+        log.info(
+          'More than 1 device attached. Running only on the first one ($firstDevice)',
+        );
+
+        return [firstDevice];
+      }
+
+      return adbDevices;
+    }
+
+    if (devicesArg.contains('all')) {
+      return const Adb().devices();
+    }
+
+    return devicesArg;
   }
 }

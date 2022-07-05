@@ -14,7 +14,7 @@ packages:
       name: adb
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.4"
+    version: "0.1.0"
   analyzer:
     dependency: transitive
     description:
@@ -190,6 +190,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  mocktail:
+    dependency: transitive
+    description:
+      name: mocktail
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   node_preamble:
     dependency: transitive
     description:

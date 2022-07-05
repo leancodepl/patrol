@@ -8,13 +8,17 @@ import 'package:maestro_cli/src/features/drive/constants.dart';
 Future<void> runTests({
   required String driver,
   required String target,
-  required String port,
   required String host,
+  required int port,
   required bool verbose,
   String? device,
   String? flavor,
 }) async {
-  log.info('Running tests...');
+  if (device != null) {
+    log.info('Running tests on $device...');
+  } else {
+    log.info('Running tests...');
+  }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
 
@@ -43,13 +47,17 @@ Future<void> runTests({
 Future<void> runTestsWithOutput({
   required String driver,
   required String target,
-  required String port,
   required String host,
+  required int port,
   required bool verbose,
   String? device,
   String? flavor,
 }) async {
-  log.info('Running tests with output...');
+  if (device != null) {
+    log.info('Running tests with output on $device...');
+  } else {
+    log.info('Running tests with output...');
+  }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
 
@@ -94,12 +102,12 @@ Future<void> runTestsWithOutput({
 
 Map<String, String> _dartDefines({
   required String host,
-  required String port,
+  required int port,
   required bool verbose,
 }) {
   return {
     envHostKey: host,
-    envPortKey: port,
+    envPortKey: port.toString(),
     envVerboseKey: verbose.toString(),
   };
 }
