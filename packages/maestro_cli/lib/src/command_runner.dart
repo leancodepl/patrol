@@ -80,11 +80,11 @@ class MaestroCommandRunner extends CommandRunner<int> {
       log.info('Debug mode enabled. Non-versioned artifacts will be used.');
     }
 
-    if (!_isUpdateCommand(results.arguments)) {
+    if (!_isUpdateCommand(results.command?.name)) {
       await _checkIfUsingLatestVersion();
     }
 
-    if (_commandRequiresArtifacts(results.arguments)) {
+    if (_isCommandRequiringArtifacts(results.command?.name)) {
       try {
         await _ensureArtifactsArePresent(debugFlag);
       } catch (err, st) {
@@ -99,14 +99,19 @@ class MaestroCommandRunner extends CommandRunner<int> {
   }
 }
 
-bool _commandRequiresArtifacts(List<String> arguments) {
-  return !arguments.contains('clean') &&
-      !arguments.contains('doctor') &&
-      !arguments.contains('help');
+bool _isUpdateCommand(String? commandName) {
+  return commandName == 'update';
 }
 
-bool _isUpdateCommand(List<String> arguments) {
-  return arguments.contains('update');
+bool _isCommandRequiringArtifacts(String? commandName) {
+  if (commandName == 'clean' ||
+      commandName == 'doctor' ||
+      commandName == 'update' ||
+      commandName == 'help') {
+    return false;
+  }
+
+  return true;
 }
 
 Future<void> _checkIfUsingLatestVersion() async {
@@ -123,7 +128,7 @@ Future<void> _checkIfUsingLatestVersion() async {
       ..info(
         'Newer version of $maestroCliPackage is available ($latestVersion)',
       )
-      ..info('Run `$maestroCliPackage ${UpdateCommand().name}` to update');
+      ..info('Run `maestro update` to update');
   }
 }
 

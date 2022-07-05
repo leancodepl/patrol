@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# make is a convenience command for running common Gradle tasks.
+
+./gradlew assembleDebugAndroidTest
+./gradlew installDebugAndroidTest
+./gradlew install
