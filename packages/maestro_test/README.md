@@ -19,7 +19,7 @@ dev_dependencies:
   maestro_test: ^0.3.0
 ```
 
-### Usage
+### Using features of the underlying native platform
 
 ```dart
 // example/integration_test/example_test.dart
@@ -63,9 +63,12 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   maestroTest(
-    'counter state is the same after going to Home and switching apps',
+    'logs in successfully',
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
+
+      await $(#emailInput).enterText('user@leancode.co');
+      await $(#passwordInput).enterText('ny4ncat');
 
       // Find widget with text 'Log in' which is a descendant of widget with key
       // box1 which is a descendant of a Scaffold widget and tap on it.
@@ -73,6 +76,9 @@ void main() {
 
       // Selects the first Scrollable which has a Text descendant
       $(Scrollable).withDescendant(Text);
+
+      // Selects the first Scrollable which has a Button descendant which has a Text descendant
+      $(Scrollable).withDescendant($(Text).withDescendant(Text));
     },
   );
 }
