@@ -1,4 +1,16 @@
+## 0.3.1
+
+- Improve selector engine:
+
+  - Make it possible to pass a `MaestroFinder` as `expression` to
+    `MaestroTester.call(dynamic expression)` and `MaestroFinder.$(dynamic expression)`
+  - Fix a bug which caused chaining expressions (e.g
+    `$(Scaffold).$(Container).$(#someText)`) to not work.
+
+- Add more in-code documentation and improve README.
+
 ## 0.3.0
+
 - Add selector engine
 
 ## 0.2.0
