@@ -1,3 +1,8 @@
+## 0.3.1
+
+- Automatically inform about new version when it is available.
+- Add `maestro update` command to easily update the package.
+
 ## 0.3.0
 
 - Add support for new features in [maestro_test

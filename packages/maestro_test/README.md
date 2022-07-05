@@ -16,7 +16,7 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.3.0
+  maestro_test: ^0.3.1
 ```
 
 ### Using features of the underlying native platform
