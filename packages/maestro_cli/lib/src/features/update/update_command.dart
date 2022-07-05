@@ -21,13 +21,14 @@ class UpdateCommand extends Command<int> {
       currentVersion: version,
     );
 
-    final latestVersion = await _pubUpdater.getLatestVersion(maestroCliPackage);
-
     if (!isLatestVersion) {
+      final latestVersion = await _pubUpdater.getLatestVersion(
+        maestroCliPackage,
+      );
       await _update(latestVersion);
     } else {
       log.info(
-        'You already have the newest version of $maestroCliPackage ($latestVersion)',
+        'You already have the newest version of $maestroCliPackage ($version)',
       );
     }
 
