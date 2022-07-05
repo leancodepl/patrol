@@ -250,6 +250,13 @@ class Maestro {
     return _wrapPost('tap', selector.toJson());
   }
 
+  /// Double taps on the native widget specified by [selector].
+  ///
+  /// If the native widget is not found, an exception is thrown.
+  Future<void> doubleTap(Selector selector) {
+    return _wrapPost('doubleTap', selector.toJson());
+  }
+
   /// Enters text to the native widget specified by [selector].
   ///
   /// The native widget specified by selector must be an EditText on Android.
