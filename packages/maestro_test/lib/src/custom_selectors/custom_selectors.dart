@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/extensions.dart';
@@ -7,6 +9,10 @@ import 'package:meta/meta.dart';
 typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 /// Like [testWidgets], but with Maestro custom selector support.
+///
+/// If you want to finish the test immediately after it completes, pass
+/// [Duration.zero] for [sleep]. By default, Maestro sleeps for a bit to let you
+/// see how things looked like afte the test finished.
 ///
 /// ### Custom selectors
 ///
@@ -32,11 +38,15 @@ void maestroTest(
   Timeout? timeout,
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
+  Duration sleep = const Duration(seconds: 5),
   dynamic tags,
 }) {
   return testWidgets(
     description,
-    (widgetTester) => callback(MaestroTester(widgetTester)),
+    (widgetTester) async {
+      await callback(MaestroTester(widgetTester));
+      io.sleep(sleep);
+    },
     skip: skip,
     timeout: timeout,
     semanticsEnabled: semanticsEnabled,
