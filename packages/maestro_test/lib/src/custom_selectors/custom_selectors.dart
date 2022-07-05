@@ -224,6 +224,7 @@ class MaestroFinder extends MatchFinder {
   /// The [Finder] that this method returns depends on the type of [matching].
   /// Supported [matching] types are:
   /// - [Type], which translates to [CommonFinders.byType]
+  /// - [Key], which translates to [CommonFinders.byKey]
   /// - [Symbol], which translates to [CommonFinders.byKey]
   /// - [String], which translates to [CommonFinders.text]
   /// - [Pattern], which translates to [CommonFinders.textContaining]. Example
@@ -278,6 +279,10 @@ class MaestroFinder extends MatchFinder {
 Finder _createFinder(dynamic expression) {
   if (expression is Type) {
     return find.byType(expression);
+  }
+
+  if (expression is Key) {
+    return find.byKey(expression);
   }
 
   if (expression is Symbol) {
