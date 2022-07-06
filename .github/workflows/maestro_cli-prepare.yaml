@@ -61,7 +61,7 @@ jobs:
         run: ./gradlew ktlintFormat
 
       - name: Test maestro bootstrap --template generic
-        workin-directory: ../
+        working-directory: ../
         run: |
           flutter create my_awesome_app
           cd my_awesome_app
@@ -69,7 +69,7 @@ jobs:
           flutter analyze
 
       - name: Test maestro bootstrap --template counter
-        workin-directory: ../
+        working-directory: ../
         run: |
           flutter create example
           cd example

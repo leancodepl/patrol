@@ -26,7 +26,7 @@ First, initialize Maestro in your project:
 $ maestro bootstrap
 ```
 
-Then, to run tests using `maestro_test`::
+Then, to run tests using `maestro_test`:
 
 ```
 $ maestro drive
