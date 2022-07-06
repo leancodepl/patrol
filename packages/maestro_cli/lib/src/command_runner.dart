@@ -103,10 +103,6 @@ class MaestroCommandRunner extends CommandRunner<int> {
   }
 }
 
-bool _isUpdateCommand(String? commandName) {
-  return commandName == 'update';
-}
-
 bool _isCommandRequiringArtifacts(String? commandName) {
   if (commandName == 'clean' ||
       commandName == 'doctor' ||

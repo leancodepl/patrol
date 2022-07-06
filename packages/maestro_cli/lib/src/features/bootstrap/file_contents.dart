@@ -1,4 +1,4 @@
-import 'package:maestro_cli/src/common/constants.dart';
+import 'package:maestro_cli/src/common/common.dart';
 
 abstract class AppTestTemplate {
   const AppTestTemplate();
@@ -31,22 +31,20 @@ class CounterTemplate extends AppTestTemplate {
 
   static const _code = '''
 // ignore_for_file: avoid_print
-import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:$maestroPackage/$maestroPackage.dart';
 
-// This is an example file. Use it as a base to create your own Maestro-powered
-// test.
+// This is an example integration test using Maestro. Use it as a base to create
+// your own Maestro-powered test.
 //
 // It runs on target device.
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final maestro = Maestro.forTest();
 
-  testWidgets(
+  maestroTest(
     'counter state is the same after going to Home and switching apps',
     (tester) async {
       /// Find the first Text widget whose content is a String which represents
@@ -71,11 +69,9 @@ void main() {
         return null;
       }
 
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
+      await tester.pumpWidgetAndSettle(const MyApp());
 
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
+      await \$(FloatingActionButton).tap();
       expect(findCounterText()!.data, '1');
 
       await maestro.pressHome();
@@ -83,15 +79,17 @@ void main() {
       await maestro.pressDoubleRecentApps();
 
       expect(findCounterText()!.data, '1');
-      await tester.tap(find.byType(FloatingActionButton));
+      await \$(FloatingActionButton).tap();
       await tester.pumpAndSettle();
       expect(findCounterText()!.data, '2');
 
       await maestro.pressHome();
 
-      await maestro.openNotifications();
+      await maestro.openHalfNotificationShade();
 
       await maestro.pressBack();
+
+      await maestro.pressDoubleRecentApps();
     },
   );
 }
@@ -108,27 +106,25 @@ class GenericTemplate extends AppTestTemplate {
   final String _code;
 
   static const dummyProjectName = 'PROJECT_NAME';
-  static const _basicCode = '''
+  static const _basicCode = r'''
 // ignore_for_file: avoid_print
-import 'package:$dummyProjectName/app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
-// This is an example file. Use it as a base to create your own Maestro-powered
-// test.
+// This is an example integration test using Maestro. Use it as a base to create
+// your own Maestro-powered test.
 //
 // It runs on target device.
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final maestro = Maestro.forTest();
 
-  testWidgets(
+  maestroTest(
     'counter state is the same after going to Home and switching apps',
-    (tester) async {
-      await tester.pumpWidget(
+    ($) async {
+      // Replace with your own app widget.
+      await $.pumpWidgetAndSettle(
         MaterialApp(
           home: Scaffold(
             appBar: AppBar(title: const Text('app')),
@@ -136,17 +132,20 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
 
       await maestro.pressHome();
 
       await maestro.pressDoubleRecentApps();
 
-      await maestro.pressHome();
+      await maestro.openHalfNotificationShade();
 
-      await maestro.openNotifications();
+      await maestro.enableWifi();
+      await maestro.disableWifi();
+      await maestro.enableWifi();
 
       await maestro.pressBack();
+
+      expect($('app'), findsOneWidget);
     },
   );
 }
@@ -155,3 +154,26 @@ void main() {
   @override
   String get code => _code;
 }
+
+const driverFileContent = '''
+// ignore_for_file: avoid_print
+import 'package:integration_test/integration_test_driver.dart';
+import 'package:maestro_test/maestro_drive_helper.dart';
+
+// Runs on our machine. Knows nothing about the app being tested.
+
+Future<void> main() async {
+  final maestro = MaestroDriveHelper();
+  while (!await maestro.isRunning()) {
+    print('Waiting for maestro automation server...');
+    await Future<void>.delayed(const Duration(seconds: 1));
+  }
+  print('Maestro automation server is running, starting test drive');
+  try {
+    await integrationDriver();
+  } finally {
+    print('Stopping Maestro automation server');
+    await maestro.stop();
+  }
+}
+''';
