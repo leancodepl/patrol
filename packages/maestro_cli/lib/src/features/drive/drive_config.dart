@@ -56,8 +56,8 @@ class DriveConfig {
       target: target,
       driver: driver,
       flavor: flavor as String?,
-      dartDefines: (dartDefines as Map<String, dynamic>)
-          .map((key, dynamic value) => MapEntry(key, value.toString())),
+      dartDefines: (dartDefines as Map<String, dynamic>?)
+          ?.map((key, dynamic value) => MapEntry(key, value.toString())),
     );
   }
 

@@ -10,7 +10,7 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand(List<String> devices) {
+  DriveCommand() {
     argParser
       ..addOption(
         'host',
@@ -38,7 +38,14 @@ class DriveCommand extends Command<int> {
       ..addMultiOption(
         'devices',
         help: 'List of devices to drive the app on.',
-        allowed: ['all', ...devices],
+        valueHelp: 'all, emulator-5554',
+      )
+      ..addMultiOption(
+        'dart-define',
+        help:
+            'List of additional key-value pairs that will be available to the '
+            'app under test.',
+        valueHelp: 'SOME_VAR=SOME_VALUE',
       )
       ..addFlag(
         'parallel',
@@ -93,9 +100,23 @@ class DriveCommand extends Command<int> {
     }
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
+    final dynamic cliDartDefines = argResults?['dart-define'];
+    if (cliDartDefines != null && cliDartDefines is! List<String>) {
+      throw FormatException(
+        '`dart-define` argument $cliDartDefines is not a list',
+      );
+    }
+
+    for (final entry in cliDartDefines as List<String>) {
+      final split = entry.split('=');
+      if (split.length != 2) {
+        throw FormatException('`dart-define` value $split is not valid');
+      }
+      dartDefines[split[0]] = split[1];
+    }
 
     for (final dartDefine in dartDefines.entries) {
-      log.info('dartDefine: ${dartDefine.key}=${dartDefine.value}');
+      log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
     final devicesArg = argResults?['devices'] as List<String>?;
