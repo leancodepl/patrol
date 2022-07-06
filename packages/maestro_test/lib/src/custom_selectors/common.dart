@@ -142,6 +142,6 @@ Finder createFinder(dynamic matching) {
   }
 
   throw ArgumentError(
-    'expression must be of type `Type`, `Symbol`, `String`, `Pattern`, `IconData`, or `MaestroFinder`',
+    'expression of type ${matching.runtimeType} is not one of supported types `Type`, `Key`, `Symbol`, `String`, `Pattern`, `IconData`, or `MaestroFinder`',
   );
 }
