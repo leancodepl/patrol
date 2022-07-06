@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
@@ -11,12 +10,7 @@ import 'package:maestro_cli/src/features/update/update_command.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
-  // TODO: Move this initalization to a better place.
-  final adb = Adb();
-  await adb.init();
-  final devices = await adb.devices();
-
-  final runner = MaestroCommandRunner(devices: devices);
+  final runner = MaestroCommandRunner();
 
   try {
     final exitCode = await runner.run(args) ?? 0;
@@ -40,13 +34,13 @@ bool debugFlag = false;
 bool verboseFlag = false;
 
 class MaestroCommandRunner extends CommandRunner<int> {
-  MaestroCommandRunner({required List<String> devices})
+  MaestroCommandRunner()
       : super(
           'maestro',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
     addCommand(BootstrapCommand());
-    addCommand(DriveCommand(devices));
+    addCommand(DriveCommand());
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
     addCommand(UpdateCommand());
@@ -126,7 +120,7 @@ Future<void> _checkIfUsingLatestVersion() async {
     currentVersion: version,
   );
 
-  if (!isLatestVersion) {
+  if (!isLatestVersion && !debugFlag) {
     log
       ..info(
         'Newer version of $maestroCliPackage is available ($latestVersion)',
