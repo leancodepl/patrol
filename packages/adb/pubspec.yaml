@@ -1,6 +1,6 @@
 name: adb
 description: Simple wrapper for adb.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/leancodepl/maestro
 
 environment:
@@ -13,3 +13,6 @@ dependencies:
 dev_dependencies:
   leancode_lint: ^1.1.0
   test: ^1.16.0
+
+executables:
+  dadb: example
