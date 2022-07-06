@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Move `adb start-server` to `Adb.init` method
+
 ## 0.1.1
 
 - Ensure that `adbd` is running in `Adb` constructor
