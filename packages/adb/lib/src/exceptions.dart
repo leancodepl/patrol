@@ -1,4 +1,15 @@
-/// Indicates that adb call failed with INSTALL_FAILED_UPDATE_INCOMPATIBLE.
+/// Indicates that `adbd` (ADB daemon) was not running when `adb` (ADB client)
+/// was called.
+///
+/// See also:
+///  - https://developer.android.com/studio/command-line/adb
+class AdbDaemonNotRunning implements Exception {
+  /// Creates a new [AdbDaemonNotRunning].
+  const AdbDaemonNotRunning();
+}
+
+/// Indicates that `adb install` call failed with
+/// INSTALL_FAILED_UPDATE_INCOMPATIBLE.
 class AdbInstallFailedUpdateIncompatible implements Exception {
   AdbInstallFailedUpdateIncompatible._({
     required this.packageName,
