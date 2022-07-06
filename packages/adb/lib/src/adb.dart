@@ -54,11 +54,11 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
+      if (result.stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
         throw AdbInstallFailedUpdateIncompatible.fromStdErr(result.stdErr);
       }
 
-      if (result.stdErr.contains('daemon not running; starting now at')) {
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
         throw const AdbDaemonNotRunning();
       }
 
@@ -93,7 +93,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains('daemon not running; starting now at')) {
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
         throw const AdbDaemonNotRunning();
       }
 
@@ -133,7 +133,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains('daemon not running; starting now at')) {
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
         throw const AdbDaemonNotRunning();
       }
 

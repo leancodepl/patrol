@@ -6,6 +6,10 @@
 class AdbDaemonNotRunning implements Exception {
   /// Creates a new [AdbDaemonNotRunning].
   const AdbDaemonNotRunning();
+
+  /// If this string occurs in `adb`'s stderr, there's a good chance that
+  /// [AdbDaemonNotRunning] should be thrown.
+  static const trigger = 'daemon not running; starting now at';
 }
 
 /// Indicates that `adb install` call failed with
@@ -34,6 +38,10 @@ class AdbInstallFailedUpdateIncompatible implements Exception {
       message: stderr,
     );
   }
+
+  /// If this string occurs in `adb`'s stderr, there's a good chance that
+  /// [AdbInstallFailedUpdateIncompatible] should be thrown.
+  static const trigger = 'INSTALL_FAILED_UPDATE_INCOMPATIBLE';
 
   final String message;
   final String packageName;
