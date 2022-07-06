@@ -52,9 +52,10 @@ class MaestroTester {
 
   /// Returns a [MaestroFinder] that matches [matching].
   ///
-  /// Refer to
+  /// See also:
+  ///  - [MaestroFinder.resolve]
   MaestroFinder call(dynamic matching) {
-    return resolve(
+    return MaestroFinder.resolve(
       matching: matching,
       tester: tester,
       parentFinder: null,
@@ -97,7 +98,7 @@ class MaestroTester {
     }
   }
 
-  //// A convenience method combining [WidgetTester.dragUntilVisible] and
+  //// A convenience method combining `WidgetTester.dragUntilVisible` and
   /// [WidgetTester.pumpAndSettle].
   ///
   /// Specify [index] to select on which [finder] to tap. It defaults to the

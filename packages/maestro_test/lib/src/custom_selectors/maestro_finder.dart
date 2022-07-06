@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
 
+import 'maestro_tester.dart';
+
 /// A decorator around [Finder] that provides Maestro _custom selector_ (also
 /// known as `$`).
 class MaestroFinder extends MatchFinder {
@@ -13,6 +15,32 @@ class MaestroFinder extends MatchFinder {
   /// [MaestroTester] (which is provided by [MaestroTesterCallback] in
   /// [maestroTest]) and [MaestroFinder.$].
   MaestroFinder({required this.finder, required this.tester});
+
+  /// Returns a [MaestroFinder] that looks for [matching] in descendants of
+  /// [parentFinder]. If [parentFinder] is null, it looks for [matching]
+  /// anywhere in the widget tree.
+  factory MaestroFinder.resolve({
+    required dynamic matching,
+    required Finder? parentFinder,
+    required WidgetTester tester,
+  }) {
+    final finder = createFinder(matching);
+
+    if (parentFinder != null) {
+      return MaestroFinder(
+        tester: tester,
+        finder: find.descendant(
+          of: parentFinder,
+          matching: finder,
+        ),
+      );
+    }
+
+    return MaestroFinder(
+      tester: tester,
+      finder: finder,
+    );
+  }
 
   /// Finder that this [MaestroFinder] wraps.
   final Finder finder;
@@ -74,22 +102,9 @@ class MaestroFinder extends MatchFinder {
     return (finder.evaluate().first.widget as Text).data;
   }
 
-  /// Returns a [MaestroFinder] that looks for [matching] in descendants of this
-  /// [MaestroFinder].
-  ///
-  /// The [Finder] that this method returns depends on the type of [matching].
-  /// Supported [matching] types are:
-  /// - [Type], which translates to [CommonFinders.byType]
-  /// - [Key], which translates to [CommonFinders.byKey]
-  /// - [Symbol], which translates to [CommonFinders.byKey]
-  /// - [String], which translates to [CommonFinders.text]
-  /// - [Pattern], which translates to [CommonFinders.textContaining]. Example
-  ///   [Pattern] is a [RegExp].
-  /// - [IconData], which translates to [CommonFinders.byIcon]
-  /// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder]
-  ///   passed as [matching] resolves to.
+  /// A shortcut for [MaestroFinder.resolve]
   MaestroFinder $(dynamic matching) {
-    return resolve(
+    return MaestroFinder.resolve(
       matching: matching,
       tester: tester,
       parentFinder: this,

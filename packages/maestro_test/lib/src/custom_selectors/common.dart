@@ -57,60 +57,70 @@ void maestroTest(
   );
 }
 
-/// Creates a [Finder] from [expression].
+/// Creates a [Finder] from [matching].
 ///
-/// To learn more about rules, see [MaestroFinder.$].
-Finder createFinder(dynamic expression) {
-  if (expression is Type) {
-    return find.byType(expression);
+/// The [Finder] that this method returns depends on the type of [matching].
+/// Supported types of [matching] are:
+/// - [Type], which translates to [CommonFinders.byType], for example:
+///   ```dart
+///   final finder = createFinder(Button);
+///   ```
+/// - [Key], which translates to [CommonFinders.byKey], for example:
+///   ```dart
+///   final finder = createFinder(Key('signInWithGoogle'));
+///   ```
+/// - [Symbol], which translates to [CommonFinders.byKey], for example:
+///   ```dart
+///   final finder = createFinder(#signInWithGoogle);
+///   ```
+/// - [String], which translates to [CommonFinders.text], for example:
+///   ```dart
+///   final finder = createFinder('Sign in with Google');
+///   ```
+/// - [Pattern], which translates to [CommonFinders.textContaining]. Example
+///   [Pattern] is a [RegExp].
+///   ```dart
+///   final finder = createFinder(RegExp('.*in with.*'));
+///   ```
+/// - [IconData], which translates to [CommonFinders.byIcon], for example:
+///   ```dart
+///   final finder = createFinder(Icons.add);
+///   ```
+/// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder], for
+///   example: passed as [matching] resolves to.
+///   ```dart
+///   final finder = createFinder($(Text('Sign in with Google')));
+///   ```
+Finder createFinder(dynamic matching) {
+  if (matching is Type) {
+    return find.byType(matching);
   }
 
-  if (expression is Key) {
-    return find.byKey(expression);
+  if (matching is Key) {
+    return find.byKey(matching);
   }
 
-  if (expression is Symbol) {
-    return find.byKey(Key(expression.name));
+  if (matching is Symbol) {
+    return find.byKey(Key(matching.name));
   }
 
-  if (expression is String) {
-    return find.text(expression);
+  if (matching is String) {
+    return find.text(matching);
   }
 
-  if (expression is Pattern) {
-    return find.textContaining(expression);
+  if (matching is Pattern) {
+    return find.textContaining(matching);
   }
 
-  if (expression is IconData) {
-    return find.byIcon(expression);
+  if (matching is IconData) {
+    return find.byIcon(matching);
   }
 
-  if (expression is MaestroFinder) {
-    return expression.finder;
+  if (matching is MaestroFinder) {
+    return matching.finder;
   }
 
   throw ArgumentError(
     'expression must be of type `Type`, `Symbol`, `String`, `Pattern`, `IconData`, or `MaestroFinder`',
-  );
-}
-
-MaestroFinder resolve({
-  required dynamic matching,
-  required WidgetTester tester,
-  required Finder? parentFinder,
-}) {
-  if (parentFinder != null) {
-    return MaestroFinder(
-      tester: tester,
-      finder: find.descendant(
-        of: parentFinder,
-        matching: createFinder(matching),
-      ),
-    );
-  }
-
-  return MaestroFinder(
-    tester: tester,
-    finder: createFinder(matching),
   );
 }
