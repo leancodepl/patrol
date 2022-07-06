@@ -176,7 +176,7 @@ class DriveCommand extends Command<int> {
 
   Future<List<String>> _parseDevices(List<String>? devicesArg) async {
     if (devicesArg == null || devicesArg.isEmpty) {
-      final adbDevices = await const Adb().devices();
+      final adbDevices = await Adb().devices();
 
       if (adbDevices.isEmpty) {
         throw Exception('No devices attached');
@@ -195,7 +195,7 @@ class DriveCommand extends Command<int> {
     }
 
     if (devicesArg.contains('all')) {
-      return const Adb().devices();
+      return Adb().devices();
     }
 
     return devicesArg;

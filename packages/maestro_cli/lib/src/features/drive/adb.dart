@@ -12,7 +12,7 @@ Future<void> installApps({String? device, bool debug = false}) async {
       artifactPath,
       debug ? debugServerArtifactFile : serverArtifactFile,
     );
-    await const Adb().forceInstallApk(p, device: device);
+    await Adb().forceInstallApk(p, device: device);
   } catch (err) {
     serverInstallProgress.fail('Failed to install server');
     rethrow;
@@ -25,7 +25,7 @@ Future<void> installApps({String? device, bool debug = false}) async {
       artifactPath,
       debug ? debugInstrumentationArtifactFile : instrumentationArtifactFile,
     );
-    await const Adb().forceInstallApk(p, device: device);
+    await Adb().forceInstallApk(p, device: device);
   } catch (err) {
     instrumentInstallProgress.fail('Failed to install instrumentation');
     rethrow;
@@ -38,7 +38,7 @@ Future<void> forwardPorts(int port, {String? device}) async {
   final progress = log.progress('Forwarding ports');
 
   try {
-    await const Adb().forwardPorts(
+    await Adb().forwardPorts(
       fromHost: port,
       toDevice: port,
       device: device,
@@ -55,7 +55,7 @@ void runServer({
   required String? device,
   required int port,
 }) {
-  const Adb().instrument(
+  Adb().instrument(
     packageName: 'pl.leancode.automatorserver.test',
     intentClass: 'androidx.test.runner.AndroidJUnitRunner',
     device: device,
