@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:pub_updater/pub_updater.dart';
-
-import '../../common/common.dart';
 
 class UpdateCommand extends Command<int> {
   UpdateCommand() : _pubUpdater = PubUpdater();

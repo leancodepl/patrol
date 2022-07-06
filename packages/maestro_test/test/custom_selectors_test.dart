@@ -15,11 +15,25 @@ void main() {
 
     maestroTest('key', ($) async {
       await $.pumpWidgetAndSettle(
-        const MaterialApp(
-          home: Text('Hello', key: Key('hello')),
+        MaterialApp(
+          home: Column(
+            children: const [
+              Text('Hello', key: Key('hello')),
+              Text('Some text', key: Key('Some \n long, complex\t\ttext!')),
+              Text('Another text', key: ValueKey({'key': 'value'})),
+            ],
+          ),
         ),
       );
       expect($(#hello), findsOneWidget);
+      expect($(const Symbol('hello')), findsOneWidget);
+      expect($(const Key('hello')), findsOneWidget);
+
+      expect($(const Symbol('Some \n long, complex\t\ttext!')), findsOneWidget);
+      expect($(const Key('Some \n long, complex\t\ttext!')), findsOneWidget);
+
+      expect($(const ValueKey({'key': 'value'})), findsOneWidget);
+      expect($(const ValueKey({'key': 'value1'})), findsNothing);
     });
 
     maestroTest('text', ($) async {
@@ -109,6 +123,16 @@ void main() {
 
       expect($(SizedBox).withDescendant(Text), findsOneWidget);
       expect($(Column).withDescendant('Hello 2'), findsOneWidget);
+
+      final columnFinder = $(Column).withDescendant(
+        $(Container).withDescendant('Hello 1'),
+      );
+      expect(columnFinder, findsOneWidget);
+      expect(columnFinder.finder.evaluate().first.widget.runtimeType, Column);
+
+      final column2Finder =
+          $(Column).withDescendant(Container).withDescendant(#helloText);
+      expect(column2Finder, findsNWidgets(2));
     });
   });
 }
