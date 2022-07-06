@@ -1,15 +1,22 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
 import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
 
+/// Default amount of space to scroll by in a vertical [Scrollable]
+const verticalStep = Offset(0, 16);
+
+/// Default amount of space to scroll by in a horizontal [Scrollable].
+const horizontalStep = Offset(16, 0);
+
 /// [MaestroTester] wraps a [WidgetTester]. It provides
 /// - support for _Maestro custom selector_, a.k.a `$`
-/// - convenience method for pumping, scrolling, etc.
+/// - convenience method for pumping widgets, scrolling, etc.
 ///
 /// If you want to do something that [WidgetTester] supports, but
 /// [MaestroTester] does not, you can access the underlying [WidgetTester] via
-/// [tester].
+/// [tester] field of [MaestroTester].
 ///
 /// Usually, you won't create a [MaestroTester] instance directly. Instead,
 /// you'll use the [MaestroTester] which is provided by [MaestroTesterCallback]
@@ -38,6 +45,8 @@ import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
 ///   });
 /// }
 /// ```
+///
+///
 /// You can call [MaestroTester] just like a normal method, because it is a
 /// [callable class][callable-class].
 ///
@@ -98,7 +107,79 @@ class MaestroTester {
     }
   }
 
-  //// A convenience method combining `WidgetTester.dragUntilVisible` and
+  /// Convenience method combining `WidgetTester.drag` and
+  /// [WidgetTester.pumpAndSettle].
+  ///
+  /// Specify [index] to select on which [finder] to tap. It defaults to the
+  /// first finder.
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after drag.
+  /// If you want to disable this behavior, pass `false` to [andSettle].
+  ///
+  /// See also:
+  ///  - [WidgetController.drag]
+  Future<void> drag(
+    Finder finder,
+    Offset offset, {
+    int? pointer,
+    int buttons = kPrimaryButton,
+    double touchSlopX = kDragSlopDefault,
+    double touchSlopY = kDragSlopDefault,
+    bool warnIfMissed = true,
+    PointerDeviceKind kind = PointerDeviceKind.touch,
+    int index = 0,
+    bool andSettle = true,
+  }) async {
+    await tester.drag(
+      finder.at(index),
+      offset,
+      pointer: pointer,
+      buttons: buttons,
+      touchSlopX: touchSlopX,
+      touchSlopY: touchSlopY,
+      kind: kind,
+    );
+
+    if (andSettle) {
+      await tester.pumpAndSettle();
+    }
+  }
+
+  /// Convenience method combining `WidgetTester.dragFrom` and
+  /// [WidgetTester.pumpAndSettle].
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
+  /// you want to disable this behavior, pass `false` to [andSettle].
+  ///
+  /// See also:
+  ///  - [WidgetController.dragFrom].
+  Future<void> dragFrom(
+    Offset startLocation,
+    Offset offset, {
+    int? pointer,
+    int buttons = kPrimaryButton,
+    double touchSlopX = kDragSlopDefault,
+    double touchSlopY = kDragSlopDefault,
+    PointerDeviceKind kind = PointerDeviceKind.touch,
+    bool andSettle = true,
+    int index = 0,
+  }) async {
+    await tester.dragFrom(
+      startLocation,
+      offset,
+      pointer: pointer,
+      buttons: buttons,
+      touchSlopX: touchSlopX,
+      touchSlopY: touchSlopY,
+      kind: kind,
+    );
+
+    if (andSettle) {
+      await tester.pumpAndSettle();
+    }
+  }
+
+  /// Convenience method combining `WidgetTester.dragUntilVisible` and
   /// [WidgetTester.pumpAndSettle].
   ///
   /// Specify [index] to select on which [finder] to tap. It defaults to the
@@ -109,14 +190,14 @@ class MaestroTester {
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
-  Future dragUntilVisible(
+  Future<void> dragUntilVisible(
     Finder finder,
     Finder view,
     Offset moveStep, {
-    int index = 0,
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool andSettle = true,
+    int index = 0,
   }) async {
     await tester.dragUntilVisible(
       finder.at(index),

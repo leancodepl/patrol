@@ -14,7 +14,7 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 ///
 /// If you want to finish the test immediately after it completes, pass
 /// [Duration.zero] for [sleep]. By default, Maestro sleeps for a bit to let you
-/// see how things looked like afte the test finished.
+/// see how things looked like after the test finished.
 ///
 /// ### Custom selectors
 ///
@@ -59,6 +59,23 @@ void maestroTest(
 
 /// Creates a [Finder] from [matching].
 ///
+/// ### Usage
+///
+/// Usually, you won't use `createFinder` directly. Instead, you'll use
+/// [MaestroTester.call] and [MaestroFinder.$], like this:
+///
+/// ```dart
+/// maestroTest(
+///    'increase counter text',
+///    ($) async {
+///      // calls createFinder method under the hood
+///      await $(Scaffold).$(#passwordTextField).enterText('my password');
+///    },
+/// );
+/// ```
+///
+/// ### What does this method accept?
+///
 /// The [Finder] that this method returns depends on the type of [matching].
 /// Supported types of [matching] are:
 /// - [Type], which translates to [CommonFinders.byType], for example:
@@ -91,6 +108,11 @@ void maestroTest(
 ///   ```dart
 ///   final finder = createFinder($(Text('Sign in with Google')));
 ///   ```
+///
+/// See also:
+///  - [MaestroTester.call]
+///  - [MaestroFinder.$]
+/// -  [MaestroFinder.resolve]
 Finder createFinder(dynamic matching) {
   if (matching is Type) {
     return find.byType(matching);
