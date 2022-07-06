@@ -1,0 +1,20 @@
+name: Maestro
+
+packages:
+  - packages/**
+
+scripts:
+  get:
+    run: melos exec flutter pub get
+
+  analyze:
+    run: melos exec flutter analyze
+
+  format:
+    run: melos exec flutter format .
+
+  test:
+    run: melos exec flutter test
+    select-package:
+      dir-exists:
+        - test

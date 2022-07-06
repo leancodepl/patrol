@@ -13,6 +13,7 @@ Future<void> runTests({
   required bool verbose,
   String? device,
   String? flavor,
+  Map<String, String> dartDefines = const {},
 }) async {
   if (device != null) {
     log.info('Running tests on $device...');
@@ -29,7 +30,7 @@ Future<void> runTests({
       target: target,
       device: device,
       flavor: flavor,
-      dartDefines: env,
+      dartDefines: {...dartDefines, ...env},
     ),
     environment: env,
     runInShell: true,
@@ -52,6 +53,7 @@ Future<void> runTestsWithOutput({
   required bool verbose,
   String? device,
   String? flavor,
+  Map<String, String> dartDefines = const {},
 }) async {
   if (device != null) {
     log.info('Running tests with output on $device...');
@@ -68,7 +70,7 @@ Future<void> runTestsWithOutput({
       target: target,
       device: device,
       flavor: flavor,
-      dartDefines: env,
+      dartDefines: {...dartDefines, ...env},
     ),
     environment: env,
     runInShell: true,
