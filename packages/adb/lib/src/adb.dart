@@ -17,13 +17,12 @@ class Adb {
   /// complete when the daemon  started.
   Adb({AdbInternals adbInternals = const AdbInternals()})
       : _adbInternals = adbInternals {
-    var running = false;
-    while (!running) {
+    while (true) {
       final result = Process.runSync('adb start-server', [], runInShell: true);
       if (result.stdErr.contains('daemon not running; starting now at')) {
         sleep(const Duration(milliseconds: 100));
       } else {
-        running = true;
+        break;
       }
     }
   }
