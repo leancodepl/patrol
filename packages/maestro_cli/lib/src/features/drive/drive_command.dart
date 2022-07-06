@@ -92,6 +92,12 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
+    final dartDefines = config.driveConfig.dartDefines ?? {};
+
+    for (final dartDefine in dartDefines.entries) {
+      log.info('dartDefine: ${dartDefine.key}=${dartDefine.value}');
+    }
+
     final devicesArg = argResults?['devices'] as List<String>?;
     final devices = await _parseDevices(devicesArg);
 
@@ -106,6 +112,7 @@ class DriveCommand extends Command<int> {
         verbose: verboseFlag,
         devices: devices,
         flavor: flavor as String?,
+        dartDefines: dartDefines,
       );
     } else {
       await _runTestsSequentially(
@@ -116,6 +123,7 @@ class DriveCommand extends Command<int> {
         verbose: verboseFlag,
         devices: devices,
         flavor: flavor as String?,
+        dartDefines: dartDefines,
       );
     }
 
@@ -130,6 +138,7 @@ class DriveCommand extends Command<int> {
     required bool verbose,
     required List<String> devices,
     required String? flavor,
+    required Map<String, String>? dartDefines,
   }) async {
     await Future.wait(
       devices.map((device) async {
@@ -144,6 +153,7 @@ class DriveCommand extends Command<int> {
           verbose: verboseFlag,
           device: device,
           flavor: flavor,
+          dartDefines: dartDefines ?? {},
         );
       }),
     );
@@ -157,6 +167,7 @@ class DriveCommand extends Command<int> {
     required bool verbose,
     required List<String> devices,
     required String? flavor,
+    Map<String, String> dartDefines = const {},
   }) async {
     for (final device in devices) {
       await drive_adb.installApps(device: device, debug: debugFlag);
@@ -170,6 +181,7 @@ class DriveCommand extends Command<int> {
         verbose: verboseFlag,
         device: device,
         flavor: flavor,
+        dartDefines: dartDefines,
       );
     }
   }
