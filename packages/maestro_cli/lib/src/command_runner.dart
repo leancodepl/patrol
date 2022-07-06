@@ -11,7 +11,7 @@ import 'package:maestro_cli/src/features/update/update_command.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
-  final devices = await const Adb().devices();
+  final devices = await Adb().devices();
 
   final runner = MaestroCommandRunner(devices: devices);
 
