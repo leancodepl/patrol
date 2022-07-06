@@ -12,9 +12,8 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 /// Like [testWidgets], but with Maestro custom selector support.
 ///
-/// If you want to finish the test immediately after it completes, pass
-/// [Duration.zero] for [sleep]. By default, Maestro sleeps for a bit to let you
-/// see how things looked like after the test finished.
+/// If you want to not close the app immediately after the test completes, use
+/// [sleep].
 ///
 /// ### Custom selectors
 ///
@@ -40,7 +39,7 @@ void maestroTest(
   Timeout? timeout,
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
-  Duration sleep = const Duration(seconds: 5),
+  Duration sleep = Duration.zero,
   dynamic tags,
 }) {
   return testWidgets(

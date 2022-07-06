@@ -20,6 +20,7 @@ void main() {
         ),
       );
       expect($(#hello), findsOneWidget);
+      expect($(const Key('hello')), findsOneWidget);
     });
 
     maestroTest('text', ($) async {
