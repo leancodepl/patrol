@@ -8,7 +8,6 @@ import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.Until
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
