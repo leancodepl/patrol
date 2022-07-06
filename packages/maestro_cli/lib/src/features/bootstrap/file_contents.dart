@@ -1,112 +1,111 @@
-import 'package:maestro_cli/src/common/common.dart';
-
 abstract class AppTestTemplate {
   const AppTestTemplate();
 
   factory AppTestTemplate.fromTemplateName({
     required String templateName,
-    required String projetName,
+    required String projectName,
   }) {
     switch (templateName) {
-      case counter:
-        return const CounterTemplate();
-      case generic:
-        return GenericTemplate(name: projetName);
+      case CounterTemplate.name:
+        return CounterTemplate(projectName: projectName);
+      case BasicTemplate.name:
+        return const BasicTemplate();
       default:
         throw Exception('Unknown template: $templateName');
     }
   }
 
-  static const counter = 'counter';
-  static const generic = 'generic';
-
-  String get code;
+  String generateCode();
 }
 
+/// Template which can be applied to a default counter app.
 class CounterTemplate extends AppTestTemplate {
-  const CounterTemplate();
+  const CounterTemplate({required this.projectName});
+
+  static const name = 'counter';
+
+  /// Name of the app project as it appears in pubspec.yaml file.
+  final String projectName;
 
   @override
-  String get code => _code;
-
-  static const _code = '''
-// ignore_for_file: avoid_print
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
-import 'package:$maestroPackage/$maestroPackage.dart';
-
-// This is an example integration test using Maestro. Use it as a base to create
-// your own Maestro-powered test.
-//
-// It runs on target device.
-
-void main() {
+  String generateCode() {
+    return '''
+  // ignore_for_file: avoid_print
+  import 'package:$projectName/main.dart';
+  import 'package:flutter/material.dart';
+  import 'package:flutter_test/flutter_test.dart';
+  import 'package:maestro_test/maestro_test.dart';
+  
+  // This is an example integration test using Maestro. Use it as a base to
+  // create your own Maestro-powered test.
+  //
+  // It runs on target device.
+  
+  void main() {
   final maestro = Maestro.forTest();
-
+  
   maestroTest(
     'counter state is the same after going to Home and switching apps',
-    (tester) async {
+    (\$) async {
       /// Find the first Text widget whose content is a String which represents
       /// a num.
       Text? findCounterText() {
         final textWidgets = find.byType(Text);
         final foundElements = textWidgets.evaluate();
-
+  
         for (final element in foundElements) {
           final textWidget = element.widget as Text;
           final text = textWidget.data;
           if (text == null) {
             continue;
           }
-
+  
           final number = num.tryParse(text);
           if (number != null) {
             return textWidget;
           }
         }
-
+  
         return null;
       }
-
-      await tester.pumpWidgetAndSettle(const MyApp());
-
+  
+      await \$.pumpWidgetAndSettle(const MyApp());
+  
       await \$(FloatingActionButton).tap();
       expect(findCounterText()!.data, '1');
-
+  
       await maestro.pressHome();
-
+  
       await maestro.pressDoubleRecentApps();
-
+  
       expect(findCounterText()!.data, '1');
       await \$(FloatingActionButton).tap();
-      await tester.pumpAndSettle();
       expect(findCounterText()!.data, '2');
-
+  
       await maestro.pressHome();
-
+  
       await maestro.openHalfNotificationShade();
-
+  
       await maestro.pressBack();
-
+  
       await maestro.pressDoubleRecentApps();
     },
   );
+  }
+
+  ''';
+  }
 }
-''';
-}
 
-class GenericTemplate extends AppTestTemplate {
-  GenericTemplate({required this.name})
-      : _code = _basicCode.replaceFirst(dummyProjectName, name);
+/// Template which can be applied to any app, because it doesn't need to import
+/// anything app-specific.
+class BasicTemplate extends AppTestTemplate {
+  const BasicTemplate();
 
-  /// Name of the app project as it appears in pubspec.yaml file.
-  final String name;
+  static const name = 'basic';
 
-  final String _code;
-
-  static const dummyProjectName = 'PROJECT_NAME';
-  static const _basicCode = r'''
+  @override
+  String generateCode() => r'''
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -150,9 +149,6 @@ void main() {
   );
 }
 ''';
-
-  @override
-  String get code => _code;
 }
 
 const driverFileContent = '''

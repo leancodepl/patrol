@@ -49,6 +49,9 @@ jobs:
       - name: dart analyze
         run: dart analyze
 
+      - name: Install maestro_cli
+        run: dart pub global activate --source path . && maestro
+
       # We don't have any tests, yet.
       # - name: dart test
       #   run: dart test
@@ -64,12 +67,12 @@ jobs:
         working-directory: ./AutomatorServer
         run: ./gradlew ktlintFormat
 
-      - name: Test maestro bootstrap --template generic
+      - name: Test maestro bootstrap --template basic
         working-directory: ../
         run: |
           flutter create my_awesome_app
           cd my_awesome_app
-          maestro bootstrap --template generic
+          maestro bootstrap --template basic
           flutter analyze
 
       - name: Test maestro bootstrap --template counter
@@ -77,5 +80,5 @@ jobs:
         run: |
           flutter create example
           cd example
-          maestro bootstrap --template generic
+          maestro bootstrap --template counter
           flutter analyze

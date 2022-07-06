@@ -12,8 +12,8 @@ class BootstrapCommand extends Command<int> {
     argParser.addOption(
       'template',
       help: 'Project type to bootstrap for',
-      defaultsTo: AppTestTemplate.generic,
-      allowed: [AppTestTemplate.generic, AppTestTemplate.counter],
+      defaultsTo: BasicTemplate.name,
+      allowed: [BasicTemplate.name, CounterTemplate.name],
     );
   }
 
@@ -149,7 +149,7 @@ Future<void> _createDefaultIntegrationTestFile(String templateName) async {
 
   final template = AppTestTemplate.fromTemplateName(
     templateName: templateName,
-    projetName: projectName,
+    projectName: projectName,
   );
 
   try {
@@ -159,7 +159,7 @@ Future<void> _createDefaultIntegrationTestFile(String templateName) async {
     }
 
     final file = File(relativeFilePath);
-    await file.writeAsString(template.code);
+    await file.writeAsString(template.generateCode());
   } catch (err, st) {
     progress.fail('Failed to create default $relativeFilePath');
     log.severe(null, err, st);
