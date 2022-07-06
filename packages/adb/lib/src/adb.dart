@@ -1,26 +1,32 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:adb/adb.dart';
 import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 import 'package:adb/src/internals.dart';
 
-/// Provides Dart interface for common `adb` functionality.
+/// Provides Dart interface for common Android Debug Bridge features.
 ///
 /// See also:
 ///  * https://developer.android.com/studio/command-line/adb
 class Adb {
-  /// Creates [Adb] instance.
-  ///
-  /// If the daemon is not running, it will be started. This constructor will
-  /// complete when the daemon  started.
+  /// Creates a new [Adb] instance.
   Adb({AdbInternals adbInternals = const AdbInternals()})
-      : _adbInternals = adbInternals {
+      : _adbInternals = adbInternals;
+
+  /// Initializes this [Adb] instance.
+  ///
+  /// If the ADB daemon is not running, it will be started.
+  Future<void> init() async {
     while (true) {
-      final result = Process.runSync('adb start-server', [], runInShell: true);
-      if (result.stdErr.contains('daemon not running; starting now at')) {
-        sleep(const Duration(milliseconds: 100));
+      final result = await io.Process.run(
+        'adb',
+        ['start-server'],
+        runInShell: true,
+      );
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
       } else {
         break;
       }
@@ -35,11 +41,11 @@ class Adb {
   /// passing [device].
   ///
   /// Throws if there are no devices attached.
-  Future<ProcessResult> install(
+  Future<io.ProcessResult> install(
     String path, {
     String? device,
   }) async {
-    final result = await Process.run(
+    final result = await io.Process.run(
       'adb',
       [
         if (device != null) ...[
@@ -74,11 +80,11 @@ class Adb {
   /// passing [device].
   ///
   /// Thorws if there are no devices attached.
-  Future<ProcessResult> uninstall(
+  Future<io.ProcessResult> uninstall(
     String packageName, {
     String? device,
   }) async {
-    final result = await Process.run(
+    final result = await io.Process.run(
       'adb',
       [
         if (device != null) ...[
@@ -117,7 +123,7 @@ class Adb {
     String? device,
     String protocol = 'tcp',
   }) async {
-    final result = await Process.run(
+    final result = await io.Process.run(
       'adb',
       [
         if (device != null) ...[
@@ -158,7 +164,7 @@ class Adb {
     void Function(String)? onStderr,
     Map<String, String> arguments = const {},
   }) async {
-    final process = await Process.start(
+    final process = await io.Process.start(
       'adb',
       [
         if (device != null) ...[
@@ -180,12 +186,12 @@ class Adb {
     );
 
     final stdoutSub = process.stdout.listen((data) {
-      final text = systemEncoding.decode(data);
+      final text = io.systemEncoding.decode(data);
       onStdout?.call(text);
     });
 
     final stderrSub = process.stderr.listen((data) {
-      final text = systemEncoding.decode(data);
+      final text = io.systemEncoding.decode(data);
       onStderr?.call(text);
     });
 
