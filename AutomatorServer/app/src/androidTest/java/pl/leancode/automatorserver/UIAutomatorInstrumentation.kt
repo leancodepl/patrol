@@ -78,7 +78,7 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    private fun delay() = SystemClock.sleep(1000)
+    private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
     fun pressBack() {
         Logger.d("pressBack")
@@ -151,6 +151,7 @@ class UIAutomatorInstrumentation {
         Logger.d("tap()")
 
         val device = getUiDevice()
+
         val selector = query.toUiSelector()
         Logger.d("Selector: $selector")
 
@@ -158,6 +159,7 @@ class UIAutomatorInstrumentation {
 
         Logger.d("Clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()
+        delay()
     }
 
     fun doubleTap(query: SelectorQuery) {
@@ -171,7 +173,11 @@ class UIAutomatorInstrumentation {
 
         Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()
+        Logger.d("After first click")
+        delay(ms = 300)
         uiObject.click()
+        Logger.d("After second click")
+        delay()
     }
 
     fun enterText(index: Int, text: String) {

@@ -5,6 +5,7 @@ class DriveConfig {
     required this.target,
     required this.driver,
     this.flavor,
+    this.dartDefines,
   });
 
   factory DriveConfig.fromMap(Map<String, dynamic> toml) {
@@ -13,6 +14,7 @@ class DriveConfig {
     final dynamic target = toml['target'];
     final dynamic driver = toml['driver'];
     final dynamic flavor = toml['flavor'];
+    final dynamic dartDefines = toml['dart-defines'];
 
     if (host is! String) {
       throw const FormatException('`host` field is not a string');
@@ -36,12 +38,26 @@ class DriveConfig {
       }
     }
 
+    if (dartDefines != null) {
+      if (dartDefines is! Map<String, dynamic>) {
+        throw const FormatException('`dart-defines` field is not a map');
+      }
+
+      for (final dartDefine in dartDefines.entries) {
+        if (dartDefine.value is! String) {
+          throw const FormatException('`dart-define` value is not a string');
+        }
+      }
+    }
+
     return DriveConfig(
       host: host,
       port: port,
       target: target,
       driver: driver,
       flavor: flavor as String?,
+      dartDefines: (dartDefines as Map<String, dynamic>)
+          .map((key, dynamic value) => MapEntry(key, value.toString())),
     );
   }
 
@@ -59,6 +75,7 @@ class DriveConfig {
   final String target;
   final String driver;
   final String? flavor;
+  final Map<String, String>? dartDefines;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -67,6 +84,7 @@ class DriveConfig {
       'target': target,
       'driver': driver,
       if (flavor != null) 'flavor': flavor,
+      if (dartDefines != null) 'dartDefines': dartDefines,
     };
   }
 }
