@@ -50,8 +50,8 @@ data class NativeWidget(
 class UIAutomatorInstrumentation {
     fun configure() {
         val configurator = Configurator.getInstance()
-        configurator.waitForSelectorTimeout = 10000
-        configurator.waitForIdleTimeout = 10000
+        configurator.waitForSelectorTimeout = 5000
+        configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
 
         Logger.i("Android UiAutomator configuration:")
