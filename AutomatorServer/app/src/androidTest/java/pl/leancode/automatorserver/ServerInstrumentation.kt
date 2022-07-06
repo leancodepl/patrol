@@ -294,6 +294,11 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.tap(body)
                 Response(OK)
             },
+            "doubleTap" bind POST to {
+                val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
+                UIAutomatorInstrumentation.instance.doubleTap(body)
+                Response(OK)
+            },
             "enterTextByIndex" bind POST to {
                 val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.enterText(body.index, body.text)

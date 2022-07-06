@@ -1,6 +1,5 @@
 import 'package:args/command_runner.dart';
-
-import '../../common/common.dart';
+import 'package:maestro_cli/src/common/common.dart';
 
 class DoctorCommand extends Command<int> {
   DoctorCommand() {
