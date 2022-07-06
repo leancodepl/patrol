@@ -1,7 +1,7 @@
 # maestro_test
 
-[![maestro_test on pub.dev][pub_badge]][pub_link] [![code
-style][pub_badge_style]][pub_badge_link]
+[![maestro_test on pub.dev][pub_badge]][pub_link]
+[![codestyle][pub_badge_style]][pub_badge_link]
 
 `maestro_test` package builds on top of `flutter_driver` to make it easy to
 control the native device from Dart. It does this by using Android's
@@ -16,10 +16,10 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.3.1
+  maestro_test: ^0.3.2
 ```
 
-### Using features of the underlying native platform
+### Accessing native platform features
 
 ```dart
 // example/integration_test/example_test.dart
