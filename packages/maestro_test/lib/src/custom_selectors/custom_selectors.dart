@@ -127,20 +127,20 @@ class MaestroTester {
 
   /// A convenience method combining [WidgetTester.pumpWidget] and
   /// [WidgetTester.pumpAndSettle].
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
+  /// you want to disable this behavior, pass `false` to [andSettle].
   Future<void> pumpWidgetAndSettle(
-    Widget widget, [
-    Duration? pumpWidgetDuration,
-    EnginePhase pumpWidgetPhase = EnginePhase.sendSemanticsUpdate,
-    Duration pumpAndSettleDuration = const Duration(milliseconds: 100),
-    Duration pumpAndSettleTimeout = const Duration(minutes: 10),
-    EnginePhase pumpAndSettlePhase = EnginePhase.sendSemanticsUpdate,
-  ]) async {
-    await tester.pumpWidget(widget, pumpWidgetDuration, pumpWidgetPhase);
-    await tester.pumpAndSettle(
-      pumpAndSettleDuration,
-      pumpAndSettlePhase,
-      pumpAndSettleTimeout,
-    );
+    Widget widget, {
+    Duration? duration,
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+    bool andSettle = true,
+  }) async {
+    await tester.pumpWidget(widget, duration, phase);
+
+    if (andSettle) {
+      await tester.pumpAndSettle();
+    }
   }
 
   //// A convenience method combining [WidgetTester.dragUntilVisible] and
@@ -148,6 +148,9 @@ class MaestroTester {
   ///
   /// Specify [index] to select on which [finder] to tap. It defaults to the
   /// first finder.
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
+  /// you want to disable this behavior, pass `false` to [andSettle].
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
@@ -157,20 +160,20 @@ class MaestroTester {
     Offset moveStep, {
     int index = 0,
     int maxIteration = 50,
-    Duration dragDuration = const Duration(milliseconds: 50),
-    Duration pumpDuration = const Duration(milliseconds: 100),
-    EnginePhase pumpPhase = EnginePhase.sendSemanticsUpdate,
-    Duration pumpTimeout = const Duration(minutes: 10),
+    Duration duration = const Duration(milliseconds: 50),
+    bool andSettle = true,
   }) async {
     await tester.dragUntilVisible(
       finder.at(index),
       view,
       moveStep,
       maxIteration: maxIteration,
-      duration: dragDuration,
+      duration: duration,
     );
 
-    await tester.pumpAndSettle(pumpDuration, pumpPhase, pumpTimeout);
+    if (andSettle) {
+      await tester.pumpAndSettle();
+    }
   }
 }
 
