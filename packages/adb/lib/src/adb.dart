@@ -12,15 +12,27 @@ import 'package:adb/src/internals.dart';
 ///  * https://developer.android.com/studio/command-line/adb
 class Adb {
   /// Creates [Adb] instance.
-  const Adb({AdbInternals adbInternals = const AdbInternals()})
-      : _adbInternals = adbInternals;
+  ///
+  /// If the daemon is not running, it will be started. This constructor will
+  /// complete when the daemon  started.
+  Adb({AdbInternals adbInternals = const AdbInternals()})
+      : _adbInternals = adbInternals {
+    while (true) {
+      final result = Process.runSync('adb start-server', [], runInShell: true);
+      if (result.stdErr.contains('daemon not running; starting now at')) {
+        sleep(const Duration(milliseconds: 100));
+      } else {
+        break;
+      }
+    }
+  }
 
   final AdbInternals _adbInternals;
 
   /// Installs the APK file (which has to be on [path]) to the attached device.
   ///
-  /// If there is more than 1 device attached, decide which one to use by passing
-  /// [device].
+  /// If there is more than 1 device attached, decide which one to use by
+  /// passing [device].
   ///
   /// Throws if there are no devices attached.
   Future<ProcessResult> install(
@@ -41,8 +53,12 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains('INSTALL_FAILED_UPDATE_INCOMPATIBLE')) {
+      if (result.stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
         throw AdbInstallFailedUpdateIncompatible.fromStdErr(result.stdErr);
+      }
+
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
+        throw const AdbDaemonNotRunning();
       }
 
       throw Exception(result.stdErr);
@@ -51,10 +67,11 @@ class Adb {
     return result;
   }
 
-  /// Uninstalls the app identified by [packageName] from the the attached device.
+  /// Uninstalls the app identified by [packageName] from the the attached
+  /// device.
   ///
-  /// If there is more than 1 device attached, decide which one to use by passing
-  /// [device].
+  /// If there is more than 1 device attached, decide which one to use by
+  /// passing [device].
   ///
   /// Thorws if there are no devices attached.
   Future<ProcessResult> uninstall(
@@ -75,6 +92,10 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
+        throw const AdbDaemonNotRunning();
+      }
+
       throw Exception(result.stdErr);
     }
 
@@ -83,8 +104,8 @@ class Adb {
 
   /// Sets up port forwarding on the attached device.
   ///
-  /// If there is more than 1 device attached, decide which one to use by passing
-  /// [device].
+  /// If there is more than 1 device attached, decide which one to use by
+  /// passing [device].
   ///
   /// Throws if there are no devices attached.
   ///
@@ -111,6 +132,10 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
+        throw const AdbDaemonNotRunning();
+      }
+
       throw Exception(result.stdErr);
     }
   }
@@ -118,8 +143,8 @@ class Adb {
   /// Runs instrumentation test specified by [packageName] and [intentClass] on
   /// the attached device.
   ///
-  /// If there is more than 1 device attached, decide which one to use by passing
-  /// [device].
+  /// If there is more than 1 device attached, decide which one to use by
+  /// passing [device].
   ///
   /// Throws if there are no devices attached.
   ///
