@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/features/drive/adb.dart' as drive_adb;
+import 'package:maestro_cli/src/features/drive/adb.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/maestro_config.dart';
@@ -59,8 +58,13 @@ class DriveCommand extends Command<int> {
   @override
   String get description => 'Drive the app using flutter_driver.';
 
+  late MaestroAdb _adb;
+
   @override
   Future<int> run() async {
+    _adb = MaestroAdb();
+    await _adb.init();
+
     final toml = File(configFileName).readAsStringSync();
     final config = MaestroConfig.fromToml(toml);
 
@@ -163,9 +167,9 @@ class DriveCommand extends Command<int> {
   }) async {
     await Future.wait(
       devices.map((device) async {
-        await drive_adb.installApps(device: device, debug: debugFlag);
-        await drive_adb.forwardPorts(port, device: device);
-        drive_adb.runServer(device: device, port: port);
+        await _adb.installApps(device: device, debug: debugFlag);
+        await _adb.forwardPorts(port, device: device);
+        _adb.runServer(device: device, port: port);
         await flutter_driver.runTestsWithOutput(
           driver: driver,
           target: target,
@@ -191,9 +195,9 @@ class DriveCommand extends Command<int> {
     Map<String, String> dartDefines = const {},
   }) async {
     for (final device in devices) {
-      await drive_adb.installApps(device: device, debug: debugFlag);
-      await drive_adb.forwardPorts(port, device: device);
-      drive_adb.runServer(device: device, port: port);
+      await _adb.installApps(device: device, debug: debugFlag);
+      await _adb.forwardPorts(port, device: device);
+      _adb.runServer(device: device, port: port);
       await flutter_driver.runTestsWithOutput(
         driver: driver,
         target: target,
@@ -209,7 +213,7 @@ class DriveCommand extends Command<int> {
 
   Future<List<String>> _parseDevices(List<String>? devicesArg) async {
     if (devicesArg == null || devicesArg.isEmpty) {
-      final adbDevices = await Adb().devices();
+      final adbDevices = await _adb.devices();
 
       if (adbDevices.isEmpty) {
         throw Exception('No devices attached');
@@ -228,7 +232,7 @@ class DriveCommand extends Command<int> {
     }
 
     if (devicesArg.contains('all')) {
-      return Adb().devices();
+      return _adb.devices();
     }
 
     return devicesArg;
