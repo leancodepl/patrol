@@ -221,8 +221,18 @@ class Maestro {
   /// Taps on the [index]-th visible notification.
   ///
   /// Notification shade will be opened automatically.
-  Future<void> tapOnNotification({int index = 0}) async {
-    await _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
+  Future<void> tapOnNotificationByIndex(int index) async {
+    await _wrapPost(
+      'tapOnNotificationByIndex',
+      <String, dynamic>{'index': index},
+    );
+  }
+
+  /// Taps on the visible notification using [selector].
+  ///
+  /// Notification shade will be opened automatically.
+  Future<void> tapOnNotificationBySelector(Selector selector) async {
+    await _wrapPost('tapOnNotificationBySelector', selector.toJson());
   }
 
   /// Enables dark mode.

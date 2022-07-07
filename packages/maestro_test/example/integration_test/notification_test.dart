@@ -7,7 +7,7 @@ void main() {
   maestroTest(
     'sends a notification and taps on it',
     ($) async {
-      await $.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(MyApp());
 
       await $('Open notifications screen').tap();
 
@@ -16,10 +16,11 @@ void main() {
 
       (await maestro.getNotifications()).forEach(print);
 
-      await maestro.tapOnNotification(index: 1);
+      await maestro.tapOnNotificationByIndex(1);
+      await maestro.tapOnNotificationBySelector(Selector(textContains: 'ID=2'));
 
       await maestro.openHalfNotificationShade();
-      await maestro.tap(const Selector(textContains: 'ID=2'));
+      await maestro.tap(Selector(textContains: 'ID=2'));
     },
   );
 }

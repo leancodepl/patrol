@@ -7,11 +7,11 @@ void main() {
   maestroTest(
     'counter state is the same after going to Home and switching apps',
     ($) async {
-      await $.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(MyApp());
 
       await maestro.openFullNotificationShade();
-      await maestro.tap(const Selector(text: 'Bluetooth'));
-      await maestro.tap(const Selector(text: 'Bluetooth'));
+      await maestro.tap(Selector(text: 'Bluetooth'));
+      await maestro.tap(Selector(text: 'Bluetooth'));
       await maestro.pressBack();
 
       await maestro.openHalfNotificationShade();
