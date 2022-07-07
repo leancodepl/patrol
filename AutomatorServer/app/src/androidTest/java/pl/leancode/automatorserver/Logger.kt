@@ -3,7 +3,7 @@ package pl.leancode.automatorserver
 import android.util.Log
 
 object Logger {
-    private const val TAG = "Maestro"
+    private const val TAG = "MaestroServer"
 
     fun e(msg: String) {
         Log.e(TAG, msg)

@@ -60,7 +60,11 @@ class Maestro {
     Logger.root.level = Level.ALL;
 
     // ignore: avoid_print
-    Logger.root.onRecord.listen((log) => print(_formatLog(log)));
+    Logger.root.onRecord.listen((log) {
+      final fmtLog = _formatLog(log);
+
+      print(fmtLog);
+    });
   }
 
   /// Copied from
@@ -104,7 +108,7 @@ class Maestro {
   }
 
   Future<http.Response> _wrapGet(String action) async {
-    _logger.fine('$action: executing...');
+    _logger.info('action GET $action executing');
 
     final response = await _client.get(
       Uri.parse('$_baseUri/$action'),
@@ -112,10 +116,10 @@ class Maestro {
     ).timeout(timeout);
 
     if (!response.successful) {
-      final msg = '$action: failed with code ${response.statusCode}';
+      final msg = 'action GET $action failed with code ${response.statusCode}';
       throw Exception('$msg\n${response.body}');
     } else {
-      _logger.fine('$action: succeeded');
+      _logger.info('action GET $action succeeded');
     }
 
     return response;
@@ -125,7 +129,7 @@ class Maestro {
     String action, [
     Map<String, dynamic> body = const <String, dynamic>{},
   ]) async {
-    _logger.fine('$action: executing...');
+    _logger.info('action POST $action executing with $body');
 
     final response = await _client.post(
       Uri.parse('$_baseUri/$action'),
@@ -134,13 +138,23 @@ class Maestro {
     ).timeout(timeout);
 
     if (!response.successful) {
-      final msg = '$action: failed with code ${response.statusCode}';
-      throw Exception('$msg\n${response.body}');
+      final msg = 'action POST $action failed with code ${response.statusCode}';
+      _handleErrorResponse(msg, response);
     } else {
-      _logger.fine('$action: succeeded');
+      _logger.info('action POST $action succeeded');
     }
 
     return response;
+  }
+
+  void _handleErrorResponse(String msg, http.Response response) {
+    if (response.statusCode == 404) {
+      _logger
+        ..severe(msg)
+        ..severe('Matching UI object could not be found');
+    }
+
+    throw Exception('$msg\n${response.body}');
   }
 
   /// Returns whether the Maestro automation server is running on the target

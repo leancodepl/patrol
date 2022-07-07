@@ -63,7 +63,7 @@ Future<void> runTestsWithOutput({
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
 
-  final result = await Process.start(
+  final process = await Process.start(
     'flutter',
     _flutterDriveArguments(
       driver: driver,
@@ -76,7 +76,7 @@ Future<void> runTestsWithOutput({
     runInShell: true,
   );
 
-  final stdOutSub = result.stdout.listen((msg) {
+  final stdOutSub = process.stdout.listen((msg) {
     final text = 'driver: ${systemEncoding.decode(msg)}'.trim();
     if (text.contains('I/flutter')) {
       log.info(text);
@@ -85,12 +85,12 @@ Future<void> runTestsWithOutput({
     }
   });
 
-  final stdErrSub = result.stderr.listen((msg) {
+  final stdErrSub = process.stderr.listen((msg) {
     final text = 'driver: ${systemEncoding.decode(msg)}'.trim();
     log.severe(text);
   });
 
-  final exitCode = await result.exitCode;
+  final exitCode = await process.exitCode;
   await stdOutSub.cancel();
   await stdErrSub.cancel();
 

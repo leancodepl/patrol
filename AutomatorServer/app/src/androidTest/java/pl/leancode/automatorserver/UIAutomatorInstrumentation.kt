@@ -275,11 +275,17 @@ class UIAutomatorInstrumentation {
 
         val notifications = mutableListOf<Notification>()
         for (widget in widgets) {
-            // Tested and working on API 30. May require changes for other OS versions.
-            val appName = widget.children?.get(0)?.children?.get(1)?.text
-            val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
-            val content = widget.children?.get(1)?.children?.get(1)?.text
-            notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
+            try {
+                // Tested and working on API 30. May require changes for other OS versions.
+                val appName = widget.children?.get(0)?.children?.get(1)?.text
+                val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
+                val content = widget.children?.get(1)?.children?.get(1)?.text
+                notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
+            } catch (err: IndexOutOfBoundsException) {
+                Logger.e("Failed to get notification UI component", err)
+            } catch (err: NullPointerException) {
+                Logger.e("Null Pointer", err)
+            }
         }
 
         return notifications
@@ -306,7 +312,7 @@ class UIAutomatorInstrumentation {
 
         val device = getUiDevice()
 
-        val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
+        val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = 0)
         val obj = device.findObject(query.toUiSelector())
         obj.click()
 
