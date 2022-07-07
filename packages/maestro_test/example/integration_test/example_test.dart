@@ -24,5 +24,6 @@ void main() {
       await maestro.openHalfNotificationShade();
       await maestro.pressBack();
     },
+    appName: 'ExampleApp',
   );
 }

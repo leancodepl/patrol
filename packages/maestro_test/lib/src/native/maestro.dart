@@ -117,7 +117,7 @@ class Maestro {
 
     if (!response.successful) {
       final msg = 'action GET $action failed with code ${response.statusCode}';
-      throw Exception('$msg\n${response.body}');
+      _handleErrorResponse(msg, response);
     } else {
       _logger.info('action GET $action succeeded');
     }

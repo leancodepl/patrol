@@ -30,5 +30,6 @@ void main() {
 
       await maestro.pressBack();
     },
+    appName: 'ExampleApp',
   );
 }

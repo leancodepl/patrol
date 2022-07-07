@@ -22,7 +22,7 @@ void main() {
       await maestro.tapOnNotificationBySelector(Selector(textContains: 'ID=2'));
       // await maestro.tapOnNotificationBySelector(Selector(textContains: 'ID=2'));
     },
-    appName: 'AspeCTS',
+    appName: 'ExampleApp',
     sleep: Duration(seconds: 5),
   );
 }

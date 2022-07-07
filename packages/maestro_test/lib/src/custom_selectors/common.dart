@@ -48,9 +48,14 @@ void maestroTest(
     (widgetTester) async {
       final maestroTester = MaestroTester(widgetTester, appName: appName);
       await callback(maestroTester);
-      print('maestroTest: sleeping for ${sleep.inSeconds} seconds');
-      io.sleep(sleep);
-      print('maestroTest: sleeping finished');
+      if (sleep != Duration.zero) {
+        maestroTester.log(
+          'sleeping for ${sleep.inSeconds} seconds',
+          name: 'maestroTest',
+        );
+        io.sleep(sleep);
+        maestroTester.log('sleeping finished', name: 'maestroTest');
+      }
     },
     skip: skip,
     timeout: timeout,

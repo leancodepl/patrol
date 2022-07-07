@@ -65,11 +65,12 @@ class MaestroTester {
   final String? appName;
 
   /// Makes it simple to log.
-  void log(Object? object) {
+  void log(Object? object, {String? name}) {
     final log = StringBuffer();
 
-    if (appName != null) {
-      log.write('$appName: ');
+    final tag = appName ?? name;
+    if (tag != null) {
+      log.write('$tag: ');
     }
 
     log.write(object);
