@@ -286,6 +286,20 @@ class UIAutomatorInstrumentation {
     }
 
     fun tapOnNotification(index: Int) {
+        Logger.d("tapOnNotification($index)")
+
+        openHalfNotificationShade()
+
+        val device = getUiDevice()
+
+        val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
+        val obj = device.findObject(query.toUiSelector())
+        obj.click()
+
+        delay()
+    }
+
+    fun tapOnNotification(selector: SelectorQuery) {
         Logger.d("tapOnNotification()")
 
         openHalfNotificationShade()
