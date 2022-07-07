@@ -1,3 +1,7 @@
+## 0.3.3
+
+- Fix a crash which occured when ADB daemon was not initialized
+
 ## 0.3.2
 
 - Fix a crash which occured when ADB daemon was not initialized
