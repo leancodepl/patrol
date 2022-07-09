@@ -5,7 +5,7 @@ import 'package:maestro_cli/src/features/drive/constants.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
-Future<void> runTests({
+Future<void> run({
   required String driver,
   required String target,
   required String host,
@@ -16,9 +16,9 @@ Future<void> runTests({
   Map<String, String> dartDefines = const {},
 }) async {
   if (device != null) {
-    log.info('Running tests on $device...');
+    log.info('Running $target on $device...');
   } else {
-    log.info('Running tests...');
+    log.info('Running $target...');
   }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
@@ -45,7 +45,7 @@ Future<void> runTests({
 /// drive is done.
 ///
 /// Prints standard output of "flutter drive".
-Future<void> runTestsWithOutput({
+Future<void> runWithOutput({
   required String driver,
   required String target,
   required String host,
@@ -56,9 +56,9 @@ Future<void> runTestsWithOutput({
   Map<String, String> dartDefines = const {},
 }) async {
   if (device != null) {
-    log.info('Running tests with output on $device...');
+    log.info('Running $target with output on $device...');
   } else {
-    log.info('Running tests with output...');
+    log.info('Running $target with output...');
   }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
@@ -78,6 +78,15 @@ Future<void> runTestsWithOutput({
 
   final stdOutSub = process.stdout.listen((msg) {
     final text = systemEncoding.decode(msg).trim();
+    final colonIndex = text.indexOf(':');
+
+    if (colonIndex == -1) {
+      return;
+    }
+    log
+      ..info('colonIndex: $colonIndex, $text')
+      ..info(text.substring(colonIndex + 2));
+    return;
 
     if (text.contains('I/flutter')) {
       final index = text.indexOf(':');
@@ -86,6 +95,7 @@ Future<void> runTestsWithOutput({
         text.substring(index + 1).trim()
       ];
       log.info(parts[1]);
+      log.fine('parts: $parts');
     } else {
       log.fine(text);
     }
@@ -93,7 +103,7 @@ Future<void> runTestsWithOutput({
 
   final stdErrSub = process.stderr.listen((msg) {
     final text = systemEncoding.decode(msg).trim();
-    log.severe('ERR: $text');
+    log.severe(text);
   });
 
   final exitCode = await process.exitCode;

@@ -170,7 +170,7 @@ class DriveCommand extends Command<int> {
         await _adb.installApps(device: device, debug: debugFlag);
         await _adb.forwardPorts(port, device: device);
         _adb.runServer(device: device, port: port);
-        await flutter_driver.runTestsWithOutput(
+        await flutter_driver.runWithOutput(
           driver: driver,
           target: target,
           host: host,
@@ -198,7 +198,7 @@ class DriveCommand extends Command<int> {
       await _adb.installApps(device: device, debug: debugFlag);
       await _adb.forwardPorts(port, device: device);
       _adb.runServer(device: device, port: port);
-      await flutter_driver.runTestsWithOutput(
+      await flutter_driver.runWithOutput(
         driver: driver,
         target: target,
         host: host,
