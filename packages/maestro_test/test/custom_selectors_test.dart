@@ -130,9 +130,76 @@ void main() {
       expect(columnFinder, findsOneWidget);
       expect(columnFinder.finder.evaluate().first.widget.runtimeType, Column);
 
-      final column2Finder =
-          $(Column).withDescendant(Container).withDescendant(#helloText);
-      expect(column2Finder, findsNWidgets(2));
+      expect(
+        $(Column).withDescendant(Container).withDescendant(#helloText),
+        findsNWidgets(2),
+      );
+    });
+
+    maestroTest('bug', ($) async {
+      await $.pumpWidgetAndSettle(
+        MaterialApp(
+          home: Column(
+            children: const [
+              AppDataTableRow(
+                text: 'nothing important',
+                child: Text('boi', key: Key('HSV')),
+              ),
+              AppDataTableRow(
+                text: 'layer',
+                child: Text('boi', key: Key('HSV')),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        $(AppDataTableRow).withDescendant($('layer')).$(#HSV),
+        findsOneWidget,
+      );
+
+      expect(
+        $(AppDataTableRow).withDescendant($('laye')).$(#HSV),
+        findsNothing,
+      );
+
+      expect(
+        $(AppDataTableRow).withDescendant($('laye').$(#HSV)),
+        findsNothing,
+      );
+
+      expect(
+        find.descendant(
+          of: find.ancestor(
+            of: find.text('layer'),
+            matching: find.byType(AppDataTableRow),
+          ),
+          matching: find.byKey(const Key('HSV')),
+        ),
+        findsOneWidget,
+      );
     });
   });
+}
+
+class AppDataTableRow extends StatelessWidget {
+  const AppDataTableRow({
+    Key? key,
+    required this.text,
+    required this.child,
+  }) : super(key: key);
+
+  final String text;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(text),
+        child,
+      ],
+    );
+  }
 }
