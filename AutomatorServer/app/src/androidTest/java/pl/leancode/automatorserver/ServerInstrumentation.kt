@@ -37,7 +37,7 @@ data class SwipeCommand(
 )
 
 @Serializable
-data class TapOnNotificationCommand(val index: Int)
+data class TapOnNotificationByIndexCommand(val index: Int)
 
 @Serializable
 data class EnterTextByIndexCommand(val index: Int, val text: String)
@@ -284,9 +284,14 @@ class ServerInstrumentation {
                 val notifications = UIAutomatorInstrumentation.instance.getNotifications()
                 Response(OK).body(Json.encodeToString(notifications))
             },
-            "tapOnNotification" bind POST to {
-                val body = Json.decodeFromString<TapOnNotificationCommand>(it.bodyString())
+            "tapOnNotificationByIndex" bind POST to {
+                val body = Json.decodeFromString<TapOnNotificationByIndexCommand>(it.bodyString())
                 UIAutomatorInstrumentation.instance.tapOnNotification(body.index)
+                Response(OK)
+            },
+            "tapOnNotificationBySelector" bind POST to {
+                val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
+                UIAutomatorInstrumentation.instance.tapOnNotification(body)
                 Response(OK)
             },
             "tap" bind POST to {
@@ -301,12 +306,12 @@ class ServerInstrumentation {
             },
             "enterTextByIndex" bind POST to {
                 val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.enterText(body.index, body.text)
+                UIAutomatorInstrumentation.instance.enterText(body.text, body.index)
                 Response(OK)
             },
             "enterTextBySelector" bind POST to {
                 val body = Json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.enterText(body.selector, body.text)
+                UIAutomatorInstrumentation.instance.enterText(body.text, body.selector)
                 Response(OK)
             },
             "swipe" bind POST to {

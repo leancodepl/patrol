@@ -54,10 +54,30 @@ const horizontalStep = Offset(16, 0);
 /// https://dart.dev/guides/language/language-tour#callable-classes
 class MaestroTester {
   /// Creates a new [MaestroTester] with the given WidgetTester [tester].
-  const MaestroTester(this.tester);
+  const MaestroTester(this.tester, {this.appName});
 
   /// Widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
+
+  /// App name of the application under test.
+  ///
+  /// Useful for logging.
+  final String? appName;
+
+  /// Makes it simple to log.
+  void log(Object? object, {String? name}) {
+    final log = StringBuffer();
+
+    final tag = appName ?? name;
+    if (tag != null) {
+      log.write('$tag: ');
+    }
+
+    log.write(object);
+
+    // ignore: avoid_print
+    print(log.toString());
+  }
 
   /// Returns a [MaestroFinder] that matches [matching].
   ///

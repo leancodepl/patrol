@@ -59,8 +59,12 @@ class Maestro {
 
     Logger.root.level = Level.ALL;
 
-    // ignore: avoid_print
-    Logger.root.onRecord.listen((log) => print(_formatLog(log)));
+    Logger.root.onRecord.listen((log) {
+      final fmtLog = _formatLog(log);
+
+      // ignore: avoid_print
+      print(fmtLog);
+    });
   }
 
   /// Copied from
@@ -104,7 +108,7 @@ class Maestro {
   }
 
   Future<http.Response> _wrapGet(String action) async {
-    _logger.fine('$action: executing...');
+    _logger.info('action $action executing');
 
     final response = await _client.get(
       Uri.parse('$_baseUri/$action'),
@@ -112,10 +116,10 @@ class Maestro {
     ).timeout(timeout);
 
     if (!response.successful) {
-      final msg = '$action: failed with code ${response.statusCode}';
-      throw Exception('$msg\n${response.body}');
+      final msg = 'action $action failed with code ${response.statusCode}';
+      _handleErrorResponse(msg, response);
     } else {
-      _logger.fine('$action: succeeded');
+      _logger.info('action $action succeeded');
     }
 
     return response;
@@ -125,7 +129,11 @@ class Maestro {
     String action, [
     Map<String, dynamic> body = const <String, dynamic>{},
   ]) async {
-    _logger.fine('$action: executing...');
+    if (body.isNotEmpty) {
+      _logger.info('action $action executing with $body');
+    } else {
+      _logger.info('action $action executing');
+    }
 
     final response = await _client.post(
       Uri.parse('$_baseUri/$action'),
@@ -134,13 +142,23 @@ class Maestro {
     ).timeout(timeout);
 
     if (!response.successful) {
-      final msg = '$action: failed with code ${response.statusCode}';
-      throw Exception('$msg\n${response.body}');
+      final msg = 'action $action failed with code ${response.statusCode}';
+      _handleErrorResponse(msg, response);
     } else {
-      _logger.fine('$action: succeeded');
+      _logger.info('action $action succeeded');
     }
 
     return response;
+  }
+
+  void _handleErrorResponse(String msg, http.Response response) {
+    if (response.statusCode == 404) {
+      _logger
+        ..severe(msg)
+        ..severe('Matching UI object could not be found');
+    }
+
+    throw Exception('$msg\n${response.body}');
   }
 
   /// Returns whether the Maestro automation server is running on the target
@@ -221,8 +239,18 @@ class Maestro {
   /// Taps on the [index]-th visible notification.
   ///
   /// Notification shade will be opened automatically.
-  Future<void> tapOnNotification({int index = 0}) async {
-    await _wrapPost('tapOnNotification', <String, dynamic>{'index': index});
+  Future<void> tapOnNotificationByIndex(int index) async {
+    await _wrapPost(
+      'tapOnNotificationByIndex',
+      <String, dynamic>{'index': index},
+    );
+  }
+
+  /// Taps on the visible notification using [selector].
+  ///
+  /// Notification shade will be opened automatically.
+  Future<void> tapOnNotificationBySelector(Selector selector) async {
+    await _wrapPost('tapOnNotificationBySelector', selector.toJson());
   }
 
   /// Enables dark mode.

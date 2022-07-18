@@ -81,12 +81,10 @@ class UIAutomatorInstrumentation {
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
     fun pressBack() {
-        Logger.d("pressBack")
+        Logger.d("pressBack()")
 
         val device = getUiDevice()
-        Logger.d("Before press back")
         device.pressBack()
-        Logger.d("After press back")
         delay()
     }
 
@@ -94,32 +92,26 @@ class UIAutomatorInstrumentation {
         Logger.d("pressHome()")
 
         val device = getUiDevice()
-        Logger.d("Before press home")
         device.pressHome()
         delay()
-        Logger.d("After press home")
     }
 
     fun pressRecentApps() {
         Logger.d("pressRecentApps()")
 
         val device = getUiDevice()
-        Logger.d("Before press recent apps")
         device.pressRecentApps()
         delay()
-        Logger.d("After press recent apps")
     }
 
     fun pressDoubleRecentApps() {
         Logger.d("pressDoubleRecentApps()")
 
         val device = getUiDevice()
-        Logger.d("Before press double recent apps")
         device.pressRecentApps()
         delay()
         device.pressRecentApps()
         delay()
-        Logger.d("After press double recent apps")
     }
 
     fun enableDarkMode() = executeShellCommand("cmd uimode night yes")
@@ -180,12 +172,14 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun enterText(index: Int, text: String) {
-        Logger.d("enterText()")
+    fun enterText(text: String, index: Int) {
+        Logger.d("enterText(text: $text, index: $index)")
 
         val device = getUiDevice()
         val selector = UiSelector().className(EditText::class.java).instance(index)
         Logger.d("Selector: $selector")
+
+        Logger.d("entering text \"$text\" to $selector")
 
         val uiObject = device.findObject(selector)
         uiObject.click()
@@ -194,12 +188,12 @@ class UIAutomatorInstrumentation {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(query: SelectorQuery, text: String) {
-        Logger.d("enterText()")
+    fun enterText(text: String, query: SelectorQuery) {
+        Logger.d("enterText(text: $text, query: $query")
 
         val device = getUiDevice()
         val selector = query.toUiSelector()
-        Logger.d("Selector: $selector")
+        Logger.d("entering text \"$text\" to $selector")
 
         val uiObject = device.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.click()
@@ -238,9 +232,7 @@ class UIAutomatorInstrumentation {
 
         val device = getUiDevice()
 
-        Logger.d("Before open notifications")
         device.openNotification()
-        Logger.d("After open notifications")
         delay()
     }
 
@@ -252,7 +244,7 @@ class UIAutomatorInstrumentation {
         openHalfNotificationShade()
 
         val startX = (device.displayWidth * 0.5).roundToInt()
-        val startY = (device.displayHeight * 0.3).roundToInt()
+        val startY = (device.displayHeight * 0.1).roundToInt()
         val endX = (device.displayWidth * 0.5).roundToInt()
         val endY = (device.displayHeight * 0.9).roundToInt()
 
@@ -275,18 +267,24 @@ class UIAutomatorInstrumentation {
 
         val notifications = mutableListOf<Notification>()
         for (widget in widgets) {
-            // Tested and working on API 30. May require changes for other OS versions.
-            val appName = widget.children?.get(0)?.children?.get(1)?.text
-            val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
-            val content = widget.children?.get(1)?.children?.get(1)?.text
-            notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
+            try {
+                // Tested and working on API 30. May require changes for other OS versions.
+                val appName = widget.children?.get(0)?.children?.get(1)?.text
+                val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
+                val content = widget.children?.get(1)?.children?.get(1)?.text
+                notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
+            } catch (err: IndexOutOfBoundsException) {
+                Logger.e("Failed to get notification UI component", err)
+            } catch (err: NullPointerException) {
+                Logger.e("Null Pointer", err)
+            }
         }
 
         return notifications
     }
 
     fun tapOnNotification(index: Int) {
-        Logger.d("tapOnNotification()")
+        Logger.d("tapOnNotification($index)")
 
         openHalfNotificationShade()
 
@@ -294,6 +292,19 @@ class UIAutomatorInstrumentation {
 
         val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
         val obj = device.findObject(query.toUiSelector())
+        obj.click()
+
+        delay()
+    }
+
+    fun tapOnNotification(selector: SelectorQuery) {
+        Logger.d("tapOnNotification()")
+
+        openHalfNotificationShade()
+
+        val device = getUiDevice()
+
+        val obj = device.findObject(selector.toUiSelector())
         obj.click()
 
         delay()
