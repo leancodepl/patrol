@@ -125,6 +125,9 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
+  /// The number of [Element]s that match this [MaestroFinder].
+  int get length => evaluate().length;
+
   @override
   Iterable<Element> evaluate() {
     return finder.evaluate();
@@ -134,6 +137,16 @@ class MaestroFinder extends MatchFinder {
   Iterable<Element> apply(Iterable<Element> candidates) {
     return finder.apply(candidates);
   }
+
+  /// Returns the first [Widget] that matches this [MaestroFinder].
+  T firstWidget<T extends Widget>() => finder.evaluate().first.widget as T;
+
+  /// Returns the last [Widget] that matches this [MaestroFinder].
+  T lastWidget<T extends Widget>() => finder.evaluate().first.widget as T;
+
+  /// Returns the [index]-th [Widget] that matches this [MaestroFinder].
+  T widgetAt<T extends Widget>(int index) =>
+      finder.evaluate().elementAt(index).widget as T;
 
   @override
   MaestroFinder get first => $(super.first);
