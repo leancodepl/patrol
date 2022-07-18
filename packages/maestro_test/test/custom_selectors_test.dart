@@ -11,6 +11,10 @@ void main() {
         ),
       );
       expect($(Text), findsOneWidget);
+
+      expect($(Text).first, findsOneWidget);
+      expect($(Text).last, findsOneWidget);
+      expect($(Text).at(0), findsOneWidget);
     });
 
     maestroTest('key', ($) async {
@@ -114,10 +118,12 @@ void main() {
     maestroTest('finds by parent', ($) async {
       await $.pumpWidgetAndSettle(app());
 
-      $(MaterialApp).$(Text).at
-
       expect($(MaterialApp).$(Text), findsNWidgets(2));
       expect($(MaterialApp).$(#helloText), findsNWidgets(2));
+
+      expect($(MaterialApp).$(Text).at(0), findsOneWidget);
+      expect($(MaterialApp).$(Text).at(1), findsOneWidget);
+
       expect($(Container).$(Text), findsOneWidget);
       expect($(SizedBox).$(Text), findsOneWidget);
       expect($(Container).$('Hello 2'), findsNothing);

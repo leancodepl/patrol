@@ -136,13 +136,25 @@ class MaestroFinder extends MatchFinder {
   }
 
   @override
-  MaestroFinder get first => $(super.first);
+  MaestroFinder get first {
+    return MaestroFinder(tester: tester, finder: finder.first);
+  }
 
   @override
-  MaestroFinder get last => $(super.last);
+  MaestroFinder get last {
+    return MaestroFinder(
+      tester: tester,
+      finder: finder.last,
+    );
+  }
 
   @override
-  MaestroFinder at(int index) => $(super.at(index));
+  MaestroFinder at(int index) {
+    return MaestroFinder(
+      tester: tester,
+      finder: finder.at(index),
+    );
+  }
 
   @override
   String get description => finder.description;
