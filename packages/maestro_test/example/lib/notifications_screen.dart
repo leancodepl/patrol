@@ -20,7 +20,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       ),
       onDidReceiveNotificationResponse: (notificationResponse) {
-        print('tapped notification with ID ${notificationResponse.id}');
+        print(
+          'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
+        );
       },
     );
   }

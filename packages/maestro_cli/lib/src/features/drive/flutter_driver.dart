@@ -5,7 +5,7 @@ import 'package:maestro_cli/src/features/drive/constants.dart';
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
 /// drive is done.
-Future<void> runTests({
+Future<void> run({
   required String driver,
   required String target,
   required String host,
@@ -16,9 +16,9 @@ Future<void> runTests({
   Map<String, String> dartDefines = const {},
 }) async {
   if (device != null) {
-    log.info('Running tests on $device...');
+    log.info('Running $target on $device...');
   } else {
-    log.info('Running tests...');
+    log.info('Running $target...');
   }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
@@ -45,7 +45,7 @@ Future<void> runTests({
 /// drive is done.
 ///
 /// Prints standard output of "flutter drive".
-Future<void> runTestsWithOutput({
+Future<void> runWithOutput({
   required String driver,
   required String target,
   required String host,
@@ -56,14 +56,14 @@ Future<void> runTestsWithOutput({
   Map<String, String> dartDefines = const {},
 }) async {
   if (device != null) {
-    log.info('Running tests with output on $device...');
+    log.info('Running $target with output on $device...');
   } else {
-    log.info('Running tests with output...');
+    log.info('Running $target with output...');
   }
 
   final env = _dartDefines(host: host, port: port, verbose: verbose);
 
-  final result = await Process.start(
+  final process = await Process.start(
     'flutter',
     _flutterDriveArguments(
       driver: driver,
@@ -76,21 +76,32 @@ Future<void> runTestsWithOutput({
     runInShell: true,
   );
 
-  final stdOutSub = result.stdout.listen((msg) {
-    final text = 'driver: ${systemEncoding.decode(msg)}'.trim();
-    if (text.contains('I/flutter')) {
-      log.info(text);
-    } else {
-      log.fine(text);
+  final stdOutSub = process.stdout.listen((msg) {
+    final lines = systemEncoding
+        .decode(msg)
+        .split('\n')
+        .map((str) => str.trim())
+        .toList()
+      ..removeWhere((element) => element.isEmpty);
+
+    for (var text in lines) {
+      text = text.trim();
+      final regexp = RegExp(r'I\/flutter \([0-9]+\): ');
+      if (text.contains(regexp)) {
+        text = text.replaceFirst(regexp, '');
+        log.info(text);
+      } else {
+        log.fine(text);
+      }
     }
   });
 
-  final stdErrSub = result.stderr.listen((msg) {
-    final text = 'driver: ${systemEncoding.decode(msg)}'.trim();
+  final stdErrSub = process.stderr.listen((msg) {
+    final text = systemEncoding.decode(msg).trim();
     log.severe(text);
   });
 
-  final exitCode = await result.exitCode;
+  final exitCode = await process.exitCode;
   await stdOutSub.cancel();
   await stdErrSub.cancel();
 

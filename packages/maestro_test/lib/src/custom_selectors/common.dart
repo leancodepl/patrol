@@ -40,13 +40,22 @@ void maestroTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   Duration sleep = Duration.zero,
+  String? appName,
   dynamic tags,
 }) {
   return testWidgets(
     description,
     (widgetTester) async {
-      await callback(MaestroTester(widgetTester));
-      io.sleep(sleep);
+      final maestroTester = MaestroTester(widgetTester, appName: appName);
+      await callback(maestroTester);
+      if (sleep != Duration.zero) {
+        maestroTester.log(
+          'sleeping for ${sleep.inSeconds} seconds',
+          name: 'maestroTest',
+        );
+        io.sleep(sleep);
+        maestroTester.log('sleeping finished', name: 'maestroTest');
+      }
     },
     skip: skip,
     timeout: timeout,
