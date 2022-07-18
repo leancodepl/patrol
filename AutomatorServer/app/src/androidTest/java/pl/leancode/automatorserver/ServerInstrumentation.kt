@@ -306,12 +306,12 @@ class ServerInstrumentation {
             },
             "enterTextByIndex" bind POST to {
                 val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.enterText(body.index, body.text)
+                UIAutomatorInstrumentation.instance.enterText(body.text, body.index)
                 Response(OK)
             },
             "enterTextBySelector" bind POST to {
                 val body = Json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.enterText(body.selector, body.text)
+                UIAutomatorInstrumentation.instance.enterText(body.text, body.selector)
                 Response(OK)
             },
             "swipe" bind POST to {

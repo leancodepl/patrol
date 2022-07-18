@@ -59,10 +59,10 @@ class Maestro {
 
     Logger.root.level = Level.ALL;
 
-    // ignore: avoid_print
     Logger.root.onRecord.listen((log) {
       final fmtLog = _formatLog(log);
 
+      // ignore: avoid_print
       print(fmtLog);
     });
   }

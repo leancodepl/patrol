@@ -81,7 +81,7 @@ class UIAutomatorInstrumentation {
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
     fun pressBack() {
-        Logger.d("pressBack")
+        Logger.d("pressBack()")
 
         val device = getUiDevice()
         Logger.d("Before press back")
@@ -180,12 +180,14 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun enterText(index: Int, text: String) {
-        Logger.d("enterText()")
+    fun enterText(text: String, index: Int) {
+        Logger.d("enterText(text: $text, index: $index)")
 
         val device = getUiDevice()
         val selector = UiSelector().className(EditText::class.java).instance(index)
         Logger.d("Selector: $selector")
+
+        Logger.d("entering text \"$text\" to $selector")
 
         val uiObject = device.findObject(selector)
         uiObject.click()
@@ -194,12 +196,12 @@ class UIAutomatorInstrumentation {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(query: SelectorQuery, text: String) {
-        Logger.d("enterText()")
+    fun enterText(text: String, query: SelectorQuery) {
+        Logger.d("enterText(text: $text, query: $query")
 
         val device = getUiDevice()
         val selector = query.toUiSelector()
-        Logger.d("Selector: $selector")
+        Logger.d("entering text \"$text\" to $selector")
 
         val uiObject = device.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.click()
@@ -312,8 +314,7 @@ class UIAutomatorInstrumentation {
 
         val device = getUiDevice()
 
-        val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = 0)
-        val obj = device.findObject(query.toUiSelector())
+        val obj = device.findObject(selector.toUiSelector())
         obj.click()
 
         delay()
