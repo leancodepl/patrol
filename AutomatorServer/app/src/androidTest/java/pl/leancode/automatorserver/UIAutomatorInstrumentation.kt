@@ -84,9 +84,7 @@ class UIAutomatorInstrumentation {
         Logger.d("pressBack()")
 
         val device = getUiDevice()
-        Logger.d("Before press back")
         device.pressBack()
-        Logger.d("After press back")
         delay()
     }
 
@@ -94,32 +92,26 @@ class UIAutomatorInstrumentation {
         Logger.d("pressHome()")
 
         val device = getUiDevice()
-        Logger.d("Before press home")
         device.pressHome()
         delay()
-        Logger.d("After press home")
     }
 
     fun pressRecentApps() {
         Logger.d("pressRecentApps()")
 
         val device = getUiDevice()
-        Logger.d("Before press recent apps")
         device.pressRecentApps()
         delay()
-        Logger.d("After press recent apps")
     }
 
     fun pressDoubleRecentApps() {
         Logger.d("pressDoubleRecentApps()")
 
         val device = getUiDevice()
-        Logger.d("Before press double recent apps")
         device.pressRecentApps()
         delay()
         device.pressRecentApps()
         delay()
-        Logger.d("After press double recent apps")
     }
 
     fun enableDarkMode() = executeShellCommand("cmd uimode night yes")
@@ -240,9 +232,7 @@ class UIAutomatorInstrumentation {
 
         val device = getUiDevice()
 
-        Logger.d("Before open notifications")
         device.openNotification()
-        Logger.d("After open notifications")
         delay()
     }
 
