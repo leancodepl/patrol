@@ -1,0 +1,6 @@
+"p: adb":
+  - packages/adb/**/*
+"p: maestro_cli":
+  - packages/maestro_cli/**/*
+"p: maestro_test":
+  - packages/maestro_test/**/*
