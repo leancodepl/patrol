@@ -77,27 +77,22 @@ Future<void> runWithOutput({
   );
 
   final stdOutSub = process.stdout.listen((msg) {
-    final text = systemEncoding.decode(msg).trim();
-    final colonIndex = text.indexOf(':');
+    final lines = systemEncoding
+        .decode(msg)
+        .split('\n')
+        .map((str) => str.trim())
+        .toList()
+      ..removeWhere((element) => element.isEmpty);
 
-    if (colonIndex == -1) {
-      return;
-    }
-    log
-      ..info('colonIndex: $colonIndex, $text')
-      ..info(text.substring(colonIndex + 2));
-    return;
-
-    if (text.contains('I/flutter')) {
-      final index = text.indexOf(':');
-      final parts = [
-        text.substring(0, index).trim(),
-        text.substring(index + 1).trim()
-      ];
-      log.info(parts[1]);
-      log.fine('parts: $parts');
-    } else {
-      log.fine(text);
+    for (var text in lines) {
+      text = text.trim();
+      final regexp = RegExp(r'I\/flutter \([0-9]+\): ');
+      if (text.contains(regexp)) {
+        text = text.replaceFirst(regexp, '');
+        log.info(text);
+      } else {
+        log.fine(text);
+      }
     }
   });
 

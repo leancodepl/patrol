@@ -7,7 +7,7 @@ void main() {
   maestroTest(
     'sends a notification and taps on it',
     ($) async {
-      $.log('WHERE IS MY PRINT?!');
+      $.log('Yay, notification_test.dart is starting!');
 
       await $.pumpWidgetAndSettle(MyApp());
 
