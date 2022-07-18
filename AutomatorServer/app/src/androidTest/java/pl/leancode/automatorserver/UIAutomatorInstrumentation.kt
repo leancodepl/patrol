@@ -244,7 +244,7 @@ class UIAutomatorInstrumentation {
         openHalfNotificationShade()
 
         val startX = (device.displayWidth * 0.5).roundToInt()
-        val startY = (device.displayHeight * 0.3).roundToInt()
+        val startY = (device.displayHeight * 0.1).roundToInt()
         val endX = (device.displayWidth * 0.5).roundToInt()
         val endY = (device.displayHeight * 0.9).roundToInt()
 

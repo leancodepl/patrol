@@ -132,7 +132,7 @@ class Maestro {
     if (body.isNotEmpty) {
       _logger.info('action $action executing with $body');
     } else {
-      _logger.info('action $action executing...');
+      _logger.info('action $action executing');
     }
 
     final response = await _client.post(
