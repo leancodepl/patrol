@@ -83,6 +83,14 @@ void main() {
         expect($($($($('Hello')))), findsOneWidget);
       },
     );
+
+    maestroTest('using Finder', ($) async {
+      await $.pumpWidgetAndSettle(
+        const MaterialApp(home: Text('Hello')),
+      );
+
+      expect($(find.text('Hello')), findsOneWidget);
+    });
   });
 
   group('smoke tests', () {
