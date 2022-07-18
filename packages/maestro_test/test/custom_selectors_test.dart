@@ -114,6 +114,8 @@ void main() {
     maestroTest('finds by parent', ($) async {
       await $.pumpWidgetAndSettle(app());
 
+      $(MaterialApp).$(Text).at
+
       expect($(MaterialApp).$(Text), findsNWidgets(2));
       expect($(MaterialApp).$(#helloText), findsNWidgets(2));
       expect($(Container).$(Text), findsOneWidget);
