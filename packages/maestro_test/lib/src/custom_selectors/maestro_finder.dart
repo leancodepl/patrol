@@ -136,10 +136,34 @@ class MaestroFinder extends MatchFinder {
   }
 
   @override
+  MaestroFinder get first {
+    return MaestroFinder(tester: tester, finder: finder.first);
+  }
+
+  @override
+  MaestroFinder get last {
+    return MaestroFinder(
+      tester: tester,
+      finder: finder.last,
+    );
+  }
+
+  @override
+  MaestroFinder at(int index) {
+    return MaestroFinder(
+      tester: tester,
+      finder: finder.at(index),
+    );
+  }
+
+  @override
   String get description => finder.description;
 
   @override
   bool matches(Element candidate) {
     return (finder as MatchFinder).matches(candidate);
   }
+
+  @override
+  String toString() => finder.toString();
 }

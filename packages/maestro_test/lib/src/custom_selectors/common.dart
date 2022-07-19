@@ -116,6 +116,10 @@ void maestroTest(
 ///   ```dart
 ///   final finder = createFinder($(Text('Sign in with Google')));
 ///   ```
+/// - [Finder], which simply returns the [Finder] itself.
+///   ```dart
+///   final finder = createFinder(find.text('Log in'));
+///   ```
 ///
 /// See also:
 ///  - [MaestroTester.call]
@@ -148,6 +152,10 @@ Finder createFinder(dynamic matching) {
 
   if (matching is MaestroFinder) {
     return matching.finder;
+  }
+
+  if (matching is Finder) {
+    return matching;
   }
 
   throw ArgumentError(
