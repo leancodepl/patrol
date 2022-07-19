@@ -163,4 +163,7 @@ class MaestroFinder extends MatchFinder {
   bool matches(Element candidate) {
     return (finder as MatchFinder).matches(candidate);
   }
+
+  @override
+  String toString() => finder.toString();
 }
