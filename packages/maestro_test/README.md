@@ -46,7 +46,7 @@ void main() {
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '2');
 
-      await maestro.openHalfNotificationShade();
+      await maestro.openNotifications();
       await maestro.pressBack();
     },
   );
