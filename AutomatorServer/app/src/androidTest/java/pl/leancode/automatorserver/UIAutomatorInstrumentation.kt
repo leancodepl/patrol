@@ -227,8 +227,8 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun openHalfNotificationShade() {
-        Logger.d("openHalfNotificationShade()")
+    fun openNotifications() {
+        Logger.d("openNotifications()")
 
         val device = getUiDevice()
 
@@ -236,30 +236,19 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun openFullNotificationShade() {
-        Logger.d("openFullNotificationShade()")
+    fun openQuickSettings() {
+        Logger.d("openNotifications()")
 
         val device = getUiDevice()
 
-        openHalfNotificationShade()
-
-        val startX = (device.displayWidth * 0.5).roundToInt()
-        val startY = (device.displayHeight * 0.1).roundToInt()
-        val endX = (device.displayWidth * 0.5).roundToInt()
-        val endY = (device.displayHeight * 0.9).roundToInt()
-
-        val successful = device.swipe(startX, startY, endX, endY, 3)
-        if (!successful) {
-            throw IllegalArgumentException("Swipe failed")
-        }
-
+        device.openQuickSettings()
         delay()
     }
 
     fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
-        openHalfNotificationShade()
+        openNotifications()
 
         val widgets = getNativeWidgets(
             query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content")
@@ -286,7 +275,7 @@ class UIAutomatorInstrumentation {
     fun tapOnNotification(index: Int) {
         Logger.d("tapOnNotification($index)")
 
-        openHalfNotificationShade()
+        openNotifications()
 
         val device = getUiDevice()
 
@@ -300,7 +289,7 @@ class UIAutomatorInstrumentation {
     fun tapOnNotification(selector: SelectorQuery) {
         Logger.d("tapOnNotification()")
 
-        openHalfNotificationShade()
+        openNotifications()
 
         val device = getUiDevice()
 

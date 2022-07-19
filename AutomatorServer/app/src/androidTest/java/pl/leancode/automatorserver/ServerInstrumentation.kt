@@ -272,12 +272,12 @@ class ServerInstrumentation {
                 UIAutomatorInstrumentation.instance.pressDoubleRecentApps()
                 Response(OK)
             },
-            "openHalfNotificationShade" bind POST to {
-                UIAutomatorInstrumentation.instance.openHalfNotificationShade()
+            "openNotifications" bind POST to {
+                UIAutomatorInstrumentation.instance.openNotifications()
                 Response(OK)
             },
-            "openFullNotificationShade" bind POST to {
-                UIAutomatorInstrumentation.instance.openFullNotificationShade()
+            "openQuickSettings" bind POST to {
+                UIAutomatorInstrumentation.instance.openQuickSettings()
                 Response(OK)
             },
             "getNotifications" bind GET to {
