@@ -259,10 +259,15 @@ class UIAutomatorInstrumentation {
             try {
                 // Tested and working on API 30. May require changes for other OS versions.
                 val appName = widget.children?.get(0)?.children?.get(1)?.text
-                val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
-                val content = widget.children?.get(1)?.children?.get(1)?.text
-                notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
+                    ?: throw IllegalStateException("Could not get notification app name")
+                val title = widget.children[1].children?.get(0)?.children?.get(0)?.text
+                    ?: throw IllegalStateException("Could not get notification title")
+                val content = widget.children[1].children?.get(1)?.text
+                    ?: throw IllegalStateException("Could not get notification content")
+                notifications.add(Notification(appName = appName, title = title, content = content))
             } catch (err: IndexOutOfBoundsException) {
+                Logger.e("Failed to get notification UI component", err)
+            } catch (err: java.lang.IllegalStateException) {
                 Logger.e("Failed to get notification UI component", err)
             } catch (err: NullPointerException) {
                 Logger.e("Null Pointer", err)
