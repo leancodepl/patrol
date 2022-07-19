@@ -3,33 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/custom_selectors.dart';
 
 void main() {
-  Future<void> simplePump(MaestroTester $) async {
-    await $.pumpWidgetAndSettle(
-      MaterialApp(
-        home: Row(
-          children: const [
-            Icon(Icons.front_hand),
-            Text('Hello'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> complexPump(MaestroTester $) async {
-    await $.pumpWidgetAndSettle(
-      MaterialApp(
-        home: Column(
-          children: const [
-            Text('Hello', key: Key('hello')),
-            Text('Some text', key: Key('Some \n long, complex\t\ttext!')),
-            Text('Another text', key: ValueKey({'key': 'value'})),
-          ],
-        ),
-      ),
-    );
-  }
-
   group('MaestroFinders work the same as Flutter Finders', () {
     maestroTest('(simple case 1)', ($) async {
       final flutterFinder = find.byType(Text);
@@ -83,10 +56,25 @@ void main() {
           of: find.text('layer'),
           matching: find.byType(MaterialApp),
         ),
-        matching: find.byKey(const Key('HSV')),
+        matching: find.byKey(const Key('SomeKey')),
       );
 
-      final maestroFinder = $(MaterialApp).withDescendant('layer').$(#HSV);
+      final maestroFinder = $(MaterialApp).withDescendant('layer').$(#SomeKey);
+
+      expect(flutterFinder.toString(), maestroFinder.toString());
+    });
+
+    maestroTest('(complex case 4)', ($) async {
+      final flutterFinder = find.ancestor(
+        of: find.ancestor(
+          of: find.byKey(const Key('SomeKey')),
+          matching: find.text('layer'),
+        ),
+        matching: find.byType(MaterialApp),
+      );
+
+      final maestroFinder =
+          $(MaterialApp).withDescendant($('layer').withDescendant(#SomeKey));
 
       expect(flutterFinder.toString(), maestroFinder.toString());
     });
@@ -94,21 +82,21 @@ void main() {
 
   group('matches widget by', () {
     maestroTest('first', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($(Text).first, findsOneWidget);
       expect($(Icon).first, findsOneWidget);
       expect($(Row).first, findsOneWidget);
     });
 
     maestroTest('last', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($(Text).last, findsOneWidget);
       expect($(Icon).last, findsOneWidget);
       expect($(Row).last, findsOneWidget);
     });
 
     maestroTest('at', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($(Text).at(0), findsOneWidget);
       expect($(Icon).at(0), findsOneWidget);
       expect($(Row).at(0), findsOneWidget);
@@ -117,14 +105,14 @@ void main() {
 
   group('finds widget by', () {
     maestroTest('type', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($(Text), findsOneWidget);
       expect($(Icon), findsOneWidget);
       expect($(Row), findsOneWidget);
     });
 
     maestroTest('key', ($) async {
-      await complexPump($);
+      await mediumPump($);
 
       expect($(#hello), findsOneWidget);
       expect($(const Symbol('hello')), findsOneWidget);
@@ -138,12 +126,12 @@ void main() {
     });
 
     maestroTest('text', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($('Hello'), findsOneWidget);
     });
 
     maestroTest('text it contains', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($(RegExp('Hello')), findsOneWidget);
       expect($(RegExp('Hell.*')), findsOneWidget);
       expect($(RegExp('.*ello')), findsOneWidget);
@@ -151,19 +139,19 @@ void main() {
     });
 
     maestroTest('icon', ($) async {
-      await simplePump($);
+      await smallPump($);
       expect($(Icons.front_hand), findsOneWidget);
     });
 
-    maestroTest('using MaestroFinder', ($) async {
-      await simplePump($);
+    maestroTest('text using MaestroFinder', ($) async {
+      await smallPump($);
       expect($('Hello'), findsOneWidget);
     });
 
     maestroTest(
       'text using 2 nested MaestroFinders',
       ($) async {
-        await simplePump($);
+        await smallPump($);
         expect($($('Hello')), findsOneWidget);
       },
     );
@@ -171,37 +159,20 @@ void main() {
     maestroTest(
       'text using many nested MaestroFinders',
       ($) async {
-        await simplePump($);
+        await smallPump($);
         expect($($($($($('Hello'))))), findsOneWidget);
       },
     );
 
-    maestroTest('using Finder', ($) async {
-      await simplePump($);
+    maestroTest('text using Flutter Finder', ($) async {
+      await smallPump($);
       expect($(find.text('Hello')), findsOneWidget);
     });
   });
 
   group('smoke tests', () {
-    Widget app() => MaterialApp(
-          key: const Key('app'),
-          home: Column(
-            children: [
-              Container(
-                key: const Key('container'),
-                child: const Text('Hello 1', key: Key('helloText')),
-              ),
-              const SizedBox(
-                key: Key('sizedbox'),
-                child: Text('Hello 2', key: Key('helloText')),
-              ),
-              const SizedBox(child: Icon(Icons.code)),
-            ],
-          ),
-        );
-
     maestroTest('finds by parent', ($) async {
-      await $.pumpWidgetAndSettle(app());
+      await bigPump($);
 
       expect($(MaterialApp).$(Text), findsNWidgets(2));
       expect($(MaterialApp).$(#helloText), findsNWidgets(2));
@@ -220,7 +191,7 @@ void main() {
     });
 
     maestroTest('finds by parent and with descendant', ($) async {
-      await $.pumpWidgetAndSettle(app());
+      await bigPump($);
 
       expect($(SizedBox).withDescendant(Text), findsOneWidget);
       expect($(Column).withDescendant('Hello 2'), findsOneWidget);
@@ -236,71 +207,53 @@ void main() {
         findsNWidgets(2),
       );
     });
-
-    maestroTest('bug', ($) async {
-      await $.pumpWidgetAndSettle(
-        MaterialApp(
-          home: Column(
-            children: const [
-              AppDataTableRow(
-                text: 'nothing important',
-                child: Text('boi', key: Key('HSV')),
-              ),
-              AppDataTableRow(
-                text: 'layer',
-                child: Text('boi', key: Key('HSV')),
-              ),
-            ],
-          ),
-        ),
-      );
-
-      expect(
-        $(AppDataTableRow).withDescendant($('layer')).$(#HSV),
-        findsOneWidget,
-      );
-
-      expect(
-        $(AppDataTableRow).withDescendant($('laye')).$(#HSV),
-        findsNothing,
-      );
-
-      expect(
-        $(AppDataTableRow).withDescendant($('laye').$(#HSV)),
-        findsNothing,
-      );
-
-      expect(
-        find.descendant(
-          of: find.ancestor(
-            of: find.text('layer'),
-            matching: find.byType(AppDataTableRow),
-          ),
-          matching: find.byKey(const Key('HSV')),
-        ),
-        findsOneWidget,
-      );
-    });
   });
 }
 
-class AppDataTableRow extends StatelessWidget {
-  const AppDataTableRow({
-    Key? key,
-    required this.text,
-    required this.child,
-  }) : super(key: key);
+Future<void> smallPump(MaestroTester $) async {
+  await $.pumpWidgetAndSettle(
+    MaterialApp(
+      home: Row(
+        children: const [
+          Icon(Icons.front_hand),
+          Text('Hello'),
+        ],
+      ),
+    ),
+  );
+}
 
-  final String text;
-  final Widget child;
+Future<void> mediumPump(MaestroTester $) async {
+  await $.pumpWidgetAndSettle(
+    MaterialApp(
+      home: Column(
+        children: const [
+          Text('Hello', key: Key('hello')),
+          Text('Some text', key: Key('Some \n long, complex\t\ttext!')),
+          Text('Another text', key: ValueKey({'key': 'value'})),
+        ],
+      ),
+    ),
+  );
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(text),
-        child,
-      ],
-    );
-  }
+Future<void> bigPump(MaestroTester $) async {
+  await $.pumpWidgetAndSettle(
+    MaterialApp(
+      key: const Key('app'),
+      home: Column(
+        children: [
+          Container(
+            key: const Key('container'),
+            child: const Text('Hello 1', key: Key('helloText')),
+          ),
+          const SizedBox(
+            key: Key('sizedbox'),
+            child: Text('Hello 2', key: Key('helloText')),
+          ),
+          const SizedBox(child: Icon(Icons.code)),
+        ],
+      ),
+    ),
+  );
 }
