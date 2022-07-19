@@ -86,7 +86,7 @@ Future<void> runWithOutput({
 
     for (var text in lines) {
       text = text.trim();
-      final regexp = RegExp(r'I\/flutter \([0-9]+\): ');
+      final regexp = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
       if (text.contains(regexp)) {
         text = text.replaceFirst(regexp, '');
         log.info(text);
