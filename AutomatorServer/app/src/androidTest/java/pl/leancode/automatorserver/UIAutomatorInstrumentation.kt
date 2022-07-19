@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
@@ -250,27 +251,25 @@ class UIAutomatorInstrumentation {
 
         openNotifications()
 
-        val widgets = getNativeWidgets(
-            query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content")
-        )
+        val device = getUiDevice()
+
+        val notificationContainers = device.findObjects(By.res("android:id/status_bar_latest_event_content"))
 
         val notifications = mutableListOf<Notification>()
-        for (widget in widgets) {
+        Logger.d("Found ${notificationContainers.size} notifications")
+        for (notificationContainer in notificationContainers) {
             try {
-                // Tested and working on API 30. May require changes for other OS versions.
-                val appName = widget.children?.get(0)?.children?.get(1)?.text
-                    ?: throw IllegalStateException("Could not get notification app name")
-                val title = widget.children[1].children?.get(0)?.children?.get(0)?.text
-                    ?: throw IllegalStateException("Could not get notification title")
-                val content = widget.children[1].children?.get(1)?.text
-                    ?: throw IllegalStateException("Could not get notification content")
+                val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+                    ?: throw NullPointerException("Could not find app name text")
+                val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                    ?: throw NullPointerException("Could not find title text")
+                val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                    ?: throw NullPointerException("Could not find content text")
+
                 notifications.add(Notification(appName = appName, title = title, content = content))
-            } catch (err: IndexOutOfBoundsException) {
-                Logger.e("Failed to get notification UI component", err)
-            } catch (err: java.lang.IllegalStateException) {
-                Logger.e("Failed to get notification UI component", err)
-            } catch (err: NullPointerException) {
-                Logger.e("Null Pointer", err)
+            } catch (e: NullPointerException) {
+                Logger.e("Failed to find UI component of a notification", e)
             }
         }
 
