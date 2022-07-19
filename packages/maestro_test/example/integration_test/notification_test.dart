@@ -13,14 +13,15 @@ void main() {
 
       await $('Open notifications screen').tap();
 
-      await $(RegExp('.*ID=1')).tap(); // appears on top
-      await $(RegExp('.*ID=2')).tap(); // also appears on top
+      await $(RegExp('someone liked')).tap(); // appears on top
+      await $(RegExp('special offer')).tap(); // also appears on top
 
       (await maestro.getNotifications()).forEach($.log);
 
       await maestro.tapOnNotificationByIndex(1);
-      await maestro.tapOnNotificationBySelector(Selector(textContains: 'ID=2'));
-      // await maestro.tapOnNotificationBySelector(Selector(textContains: 'ID=2'));
+      await maestro.tapOnNotificationBySelector(
+        Selector(textContains: 'special offer'),
+      );
     },
     appName: 'ExampleApp',
     sleep: Duration(seconds: 5),
