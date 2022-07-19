@@ -61,7 +61,7 @@ See README of [package:maestro_test][]
 1. Create a [git annotated tag][annotated_tag]:
 
 ```
-git tag -a "maestro_cli-v0.0.4" -m "Release notes go here"
+git tag -a "maestro_cli-v0.3.4" -m "Release notes go here"
 ```
 
 2. Push it! GitHub Actions will take care of the rest.

@@ -1,2 +1,5 @@
 .DS_Store
 .idea
+
+.flutter-plugins
+.flutter-plugins-dependencies

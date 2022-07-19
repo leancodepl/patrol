@@ -1,3 +1,7 @@
+## 0.3.5
+
+- Fix dependency resolution problem
+
 ## 0.3.4
 
 - Improve output of `maestro drive`
