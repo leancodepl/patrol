@@ -16,7 +16,7 @@ Add `maestro_test` as a dev dependency in `pubspec.yaml`:
 
 ```
 dev_dependencies:
-  maestro_test: ^0.3.2
+  maestro_test: ^0.3.3
 ```
 
 ### Accessing native platform features
@@ -74,11 +74,14 @@ void main() {
       // box1 which is a descendant of a Scaffold widget and tap on it.
       await $(Scaffold).$(#box1).$('Log in').tap();
 
-      // Selects the first Scrollable which has a Text descendant
+      // Selects all Scrollables which have Text descendant
       $(Scrollable).withDescendant(Text);
 
-      // Selects the first Scrollable which has a Button descendant which has a Text descendant
-      $(Scrollable).withDescendant($(Text).withDescendant(Text));
+      // Selects all Scrollables which have a Button descendant which has a Text descendant
+      $(Scrollable).withDescendant($(Button).withDescendant(Text));
+
+      // Selects all Scrollables which have a Button descendant and a Text descendant
+      $(Scrollable).withDescendant(Button).withDescendant(Text);
     },
   );
 }

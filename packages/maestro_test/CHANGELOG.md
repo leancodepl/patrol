@@ -1,3 +1,9 @@
+## 0.3.3
+
+- Make it possible to pass Flutter's `Finder` to `$`
+- Make `MaestroFinder.first`, `MaestroFinder.last`, `MaestroFinder.at()` return
+  `MaestroFinder`, not `Finder`
+
 ## 0.3.2
 
 - Improve selector engine:
