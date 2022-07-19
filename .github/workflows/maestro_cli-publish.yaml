@@ -15,36 +15,9 @@ jobs:
       - name: Check if versions are defined consistently
         run: ./check_versions
 
-  publish_cli:
-    runs-on: ubuntu-latest
-    needs: check_versions
-
-    defaults:
-      run:
-        working-directory: packages/maestro_cli
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v3
-
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: stable
-
-      - name: Download pub.dev credentials
-        env:
-          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
-        run: |
-          mkdir -p ~/.pub-cache
-          echo $CREDENTIALS > ~/.pub-cache/credentials.json
-
-      - name: Publish
-        run: dart pub publish -f
-
   upload_artifacts:
     runs-on: ubuntu-latest
-    needs: publish_cli
+    needs: check_versions
 
     defaults:
       run:
@@ -113,3 +86,30 @@ jobs:
         run: |
           ./upload_artifact ${{ env.SERVER_FILE }}
           ./upload_artifact ${{ env.INSTRUMENTATION_FILE }}
+
+  publish_cli:
+    runs-on: ubuntu-latest
+    needs: upload_artifacts
+
+    defaults:
+      run:
+        working-directory: packages/maestro_cli
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Download pub.dev credentials
+        env:
+          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.pub-cache
+          echo $CREDENTIALS > ~/.pub-cache/credentials.json
+
+      - name: Publish
+        run: dart pub publish -f
