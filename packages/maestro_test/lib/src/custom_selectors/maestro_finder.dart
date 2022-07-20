@@ -48,16 +48,16 @@ class MaestroFinder extends MatchFinder {
   /// [MaestroTester] that this [MaestroFinder] wraps.
   final MaestroTester tester;
 
-  /// Taps on the widget resolved by this finder.
+  /// Taps on the first widget resolved by this finder.
   ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
   Future<void> tap({bool? andSettle}) async {
-    await tester.tester.tap(finder);
+    await tester.tester.tap(finder.first);
     await tester.performPump(andSettle);
   }
 
-  /// Enters text into the widget resolved by this finder.
+  /// Enters text into the first widget resolved by this finder.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
   /// entering text. If you want to disable this behavior, pass `false` to
@@ -66,7 +66,7 @@ class MaestroFinder extends MatchFinder {
   /// See also:
   ///  - [WidgetTester.enterText]
   Future<void> enterText(String text, {bool? andSettle}) async {
-    await tester.tester.enterText(finder, text);
+    await tester.tester.enterText(finder.first, text);
     await tester.performPump(andSettle);
   }
 

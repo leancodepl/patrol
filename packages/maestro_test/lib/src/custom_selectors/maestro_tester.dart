@@ -65,8 +65,10 @@ class MaestroTester {
   /// Useful for logging.
   final String? appName;
 
-  /// If true, [pumpAndSettle] is called after every action wait for the
-  /// animations to finish.
+  /// If true, [pumpAndSettle] is called after every action such as tapping,
+  /// entering text, dragging, etc.
+  ///
+  /// If false, only [pump] is called in these situations.
   final bool andSettle;
 
   /// Makes it simple to log.
@@ -157,11 +159,10 @@ class MaestroTester {
     double touchSlopY = kDragSlopDefault,
     bool warnIfMissed = true,
     PointerDeviceKind kind = PointerDeviceKind.touch,
-    int index = 0,
     bool? andSettle,
   }) async {
     await tester.drag(
-      finder.at(index),
+      finder.first,
       offset,
       pointer: pointer,
       buttons: buttons,
@@ -189,7 +190,6 @@ class MaestroTester {
     double touchSlopY = kDragSlopDefault,
     PointerDeviceKind kind = PointerDeviceKind.touch,
     bool? andSettle,
-    int index = 0,
   }) async {
     await tester.dragFrom(
       startLocation,
@@ -207,9 +207,6 @@ class MaestroTester {
   /// Convenience method combining `WidgetTester.dragUntilVisible` and
   /// [WidgetTester.pumpAndSettle].
   ///
-  /// Specify [index] to select on which [finder] to tap. It defaults to the
-  /// first finder.
-  ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
   /// you want to disable this behavior, pass `false` to [andSettle].
   ///
@@ -222,10 +219,9 @@ class MaestroTester {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
-    int index = 0,
   }) async {
     await tester.dragUntilVisible(
-      finder.at(index),
+      finder.first,
       view,
       moveStep,
       maxIteration: maxIteration,
@@ -235,9 +231,8 @@ class MaestroTester {
     await performPump(andSettle);
   }
 
-  /// Shorthand for default-aware pumping and settling.
   @internal
-  // ignore: avoid_positional_boolean_parameters
+  // ignore: avoid_positional_boolean_parameters, public_member_api_docs
   Future<void> performPump(bool? andSettle) async {
     final settle = andSettle ?? this.andSettle;
     if (settle) {
