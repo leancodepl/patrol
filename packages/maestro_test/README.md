@@ -75,13 +75,13 @@ void main() {
       await $(Scaffold).$(#box1).$('Log in').tap();
 
       // Selects all Scrollables which have Text descendant
-      $(Scrollable).withDescendant(Text);
+      $(Scrollable).containing(Text);
 
       // Selects all Scrollables which have a Button descendant which has a Text descendant
-      $(Scrollable).withDescendant($(Button).withDescendant(Text));
+      $(Scrollable).containing($(Button).containing(Text));
 
       // Selects all Scrollables which have a Button descendant and a Text descendant
-      $(Scrollable).withDescendant(Button).withDescendant(Text);
+      $(Scrollable).containing(Button).containing(Text);
     },
   );
 }
