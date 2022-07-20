@@ -59,7 +59,7 @@ void main() {
         matching: find.byKey(const Key('SomeKey')),
       );
 
-      final maestroFinder = $(MaterialApp).withDescendant('layer').$(#SomeKey);
+      final maestroFinder = $(MaterialApp).containing('layer').$(#SomeKey);
 
       expect(flutterFinder.toString(), maestroFinder.toString());
     });
@@ -74,7 +74,7 @@ void main() {
       );
 
       final maestroFinder =
-          $(MaterialApp).withDescendant($('layer').withDescendant(#SomeKey));
+          $(MaterialApp).containing($('layer').containing(#SomeKey));
 
       expect(flutterFinder.toString(), maestroFinder.toString());
     });
@@ -193,17 +193,17 @@ void main() {
     maestroTest('finds by parent and with descendant', ($) async {
       await bigPump($);
 
-      expect($(SizedBox).withDescendant(Text), findsOneWidget);
-      expect($(Column).withDescendant('Hello 2'), findsOneWidget);
+      expect($(SizedBox).containing(Text), findsOneWidget);
+      expect($(Column).containing('Hello 2'), findsOneWidget);
 
-      final columnFinder = $(Column).withDescendant(
-        $(Container).withDescendant('Hello 1'),
+      final columnFinder = $(Column).containing(
+        $(Container).containing('Hello 1'),
       );
       expect(columnFinder, findsOneWidget);
       expect(columnFinder.finder.evaluate().first.widget.runtimeType, Column);
 
       expect(
-        $(Column).withDescendant(Container).withDescendant(#helloText),
+        $(Column).containing(Container).containing(#helloText),
         findsNWidgets(2),
       );
     });

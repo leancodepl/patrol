@@ -111,11 +111,9 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
-  /// Returns a [MaestroFinder] that this method was called on.
-  ///
-  /// Checks whether the [Widget] that this [MaestroFinder] was called on has
+  /// Returns [MaestroFinder] that this method was called on and which contains
   /// [matching] as a descendant.
-  MaestroFinder withDescendant(dynamic matching) {
+  MaestroFinder containing(dynamic matching) {
     return MaestroFinder(
       tester: tester,
       finder: find.ancestor(
