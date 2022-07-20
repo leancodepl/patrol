@@ -100,7 +100,7 @@ class MaestroFinder extends MatchFinder {
       ),
     );
   }
-
+  
   Future<MaestroFinder> get visible async {
     // TODO(bartekpacia): make this configurable
     const timeout = Duration(seconds: 5);

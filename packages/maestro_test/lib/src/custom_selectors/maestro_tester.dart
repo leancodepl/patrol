@@ -11,9 +11,8 @@ const verticalStep = Offset(0, 16);
 /// Default amount of space to scroll by in a horizontal [Scrollable].
 const horizontalStep = Offset(16, 0);
 
-/// [MaestroTester] wraps a [WidgetTester]. It provides
-/// - support for _Maestro custom selector_, a.k.a `$`
-/// - convenience method for pumping widgets, scrolling, etc.
+/// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
+/// custom finder_, a.k.a `$`.
 ///
 /// If you want to do something that [WidgetTester] supports, but
 /// [MaestroTester] does not, you can access the underlying [WidgetTester] via
