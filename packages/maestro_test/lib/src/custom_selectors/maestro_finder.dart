@@ -131,12 +131,21 @@ class MaestroFinder extends MatchFinder {
   }
 
   @override
-  String get description => finder.description;
+  bool matches(Element candidate) {
+    print('matches!');
+    return (finder.hitTestable() as MatchFinder).matches(candidate);
+  }
 
   @override
-  bool matches(Element candidate) {
-    return (finder as MatchFinder).matches(candidate);
+  bool precache() => finder.precache();
+
+  @override
+  Finder hitTestable({Alignment at = Alignment.center}) {
+    return finder.hitTestable(at: at);
   }
+
+  @override
+  String get description => finder.description;
 
   @override
   String toString() => finder.toString();
