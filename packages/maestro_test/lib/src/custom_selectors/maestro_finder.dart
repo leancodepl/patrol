@@ -132,8 +132,7 @@ class MaestroFinder extends MatchFinder {
 
   @override
   bool matches(Element candidate) {
-    print('matches!');
-    return (finder.hitTestable() as MatchFinder).matches(candidate);
+    return (finder as MatchFinder).matches(candidate);
   }
 
   @override
