@@ -14,7 +14,9 @@ class MaestroFinder extends MatchFinder {
   /// Usually, you won't use this constructor directly. Instead, you'll use the
   /// [MaestroTester] (which is provided by [MaestroTesterCallback] in
   /// [maestroTest]) and [MaestroFinder.$].
-  MaestroFinder({required this.finder, required this.tester});
+  ///
+  /// [defaultPostAction] is called after methods such as [tap] and [enterText].
+  MaestroFinder({required this.finder, required this.tester, this.defaultPostAction});
 
   /// Returns a [MaestroFinder] that looks for [matching] in descendants of
   /// [parentFinder]. If [parentFinder] is null, it looks for [matching]
@@ -48,23 +50,19 @@ class MaestroFinder extends MatchFinder {
   /// Widget tester that this [MaestroFinder] wraps.
   final WidgetTester tester;
 
+  final VoidCallback? defaultPostAction;
+
   /// Taps on the widget resolved by this finder.
-  ///
-  /// If more than one widget is found, the [index]-th widget is tapped, instead
-  /// of throwing an exception (like [WidgetTester.tap] does).
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, pass `false` to [andSettle].
   ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
-  Future<void> tap({bool andSettle = true, int index = 0}) async {
-    await tester.tap(finder.at(index));
+  Future<void> tap([VoidCallback? postAction]) async {
+    await tester.tap(finder);
 
-    if (andSettle) {
-      await tester.pumpAndSettle();
-    } else {
-      await tester.pump();
+    if (postAction != null) {
+      postAction();
+    } else if (defaultPostAction != null) {
+      defaultPostAction?.call();
     }
   }
 
@@ -159,7 +157,8 @@ class MaestroFinder extends MatchFinder {
 
   @override
   bool matches(Element candidate) {
-    return (finder as MatchFinder).matches(candidate);
+    final finderMatches = (finder as MatchFinder).matches(candidate);
+    final hitTestable = finder.hi
   }
 
   @override
