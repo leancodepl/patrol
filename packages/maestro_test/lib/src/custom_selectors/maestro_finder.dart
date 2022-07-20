@@ -16,7 +16,11 @@ class MaestroFinder extends MatchFinder {
   /// [maestroTest]) and [MaestroFinder.$].
   ///
   /// [defaultPostAction] is called after methods such as [tap] and [enterText].
-  MaestroFinder({required this.finder, required this.tester, this.defaultPostAction});
+  MaestroFinder({
+    required this.finder,
+    required this.tester,
+    this.defaultPostAction,
+  });
 
   /// Returns a [MaestroFinder] that looks for [matching] in descendants of
   /// [parentFinder]. If [parentFinder] is null, it looks for [matching]
@@ -157,8 +161,7 @@ class MaestroFinder extends MatchFinder {
 
   @override
   bool matches(Element candidate) {
-    final finderMatches = (finder as MatchFinder).matches(candidate);
-    final hitTestable = finder.hi
+    return (finder as MatchFinder).matches(candidate);
   }
 
   @override
