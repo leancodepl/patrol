@@ -9,12 +9,12 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(MyApp());
 
-      await maestro.openFullNotificationShade();
+      await maestro.openQuickSettings();
       await maestro.tap(Selector(text: 'Bluetooth'));
       await maestro.tap(Selector(text: 'Bluetooth'));
       await maestro.pressBack();
 
-      await maestro.openHalfNotificationShade();
+      await maestro.openNotifications();
 
       await maestro.enableWifi();
       await maestro.disableWifi();

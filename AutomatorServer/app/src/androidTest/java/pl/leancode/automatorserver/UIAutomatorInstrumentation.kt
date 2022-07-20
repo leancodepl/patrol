@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
@@ -227,8 +228,8 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun openHalfNotificationShade() {
-        Logger.d("openHalfNotificationShade()")
+    fun openNotifications() {
+        Logger.d("openNotifications()")
 
         val device = getUiDevice()
 
@@ -236,47 +237,39 @@ class UIAutomatorInstrumentation {
         delay()
     }
 
-    fun openFullNotificationShade() {
-        Logger.d("openFullNotificationShade()")
+    fun openQuickSettings() {
+        Logger.d("openNotifications()")
 
         val device = getUiDevice()
 
-        openHalfNotificationShade()
-
-        val startX = (device.displayWidth * 0.5).roundToInt()
-        val startY = (device.displayHeight * 0.1).roundToInt()
-        val endX = (device.displayWidth * 0.5).roundToInt()
-        val endY = (device.displayHeight * 0.9).roundToInt()
-
-        val successful = device.swipe(startX, startY, endX, endY, 3)
-        if (!successful) {
-            throw IllegalArgumentException("Swipe failed")
-        }
-
+        device.openQuickSettings()
         delay()
     }
 
     fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
-        openHalfNotificationShade()
+        openNotifications()
 
-        val widgets = getNativeWidgets(
-            query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content")
-        )
+        val device = getUiDevice()
+
+        val notificationContainers = device.findObjects(By.res("android:id/status_bar_latest_event_content"))
 
         val notifications = mutableListOf<Notification>()
-        for (widget in widgets) {
+        Logger.d("Found ${notificationContainers.size} notifications")
+        for (notificationContainer in notificationContainers) {
             try {
-                // Tested and working on API 30. May require changes for other OS versions.
-                val appName = widget.children?.get(0)?.children?.get(1)?.text
-                val title = widget.children?.get(1)?.children?.get(0)?.children?.get(0)?.text
-                val content = widget.children?.get(1)?.children?.get(1)?.text
-                notifications.add(Notification(appName = appName!!, title = title!!, content = content!!))
-            } catch (err: IndexOutOfBoundsException) {
-                Logger.e("Failed to get notification UI component", err)
-            } catch (err: NullPointerException) {
-                Logger.e("Null Pointer", err)
+                val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+                    ?: throw NullPointerException("Could not find app name text")
+                val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                    ?: throw NullPointerException("Could not find title text")
+                val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                    ?: throw NullPointerException("Could not find content text")
+
+                notifications.add(Notification(appName = appName, title = title, content = content))
+            } catch (e: NullPointerException) {
+                Logger.e("Failed to find UI component of a notification", e)
             }
         }
 
@@ -286,7 +279,7 @@ class UIAutomatorInstrumentation {
     fun tapOnNotification(index: Int) {
         Logger.d("tapOnNotification($index)")
 
-        openHalfNotificationShade()
+        openNotifications()
 
         val device = getUiDevice()
 
@@ -300,7 +293,7 @@ class UIAutomatorInstrumentation {
     fun tapOnNotification(selector: SelectorQuery) {
         Logger.d("tapOnNotification()")
 
-        openHalfNotificationShade()
+        openNotifications()
 
         val device = getUiDevice()
 

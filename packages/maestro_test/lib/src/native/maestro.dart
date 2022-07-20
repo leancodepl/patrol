@@ -205,16 +205,14 @@ class Maestro {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
-  Future<void> openHalfNotificationShade() =>
-      _wrapPost('openHalfNotificationShade');
+  Future<void> openNotifications() => _wrapPost('openNotifications');
 
-  /// Opens the notification shade (equivalent of by swiping down 2 times).
+  /// Opens the quick settings shade.
   ///
   /// See also:
-  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#openquicksettings>,
   ///    which is used on Android
-  Future<void> openFullNotificationShade() =>
-      _wrapPost('openFullNotificationShade');
+  Future<void> openQuickSettings() => _wrapPost('openQuickSettings');
 
   /// Returns the first, topmost visible notification.
   ///
