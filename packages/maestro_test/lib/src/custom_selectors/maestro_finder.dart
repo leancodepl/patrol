@@ -100,12 +100,10 @@ class MaestroFinder extends MatchFinder {
       ),
     );
   }
-  
-  Future<MaestroFinder> get visible async {
-    // TODO(bartekpacia): make this configurable
-    const timeout = Duration(seconds: 5);
 
-    final end = DateTime.now().add(timeout);
+  /// Waits for [MaestroTester.findTimeout].
+  Future<MaestroFinder> get visible async {
+    final end = DateTime.now().add(tester.findTimeout);
 
     while (hitTestable().evaluate().isEmpty) {
       if (DateTime.now().isAfter(end)) {

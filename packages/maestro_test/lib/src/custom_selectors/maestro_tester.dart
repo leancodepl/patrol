@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,7 +56,12 @@ const horizontalStep = Offset(16, 0);
 /// https://dart.dev/guides/language/language-tour#callable-classes
 class MaestroTester {
   /// Creates a new [MaestroTester] with the given WidgetTester [tester].
-  const MaestroTester(this.tester, {this.appName, required this.andSettle});
+  const MaestroTester(
+    this.tester, {
+    this.appName,
+    required this.andSettle,
+    this.findTimeout = const Duration(seconds: 5),
+  });
 
   /// Widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
@@ -69,6 +76,9 @@ class MaestroTester {
   ///
   /// If false, only [pump] is called in these situations.
   final bool andSettle;
+
+  /// Time after which [MaestroFinder.visible] will throw an [TimeoutException].
+  final Duration findTimeout;
 
   /// Makes it simple to log.
   void log(Object? object, {String? name}) {
