@@ -27,7 +27,7 @@ void main() {
       await $.tester.pump();
 
       final helloFinder = $('Hello');
-      print('waiting for visible');
+      print('waiting for text to appear');
       await helloFinder.visible;
       print('waiting for tap');
       await helloFinder.tap(andSettle: false);
@@ -60,11 +60,13 @@ extension MaestroX on MaestroFinder {
   Future<MaestroFinder> get visible async {
     while (hitTestable().evaluate().isEmpty) {
       print('no visible found');
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
       // await Future<void>.delayed(const Duration(milliseconds: 100));
     }
 
-    await tester.pump();
+    print('VISIBLE FOUND!');
+
+    await tester.pump(const Duration(milliseconds: 100));
 
     return this;
   }
