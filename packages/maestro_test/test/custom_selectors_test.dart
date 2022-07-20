@@ -212,7 +212,9 @@ void main() {
       await pumpWithOverlays($);
 
       expect(find.text('hidden boi'), findsOneWidget);
-      expect($('hidden boi').hitTestable(), findsNothing);
+
+      // what if we want to scroll to it?
+      await expectLater($('hidden boi').hitTestable(), findsNothing);
     });
   });
 }

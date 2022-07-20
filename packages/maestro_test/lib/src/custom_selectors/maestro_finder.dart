@@ -1,5 +1,7 @@
 library custom_selectors;
 
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
@@ -99,6 +101,25 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
+  Future<MaestroFinder> get visible async {
+    // TODO(bartekpacia): make this configurable
+    const timeout = Duration(seconds: 5);
+
+    final end = DateTime.now().add(timeout);
+
+    while (hitTestable().evaluate().isEmpty) {
+      if (DateTime.now().isAfter(end)) {
+        throw TimeoutException('Timed out waiting for $finder');
+      }
+
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    await tester.pump(const Duration(milliseconds: 100));
+
+    return this;
+  }
+
   @override
   Iterable<Element> evaluate() {
     return finder.evaluate();
@@ -139,8 +160,8 @@ class MaestroFinder extends MatchFinder {
   bool precache() => finder.precache();
 
   @override
-  Finder hitTestable({Alignment at = Alignment.center}) {
-    return finder.hitTestable(at: at);
+  MaestroFinder hitTestable({Alignment at = Alignment.center}) {
+    return MaestroFinder(finder: finder.hitTestable(at: at), tester: tester);
   }
 
   @override
