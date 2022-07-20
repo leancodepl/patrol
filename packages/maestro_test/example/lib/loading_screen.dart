@@ -14,7 +14,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void initState() {
     super.initState();
 
-    Future<void>.delayed(const Duration(seconds: 1)).then(
+    Future<void>.delayed(const Duration(seconds: 3)).then(
       (_) => setState(() {
         _visible = true;
       }),
@@ -28,8 +28,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
         title: const Text('LoadingScreen'),
       ),
       body: Center(
-        child:
-            _visible ? const Text('Hello') : const CircularProgressIndicator(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            if (_visible)
+              const Text('Hello')
+            else
+              const CircularProgressIndicator(),
+          ],
+        ),
       ),
     );
   }
