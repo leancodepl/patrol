@@ -44,6 +44,7 @@ void maestroTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   Duration sleep = Duration.zero,
+  Duration findTimeout = const Duration(seconds: 5),
   String? appName,
   bool andSettle = true,
   dynamic tags,
@@ -55,6 +56,7 @@ void maestroTest(
         widgetTester,
         appName: appName,
         andSettle: andSettle,
+        findTimeout: findTimeout,
       );
       await callback(maestroTester);
       if (sleep != Duration.zero) {

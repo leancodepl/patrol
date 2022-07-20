@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:example/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,5 +15,21 @@ void main() {
       await helloText.tap(andSettle: false);
       expect(helloText, findsOneWidget);
     });
+
+    maestroTest(
+      'throws TimeoutException when takes more than findTimeout',
+      ($) async {
+        await $.tester.runAsync(() async {
+          await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
+
+          final helloText = $('Hello');
+          await expectLater(
+            () => helloText.visible,
+            throwsA(isA<TimeoutException>()),
+          );
+        });
+      },
+      findTimeout: const Duration(milliseconds: 100),
+    );
   });
 }

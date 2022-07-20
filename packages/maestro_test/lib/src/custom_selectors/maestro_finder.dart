@@ -101,7 +101,10 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
-  /// Waits for [MaestroTester.findTimeout].
+  /// Waits until this finder finds at least one visible widget.
+  ///
+  /// It throws a [TimeoutException] if more than [MaestroTester.findTimeout]
+  /// passed and no widgets were found.
   Future<MaestroFinder> get visible async {
     final end = DateTime.now().add(tester.findTimeout);
 
@@ -110,10 +113,10 @@ class MaestroFinder extends MatchFinder {
         throw TimeoutException('Timed out waiting for $finder');
       }
 
-      await tester.pump(const Duration(milliseconds: 100));
+      await tester.tester.pump(const Duration(milliseconds: 100));
     }
 
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tester.pump(const Duration(milliseconds: 100));
 
     return this;
   }

@@ -15,10 +15,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.initState();
 
     Future<void>.delayed(const Duration(seconds: 3)).then(
-      (_) => setState(() {
-        print('set state!');
-        _visible = true;
-      }),
+      (_) {
+        setState(() {
+          _visible = true;
+        });
+      },
     );
   }
 

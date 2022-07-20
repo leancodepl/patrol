@@ -186,7 +186,7 @@ class MaestroTester {
   /// [WidgetTester.pumpAndSettle].
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, pass `false` to [andSettle].
+  /// you want to disable this behavior, set [andSettle] to `false`.
   ///
   /// See also:
   ///  - [WidgetController.dragFrom].

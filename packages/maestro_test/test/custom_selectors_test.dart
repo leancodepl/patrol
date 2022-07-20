@@ -274,11 +274,8 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
       home: Scaffold(
         body: Stack(
           children: [
-            Center(
-              child: TextButton(
-                child: const Text('hidden boi'),
-                onPressed: () => print('tap tap'),
-              ),
+            const Center(
+              child: Text('hidden boi'),
             ),
             Center(
               child: Container(
