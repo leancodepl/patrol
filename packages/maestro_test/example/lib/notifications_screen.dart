@@ -27,11 +27,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  void _showNotification({required int id}) {
+  void _showNotification({
+    required String title,
+    required String body,
+    required int id,
+  }) {
     _notificationsPlugin.show(
       id,
-      'Maestro example',
-      'Hello there! This notification has ID=$id',
+      title,
+      '$body. BTW, this notification has ID $id',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'main',
@@ -51,12 +55,20 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           TextButton(
-            onPressed: () => _showNotification(id: 1),
-            child: const Text('Show notification with ID=1'),
+            onPressed: () => _showNotification(
+              id: 1,
+              title: 'Someone liked your recent post',
+              body: 'Tap to see who!',
+            ),
+            child: const Text('Show "someone liked" notification'),
           ),
           TextButton(
-            onPressed: () => _showNotification(id: 2),
-            child: const Text('Show notification with ID=2'),
+            onPressed: () => _showNotification(
+              id: 2,
+              title: 'Special offer',
+              body: 'We have something special for you!',
+            ),
+            child: const Text('Show special offer notification'),
           ),
         ],
       ),
