@@ -116,8 +116,6 @@ class MaestroFinder extends MatchFinder {
       await tester.tester.pump(const Duration(milliseconds: 100));
     }
 
-    await tester.tester.pump(const Duration(milliseconds: 100));
-
     return this;
   }
 
