@@ -7,11 +7,40 @@ import 'package:maestro_test/src/custom_selectors/common.dart';
 import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
 import 'package:meta/meta.dart';
 
-/// Default amount of space to scroll by in a vertical [Scrollable]
-const verticalStep = Offset(0, 16);
+/// Specifies direction in the cartesian plane.
+enum Direction {
+  /// Left.
+  left,
 
-/// Default amount of space to scroll by in a horizontal [Scrollable].
-const horizontalStep = Offset(16, 0);
+  /// Up.
+  up,
+
+  /// Right.
+  right,
+
+  /// Down.
+  down,
+}
+
+/// Adds functionality to [Direction].
+extension DirectionX on Direction {
+  /// Resolves the direction to a [Offset].
+  Offset resolveOffset({
+    required Offset horizontalOffset,
+    required Offset verticalOffset,
+  }) {
+    switch (this) {
+      case Direction.left:
+        return -horizontalOffset;
+      case Direction.up:
+        return -verticalOffset;
+      case Direction.right:
+        return horizontalOffset;
+      case Direction.down:
+        return verticalOffset;
+    }
+  }
+}
 
 /// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
 /// custom finder_, a.k.a `$`.
@@ -211,22 +240,34 @@ class MaestroTester {
     await performPump(andSettle);
   }
 
-  /// Convenience method combining `WidgetTester.dragUntilVisible` and
-  /// [WidgetTester.pumpAndSettle].
+  /// Convenient wrapper over `WidgetTester.dragUntilVisible`.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, pass `false` to [andSettle].
+  /// you want to disable this behavior, set [andSettle] to `false`.
+  ///
+  /// [verticalStep] is the amount of space to scroll by in a vertical
+  /// [Scrollable].
+  ///
+  /// [horizontalStep] is the amount of space to scroll by in a horizontal
+  /// [Scrollable].
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
   Future<void> dragUntilVisible(
     Finder finder,
     Finder view,
-    Offset moveStep, {
+    Direction direction, {
+    Offset verticalStep = const Offset(0, 16),
+    Offset horizontalStep = const Offset(16, 0),
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) async {
+    final moveStep = direction.resolveOffset(
+      horizontalOffset: verticalStep,
+      verticalOffset: horizontalStep,
+    );
+
     await tester.dragUntilVisible(
       finder.first,
       view,
