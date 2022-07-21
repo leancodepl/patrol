@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
 import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
+import 'package:meta/meta.dart';
 
 /// Default amount of space to scroll by in a vertical [Scrollable]
 const verticalStep = Offset(0, 16);
@@ -54,7 +55,7 @@ const horizontalStep = Offset(16, 0);
 /// https://dart.dev/guides/language/language-tour#callable-classes
 class MaestroTester {
   /// Creates a new [MaestroTester] with the given WidgetTester [tester].
-  const MaestroTester(this.tester, {this.appName});
+  const MaestroTester(this.tester, {this.appName, required this.andSettle});
 
   /// Widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
@@ -63,6 +64,12 @@ class MaestroTester {
   ///
   /// Useful for logging.
   final String? appName;
+
+  /// If true, [pumpAndSettle] is called after every action such as tapping,
+  /// entering text, dragging, etc.
+  ///
+  /// If false, only [pump] is called in these situations.
+  final bool andSettle;
 
   /// Makes it simple to log.
   void log(Object? object, {String? name}) {
@@ -86,7 +93,7 @@ class MaestroTester {
   MaestroFinder call(dynamic matching) {
     return MaestroFinder.resolve(
       matching: matching,
-      tester: tester,
+      tester: this,
       parentFinder: null,
     );
   }
@@ -98,6 +105,14 @@ class MaestroTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
   ]) async {
     await tester.pumpWidget(widget, duration, phase);
+  }
+
+  /// See [WidgetTester.pump].
+  Future<void> pump([
+    Duration? duration,
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+  ]) async {
+    await tester.pump(duration, phase);
   }
 
   /// See [WidgetTester.pumpAndSettle].
@@ -118,13 +133,10 @@ class MaestroTester {
     Widget widget, {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-    bool andSettle = true,
+    bool? andSettle,
   }) async {
     await tester.pumpWidget(widget, duration, phase);
-
-    if (andSettle) {
-      await tester.pumpAndSettle();
-    }
+    await performPump(andSettle);
   }
 
   /// Convenience method combining `WidgetTester.drag` and
@@ -147,11 +159,10 @@ class MaestroTester {
     double touchSlopY = kDragSlopDefault,
     bool warnIfMissed = true,
     PointerDeviceKind kind = PointerDeviceKind.touch,
-    int index = 0,
-    bool andSettle = true,
+    bool? andSettle,
   }) async {
     await tester.drag(
-      finder.at(index),
+      finder.first,
       offset,
       pointer: pointer,
       buttons: buttons,
@@ -159,10 +170,7 @@ class MaestroTester {
       touchSlopY: touchSlopY,
       kind: kind,
     );
-
-    if (andSettle) {
-      await tester.pumpAndSettle();
-    }
+    await performPump(andSettle);
   }
 
   /// Convenience method combining `WidgetTester.dragFrom` and
@@ -181,8 +189,7 @@ class MaestroTester {
     double touchSlopX = kDragSlopDefault,
     double touchSlopY = kDragSlopDefault,
     PointerDeviceKind kind = PointerDeviceKind.touch,
-    bool andSettle = true,
-    int index = 0,
+    bool? andSettle,
   }) async {
     await tester.dragFrom(
       startLocation,
@@ -194,16 +201,11 @@ class MaestroTester {
       kind: kind,
     );
 
-    if (andSettle) {
-      await tester.pumpAndSettle();
-    }
+    await performPump(andSettle);
   }
 
   /// Convenience method combining `WidgetTester.dragUntilVisible` and
   /// [WidgetTester.pumpAndSettle].
-  ///
-  /// Specify [index] to select on which [finder] to tap. It defaults to the
-  /// first finder.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
   /// you want to disable this behavior, pass `false` to [andSettle].
@@ -216,19 +218,27 @@ class MaestroTester {
     Offset moveStep, {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
-    bool andSettle = true,
-    int index = 0,
+    bool? andSettle,
   }) async {
     await tester.dragUntilVisible(
-      finder.at(index),
+      finder.first,
       view,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
     );
 
-    if (andSettle) {
+    await performPump(andSettle);
+  }
+
+  @internal
+  // ignore: avoid_positional_boolean_parameters, public_member_api_docs
+  Future<void> performPump(bool? andSettle) async {
+    final settle = andSettle ?? this.andSettle;
+    if (settle) {
       await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
     }
   }
 }
