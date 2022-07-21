@@ -1,3 +1,23 @@
+## 0.4.0
+
+`MaestroFinder`:
+
+- Now `tap()` and `enterText()` wait for the widget to become visible. The
+  timeout can be configured by setting `findTimeout` in `maestroTest()`
+- Remove `index` parameter from `tap()` and `enterText()`. The new way to select
+  the widget to be tapped is to use `at()` before tapping. Same goes for
+  entering text.
+- Add `bool andSettle` parameter to `maestroTest` function. This lets you
+  globally configure whether to call `pumpAndSettle` after actions such as
+  `tap()` or `enterText()`
+- Refactor `MaestroTester.dragUntilVisible` to be simpler to use
+- Rename `withDescendant()` to `containing()`
+
+Native:
+
+- Make `Maestro.openNotifications()` and `Maestro.openQuickSettings()` more
+  robust
+
 ## 0.3.3
 
 - Make it possible to pass Flutter's `Finder` to `$`
