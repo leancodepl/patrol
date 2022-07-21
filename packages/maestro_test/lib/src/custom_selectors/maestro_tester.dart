@@ -7,11 +7,39 @@ import 'package:maestro_test/src/custom_selectors/common.dart';
 import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
 import 'package:meta/meta.dart';
 
-/// Default amount of space to scroll by in a vertical [Scrollable]
-const verticalStep = Offset(0, 16);
+/// Specifies direction in the cartesian plane.
+enum Direction {
+  /// Left.
+  left,
 
-/// Default amount of space to scroll by in a horizontal [Scrollable].
-const horizontalStep = Offset(16, 0);
+  /// Up.
+  up,
+
+  /// Right.
+  right,
+
+  /// Down.
+  down,
+}
+
+/// Adds functionality to [Direction].
+extension DirectionX on Direction {
+  /// Resolves the direction to a [Offset].
+  Offset resolveOffset(double step) {
+    assert(step > 0, 'step must be positive number');
+
+    switch (this) {
+      case Direction.left:
+        return Offset(step, 0);
+      case Direction.up:
+        return Offset(0, -step);
+      case Direction.right:
+        return Offset(step, 0);
+      case Direction.down:
+        return Offset(0, step);
+    }
+  }
+}
 
 /// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
 /// custom finder_, a.k.a `$`.
@@ -211,22 +239,28 @@ class MaestroTester {
     await performPump(andSettle);
   }
 
-  /// Convenience method combining `WidgetTester.dragUntilVisible` and
-  /// [WidgetTester.pumpAndSettle].
+  /// Convenient wrapper over `WidgetTester.dragUntilVisible`.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, pass `false` to [andSettle].
+  /// you want to disable this behavior, set [andSettle] to `false`.
+  ///
+  /// [step] is the amount of space to scroll by. It must be positive number.
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
   Future<void> dragUntilVisible(
     Finder finder,
     Finder view,
-    Offset moveStep, {
+    Direction direction, {
+    double step = 16,
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) async {
+    assert(step > 0, 'step must be positive number');
+
+    final moveStep = direction.resolveOffset(step);
+
     await tester.dragUntilVisible(
       finder.first,
       view,
