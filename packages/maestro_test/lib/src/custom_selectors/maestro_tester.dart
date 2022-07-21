@@ -149,7 +149,8 @@ class MaestroTester {
   }
 
   /// Convenience method combining `WidgetTester.drag` and
-  /// [WidgetTester.pumpAndSettle]. It
+  /// [WidgetTester.pumpAndSettle]. It attempts to drag the first widget
+  /// resolved by [finder] by the given [offset].
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after drag.
   /// If you want to disable this behavior, pass `false` to [andSettle].
