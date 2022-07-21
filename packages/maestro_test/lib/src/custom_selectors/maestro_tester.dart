@@ -25,19 +25,18 @@ enum Direction {
 /// Adds functionality to [Direction].
 extension DirectionX on Direction {
   /// Resolves the direction to a [Offset].
-  Offset resolveOffset({
-    required Offset horizontalOffset,
-    required Offset verticalOffset,
-  }) {
+  Offset resolveOffset(double step) {
+    assert(step > 0, 'step must be positive number');
+
     switch (this) {
       case Direction.left:
-        return -horizontalOffset;
+        return Offset(step, 0);
       case Direction.up:
-        return -verticalOffset;
+        return Offset(0, -step);
       case Direction.right:
-        return horizontalOffset;
+        return Offset(step, 0);
       case Direction.down:
-        return verticalOffset;
+        return Offset(0, step);
     }
   }
 }
@@ -245,11 +244,7 @@ class MaestroTester {
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
   /// you want to disable this behavior, set [andSettle] to `false`.
   ///
-  /// [verticalStep] is the amount of space to scroll by in a vertical
-  /// [Scrollable].
-  ///
-  /// [horizontalStep] is the amount of space to scroll by in a horizontal
-  /// [Scrollable].
+  /// [step] is the amount of space to scroll by. It must be positive number.
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible].
@@ -257,16 +252,14 @@ class MaestroTester {
     Finder finder,
     Finder view,
     Direction direction, {
-    Offset verticalStep = const Offset(0, 16),
-    Offset horizontalStep = const Offset(16, 0),
+    double step = 16,
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) async {
-    final moveStep = direction.resolveOffset(
-      horizontalOffset: verticalStep,
-      verticalOffset: horizontalStep,
-    );
+    assert(step > 0, 'step must be positive number');
+
+    final moveStep = direction.resolveOffset(step);
 
     await tester.dragUntilVisible(
       finder.first,
