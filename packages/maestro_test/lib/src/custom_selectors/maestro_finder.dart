@@ -49,25 +49,27 @@ class MaestroFinder extends MatchFinder {
   /// [MaestroTester] that this [MaestroFinder] wraps.
   final MaestroTester tester;
 
-  /// Taps on the first widget resolved by this finder.
+  /// Taps on the first visible (i.e hit testable) widget resolved by this
+  /// finder.
   ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
   Future<void> tap({bool? andSettle}) async {
-    await tester.tester.tap(finder.first);
+    await tester.tester.tap(await first.visible);
     await tester.performPump(andSettle);
   }
 
-  /// Enters text into the first widget resolved by this finder.
+  /// Enters text into the first visible (i.e hit testable) widget resolved by
+  /// this finder.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// entering text. If you want to disable this behavior, pass `false` to
-  /// [andSettle].
+  /// entering text. If you want to disable this behavior, set [andSettle] to
+  /// `false`.
   ///
   /// See also:
   ///  - [WidgetTester.enterText]
   Future<void> enterText(String text, {bool? andSettle}) async {
-    await tester.tester.enterText(finder.first, text);
+    await tester.tester.enterText(await first.visible, text);
     await tester.performPump(andSettle);
   }
 
@@ -102,8 +104,8 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one visible widget.
   ///
-  /// Throws a [MaestroFinderFoundNothingException] if more than [MaestroTester.findTimeout]
-  /// passed and no widgets were found.
+  /// Throws a [MaestroFinderFoundNothingException] if more than
+  /// [MaestroTester.findTimeout] passed and no widgets were found.
   Future<MaestroFinder> get visible async {
     final end = DateTime.now().add(tester.findTimeout);
 
