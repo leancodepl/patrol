@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
 import 'package:maestro_test/src/custom_selectors/exceptions.dart';
+import 'package:meta/meta.dart';
 
 import 'maestro_tester.dart';
 
@@ -20,6 +21,7 @@ class MaestroFinder extends MatchFinder {
   /// Returns a [MaestroFinder] that looks for [matching] in descendants of
   /// [parentFinder]. If [parentFinder] is null, it looks for [matching]
   /// anywhere in the widget tree.
+  @internal
   factory MaestroFinder.resolve({
     required dynamic matching,
     required Finder? parentFinder,
