@@ -55,7 +55,7 @@ jobs:
         run: flutter format --set-exit-if-changed .
 
       - name: flutter analyze
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze
 
       - name: flutter test
         run: flutter test
