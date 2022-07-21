@@ -54,7 +54,7 @@ dev_dependencies:
 
 ### Usage
 
-See README of [package:maestro_test][]
+See [package:maestro_test][maestro_test]'s README.
 
 ## Release process
 
@@ -66,6 +66,7 @@ git tag -a "maestro_cli-v0.3.4" -m "Release notes go here"
 
 2. Push it! GitHub Actions will take care of the rest.
 
+[maestro_test]: https://github.com/leancodepl/maestro/tree/master/packages/maestro_test
 [pub_badge_test]: https://img.shields.io/pub/v/maestro_test?label=maestro_test
 [pub_link_test]: https://pub.dartlang.org/packages/maestro_test
 [pub_badge_cli]: https://img.shields.io/pub/v/maestro_cli?label=maestro_cli

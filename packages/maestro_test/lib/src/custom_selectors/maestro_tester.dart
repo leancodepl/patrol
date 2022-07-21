@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,9 +13,8 @@ const verticalStep = Offset(0, 16);
 /// Default amount of space to scroll by in a horizontal [Scrollable].
 const horizontalStep = Offset(16, 0);
 
-/// [MaestroTester] wraps a [WidgetTester]. It provides
-/// - support for _Maestro custom selector_, a.k.a `$`
-/// - convenience method for pumping widgets, scrolling, etc.
+/// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
+/// custom finder_, a.k.a `$`.
 ///
 /// If you want to do something that [WidgetTester] supports, but
 /// [MaestroTester] does not, you can access the underlying [WidgetTester] via
@@ -55,7 +56,12 @@ const horizontalStep = Offset(16, 0);
 /// https://dart.dev/guides/language/language-tour#callable-classes
 class MaestroTester {
   /// Creates a new [MaestroTester] with the given WidgetTester [tester].
-  const MaestroTester(this.tester, {this.appName, required this.andSettle});
+  const MaestroTester(
+    this.tester, {
+    this.appName,
+    required this.andSettle,
+    this.findTimeout = const Duration(seconds: 5),
+  });
 
   /// Widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
@@ -70,6 +76,9 @@ class MaestroTester {
   ///
   /// If false, only [pump] is called in these situations.
   final bool andSettle;
+
+  /// Time after which [MaestroFinder.visible] will throw an [TimeoutException].
+  final Duration findTimeout;
 
   /// Makes it simple to log.
   void log(Object? object, {String? name}) {
@@ -177,7 +186,7 @@ class MaestroTester {
   /// [WidgetTester.pumpAndSettle].
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, pass `false` to [andSettle].
+  /// you want to disable this behavior, set [andSettle] to `false`.
   ///
   /// See also:
   ///  - [WidgetController.dragFrom].

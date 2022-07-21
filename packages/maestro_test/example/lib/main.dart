@@ -1,4 +1,6 @@
+import 'package:example/loading_screen.dart';
 import 'package:example/notifications_screen.dart';
+import 'package:example/overlay_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -128,11 +130,27 @@ class _MyHomePageState extends State<MyHomePage> {
           TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
+                builder: (_) => const LoadingScreen(),
+              ),
+            ),
+            child: const Text('Open loading screen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
                 builder: (_) => const NotificationsScreen(),
               ),
             ),
             child: const Text('Open notifications screen'),
-          )
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const OverlayScreen(),
+              ),
+            ),
+            child: const Text('Open overlay screen'),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(

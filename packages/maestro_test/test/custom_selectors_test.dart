@@ -207,6 +207,21 @@ void main() {
         findsNWidgets(2),
       );
     });
+
+    maestroTest(
+      'finds only hit testable',
+      ($) async {
+        await pumpWithOverlays($);
+
+        expect(find.text('hidden boi'), findsOneWidget);
+
+        await expectLater(
+          () => $('hidden boi').visible,
+          throwsA(isA<MaestroFinderFoundNothingException>()),
+        );
+      },
+      findTimeout: const Duration(milliseconds: 300),
+    );
   });
 }
 
@@ -253,6 +268,30 @@ Future<void> bigPump(MaestroTester $) async {
           ),
           const SizedBox(child: Icon(Icons.code)),
         ],
+      ),
+    ),
+  );
+}
+
+Future<void> pumpWithOverlays(MaestroTester $) async {
+  await $.pumpWidgetAndSettle(
+    MaterialApp(
+      key: const Key('app'),
+      home: Scaffold(
+        body: Stack(
+          children: [
+            const Center(
+              child: Text('hidden boi'),
+            ),
+            Center(
+              child: Container(
+                width: 150,
+                height: 150,
+                color: Colors.blue,
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
