@@ -2,11 +2,11 @@
 
 `MaestroFinder`:
 
-- Now `tap()` and `enterText` wait for the widget to become visible. The timeout
-  can be configured by setting `findTimeout` in `maestroTest()`
+- Now `tap()` and `enterText()` wait for the widget to become visible. The
+  timeout can be configured by setting `findTimeout` in `maestroTest()`
 - Remove `index` parameter from `tap()` and `enterText()`. The new way to select
   the widget to be tapped is to use `at()` before tapping. Same goes for
-  entering text
+  entering text.
 - Add `bool andSettle` parameter to `maestroTest` function. This lets you
   globally configure whether to call `pumpAndSettle` after actions such as
   `tap()` or `enterText()`
