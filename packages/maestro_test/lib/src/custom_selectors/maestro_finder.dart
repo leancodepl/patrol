@@ -1,10 +1,9 @@
 library custom_selectors;
 
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
+import 'package:maestro_test/src/custom_selectors/exceptions.dart';
 
 import 'maestro_tester.dart';
 
@@ -103,14 +102,17 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one visible widget.
   ///
-  /// It throws a [TimeoutException] if more than [MaestroTester.findTimeout]
+  /// Throws a [MaestroFinderFoundNothingException] if more than [MaestroTester.findTimeout]
   /// passed and no widgets were found.
   Future<MaestroFinder> get visible async {
     final end = DateTime.now().add(tester.findTimeout);
 
     while (hitTestable().evaluate().isEmpty) {
       if (DateTime.now().isAfter(end)) {
-        throw TimeoutException('Timed out waiting for $finder');
+        throw MaestroFinderFoundNothingException(
+          finder: this,
+          message: 'Timed out waiting for $finder',
+        );
       }
 
       await tester.tester.pump(const Duration(milliseconds: 100));

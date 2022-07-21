@@ -208,14 +208,20 @@ void main() {
       );
     });
 
-    maestroTest('finds only hit testable', ($) async {
-      await pumpWithOverlays($);
+    maestroTest(
+      'finds only hit testable',
+      ($) async {
+        await pumpWithOverlays($);
 
-      expect(find.text('hidden boi'), findsOneWidget);
+        expect(find.text('hidden boi'), findsOneWidget);
 
-      // what if we want to scroll to it?
-      await expectLater($('hidden boi').hitTestable(), findsNothing);
-    });
+        await expectLater(
+          () => $('hidden boi').visible,
+          throwsA(isA<MaestroFinderFoundNothingException>()),
+        );
+      },
+      findTimeout: const Duration(milliseconds: 300),
+    );
   });
 }
 

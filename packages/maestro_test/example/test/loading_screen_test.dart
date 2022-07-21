@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:example/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,7 +23,7 @@ void main() {
           final helloText = $('Hello');
           await expectLater(
             () => helloText.visible,
-            throwsA(isA<TimeoutException>()),
+            throwsA(isA<MaestroFinderFoundNothingException>()),
           );
         });
       },
