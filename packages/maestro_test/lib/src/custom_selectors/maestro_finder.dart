@@ -3,6 +3,7 @@ library custom_selectors;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_selectors/common.dart';
+import 'package:maestro_test/src/custom_selectors/exceptions.dart';
 
 import 'maestro_tester.dart';
 
@@ -48,25 +49,27 @@ class MaestroFinder extends MatchFinder {
   /// [MaestroTester] that this [MaestroFinder] wraps.
   final MaestroTester tester;
 
-  /// Taps on the first widget resolved by this finder.
+  /// Taps on the first visible (i.e hit testable) widget resolved by this
+  /// finder.
   ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
   Future<void> tap({bool? andSettle}) async {
-    await tester.tester.tap(finder.first);
+    await tester.tester.tap(await first.visible);
     await tester.performPump(andSettle);
   }
 
-  /// Enters text into the first widget resolved by this finder.
+  /// Enters text into the first visible (i.e hit testable) widget resolved by
+  /// this finder.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// entering text. If you want to disable this behavior, pass `false` to
-  /// [andSettle].
+  /// entering text. If you want to disable this behavior, set [andSettle] to
+  /// `false`.
   ///
   /// See also:
   ///  - [WidgetTester.enterText]
   Future<void> enterText(String text, {bool? andSettle}) async {
-    await tester.tester.enterText(finder.first, text);
+    await tester.tester.enterText(await first.visible, text);
     await tester.performPump(andSettle);
   }
 
@@ -97,6 +100,27 @@ class MaestroFinder extends MatchFinder {
         matching: finder,
       ),
     );
+  }
+
+  /// Waits until this finder finds at least one visible widget.
+  ///
+  /// Throws a [MaestroFinderFoundNothingException] if more than
+  /// [MaestroTester.findTimeout] passed and no widgets were found.
+  Future<MaestroFinder> get visible async {
+    final end = DateTime.now().add(tester.findTimeout);
+
+    while (hitTestable().evaluate().isEmpty) {
+      if (DateTime.now().isAfter(end)) {
+        throw MaestroFinderFoundNothingException(
+          finder: this,
+          message: 'Timed out waiting for $finder',
+        );
+      }
+
+      await tester.tester.pump(const Duration(milliseconds: 100));
+    }
+
+    return this;
   }
 
   @override
@@ -131,12 +155,20 @@ class MaestroFinder extends MatchFinder {
   }
 
   @override
-  String get description => finder.description;
-
-  @override
   bool matches(Element candidate) {
     return (finder as MatchFinder).matches(candidate);
   }
+
+  @override
+  bool precache() => finder.precache();
+
+  @override
+  MaestroFinder hitTestable({Alignment at = Alignment.center}) {
+    return MaestroFinder(finder: finder.hitTestable(at: at), tester: tester);
+  }
+
+  @override
+  String get description => finder.description;
 
   @override
   String toString() => finder.toString();
