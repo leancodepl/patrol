@@ -15,6 +15,10 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 /// If you want to not close the app immediately after the test completes, use
 /// [sleep].
 ///
+/// To call [WidgetTester.pump] instead of [WidgetTester.pumpAndSettle] after
+/// actions such as [MaestroFinder.tap] and [MaestroFinder.enterText], set
+/// [andSettle] to `false`.
+///
 /// ### Custom selectors
 ///
 /// Custom selectors greatly simplify writing widget tests.
@@ -41,12 +45,17 @@ void maestroTest(
   TestVariant<Object?> variant = const DefaultTestVariant(),
   Duration sleep = Duration.zero,
   String? appName,
+  bool andSettle = true,
   dynamic tags,
 }) {
   return testWidgets(
     description,
     (widgetTester) async {
-      final maestroTester = MaestroTester(widgetTester, appName: appName);
+      final maestroTester = MaestroTester(
+        widgetTester,
+        appName: appName,
+        andSettle: andSettle,
+      );
       await callback(maestroTester);
       if (sleep != Duration.zero) {
         maestroTester.log(
