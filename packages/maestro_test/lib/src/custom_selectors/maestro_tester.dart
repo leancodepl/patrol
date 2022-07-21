@@ -149,10 +149,7 @@ class MaestroTester {
   }
 
   /// Convenience method combining `WidgetTester.drag` and
-  /// [WidgetTester.pumpAndSettle].
-  ///
-  /// Specify [index] to select on which [finder] to tap. It defaults to the
-  /// first finder.
+  /// [WidgetTester.pumpAndSettle]. It
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after drag.
   /// If you want to disable this behavior, pass `false` to [andSettle].
