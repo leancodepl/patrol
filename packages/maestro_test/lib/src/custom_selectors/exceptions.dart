@@ -20,4 +20,7 @@ class MaestroFinderFoundNothingException extends MaestroFinderException {
     required MaestroFinder finder,
     required String message,
   }) : super(finder, message);
+
+  @override
+  String toString() => 'Could not find $finder';
 }
