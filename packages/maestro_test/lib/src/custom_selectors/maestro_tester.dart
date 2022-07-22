@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -83,7 +81,7 @@ extension DirectionX on Direction {
 /// [callable-class]:
 /// https://dart.dev/guides/language/language-tour#callable-classes
 class MaestroTester {
-  /// Creates a new [MaestroTester] with the given WidgetTester [tester].
+  /// Creates a new [MaestroTester] which wraps [tester].
   const MaestroTester(
     this.tester, {
     this.appName,
@@ -91,12 +89,12 @@ class MaestroTester {
     this.findTimeout = const Duration(seconds: 5),
   });
 
-  /// Widget tester that this [MaestroTester] wraps.
+  /// Flutter's widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
 
-  /// App name of the application under test.
+  /// Name of the application under test.
   ///
-  /// Useful for logging.
+  /// If non-null, [MaestroTester.log] will prefix logs with it.
   final String? appName;
 
   /// If true, [pumpAndSettle] is called after every action such as tapping,
@@ -105,7 +103,11 @@ class MaestroTester {
   /// If false, only [pump] is called in these situations.
   final bool andSettle;
 
-  /// Time after which [MaestroFinder.visible] will throw an [TimeoutException].
+  /// Time after which [MaestroFinder.visible] fails if it doesn't finds a
+  /// widget.
+  ///
+  /// [MaestroFinder.visible] is used internally by [MaestroFinder.tap] and
+  /// [MaestroFinder.enterText].
   final Duration findTimeout;
 
   /// Makes it simple to log.
