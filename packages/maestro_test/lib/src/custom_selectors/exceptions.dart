@@ -2,11 +2,8 @@ import 'package:maestro_test/maestro_test.dart';
 
 /// Indicates that something went wrong with [MaestroFinder].
 class MaestroFinderException implements Exception {
-  /// Creates a new [MaestroFinderException] with [message].
-  const MaestroFinderException(this.finder, this.message);
-
-  /// Describes what went wrong.
-  final String message;
+  /// Creates a new [MaestroFinderException].
+  const MaestroFinderException(this.finder);
 
   /// Finder which caused the exception.
   final MaestroFinder finder;
@@ -15,9 +12,12 @@ class MaestroFinderException implements Exception {
 /// Indicates that [MaestroFinder] did not find anything in the allowed time and
 /// timed out.
 class MaestroFinderFoundNothingException extends MaestroFinderException {
-  /// Creates a new [MaestroFinderFoundNothingException] with [message].
+  /// Creates a new [MaestroFinderFoundNothingException] with [finder] which
+  /// could not find any widget.
   const MaestroFinderFoundNothingException({
     required MaestroFinder finder,
-    required String message,
-  }) : super(finder, message);
+  }) : super(finder);
+
+  @override
+  String toString() => 'Could not find $finder';
 }

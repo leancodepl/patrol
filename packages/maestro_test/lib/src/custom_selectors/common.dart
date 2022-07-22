@@ -122,8 +122,8 @@ void maestroTest(
 ///   ```dart
 ///   final finder = createFinder(Icons.add);
 ///   ```
-/// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder], for
-///   example: passed as [matching] resolves to.
+/// - [MaestroFinder], which returns a [Finder] that the [MaestroFinder]
+///   resolves to, for example:
 ///   ```dart
 ///   final finder = createFinder($(Text('Sign in with Google')));
 ///   ```
