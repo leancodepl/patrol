@@ -124,10 +124,7 @@ class MaestroFinder extends MatchFinder {
 
     while (hitTestable().evaluate().isEmpty) {
       if (DateTime.now().isAfter(end)) {
-        throw MaestroFinderFoundNothingException(
-          finder: this,
-          message: 'Timed out waiting for $finder',
-        );
+        throw MaestroFinderFoundNothingException(finder: this);
       }
 
       await tester.tester.pump(const Duration(milliseconds: 100));
