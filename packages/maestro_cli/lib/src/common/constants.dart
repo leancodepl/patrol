@@ -1,5 +1,5 @@
 /// Version of Maestro CLI. Must be kept in sync with pubspec.yaml.
-const version = '0.3.5';
+const version = '0.4.0';
 
 const maestroPackage = 'maestro_test';
 const maestroCliPackage = 'maestro_cli';
