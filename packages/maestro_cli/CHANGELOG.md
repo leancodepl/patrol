@@ -1,3 +1,7 @@
+## 0.4.0
+
+- Support [maestro_test 0.4.0](https://pub.dev/packages/maestro_test/changelog#040)
+
 ## 0.3.5
 
 - Fix dependency resolution problem
