@@ -1,3 +1,8 @@
+## 0.4.1
+
+- Throw `MaestroFinderFoundNothingException` when [MaestroFinder.visible]
+  doesn't find any widget during [MaestroTester.findTimeout]
+
 ## 0.4.0
 
 `MaestroFinder`:
