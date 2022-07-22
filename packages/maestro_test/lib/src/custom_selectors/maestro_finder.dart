@@ -54,6 +54,17 @@ class MaestroFinder extends MatchFinder {
   /// Taps on the first visible (i.e hit testable) widget resolved by this
   /// finder.
   ///
+  /// ```dart
+  /// await $(#createAccount).tap();
+  /// ```
+  ///
+  /// If the finder resolves to more than 1 widget, you can choose which one to
+  /// tap on:
+  ///
+  /// ```dart
+  /// await $(TextButton).at(2).tap(); // tap on the third TextButton
+  /// ```
+  ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
   Future<void> tap({bool? andSettle}) async {
@@ -83,7 +94,7 @@ class MaestroFinder extends MatchFinder {
     return (finder.evaluate().first.widget as Text).data;
   }
 
-  /// A shortcut for [MaestroFinder.resolve]
+  /// Shorthand for [MaestroFinder.resolve].
   MaestroFinder $(dynamic matching) {
     return MaestroFinder.resolve(
       matching: matching,
