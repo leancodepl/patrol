@@ -78,6 +78,25 @@ void main() {
 
       expect(flutterFinder.toString(), maestroFinder.toString());
     });
+
+    maestroTest('(complex case 5)', ($) async {
+      final flutterFinder = find.descendant(
+        of: find.ancestor(
+          of: find.descendant(
+            of: find.byType(Chip),
+            matching: find.textContaining(RegExp('Dual Incremental')),
+          ),
+          matching: find.text('WorkOrderTile'),
+        ),
+        matching: find.byKey(const Key('arrow')),
+      );
+
+      final maestroFinder = $('WorkOrderTile')
+          .containing($(Chip).$(RegExp('Dual Incremental')))
+          .$(#arrow);
+
+      expect(flutterFinder.toString(), maestroFinder.toString());
+    });
   });
 
   group('matches widget by', () {
