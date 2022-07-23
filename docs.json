@@ -1,0 +1,24 @@
+{
+  "name": "Maestro",
+  "twitter": "leancodepl",
+  "theme": "#FFA03F",
+  "sidebar": [
+    ["Overview", "/"],
+    ["Custom finders", "/custom-finders"],
+    [
+      "Custom finders",
+      [
+        ["Overview", "/custom_finders/overview"],
+        ["Getting started", "/custom-finders/getting-started"],
+        ["Complex examples", "/custom-finders/simple-examples"]
+      ]
+    ],
+    [
+      "Native",
+      [
+        ["Overview", "/native/overview"],
+        ["Getting started", "/native/getting-started"]
+      ]
+    ]
+  ]
+}
