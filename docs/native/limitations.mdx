@@ -1,0 +1,28 @@
+## Limitations
+
+Maestro's feature of interacting with the native platform has a few limitations.
+
+### iOS support
+
+We've already got a basic PoC working on Simulator, but there's support for
+physical devices yet.
+
+One of our main goals over the coming weeks is to bring iOS support on par with
+Android.
+
+### Other platforms support
+
+Supporting platforms other than Android and iOS is currently not a part of our
+roadmap.
+
+### Zones
+
+Long story short, you can't use Flutter's `integration_test` if you're using a
+package depending on Dart's zones, such as [hydrated_bloc][hydrated_bloc]. This
+is a Flutter bug, but Maestro is affected by it because it depends on
+`integration_test`.
+
+For more info see [issue #96939 on flutter/flutter][zones_bug].
+
+[zones_bug]: https://github.com/flutter/flutter/issues/96939
+[hydrated_bloc]: https://pub.dev/packages/hydrated_bloc
