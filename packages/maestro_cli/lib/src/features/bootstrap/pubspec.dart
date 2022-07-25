@@ -10,7 +10,7 @@ String getName() {
   final contents = file.readAsStringSync();
 
   final dynamic yaml = loadYaml(contents);
-  final name = (yaml as Map<String, dynamic>)['name'] as String;
+  final name = (yaml as YamlMap)['name'] as String;
 
   return name;
 }
