@@ -1,0 +1,21 @@
+PODS:
+  - Embassy (4.1.1)
+  - EnvoyAmbassador (4.0.5):
+    - Embassy (~> 4.0)
+
+DEPENDENCIES:
+  - Embassy (~> 4.1)
+  - EnvoyAmbassador (~> 4.0)
+
+SPEC REPOS:
+  trunk:
+    - Embassy
+    - EnvoyAmbassador
+
+SPEC CHECKSUMS:
+  Embassy: eb36dc783ea20b792426461bbaff8c3f256e0331
+  EnvoyAmbassador: 21cef10e70d003801c68ba5281948684a4e25486
+
+PODFILE CHECKSUM: d51bdc67ac62133a90a44b7d6d09033c8e21e57d
+
+COCOAPODS: 1.11.3

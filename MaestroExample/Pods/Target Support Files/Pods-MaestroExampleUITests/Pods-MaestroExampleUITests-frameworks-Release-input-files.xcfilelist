@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-MaestroExampleUITests/Pods-MaestroExampleUITests-frameworks.sh
+${BUILT_PRODUCTS_DIR}/Embassy/Embassy.framework
+${BUILT_PRODUCTS_DIR}/EnvoyAmbassador/EnvoyAmbassador.framework

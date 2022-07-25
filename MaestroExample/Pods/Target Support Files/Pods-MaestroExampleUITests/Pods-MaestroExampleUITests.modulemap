@@ -1,0 +1,6 @@
+framework module Pods_MaestroExampleUITests {
+  umbrella header "Pods-MaestroExampleUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
