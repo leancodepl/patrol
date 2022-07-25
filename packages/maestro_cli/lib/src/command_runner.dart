@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:maestro_cli/src/features/clean/clean_command.dart';
+import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
 import 'package:maestro_cli/src/features/update/update_command.dart';
@@ -41,6 +42,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand());
     addCommand(DriveCommand());
+    addCommand(DevicesCommand());
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
     addCommand(UpdateCommand());
