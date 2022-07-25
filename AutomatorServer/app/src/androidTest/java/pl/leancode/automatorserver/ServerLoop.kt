@@ -5,7 +5,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class AutomatorServer {
+class ServerLoop {
     @Test
     fun startServer() {
         Logger.i("Starting server...")
