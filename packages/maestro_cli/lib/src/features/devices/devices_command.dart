@@ -15,8 +15,16 @@ class DevicesCommand extends Command<int> {
     final adb = Adb();
     await adb.init();
 
-    (await adb.devices()).forEach(log.info);
-    (await IOSDriver().devices()).forEach(log.info);
+    final androidDevices = await adb.devices();
+    final iosDevices = await IOSDriver().devices();
+
+    final devices = [...androidDevices, ...iosDevices];
+
+    if (devices.isEmpty) {
+      log.info('No devices attached');
+    }
+
+    devices.forEach(log.info);
 
     return 0;
   }

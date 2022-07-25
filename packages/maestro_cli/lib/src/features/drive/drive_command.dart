@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
+import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -122,44 +123,44 @@ class DriveCommand extends Command<int> {
     final devicesArg = argResults?['devices'] as List<String>?;
     final devices = await androidDriver.devices(devicesArg);
 
-    // log.info('Running on iOS...');
-    // await IOSDriver().run(
-    //   driver: driver,
-    //   target: target,
-    //   host: host,
-    //   port: port,
-    //   verbose: verboseFlag,
-    //   debug: debugFlag,
-    //   device: 'iPhone 12',
-    //   flavor: flavor as String?,
-    // );
+    log.info('Running on iOS...');
+    await IOSDriver().run(
+      driver: driver,
+      target: target,
+      host: host,
+      port: port,
+      verbose: verboseFlag,
+      debug: debugFlag,
+      device: 'iPhone 12',
+      flavor: flavor as String?,
+    );
 
-    final parallel = argResults?['parallel'] as bool? ?? false;
-    if (parallel) {
-      await androidDriver.runTestsInParallel(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verboseFlag,
-        devices: devices,
-        flavor: flavor as String?,
-        dartDefines: dartDefines,
-        debug: debugFlag,
-      );
-    } else {
-      await androidDriver.runTestsSequentially(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verboseFlag,
-        devices: devices,
-        flavor: flavor as String?,
-        dartDefines: dartDefines,
-        debug: debugFlag,
-      );
-    }
+    // final parallel = argResults?['parallel'] as bool? ?? false;
+    // if (parallel) {
+    //   await androidDriver.runTestsInParallel(
+    //     driver: driver,
+    //     target: target,
+    //     host: host,
+    //     port: port,
+    //     verbose: verboseFlag,
+    //     devices: devices,
+    //     flavor: flavor as String?,
+    //     dartDefines: dartDefines,
+    //     debug: debugFlag,
+    //   );
+    // } else {
+    //   await androidDriver.runTestsSequentially(
+    //     driver: driver,
+    //     target: target,
+    //     host: host,
+    //     port: port,
+    //     verbose: verboseFlag,
+    //     devices: devices,
+    //     flavor: flavor as String?,
+    //     dartDefines: dartDefines,
+    //     debug: debugFlag,
+    //   );
+    // }
 
     return 0;
   }

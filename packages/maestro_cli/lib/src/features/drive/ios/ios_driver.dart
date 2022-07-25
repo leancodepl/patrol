@@ -44,6 +44,7 @@ class IOSDriver {
         'platform=iOS Simulator,name=$deviceName',
       ],
       runInShell: true,
+      workingDirectory: '/Users/bartek/dev/leancode/maestro/MaestroExample',
     );
   }
 

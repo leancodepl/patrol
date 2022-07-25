@@ -75,10 +75,6 @@ class AndroidDriver {
     if (devicesArg == null || devicesArg.isEmpty) {
       final adbDevices = await _adb.devices();
 
-      if (adbDevices.isEmpty) {
-        throw Exception('No devices attached');
-      }
-
       if (adbDevices.length > 1) {
         final firstDevice = adbDevices.first;
         log.info(
