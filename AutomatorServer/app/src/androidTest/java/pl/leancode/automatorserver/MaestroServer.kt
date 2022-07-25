@@ -239,7 +239,7 @@ data class SelectorQuery(
     }
 }
 
-class ServerInstrumentation {
+class MaestroServer {
     var running = false
     private var server: Http4kServer? = null
 
@@ -381,7 +381,7 @@ class ServerInstrumentation {
     }
 
     companion object {
-        val instance = ServerInstrumentation()
+        val instance = MaestroServer()
     }
 }
 

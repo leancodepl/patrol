@@ -10,11 +10,11 @@ class AutomatorServer {
     fun startServer() {
         Logger.i("Starting server...")
 
-        val serverInstrumentation = ServerInstrumentation.instance
+        val maestroServer = MaestroServer.instance
         try {
-            serverInstrumentation.start()
+            maestroServer.start()
             Logger.i("Server started")
-            while (serverInstrumentation.running) {
+            while (maestroServer.running) {
             }
         } catch (e: Exception) {
             e.printStackTrace()
