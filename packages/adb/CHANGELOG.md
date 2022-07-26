@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Always ensure that `adb` dameon is running.
+
 ## 0.1.2
 
 - Move `adb start-server` to `Adb.init` method
