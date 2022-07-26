@@ -40,7 +40,7 @@ directories to PATH:
 
 On first run, `maestro` will download artifacts it needs to the _artifact path_.
 By default it is `$HOME/.maestro`, but you can change it by setting
-`MAESTRO_ARTIFACT_PATH` environment variable.
+`MAESTRO_CACHE` environment variable.
 
 To learn about commands, run:
 
