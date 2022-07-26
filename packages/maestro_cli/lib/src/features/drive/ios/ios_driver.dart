@@ -3,20 +3,22 @@ import 'dart:io';
 
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
+import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
-class IOSDriver {
+class IOSDriver extends PlatformDriver {
+  @override
   Future<void> run({
     required String driver,
     required String target,
     required String host,
     required int port,
-    required bool verbose,
-    required bool debug,
     required String device,
     required String? flavor,
     Map<String, String> dartDefines = const {},
+    required bool verbose,
+    required bool debug,
   }) async {
-    _runServer(deviceName: device); // FIXME: verify that works
+    _runServer(deviceName: device);
     await flutter_driver.runWithOutput(
       driver: driver,
       target: target,
@@ -29,26 +31,8 @@ class IOSDriver {
     );
   }
 
-  void _runServer({required String deviceName}) {
-    Process.start(
-      'xcodebuild',
-      [
-        'test',
-        '-workspace',
-        'MaestroExample.xcworkspace',
-        '-scheme',
-        'MaestroExample',
-        '-sdk',
-        'iphonesimulator',
-        '-destination',
-        'platform=iOS Simulator,name=$deviceName',
-      ],
-      runInShell: true,
-      workingDirectory: '/Users/bartek/dev/leancode/maestro/MaestroExample',
-    );
-  }
-
-  Future<List<String>> devices() async {
+  @override
+  Future<List<Device>> devices() async {
     final result = await Process.run(
       'xcrun',
       ['simctl', 'list', 'devices', '--json'],
@@ -74,7 +58,26 @@ class IOSDriver {
       }
     }
 
-    return iosDevices.map((device) => device.name).toList();
+    return iosDevices.map((device) => Device.ios(name: device.name)).toList();
+  }
+
+  void _runServer({required String deviceName}) {
+    Process.start(
+      'xcodebuild',
+      [
+        'test',
+        '-workspace',
+        'MaestroExample.xcworkspace',
+        '-scheme',
+        'MaestroExample',
+        '-sdk',
+        'iphonesimulator',
+        '-destination',
+        'platform=iOS Simulator,name=$deviceName',
+      ],
+      runInShell: true,
+      workingDirectory: '/Users/bartek/dev/leancode/maestro/MaestroExample',
+    );
   }
 }
 

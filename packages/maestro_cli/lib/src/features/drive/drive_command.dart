@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:collection/collection.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
+import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -62,8 +64,7 @@ class DriveCommand extends Command<int> {
     final toml = File(configFileName).readAsStringSync();
     final config = MaestroConfig.fromToml(toml);
 
-    dynamic host = argResults?['host'];
-    host ??= config.driveConfig.host;
+    final dynamic host = argResults?['host'] ?? config.driveConfig.host;
     if (host is! String) {
       throw const FormatException('`host` argument is not a string');
     }
@@ -79,23 +80,23 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`port` cannot be parsed into an integer');
     }
 
-    dynamic target = argResults?['target'];
-    target ??= config.driveConfig.target;
+    final dynamic target = argResults?['target'] ?? config.driveConfig.target;
     if (target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
 
-    dynamic driver = argResults?['driver'];
-    driver ??= config.driveConfig.driver;
+    final dynamic driver = argResults?['driver'] ?? config.driveConfig.driver;
     if (driver is! String) {
       throw const FormatException('`driver` argument is not a string');
     }
 
-    dynamic flavor = argResults?['flavor'];
-    flavor ??= config.driveConfig.flavor;
+    final dynamic flavor = argResults?['flavor'] ?? config.driveConfig.flavor;
     if (flavor != null && flavor is! String) {
       throw const FormatException('`flavor` argument is not a string');
     }
+
+    final devicesArg = argResults?['devices'] as List<String>? ?? [];
+    final wantDevice = devicesArg[0];
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'];
@@ -120,19 +121,48 @@ class DriveCommand extends Command<int> {
     final androidDriver = AndroidDriver();
     await androidDriver.init();
 
-    final devicesArg = argResults?['devices'] as List<String>?;
-    final devices = await androidDriver.devices(devicesArg);
+    final drivers = <PlatformDriver>[
+      AndroidDriver(),
+      if (Platform.isMacOS) IOSDriver(),
+    ];
 
-    log.info('Running on iOS...');
-    await IOSDriver().run(
-      driver: driver,
-      target: target,
-      host: host,
-      port: port,
-      verbose: verboseFlag,
-      debug: debugFlag,
-      device: 'iPhone 12',
-      flavor: flavor as String?,
+    // TODO: handle `all` device
+
+    final devices = <Device>[];
+    for (final driver in drivers) {
+      devices.addAll(await driver.devices());
+    }
+
+    final selectedDevice = devices.firstWhereOrNull(
+      (device) => device.name == wantDevice,
+    );
+
+    if (selectedDevice == null) {
+      log.severe('Device $wantDevice is not available');
+      return 1;
+    }
+
+    await selectedDevice.map(
+      android: (device) => AndroidDriver().run(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        device: device.name,
+        flavor: flavor as String?,
+        verbose: verboseFlag,
+        debug: debugFlag,
+      ),
+      ios: (device) => IOSDriver().run(
+        driver: driver,
+        target: target,
+        host: host,
+        port: port,
+        device: device.name,
+        flavor: flavor as String?,
+        verbose: verboseFlag,
+        debug: debugFlag,
+      ),
     );
 
     // final parallel = argResults?['parallel'] as bool? ?? false;

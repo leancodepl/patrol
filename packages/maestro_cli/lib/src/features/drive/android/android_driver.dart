@@ -3,9 +3,10 @@ import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
+import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:path/path.dart' as path;
 
-class AndroidDriver {
+class AndroidDriver implements PlatformDriver {
   late Adb _adb;
 
   Future<void> init() async {
@@ -13,31 +14,83 @@ class AndroidDriver {
     await _adb.init();
   }
 
+  @override
+  Future<List<Device>> devices() async {
+    final adbDevices = await _adb.devices();
+    return adbDevices
+        .map((adbDevice) => Device.android(name: adbDevice))
+        .toList();
+
+    // if (devicesArg == null || devicesArg.isEmpty) {
+    //   final adbDevices = await _adb.devices();
+
+    //   if (adbDevices.length > 1) {
+    //     final firstDevice = adbDevices.first;
+    //     log.info(
+    //       'More than 1 device attached. Running only on the first one ($firstDevice)',
+    //     );
+
+    //     return [firstDevice];
+    //   }
+
+    //   return adbDevices;
+    // }
+
+    // if (devicesArg.contains('all')) {
+    //   return _adb.devices();
+    // }
+  }
+
+  @override
+  Future<void> run({
+    required String driver,
+    required String target,
+    required String host,
+    required int port,
+    required String device,
+    required String? flavor,
+    Map<String, String> dartDefines = const {},
+    required bool verbose,
+    required bool debug,
+  }) async {
+    await _installApps(device: device, debug: debug);
+    await _forwardPorts(port, device: device);
+    _runServer(device: device, port: port);
+    await flutter_driver.runWithOutput(
+      driver: driver,
+      target: target,
+      host: host,
+      port: port,
+      device: device,
+      flavor: flavor,
+      dartDefines: dartDefines,
+      verbose: verbose,
+    );
+  }
+
   Future<void> runTestsInParallel({
     required String driver,
     required String target,
     required String host,
     required int port,
-    required bool verbose,
-    required bool debug,
     required List<String> devices,
     required String? flavor,
-    Map<String, String>? dartDefines = const {},
+    Map<String, String> dartDefines = const {},
+    required bool verbose,
+    required bool debug,
   }) async {
     await Future.wait(
       devices.map((device) async {
-        await _installApps(device: device, debug: debug);
-        await _forwardPorts(port, device: device);
-        _runServer(device: device, port: port);
-        await flutter_driver.runWithOutput(
+        await run(
           driver: driver,
           target: target,
           host: host,
           port: port,
-          verbose: verbose,
+          debug: debug,
           device: device,
           flavor: flavor,
-          dartDefines: dartDefines ?? {},
+          dartDefines: dartDefines,
+          verbose: verbose,
         );
       }),
     );
@@ -55,43 +108,17 @@ class AndroidDriver {
     Map<String, String> dartDefines = const {},
   }) async {
     for (final device in devices) {
-      await _installApps(device: device, debug: debug);
-      await _forwardPorts(port, device: device);
-      _runServer(device: device, port: port);
-      await flutter_driver.runWithOutput(
+      await run(
         driver: driver,
         target: target,
         host: host,
         port: port,
         verbose: verbose,
+        debug: debug,
         device: device,
         flavor: flavor,
-        dartDefines: dartDefines,
       );
     }
-  }
-
-  Future<List<String>> devices(List<String>? devicesArg) async {
-    if (devicesArg == null || devicesArg.isEmpty) {
-      final adbDevices = await _adb.devices();
-
-      if (adbDevices.length > 1) {
-        final firstDevice = adbDevices.first;
-        log.info(
-          'More than 1 device attached. Running only on the first one ($firstDevice)',
-        );
-
-        return [firstDevice];
-      }
-
-      return adbDevices;
-    }
-
-    if (devicesArg.contains('all')) {
-      return _adb.devices();
-    }
-
-    return devicesArg;
   }
 
   Future<void> _installApps({String? device, bool debug = false}) async {
