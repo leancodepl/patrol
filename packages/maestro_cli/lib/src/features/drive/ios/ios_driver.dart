@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
@@ -18,7 +19,7 @@ class IOSDriver extends PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
-    _runServer(deviceName: device);
+    await _runServer(deviceName: device);
     await flutter_driver.runWithOutput(
       driver: driver,
       target: target,
@@ -61,8 +62,8 @@ class IOSDriver extends PlatformDriver {
     return iosDevices.map((device) => Device.ios(name: device.name)).toList();
   }
 
-  void _runServer({required String deviceName}) {
-    Process.start(
+  Future<void> _runServer({required String deviceName}) async {
+    final process = await Process.start(
       'xcodebuild',
       [
         'test',
@@ -80,6 +81,17 @@ class IOSDriver extends PlatformDriver {
       workingDirectory:
           '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios',
     );
+
+    final stdOutSub = process.stdout.listen((msg) {
+      systemEncoding.decode(msg).split('\n').map((str) => str.trim()).toList()
+        ..removeWhere((element) => element.isEmpty)
+        ..forEach(log.info);
+    });
+
+    final stdErrSub = process.stderr.listen((msg) {
+      final text = systemEncoding.decode(msg).trim();
+      log.severe(text);
+    });
   }
 }
 
