@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
@@ -16,9 +15,6 @@ class DevicesCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final adb = Adb();
-    await adb.init();
-
     final drivers = <PlatformDriver>[
       AndroidDriver(),
       if (Platform.isMacOS) IOSDriver(),

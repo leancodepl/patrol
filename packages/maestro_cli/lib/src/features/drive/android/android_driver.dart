@@ -7,12 +7,7 @@ import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:path/path.dart' as path;
 
 class AndroidDriver implements PlatformDriver {
-  late Adb _adb;
-
-  Future<void> init() async {
-    _adb = Adb();
-    await _adb.init();
-  }
+  final _adb = Adb();
 
   @override
   Future<List<Device>> devices() async {

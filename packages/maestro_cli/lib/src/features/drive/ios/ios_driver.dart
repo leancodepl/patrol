@@ -67,16 +67,18 @@ class IOSDriver extends PlatformDriver {
       [
         'test',
         '-workspace',
-        'MaestroExample.xcworkspace',
+        'AutomatorServer.xcworkspace',
         '-scheme',
-        'MaestroExample',
+        'AutomatorServer',
         '-sdk',
         'iphonesimulator',
         '-destination',
         'platform=iOS Simulator,name=$deviceName',
       ],
       runInShell: true,
-      workingDirectory: '/Users/bartek/dev/leancode/maestro/MaestroExample',
+      // FIXME: don't hardcode working directory
+      workingDirectory:
+          '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios',
     );
   }
 }
