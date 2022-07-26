@@ -69,11 +69,11 @@ jobs:
         run: dart format --set-exit-if-changed .
 
       - name: ktlint check
-        working-directory: ./AutomatorServer
+        working-directory: ./AutomatorServer/android
         run: ./gradlew ktlintCheck
 
       - name: ktlint format
-        working-directory: ./AutomatorServer
+        working-directory: ./AutomatorServer/android
         run: ./gradlew ktlintFormat
 
       - name: Test maestro bootstrap --template basic
