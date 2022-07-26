@@ -18,20 +18,7 @@ class Adb {
   /// Initializes this [Adb] instance.
   ///
   /// If the ADB daemon is not running, it will be started.
-  Future<void> init() async {
-    while (true) {
-      final result = await io.Process.run(
-        'adb',
-        ['start-server'],
-        runInShell: true,
-      );
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-      } else {
-        break;
-      }
-    }
-  }
+  Future<void> init() async => _ensureRunning();
 
   final AdbInternals _adbInternals;
 
@@ -45,6 +32,8 @@ class Adb {
     String path, {
     String? device,
   }) async {
+    await _ensureRunning();
+
     final result = await io.Process.run(
       'adb',
       [
@@ -84,6 +73,8 @@ class Adb {
     String packageName, {
     String? device,
   }) async {
+    await _ensureRunning();
+
     final result = await io.Process.run(
       'adb',
       [
@@ -123,6 +114,8 @@ class Adb {
     String? device,
     String protocol = 'tcp',
   }) async {
+    await _ensureRunning();
+
     final result = await io.Process.run(
       'adb',
       [
@@ -164,6 +157,8 @@ class Adb {
     void Function(String)? onStderr,
     Map<String, String> arguments = const {},
   }) async {
+    await _ensureRunning();
+
     final process = await io.Process.start(
       'adb',
       [
@@ -209,6 +204,8 @@ class Adb {
   /// INSTALL_FAILED_UPDATE_INCOMPATIBLE, the app is uninstalled and installed
   /// again.
   Future<void> forceInstallApk(String path, {String? device}) async {
+    await _ensureRunning();
+
     try {
       await install(path, device: device);
     } on AdbInstallFailedUpdateIncompatible catch (err) {
@@ -222,6 +219,8 @@ class Adb {
   /// See also:
   ///  * https://developer.android.com/studio/command-line/adb#devicestatus
   Future<List<String>> devices() async {
+    await _ensureRunning();
+
     final stdOut = await _adbInternals.devices();
 
     final lines = stdOut.split('\n')
@@ -240,5 +239,20 @@ class Adb {
     }
 
     return devices;
+  }
+
+  Future<void> _ensureRunning() async {
+    while (true) {
+      final result = await io.Process.run(
+        'adb',
+        ['start-server'],
+        runInShell: true,
+      );
+      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      } else {
+        break;
+      }
+    }
   }
 }
