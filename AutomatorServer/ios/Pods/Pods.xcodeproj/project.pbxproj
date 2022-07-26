@@ -83,7 +83,11 @@
 /* Begin PBXFileReference section */
 		00EF458BEB7CA84C2F1F10BA8B96B894 /* Embassy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Embassy.debug.xcconfig; sourceTree = "<group>"; };
 		1721AFE26D6EC91282E06DB474E25D06 /* Pods-AutomatorServerUITests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AutomatorServerUITests-umbrella.h"; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		193CA82337D381AD5A74EAE2A276EFA3 /* EnvoyAmbassador */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = EnvoyAmbassador; path = EnvoyAmbassador.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+=======
+		193CA82337D381AD5A74EAE2A276EFA3 /* EnvoyAmbassador.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EnvoyAmbassador.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 		197C0F158A522F90EF00DD09B8C29773 /* DataReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DataReader.swift; path = Ambassador/Readers/DataReader.swift; sourceTree = "<group>"; };
 		1E928B4717B4EF143318CF3F940A7D5E /* URLParametersReader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = URLParametersReader.swift; path = Ambassador/Readers/URLParametersReader.swift; sourceTree = "<group>"; };
 		20D9F97D518F0D77668018661CD8A3BB /* FileLogHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FileLogHandler.swift; path = Sources/FileLogHandler.swift; sourceTree = "<group>"; };
@@ -124,7 +128,11 @@
 		976086B152FB417EF432EBB5927EC017 /* WebApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebApp.swift; path = Ambassador/WebApp.swift; sourceTree = "<group>"; };
 		98B740047F14ECAD35EA61C9FBEA13C3 /* Pods-AutomatorServerUITests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-AutomatorServerUITests-frameworks.sh"; sourceTree = "<group>"; };
 		9D308CF26F6499214C2190C41A893AAF /* Pods-AutomatorServerUITests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AutomatorServerUITests.modulemap"; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+=======
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 		9F9DDA4D90B2A969EF43CD22F563F707 /* EnvoyAmbassador.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = EnvoyAmbassador.modulemap; sourceTree = "<group>"; };
 		A90E5331701A85A54C7F67CB332CB127 /* Pods-AutomatorServerUITests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AutomatorServerUITests"; path = Pods_AutomatorServerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABECE6B606997CB60330DF02FF7D5485 /* PropagateLogHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PropagateLogHandler.swift; path = Sources/PropagateLogHandler.swift; sourceTree = "<group>"; };
@@ -145,7 +153,11 @@
 		EF1F984459C4FAB63371ED7AED3A2E96 /* EnvoyAmbassador-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "EnvoyAmbassador-umbrella.h"; sourceTree = "<group>"; };
 		EF88098FC3206C74A8423C543EAC475A /* Embassy-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Embassy-prefix.pch"; sourceTree = "<group>"; };
 		F173B6DB3FFA6AFC4A7B69EBBD21A382 /* LogFormatter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogFormatter.swift; path = Sources/LogFormatter.swift; sourceTree = "<group>"; };
+<<<<<<< HEAD
 		F4602BC9FD320E448ECBD0711E1FCC17 /* Embassy */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Embassy; path = Embassy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+=======
+		F4602BC9FD320E448ECBD0711E1FCC17 /* Embassy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Embassy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 		FB8A8BFF2BBB8A8CAC68CAEEA60D6400 /* Embassy-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Embassy-umbrella.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -217,7 +229,10 @@
 				976086B152FB417EF432EBB5927EC017 /* WebApp.swift */,
 				92B90B362D3E00996F48B4DCB4FE2F3F /* Support Files */,
 			);
+<<<<<<< HEAD
 			name = EnvoyAmbassador;
+=======
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 			path = EnvoyAmbassador;
 			sourceTree = "<group>";
 		};
@@ -255,7 +270,10 @@
 				B7A3FCEE4B5AF2664D4C40BEC31B1C56 /* Transport.swift */,
 				DFC37404BC9DAEA270102409EFAA2C2F /* Support Files */,
 			);
+<<<<<<< HEAD
 			name = Embassy;
+=======
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 			path = Embassy;
 			sourceTree = "<group>";
 		};
@@ -327,8 +345,13 @@
 		FF725B45FF6B7CE18443115A1A1467F4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
 				F4602BC9FD320E448ECBD0711E1FCC17 /* Embassy */,
 				193CA82337D381AD5A74EAE2A276EFA3 /* EnvoyAmbassador */,
+=======
+				F4602BC9FD320E448ECBD0711E1FCC17 /* Embassy.framework */,
+				193CA82337D381AD5A74EAE2A276EFA3 /* EnvoyAmbassador.framework */,
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 				A90E5331701A85A54C7F67CB332CB127 /* Pods-AutomatorServerUITests */,
 			);
 			name = Products;
@@ -380,7 +403,11 @@
 			);
 			name = EnvoyAmbassador;
 			productName = EnvoyAmbassador;
+<<<<<<< HEAD
 			productReference = 193CA82337D381AD5A74EAE2A276EFA3 /* EnvoyAmbassador */;
+=======
+			productReference = 193CA82337D381AD5A74EAE2A276EFA3 /* EnvoyAmbassador.framework */;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 			productType = "com.apple.product-type.framework";
 		};
 		8FE649A3E328F8296F04B715E875E776 /* Embassy */ = {
@@ -398,7 +425,11 @@
 			);
 			name = Embassy;
 			productName = Embassy;
+<<<<<<< HEAD
 			productReference = F4602BC9FD320E448ECBD0711E1FCC17 /* Embassy */;
+=======
+			productReference = F4602BC9FD320E448ECBD0711E1FCC17 /* Embassy.framework */;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 			productType = "com.apple.product-type.framework";
 		};
 		FB18EFB4A9D86AE2F8E0F80B67158C58 /* Pods-AutomatorServerUITests */ = {
@@ -428,7 +459,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1300;
+<<<<<<< HEAD
 				LastUpgradeCheck = 1300;
+=======
+				LastUpgradeCheck = 1340;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 13.0";
@@ -576,7 +611,11 @@
 				GCC_PREFIX_HEADER = "Target Support Files/EnvoyAmbassador/EnvoyAmbassador-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/EnvoyAmbassador/EnvoyAmbassador-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -647,7 +686,11 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Embassy/Embassy-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Embassy/Embassy-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -809,7 +852,11 @@
 				GCC_PREFIX_HEADER = "Target Support Files/EnvoyAmbassador/EnvoyAmbassador-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/EnvoyAmbassador/EnvoyAmbassador-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -882,7 +929,11 @@
 				GCC_PREFIX_HEADER = "Target Support Files/Embassy/Embassy-prefix.pch";
 				INFOPLIST_FILE = "Target Support Files/Embassy/Embassy-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+=======
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+>>>>>>> cacaf53 (create Android and iOS `AutomatorServer`s)
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

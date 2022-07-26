@@ -1,6 +1,0 @@
-framework module EnvoyAmbassador {
-  umbrella header "EnvoyAmbassador-umbrella.h"
-
-  export *
-  module * { export * }
-}
