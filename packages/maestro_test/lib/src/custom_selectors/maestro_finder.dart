@@ -178,6 +178,9 @@ class MaestroFinder extends MatchFinder {
   }
 
   @override
+  Iterable<Element> get allCandidates => finder.allCandidates;
+
+  @override
   String get description => finder.description;
 
   @override
