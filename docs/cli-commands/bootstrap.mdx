@@ -1,0 +1,15 @@
+## bootstrap
+
+To use Maestro's native features, you need to set it up first. Worry not though,
+because `maestro bootstrap` is here to help.
+
+Bootstrap does the following:
+
+1. Creates default `maestro.toml`.
+2. Adds `package:maestro_test` as a dev_dependency in `pubspec.yaml`
+3. Adds `package:integration_test` as a dev_dependency in `pubspec.yaml`
+4. Creates default `test_driver/integration_test.dart`
+5. Creates default `integration_test/app_test.dart`
+
+After `maestro bootstrap`, you should be able to `maestro drive` and an example
+app should show up ono your device.

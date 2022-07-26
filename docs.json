@@ -19,6 +19,17 @@
         ["Overview", "/native/overview"],
         ["Getting started", "/native/getting-started"]
       ]
+    ],
+    [
+      "CLI commands",
+      [
+        ["bootstrap", "/cli-commands/bootstrap"],
+        ["clean", "/cli-commands/clean"],
+        ["devices", "/cli-commands/devices"],
+        ["doctor", "/cli-commands/doctor"],
+        ["drive", "/cli-commands/drive"],
+        ["update", "/cli-commands/update"]
+      ]
     ]
   ]
 }
