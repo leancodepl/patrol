@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
 
-const maestroArtifactPathEnv = 'MAESTRO_ARTIFACT_PATH';
+const maestroArtifactPathEnv = 'MAESTRO_CACHE';
 
 String get serverArtifact => 'server-$version';
 String get instrumentationArtifact => 'instrumentation-$version';
