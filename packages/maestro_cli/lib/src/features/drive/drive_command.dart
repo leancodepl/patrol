@@ -119,7 +119,7 @@ class DriveCommand extends Command<int> {
     }
 
     final drivers = <PlatformDriver>[
-      AndroidDriver(), // FIXME: don't init
+      AndroidDriver(),
       if (Platform.isMacOS) IOSDriver(),
     ];
 

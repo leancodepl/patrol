@@ -27,23 +27,25 @@ class MaestroDriveHelper {
 
   /// Returns whether the Maestro automation server is running on target device.
   Future<bool> isRunning() async {
+    final uri = Uri.parse('$_baseUri/isRunning');
     try {
-      final result = await _client.get(Uri.parse('$_baseUri/isRunning'));
+      final result = await _client.get(uri);
       print('status code: ${result.statusCode}, response body: ${result.body}');
       return result.successful;
     } catch (err) {
-      print('failed to call isRunning(): $err');
+      print('failed to call $uri: $err');
       return false;
     }
   }
 
   /// Stops the instrumentation server.
   Future<void> stop() async {
+    final uri = Uri.parse('$_baseUri/stop');
     try {
       print('stopping instrumentation server...');
-      await _client.post(Uri.parse('$_baseUri/stop'));
+      await _client.post(uri);
     } catch (err) {
-      print('failed to call stop(): $err');
+      print('failed to call $uri: $err');
     } finally {
       print('instrumentation server stopped');
     }
