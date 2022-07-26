@@ -118,11 +118,8 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final androidDriver = AndroidDriver();
-    await androidDriver.init();
-
     final drivers = <PlatformDriver>[
-      AndroidDriver(),
+      AndroidDriver(), // FIXME: don't init
       if (Platform.isMacOS) IOSDriver(),
     ];
 

@@ -31,7 +31,7 @@ task clean(type: Delete) {
 }
 
 task install(type: Copy) {
-    def artifactPath = System.getenv('MAESTRO_ARTIFACT_PATH')
+    def artifactPath = System.getenv('MAESTRO_CACHE')
     if (artifactPath == null) {
         artifactPath = Paths.get(System.properties['user.home'], ".maestro")
     }

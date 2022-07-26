@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:adb/adb.dart';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/common/logging.dart';
+import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
+import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
 class DevicesCommand extends Command<int> {
   @override
@@ -15,16 +19,24 @@ class DevicesCommand extends Command<int> {
     final adb = Adb();
     await adb.init();
 
-    final androidDevices = await adb.devices();
-    final iosDevices = await IOSDriver().devices();
+    final drivers = <PlatformDriver>[
+      AndroidDriver(),
+      if (Platform.isMacOS) IOSDriver(),
+    ];
 
-    final devices = [...androidDevices, ...iosDevices];
+    final devices = <Device>[];
+    for (final driver in drivers) {
+      devices.addAll(await driver.devices());
+    }
 
     if (devices.isEmpty) {
       log.info('No devices attached');
+      return 1;
     }
 
-    devices.forEach(log.info);
+    for (final device in devices) {
+      log.info(device.name);
+    }
 
     return 0;
   }
