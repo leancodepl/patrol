@@ -63,10 +63,17 @@ class IOSDriver extends PlatformDriver {
   }
 
   Future<void> _runServer({required String deviceName}) async {
+    // FIXME: Fix failing to build when using Dart x86_64.
     final process = await Process.start(
       'xcodebuild',
       [
+        //'-arm64',
+        //'xcodebuild',
         'test',
+        //'ARCHS=x86_64',
+        'ONLY_ACTIVE_ARCH=YES',
+        //'-arch',
+        //'"x86_64"',
         '-workspace',
         'AutomatorServer.xcworkspace',
         '-scheme',
@@ -78,6 +85,7 @@ class IOSDriver extends PlatformDriver {
       ],
       runInShell: true,
       // FIXME: don't hardcode working directory
+      includeParentEnvironment: false,
       workingDirectory:
           '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios',
     );
