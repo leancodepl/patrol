@@ -71,7 +71,7 @@ class IOSDriver extends PlatformDriver {
         //'xcodebuild',
         'test',
         //'ARCHS=x86_64',
-        'ONLY_ACTIVE_ARCH=YES',
+        //'ONLY_ACTIVE_ARCH=YES',
         //'-arch',
         //'"x86_64"',
         '-workspace',
