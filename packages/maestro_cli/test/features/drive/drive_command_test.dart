@@ -6,7 +6,7 @@ import 'package:test/scaffolding.dart';
 const _androidDeviceName = 'Pixel 5';
 const _androidDevice = Device.android(name: _androidDeviceName);
 const _iosDeviceName = 'iPhone 13';
-const _iosDevice = Device.ios(name: _iosDeviceName);
+const _iosDevice = Device.iOS(name: _iosDeviceName);
 
 void main() {
   group('finds device to use when', () {

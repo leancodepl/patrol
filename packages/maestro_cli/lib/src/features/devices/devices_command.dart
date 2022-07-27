@@ -20,10 +20,7 @@ class DevicesCommand extends Command<int> {
       if (Platform.isMacOS) IOSDriver(),
     ];
 
-    final devices = <Device>[];
-    for (final driver in drivers) {
-      devices.addAll(await driver.devices());
-    }
+    final devices = [for (final driver in drivers) ...await driver.devices()];
 
     if (devices.isEmpty) {
       log.info('No devices attached');

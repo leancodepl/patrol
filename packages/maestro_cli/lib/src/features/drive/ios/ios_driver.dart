@@ -59,7 +59,7 @@ class IOSDriver extends PlatformDriver {
       }
     }
 
-    return iosDevices.map((device) => Device.ios(name: device.name)).toList();
+    return iosDevices.map((device) => Device.iOS(name: device.name)).toList();
   }
 
   Future<void> _runServer({required String deviceName}) async {

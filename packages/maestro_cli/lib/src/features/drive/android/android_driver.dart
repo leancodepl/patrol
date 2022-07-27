@@ -15,25 +15,6 @@ class AndroidDriver implements PlatformDriver {
     return adbDevices
         .map((adbDevice) => Device.android(name: adbDevice))
         .toList();
-
-    // if (devicesArg == null || devicesArg.isEmpty) {
-    //   final adbDevices = await _adb.devices();
-
-    //   if (adbDevices.length > 1) {
-    //     final firstDevice = adbDevices.first;
-    //     log.info(
-    //       'More than 1 device attached. Running only on the first one ($firstDevice)',
-    //     );
-
-    //     return [firstDevice];
-    //   }
-
-    //   return adbDevices;
-    // }
-
-    // if (devicesArg.contains('all')) {
-    //   return _adb.devices();
-    // }
   }
 
   @override

@@ -24,7 +24,7 @@ class Device with _$Device {
     required String name,
   }) = _AndroidDevice;
 
-  const factory Device.ios({
+  const factory Device.iOS({
     required String name,
   }) = _IOSDevice;
 }
