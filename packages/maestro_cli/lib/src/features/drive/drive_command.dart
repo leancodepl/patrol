@@ -48,7 +48,7 @@ class DriveCommand extends Command<int> {
       )
       ..addFlag(
         'parallel',
-        help: '(experimental) Run tests on devices in parallel.',
+        help: '(experimental, inactive) Run tests on devices in parallel.',
       );
   }
 
@@ -145,6 +145,7 @@ class DriveCommand extends Command<int> {
           : wantDevices,
     );
 
+    // TODO: Re-add support for parallel test execution.
     for (final device in devicesToUse) {
       await device.map(
         android: (device) => AndroidDriver().run(
@@ -169,33 +170,6 @@ class DriveCommand extends Command<int> {
         ),
       );
     }
-
-    // final parallel = argResults?['parallel'] as bool? ?? false;
-    // if (parallel) {
-    //   await androidDriver.runTestsInParallel(
-    //     driver: driver,
-    //     target: target,
-    //     host: host,
-    //     port: port,
-    //     verbose: verboseFlag,
-    //     devices: devices,
-    //     flavor: flavor as String?,
-    //     dartDefines: dartDefines,
-    //     debug: debugFlag,
-    //   );
-    // } else {
-    //   await androidDriver.runTestsSequentially(
-    //     driver: driver,
-    //     target: target,
-    //     host: host,
-    //     port: port,
-    //     verbose: verboseFlag,
-    //     devices: devices,
-    //     flavor: flavor as String?,
-    //     dartDefines: dartDefines,
-    //     debug: debugFlag,
-    //   );
-    // }
 
     return 0;
   }
