@@ -125,10 +125,7 @@ class DriveCommand extends Command<int> {
 
     // TODO: handle `all` device
 
-    final devices = <Device>[];
-    for (final driver in drivers) {
-      devices.addAll(await driver.devices());
-    }
+    final devices = await Future.wait(drivers.map((e) => e.devices()));
 
     final selectedDevice = devices.firstWhereOrNull(
       (device) => device.name == wantDevice,
