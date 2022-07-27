@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -19,7 +20,7 @@ class IOSDriver extends PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
-    await _runServer(deviceName: device);
+    final cancel = await _runServer(deviceName: device);
     await flutter_driver.runWithOutput(
       driver: driver,
       target: target,
@@ -30,6 +31,8 @@ class IOSDriver extends PlatformDriver {
       flavor: flavor,
       dartDefines: dartDefines,
     );
+
+    await cancel();
   }
 
   @override
@@ -62,7 +65,9 @@ class IOSDriver extends PlatformDriver {
     return iosDevices.map((device) => Device.iOS(name: device.name)).toList();
   }
 
-  Future<void> _runServer({required String deviceName}) async {
+  Future<Future<void> Function()> _runServer({
+    required String deviceName,
+  }) async {
     // FIXME: Fix failing to build when using Dart x86_64.
     final process = await Process.start(
       'xcodebuild',
@@ -100,6 +105,32 @@ class IOSDriver extends PlatformDriver {
       final text = systemEncoding.decode(msg).trim();
       log.severe(text);
     });
+
+    return () async {
+      await stdOutSub.cancel();
+      await stdErrSub.cancel();
+
+      final msg = 'xcodebuild exited with code $exitCode';
+      if (exitCode == 0) {
+        log.info(msg);
+      } else {
+        log.severe(msg);
+      }
+    };
+
+    unawaited(
+      process.exitCode.then((exitCode) async {
+        await stdOutSub.cancel();
+        await stdErrSub.cancel();
+
+        final msg = 'xcodebuild exited with code $exitCode';
+        if (exitCode == 0) {
+          log.info(msg);
+        } else {
+          log.severe(msg);
+        }
+      }),
+    );
   }
 }
 
