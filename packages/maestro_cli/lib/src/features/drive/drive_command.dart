@@ -128,6 +128,15 @@ class DriveCommand extends Command<int> {
     final availableDevices = [
       for (final driver in drivers) ...await driver.devices()
     ];
+    if (availableDevices.isEmpty) {
+      throw Exception('No devices are available');
+    }
+
+    if (wantDevices.isEmpty) {
+      final firstDeviceName = availableDevices.first.name;
+      log.info('No device specified, using the first one ($firstDeviceName)');
+      wantDevices.add(firstDeviceName);
+    }
 
     final devicesToUse = findOverlap(
       availableDevices: availableDevices,
