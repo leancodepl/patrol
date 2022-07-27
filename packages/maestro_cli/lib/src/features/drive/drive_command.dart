@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:collection/collection.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
@@ -95,8 +94,7 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final devicesArg = argResults?['devices'] as List<String>? ?? [];
-    final wantDevice = devicesArg[0];
+    final wantDevices = argResults?['devices'] as List<String>? ?? [];
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'];
@@ -125,39 +123,39 @@ class DriveCommand extends Command<int> {
 
     // TODO: handle `all` device
 
-    final devices = await Future.wait(drivers.map((e) => e.devices()));
+    final availableDevices = [
+      for (final driver in drivers) ...await driver.devices()
+    ];
 
-    final selectedDevice = devices.firstWhereOrNull(
-      (device) => device.name == wantDevice,
+    final devicesToUse = findOverlap(
+      availableDevices: availableDevices,
+      wantDevices: wantDevices,
     );
 
-    if (selectedDevice == null) {
-      log.severe('Device $wantDevice is not available');
-      return 1;
+    for (final device in devicesToUse) {
+      await device.map(
+        android: (device) => AndroidDriver().run(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          device: device.name,
+          flavor: flavor as String?,
+          verbose: verboseFlag,
+          debug: debugFlag,
+        ),
+        ios: (device) => IOSDriver().run(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          device: device.name,
+          flavor: flavor as String?,
+          verbose: verboseFlag,
+          debug: debugFlag,
+        ),
+      );
     }
-
-    await selectedDevice.map(
-      android: (device) => AndroidDriver().run(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        device: device.name,
-        flavor: flavor as String?,
-        verbose: verboseFlag,
-        debug: debugFlag,
-      ),
-      ios: (device) => IOSDriver().run(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        device: device.name,
-        flavor: flavor as String?,
-        verbose: verboseFlag,
-        debug: debugFlag,
-      ),
-    );
 
     // final parallel = argResults?['parallel'] as bool? ?? false;
     // if (parallel) {
@@ -187,5 +185,23 @@ class DriveCommand extends Command<int> {
     // }
 
     return 0;
+  }
+
+  static List<Device> findOverlap({
+    required List<Device> availableDevices,
+    required List<String> wantDevices,
+  }) {
+    final availableDevicesSet =
+        availableDevices.map((device) => device.name).toSet();
+
+    for (final wantDevice in wantDevices) {
+      if (!availableDevicesSet.contains(wantDevice)) {
+        throw Exception('Device $wantDevice is not available');
+      }
+    }
+
+    return availableDevices
+        .where((device) => wantDevices.contains(device.name))
+        .toList();
   }
 }
