@@ -95,6 +95,10 @@ class DriveCommand extends Command<int> {
     }
 
     final wantDevices = argResults?['devices'] as List<String>? ?? [];
+    final wantsAll = wantDevices.contains('all');
+    if (wantsAll && wantDevices.length > 1) {
+      throw Exception("Device 'all' must be the only device");
+    }
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'];
@@ -121,15 +125,15 @@ class DriveCommand extends Command<int> {
       if (Platform.isMacOS) IOSDriver(),
     ];
 
-    // TODO: handle `all` device
-
     final availableDevices = [
       for (final driver in drivers) ...await driver.devices()
     ];
 
     final devicesToUse = findOverlap(
       availableDevices: availableDevices,
-      wantDevices: wantDevices,
+      wantDevices: wantsAll
+          ? availableDevices.map((device) => device.name).toList()
+          : wantDevices,
     );
 
     for (final device in devicesToUse) {
