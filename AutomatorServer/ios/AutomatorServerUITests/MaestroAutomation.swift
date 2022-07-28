@@ -10,6 +10,6 @@ class MaestroAutomation {
   }()
 
   func pressHome() {
-    device.press(XCUIDevice.Button.home)
+      device.press(XCUIDevice.Button.home)
   }
 }
