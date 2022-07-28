@@ -9,6 +9,8 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(MyApp());
 
+      await maestro.pressHome();
+
       await maestro.openQuickSettings();
       await maestro.tap(Selector(text: 'Bluetooth'));
       await maestro.tap(Selector(text: 'Bluetooth'));

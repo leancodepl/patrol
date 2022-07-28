@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# make is a convenience command for running common Gradle tasks.
+
+adb uninstall pl.leancode.automatorserver 1> /dev/null 2>&1 || true
+adb uninstall pl.leancode.automatorserver.test 1> /dev/null 2>&1 || true
+
+./gradlew assembleDebug
+./gradlew assembleDebugAndroidTest
+./gradlew install
+./gradlew installDebug
+./gradlew installDebugAndroidTest

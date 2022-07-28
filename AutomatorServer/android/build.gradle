@@ -1,0 +1,52 @@
+import java.nio.file.Paths
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext.kotlin_version = "1.7.0"
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.0.4"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+task install(type: Copy) {
+    def artifactPath = System.getenv('MAESTRO_CACHE')
+    if (artifactPath == null) {
+        artifactPath = Paths.get(System.properties['user.home'], ".maestro")
+    }
+
+    from("app/build/outputs/apk/debug") {
+        def name = "app-debug.apk"
+        include name
+        rename name, "server.apk"
+    }
+
+    from("app/build/outputs/apk/androidTest/debug") {
+        def name ="app-debug-androidTest.apk"
+        include name
+        rename name, "instrumentation.apk"
+    }
+
+    into artifactPath
+}

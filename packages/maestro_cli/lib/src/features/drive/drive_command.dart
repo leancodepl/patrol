@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/features/drive/adb.dart';
-import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
-    as flutter_driver;
+import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
+import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
+import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -48,7 +48,7 @@ class DriveCommand extends Command<int> {
       )
       ..addFlag(
         'parallel',
-        help: '(experimental) Run tests on devices in parallel.',
+        help: '(experimental, inactive) Run tests on devices in parallel.',
       );
   }
 
@@ -58,18 +58,12 @@ class DriveCommand extends Command<int> {
   @override
   String get description => 'Drive the app using flutter_driver.';
 
-  late MaestroAdb _adb;
-
   @override
   Future<int> run() async {
-    _adb = MaestroAdb();
-    await _adb.init();
-
     final toml = File(configFileName).readAsStringSync();
     final config = MaestroConfig.fromToml(toml);
 
-    dynamic host = argResults?['host'];
-    host ??= config.driveConfig.host;
+    final dynamic host = argResults?['host'] ?? config.driveConfig.host;
     if (host is! String) {
       throw const FormatException('`host` argument is not a string');
     }
@@ -85,22 +79,25 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`port` cannot be parsed into an integer');
     }
 
-    dynamic target = argResults?['target'];
-    target ??= config.driveConfig.target;
+    final dynamic target = argResults?['target'] ?? config.driveConfig.target;
     if (target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
 
-    dynamic driver = argResults?['driver'];
-    driver ??= config.driveConfig.driver;
+    final dynamic driver = argResults?['driver'] ?? config.driveConfig.driver;
     if (driver is! String) {
       throw const FormatException('`driver` argument is not a string');
     }
 
-    dynamic flavor = argResults?['flavor'];
-    flavor ??= config.driveConfig.flavor;
+    final dynamic flavor = argResults?['flavor'] ?? config.driveConfig.flavor;
     if (flavor != null && flavor is! String) {
       throw const FormatException('`flavor` argument is not a string');
+    }
+
+    final wantDevices = argResults?['devices'] as List<String>? ?? [];
+    final wantsAll = wantDevices.contains('all');
+    if (wantsAll && wantDevices.length > 1) {
+      throw Exception("Device 'all' must be the only device");
     }
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
@@ -123,118 +120,75 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final devicesArg = argResults?['devices'] as List<String>?;
-    final devices = await _parseDevices(devicesArg);
+    final drivers = <PlatformDriver>[
+      AndroidDriver(),
+      if (Platform.isMacOS) IOSDriver(),
+    ];
 
-    final parallel = argResults?['parallel'] as bool? ?? false;
+    final availableDevices = [
+      for (final driver in drivers) ...await driver.devices()
+    ];
+    if (availableDevices.isEmpty) {
+      throw Exception('No devices are available');
+    }
 
-    if (parallel) {
-      await _runTestsInParallel(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verboseFlag,
-        devices: devices,
-        flavor: flavor as String?,
-        dartDefines: dartDefines,
-      );
-    } else {
-      await _runTestsSequentially(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verboseFlag,
-        devices: devices,
-        flavor: flavor as String?,
-        dartDefines: dartDefines,
+    if (wantDevices.isEmpty) {
+      final firstDeviceName = availableDevices.first.name;
+      log.info('No device specified, using the first one ($firstDeviceName)');
+      wantDevices.add(firstDeviceName);
+    }
+
+    final devicesToUse = findOverlap(
+      availableDevices: availableDevices,
+      wantDevices: wantsAll
+          ? availableDevices.map((device) => device.name).toList()
+          : wantDevices,
+    );
+
+    // TODO: Re-add support for parallel test execution.
+    for (final device in devicesToUse) {
+      await device.map(
+        android: (device) => AndroidDriver().run(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          device: device.name,
+          flavor: flavor as String?,
+          verbose: verboseFlag,
+          debug: debugFlag,
+        ),
+        ios: (device) => IOSDriver().run(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          device: device.name,
+          flavor: flavor as String?,
+          verbose: verboseFlag,
+          debug: debugFlag,
+        ),
       );
     }
 
     return 0;
   }
 
-  Future<void> _runTestsInParallel({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required bool verbose,
-    required List<String> devices,
-    required String? flavor,
-    required Map<String, String>? dartDefines,
-  }) async {
-    await Future.wait(
-      devices.map((device) async {
-        await _adb.installApps(device: device, debug: debugFlag);
-        await _adb.forwardPorts(port, device: device);
-        _adb.runServer(device: device, port: port);
-        await flutter_driver.runWithOutput(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          verbose: verboseFlag,
-          device: device,
-          flavor: flavor,
-          dartDefines: dartDefines ?? {},
-        );
-      }),
-    );
-  }
+  static List<Device> findOverlap({
+    required List<Device> availableDevices,
+    required List<String> wantDevices,
+  }) {
+    final availableDevicesSet =
+        availableDevices.map((device) => device.name).toSet();
 
-  Future<void> _runTestsSequentially({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required bool verbose,
-    required List<String> devices,
-    required String? flavor,
-    Map<String, String> dartDefines = const {},
-  }) async {
-    for (final device in devices) {
-      await _adb.installApps(device: device, debug: debugFlag);
-      await _adb.forwardPorts(port, device: device);
-      _adb.runServer(device: device, port: port);
-      await flutter_driver.runWithOutput(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verboseFlag,
-        device: device,
-        flavor: flavor,
-        dartDefines: dartDefines,
-      );
-    }
-  }
-
-  Future<List<String>> _parseDevices(List<String>? devicesArg) async {
-    if (devicesArg == null || devicesArg.isEmpty) {
-      final adbDevices = await _adb.devices();
-
-      if (adbDevices.isEmpty) {
-        throw Exception('No devices attached');
+    for (final wantDevice in wantDevices) {
+      if (!availableDevicesSet.contains(wantDevice)) {
+        throw Exception('Device $wantDevice is not available');
       }
-
-      if (adbDevices.length > 1) {
-        final firstDevice = adbDevices.first;
-        log.info(
-          'More than 1 device attached. Running only on the first one ($firstDevice)',
-        );
-
-        return [firstDevice];
-      }
-
-      return adbDevices;
     }
 
-    if (devicesArg.contains('all')) {
-      return _adb.devices();
-    }
-
-    return devicesArg;
+    return availableDevices
+        .where((device) => wantDevices.contains(device.name))
+        .toList();
   }
 }

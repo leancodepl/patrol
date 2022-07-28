@@ -84,7 +84,7 @@ class CounterTemplate extends AppTestTemplate {
   
       await maestro.pressHome();
   
-      await maestro.openHalfNotificationShade();
+      await maestro.openNotifications();
   
       await maestro.pressBack();
   
@@ -136,7 +136,7 @@ void main() {
 
       await maestro.pressDoubleRecentApps();
 
-      await maestro.openHalfNotificationShade();
+      await maestro.openNotifications();
 
       await maestro.enableWifi();
       await maestro.disableWifi();

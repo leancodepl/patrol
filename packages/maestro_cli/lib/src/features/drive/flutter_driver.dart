@@ -10,10 +10,10 @@ Future<void> run({
   required String target,
   required String host,
   required int port,
-  required bool verbose,
   String? device,
   String? flavor,
-  Map<String, String> dartDefines = const {},
+  required Map<String, String> dartDefines,
+  required bool verbose,
 }) async {
   if (device != null) {
     log.info('Running $target on $device...');
@@ -50,10 +50,10 @@ Future<void> runWithOutput({
   required String target,
   required String host,
   required int port,
-  required bool verbose,
   String? device,
   String? flavor,
-  Map<String, String> dartDefines = const {},
+  required Map<String, String> dartDefines,
+  required bool verbose,
 }) async {
   if (device != null) {
     log.info('Running $target with output on $device...');
