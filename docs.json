@@ -4,7 +4,7 @@
   "theme": "#FFA03F",
   "sidebar": [
     ["Overview", "/"],
-    ["Custom finders", "/custom-finders"],
+    ["Comparison with other testing frameworks", "/comparison"],
     [
       "Custom finders",
       [

@@ -7,47 +7,18 @@ description: Flutter-native UI testing framework overcoming limitations of flutt
 Maestro is a new testing framework for Flutter. It builds on top of Flutter's
 testing tools to let you do things which were previously impossible.
 
-Maestro lets you access features of the platform that the Flutter app is running
+Maestro lets you [access features of the platform][native] that the Flutter app is running
 on. For example, you can go to the home screen, rotate the device, and then go
 back – and you can code this very easily in Dart.
 
-Maestro also provides a new custom finder system that extends Flutter's default
+Maestro also provides a [new custom finder system][custom-finders] that extends Flutter's default
 finders. Maestro's custom finders make writing Flutter widget tests
 _dramatically_ faster, easier, and more fun!
 
 Maestro is an open-source project which is being developed and maintained by us
-– [LeanCode][leancode]! We already use it to test production apps.
-
-Maestro is still in active development and hasn't reached 1.0 yet.
-
-## How is it different from `package:integration_test`?
-
-Maestro builds on top of [package:integration_test][package_integration_test].
-This means that you can do everything that package:integration_test can do, plus
-some additional, awesome things.
-
-## How is it different from Appium?
-
-Appium is one of the most the most popular tool for automating mobile app
-testing. It has a big community and there are lots of resources on the internet
-on it. Unfortunately, we found that Appium doesn't fit well into Flutter world.
-Actually, the idea for Maestro was born out of our frustration with trying to
-use Appium for testing Flutter apps.
-
-1. Appium does not feel native to Flutter. To use it, you need `Node.js`, and
-   you need to use `npm`. You used 1 language in your app (Dart), and now you
-   got the second one. It's setup is cumbersome.
-
-1. Maestro lets you do [greybox testing][greybox], while Appium lets you do
-   [blackbox testing][blackbox].
-
-1. Appium is much more mature than Maestro.
-
-TODO: Make sure that the above is correct. One can write Appium client in Dart.
-TODO: bash appium more with some better arguments
+– [LeanCode][leancode]! It is still in active development and hasn't reached 1.0
+yet, but we already use it to test production apps.
 
 [leancode]: https://leancode.co
-[appium]: https://appium.io
-[greybox]: https://en.wikipedia.org/wiki/Gray_box_testing
-[blackbox]: https://en.wikipedia.org/wiki/Black-box_testing
-[package_integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[native]: /native/overview
+[custom-finders]: /custom_finders/overview
