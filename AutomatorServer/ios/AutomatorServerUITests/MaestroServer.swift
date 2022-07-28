@@ -22,18 +22,18 @@ class MaestroServer {
     case ("GET", "isRunning"):
       startResponse("200 OK", [])
       sendBody(Data("All is good.".utf8))
-      sendBody(Data()) // send EOF
+      sendBody(Data())  // send EOF
     case ("POST", "stop"):
       self.stop()
       startResponse("200 OK", [])
-      sendBody(Data()) // send EOF
+      sendBody(Data())  // send EOF
     case ("POST", "pressHome"):
       self.automation.pressHome()
       startResponse("200 OK", [])
-      sendBody(Data()) // send EOF
+      sendBody(Data())  // send EOF
     default:
       startResponse("404 Not Found", [])
-      sendBody(Data()) // send EOF
+      sendBody(Data())  // send EOF
     }
   }
 
