@@ -6,9 +6,7 @@ class MaestroServer {
     return try! SelectorEventLoop(selector: try! KqueueSelector())
   }()
 
-  private lazy var automation: MaestroAutomation = {
-    return MaestroAutomation()
-  }()
+  private let automation = MaestroAutomation()
 
   func onRequest(
     environ: [String: Any], startResponse: ((String, [(String, String)]) -> Void),
