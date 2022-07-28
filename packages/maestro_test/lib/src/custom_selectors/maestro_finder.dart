@@ -77,7 +77,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
   /// entering text. If you want to disable this behavior, set [andSettle] to
-  /// `false`.
+  /// false.
   ///
   /// See also:
   ///  - [WidgetTester.enterText]

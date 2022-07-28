@@ -17,7 +17,7 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 ///
 /// To call [WidgetTester.pump] instead of [WidgetTester.pumpAndSettle] after
 /// actions such as [MaestroFinder.tap] and [MaestroFinder.enterText], set
-/// [andSettle] to `false`.
+/// [andSettle] to false.
 ///
 /// ### Custom selectors
 ///
