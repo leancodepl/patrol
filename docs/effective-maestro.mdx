@@ -46,7 +46,7 @@ await $(Select<String>).tap(); // taps on the first Select<String>
 If the type parameter is changed from `String` to, for example, some specialized
 `PersonData` model, that finder won't find anything. You'd have to update it to:
 
-```
+```dart
 await $(Select<PersonTile>).tap();
 ```
 
