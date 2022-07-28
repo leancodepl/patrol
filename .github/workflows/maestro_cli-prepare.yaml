@@ -40,11 +40,14 @@ jobs:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
 
-      - name: Set up JDK 11
+      - name: Install Java
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "11"
+
+      - name: Install swift-format
+        run: brew install swift-format
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
@@ -74,6 +77,17 @@ jobs:
       - name: ktlint format
         working-directory: ./AutomatorServer/android
         run: ./gradlew ktlintFormat
+
+      - name: swift-format lint
+        working-directory: ./AutomatorServer/ios/AutomatorServerUITests
+        run: test -z $(swift-format lint --recursive .)
+
+      - name: swift-format format
+        working-directory: ./AutomatorServer/ios/AutomatorServerUITests
+        run: |
+          swift-format format --recursive .
+          git update-index --refresh
+          git diff-index --quiet HEAD --
 
       - name: Test maestro bootstrap --template basic
         working-directory: ../
