@@ -35,17 +35,16 @@ But if you assigned a key to the login button, the above could be simplified to:
 await $(#loginButton).tap();
 ```
 
-In some cases using classes for finding widgets might be OK, but let's see
-another example:
+Much better!
+
+Let's see another example:
 
 ```dart
 await $(Select<String>).tap(); // taps on the first Select<String>
 ```
 
-This works, but if some changes are made to the `Select` widget, your test will
-break. For example, if its type parameter is changed from `String` to some
-specialized `PersonData` model. This change would case the above line to break,
-and you'd have to update it to:
+If the type parameter is changed from `String` to, for example, some specialized
+`PersonData` model, that finder won't find anything. You'd have to update it to:
 
 ```
 await $(Select<PersonTile>).tap();
@@ -61,11 +60,29 @@ This whole section could be summed up to the simple maxim:
 
 Treat your finders as if they were the tester's eyes.
 
-### CONSIDER having a global file where all keys are defined
+### CONSIDER having a file where all keys are defined
 
 The number of keys will get bigger as your app grows and you write more tests.
-To keep track of them, it's a good idea to keep all keys in some global
-`keys.dart` file.
+To keep track of them, it's a good idea to keep all keys in, say,
+`lib/keys.dart` file.
+
+```dart
+import 'package:flutter/foundation.dart';
+
+typedef K = Keys;
+
+class Keys {
+  const Keys();
+
+  static const usernameTextField = Key('usernameTextField');
+  static const passwordTextField = Key('passwordTextField');
+  static const loginButton = Key('loginButton');
+  static const forgotPasswordButton = Key('forgotPasswordButton');
+  static const privacyPolicyLink = Key('privacyPolicyLink');
+```
+
+This is a good way to make sure that the same keys are used in app and tests. No
+more typos!
 
 ### PREFER having one test path
 
@@ -84,7 +101,7 @@ You may be sure now that you'll always remember what the 200 line long test
 you've just written does and are (rightfully) very proud of it.
 
 Believe us, in 3 months you will not remember what your test does. This is why
-the first argument to `maestroTest` is the test description. Use it well.
+the first argument to `maestroTest` is the test description. Use it well!
 
 ```dart
 // GOOD
