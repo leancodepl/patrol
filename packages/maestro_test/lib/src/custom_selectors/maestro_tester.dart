@@ -165,31 +165,31 @@ class MaestroTester {
 
   /// A convenience method combining [WidgetTester.pumpWidget] and
   /// [WidgetTester.pumpAndSettle].
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, pass `false` to [andSettle].
   Future<void> pumpWidgetAndSettle(
     Widget widget, {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-    bool? andSettle,
   }) async {
     await tester.pumpWidget(widget, duration, phase);
+    const andSettle = true;
     await performPump(andSettle);
   }
 
-  /// Convenience method combining `WidgetTester.drag` and
-  /// [WidgetTester.pumpAndSettle]. It attempts to drag the first widget
-  /// resolved by [finder] by the given [offset].
+  /// Attempts to drag the widget resolved by [finder] by the given [offset], by
+  /// starting a drag in the middle of the widget.
   ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] after drag.
-  /// If you want to disable this behavior, pass `false` to [andSettle].
+  /// This method automatically calls [WidgetTester.pumpAndSettle] or
+  /// [WidgetTester.pump] after the drag is complete. If you want to override
+  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
+  /// false.
   ///
   /// See also:
   ///  - [WidgetController.drag]
-  Future<void> drag(
-    Finder finder,
-    Offset offset, {
+  ///  - [MaestroTester.andSettle], which controls the default behavior if
+  ///    [andSettle] is null
+  Future<void> drag({
+    required Finder finder,
+    required Offset offset,
     int? pointer,
     int buttons = kPrimaryButton,
     double touchSlopX = kDragSlopDefault,
@@ -198,8 +198,10 @@ class MaestroTester {
     PointerDeviceKind kind = PointerDeviceKind.touch,
     bool? andSettle,
   }) async {
+    final maestroFinder = MaestroFinder(finder: finder, tester: this);
+
     await tester.drag(
-      finder.first,
+      (await maestroFinder.visible).first,
       offset,
       pointer: pointer,
       buttons: buttons,
@@ -210,17 +212,21 @@ class MaestroTester {
     await performPump(andSettle);
   }
 
-  /// Convenience method combining `WidgetTester.dragFrom` and
-  /// [WidgetTester.pumpAndSettle].
+  /// Attempts a drag gesture consisting of a pointer down on [startLocation], a
+  /// move by the given [offset], and a pointer up.
   ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, set [andSettle] to `false`.
+  /// This method automatically calls [WidgetTester.pumpAndSettle] or
+  /// [WidgetTester.pump] after the drag is complete. If you want to override
+  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
+  /// false.
   ///
   /// See also:
-  ///  - [WidgetController.dragFrom].
-  Future<void> dragFrom(
-    Offset startLocation,
-    Offset offset, {
+  ///  - [WidgetController.dragFrom], which this method wraps.
+  ///  - [MaestroTester.andSettle], which controls the default behavior if
+  ///    [andSettle] is null
+  Future<void> dragFrom({
+    required Offset startLocation,
+    required Offset offset,
     int? pointer,
     int buttons = kPrimaryButton,
     double touchSlopX = kDragSlopDefault,
@@ -241,31 +247,36 @@ class MaestroTester {
     await performPump(andSettle);
   }
 
-  /// Convenient wrapper over `WidgetTester.dragUntilVisible`.
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] after tap. If
-  /// you want to disable this behavior, set [andSettle] to `false`.
+  /// Scrolls [view] in [direction] until it finds [finder].
   ///
   /// [step] is the amount of space to scroll by. It must be positive number.
   ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] or
+  /// [WidgetTester.pump] after the drag is complete. If you want to override
+  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
+  /// false.
+  ///
   /// See also:
-  ///  - [WidgetController.dragUntilVisible].
-  Future<void> dragUntilVisible(
-    Finder finder,
-    Finder view,
-    Direction direction, {
+  ///  - [WidgetController.dragUntilVisible], which this method wraps
+  ///  - [MaestroTester.andSettle], which controls the default behavior if
+  ///    [andSettle] is null
+  Future<void> dragUntilVisible({
+    required Finder finder,
+    required Finder view,
+    required Direction direction,
     double step = 16,
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) async {
     assert(step > 0, 'step must be positive number');
-
     final moveStep = direction.resolveOffset(step);
+
+    final maestroFinder = MaestroFinder(finder: view, tester: this);
 
     await tester.dragUntilVisible(
       finder.first,
-      view,
+      (await maestroFinder.visible).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
