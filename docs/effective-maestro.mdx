@@ -1,0 +1,83 @@
+## Effective Maestro
+
+Over the past months, we've written many Maestro tests and often learned the
+hard way what works well and what doesn't. We're sharing our findings hoping
+that they'll help you write robust tests:
+
+### PREFER using keys instead of classes to find widgets
+
+Maestro's custom finder is very powerful, and you might often be inclined to
+find a widget you want using only classes.
+
+The problem with using classes is that almost always they're an implementation
+detail. As a tester, you shouldn't care if it's a `TextButton`. You care that
+there is _the_ login button, and you want to tap on it. In most cases, you
+should assign key to these widgets.
+
+### PREFER having one test path
+
+Good tests test one feature, and test it well (this applies to all tests, not
+only Maestro tests). This is often called the "main path". Try to introduce as
+little condional logic as possible. In practice, this usually comes down to
+having as few `if`s as possible.
+
+Keeping your test code simple and to the point will also help you in debugging
+it.
+
+### DO add a good test description explaining the test's purpose
+
+If your app is non-trivial, your Maestro test will become long pretty quickly.
+You may be sure now that you'll always remember what the 200 line long test
+you've just written does and are (rightfully) very proud of it.
+
+Believe us, in 3 months you will not remember what your test does. This is why
+the first argument to `maestroTest` is the test description. Use it well.
+
+```dart
+// GOOD
+import 'package:awesome_app/main.dart';
+import 'package:maestro_test/maestro_test.dart';
+
+void main() {
+  final maestro = Maestro.forTest();
+
+  maestroTest(
+    'Logs in, enables push notifications, and signs up for the newsletter. Then '
+    'receives a push notification. Then taps on it and is redirected (using a deep link) '
+    "to the newsletter's Welcome & Reward page. Then taps on the button and receives "
+    'the reward.',
+    ($) async {
+      await $.pumpWidgetAndSettle(AwesomeApp());
+
+    await $(#phoneNumber).enterText(555-2137)
+    await $(#loginButton).tap();
+
+      // lots of lines
+    },
+    appName: 'AwesomeApp',
+  );
+}
+```
+
+```dart
+// BAD
+import 'package:awesome_app/main.dart';
+import 'package:maestro_test/maestro_test.dart';
+
+void main() {
+  final maestro = Maestro.forTest();
+
+  maestroTest(
+    'Tests signing up for the newsletter.',
+    ($) async {
+      await $.pumpWidgetAndSettle(AwesomeApp());
+
+      await $(#phoneNumber).enterText(555-2137)
+      await $(#loginButton).tap();
+
+      // lots of lines
+    },
+    appName: 'AwesomeApp',
+  );
+}
+```

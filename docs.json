@@ -30,6 +30,7 @@
         ["drive", "/cli-commands/drive"],
         ["update", "/cli-commands/update"]
       ]
-    ]
+    ],
+    ["Effective Maestro", "/effective-maestro"]
   ]
 }
