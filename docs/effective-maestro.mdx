@@ -4,10 +4,18 @@ Over the past months, we've written many Maestro tests and often learned the
 hard way what works well and what doesn't. We're sharing our findings hoping
 that they'll help you write robust tests:
 
-### PREFER using keys instead of classes to find widgets
+### PREFER using keys to find widgets
 
 Maestro's custom finder is very powerful, and you might often be inclined to
-find the widget you want using classes.
+find the widget you want in a variety of ways. While we're encouraging you to
+explore and play with Maestro's custom finders, we are quite confident that keys
+are the best way to find widgets.
+
+**Why not strings?**
+
+Strings are cringe.
+
+**Why not classes?**
 
 There are 2 problems with using classes.
 
@@ -56,7 +64,7 @@ widgets.
 
 This whole section could be summed up to the simple maxim:
 
-> Have tester's midset.
+> Have tester's mindset.
 
 Treat your finders as if they were the tester's eyes.
 
