@@ -30,6 +30,20 @@ Using Maestro's custom finder, you'd write the above as:
 $('Subscribe');
 ```
 
+Worth mentioning is also `Key`. The below lines are equivalent:
+
+```dart
+find.byKey(Key('loginButton'));
+$(Key('loginButton'));
+$(#loginButton);
+```
+
+For those wondering what is that `#` thing – it's a
+[Symbol](https://api.dart.dev/dart-core/Symbol-class.html)! Yes, we're Dart
+(ab)users.
+
+### Performing actions
+
 Finding widgets alone is cool, but what's even cooler is being able to tap on
 them! Let's tap on the first 'Subscribe' text:
 

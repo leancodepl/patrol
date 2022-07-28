@@ -79,6 +79,22 @@ class Keys {
   static const loginButton = Key('loginButton');
   static const forgotPasswordButton = Key('forgotPasswordButton');
   static const privacyPolicyLink = Key('privacyPolicyLink');
+}
+```
+
+Then you can use it in your app's and tests' code like this:
+
+```dart
+// somehwere in app
+TextField(
+  key: Keys.usernameTextField,
+  // more properties
+)
+```
+
+```dart
+// in test
+await $(K.usernameTextField).enterText('CoolGuy');
 ```
 
 This is a good way to make sure that the same keys are used in app and tests. No
@@ -112,15 +128,12 @@ void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'Logs in, enables push notifications, and signs up for the newsletter. Then '
-    'receives a push notification. Then taps on it and is redirected (using a deep link) '
-    "to the newsletter's Welcome & Reward page. Then taps on the button and receives "
-    'the reward.',
+    'Tests signing up for the newsletter.',
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-    await $(#phoneNumber).enterText(555-2137)
-    await $(#loginButton).tap();
+      await $(#phoneNumber).enterText(555-2137)
+      await $(#loginButton).tap();
 
       // lots of lines
     },
@@ -131,19 +144,16 @@ void main() {
 
 ```dart
 // BAD
-import 'package:awesome_app/main.dart';
-import 'package:maestro_test/maestro_test.dart';
-
 void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'Tests signing up for the newsletter.',
+    'test',
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-      await $(#phoneNumber).enterText(555-2137)
-      await $(#loginButton).tap();
+    await $(#phoneNumber).enterText(555-2137)
+    await $(#loginButton).tap();
 
       // lots of lines
     },
