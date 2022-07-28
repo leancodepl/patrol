@@ -1,12 +1,6 @@
-## Custom finders
+## Getting started
 
-Flutter's finders are powerful, but not very intuitive to use.
-
-We took them and made something awesome.
-
-### Getting started
-
-Let's you want to find some `Text` widget – nothing easier than that!
+Let's say you want to find some `Text` widget – nothing easier than that!
 
 ```dart
 find.byType(Text);
@@ -51,7 +45,7 @@ them! Let's tap on the first 'Subscribe' text:
 await tester.tap(find.text('Subscribe').first);
 ```
 
-We have to use 'first', because if there were multiple 'Subscribe' widgets, the
+We have to use 'first', because if there were multiple "Subscribe" texts, the
 `tap()` throw an exception.
 
 With Maestro, you get concise code, but you preserve the flexibility:
@@ -60,7 +54,7 @@ With Maestro, you get concise code, but you preserve the flexibility:
 await $('Subscribe').tap();
 ```
 
-If you wanted to tap on the third 'Subscribe' text, you'd do:
+If you wanted to tap on the third "Subscribe" text, you'd do:
 
 ```dart
 await $('Subscribe').at(2).tap();
@@ -86,7 +80,7 @@ Flutter's finders are starting to grow, while Maestro stays lean:
 $(ListView).$('Subscribe').tap();
 ```
 
-If we want to also make sure that the `Subscribe` text is in a `ListTile`:
+Now, we also make sure that the `Subscribe` text is in a `ListTile`:
 
 ```dart
 await tester.tap(
@@ -101,7 +95,7 @@ await tester.tap(
 );
 ```
 
-Now, this is starting to look ugly. Maestro to the rescue:
+Hey, this is starting to look complex! Fortunately, you have Maestro:
 
 ```dart
 await $(ListView).$(ListTile).$('Subscribe').tap();

@@ -8,9 +8,9 @@
     [
       "Custom finders",
       [
-        ["Overview", "/custom_finders/overview"],
+        ["Overview", "/custom-finders/overview"],
         ["Getting started", "/custom-finders/getting-started"],
-        ["Complex examples", "/custom-finders/simple-examples"]
+        ["Advanced", "/custom-finders/advanced"]
       ]
     ],
     [

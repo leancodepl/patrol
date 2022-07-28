@@ -6,7 +6,7 @@ that they'll help you write robust tests:
 
 ### PREFER using keys to find widgets
 
-Maestro's custom finder is very powerful, and you might often be inclined to
+Maestro's custom finders are very powerful, and you might often be inclined to
 find the widget you want in a variety of ways. While we're encouraging you to
 explore and play with Maestro's custom finders, we are quite confident that keys
 are the best way to find widgets.
@@ -136,7 +136,7 @@ void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'Tests signing up for the newsletter.',
+    'signs up for the newsletter and receives a reward',
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
