@@ -61,9 +61,8 @@ jobs:
       - name: Install maestro_cli
         run: dart pub global activate --source path . && maestro
 
-      # We don't have any tests, yet.
-      # - name: dart test
-      #   run: dart test
+      - name: dart test
+        run: dart test
 
       - name: dart format
         run: dart format --set-exit-if-changed .
