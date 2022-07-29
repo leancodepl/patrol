@@ -201,7 +201,7 @@ class MaestroTester {
     final maestroFinder = MaestroFinder(finder: finder, tester: this);
 
     await tester.drag(
-      (await maestroFinder.visible).first,
+      (await maestroFinder.visible()).first,
       offset,
       pointer: pointer,
       buttons: buttons,
@@ -276,7 +276,7 @@ class MaestroTester {
 
     await tester.dragUntilVisible(
       finder.first,
-      (await maestroFinder.visible).first,
+      (await maestroFinder.visible()).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
