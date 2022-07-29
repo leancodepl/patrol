@@ -1,3 +1,9 @@
+## 0.4.1
+
+- Rename `MAESTRO_ARTIFACT_PATH` environment variable to `MAESTRO_CACHE`
+- Add `maestro devices` command
+- Some work made under the hood to enable support for iOS
+
 ## 0.4.0
 
 - Support [maestro_test 0.4.0](https://pub.dev/packages/maestro_test/changelog#040)

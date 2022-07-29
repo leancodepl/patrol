@@ -30,7 +30,7 @@ checkChangelogVersion() {
 }
 
 checkApkVersion() {    
-    path="./AutomatorServer/app/build.gradle"
+    path="./AutomatorServer/android/app/build.gradle"
     version=$(grep versionName "$path" | xargs | cut -d ' ' -f 2)
     versions[apk]="$version"
 }
