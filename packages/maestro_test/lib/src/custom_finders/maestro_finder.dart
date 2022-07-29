@@ -1,15 +1,17 @@
-library custom_selectors;
+library custom_finders;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors/common.dart';
-import 'package:maestro_test/src/custom_selectors/exceptions.dart';
+import 'package:maestro_test/src/custom_finders/common.dart';
+import 'package:maestro_test/src/custom_finders/exceptions.dart';
 import 'package:meta/meta.dart';
 
 import 'maestro_tester.dart';
 
-/// A decorator around [Finder] that provides Maestro _custom selector_ (also
-/// known as `$`).
+/// Maestro custom finder, also known as `$`.
+///
+/// This is decorator around [Finder] that extends it with Maestro features, but
+/// also preserves Finder's behavior.
 class MaestroFinder extends MatchFinder {
   /// Creates a new [MaestroFinder] with the given [finder] and [tester].
   ///
