@@ -9,7 +9,7 @@ void main() {
       await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
 
       final helloText = $('Hello');
-      await helloText.visible;
+      await helloText.visible();
       await helloText.tap(andSettle: false);
       expect(helloText, findsOneWidget);
     });
