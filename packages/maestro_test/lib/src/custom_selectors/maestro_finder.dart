@@ -8,8 +8,10 @@ import 'package:meta/meta.dart';
 
 import 'maestro_tester.dart';
 
-/// A decorator around [Finder] that provides Maestro _custom selector_ (also
-/// known as `$`).
+/// Maestro custom finder, also known as `$`.
+///
+/// This is decorator around [Finder] that extends it with Maestro features, but
+/// also preserves Finder's behavior.
 class MaestroFinder extends MatchFinder {
   /// Creates a new [MaestroFinder] with the given [finder] and [tester].
   ///
