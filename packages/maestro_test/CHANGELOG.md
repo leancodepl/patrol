@@ -1,3 +1,11 @@
+## 0.4.2
+
+- Convert `MaestroFinder.visible` getter to a method, which now also takes a
+  timeout
+- Rename `MAESTRO_ARTIFACT_PATH` environment variable to `MAESTRO_CACHE
+- Fix `MaestroTester.dragUntilVisible` not waiting for the scrollable to appear
+- Fix `MaestroFinder.allCandidates` returning incorrect results
+
 ## 0.4.1
 
 - Throw `MaestroFinderFoundNothingException` when [MaestroFinder.visible]
