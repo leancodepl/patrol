@@ -68,7 +68,7 @@ class MaestroFinder extends MatchFinder {
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
   Future<void> tap({bool? andSettle}) async {
-    await tester.tester.tap((await visible).first);
+    await tester.tester.tap((await visible()).first);
     await tester.performPump(andSettle);
   }
 
@@ -82,7 +82,7 @@ class MaestroFinder extends MatchFinder {
   /// See also:
   ///  - [WidgetTester.enterText]
   Future<void> enterText(String text, {bool? andSettle}) async {
-    await tester.tester.enterText((await visible).first, text);
+    await tester.tester.enterText((await visible()).first, text);
     await tester.performPump(andSettle);
   }
 
@@ -117,10 +117,13 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one visible widget.
   ///
-  /// Throws a [MaestroFinderFoundNothingException] if more than
-  /// [MaestroTester.findTimeout] passed and no widgets were found.
-  Future<MaestroFinder> get visible async {
-    final end = DateTime.now().add(tester.findTimeout);
+  /// Throws a [MaestroFinderFoundNothingException] if more time than specified
+  /// by timeout passed and no widgets were found.
+  ///
+  /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
+  /// override this global setting, set [timeout].
+  Future<MaestroFinder> visible({Duration? timeout}) async {
+    final end = DateTime.now().add(timeout ?? tester.findTimeout);
 
     while (hitTestable().evaluate().isEmpty) {
       if (DateTime.now().isAfter(end)) {
