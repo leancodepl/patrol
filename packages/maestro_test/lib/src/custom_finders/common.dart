@@ -2,15 +2,15 @@ import 'dart:io' as io;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
-import 'package:maestro_test/src/custom_selectors/maestro_tester.dart';
+import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
+import 'package:maestro_test/src/custom_finders/maestro_tester.dart';
 import 'package:maestro_test/src/extensions.dart';
 import 'package:meta/meta.dart';
 
 /// Signature for callback to [maestroTest].
 typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
-/// Like [testWidgets], but with Maestro custom selector support.
+/// Like [testWidgets], but with support for Maestro custom finders.
 ///
 /// If you want to not close the app immediately after the test completes, use
 /// [sleep].
@@ -19,9 +19,9 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 /// actions such as [MaestroFinder.tap] and [MaestroFinder.enterText], set
 /// [andSettle] to false.
 ///
-/// ### Custom selectors
+/// ### Custom finders
 ///
-/// Custom selectors greatly simplify writing widget tests.
+/// Maestro custom finders greatly simplify writing widget tests.
 ///
 /// ### Using the default [WidgetTester]
 /// If you need to do something using Flutter's [WidgetTester], you can access

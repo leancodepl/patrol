@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors/common.dart';
-import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
+import 'package:maestro_test/src/custom_finders/common.dart';
+import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
 import 'package:meta/meta.dart';
 
 /// Specifies direction in the cartesian plane.
