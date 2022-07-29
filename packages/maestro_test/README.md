@@ -12,11 +12,8 @@ tests more concisce, and writing them faster & more fun.
 
 ### Installation
 
-Add `maestro_test` as a dev dependency in `pubspec.yaml`:
-
-```
-dev_dependencies:
-  maestro_test: ^0.4.1
+```bash
+$ dart pub add maestro_test
 ```
 
 ### Accessing native platform features
