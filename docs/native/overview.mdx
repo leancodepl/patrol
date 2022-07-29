@@ -1,3 +1,16 @@
 ## Overview
 
-### The problem
+Flutter's [integration_test][integration_test] does a good job at providing
+basic support for integration testing Flutter app. What it can't do is
+interaction with the OS on which your Flutter app is running. This makes it
+impossible to test so many critical business features:
+
+- receiving and tapping on push notifications
+- exiting the app, coming back, and verifying that state is preserved
+- rotating the device
+- enabling and disabling features such as Wi-Fi, mobile data, location, or dark
+  mode
+
+Maestro's native capabilities solve these problems.
+
+[integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
