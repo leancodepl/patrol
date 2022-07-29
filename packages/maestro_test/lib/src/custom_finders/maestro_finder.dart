@@ -1,9 +1,9 @@
-library custom_selectors;
+library custom_finders;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors/common.dart';
-import 'package:maestro_test/src/custom_selectors/exceptions.dart';
+import 'package:maestro_test/src/custom_finders/common.dart';
+import 'package:maestro_test/src/custom_finders/exceptions.dart';
 import 'package:meta/meta.dart';
 
 import 'maestro_tester.dart';

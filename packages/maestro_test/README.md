@@ -7,8 +7,8 @@
 control the native device from Dart. It does this by using Android's
 [UIAutomator][ui_automator] library.
 
-It also provides a new custom finder system to make writing Flutter widget tests
-more concisce, and writing them faster & more fun.
+It also provides a new custom finder system to make Flutter widget tests more
+concise and understandable, and writing them – faster and more fun.
 
 ### Installation
 

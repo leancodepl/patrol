@@ -2,8 +2,8 @@ import 'dart:io' as io;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors/maestro_finder.dart';
-import 'package:maestro_test/src/custom_selectors/maestro_tester.dart';
+import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
+import 'package:maestro_test/src/custom_finders/maestro_tester.dart';
 import 'package:maestro_test/src/extensions.dart';
 import 'package:meta/meta.dart';
 

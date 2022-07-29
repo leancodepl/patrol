@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_selectors/custom_selectors.dart';
+import 'package:maestro_test/src/custom_finders/custom_finders.dart';
 
 void main() {
   group('MaestroFinders work the same as Flutter Finders', () {
