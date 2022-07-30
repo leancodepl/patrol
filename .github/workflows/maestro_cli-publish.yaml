@@ -21,7 +21,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: AutomatorServer
+        working-directory: AutomatorServer/android
 
     steps:
       - name: Clone repository
@@ -71,13 +71,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: "maestro_cli-v${{ env.VERSION }}"
-          body_path: AutomatorServer/release_notes.txt
+          body_path: AutomatorServer/android/release_notes.txt
           prerelease: ${{ env.IS_PRERELEASE }}
           fail_on_unmatched_files: true
           # see https://github.com/softprops/action-gh-release/issues/158
           files: |
-            AutomatorServer/${{ env.SERVER_FILE }}
-            AutomatorServer/${{ env.INSTRUMENTATION_FILE }}
+            AutomatorServer/android/${{ env.SERVER_FILE }}
+            AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
 
       - name: Upload artifacts to Azure Storage
         env:
