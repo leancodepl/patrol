@@ -3,7 +3,7 @@ name: maestro_cli prepare
 on:
   push:
     branches: [master]
-    ignore-tags: ["maestro_cli-v*"]
+    tags-ignore: ["maestro_cli-v*"]
     paths:
       - "packages/maestro_cli/**"
       - "AutomatorServer/**"
@@ -35,10 +35,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
+          cache: true
 
       - name: Install Java
         uses: actions/setup-java@v3

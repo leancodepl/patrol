@@ -3,7 +3,7 @@ name: adb prepare
 on:
   push:
     branches: [master]
-    ignore-tags: ["adb-v*"]
+    tags-ignore: ["adb-v*"]
     paths:
       - "packages/adb/**"
   pull_request:

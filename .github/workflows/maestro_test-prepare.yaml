@@ -3,7 +3,7 @@ name: maestro_test prepare
 on:
   push:
     branches: [master]
-    ignore-tags: ["maestro_test-v*"]
+    tags-ignore: ["maestro_test-v*"]
     paths:
       - "packages/maestro_test/**"
   pull_request:
@@ -33,17 +33,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v1
+        uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
-
-      - name: Cache pub dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.FLUTTER_HOME }}/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: ${{ runner.os }}-pub-
+          cache: true
 
       - name: flutter version
         run: flutter --version
