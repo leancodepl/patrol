@@ -1,0 +1,37 @@
+{
+  "name": "Maestro",
+  "twitter": "leancodepl",
+  "theme": "#FFA03F",
+  "sidebar": [
+    ["Overview", "/"],
+    ["Comparison with other testing frameworks", "/comparison"],
+    [
+      "Custom finders",
+      [
+        ["Overview", "/custom-finders/overview"],
+        ["Getting started", "/custom-finders/getting-started"],
+        ["Advanced", "/custom-finders/advanced"]
+      ]
+    ],
+    [
+      "Native",
+      [
+        ["Overview", "/native/overview"],
+        ["Getting started", "/native/getting-started"],
+        ["Limitations", "/native/limitations"]
+      ]
+    ],
+    [
+      "CLI commands",
+      [
+        ["bootstrap", "/cli-commands/bootstrap"],
+        ["clean", "/cli-commands/clean"],
+        ["devices", "/cli-commands/devices"],
+        ["doctor", "/cli-commands/doctor"],
+        ["drive", "/cli-commands/drive"],
+        ["update", "/cli-commands/update"]
+      ]
+    ],
+    ["Effective Maestro", "/effective-maestro"]
+  ]
+}

@@ -1,0 +1,33 @@
+## Comparison with other testing frameworks
+
+### How is it different from `integration_test`?
+
+Maestro builds on top of the [integration_test package][integration_test]. This
+means that you can do everything that package:integration_test can do, plus some
+additional, awesome things.
+
+### How is it different from Appium?
+
+Appium is one of the most the most popular tool for automating mobile app
+testing. It has a big community and there are lots of resources on the internet
+on it. Unfortunately, we found that Appium doesn't fit well into Flutter world.
+Actually, the idea for Maestro was born out of our frustration with trying to
+use Appium for testing Flutter apps.
+
+1. Appium does not feel native to Flutter. To use it, you need `Node.js`, and
+   you need to use `npm`. You used 1 language in your app (Dart), and now you
+   got the second one. It's setup is cumbersome.
+
+1. Maestro lets you do [greybox testing][greybox], while Appium lets you do
+   [blackbox testing][blackbox].
+
+1. Appium is much more mature than Maestro.
+
+TODO: Make sure that the above is correct. One can write Appium client in Dart.
+
+TODO: bash appium more with some better arguments
+
+[appium]: https://appium.io
+[greybox]: https://en.wikipedia.org/wiki/Gray_box_testing
+[blackbox]: https://en.wikipedia.org/wiki/Black-box_testing
+[integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
