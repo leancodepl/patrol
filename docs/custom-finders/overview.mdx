@@ -1,0 +1,57 @@
+## Custom finders
+
+Flutter's finders are powerful, but not very intuitive to use.
+
+We took them and made something awesome.
+
+Thanks to Maestro's custom finders, you'll take your tests from this:
+
+```dart
+testWidgets('signs up', (tester) async {
+  await tester.pumpWidget(AwesomeApp());
+  await tester.pumpAndSettle();
+
+  await tester.enterText(
+    find.byKey(Key('emailTextField')),
+    'bartek@awesome.com',
+  );
+  await tester.pumpAndSettle();
+
+  await tester.enterText(
+    find.byKey(Key('nameTextField')),
+    'Bartek',
+  );
+  await tester.pumpAndSettle();
+
+  await tester.enterText(
+    find.byKey(Key('passwordTextField')),
+    'pass213769420word',
+  );
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byKey(Key('termsCheckbox')));
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byKey(Key('signUpButton')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(Key('signUpButton')));
+  await tester.pumpAndSettle();
+
+  expect(find.text('Welcome, Bartek!'), findsOneWidget);
+});
+```
+
+to this:
+
+```dart
+maestroTest('signs up', ($) async {
+  await $.pumpWidgetAndSettle(AwesomeApp());
+
+  await $(#emailTextField).enterText('bartek@awesome.com');
+  await $(#nameTextField).enterText('Bartek');
+  await $(#emailTextField).enterText('pass213769420word');
+  await $(#termsCheckbox).tap();
+  await $(#signUpButton).tap();
+  expect($('Welcome, Bartek!'), findsOneWidget);
+});
+```

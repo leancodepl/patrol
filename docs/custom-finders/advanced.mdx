@@ -1,0 +1,80 @@
+## Advanced
+
+We aim to make Maestro as simple as possible, but there are still a few matters
+that we feel require some more attention.
+
+Here we'll explain how Maestro's custom finders work.
+
+### How is Maestro's `tap()` different from Flutter `tap()`?
+
+Let's consider this test, written without Maestro:
+
+```dart
+await tester.tap(find.byKey(Key('addComment')).first);
+await tester.pumpAndSettle();
+```
+
+This code:
+
+1. Immediately atttempts to find the first widget with `addComment` key
+2. Immediately attempts to tap on it
+
+This is the default behavior, but in our experience, it's often a source of
+flakiness. For example, the widget having `addComment` key might not be visible
+at the time when the finder is run. This usually doesn't means that the test
+should fail. Probably an HTTP request was made to fetch the post, and when it is
+fetched, the widget having `addComment` key will show up.
+
+To achieve this behavior, you'd have to do:
+
+```dart
+while (find.byKey(Key('addComment')).first.evaluate().isEmpty) {
+  await tester.pump(const Duration(milliseconds: 100));
+}
+
+await tester.tap(find.byKey(Key('addComment')).first);
+await tester.pumpAndSettle();
+```
+
+Our tiny example got really big, but it's still got two problems.
+
+1.  If something goes wrong and `addComment` never shows up, we'll keep waiting
+    indefinitely.
+
+2.  The widget with `addComment` key might be out of view. This means it's not
+    possible to be tapped by a normal user, but our `tester` doesn't care. This
+    is almost never desirable.
+
+Fortunately, you don't have to overcome these problems. Maestro already did it!
+
+Below is the same test, with all the problems fixed, written with Maestro's
+custom finders:
+
+```dart
+await $(#addComment).tap();
+```
+
+This code:
+
+1. Attempts to find the first widget with `addComment` that is visible on
+   screen. If it's not found immediately, it keeps trying until it finds it, or
+   throws an exception if timeout.
+2. Taps on it.
+
+The timeout can be configured globally:
+
+```dart
+maestroTest(
+  'logs in successfully',
+  ($) async {
+  // your test code
+  },
+  findTimeout: Duration(seconds: 10),
+);
+```
+
+You can also change the timeout ad-hoc:
+
+```dart
+await $(#addComment).tap(timeout: Duration(seconds: 30));
+```

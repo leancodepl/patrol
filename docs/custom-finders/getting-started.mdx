@@ -1,0 +1,104 @@
+## Getting started
+
+Let's say you want to find some `Text` widget – nothing easier than that!
+
+```dart
+find.byType(Text);
+```
+
+Using Maestro's custom finder, you'd write the above as:
+
+```dart
+$(Text);
+```
+
+Or let's find a `Text` widget with a specific text:
+
+```dart
+find.text('Subscribe');
+```
+
+Using Maestro's custom finder, you'd write the above as:
+
+```dart
+$('Subscribe');
+```
+
+Worth mentioning is also `Key`. The below lines are equivalent:
+
+```dart
+find.byKey(Key('loginButton'));
+$(Key('loginButton'));
+$(#loginButton);
+```
+
+For those wondering what is that `#` thing – it's a
+[Symbol](https://api.dart.dev/dart-core/Symbol-class.html)! Yes, we're Dart
+(ab)users.
+
+### Performing actions
+
+Finding widgets alone is cool, but what's even cooler is being able to tap on
+them! Let's tap on the first 'Subscribe' text:
+
+```dart
+await tester.tap(find.text('Subscribe').first);
+```
+
+We have to use `first`, because if there were multiple "Subscribe" texts,
+`tap()` would throw an exception.
+
+With Maestro, you get concise code, but you preserve the flexibility:
+
+```dart
+await $('Subscribe').tap();
+```
+
+If you wanted to tap on the third "Subscribe" text, you'd do:
+
+```dart
+await $('Subscribe').at(2).tap();
+```
+
+### Going deeper
+
+But hey, these were very simple examples. In real apps, unfortunately, finding
+widgets is not that easy.
+
+Often, you'll need to tap on a widget which is in some other widget.
+
+```dart
+await tester.tap(
+  find.descendant(
+    of: find.byType(ListView),
+    matching: find.text('Subscribe'),
+  ).first
+);
+```
+
+Flutter's finders are starting to grow, while Maestro stays lean:
+
+```dart
+$(ListView).$('Subscribe').tap();
+```
+
+Now, we also make sure that the `Subscribe` text is in a `ListTile`:
+
+```dart
+await tester.tap(
+  find.descendant(
+    of: find.byType(ListView),
+    matching: find.descendant(
+      of: find.byType(ListTile),
+      matching: find.text('Subscribe'),
+      ),
+    ),
+  ).first
+);
+```
+
+Hey, this is starting to look complex! Fortunately, you have Maestro:
+
+```dart
+await $(ListView).$(ListTile).$('Subscribe').tap();
+```
