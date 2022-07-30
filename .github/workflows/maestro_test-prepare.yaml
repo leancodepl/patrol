@@ -3,7 +3,7 @@ name: maestro_test prepare
 on:
   push:
     branches: [master]
-    ignore-tags: ["maestro_test-v*"]
+    tags-ignore: ["maestro_test-v*"]
     paths:
       - "packages/maestro_test/**"
   pull_request:

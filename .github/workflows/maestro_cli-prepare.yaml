@@ -3,7 +3,7 @@ name: maestro_cli prepare
 on:
   push:
     branches: [master]
-    ignore-tags: ["maestro_cli-v*"]
+    tags-ignore: ["maestro_cli-v*"]
     paths:
       - "packages/maestro_cli/**"
       - "AutomatorServer/**"
