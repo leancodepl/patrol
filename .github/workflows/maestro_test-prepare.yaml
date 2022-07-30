@@ -37,13 +37,7 @@ jobs:
         with:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
-
-      - name: Cache pub dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.FLUTTER_HOME }}/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: ${{ runner.os }}-pub-
+          cache: true
 
       - name: flutter version
         run: flutter --version
