@@ -37,7 +37,6 @@ jobs:
         with:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
-          cache: true
 
       - name: flutter version
         run: flutter --version
