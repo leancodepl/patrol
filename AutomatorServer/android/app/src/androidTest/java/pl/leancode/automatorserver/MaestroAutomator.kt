@@ -183,10 +183,7 @@ class UIAutomatorInstrumentation {
         Logger.d("entering text \"$text\" to $selector")
 
         val uiObject = device.findObject(selector)
-        uiObject.click()
         uiObject.text = text
-
-        pressBack() // Hide keyboard.
     }
 
     fun enterText(text: String, query: SelectorQuery) {
@@ -197,10 +194,7 @@ class UIAutomatorInstrumentation {
         Logger.d("entering text \"$text\" to $selector")
 
         val uiObject = device.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
-        uiObject.click()
         uiObject.text = text
-
-        pressBack() // Hide keyboard.
     }
 
     fun swipe(swipe: SwipeCommand) {
