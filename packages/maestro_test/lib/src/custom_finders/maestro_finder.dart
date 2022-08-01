@@ -125,7 +125,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Otherwise it throws an error.
   String? get text {
-    return (finder.evaluate().first.widget as Text).data;
+    return (finder.hitTestable().evaluate().first.widget as Text).data;
   }
 
   /// Shorthand for [MaestroFinder.resolve].
