@@ -20,7 +20,7 @@ class IOSDriver extends PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
-    await _runServer(
+    final cancel = await _runServer(
       deviceName: device,
       onServerInstalled: () async {
         await flutter_driver.runWithOutput(
@@ -36,7 +36,7 @@ class IOSDriver extends PlatformDriver {
       },
     );
 
-    //await cancel();
+    await cancel();
   }
 
   @override
@@ -69,7 +69,7 @@ class IOSDriver extends PlatformDriver {
     return iosDevices.map((device) => Device.iOS(name: device.name)).toList();
   }
 
-  Future<void> _runServer({
+  Future<Future<void> Function()> _runServer({
     required String deviceName,
     required void Function() onServerInstalled,
   }) async {
@@ -109,7 +109,7 @@ class IOSDriver extends PlatformDriver {
 
       for (final line in lines) {
         log.info(line);
-        if (line.contains('Starting server...')) {
+        if (line.contains('Server started')) {
           onServerInstalled();
         }
       }
@@ -120,33 +120,23 @@ class IOSDriver extends PlatformDriver {
       log.severe(text);
 
       if (text.contains('** TEST FAILED **')) {
-        //throw Exception('Test failed. See logs above.');
+        throw Exception('Test failed. See logs above.');
       }
     });
 
-    // return () async {
-    //   await stdOutSub.cancel();
-    //   await stdErrSub.cancel();
+    return () async {
+      await process.exitCode.then((exitCode) async {
+        await stdOutSub.cancel();
+        await stdErrSub.cancel();
 
-    //   final msg = 'xcodebuild exited with code $exitCode';
-    //   if (exitCode == 0) {
-    //     log.info(msg);
-    //   } else {
-    //     log.severe(msg);
-    //   }
-    // };
-
-    await process.exitCode.then((exitCode) async {
-      await stdOutSub.cancel();
-      await stdErrSub.cancel();
-
-      final msg = 'xcodebuild exited with code $exitCode';
-      if (exitCode == 0) {
-        log.info(msg);
-      } else {
-        log.severe(msg);
-      }
-    });
+        final msg = 'xcodebuild exited with code $exitCode';
+        if (exitCode == 0) {
+          log.info(msg);
+        } else {
+          log.severe(msg);
+        }
+      });
+    };
   }
 }
 

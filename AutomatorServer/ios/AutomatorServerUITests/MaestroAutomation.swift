@@ -10,6 +10,13 @@ class MaestroAutomation {
   }()
 
   func pressHome() {
+    Logger.shared.i("pressing home button")
     device.press(XCUIDevice.Button.home)
+  }
+
+  func openApp(_ bundleIdentifier: String) {
+    Logger.shared.i("opening app with bundle id \(bundleIdentifier)")
+    let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+    app.activate()
   }
 }

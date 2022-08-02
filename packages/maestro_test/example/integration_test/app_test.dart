@@ -11,6 +11,17 @@ void main() {
 
       await maestro.pressHome();
 
+      $.log(
+        'I went to home! Now gonna wait for 5 seconds and then go open the app '
+        'again...',
+      );
+      await Future<void>.delayed(Duration(seconds: 5));
+
+      $.log('Opeing the app again...');
+      await maestro.openApp(id: 'com.example.example');
+
+      $.log("More functionality is not implemented, so I'm gonna crash now :(");
+
       await maestro.openQuickSettings();
       await maestro.tap(Selector(text: 'Bluetooth'));
       await maestro.tap(Selector(text: 'Bluetooth'));

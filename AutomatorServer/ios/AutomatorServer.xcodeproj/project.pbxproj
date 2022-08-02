@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
 		98B3654728903353008B5B8B /* MaestroServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* MaestroServer.swift */; };
 		98B3654928903360008B5B8B /* MaestroAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654828903360008B5B8B /* MaestroAutomation.swift */; };
@@ -31,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		2820135DF7306AA17A786AF5 /* Pods-AutomatorServerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AutomatorServerUITests.release.xcconfig"; path = "Target Support Files/Pods-AutomatorServerUITests/Pods-AutomatorServerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		983049F92899206400C87527 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AutomatorServerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		98B365442890333D008B5B8B /* ServerLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerLoop.swift; sourceTree = "<group>"; };
 		98B3654628903353008B5B8B /* MaestroServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroServer.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 				98B365442890333D008B5B8B /* ServerLoop.swift */,
 				98B3654628903353008B5B8B /* MaestroServer.swift */,
 				98B3654828903360008B5B8B /* MaestroAutomation.swift */,
+				983049F92899206400C87527 /* Logger.swift */,
 			);
 			path = AutomatorServerUITests;
 			sourceTree = "<group>";
@@ -276,6 +279,7 @@
 				98B3654928903360008B5B8B /* MaestroAutomation.swift in Sources */,
 				98B3654728903353008B5B8B /* MaestroServer.swift in Sources */,
 				98B365452890333D008B5B8B /* ServerLoop.swift in Sources */,
+				983049FA2899206400C87527 /* Logger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
