@@ -104,6 +104,10 @@ class IOSDriver extends PlatformDriver {
     final stdErrSub = process.stderr.listen((msg) {
       final text = systemEncoding.decode(msg).trim();
       log.severe(text);
+
+      if (text.contains('** TEST FAILED **')) {
+        throw Exception('Test failed. See logs above.');
+      }
     });
 
     return () async {
