@@ -109,7 +109,7 @@ Future<void> runWithOutput({
   if (exitCode == 0) {
     log.info(msg);
   } else {
-    log.severe(msg);
+    throw Exception('$msg. See logs above.');
   }
 }
 

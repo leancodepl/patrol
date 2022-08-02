@@ -2,9 +2,7 @@ import Embassy
 import EnvoyAmbassador
 
 class MaestroServer {
-  private lazy var loop: EventLoop = {
-    return try! SelectorEventLoop(selector: try! KqueueSelector())
-  }()
+  private let loop = try! SelectorEventLoop(selector: try! KqueueSelector())
 
   private let automation = MaestroAutomation()
 
