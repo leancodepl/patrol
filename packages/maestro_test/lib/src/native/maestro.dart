@@ -176,6 +176,21 @@ class Maestro {
     }
   }
 
+  /// Stops the instrumentation server.
+  ///
+  /// This is an escape hatch, and should not be used.
+  Future<void> stop() async {
+    final uri = Uri.parse('$_baseUri/stop');
+    try {
+      _logger.info('stopping instrumentation server...');
+      await _client.post(uri);
+    } catch (err) {
+      _logger.warning('failed to call $uri: $err');
+    } finally {
+      _logger.info('instrumentation server stopped');
+    }
+  }
+
   /// Presses the back button.
   ///
   /// See also:
