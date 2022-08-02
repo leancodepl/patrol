@@ -108,7 +108,12 @@ class IOSDriver extends PlatformDriver {
         ..removeWhere((element) => element.isEmpty);
 
       for (final line in lines) {
-        log.info(line);
+        if (line.startsWith('MaestroServer')) {
+          log.info(line);
+        } else {
+          log.fine(line);
+        }
+
         if (line.contains('Server started')) {
           onServerInstalled();
         }
@@ -120,7 +125,9 @@ class IOSDriver extends PlatformDriver {
       log.severe(text);
 
       if (text.contains('** TEST FAILED **')) {
-        throw Exception('Test failed. See logs above.');
+        throw Exception(
+          'Test failed. See logs above. Also, consider running with --verbose.',
+        );
       }
     });
 

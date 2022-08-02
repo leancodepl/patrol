@@ -29,8 +29,6 @@ void main() {
 
       $.log("More functionality is not implemented, so I'm gonna head out now");
 
-      await maestro.stop();
-
       await Future<void>.delayed(Duration(seconds: 5));
       return;
     },
