@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/common.dart';
@@ -163,7 +162,9 @@ class MaestroTester {
     await tester.pumpAndSettle();
   }
 
-  /// A convenience method combining [WidgetTester.pumpWidget] and
+  /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].
+  ///
+  /// This is a convenience method combining [WidgetTester.pumpWidget] and
   /// [WidgetTester.pumpAndSettle].
   Future<void> pumpWidgetAndSettle(
     Widget widget, {
@@ -172,78 +173,6 @@ class MaestroTester {
   }) async {
     await tester.pumpWidget(widget, duration, phase);
     const andSettle = true;
-    await performPump(andSettle);
-  }
-
-  /// Attempts to drag the widget resolved by [finder] by the given [offset], by
-  /// starting a drag in the middle of the widget.
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] or
-  /// [WidgetTester.pump] after the drag is complete. If you want to override
-  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
-  /// false.
-  ///
-  /// See also:
-  ///  - [WidgetController.drag]
-  ///  - [MaestroTester.andSettle], which controls the default behavior if
-  ///    [andSettle] is null
-  Future<void> drag({
-    required Finder finder,
-    required Offset offset,
-    int? pointer,
-    int buttons = kPrimaryButton,
-    double touchSlopX = kDragSlopDefault,
-    double touchSlopY = kDragSlopDefault,
-    bool warnIfMissed = true,
-    PointerDeviceKind kind = PointerDeviceKind.touch,
-    bool? andSettle,
-  }) async {
-    final maestroFinder = MaestroFinder(finder: finder, tester: this);
-
-    await tester.drag(
-      (await maestroFinder.visible()).first,
-      offset,
-      pointer: pointer,
-      buttons: buttons,
-      touchSlopX: touchSlopX,
-      touchSlopY: touchSlopY,
-      kind: kind,
-    );
-    await performPump(andSettle);
-  }
-
-  /// Attempts a drag gesture consisting of a pointer down on [startLocation], a
-  /// move by the given [offset], and a pointer up.
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] or
-  /// [WidgetTester.pump] after the drag is complete. If you want to override
-  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
-  /// false.
-  ///
-  /// See also:
-  ///  - [WidgetController.dragFrom], which this method wraps.
-  ///  - [MaestroTester.andSettle], which controls the default behavior if
-  ///    [andSettle] is null
-  Future<void> dragFrom({
-    required Offset startLocation,
-    required Offset offset,
-    int? pointer,
-    int buttons = kPrimaryButton,
-    double touchSlopX = kDragSlopDefault,
-    double touchSlopY = kDragSlopDefault,
-    PointerDeviceKind kind = PointerDeviceKind.touch,
-    bool? andSettle,
-  }) async {
-    await tester.dragFrom(
-      startLocation,
-      offset,
-      pointer: pointer,
-      buttons: buttons,
-      touchSlopX: touchSlopX,
-      touchSlopY: touchSlopY,
-      kind: kind,
-    );
-
     await performPump(andSettle);
   }
 
