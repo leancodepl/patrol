@@ -189,7 +189,7 @@ class MaestroTester {
   ///  - [WidgetController.dragUntilVisible], which this method wraps
   ///  - [MaestroTester.andSettle], which controls the default behavior if
   ///    [andSettle] is null
-  Future<void> dragUntilVisible({
+  Future<MaestroFinder> dragUntilVisible({
     required Finder finder,
     required Finder view,
     required Direction direction,
@@ -212,6 +212,8 @@ class MaestroTester {
     );
 
     await performPump(andSettle);
+
+    return MaestroFinder(finder: finder.first, tester: this);
   }
 
   @internal

@@ -69,9 +69,40 @@ class MaestroFinder extends MatchFinder {
   ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
+  // TODO: Add timeout
   Future<void> tap({bool? andSettle}) async {
     await tester.tester.tap((await visible()).first);
     await tester.performPump(andSettle);
+  }
+
+  /// Drags in [direction] until the first widget resolved by this finder
+  /// becomes visible.
+  ///
+  /// If [view] is null, it defaults to the first found [Scrollable].
+  ///
+  /// See also:
+  ///  - [MaestroTester.dragUntilVisible]
+  Future<MaestroFinder> dragTo({
+    Finder? view,
+    Direction direction = Direction.down,
+    double step = 16,
+    int maxIteration = 50,
+    Duration duration = const Duration(milliseconds: 50),
+    bool? andSettle,
+  }) async {
+    view ??= createFinder(Scrollable);
+
+    final resolvedFinder = await tester.dragUntilVisible(
+      finder: finder,
+      view: view,
+      direction: direction,
+      step: step,
+      maxIteration: maxIteration,
+      duration: duration,
+      andSettle: andSettle,
+    );
+
+    return resolvedFinder;
   }
 
   /// Enters text into the first visible (i.e hit testable) widget resolved by
@@ -83,6 +114,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// See also:
   ///  - [WidgetTester.enterText]
+  // TODO: Add timeout
   Future<void> enterText(String text, {bool? andSettle}) async {
     await tester.tester.enterText((await visible()).first, text);
     await tester.performPump(andSettle);
@@ -190,4 +222,19 @@ class MaestroFinder extends MatchFinder {
 
   @override
   String toString() => finder.toString();
+}
+
+/// Useful methods that make chained finders more readable.
+extension ActionCombiner on Future<MaestroFinder> {
+  /// Same as [MaestroFinder.tap], but on a [MaestroFinder] which is not yet
+  /// visible.
+  Future<void> tap({bool? andSettle}) async {
+    await (await this).tap(andSettle: andSettle);
+  }
+
+  /// Same as [MaestroFinder.enterText], but on a [MaestroFinder] which is not
+  /// yet visible.
+  Future<void> enterText(String text, {bool? andSettle}) async {
+    await (await this).enterText(text, andSettle: andSettle);
+  }
 }
