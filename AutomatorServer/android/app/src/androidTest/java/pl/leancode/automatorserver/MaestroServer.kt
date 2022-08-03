@@ -28,6 +28,9 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
+data class OpenAppCommand(var packageName: String)
+
+@Serializable
 data class SwipeCommand(
     var startX: Float,
     var startY: Float,
@@ -62,19 +65,19 @@ data class SelectorQuery(
 ) {
     fun isEmpty(): Boolean {
         return (
-            text == null &&
-                textStartsWith == null &&
-                textContains == null &&
-                className == null &&
-                contentDescription == null &&
-                contentDescriptionStartsWith == null &&
-                contentDescriptionContains == null &&
-                resourceId == null &&
-                instance == null &&
-                enabled == null &&
-                focused == null &&
-                pkg == null
-            )
+                text == null &&
+                        textStartsWith == null &&
+                        textContains == null &&
+                        className == null &&
+                        contentDescription == null &&
+                        contentDescriptionStartsWith == null &&
+                        contentDescriptionContains == null &&
+                        resourceId == null &&
+                        instance == null &&
+                        enabled == null &&
+                        focused == null &&
+                        pkg == null
+                )
     }
 
     fun toUiSelector(): UiSelector {
@@ -255,6 +258,11 @@ class MaestroServer {
             "stop" bind POST to {
                 stop()
                 Response(OK).body("Server stopped.")
+            },
+            "openApp" bind POST to {
+                val body = Json.decodeFromString<OpenAppCommand>(it.bodyString())
+                UIAutomatorInstrumentation.instance.openApp(body.packageName)
+                Response(OK)
             },
             "pressBack" bind POST to {
                 UIAutomatorInstrumentation.instance.pressBack()
