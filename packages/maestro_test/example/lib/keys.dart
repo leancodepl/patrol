@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
-const K = Keys();
+typedef K = Keys;
 
 class Keys {
   const Keys();
 
-  Key get topText => const Key('topText');
-  Key get bottomText => const Key('bottomText');
+  static const topText = Key('topText');
+  static const bottomText = Key('bottomText');
 }
