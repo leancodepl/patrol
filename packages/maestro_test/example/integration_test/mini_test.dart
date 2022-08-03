@@ -5,16 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
-String? appPackage;
+late String mapsId;
+late String myAppId;
 
-void main() async {
-  final maestro = Maestro.forTest();
-
+Future<void> main() async {
   if (Platform.isIOS) {
-    appPackage = 'com.apple.Mail';
+    mapsId = 'com.apple.Maps';
+    myAppId = 'com.example.example';
   } else if (Platform.isAndroid) {
-    appPackage = 'com.google.android.gm';
+    mapsId = 'com.google.android.apps.maps';
+    myAppId = 'pl.leancode.maestro.example';
   }
+
+  final maestro = Maestro.forTest();
 
   maestroTest(
     'counter state is the same after going to Home and switching apps',
@@ -25,27 +28,26 @@ void main() async {
       await $(FloatingActionButton).tap();
 
       await maestro.pressHome();
+      await Future<void>.delayed(Duration(seconds: 3));
 
-      $.log(
-        'I went to home! Now gonna wait for 5 seconds and then go open the '
-        'mail app.',
-      );
-      await Future<void>.delayed(Duration(seconds: 5));
+      $.log("I went to home! Now I'm gonna open the mail app");
 
-      await maestro.openApp(id: appPackage!);
+      await maestro.openApp(id: mapsId);
+      await Future<void>.delayed(Duration(seconds: 3));
+      $.log("Opened mail app! Now I'm gonna go to home");
 
       await maestro.pressHome();
+      await Future<void>.delayed(Duration(seconds: 3));
 
-      $.log('Opeing the app again...');
-      await maestro.openApp(id: 'com.example.example');
+      await maestro.openApp(id: myAppId);
+      await Future<void>.delayed(Duration(seconds: 1));
+      $.log('Opening the app under test again...');
 
       expect($(#counterText).text, '2');
 
       $.log("More functionality is not implemented, so I'm gonna head out now");
-
-      await Future<void>.delayed(Duration(seconds: 5));
-      return;
     },
+    sleep: Duration(seconds: 5),
     appName: 'ExampleApp',
   );
 }
