@@ -5,7 +5,7 @@ import 'package:maestro_test/maestro_test.dart';
 
 void main() {
   maestroTest('Counter increments smoke test', ($) async {
-    await $.pumpWidgetAndSettle(const MyApp());
+    await $.pumpWidgetAndSettle(const ExampleApp());
 
     // equivalent of await $(ListTile).$(Icons.add).tap();
     await $.tester.tap(
