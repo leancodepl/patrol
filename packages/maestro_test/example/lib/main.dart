@@ -1,14 +1,15 @@
 import 'package:example/loading_screen.dart';
 import 'package:example/notifications_screen.dart';
 import 'package:example/overlay_screen.dart';
+import 'package:example/scrolling_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ExampleApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class ExampleApp extends StatelessWidget {
+  const ExampleApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,26 +18,25 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ExampleHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class ExampleHomePage extends StatefulWidget {
+  const ExampleHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ExampleHomePage> createState() => _ExampleHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ExampleHomePageState extends State<ExampleHomePage> {
   var _counter = 0;
 
   void _incrementCounter([int value = 1]) {
     final newValue = _counter + value;
-    print('incrementing counter by $value (to $newValue)');
     setState(() {
       _counter = newValue;
     });
@@ -44,7 +44,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _decrementCounter([int value = 1]) {
     final newValue = _counter - value;
-    print('decrementing counter by $value (to $newValue)');
     setState(() {
       _counter = newValue;
     });
@@ -150,6 +149,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             child: const Text('Open overlay screen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const ScrollingScreen(),
+              ),
+            ),
+            child: const Text('Open scrolling screen'),
           ),
         ],
       ),

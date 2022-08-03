@@ -9,7 +9,7 @@ void main() {
     ($) async {
       $.log('Yay, notification_test.dart is starting!');
 
-      await $.pumpWidgetAndSettle(MyApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
 

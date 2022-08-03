@@ -27,7 +27,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LoadingScreen'),
+        title: const Text('Loading'),
       ),
       body: Center(
         child: Column(

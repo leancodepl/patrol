@@ -9,7 +9,7 @@ void main() {
   maestroTest(
     'counter state is the same after going to Home and switching apps',
     ($) async {
-      await $.pumpWidgetAndSettle(MyApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
