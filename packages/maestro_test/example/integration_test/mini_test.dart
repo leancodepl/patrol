@@ -7,7 +7,7 @@ void main() {
   maestroTest(
     'goes to home',
     ($) async {
-      await $.pumpWidgetAndSettle(MyApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await maestro.pressHome();
     },
