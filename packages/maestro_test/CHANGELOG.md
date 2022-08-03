@@ -1,3 +1,8 @@
+## 0.4.3
+
+- Add `MaestroFinder.dragTo`
+- Remove unused `MaestroTester.drag` and `MaestroTester.dragFrom`
+
 ## 0.4.2
 
 - Convert `MaestroFinder.visible` getter to a method, which now also takes a
