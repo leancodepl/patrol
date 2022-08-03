@@ -1,10 +1,20 @@
+import 'dart:io' show Platform;
+
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
-void main() {
+String? appPackage;
+
+void main() async {
   final maestro = Maestro.forTest();
+
+  if (Platform.isIOS) {
+    appPackage = 'com.apple.Mail';
+  } else if (Platform.isAndroid) {
+    appPackage = 'com.google.android.gm';
+  }
 
   maestroTest(
     'counter state is the same after going to Home and switching apps',
@@ -22,8 +32,8 @@ void main() {
       );
       await Future<void>.delayed(Duration(seconds: 5));
 
-      // TODO: different for iOS
-      await maestro.openApp(id: 'com.google.android.gm');
+      await maestro.openApp(id: appPackage!);
+
       await maestro.pressHome();
 
       $.log('Opeing the app again...');
