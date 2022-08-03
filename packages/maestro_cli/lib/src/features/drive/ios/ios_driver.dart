@@ -20,16 +20,20 @@ class IOSDriver extends PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
-    final cancel = await _runServer(deviceName: device);
-    await flutter_driver.runWithOutput(
-      driver: driver,
-      target: target,
-      host: host,
-      port: port,
-      verbose: verbose,
-      device: device,
-      flavor: flavor,
-      dartDefines: dartDefines,
+    final cancel = await _runServer(
+      deviceName: device,
+      onServerInstalled: () async {
+        await flutter_driver.runWithOutput(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          verbose: verbose,
+          device: device,
+          flavor: flavor,
+          dartDefines: dartDefines,
+        );
+      },
     );
 
     await cancel();
@@ -67,6 +71,7 @@ class IOSDriver extends PlatformDriver {
 
   Future<Future<void> Function()> _runServer({
     required String deviceName,
+    required void Function() onServerInstalled,
   }) async {
     // FIXME: Fix failing to build when using Dart x86_64.
     final process = await Process.start(
@@ -90,15 +95,29 @@ class IOSDriver extends PlatformDriver {
       ],
       runInShell: true,
       // FIXME: don't hardcode working directory
-      includeParentEnvironment: false,
       workingDirectory:
           '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios',
     );
 
     final stdOutSub = process.stdout.listen((msg) {
-      systemEncoding.decode(msg).split('\n').map((str) => str.trim()).toList()
-        ..removeWhere((element) => element.isEmpty)
-        ..forEach(log.info);
+      final lines = systemEncoding
+          .decode(msg)
+          .split('\n')
+          .map((str) => str.trim())
+          .toList()
+        ..removeWhere((element) => element.isEmpty);
+
+      for (final line in lines) {
+        if (line.startsWith('MaestroServer')) {
+          log.info(line);
+        } else {
+          log.fine(line);
+        }
+
+        if (line.contains('Server started')) {
+          onServerInstalled();
+        }
+      }
     });
 
     final stdErrSub = process.stderr.listen((msg) {
@@ -106,24 +125,14 @@ class IOSDriver extends PlatformDriver {
       log.severe(text);
 
       if (text.contains('** TEST FAILED **')) {
-        throw Exception('Test failed. See logs above.');
+        throw Exception(
+          'Test failed. See logs above. Also, consider running with --verbose.',
+        );
       }
     });
 
     return () async {
-      await stdOutSub.cancel();
-      await stdErrSub.cancel();
-
-      final msg = 'xcodebuild exited with code $exitCode';
-      if (exitCode == 0) {
-        log.info(msg);
-      } else {
-        log.severe(msg);
-      }
-    };
-
-    unawaited(
-      process.exitCode.then((exitCode) async {
+      await process.exitCode.then((exitCode) async {
         await stdOutSub.cancel();
         await stdErrSub.cancel();
 
@@ -133,8 +142,8 @@ class IOSDriver extends PlatformDriver {
         } else {
           log.severe(msg);
         }
-      }),
-    );
+      });
+    };
   }
 }
 

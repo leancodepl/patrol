@@ -2,14 +2,13 @@ import XCTest
 
 class ServerLoop: XCTestCase {
   func testRunMaestroServer() {
-    print("Starting server...")
+    Logger.shared.i("Starting server...")
 
     let maestroServer = MaestroServer()
     do {
       try maestroServer.start()
-      print("Server started")
     } catch let error {
-      print("error: \(error)")
+      Logger.shared.i("error: \(error)")
       maestroServer.stop()
     }
   }
