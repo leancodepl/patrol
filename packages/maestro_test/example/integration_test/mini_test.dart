@@ -17,10 +17,14 @@ void main() {
       await maestro.pressHome();
 
       $.log(
-        'I went to home! Now gonna wait for 5 seconds and then go open the app '
-        'again...',
+        'I went to home! Now gonna wait for 5 seconds and then go open the '
+        'mail app.',
       );
       await Future<void>.delayed(Duration(seconds: 5));
+
+      // TODO: different for iOS
+      await maestro.openApp(id: 'com.google.android.gm');
+      await maestro.pressHome();
 
       $.log('Opeing the app again...');
       await maestro.openApp(id: 'com.example.example');

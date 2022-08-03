@@ -28,7 +28,7 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
-data class OpenAppCommand(var packageName: String)
+data class OpenAppCommand(var id: String)
 
 @Serializable
 data class SwipeCommand(
@@ -261,7 +261,7 @@ class MaestroServer {
             },
             "openApp" bind POST to {
                 val body = Json.decodeFromString<OpenAppCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.openApp(body.packageName)
+                UIAutomatorInstrumentation.instance.openApp(body.id)
                 Response(OK)
             },
             "pressBack" bind POST to {

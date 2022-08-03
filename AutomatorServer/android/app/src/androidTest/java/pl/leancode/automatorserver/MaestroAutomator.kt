@@ -8,6 +8,7 @@ import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
 import kotlinx.serialization.Serializable
+import java.lang.Exception
 import kotlin.math.roundToInt
 
 
@@ -72,6 +73,8 @@ class UIAutomatorInstrumentation {
 
     private val context get() = instrumentation.context
 
+    private val targetContext get() = instrumentation.targetContext
+
     val port: Int?
         get() = arguments.getString("MAESTRO_PORT")?.toInt()
 
@@ -83,10 +86,10 @@ class UIAutomatorInstrumentation {
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
     fun openApp(packageName: String) {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        val intent = context.packageManager?.getLaunchIntentForPackage(packageName)
-        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // clear out any previous task, i.e., make sure it starts on the initial screen
-        context.startActivity(intent) // starts the app
+        val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)
+            ?: throw Exception("intent for launching $packageName is null")
+        // intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // clear out any previous task, i.e., make sure it starts on the initial screen
+        targetContext.startActivity(intent) // starts the app
         delay()
     }
 
