@@ -54,7 +54,12 @@ class MaestroFinder extends MatchFinder {
   final MaestroTester tester;
 
   /// Taps on the first visible (i.e hit testable) widget resolved by this
-  /// finder.
+  /// finder. If no widgets are found, it calls [MaestroFinder.waitForVisible].
+  /// To override the global timeout, set [timeout].
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after
+  /// entering text. If you want to disable this behavior, set [andSettle] to
+  /// false.
   ///
   /// ```dart
   /// await $(#createAccount).tap();
@@ -69,9 +74,9 @@ class MaestroFinder extends MatchFinder {
   ///
   /// See also:
   ///  - [WidgetController.tap] (which [WidgetTester] extends from)
-  // TODO: Add timeout
-  Future<void> tap({bool? andSettle}) async {
-    await tester.tester.tap((await visible()).first);
+  Future<void> tap({bool? andSettle, Duration? timeout}) async {
+    final resolvedFinder = await waitForVisible(timeout: timeout);
+    await tester.tester.tap(resolvedFinder.first);
     await tester.performPump(andSettle);
   }
 
@@ -105,8 +110,9 @@ class MaestroFinder extends MatchFinder {
     return resolvedFinder;
   }
 
-  /// Enters text into the first visible (i.e hit testable) widget resolved by
-  /// this finder.
+  /// Enters text into the first visible (i.e hit testable) widget found by this
+  /// finder. If no widgets are found, it calls [MaestroFinder.waitForVisible].
+  /// To override the global timeout, set [timeout].
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
   /// entering text. If you want to disable this behavior, set [andSettle] to
@@ -114,16 +120,21 @@ class MaestroFinder extends MatchFinder {
   ///
   /// See also:
   ///  - [WidgetTester.enterText]
-  // TODO: Add timeout
-  Future<void> enterText(String text, {bool? andSettle}) async {
-    await tester.tester.enterText((await visible()).first, text);
+  Future<void> enterText(
+    String text, {
+    bool? andSettle,
+    Duration? timeout,
+  }) async {
+    final resolvedFinder = await waitForVisible(timeout: timeout);
+    await tester.tester.enterText(resolvedFinder.first, text);
     await tester.performPump(andSettle);
   }
 
   /// If the first widget resolved by this [MaestroFinder] matches a [Text]
   /// widget, then this method returns its data.
   ///
-  /// If you want to make sure that that widget is visible, first use [visible] method:
+  /// If you want to make sure that that widget is visible, first use
+  /// [waitForVisible] method:
   ///
   /// ```dart
   /// expect(await $(Key('Sign in Button')).visible.text, 'Sign in');
@@ -169,6 +180,32 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
+  /// Returns if this finder finds at least 1 widget.
+  bool get exists => evaluate().isNotEmpty;
+
+  /// Returns if this finder finds at least 1 visible widget.
+  bool get visible => hitTestable().evaluate().isNotEmpty;
+
+  /// Waits until this finder finds at least one widget.
+  ///
+  /// Throws a [MaestroFinderFoundNothingException] if no widgets  found.
+  ///
+  /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
+  /// override this global setting, set [timeout].
+  Future<MaestroFinder> waitForExists({Duration? timeout}) async {
+    final end = DateTime.now().add(timeout ?? tester.findTimeout);
+
+    while (evaluate().isEmpty) {
+      if (DateTime.now().isAfter(end)) {
+        throw MaestroFinderFoundNothingException(finder: this);
+      }
+
+      await tester.tester.pump(const Duration(milliseconds: 100));
+    }
+
+    return this;
+  }
+
   /// Waits until this finder finds at least one visible widget.
   ///
   /// Throws a [MaestroFinderFoundNothingException] if more time than specified
@@ -176,7 +213,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
   /// override this global setting, set [timeout].
-  Future<MaestroFinder> visible({Duration? timeout}) async {
+  Future<MaestroFinder> waitForVisible({Duration? timeout}) async {
     final end = DateTime.now().add(timeout ?? tester.findTimeout);
 
     while (hitTestable().evaluate().isEmpty) {

@@ -102,10 +102,10 @@ class MaestroTester {
   /// If false, only [pump] is called in these situations.
   final bool andSettle;
 
-  /// Time after which [MaestroFinder.visible] fails if it doesn't finds a
+  /// Time after which [MaestroFinder.waitForVisible] fails if it doesn't finds a
   /// widget.
   ///
-  /// [MaestroFinder.visible] is used internally by [MaestroFinder.tap] and
+  /// [MaestroFinder.waitForVisible] is used internally by [MaestroFinder.tap] and
   /// [MaestroFinder.enterText].
   final Duration findTimeout;
 
@@ -205,7 +205,7 @@ class MaestroTester {
 
     await tester.dragUntilVisible(
       finder.first,
-      (await maestroFinder.visible()).first,
+      (await maestroFinder.waitForVisible()).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
