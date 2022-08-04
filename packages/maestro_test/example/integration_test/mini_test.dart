@@ -28,7 +28,6 @@ Future<void> main() async {
       await $(FloatingActionButton).tap();
 
       await maestro.pressHome();
-      await Future<void>.delayed(Duration(seconds: 3));
 
       $.log("I went to home! Now I'm gonna open the mail app");
 

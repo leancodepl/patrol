@@ -42,10 +42,10 @@ Future<void> run({
 }
 
 /// Runs flutter driver with the given [driver] and [target] and waits until the
-/// drive is done.
+/// drive is done. Returns the exit code of the `flutter drive`.
 ///
 /// Prints standard output of "flutter drive".
-Future<void> runWithOutput({
+Future<int> runWithOutput({
   required String driver,
   required String target,
   required String host,
@@ -109,8 +109,10 @@ Future<void> runWithOutput({
   if (exitCode == 0) {
     log.info(msg);
   } else {
-    throw Exception('$msg. See logs above.');
+    log.warning(msg);
   }
+
+  return exitCode;
 }
 
 Map<String, String> _dartDefines({

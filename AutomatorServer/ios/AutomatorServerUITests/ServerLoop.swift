@@ -11,5 +11,7 @@ class ServerLoop: XCTestCase {
       Logger.shared.i("error: \(error)")
       maestroServer.stop()
     }
+
+    Logger.shared.i("Server stopped")
   }
 }

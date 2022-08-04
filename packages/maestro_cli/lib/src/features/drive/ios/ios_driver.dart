@@ -22,8 +22,8 @@ class IOSDriver extends PlatformDriver {
   }) async {
     final cancel = await _runServer(
       deviceName: device,
-      onServerInstalled: () async {
-        await flutter_driver.runWithOutput(
+      onServerStarted: () async {
+        final exitCode = await flutter_driver.runWithOutput(
           driver: driver,
           target: target,
           host: host,
@@ -71,7 +71,7 @@ class IOSDriver extends PlatformDriver {
 
   Future<Future<void> Function()> _runServer({
     required String deviceName,
-    required void Function() onServerInstalled,
+    required Future<void> Function() onServerStarted,
   }) async {
     // FIXME: Fix failing to build when using Dart x86_64.
     final process = await Process.start(
@@ -115,7 +115,10 @@ class IOSDriver extends PlatformDriver {
         }
 
         if (line.contains('Server started')) {
-          onServerInstalled();
+          onServerStarted().then((exitCode) {
+            log.info('Killing server because `flutter drive` finished');
+            process.kill();
+          });
         }
       }
     });

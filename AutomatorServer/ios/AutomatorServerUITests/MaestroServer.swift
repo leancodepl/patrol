@@ -34,7 +34,7 @@ class MaestroServer {
     case ("POST", "openApp"):
       let input = environ["swsgi.input"] as! SWSGIInput
       JSONReader.read(input) { json in
-        guard let map = json as? [String:Any] else {
+        guard let map = json as? [String: Any] else {
           Logger.shared.i("Failed to type assert")
           return
         }
