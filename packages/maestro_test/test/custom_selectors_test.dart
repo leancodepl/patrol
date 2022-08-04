@@ -209,7 +209,7 @@ void main() {
     });
 
     maestroTest(
-      'finds only hit testable',
+      'visible() throws exception when widget is not hit testable',
       ($) async {
         await pumpWithOverlays($);
 
@@ -223,6 +223,30 @@ void main() {
       findTimeout: const Duration(milliseconds: 300),
     );
   });
+
+  maestroTest('text returns the nearest visible Text widget (1)', ($) async {
+    await smallPump($);
+
+    expect($(#helloText), findsOneWidget);
+    expect($(#helloText).text, 'Hello');
+  });
+
+  maestroTest('text returns the nearest visible Text widget (2)', ($) async {
+    await pumpWithOverlays($);
+
+    expect($(#visibleText), findsOneWidget);
+    expect($(#hiddenText), findsOneWidget);
+
+    expect($(#visibleText).text, 'visible boi');
+    await expectLater(
+      () => $(#hiddenBoi).text,
+      throwsA(isA<MaestroFinderFoundNothingException>()),
+    );
+    await expectLater(
+      () => $(#hiddenBoiButWrongKey).text,
+      throwsA(isA<MaestroFinderFoundNothingException>()),
+    );
+  });
 }
 
 Future<void> smallPump(MaestroTester $) async {
@@ -231,7 +255,7 @@ Future<void> smallPump(MaestroTester $) async {
       home: Row(
         children: const [
           Icon(Icons.front_hand),
-          Text('Hello'),
+          Text('Hello', key: Key('helloText')),
         ],
       ),
     ),
@@ -280,9 +304,7 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
       home: Scaffold(
         body: Stack(
           children: [
-            const Center(
-              child: Text('hidden boi'),
-            ),
+            const Center(child: Text('hidden boi', key: Key('hiddenText'))),
             Center(
               child: Container(
                 width: 150,
@@ -290,6 +312,7 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
                 color: Colors.blue,
               ),
             ),
+            const Text('visible boi', key: Key('visibleText')),
           ],
         ),
       ),
