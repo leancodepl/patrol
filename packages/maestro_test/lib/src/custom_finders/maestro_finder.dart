@@ -120,12 +120,32 @@ class MaestroFinder extends MatchFinder {
     await tester.performPump(andSettle);
   }
 
-  /// If this [MaestroFinder] matches a [Text] widget, then this method returns
-  /// its data.
+  /// If the first widget resolved by this [MaestroFinder] matches a [Text]
+  /// widget, then this method returns its data.
   ///
-  /// Otherwise it throws an error.
+  /// If you want to make sure that that widget is visible, first use [visible] method:
+  ///
+  /// ```dart
+  /// expect(await $(Key('Sign in Button')).visible.text, 'Sign in');
+  /// ```
+  ///
+  /// Otherwise it throws an exception.
   String? get text {
-    return (finder.evaluate().first.widget as Text).data;
+    final elements = finder.evaluate();
+    if (elements.isEmpty) {
+      throw MaestroFinderFoundNothingException(finder: this);
+    }
+
+    final firstWidget = elements.first.widget;
+
+    if (firstWidget is! Text) {
+      throw Exception(
+        'The first ${firstWidget.runtimeType} widget resolved by this finder '
+        'is not a Text widget',
+      );
+    }
+
+    return firstWidget.data;
   }
 
   /// Shorthand for [MaestroFinder.resolve].
