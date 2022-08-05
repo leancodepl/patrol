@@ -11,7 +11,7 @@ void main() {
     await $.pumpWidgetAndSettle(ExampleApp());
     await $('Open scrolling screen').tap();
 
-    expect(await $(K.topText).waitForVisible(), findsOneWidget);
+    expect(await $(K.topText).waitUntilVisible(), findsOneWidget);
     expect($(K.bottomText).hitTestable(), findsNothing);
 
     await $(K.bottomText).dragTo();

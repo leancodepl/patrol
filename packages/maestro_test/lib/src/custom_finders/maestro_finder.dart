@@ -74,11 +74,11 @@ class MaestroFinder extends MatchFinder {
   /// tapping. If you want to disable this behavior, set [andSettle] to false.
   ///
   /// See also:
-  ///  - [MaestroFinder.waitForVisible], which is used to wait for the widget to
-  ///    appear
+  ///  - [MaestroFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap({bool? andSettle, Duration? timeout}) async {
-    final resolvedFinder = await waitForVisible(timeout: timeout);
+    final resolvedFinder = await waitUntilVisible(timeout: timeout);
     await tester.tester.tap(resolvedFinder.first);
     await tester.performPump(andSettle);
   }
@@ -135,15 +135,15 @@ class MaestroFinder extends MatchFinder {
   /// false.
   ///
   /// See also:
-  ///  - [MaestroFinder.waitForVisible], which is used to wait for the widget to
-  ///    appear
+  ///  - [MaestroFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
     bool? andSettle,
     Duration? timeout,
   }) async {
-    final resolvedFinder = await waitForVisible(timeout: timeout);
+    final resolvedFinder = await waitUntilVisible(timeout: timeout);
     await tester.tester.enterText(resolvedFinder.first, text);
     await tester.performPump(andSettle);
   }
@@ -152,7 +152,7 @@ class MaestroFinder extends MatchFinder {
   /// widget, then this method returns its data.
   ///
   /// If you want to make sure that that widget is visible, first use
-  /// [waitForVisible] method:
+  /// [waitUntilVisible] method:
   ///
   /// ```dart
   /// expect(await $(Key('Sign in Button')).visible.text, 'Sign in');
@@ -210,7 +210,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
   /// override this global setting, set [timeout].
-  Future<MaestroFinder> waitForExists({Duration? timeout}) async {
+  Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
     final end = DateTime.now().add(timeout ?? tester.findTimeout);
 
     while (evaluate().isEmpty) {
@@ -231,7 +231,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
   /// override this global setting, set [timeout].
-  Future<MaestroFinder> waitForVisible({Duration? timeout}) async {
+  Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
     final end = DateTime.now().add(timeout ?? tester.findTimeout);
 
     while (hitTestable().evaluate().isEmpty) {

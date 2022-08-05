@@ -190,13 +190,12 @@ class Maestro {
   ///    which is used on Android
   ///
   /// * https://developer.apple.com/documentation/xctest/xcuidevice/button/home,
-  /// which is used on iOS
+  ///   which is used on iOS
   Future<void> pressHome() => _wrapPost('pressHome');
 
   /// Opens the app specified by [id].
   ///
   /// On Android [id] is the package name. On iOS [id] is the bundle name.
-  /// TODO: Implement on Android
   Future<void> openApp({required String id}) => _wrapPost(
         'openApp',
         <String, dynamic>{'id': id},
