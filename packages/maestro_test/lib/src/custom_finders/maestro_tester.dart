@@ -78,7 +78,7 @@ extension DirectionX on Direction {
 /// [callable class][callable-class].
 ///
 /// [callable-class]:
-/// https://dart.dev/guides/language/language-tour#callable-classes
+/// <https://dart.dev/guides/language/language-tour#callable-classes>
 class MaestroTester {
   /// Creates a new [MaestroTester] which wraps [tester].
   const MaestroTester(
@@ -102,10 +102,10 @@ class MaestroTester {
   /// If false, only [pump] is called in these situations.
   final bool andSettle;
 
-  /// Time after which [MaestroFinder.visible] fails if it doesn't finds a
+  /// Time after which [MaestroFinder.waitUntilVisible] fails if it doesn't finds a
   /// widget.
   ///
-  /// [MaestroFinder.visible] is used internally by [MaestroFinder.tap] and
+  /// [MaestroFinder.waitUntilVisible] is used internally by [MaestroFinder.tap] and
   /// [MaestroFinder.enterText].
   final Duration findTimeout;
 
@@ -205,7 +205,7 @@ class MaestroTester {
 
     await tester.dragUntilVisible(
       finder.first,
-      (await maestroFinder.visible()).first,
+      (await maestroFinder.waitUntilVisible()).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,

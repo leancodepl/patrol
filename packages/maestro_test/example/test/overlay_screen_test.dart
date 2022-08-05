@@ -14,7 +14,7 @@ void main() {
     expect($('hidden boi').hitTestable(), findsNothing);
 
     await expectLater(
-      () => $('hidden boi').visible(),
+      () => $('hidden boi').waitUntilVisible(),
       throwsA(isA<MaestroFinderFoundNothingException>()),
     );
   });

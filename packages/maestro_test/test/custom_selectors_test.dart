@@ -216,7 +216,7 @@ void main() {
         expect(find.text('hidden boi'), findsOneWidget);
 
         await expectLater(
-          () => $('hidden boi').visible(),
+          () => $('hidden boi').waitUntilVisible(),
           throwsA(isA<MaestroFinderFoundNothingException>()),
         );
       },
