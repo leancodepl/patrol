@@ -53,15 +53,12 @@ class MaestroFinder extends MatchFinder {
   /// [MaestroTester] that this [MaestroFinder] wraps.
   final MaestroTester tester;
 
-  /// Taps on the first visible (i.e hit testable) widget resolved by this
-  /// finder. If no widgets are found, it calls [MaestroFinder.waitForVisible].
-  /// To override the global timeout, set [timeout].
+  /// Waits until this finder finds at least 1 visible widget and then taps on
+  /// it.
   ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// entering text. If you want to disable this behavior, set [andSettle] to
-  /// false.
-  ///
+  /// Example:
   /// ```dart
+  /// // taps on the first widget having Key('createAccount')
   /// await $(#createAccount).tap();
   /// ```
   ///
@@ -69,11 +66,17 @@ class MaestroFinder extends MatchFinder {
   /// tap on:
   ///
   /// ```dart
-  /// await $(TextButton).at(2).tap(); // tap on the third TextButton
+  /// // taps on the third TextButton widget
+  /// await $(TextButton).at(2).tap();
   /// ```
   ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after
+  /// tapping. If you want to disable this behavior, set [andSettle] to false.
+  ///
   /// See also:
-  ///  - [WidgetController.tap] (which [WidgetTester] extends from)
+  ///  - [MaestroFinder.waitForVisible], which is used to wait for the widget to
+  ///    appear
+  ///  - [WidgetController.tap]
   Future<void> tap({bool? andSettle, Duration? timeout}) async {
     final resolvedFinder = await waitForVisible(timeout: timeout);
     await tester.tester.tap(resolvedFinder.first);
@@ -110,15 +113,30 @@ class MaestroFinder extends MatchFinder {
     return resolvedFinder;
   }
 
-  /// Enters text into the first visible (i.e hit testable) widget found by this
-  /// finder. If no widgets are found, it calls [MaestroFinder.waitForVisible].
-  /// To override the global timeout, set [timeout].
+  /// Waits until this finder finds at least 1 visible widget and then enters
+  /// text into it.
+  ///
+  /// Example:
+  /// ```dart
+  /// // enters text into the first widget having Key('email')
+  /// await $(#email).enterText(user@example.com);
+  /// ```
+  ///
+  /// If the finder resolves to more than 1 widget, you can choose which one to
+  /// enter text into:
+  ///
+  /// ```dart
+  /// // enters text into the third TextField widget
+  /// await $(TextField).at(2).enterText('Code ought to be lean');
+  /// ```
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
   /// entering text. If you want to disable this behavior, set [andSettle] to
   /// false.
   ///
   /// See also:
+  ///  - [MaestroFinder.waitForVisible], which is used to wait for the widget to
+  ///    appear
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
