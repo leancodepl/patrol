@@ -1,3 +1,12 @@
+## 0.4.4
+
+`MaestroFinder`:
+
+- rename `visible` method to `waitUntilVisible`
+- add `waitUntilExists` method
+- add `exists` getter
+- add `visible` getter
+
 ## 0.4.3
 
 - Add `MaestroFinder.dragTo`
