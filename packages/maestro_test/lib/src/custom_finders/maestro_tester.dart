@@ -78,7 +78,7 @@ extension DirectionX on Direction {
 /// [callable class][callable-class].
 ///
 /// [callable-class]:
-/// https://dart.dev/guides/language/language-tour#callable-classes
+/// <https://dart.dev/guides/language/language-tour#callable-classes>
 class MaestroTester {
   /// Creates a new [MaestroTester] which wraps [tester].
   const MaestroTester(
