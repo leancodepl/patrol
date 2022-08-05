@@ -9,7 +9,7 @@ void main() {
       await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
 
       final helloText = $('Hello');
-      await helloText.visible();
+      await helloText.waitUntilVisible();
       await helloText.tap(andSettle: false);
       expect(helloText, findsOneWidget);
     });
@@ -22,7 +22,7 @@ void main() {
 
           final helloText = $('Hello');
           await expectLater(
-            helloText.visible,
+            helloText.waitUntilVisible,
             throwsA(isA<MaestroFinderFoundNothingException>()),
           );
         });

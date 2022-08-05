@@ -53,10 +53,12 @@ class MaestroFinder extends MatchFinder {
   /// [MaestroTester] that this [MaestroFinder] wraps.
   final MaestroTester tester;
 
-  /// Taps on the first visible (i.e hit testable) widget resolved by this
-  /// finder.
+  /// Waits until this finder finds at least 1 visible widget and then taps on
+  /// it.
   ///
+  /// Example:
   /// ```dart
+  /// // taps on the first widget having Key('createAccount')
   /// await $(#createAccount).tap();
   /// ```
   ///
@@ -64,14 +66,20 @@ class MaestroFinder extends MatchFinder {
   /// tap on:
   ///
   /// ```dart
-  /// await $(TextButton).at(2).tap(); // tap on the third TextButton
+  /// // taps on the third TextButton widget
+  /// await $(TextButton).at(2).tap();
   /// ```
   ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after
+  /// tapping. If you want to disable this behavior, set [andSettle] to false.
+  ///
   /// See also:
-  ///  - [WidgetController.tap] (which [WidgetTester] extends from)
-  // TODO: Add timeout
-  Future<void> tap({bool? andSettle}) async {
-    await tester.tester.tap((await visible()).first);
+  ///  - [MaestroFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
+  ///  - [WidgetController.tap]
+  Future<void> tap({bool? andSettle, Duration? timeout}) async {
+    final resolvedFinder = await waitUntilVisible(timeout: timeout);
+    await tester.tester.tap(resolvedFinder.first);
     await tester.performPump(andSettle);
   }
 
@@ -105,25 +113,46 @@ class MaestroFinder extends MatchFinder {
     return resolvedFinder;
   }
 
-  /// Enters text into the first visible (i.e hit testable) widget resolved by
-  /// this finder.
+  /// Waits until this finder finds at least 1 visible widget and then enters
+  /// text into it.
+  ///
+  /// Example:
+  /// ```dart
+  /// // enters text into the first widget having Key('email')
+  /// await $(#email).enterText(user@example.com);
+  /// ```
+  ///
+  /// If the finder resolves to more than 1 widget, you can choose which one to
+  /// enter text into:
+  ///
+  /// ```dart
+  /// // enters text into the third TextField widget
+  /// await $(TextField).at(2).enterText('Code ought to be lean');
+  /// ```
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
   /// entering text. If you want to disable this behavior, set [andSettle] to
   /// false.
   ///
   /// See also:
+  ///  - [MaestroFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
   ///  - [WidgetTester.enterText]
-  // TODO: Add timeout
-  Future<void> enterText(String text, {bool? andSettle}) async {
-    await tester.tester.enterText((await visible()).first, text);
+  Future<void> enterText(
+    String text, {
+    bool? andSettle,
+    Duration? timeout,
+  }) async {
+    final resolvedFinder = await waitUntilVisible(timeout: timeout);
+    await tester.tester.enterText(resolvedFinder.first, text);
     await tester.performPump(andSettle);
   }
 
   /// If the first widget resolved by this [MaestroFinder] matches a [Text]
   /// widget, then this method returns its data.
   ///
-  /// If you want to make sure that that widget is visible, first use [visible] method:
+  /// If you want to make sure that that widget is visible, first use
+  /// [waitUntilVisible] method:
   ///
   /// ```dart
   /// expect(await $(Key('Sign in Button')).visible.text, 'Sign in');
@@ -169,6 +198,32 @@ class MaestroFinder extends MatchFinder {
     );
   }
 
+  /// Returns if this finder finds at least 1 widget.
+  bool get exists => evaluate().isNotEmpty;
+
+  /// Returns if this finder finds at least 1 visible widget.
+  bool get visible => hitTestable().evaluate().isNotEmpty;
+
+  /// Waits until this finder finds at least one widget.
+  ///
+  /// Throws a [MaestroFinderFoundNothingException] if no widgets  found.
+  ///
+  /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
+  /// override this global setting, set [timeout].
+  Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
+    final end = DateTime.now().add(timeout ?? tester.findTimeout);
+
+    while (evaluate().isEmpty) {
+      if (DateTime.now().isAfter(end)) {
+        throw MaestroFinderFoundNothingException(finder: this);
+      }
+
+      await tester.tester.pump(const Duration(milliseconds: 100));
+    }
+
+    return this;
+  }
+
   /// Waits until this finder finds at least one visible widget.
   ///
   /// Throws a [MaestroFinderFoundNothingException] if more time than specified
@@ -176,7 +231,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Timeout is globally set by [MaestroTester.findTimeout]. If you want to
   /// override this global setting, set [timeout].
-  Future<MaestroFinder> visible({Duration? timeout}) async {
+  Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
     final end = DateTime.now().add(timeout ?? tester.findTimeout);
 
     while (hitTestable().evaluate().isEmpty) {
