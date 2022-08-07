@@ -220,7 +220,9 @@ void main() {
           throwsA(isA<MaestroFinderFoundNothingException>()),
         );
       },
-      findTimeout: const Duration(milliseconds: 300),
+      config: const MaestroTestConfig(
+        findTimeout: Duration(milliseconds: 300),
+      ),
     );
   });
 

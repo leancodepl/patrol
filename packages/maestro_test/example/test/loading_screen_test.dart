@@ -27,7 +27,9 @@ void main() {
           );
         });
       },
-      findTimeout: const Duration(milliseconds: 100),
+      config: MaestroTestConfig(
+        findTimeout: const Duration(milliseconds: 100),
+      ),
     );
   });
 }

@@ -113,7 +113,7 @@ class MaestroTester {
   void log(Object? object, {String? name}) {
     final log = StringBuffer();
 
-    final tag = appName ?? name;
+    final tag = name ?? appName;
     if (tag != null) {
       log.write('$tag: ');
     }

@@ -1,5 +1,7 @@
 import 'package:maestro_test/maestro_test.dart';
 
+import 'config.dart';
+
 void main() {
   final maestro = Maestro.forTest();
 
@@ -7,8 +9,8 @@ void main() {
     'taps around',
     ($) async {
       await maestro.openQuickSettings();
-      await maestro.tap(Selector(text: 'Bluetooth'));
-      await maestro.tap(Selector(text: 'Bluetooth'));
+      await maestro.tap(const Selector(text: 'Bluetooth'));
+      await maestro.tap(const Selector(text: 'Bluetooth'));
       await maestro.pressBack();
 
       await maestro.openNotifications();
@@ -27,6 +29,6 @@ void main() {
 
       await maestro.pressBack();
     },
-    appName: 'ExampleApp',
+    config: maestroConfig,
   );
 }

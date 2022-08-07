@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
+import 'config.dart';
+
 late String mapsId;
 late String myAppId;
 
@@ -22,32 +24,31 @@ Future<void> main() async {
   maestroTest(
     'counter state is the same after going to Home and switching apps',
     ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+      await $.pumpWidgetAndSettle(const ExampleApp());
 
       await $(FloatingActionButton).tap();
       await $(FloatingActionButton).tap();
 
       await maestro.pressHome();
-      await Future<void>.delayed(Duration(seconds: 3));
+      await Future<void>.delayed(const Duration(seconds: 3));
 
       $.log("I went to home! Now I'm gonna open the mail app");
 
       await maestro.openApp(id: mapsId);
-      await Future<void>.delayed(Duration(seconds: 3));
+      await Future<void>.delayed(const Duration(seconds: 3));
       $.log("Opened mail app! Now I'm gonna go to home");
 
       await maestro.pressHome();
-      await Future<void>.delayed(Duration(seconds: 3));
+      await Future<void>.delayed(const Duration(seconds: 3));
 
       await maestro.openApp(id: myAppId);
-      await Future<void>.delayed(Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
       $.log('Opening the app under test again...');
 
       expect($(#counterText).text, '2');
 
       $.log("More functionality is not implemented, so I'm gonna head out now");
     },
-    sleep: Duration(seconds: 5),
-    appName: 'ExampleApp',
+    config: maestroConfig,
   );
 }
