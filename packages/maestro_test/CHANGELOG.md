@@ -1,3 +1,10 @@
+## 0.4.5
+
+- Create `MaestroTestConfig` class which is accepted by `maestroTest` function.
+  Use it to share common configuration across all tests.
+- Upgrade `package:freezed` to v2. Dependent projects should also make this
+  change.
+
 ## 0.4.4
 
 `MaestroFinder`:
