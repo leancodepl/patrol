@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
+import 'config.dart';
+
 void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
     'counter state is the same after going to Home and switching apps',
     ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+      await $.pumpWidgetAndSettle(const ExampleApp());
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
@@ -24,6 +26,6 @@ void main() {
       await maestro.openNotifications();
       await maestro.pressBack();
     },
-    appName: 'ExampleApp',
+    config: maestroConfig,
   );
 }

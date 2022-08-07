@@ -12,16 +12,7 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 /// Like [testWidgets], but with support for Maestro custom finders.
 ///
-/// If you want to not close the app immediately after the test completes, use
-/// [sleep].
-///
-/// To call [WidgetTester.pump] instead of [WidgetTester.pumpAndSettle] after
-/// actions such as [MaestroFinder.tap] and [MaestroFinder.enterText], set
-/// [andSettle] to false.
-///
-/// ### Custom finders
-///
-/// Maestro custom finders greatly simplify writing widget tests.
+/// To customize the Maestro-specific configuration, set [config].
 ///
 /// ### Using the default [WidgetTester]
 /// If you need to do something using Flutter's [WidgetTester], you can access
@@ -43,29 +34,26 @@ void maestroTest(
   Timeout? timeout,
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
-  Duration sleep = Duration.zero,
-  Duration findTimeout = const Duration(seconds: 5),
-  String? appName,
-  bool andSettle = true,
   dynamic tags,
+  MaestroTestConfig config = const MaestroTestConfig(),
 }) {
   return testWidgets(
     description,
     (widgetTester) async {
       final maestroTester = MaestroTester(
         widgetTester,
-        appName: appName,
-        andSettle: andSettle,
-        findTimeout: findTimeout,
+        appName: config.appName,
+        andSettle: config.andSettle,
+        findTimeout: config.findTimeout,
       );
       await callback(maestroTester);
-      if (sleep != Duration.zero) {
+      if (config.sleep != Duration.zero) {
         maestroTester.log(
-          'sleeping for ${sleep.inSeconds} seconds',
+          'sleeping for ${config.sleep.inSeconds} seconds',
           name: 'maestroTest',
         );
-        io.sleep(sleep);
-        maestroTester.log('sleeping finished', name: 'maestroTest');
+        io.sleep(config.sleep);
+        maestroTester.log('done sleeping', name: 'maestroTest');
       }
     },
     skip: skip,
@@ -74,6 +62,33 @@ void maestroTest(
     variant: variant,
     tags: tags,
   );
+}
+
+/// Maestro-specific test configuration.
+class MaestroTestConfig {
+  /// Creates a new [MaestroTestConfig].
+  const MaestroTestConfig({
+    this.findTimeout = const Duration(seconds: 10),
+    this.sleep = Duration.zero,
+    this.andSettle = true,
+    this.appName,
+  });
+
+  /// Amount of time to sleep after successful test execution. If set to
+  /// [Duration.zero], then the test completes immediately after successful
+  /// execution.
+  final Duration sleep;
+
+  /// Amount of time
+  final Duration findTimeout;
+
+  /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
+  /// [MaestroFinder.tap] and [MaestroFinder]. If false, only
+  /// [WidgetTester.pump] is called.
+  final bool andSettle;
+
+  /// Name of the application under test.
+  final String? appName;
 }
 
 /// Creates a [Finder] from [matching].

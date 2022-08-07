@@ -2,10 +2,10 @@
 
 `MaestroFinder`:
 
-- rename `visible` method to `waitUntilVisible`
-- add `waitUntilExists` method
-- add `exists` getter
-- add `visible` getter
+- Rename `visible` method to `waitUntilVisible`
+- Add `waitUntilExists` method
+- Add `exists` getter
+- Add `visible` getter
 
 ## 0.4.3
 
