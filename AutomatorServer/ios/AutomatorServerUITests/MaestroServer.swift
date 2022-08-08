@@ -2,6 +2,8 @@ import Embassy
 import EnvoyAmbassador
 
 class MaestroServer {
+  private let port = 8081
+  
   private let loop = try! SelectorEventLoop(selector: try! KqueueSelector())
 
   private let automation = MaestroAutomation()
@@ -50,9 +52,9 @@ class MaestroServer {
   }
 
   func start() throws {
-    let server = DefaultHTTPServer(eventLoop: loop, port: 8081, app: onRequest)
+    let server = DefaultHTTPServer(eventLoop: loop, port: port, app: onRequest)
     try! server.start()
-    Logger.shared.i("Server started")
+    Logger.shared.i("Server started on http://\(automation.ipAddress):\(port)")
     loop.runForever()
   }
 

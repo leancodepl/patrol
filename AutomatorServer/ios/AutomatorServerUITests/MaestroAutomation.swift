@@ -8,6 +8,10 @@ class MaestroAutomation {
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
   }()
+  
+  var ipAddress: String {
+    get { return device.wiFiIPAddress()! }
+  }
 
   func pressHome() {
     Logger.shared.i("pressing home button...")
