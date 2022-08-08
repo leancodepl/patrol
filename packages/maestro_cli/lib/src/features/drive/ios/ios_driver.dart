@@ -42,27 +42,22 @@ class IOSDriver extends PlatformDriver {
   @override
   Future<List<Device>> devices() async {
     final result = await Process.run(
-      'xcrun',
-      ['simctl', 'list', 'devices', '--json'],
+      'flutter',
+      ['devices', '--machine'],
     );
 
-    final json = jsonDecode(result.stdout as String) as Map<String, dynamic>;
-    final osVersions = (json['devices'] as Map<String, dynamic>).entries;
+    final jsonOutput = jsonDecode(result.stdout as String) as List<dynamic>;
 
     final iosDevices = <IOSDevice>[];
-    for (final osVersion in osVersions) {
-      final os = osVersion.key;
-      final devices = osVersion.value as List<dynamic>;
-      if (os.contains('com.apple.CoreSimulator.SimRuntime.iOS')) {
-        for (final device in devices) {
-          final name = (device as Map<String, dynamic>)['name'] as String;
-          final state = device['state'] as String;
-          final udid = device['udid'] as String;
+    for (final deviceJson in jsonOutput) {
+      deviceJson as Map<String, dynamic>;
 
-          if (state == 'Booted') {
-            iosDevices.add(IOSDevice(name: name, state: state, udid: udid));
-          }
-        }
+      final name = deviceJson['name'] as String;
+      final id = deviceJson['id'] as String;
+      final targetPlatform = deviceJson['targetPlatform'] as String;
+
+      if (targetPlatform == 'ios') {
+        iosDevices.add(IOSDevice(name: name, udid: id));
       }
     }
 
@@ -148,9 +143,8 @@ class IOSDriver extends PlatformDriver {
 }
 
 class IOSDevice {
-  IOSDevice({required this.name, required this.state, required this.udid});
+  IOSDevice({required this.name, required this.udid});
 
   final String name;
-  final String state;
   final String udid;
 }
