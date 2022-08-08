@@ -19,9 +19,11 @@ class IOSDriver extends PlatformDriver {
     Map<String, String> dartDefines = const {},
     required bool verbose,
     required bool debug,
+    bool simulator = false,
   }) async {
     final cancel = await _runServer(
       deviceName: device,
+      simulator: simulator,
       onServerInstalled: () async {
         await flutter_driver.runWithOutput(
           driver: driver,
@@ -67,31 +69,27 @@ class IOSDriver extends PlatformDriver {
   Future<Future<void> Function()> _runServer({
     required String deviceName,
     required void Function() onServerInstalled,
+    bool simulator = false,
   }) async {
-    // FIXME: Fix failing to build when using Dart x86_64.
+    // TODO: don't hardcode working directory
+    const xcProjPath = '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios';
+
+    // TODO: Fix failing to build when using Dart x86_64.
     final process = await Process.start(
       'xcodebuild',
       [
-        //'-arm64',
-        //'xcodebuild',
         'test',
-        //'ARCHS=x86_64',
-        //'ONLY_ACTIVE_ARCH=YES',
-        //'-arch',
-        //'"x86_64"',
         '-workspace',
         'AutomatorServer.xcworkspace',
         '-scheme',
         'AutomatorServer',
         '-sdk',
-        'iphonesimulator',
+        if (simulator) 'iphonesimulator' else 'iphoneos',
         '-destination',
-        'platform=iOS Simulator,name=$deviceName',
+        'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
       ],
       runInShell: true,
-      // FIXME: don't hardcode working directory
-      workingDirectory:
-          '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios',
+      workingDirectory: xcProjPath,
     );
 
     final stdOutSub = process.stdout.listen((msg) {

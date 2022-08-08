@@ -49,6 +49,10 @@ class DriveCommand extends Command<int> {
       ..addFlag(
         'parallel',
         help: '(experimental, inactive) Run tests on devices in parallel.',
+      )
+      ..addFlag(
+        'simulator',
+        help: 'Run on iOS simulator instead of physical device.',
       );
   }
 
@@ -106,6 +110,11 @@ class DriveCommand extends Command<int> {
       throw FormatException(
         '`dart-define` argument $cliDartDefines is not a list',
       );
+    }
+
+    final dynamic simulator = argResults?['simulator'] ?? false;
+    if (simulator is! bool) {
+      throw const FormatException('`simulator` argument is not a bool');
     }
 
     for (final entry in cliDartDefines as List<String>) {
@@ -167,6 +176,7 @@ class DriveCommand extends Command<int> {
           flavor: flavor as String?,
           verbose: verboseFlag,
           debug: debugFlag,
+          simulator: simulator,
         ),
       );
     }

@@ -9,8 +9,8 @@ class MaestroAutomation {
     return XCUIDevice.shared
   }()
   
-  var ipAddress: String {
-    get { return device.wiFiIPAddress()! }
+  var ipAddress: String? {
+    get { return device.wiFiIPAddress() }
   }
 
   func pressHome() {
