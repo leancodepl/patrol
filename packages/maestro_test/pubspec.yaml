@@ -2,7 +2,7 @@ name: maestro_test
 description: >
   Simple, easy-to-learn, and powerful Flutter-native UI testing framework eliminating
   limitations of flutter_test and flutter_driver
-version: 0.4.5
+version: 0.4.6
 homepage: https://github.com/leancodepl/maestro/tree/master/packages/maestro_test
 
 environment:
