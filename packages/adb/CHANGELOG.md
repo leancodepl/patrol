@@ -1,6 +1,11 @@
+## 0.1.4
+
+- Fix `AdbInstallFailedUpdateIncompatible.fromStdErr` not parsing the error
+  message correctly
+
 ## 0.1.3
 
-- Always ensure that `adb` dameon is running.
+- Always ensure that `adb` dameon is running
 
 ## 0.1.2
 
