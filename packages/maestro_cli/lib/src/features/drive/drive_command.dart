@@ -127,15 +127,17 @@ class DriveCommand extends Command<int> {
     }
 
     if (wantDevices.isEmpty) {
-      final firstDeviceName = availableDevices.first.name;
-      log.info('No device specified, using the first one ($firstDeviceName)');
-      wantDevices.add(firstDeviceName);
+      final firstDevice = availableDevices.first;
+      wantDevices.add(firstDevice.resolvedName);
+      log.info(
+        'No device specified, using the first one (${firstDevice.resolvedName})',
+      );
     }
 
     final devicesToUse = findOverlap(
       availableDevices: availableDevices,
       wantDevices: wantsAll
-          ? availableDevices.map((device) => device.name).toList()
+          ? availableDevices.map((device) => device.resolvedName).toList()
           : wantDevices,
     );
 
@@ -148,7 +150,7 @@ class DriveCommand extends Command<int> {
             target: target,
             host: host,
             port: port,
-            device: device.name,
+            device: device.resolvedName,
             flavor: flavor as String?,
             verbose: verboseFlag,
             debug: debugFlag,
@@ -160,7 +162,7 @@ class DriveCommand extends Command<int> {
             target: target,
             host: host,
             port: port,
-            device: device.name,
+            device: device.resolvedName,
             flavor: flavor as String?,
             verbose: verboseFlag,
             debug: debugFlag,
@@ -180,7 +182,7 @@ class DriveCommand extends Command<int> {
     required List<String> wantDevices,
   }) {
     final availableDevicesSet =
-        availableDevices.map((device) => device.name).toSet();
+        availableDevices.map((device) => device.resolvedName).toSet();
 
     for (final wantDevice in wantDevices) {
       if (!availableDevicesSet.contains(wantDevice)) {
@@ -189,7 +191,7 @@ class DriveCommand extends Command<int> {
     }
 
     return availableDevices
-        .where((device) => wantDevices.contains(device.name))
+        .where((device) => wantDevices.contains(device.resolvedName))
         .toList();
   }
 }

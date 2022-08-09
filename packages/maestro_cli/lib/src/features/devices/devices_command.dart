@@ -10,7 +10,7 @@ class DevicesCommand extends Command<int> {
   String get name => 'devices';
 
   @override
-  String get description => 'List available devices, simulators and emulators.';
+  String get description => 'List attached devices, simulators and emulators.';
 
   @override
   Future<int> run() async {
@@ -22,7 +22,7 @@ class DevicesCommand extends Command<int> {
     }
 
     for (final device in devices) {
-      log.info(device.name);
+      log.info('${device.name} (${device.id})');
     }
 
     return 0;
@@ -36,17 +36,25 @@ class DevicesCommand extends Command<int> {
 
     final jsonOutput = jsonDecode(result.stdout as String) as List<dynamic>;
 
-    return jsonOutput.map((dynamic deviceJson) {
+    final devices = <Device>[];
+    for (final deviceJson in jsonOutput) {
       deviceJson as Map<String, dynamic>;
 
-      return Device(
-        name: deviceJson['name'] as String,
-        id: deviceJson['id'] as String,
-        targetPlatform: TargetPlatformX.fromString(
-          deviceJson['targetPlatform'] as String,
+      final targetPlatform = deviceJson['targetPlatform'] as String;
+      if (targetPlatform != 'android-arm64' && targetPlatform != 'ios') {
+        continue;
+      }
+
+      devices.add(
+        Device(
+          name: deviceJson['name'] as String,
+          id: deviceJson['id'] as String,
+          targetPlatform: TargetPlatformX.fromString(targetPlatform),
+          real: !(deviceJson['emulator'] as bool),
         ),
-        real: !(deviceJson['emulator'] as bool),
       );
-    }).toList();
+    }
+
+    return devices;
   }
 }

@@ -115,12 +115,13 @@ class __$$_DeviceCopyWithImpl<$Res> extends _$DeviceCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_Device implements _Device {
+class _$_Device extends _Device {
   const _$_Device(
       {required this.name,
       required this.id,
       required this.targetPlatform,
-      required this.real});
+      required this.real})
+      : super._();
 
   @override
   final String name;
@@ -162,12 +163,13 @@ class _$_Device implements _Device {
       __$$_DeviceCopyWithImpl<_$_Device>(this, _$identity);
 }
 
-abstract class _Device implements Device {
+abstract class _Device extends Device {
   const factory _Device(
       {required final String name,
       required final String id,
       required final TargetPlatform targetPlatform,
       required final bool real}) = _$_Device;
+  const _Device._() : super._();
 
   @override
   String get name;
