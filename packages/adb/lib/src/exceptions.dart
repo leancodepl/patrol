@@ -25,7 +25,8 @@ class AdbInstallFailedUpdateIncompatible implements Exception {
   factory AdbInstallFailedUpdateIncompatible.fromStdErr(String stderr) {
     final str = stderr;
 
-    const start = ': Package ';
+    // not pretty, but works
+    const start = ': Existing package ';
     const end = ' signatures do not match';
 
     final startIndex = str.indexOf(start);
@@ -43,7 +44,10 @@ class AdbInstallFailedUpdateIncompatible implements Exception {
   /// [AdbInstallFailedUpdateIncompatible] should be thrown.
   static const trigger = 'INSTALL_FAILED_UPDATE_INCOMPATIBLE';
 
+  /// Raw error output that caused this exception.
   final String message;
+
+  /// Package which could not be installed.
   final String packageName;
 
   @override
