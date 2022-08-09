@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:maestro_cli/src/common/logging.dart';
@@ -39,31 +38,6 @@ class IOSDriver extends PlatformDriver {
     );
 
     await cancel();
-  }
-
-  @override
-  Future<List<Device>> devices() async {
-    final result = await Process.run(
-      'flutter',
-      ['devices', '--machine'],
-    );
-
-    final jsonOutput = jsonDecode(result.stdout as String) as List<dynamic>;
-
-    final iosDevices = <IOSDevice>[];
-    for (final deviceJson in jsonOutput) {
-      deviceJson as Map<String, dynamic>;
-
-      final name = deviceJson['name'] as String;
-      final id = deviceJson['id'] as String;
-      final targetPlatform = deviceJson['targetPlatform'] as String;
-
-      if (targetPlatform == 'ios') {
-        iosDevices.add(IOSDevice(name: name, udid: id));
-      }
-    }
-
-    return iosDevices.map((device) => Device.iOS(name: device.name)).toList();
   }
 
   Future<Future<void> Function()> _runServer({
@@ -138,11 +112,4 @@ class IOSDriver extends PlatformDriver {
       });
     };
   }
-}
-
-class IOSDevice {
-  IOSDevice({required this.name, required this.udid});
-
-  final String name;
-  final String udid;
 }

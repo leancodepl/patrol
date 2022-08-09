@@ -10,14 +10,6 @@ class AndroidDriver implements PlatformDriver {
   final _adb = Adb();
 
   @override
-  Future<List<Device>> devices() async {
-    final adbDevices = await _adb.devices();
-    return adbDevices
-        .map((adbDevice) => Device.android(name: adbDevice))
-        .toList();
-  }
-
-  @override
   Future<void> run({
     required String driver,
     required String target,

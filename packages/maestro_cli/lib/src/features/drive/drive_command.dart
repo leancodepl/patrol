@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
+import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
-import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -49,10 +50,6 @@ class DriveCommand extends Command<int> {
       ..addFlag(
         'parallel',
         help: '(experimental, inactive) Run tests on devices in parallel.',
-      )
-      ..addFlag(
-        'simulator',
-        help: 'Run on iOS simulator instead of physical device.',
       );
   }
 
@@ -112,11 +109,6 @@ class DriveCommand extends Command<int> {
       );
     }
 
-    final dynamic simulator = argResults?['simulator'] ?? false;
-    if (simulator is! bool) {
-      throw const FormatException('`simulator` argument is not a bool');
-    }
-
     for (final entry in cliDartDefines as List<String>) {
       final split = entry.split('=');
       if (split.length != 2) {
@@ -129,14 +121,7 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final drivers = <PlatformDriver>[
-      AndroidDriver(),
-      if (Platform.isMacOS) IOSDriver(),
-    ];
-
-    final availableDevices = [
-      for (final driver in drivers) ...await driver.devices()
-    ];
+    final availableDevices = await DevicesCommand.getDevices();
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
     }
@@ -156,29 +141,35 @@ class DriveCommand extends Command<int> {
 
     // TODO: Re-add support for parallel test execution.
     for (final device in devicesToUse) {
-      await device.map(
-        android: (device) => AndroidDriver().run(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          device: device.name,
-          flavor: flavor as String?,
-          verbose: verboseFlag,
-          debug: debugFlag,
-        ),
-        ios: (device) => IOSDriver().run(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          device: device.name,
-          flavor: flavor as String?,
-          verbose: verboseFlag,
-          debug: debugFlag,
-          simulator: simulator,
-        ),
-      );
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          await AndroidDriver().run(
+            driver: driver,
+            target: target,
+            host: host,
+            port: port,
+            device: device.name,
+            flavor: flavor as String?,
+            verbose: verboseFlag,
+            debug: debugFlag,
+          );
+          break;
+        case TargetPlatform.iOS:
+          await IOSDriver().run(
+            driver: driver,
+            target: target,
+            host: host,
+            port: port,
+            device: device.name,
+            flavor: flavor as String?,
+            verbose: verboseFlag,
+            debug: debugFlag,
+            simulator: !device.real,
+          );
+          break;
+        default:
+          throw Exception('Unsupported platform ${device.targetPlatform}');
+      }
     }
 
     return 0;

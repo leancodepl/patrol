@@ -1,7 +1,3 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'platform_driver.freezed.dart';
-
 abstract class PlatformDriver {
   Future<void> run({
     required String driver,
@@ -14,17 +10,4 @@ abstract class PlatformDriver {
     required bool verbose,
     required bool debug,
   });
-
-  Future<List<Device>> devices();
-}
-
-@freezed
-class Device with _$Device {
-  const factory Device.android({
-    required String name,
-  }) = _AndroidDevice;
-
-  const factory Device.iOS({
-    required String name,
-  }) = _IOSDevice;
 }
