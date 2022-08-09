@@ -58,4 +58,26 @@ emulator-5557	device
       ]);
     });
   });
+
+  group('exception parsing', () {
+    test('INSTALL_FAILED_UPDATE_INCOMPATIBLE (1)', () {
+      const output = '''
+failed to install /Users/bartek/.maestro/server-0.4.1.apk: Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE: Existing package pl.leancode.automatorserver signatures do not match newer version; ignoring!]
+''';
+
+      final exception = AdbInstallFailedUpdateIncompatible.fromStdErr(output);
+      expect(exception.packageName, 'pl.leancode.automatorserver');
+      expect(exception.message, output);
+    });
+
+    test('INSTALL_FAILED_UPDATE_INCOMPATIBLE (2)', () {
+      const output = '''
+failed to install /Users/bartek/.maestro/instrumentation.apk: Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE: Existing package pl.leancode.automatorserver.test signatures do not match newer version; ignoring!]
+''';
+
+      final exception = AdbInstallFailedUpdateIncompatible.fromStdErr(output);
+      expect(exception.packageName, 'pl.leancode.automatorserver.test');
+      expect(exception.message, output);
+    });
+  });
 }
