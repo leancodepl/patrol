@@ -7,6 +7,8 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
 class IOSDriver extends PlatformDriver {
+  IOSDriver();
+
   @override
   Future<void> run({
     required String driver,
@@ -20,26 +22,56 @@ class IOSDriver extends PlatformDriver {
     required bool debug,
     bool simulator = false,
   }) async {
-    final cancel = await _runServer(
+    await _forwardPorts(port); // TODO: Use device UDID
+    await _runServer(
       deviceName: device,
       simulator: simulator,
-      onServerInstalled: () async {
-        await flutter_driver.runWithOutput(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          verbose: verbose,
-          device: device,
-          flavor: flavor,
-          dartDefines: dartDefines,
-        );
-      },
+    );
+    await flutter_driver.runWithOutput(
+      driver: driver,
+      target: target,
+      host: host,
+      port: port,
+      verbose: verbose,
+      device: device,
+      flavor: flavor,
+      dartDefines: dartDefines,
     );
 
     await cancel();
   }
 
+  /// Forwards ports using iproxy.
+  Future<void> _forwardPorts(int port, {String? device}) async {
+    final progress = log.progress('Forwarding ports');
+
+    try {
+      final process = await Process.start(
+        'iproxy',
+        ['$port', '$port', '--udid', '$device'],
+      );
+
+      final subscription = process.stdout.listen((msg) {
+        final lines = systemEncoding
+            .decode(msg)
+            .split('\n')
+            .map((str) => str.trim())
+            .toList()
+          ..removeWhere((element) => element.isEmpty);
+
+        if (lines.contains('waiting for connection')) {}
+      });
+    } catch (err) {
+      progress.fail('Failed to forward ports');
+      rethrow;
+    }
+
+    progress.complete('Forwarded ports');
+  }
+
+  /// Runs the server which is an infinite XCUITest.
+  ///
+  /// Returns when the server is installed and running.
   Future<Future<void> Function()> _runServer({
     required String deviceName,
     required void Function() onServerInstalled,
