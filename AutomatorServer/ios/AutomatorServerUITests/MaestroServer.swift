@@ -21,6 +21,10 @@ class MaestroServer {
     let action = String(pathInfo[index...])
 
     switch (method, action) {
+    case ("GET", ""):
+      startResponse("200 OK", [])
+      sendBody(Data("Hello from AutomatorServer on iOS!".utf8))
+      sendBody(Data())  // send EOF
     case ("GET", "isRunning"):
       startResponse("200 OK", [])
       sendBody(Data("All is good.".utf8))
@@ -56,6 +60,7 @@ class MaestroServer {
     try! server.start()
     Logger.shared.i("Server started on http://\(automation.ipAddress ?? "localhost"):\(port)")
     loop.runForever()
+    Logger.shared.i("Server stopped (loop finished)")
   }
 
   func stop() {
