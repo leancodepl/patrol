@@ -165,11 +165,11 @@ Finder createFinder(dynamic matching) {
   }
 
   if (matching is String) {
-    return find.text(matching);
+    return find.text(matching, findRichText: true);
   }
 
   if (matching is Pattern) {
-    return find.textContaining(matching);
+    return find.textContaining(matching, findRichText: true);
   }
 
   if (matching is IconData) {

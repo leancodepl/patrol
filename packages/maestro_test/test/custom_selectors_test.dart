@@ -224,6 +224,27 @@ void main() {
         findTimeout: Duration(milliseconds: 300),
       ),
     );
+
+    maestroTest('finds RichText', ($) async {
+      await $.pumpWidgetAndSettle(
+        const MaterialApp(
+          home: Text.rich(
+            TextSpan(
+              text: 'Some text',
+              children: [
+                TextSpan(text: 'Some more text'),
+                WidgetSpan(child: SizedBox(width: 8)),
+                WidgetSpan(child: Icon(Icons.public)),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect($(RegExp('Some text')), findsOneWidget);
+      expect($(RegExp('Some more text')), findsOneWidget);
+      expect($('Some textSome more text\uFFFC\uFFFC'), findsOneWidget);
+    });
   });
 
   maestroTest('text returns the nearest visible Text widget (1)', ($) async {
