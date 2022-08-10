@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/logging.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
@@ -8,6 +9,8 @@ import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
 class IOSDriver extends PlatformDriver {
   IOSDriver();
+
+  final DisposeScope disposeScope = DisposeScope();
 
   @override
   Future<void> run({
@@ -38,7 +41,7 @@ class IOSDriver extends PlatformDriver {
       dartDefines: dartDefines,
     );
 
-    await cancel();
+    await disposeScope.dispose();
   }
 
   /// Forwards ports using iproxy.
@@ -47,20 +50,59 @@ class IOSDriver extends PlatformDriver {
 
     try {
       final process = await Process.start(
-        'iproxy',
-        ['$port', '$port', '--udid', '$device'],
+        'stdbuf',
+        [
+          '-i0',
+          '-o0',
+          '-e0',
+          'iproxy',
+          '$port:$port',
+          //'--udid',
+          //'00008101-001611D026A0001E'
+        ], // TODO: use right device
+        runInShell: true,
       );
 
-      final subscription = process.stdout.listen((msg) {
-        final lines = systemEncoding
-            .decode(msg)
-            .split('\n')
-            .map((str) => str.trim())
-            .toList()
-          ..removeWhere((element) => element.isEmpty);
-
-        if (lines.contains('waiting for connection')) {}
+      disposeScope.addDispose(() async {
+        log.info('Killing iproxy...');
+        process.kill();
+        log.info('iproxy killed');
       });
+
+      final completer = Completer<void>();
+
+      process.stdout.listen(
+        (msg) {
+          final lines = systemEncoding
+              .decode(msg)
+              .split('\n')
+              .map((str) => str.trim())
+              .toList();
+
+          for (final line in lines) {
+            const trigger = 'waiting for connection';
+            if (line.contains(trigger) && !completer.isCompleted) {
+              completer.complete();
+            }
+          }
+        },
+      ).disposed(disposeScope);
+
+      process.stderr.listen(
+        (msg) {
+          final lines = systemEncoding
+              .decode(msg)
+              .split('\n')
+              .map((str) => str.trim())
+              .toList();
+
+          for (final line in lines) {
+            log.warning('iproxy: $line');
+          }
+        },
+      ).disposed(disposeScope);
+
+      await completer.future;
     } catch (err) {
       progress.fail('Failed to forward ports');
       rethrow;
@@ -74,7 +116,6 @@ class IOSDriver extends PlatformDriver {
   /// Returns when the server is installed and running.
   Future<Future<void> Function()> _runServer({
     required String deviceName,
-    required void Function() onServerInstalled,
     bool simulator = false,
   }) async {
     // TODO: don't hardcode working directory
@@ -98,6 +139,7 @@ class IOSDriver extends PlatformDriver {
       workingDirectory: xcProjPath,
     );
 
+    final completer = Completer<void>();
     final stdOutSub = process.stdout.listen((msg) {
       final lines = systemEncoding
           .decode(msg)
@@ -114,7 +156,10 @@ class IOSDriver extends PlatformDriver {
         }
 
         if (line.contains('Server started')) {
-          onServerInstalled();
+          // FIXME: Return here
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
         }
       }
     });
@@ -129,6 +174,8 @@ class IOSDriver extends PlatformDriver {
         );
       }
     });
+
+    completer.complete();
 
     return () async {
       await process.exitCode.then((exitCode) async {

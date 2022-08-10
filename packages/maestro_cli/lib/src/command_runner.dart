@@ -13,6 +13,11 @@ import 'package:pub_updater/pub_updater.dart';
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
 
+  ProcessSignal.sigint.watch().listen((signal) {
+    log.info('Caught SIGINT, exiting...');
+    exit(1);
+  });
+
   try {
     final exitCode = await runner.run(args) ?? 0;
     return exitCode;
