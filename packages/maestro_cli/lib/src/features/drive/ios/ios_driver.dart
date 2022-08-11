@@ -27,7 +27,9 @@ class IOSDriver extends PlatformDriver {
     required bool debug,
     bool simulator = false,
   }) async {
-    await _forwardPorts(port: port, deviceId: device.id);
+    if (device.real) {
+      await _forwardPorts(port: port, deviceId: device.id);
+    }
     await _runServer(
       deviceName: device.name,
       simulator: simulator,
@@ -127,7 +129,11 @@ class IOSDriver extends PlatformDriver {
       ],
       runInShell: true,
       workingDirectory: xcProjPath,
-      environment: {...Platform.environment, envPortKey: port.toString()},
+      environment: {
+        ...Platform.environment,
+        // See https://stackoverflow.com/a/69237460/7009800
+        'TEST_RUNNER_$envPortKey': port.toString()
+      },
     );
 
     final completer = Completer<void>();
