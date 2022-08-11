@@ -252,6 +252,9 @@ class MaestroServer {
         running = true
 
         val router = routes(
+            "" bind GET to {
+                Response(OK).body("Hello from AutomatorServer on Android!")
+            },
             "isRunning" bind GET to {
                 Response(OK).body("All is good.")
             },

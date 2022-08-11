@@ -228,13 +228,19 @@ class UIAutomatorInstrumentation {
 
     fun openNotifications() {
         Logger.d("openNotifications()")
-        uiDevice.openNotification()
+        val success = uiDevice.openNotification()
+        if (!success) {
+            throw IllegalStateException("Could not open notifications")
+        }
         delay()
     }
 
     fun openQuickSettings() {
         Logger.d("openNotifications()")
-        uiDevice.openQuickSettings()
+        val success = uiDevice.openQuickSettings()
+        if (!success) {
+            throw IllegalStateException("Could not open quick settings")
+        }
         delay()
     }
 
