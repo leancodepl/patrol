@@ -1,9 +1,9 @@
 import Embassy
 import EnvoyAmbassador
 
-let envPortKey = "MAESTRO_PORT"
-
 class MaestroServer {
+  private let envPortKey = "MAESTRO_PORT"
+  
   private let port: Int
 
   private let loop: EventLoop

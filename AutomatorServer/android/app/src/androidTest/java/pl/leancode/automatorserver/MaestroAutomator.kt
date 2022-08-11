@@ -1,14 +1,10 @@
 package pl.leancode.automatorserver
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.*
 import kotlinx.serialization.Serializable
-import java.lang.Exception
 import kotlin.math.roundToInt
 
 
@@ -48,7 +44,7 @@ data class NativeWidget(
     }
 }
 
-class UIAutomatorInstrumentation {
+class MaestroAutomator {
     fun configure() {
         val configurator = Configurator.getInstance()
         configurator.waitForSelectorTimeout = 5000
@@ -69,14 +65,7 @@ class UIAutomatorInstrumentation {
 
     private val uiDevice get() = UiDevice.getInstance(instrumentation)
 
-    private val arguments get() = InstrumentationRegistry.getArguments()
-
-    private val context get() = instrumentation.context
-
     private val targetContext get() = instrumentation.targetContext
-
-    val port: Int?
-        get() = arguments.getString("MAESTRO_PORT")?.toInt()
 
     private fun executeShellCommand(cmd: String) {
         uiDevice.executeShellCommand(cmd)
@@ -296,6 +285,6 @@ class UIAutomatorInstrumentation {
     }
 
     companion object {
-        val instance = UIAutomatorInstrumentation()
+        val instance = MaestroAutomator()
     }
 }

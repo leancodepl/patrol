@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObjectNotFoundException
@@ -24,7 +25,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
-import java.util.Timer
+import java.util.*
 import kotlin.concurrent.schedule
 
 @Serializable
@@ -243,12 +244,22 @@ data class SelectorQuery(
 }
 
 class MaestroServer {
+    private val envPortKey = "MAESTRO_PORT"
+
     var running = false
     private var server: Http4kServer? = null
+    private val port: Int
+
+    init {
+        port = arguments.getString(envPortKey)?.toInt()
+            ?: throw MaestroException("$envPortKey is null")
+    }
+
+    private val arguments get() = InstrumentationRegistry.getArguments()
 
     fun start() {
         server?.stop()
-        UIAutomatorInstrumentation.instance.configure()
+        MaestroAutomator.instance.configure()
         running = true
 
         val router = routes(
@@ -264,113 +275,110 @@ class MaestroServer {
             },
             "openApp" bind POST to {
                 val body = Json.decodeFromString<OpenAppCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.openApp(body.id)
+                MaestroAutomator.instance.openApp(body.id)
                 Response(OK)
             },
             "pressBack" bind POST to {
-                UIAutomatorInstrumentation.instance.pressBack()
+                MaestroAutomator.instance.pressBack()
                 Response(OK)
             },
             "pressHome" bind POST to {
-                UIAutomatorInstrumentation.instance.pressHome()
+                MaestroAutomator.instance.pressHome()
                 Response(OK)
             },
             "pressRecentApps" bind POST to {
-                UIAutomatorInstrumentation.instance.pressRecentApps()
+                MaestroAutomator.instance.pressRecentApps()
                 Response(OK)
             },
             "pressDoubleRecentApps" bind POST to {
-                UIAutomatorInstrumentation.instance.pressDoubleRecentApps()
+                MaestroAutomator.instance.pressDoubleRecentApps()
                 Response(OK)
             },
             "openNotifications" bind POST to {
-                UIAutomatorInstrumentation.instance.openNotifications()
+                MaestroAutomator.instance.openNotifications()
                 Response(OK)
             },
             "openQuickSettings" bind POST to {
-                UIAutomatorInstrumentation.instance.openQuickSettings()
+                MaestroAutomator.instance.openQuickSettings()
                 Response(OK)
             },
             "getNotifications" bind GET to {
-                val notifications = UIAutomatorInstrumentation.instance.getNotifications()
+                val notifications = MaestroAutomator.instance.getNotifications()
                 Response(OK).body(Json.encodeToString(notifications))
             },
             "tapOnNotificationByIndex" bind POST to {
                 val body = Json.decodeFromString<TapOnNotificationByIndexCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.tapOnNotification(body.index)
+                MaestroAutomator.instance.tapOnNotification(body.index)
                 Response(OK)
             },
             "tapOnNotificationBySelector" bind POST to {
                 val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
-                UIAutomatorInstrumentation.instance.tapOnNotification(body)
+                MaestroAutomator.instance.tapOnNotification(body)
                 Response(OK)
             },
             "tap" bind POST to {
                 val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
-                UIAutomatorInstrumentation.instance.tap(body)
+                MaestroAutomator.instance.tap(body)
                 Response(OK)
             },
             "doubleTap" bind POST to {
                 val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
-                UIAutomatorInstrumentation.instance.doubleTap(body)
+                MaestroAutomator.instance.doubleTap(body)
                 Response(OK)
             },
             "enterTextByIndex" bind POST to {
                 val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.enterText(body.text, body.index)
+                MaestroAutomator.instance.enterText(body.text, body.index)
                 Response(OK)
             },
             "enterTextBySelector" bind POST to {
                 val body = Json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.enterText(body.text, body.selector)
+                MaestroAutomator.instance.enterText(body.text, body.selector)
                 Response(OK)
             },
             "swipe" bind POST to {
                 val body = Json.decodeFromString<SwipeCommand>(it.bodyString())
-                UIAutomatorInstrumentation.instance.swipe(body)
+                MaestroAutomator.instance.swipe(body)
                 Response(OK)
             },
             "getNativeWidgets" bind POST to {
                 val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
-                val textFields = UIAutomatorInstrumentation.instance.getNativeWidgets(body)
+                val textFields = MaestroAutomator.instance.getNativeWidgets(body)
                 Response(OK).body(Json.encodeToString(textFields))
             },
             "enableDarkMode" bind POST to {
-                UIAutomatorInstrumentation.instance.enableDarkMode()
+                MaestroAutomator.instance.enableDarkMode()
                 Response(OK)
             },
             "disableDarkMode" bind POST to {
-                UIAutomatorInstrumentation.instance.disableDarkMode()
+                MaestroAutomator.instance.disableDarkMode()
                 Response(OK)
             },
             "enableWifi" bind POST to {
-                UIAutomatorInstrumentation.instance.enableWifi()
+                MaestroAutomator.instance.enableWifi()
                 Response(OK)
             },
             "disableWifi" bind POST to {
-                UIAutomatorInstrumentation.instance.disableWifi()
+                MaestroAutomator.instance.disableWifi()
                 Response(OK)
             },
             "enableCelluar" bind POST to {
-                UIAutomatorInstrumentation.instance.enableCelluar()
+                MaestroAutomator.instance.enableCelluar()
                 Response(OK)
             },
             "disableCelluar" bind POST to {
-                UIAutomatorInstrumentation.instance.disableCelluar()
+                MaestroAutomator.instance.disableCelluar()
                 Response(OK)
             },
             "enableBluetooth" bind POST to {
-                UIAutomatorInstrumentation.instance.enableBluetooth()
+                MaestroAutomator.instance.enableBluetooth()
                 Response(OK)
             },
             "disableBluetooth" bind POST to {
-                UIAutomatorInstrumentation.instance.disableBluetooth()
+                MaestroAutomator.instance.disableBluetooth()
                 Response(OK)
             }
         )
-
-        val port = UIAutomatorInstrumentation.instance.port
-            ?: throw Exception("Could not start server: port is null")
 
         Logger.i("Starting server on port $port")
 
