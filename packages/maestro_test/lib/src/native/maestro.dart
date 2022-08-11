@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
-import 'package:logging/logging.dart' as logging;
-import 'package:logging/logging.dart';
 import 'package:maestro_test/src/extensions.dart';
 import 'package:maestro_test/src/native/models/models.dart';
+
+typedef _LoggerCallback = void Function(String);
+
+// ignore: avoid_print
+void _defaultPrintLogger(String message) => print('Maestro: $message');
 
 /// Provides functionality to control the device.
 ///
@@ -14,16 +17,18 @@ import 'package:maestro_test/src/native/models/models.dart';
 class Maestro {
   /// Creates a new [Maestro] instance for use in testing environment (on the
   /// target device).
-  Maestro.forTest()
-      : host = const String.fromEnvironment('MAESTRO_HOST'),
+  Maestro.forTest({
+    this.timeout = const Duration(seconds: 10),
+    _LoggerCallback logger = _defaultPrintLogger,
+  })  : _logger = logger,
+        host = const String.fromEnvironment('MAESTRO_HOST'),
         port = const String.fromEnvironment('MAESTRO_PORT'),
         verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true' {
-    _logger.info(
-      'Creating Maestro test instance. Host: $host, port: $port, verbose: $verbose',
-    );
+    _logger('creating Maestro, host: $host, port: $port, verbose: $verbose');
     IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-    _setUpLogger();
   }
+
+  final _LoggerCallback _logger;
 
   /// Host on which Maestro server instrumentation is running.
   final String host;
@@ -35,78 +40,14 @@ class Maestro {
   final bool verbose;
 
   /// Timeout for HTTP requests to Maestro automation server.
-  final timeout = const Duration(seconds: 10);
+  final Duration timeout;
 
   final _client = http.Client();
-  final _logger = logging.Logger('Maestro');
 
   String get _baseUri => 'http://$host:$port';
 
-  /// Sets up the global logger.
-  ///
-  /// We use 4 log levels:
-  /// - [Level.SEVERE], printed in red
-  /// - [Level.WARNING], printed in yellow
-  /// - [Level.INFO], printed in white
-  /// - [Level.FINE], printed in grey and only when [verbose] is true
-  Future<void> _setUpLogger({bool verbose = false}) async {
-    if (verbose) {
-      // ignore: avoid_print
-      print('Verbose mode enabled. More logs will be printed.');
-    }
-
-    Logger.root.level = Level.ALL;
-
-    Logger.root.onRecord.listen((log) {
-      final fmtLog = _formatLog(log);
-
-      // ignore: avoid_print
-      print(fmtLog);
-    });
-  }
-
-  /// Copied from
-  /// https://github.com/leancodepl/logging_bugfender/blob/master/lib/src/print_strategy.dart.
-  String _formatLog(LogRecord record) {
-    final hasName = record.loggerName.isNotEmpty;
-    final hasMessage = record.message != 'null' && record.message.isNotEmpty;
-
-    final hasTopLine = hasName || hasMessage;
-    final hasError = record.error != null;
-    final hasStackTrace = record.stackTrace != null;
-
-    final log = StringBuffer();
-
-    if (hasTopLine) {
-      log.writeAll(
-        <String>[
-          if (hasName) '${record.loggerName}: ',
-          if (hasMessage) record.message,
-        ],
-      );
-    }
-
-    if (hasTopLine && hasError) {
-      log.write('\n');
-    }
-
-    if (hasError) {
-      log.write(record.error);
-    }
-
-    if (hasError && hasStackTrace) {
-      log.write('\n');
-    }
-
-    if (hasStackTrace) {
-      log.write(record.stackTrace);
-    }
-
-    return log.toString();
-  }
-
   Future<http.Response> _wrapGet(String action) async {
-    _logger.info('action $action executing');
+    _logger('action $action executing');
 
     final response = await _client.get(
       Uri.parse('$_baseUri/$action'),
@@ -117,7 +58,7 @@ class Maestro {
       final msg = 'action $action failed with code ${response.statusCode}';
       _handleErrorResponse(msg, response);
     } else {
-      _logger.info('action $action succeeded');
+      _logger('action $action succeeded');
     }
 
     return response;
@@ -128,9 +69,9 @@ class Maestro {
     Map<String, dynamic> body = const <String, dynamic>{},
   ]) async {
     if (body.isNotEmpty) {
-      _logger.info('action $action executing with $body');
+      _logger('action $action executing with $body');
     } else {
-      _logger.info('action $action executing');
+      _logger('action $action executing');
     }
 
     final response = await _client.post(
@@ -143,7 +84,7 @@ class Maestro {
       final msg = 'action $action failed with code ${response.statusCode}';
       _handleErrorResponse(msg, response);
     } else {
-      _logger.info('action $action succeeded');
+      _logger('action $action succeeded');
     }
 
     return response;
@@ -151,9 +92,8 @@ class Maestro {
 
   void _handleErrorResponse(String msg, http.Response response) {
     if (response.statusCode == 404) {
-      _logger
-        ..severe(msg)
-        ..severe('Matching UI object could not be found');
+      _logger('Matching UI object could not be found');
+      _logger(msg);
     }
 
     throw Exception('$msg\n${response.body}');
@@ -164,12 +104,10 @@ class Maestro {
   Future<bool> isRunning() async {
     try {
       final res = await _client.get(Uri.parse('$_baseUri/isRunning'));
-      _logger.info(
-        'status code: ${res.statusCode}, response body: ${res.body}',
-      );
+      _logger('status code: ${res.statusCode}, response body: ${res.body}');
       return res.successful;
     } catch (err, st) {
-      _logger.warning('failed to call isRunning()', err, st);
+      _logger('failed to call isRunning()\n$err\n$st');
       return false;
     }
   }

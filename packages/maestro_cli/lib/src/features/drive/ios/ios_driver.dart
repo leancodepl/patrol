@@ -30,7 +30,7 @@ class IOSDriver extends PlatformDriver {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
     }
-    await _runServer(
+    final cancel = await _runServer(
       deviceName: device.name,
       simulator: simulator,
       port: port,
@@ -47,6 +47,7 @@ class IOSDriver extends PlatformDriver {
     );
 
     await disposeScope.dispose();
+    await cancel();
   }
 
   /// Forwards ports using iproxy.

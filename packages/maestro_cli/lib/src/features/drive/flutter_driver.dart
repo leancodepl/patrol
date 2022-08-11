@@ -84,14 +84,18 @@ Future<void> runWithOutput({
         .toList()
       ..removeWhere((element) => element.isEmpty);
 
-    for (var text in lines) {
-      text = text.trim();
-      final regexp = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
-      if (text.contains(regexp)) {
-        text = text.replaceFirst(regexp, '');
-        log.info(text);
+    for (final line in lines) {
+      // On iOS, "flutter" is not prefixed
+      final flutterPrefix = RegExp('flutter: ');
+
+      // On Android, "flutter" is prefixed with "I\"
+      final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
+      if (line.startsWith(flutterWithPortPrefix)) {
+        log.info(line.replaceFirst(flutterWithPortPrefix, ''));
+      } else if (line.startsWith(flutterPrefix)) {
+        log.info(line.replaceFirst(flutterPrefix, ''));
       } else {
-        log.fine(text);
+        log.fine(line);
       }
     }
   });
@@ -109,7 +113,8 @@ Future<void> runWithOutput({
   if (exitCode == 0) {
     log.info(msg);
   } else {
-    throw Exception('$msg. See logs above.');
+    log.warning('$msg. See logs above.');
+    //throw Exception('$msg. See logs above.');
   }
 }
 
