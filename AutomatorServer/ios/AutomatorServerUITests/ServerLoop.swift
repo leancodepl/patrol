@@ -2,7 +2,7 @@ import XCTest
 
 class ServerLoop: XCTestCase {
   func testRunMaestroServer() throws {
-    Logger.shared.i("Starting server...")
+    Logger.shared.i("Starting server loop...")
 
     
     let maestroServer: MaestroServer
@@ -17,7 +17,7 @@ class ServerLoop: XCTestCase {
     do {
       try maestroServer.start()
     } catch let err {
-      Logger.shared.e("\(err)")
+      Logger.shared.e("Failed to start server: \(err)")
       maestroServer.stop()
     }
   }

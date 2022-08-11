@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/common/paths.dart' as paths;
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
@@ -34,6 +35,7 @@ class IOSDriver extends PlatformDriver {
       deviceName: device.name,
       simulator: simulator,
       port: port,
+      debug: debug,
     );
     await flutter_driver.runWithOutput(
       driver: driver,
@@ -109,11 +111,9 @@ class IOSDriver extends PlatformDriver {
   Future<Future<void> Function()> _runServer({
     required int port,
     required String deviceName,
-    bool simulator = false,
+    required bool simulator,
+    required bool debug,
   }) async {
-    // TODO: don't hardcode working directory
-    const xcProjPath = '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios';
-
     // This xcodebuild faols when using Dart < 3.0, but this is not a problem,
     // because we don't have a customer project on Dart < 3.0 using iOS.
     final process = await Process.start(
@@ -130,7 +130,8 @@ class IOSDriver extends PlatformDriver {
         'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
       ],
       runInShell: true,
-      workingDirectory: xcProjPath,
+      workingDirectory:
+          debug ? paths.debugIOSArtifactDir : paths.iosArtifactDir,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800

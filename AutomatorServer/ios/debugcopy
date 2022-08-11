@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# debugcopy is a convenience program for copying iOS project to $MAESTRO_CACHE.
+
+cp -r . ~/.maestro/ios

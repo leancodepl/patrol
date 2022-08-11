@@ -9,6 +9,7 @@ environment:
 dependencies:
   adb: ^0.1.5
   ansi_styles: ^0.3.2+1
+  archive: ^3.3.1
   args: ^2.3.1
   collection: ^1.16.0
   dispose_scope: ^1.0.0
