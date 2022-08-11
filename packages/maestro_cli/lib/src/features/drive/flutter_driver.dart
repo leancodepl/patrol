@@ -36,8 +36,8 @@ Future<void> run({
     runInShell: true,
   );
 
-  if (result.stdErr.isNotEmpty) {
-    throw Exception(result.stdErr);
+  if (result.stdOut.isNotEmpty) {
+    throw Exception(result.stdOut);
   }
 }
 

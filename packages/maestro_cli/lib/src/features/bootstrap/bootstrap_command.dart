@@ -84,7 +84,7 @@ Future<void> _addMaestroToPubspec() async {
   );
 
   if (result.exitCode != 0) {
-    if (result.stdErr.contains('is already in "dev_dependencies"')) {
+    if (result.stdOut.contains('is already in "dev_dependencies"')) {
       progress.complete('$package is already in dev_dependencies');
     } else {
       progress.fail('Failed to add $package to dev_dependencies');
@@ -107,7 +107,7 @@ Future<void> _addIntegrationTestToPubspec() async {
   );
 
   if (result.exitCode != 0) {
-    if (result.stdErr.contains('is already in "dev_dependencies"')) {
+    if (result.stdOut.contains('is already in "dev_dependencies"')) {
       progress.complete('$package is already in dev_dependencies');
     } else {
       progress.fail('Failed to add $package to dev_dependencies');

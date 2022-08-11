@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:maestro_cli/src/common/logging.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
@@ -30,6 +30,7 @@ class IOSDriver extends PlatformDriver {
     await _runServer(
       deviceName: device,
       simulator: simulator,
+      port: port,
     );
     await flutter_driver.runWithOutput(
       driver: driver,
@@ -73,36 +74,18 @@ class IOSDriver extends PlatformDriver {
 
       final completer = Completer<void>();
 
-      process.stdout.listen(
-        (msg) {
-          final lines = systemEncoding
-              .decode(msg)
-              .split('\n')
-              .map((str) => str.trim())
-              .toList();
-
-          for (final line in lines) {
-            const trigger = 'waiting for connection';
-            if (line.contains(trigger) && !completer.isCompleted) {
-              completer.complete();
-            }
+      process.listenStdOut(
+        (line) {
+          const trigger = 'waiting for connection';
+          if (line.contains(trigger) && !completer.isCompleted) {
+            completer.complete();
           }
         },
       ).disposed(disposeScope);
 
-      process.stderr.listen(
-        (msg) {
-          final lines = systemEncoding
-              .decode(msg)
-              .split('\n')
-              .map((str) => str.trim())
-              .toList();
-
-          for (final line in lines) {
-            log.warning('iproxy: $line');
-          }
-        },
-      ).disposed(disposeScope);
+      process
+          .listenStdErr((line) => log.warning('iproxy: $line'))
+          .disposed(disposeScope);
 
       await completer.future;
     } catch (err) {
@@ -144,35 +127,23 @@ class IOSDriver extends PlatformDriver {
     );
 
     final completer = Completer<void>();
-    final stdOutSub = process.stdout.listen((msg) {
-      final lines = systemEncoding
-          .decode(msg)
-          .split('\n')
-          .map((str) => str.trim())
-          .toList()
-        ..removeWhere((element) => element.isEmpty);
+    final stdOutSub = process.listenStdOut((line) {
+      if (line.startsWith('MaestroServer')) {
+        log.info(line);
+      } else {
+        log.fine(line);
+      }
 
-      for (final line in lines) {
-        if (line.startsWith('MaestroServer')) {
-          log.info(line);
-        } else {
-          log.fine(line);
-        }
-
-        if (line.contains('Server started')) {
-          // FIXME: Return here
-          if (!completer.isCompleted) {
-            completer.complete();
-          }
+      if (line.contains('Server started')) {
+        if (!completer.isCompleted) {
+          completer.complete();
         }
       }
     });
 
-    final stdErrSub = process.stderr.listen((msg) {
-      final text = systemEncoding.decode(msg).trim();
-      log.severe(text);
-
-      if (text.contains('** TEST FAILED **')) {
+    final stdErrSub = process.listenStdErr((line) {
+      log.severe(line);
+      if (line.contains('** TEST FAILED **')) {
         throw Exception(
           'Test failed. See logs above. Also, consider running with --verbose.',
         );
