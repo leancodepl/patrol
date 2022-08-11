@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/logging.dart';
+import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
@@ -49,6 +50,7 @@ class IOSDriver extends PlatformDriver {
     final progress = log.progress('Forwarding ports');
 
     try {
+      // See https://github.com/libimobiledevice/libusbmuxd/issues/103
       final process = await Process.start(
         'stdbuf',
         [
@@ -115,6 +117,7 @@ class IOSDriver extends PlatformDriver {
   ///
   /// Returns when the server is installed and running.
   Future<Future<void> Function()> _runServer({
+    required int port,
     required String deviceName,
     bool simulator = false,
   }) async {
@@ -137,6 +140,7 @@ class IOSDriver extends PlatformDriver {
       ],
       runInShell: true,
       workingDirectory: xcProjPath,
+      environment: {...Platform.environment, envPortKey: port.toString()},
     );
 
     final completer = Completer<void>();

@@ -6,7 +6,7 @@ abstract class PlatformDriver {
     required int port,
     required String device,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
   });

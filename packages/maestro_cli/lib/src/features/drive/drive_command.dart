@@ -154,6 +154,7 @@ class DriveCommand extends Command<int> {
             flavor: flavor as String?,
             verbose: verboseFlag,
             debug: debugFlag,
+            dartDefines: dartDefines,
           );
           break;
         case TargetPlatform.iOS:
@@ -167,6 +168,7 @@ class DriveCommand extends Command<int> {
             verbose: verboseFlag,
             debug: debugFlag,
             simulator: !device.real,
+            dartDefines: dartDefines,
           );
           break;
         default:

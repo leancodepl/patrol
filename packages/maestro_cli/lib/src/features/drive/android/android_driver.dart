@@ -17,7 +17,7 @@ class AndroidDriver implements PlatformDriver {
     required int port,
     required String device,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
   }) async {
@@ -55,11 +55,11 @@ class AndroidDriver implements PlatformDriver {
           target: target,
           host: host,
           port: port,
+          verbose: verbose,
           debug: debug,
           device: device,
           flavor: flavor,
           dartDefines: dartDefines,
-          verbose: verbose,
         );
       }),
     );
@@ -86,6 +86,7 @@ class AndroidDriver implements PlatformDriver {
         debug: debug,
         device: device,
         flavor: flavor,
+        dartDefines: dartDefines,
       );
     }
   }

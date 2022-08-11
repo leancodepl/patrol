@@ -1,10 +1,30 @@
 import Embassy
 import EnvoyAmbassador
 
-class MaestroServer {
-  private let port = 8081
+let envPortKey = "MAESTRO_PORT"
 
-  private let loop = try! SelectorEventLoop(selector: try! KqueueSelector())
+class MaestroServer {
+  private let port: Int
+
+  private let loop: EventLoop
+
+  init() throws {
+    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+      throw MaestroError.generic("\(envPortKey) is null")
+    }
+    guard let port = Int(portStr) else {
+      throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
+    }
+    self.port = port
+
+    guard let kQueueSelector = try? KqueueSelector() else {
+      throw MaestroError.generic("Failed to create KqueueSelector")
+    }
+    guard let loop = try? SelectorEventLoop(selector: kQueueSelector) else {
+      throw MaestroError.generic("Failed to create SelectorEventLoop")
+    }
+    self.loop = loop
+  }
 
   private let automation = MaestroAutomation()
 
@@ -57,7 +77,7 @@ class MaestroServer {
 
   func start() throws {
     let server = DefaultHTTPServer(eventLoop: loop, interface: "::", port: port, app: onRequest)
-    try! server.start()
+    try server.start()
     Logger.shared.i("Server started on http://\(automation.ipAddress ?? "localhost"):\(port)")
     loop.runForever()
     Logger.shared.i("Server stopped (loop finished)")

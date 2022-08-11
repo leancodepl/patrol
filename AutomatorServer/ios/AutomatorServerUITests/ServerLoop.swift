@@ -1,30 +1,34 @@
 import XCTest
 
 class ServerLoop: XCTestCase {
-  func testRunMaestroServer() {
+  func testRunMaestroServer() throws {
     Logger.shared.i("Starting server...")
 
-    let maestroServer = MaestroServer()
-    handlePopups()
+    guard let maestroServer = try? MaestroServer() else {
+      throw MaestroError.generic("Failed to create MaestroServer")
+    }
+
+    setUpInterruptionMonitor()
+
     do {
       try maestroServer.start()
-    } catch let error {
-      Logger.shared.i("error: \(error)")
+    } catch let err {
+      Logger.shared.e("\(err)")
       maestroServer.stop()
     }
   }
 
-  func handlePopups() {
-//    addUIInterruptionMonitor(withDescription: "Access to sound recording") { (alert) -> Bool in
-//      Logger.shared.i("interruption caught")
-//      if alert.staticTexts["Odkryj Rudy would like to find and connect to devices on your local network."]
-//        .exists
-//      {
-//        alert.buttons["OK"].tap()
-//      } else {
-//        alert.buttons["Don’t Allow"].tap()
-//      }
-//      return true
-//    }
+  func setUpInterruptionMonitor() {
+    //    addUIInterruptionMonitor(withDescription: "Access to sound recording") { (alert) -> Bool in
+    //      Logger.shared.i("interruption caught")
+    //      if alert.staticTexts["Odkryj Rudy would like to find and connect to devices on your local network."]
+    //        .exists
+    //      {
+    //        alert.buttons["OK"].tap()
+    //      } else {
+    //        alert.buttons["Don’t Allow"].tap()
+    //      }
+    //      return true
+    //    }
   }
 }

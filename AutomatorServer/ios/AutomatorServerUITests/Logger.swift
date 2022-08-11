@@ -8,6 +8,10 @@ class Logger {
   private init() {}
 
   func i(_ msg: String) {
-    print("\(TAG): \(msg)")
+    print("\(TAG): INFO: \(msg)")
+  }
+
+  func e(_ msg: String) {
+    print("\(TAG): ERROR: \(msg)")
   }
 }
