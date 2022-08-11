@@ -1,3 +1,7 @@
+## 0.4.2
+
+- Fix bug with APKs failing to force install when certificates don't match
+
 ## 0.4.1
 
 - Rename `MAESTRO_ARTIFACT_PATH` environment variable to `MAESTRO_CACHE`
