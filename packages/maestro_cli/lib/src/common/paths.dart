@@ -1,9 +1,8 @@
 import 'dart:io';
 
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:path/path.dart' as path;
-
-const maestroArtifactPathEnv = 'MAESTRO_CACHE';
 
 String get serverArtifact => 'server-$version';
 String get instrumentationArtifact => 'instrumentation-$version';
@@ -38,14 +37,14 @@ String get debugInstrumentationArtifactPath {
 }
 
 bool get artifactPathSetFromEnv {
-  return Platform.environment.containsKey(maestroArtifactPathEnv);
+  return Platform.environment.containsKey(ArtifactsRepository.artifactPathEnv);
 }
 
 String get artifactPath {
   final env = Platform.environment;
   String p;
-  if (env.containsKey(maestroArtifactPathEnv)) {
-    p = env[maestroArtifactPathEnv]!;
+  if (env.containsKey(env)) {
+    p = env[env]!;
   } else {
     p = _defaultArtifactPath;
   }
@@ -53,9 +52,9 @@ String get artifactPath {
   return p;
 }
 
-String get _defaultArtifactPath => path.join(_homePath, '.maestro');
+String get _defaultArtifactPath => path.join(_homeDirPath, '.maestro');
 
-String get _homePath {
+String get _homeDirPath {
   String? home;
   final envVars = Platform.environment;
   if (Platform.isMacOS) {

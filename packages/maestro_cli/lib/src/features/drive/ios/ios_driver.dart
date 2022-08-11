@@ -114,7 +114,8 @@ class IOSDriver extends PlatformDriver {
     // TODO: don't hardcode working directory
     const xcProjPath = '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios';
 
-    // TODO: Fix failing to build when using Dart x86_64.
+    // This xcodebuild faols when using Dart < 3.0, but this is not a problem,
+    // because we don't have a customer project on Dart < 3.0 using iOS.
     final process = await Process.start(
       'xcodebuild',
       [
