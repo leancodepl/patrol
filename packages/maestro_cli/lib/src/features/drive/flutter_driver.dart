@@ -128,9 +128,9 @@ Map<String, String> _dartDefines({
 List<String> _flutterDriveArguments({
   required String driver,
   required String target,
-  String? device,
-  String? flavor,
-  Map<String, String> dartDefines = const {},
+  required String? device,
+  required String? flavor,
+  required Map<String, String> dartDefines,
 }) {
   for (final dartDefine in dartDefines.entries) {
     final key = dartDefine.key;

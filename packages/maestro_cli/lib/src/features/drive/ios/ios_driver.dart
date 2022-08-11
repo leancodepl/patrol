@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
+import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
@@ -19,16 +20,16 @@ class IOSDriver extends PlatformDriver {
     required String target,
     required String host,
     required int port,
-    required String device,
+    required Device device,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
     bool simulator = false,
   }) async {
-    await _forwardPorts(port); // TODO: Use device UDID
+    await _forwardPorts(port: port, deviceId: device.id);
     await _runServer(
-      deviceName: device,
+      deviceName: device.name,
       simulator: simulator,
       port: port,
     );
@@ -38,7 +39,7 @@ class IOSDriver extends PlatformDriver {
       host: host,
       port: port,
       verbose: verbose,
-      device: device,
+      device: device.name,
       flavor: flavor,
       dartDefines: dartDefines,
     );
@@ -47,7 +48,10 @@ class IOSDriver extends PlatformDriver {
   }
 
   /// Forwards ports using iproxy.
-  Future<void> _forwardPorts(int port, {String? device}) async {
+  Future<void> _forwardPorts({
+    required int port,
+    required String deviceId,
+  }) async {
     final progress = log.progress('Forwarding ports');
 
     try {
@@ -60,9 +64,9 @@ class IOSDriver extends PlatformDriver {
           '-e0',
           'iproxy',
           '$port:$port',
-          //'--udid',
-          //'00008101-001611D026A0001E'
-        ], // TODO: use right device
+          '--udid',
+          '00008101-001611D026A0001E',
+        ],
         runInShell: true,
       );
 
