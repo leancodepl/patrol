@@ -4,12 +4,16 @@ class ServerLoop: XCTestCase {
   func testRunMaestroServer() throws {
     Logger.shared.i("Starting server...")
 
-    guard let maestroServer = try? MaestroServer() else {
-      throw MaestroError.generic("Failed to create MaestroServer")
+    
+    let maestroServer: MaestroServer
+    do {
+      maestroServer = try MaestroServer()
+    } catch let err {
+      throw err
     }
 
     setUpInterruptionMonitor()
-
+    
     do {
       try maestroServer.start()
     } catch let err {
