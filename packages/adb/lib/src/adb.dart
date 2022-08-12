@@ -49,7 +49,7 @@ class Adb {
 
     if (result.stdErr.isNotEmpty) {
       if (result.stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
-        throw AdbInstallFailedUpdateIncompatible.fromStdErr(result.stdErr);
+        throw AdbInstallFailedUpdateIncompatible(message: result.stdErr);
       }
 
       if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
@@ -197,20 +197,6 @@ class Adb {
 
     if (code != 0) {
       throw Exception('Instrumentation server exited with code $code');
-    }
-  }
-
-  /// Like [install], but if the install fails because of
-  /// INSTALL_FAILED_UPDATE_INCOMPATIBLE, the app is uninstalled and installed
-  /// again.
-  Future<void> forceInstallApk(String path, {String? device}) async {
-    await _ensureRunning();
-
-    try {
-      await install(path, device: device);
-    } on AdbInstallFailedUpdateIncompatible catch (err) {
-      await uninstall(err.packageName, device: device);
-      await install(path, device: device);
     }
   }
 
