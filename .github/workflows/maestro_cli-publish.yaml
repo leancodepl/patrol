@@ -32,16 +32,13 @@ jobs:
           prefix=maestro_cli-v
           version=${tag#"$prefix"} # version without the prefix
           echo "version: $version"
-
           server_file="server-$version.apk"
           instrumentation_file="instrumentation-$version.apk"
           ios_zip_directory="ios-$version.zip"
-
           echo "server file: $server_file"
           echo "instrumentation file: $instrumentation_file"
           echo "ios zip directory: $ios_zip_directory"
-
-
+          # exporting
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
           echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
@@ -72,22 +69,24 @@ jobs:
           ./gradlew assembleDebugAndroidTest
           mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
 
-      - name: Create iOS zip archive
+      - name: Create zip archive from iOS project
         working-directory: AutomatorServer/ios
         run: |
           echo "ios zip directory: $IOS_ZIP_DIRECTORY"
+          ./makearchive "$VERSION"
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           name: "maestro_cli-v${{ env.VERSION }}"
-          body_path: AutomatorServer/android/release_notes.txt
+          body_path: release_notes.txt
           prerelease: ${{ env.IS_PRERELEASE }}
           fail_on_unmatched_files: true
           # see https://github.com/softprops/action-gh-release/issues/158
           files: |
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
+            AutomatorServer/ios/${{ env.IOS_ZIP_DIRECTORY }}
 
       - name: Upload artifacts to Azure Storage
         working-directory: AutomatorServer/android
@@ -95,8 +94,9 @@ jobs:
           AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
           AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
         run: |
-          ./upload_artifact ${{ env.SERVER_FILE }}
-          ./upload_artifact ${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact android/${{ env.SERVER_FILE }}
+          ./upload_artifact android/${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact ios/${{ env.IOS_ZIP_DIRECTORY }}
 
   publish_cli:
     runs-on: ubuntu-latest

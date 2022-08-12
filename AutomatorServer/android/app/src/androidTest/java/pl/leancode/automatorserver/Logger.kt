@@ -11,7 +11,6 @@ object Logger {
 
     fun e(msg: String, tr: Throwable?) {
         Log.e(TAG, msg, tr)
-
     }
 
     fun i(msg: String) {
