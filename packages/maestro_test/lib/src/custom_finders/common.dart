@@ -169,7 +169,8 @@ Finder createFinder(dynamic matching) {
   }
 
   if (matching is Pattern) {
-    return find.textContaining(matching, findRichText: true);
+    // TODO: Re-add `findRichText: true` when minimum SDK version is >= 2.17
+    return find.textContaining(matching);
   }
 
   if (matching is IconData) {

@@ -1,3 +1,8 @@
+## 0.4.3
+
+- Fix bug with APKs failing to force install when certificates don't match, this
+  time once and for all
+
 ## 0.4.2
 
 - Fix bug with APKs failing to force install when certificates don't match
@@ -10,7 +15,8 @@
 
 ## 0.4.0
 
-- Support [maestro_test 0.4.0](https://pub.dev/packages/maestro_test/changelog#040)
+- Support [maestro_test
+  0.4.0](https://pub.dev/packages/maestro_test/changelog#040)
 
 ## 0.3.5
 
