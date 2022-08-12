@@ -33,13 +33,12 @@ enum TargetPlatform { iOS, android }
 
 extension TargetPlatformX on TargetPlatform {
   static TargetPlatform fromString(String platform) {
-    switch (platform) {
-      case 'ios':
-        return TargetPlatform.iOS;
-      case 'android-arm64':
-        return TargetPlatform.android;
-      default:
-        throw Exception('Unsupported platform $platform');
+    if (platform == 'ios') {
+      return TargetPlatform.iOS;
+    } else if (platform.startsWith('android-')) {
+      return TargetPlatform.android;
+    } else {
+      throw Exception('Unsupported platform $platform');
     }
   }
 }

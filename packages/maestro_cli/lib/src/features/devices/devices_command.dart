@@ -41,7 +41,7 @@ class DevicesCommand extends Command<int> {
       deviceJson as Map<String, dynamic>;
 
       final targetPlatform = deviceJson['targetPlatform'] as String;
-      if (targetPlatform != 'android-arm64' && targetPlatform != 'ios') {
+      if (!targetPlatform.startsWith('android-') && targetPlatform != 'ios') {
         continue;
       }
 
