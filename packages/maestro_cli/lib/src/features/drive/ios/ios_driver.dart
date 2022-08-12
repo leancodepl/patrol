@@ -70,7 +70,7 @@ class IOSDriver extends PlatformDriver {
           'iproxy',
           '$port:$port',
           '--udid',
-          '00008101-001611D026A0001E',
+          deviceId,
         ],
         runInShell: true,
       );
@@ -114,8 +114,7 @@ class IOSDriver extends PlatformDriver {
     required bool simulator,
     required bool debug,
   }) async {
-    // This xcodebuild faols when using Dart < 3.0, but this is not a problem,
-    // because we don't have a customer project on Dart < 3.0 using iOS.
+    // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
       'xcodebuild',
       [
