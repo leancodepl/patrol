@@ -113,8 +113,7 @@ Future<void> runWithOutput({
   if (exitCode == 0) {
     log.info(msg);
   } else {
-    log.warning('$msg. See logs above.');
-    //throw Exception('$msg. See logs above.');
+    throw Exception('$msg. See logs above.');
   }
 }
 
