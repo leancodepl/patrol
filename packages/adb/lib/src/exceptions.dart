@@ -1,11 +1,27 @@
+/// Used when `adb` command fails.
+abstract class AdbException implements Exception {
+  /// Creates a new [AdbException].
+  const AdbException({required this.message});
+
+  /// Raw error output that caused this exception.
+  final String message;
+
+  @override
+  String toString() {
+    return 'AdbException: $message';
+  }
+}
+
 /// Indicates that `adbd` (ADB daemon) was not running when `adb` (ADB client)
 /// was called.
 ///
 /// See also:
 ///  - https://developer.android.com/studio/command-line/adb
-class AdbDaemonNotRunning implements Exception {
+class AdbDaemonNotRunning extends AdbException {
   /// Creates a new [AdbDaemonNotRunning].
-  const AdbDaemonNotRunning();
+  const AdbDaemonNotRunning({
+    required String message,
+  }) : super(message: message);
 
   /// If this string occurs in `adb`'s stderr, there's a good chance that
   /// [AdbDaemonNotRunning] should be thrown.
@@ -14,19 +30,36 @@ class AdbDaemonNotRunning implements Exception {
 
 /// Indicates that `adb install` call failed with
 /// INSTALL_FAILED_UPDATE_INCOMPATIBLE.
-class AdbInstallFailedUpdateIncompatible implements Exception {
+class AdbInstallFailedUpdateIncompatible extends AdbException {
   /// Creates a new [AdbInstallFailedUpdateIncompatible];
-  AdbInstallFailedUpdateIncompatible({required this.message});
+  const AdbInstallFailedUpdateIncompatible({
+    required String message,
+  }) : super(message: message);
 
   /// If this string occurs in `adb`'s stderr, there's a good chance that
   /// [AdbInstallFailedUpdateIncompatible] should be thrown.
   static const trigger = 'INSTALL_FAILED_UPDATE_INCOMPATIBLE';
 
-  /// Raw error output that caused this exception.
-  final String message;
+  @override
+  String toString() {
+    return 'AdbInstallFailedUpdateIncompatible: $message';
+  }
+}
+
+/// Indicates that `adb uninstall` call failed with
+/// DELETE_FAILED_INTERNAL_ERROR.
+class AdbDeleteFailedInternalError extends AdbException {
+  /// Creates a new [AdbDeleteFailedInternalError];
+  const AdbDeleteFailedInternalError({
+    required String message,
+  }) : super(message: message);
+
+  /// If this string occurs in `adb`'s stderr, there's a good chance that
+  /// [AdbDeleteFailedInternalError] should be thrown.
+  static const trigger = 'DELETE_FAILED_INTERNAL_ERROR';
 
   @override
   String toString() {
-    return 'AdbInstallFailedUpdateIncompatible(message: $message)';
+    return 'AdbDeleteFailedInternalError: $message';
   }
 }

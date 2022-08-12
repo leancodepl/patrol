@@ -19,7 +19,7 @@ class AdbInternals {
 
     if (result.stdErr.isNotEmpty) {
       if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
+        throw AdbDaemonNotRunning(message: result.stdErr);
       }
 
       throw Exception(result.stdErr);

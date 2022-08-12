@@ -48,13 +48,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
-        throw AdbInstallFailedUpdateIncompatible(message: result.stdErr);
-      }
-
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -89,9 +83,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -131,9 +123,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -239,6 +229,20 @@ class Adb {
       } else {
         break;
       }
+    }
+  }
+
+  void _handleAdbExceptions(String stdErr) {
+    if (stdErr.contains(AdbDaemonNotRunning.trigger)) {
+      throw AdbDaemonNotRunning(message: stdErr);
+    }
+
+    if (stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
+      throw AdbInstallFailedUpdateIncompatible(message: stdErr);
+    }
+
+    if (stdErr.contains(AdbDeleteFailedInternalError.trigger)) {
+      throw AdbDeleteFailedInternalError(message: stdErr);
     }
   }
 }
