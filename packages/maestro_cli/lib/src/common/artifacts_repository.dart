@@ -83,20 +83,21 @@ class ArtifactsRepository {
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
   }
 
-  String get _defaultArtifactPath => path.join(_homeDirPath, '.maestro');
+  String get _defaultArtifactPath {
+    return path.join(_homeDirPath, '.cache', 'maestro');
+  }
 
   String get _homeDirPath {
-    String? home;
     final envVars = Platform.environment;
     if (Platform.isMacOS) {
-      home = envVars['HOME'];
+      return envVars['HOME']!;
     } else if (Platform.isLinux) {
-      home = envVars['HOME'];
+      return envVars['HOME']!;
     } else if (Platform.isWindows) {
-      home = envVars['UserProfile'];
+      return envVars['UserProfile']!;
+    } else {
+      throw Exception('Cannot find home directory. Unsupported platform');
     }
-
-    return home!;
   }
 
   /// Create a file at [fullPath], recursively creating non-existent
