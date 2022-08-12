@@ -9,20 +9,8 @@ import 'paths.dart' as paths;
 class ArtifactsRepository {
   static const artifactPathEnv = 'MAESTRO_CACHE';
 
-  String get artifactPath {
-    final environment = Platform.environment;
-    String p;
-    if (environment.containsKey(artifactPathEnv)) {
-      p = environment[artifactPathEnv]!;
-    } else {
-      p = _defaultArtifactPath;
-    }
-
-    return p;
-  }
-
   /// Returns true if artifacts for the current maestro_cli version are present
-  /// in [artifactPath], false otherwise.
+  /// in [paths.artifactPath], false otherwise.
   bool areArtifactsPresent() {
     final serverApk = File(paths.serverArtifactPath);
     final instrumentationApk = File(paths.instrumentationArtifactPath);
@@ -37,7 +25,7 @@ class ArtifactsRepository {
   bool areDebugArtifactsPresent() {
     final serverApk = File(paths.debugServerArtifactPath);
     final instrumentationApk = File(paths.debugInstrumentationArtifactPath);
-    final iosDir = Directory(paths.debugIosArtifactDirPath);
+    final iosDir = Directory(paths.debugIOSArtifactDirPath);
 
     return serverApk.existsSync() &&
         instrumentationApk.existsSync() &&
@@ -81,23 +69,6 @@ class ArtifactsRepository {
 
     final p = path.join(paths.artifactPath, artifact);
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
-  }
-
-  String get _defaultArtifactPath {
-    return path.join(_homeDirPath, '.cache', 'maestro');
-  }
-
-  String get _homeDirPath {
-    final envVars = Platform.environment;
-    if (Platform.isMacOS) {
-      return envVars['HOME']!;
-    } else if (Platform.isLinux) {
-      return envVars['HOME']!;
-    } else if (Platform.isWindows) {
-      return envVars['UserProfile']!;
-    } else {
-      throw Exception('Cannot find home directory. Unsupported platform');
-    }
   }
 
   /// Create a file at [fullPath], recursively creating non-existent

@@ -130,7 +130,7 @@ class IOSDriver extends PlatformDriver {
       ],
       runInShell: true,
       workingDirectory:
-          debug ? paths.debugIOSArtifactDir : paths.iosArtifactDir,
+          debug ? paths.debugIOSArtifactDirPath : paths.iosArtifactDirPath,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
