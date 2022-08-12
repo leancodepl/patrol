@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# debugcopy is a convenience program for copying iOS project to $MAESTRO_CACHE.
+# makearchive is a convenience program which creates a zip archive of the iOS
+# AutomatorServer.
 
 if [ "$(basename "$PWD")" = "ios" ]; then
-	rm -rf ~/.maestro/ios
-	cp -r . ~/.maestro/ios
+    zip -r
 else
 	echo "this program must be run from the ios project directory"
 	exit 1

@@ -137,7 +137,7 @@ data class SelectorQuery(
 
     fun toBySelector(): BySelector {
         if (isEmpty()) {
-            throw IllegalStateException("SelectorQuery is empty")
+            throw MaestroException("SelectorQuery is empty")
         }
 
         var matchedText = false

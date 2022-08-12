@@ -37,7 +37,7 @@ class ArtifactsRepository {
   bool areDebugArtifactsPresent() {
     final serverApk = File(paths.debugServerArtifactPath);
     final instrumentationApk = File(paths.debugInstrumentationArtifactPath);
-    final iosDir = Directory(paths.debugIOSArtifactDir);
+    final iosDir = Directory(paths.debugIosArtifactDirPath);
 
     return serverApk.existsSync() &&
         instrumentationApk.existsSync() &&
@@ -56,8 +56,9 @@ class ArtifactsRepository {
     final archive = ZipDecoder().decodeBytes(bytes);
 
     for (final archiveFile in archive) {
-      final file = archiveFile.name;
-      final extractPath = paths.iosArtifactDir + Platform.pathSeparator + file;
+      final filename = archiveFile.name;
+      final extractPath =
+          paths.iosArtifactDirPath + Platform.pathSeparator + filename;
       if (archiveFile.isFile) {
         final data = archiveFile.content as List<int>;
         final newFile = File(extractPath);

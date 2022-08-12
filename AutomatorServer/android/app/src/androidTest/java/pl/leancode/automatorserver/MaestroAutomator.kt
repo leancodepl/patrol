@@ -219,7 +219,7 @@ class MaestroAutomator {
         Logger.d("openNotifications()")
         val success = uiDevice.openNotification()
         if (!success) {
-            throw IllegalStateException("Could not open notifications")
+            throw MaestroException("Could not open notifications")
         }
         delay()
     }
@@ -228,7 +228,7 @@ class MaestroAutomator {
         Logger.d("openNotifications()")
         val success = uiDevice.openQuickSettings()
         if (!success) {
-            throw IllegalStateException("Could not open quick settings")
+            throw MaestroException("Could not open quick settings")
         }
         delay()
     }
