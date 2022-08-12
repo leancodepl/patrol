@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Remove `Adb.forceInstallApk` because it was too high level and flaky
+
 ## 0.1.4
 
 - Fix `AdbInstallFailedUpdateIncompatible.fromStdErr` not parsing the error

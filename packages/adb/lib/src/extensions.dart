@@ -1,5 +1,6 @@
 import 'dart:io';
 
+/// Useful utilities for process result.
 extension ProcessResultX on ProcessResult {
   /// A shortcut to avoid typing `as String` every time.
   ///

@@ -48,13 +48,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
-        throw AdbInstallFailedUpdateIncompatible.fromStdErr(result.stdErr);
-      }
-
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -89,9 +83,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -131,9 +123,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -200,20 +190,6 @@ class Adb {
     }
   }
 
-  /// Like [install], but if the install fails because of
-  /// INSTALL_FAILED_UPDATE_INCOMPATIBLE, the app is uninstalled and installed
-  /// again.
-  Future<void> forceInstallApk(String path, {String? device}) async {
-    await _ensureRunning();
-
-    try {
-      await install(path, device: device);
-    } on AdbInstallFailedUpdateIncompatible catch (err) {
-      await uninstall(err.packageName, device: device);
-      await install(path, device: device);
-    }
-  }
-
   /// Returns the list of currently attached devices.
   ///
   /// See also:
@@ -253,6 +229,20 @@ class Adb {
       } else {
         break;
       }
+    }
+  }
+
+  void _handleAdbExceptions(String stdErr) {
+    if (stdErr.contains(AdbDaemonNotRunning.trigger)) {
+      throw AdbDaemonNotRunning(message: stdErr);
+    }
+
+    if (stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
+      throw AdbInstallFailedUpdateIncompatible(message: stdErr);
+    }
+
+    if (stdErr.contains(AdbDeleteFailedInternalError.trigger)) {
+      throw AdbDeleteFailedInternalError(message: stdErr);
     }
   }
 }
