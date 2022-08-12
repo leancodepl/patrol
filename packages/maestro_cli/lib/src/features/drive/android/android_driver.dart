@@ -29,7 +29,8 @@ class AndroidDriver implements PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
-    await _installApps(device: device, debug: debug);
+    await _installServer(device: device, debug: debug);
+    await _installInstrumentation(device: device, debug: debug);
     await _forwardPorts(port, device: device);
     _runServer(device: device, port: port);
     await flutter_driver.runWithOutput(
@@ -97,34 +98,49 @@ class AndroidDriver implements PlatformDriver {
     }
   }
 
-  Future<void> _installApps({String? device, bool debug = false}) async {
-    final serverInstallProgress = log.progress('Installing server');
+  Future<void> _installServer({
+    required String device,
+    required bool debug,
+  }) async {
+    final progress = log.progress('Installing server');
     try {
       final p = path.join(
         artifactPath,
         debug ? debugServerArtifactFile : serverArtifactFile,
       );
-      await _adb.forceInstallApk(p, device: device);
+      await _forceInstallApk(
+        path: p,
+        device: device,
+        packageName: 'pl.leancode.automatorserver',
+      );
     } catch (err) {
-      serverInstallProgress.fail('Failed to install server');
+      progress.fail('Failed to install server');
       rethrow;
     }
-    serverInstallProgress.complete('Installed server');
+    progress.complete('Installed server');
+  }
 
-    final instrumentInstallProgress =
-        log.progress('Installing instrumentation');
+  Future<void> _installInstrumentation({
+    String? device,
+    bool debug = false,
+  }) async {
+    final progress = log.progress('Installing instrumentation');
     try {
       final p = path.join(
         artifactPath,
         debug ? debugInstrumentationArtifactFile : instrumentationArtifactFile,
       );
-      await _adb.forceInstallApk(p, device: device);
+      await _forceInstallApk(
+        path: p,
+        device: device,
+        packageName: 'pl.leancode.automatorserver.test',
+      );
     } catch (err) {
-      instrumentInstallProgress.fail('Failed to install instrumentation');
+      progress.fail('Failed to install instrumentation');
       rethrow;
     }
 
-    instrumentInstallProgress.complete('Installed instrumentation');
+    progress.complete('Installed instrumentation');
   }
 
   Future<void> _forwardPorts(int port, {String? device}) async {
@@ -156,5 +172,18 @@ class AndroidDriver implements PlatformDriver {
       onStderr: log.severe,
       arguments: {envPortKey: port.toString()},
     );
+  }
+
+  Future<void> _forceInstallApk({
+    required String path,
+    required String? device,
+    required String packageName,
+  }) async {
+    try {
+      await _adb.install(path, device: device);
+    } on AdbInstallFailedUpdateIncompatible {
+      await _adb.uninstall(packageName, device: device);
+      await _adb.install(path, device: device);
+    }
   }
 }
