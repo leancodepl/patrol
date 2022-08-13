@@ -19,7 +19,6 @@ dependencies:
   integration_test:
     sdk: flutter
   json_annotation: ^4.5.0
-  logging: ^1.0.2
   meta: ^1.7.0
 
 dev_dependencies:

@@ -1,135 +1,168 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:maestro_cli/src/common/logging.dart';
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/common/paths.dart' as paths;
+import 'package:maestro_cli/src/features/drive/constants.dart';
+import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
 class IOSDriver extends PlatformDriver {
+  IOSDriver();
+
+  final DisposeScope disposeScope = DisposeScope();
+
   @override
   Future<void> run({
     required String driver,
     required String target,
     required String host,
     required int port,
-    required String device,
+    required Device device,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
+    bool simulator = false,
   }) async {
+    if (device.real) {
+      await _forwardPorts(port: port, deviceId: device.id);
+    }
     final cancel = await _runServer(
-      deviceName: device,
-      onServerInstalled: () async {
-        await flutter_driver.runWithOutput(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          verbose: verbose,
-          device: device,
-          flavor: flavor,
-          dartDefines: dartDefines,
-        );
-      },
+      deviceName: device.name,
+      simulator: simulator,
+      port: port,
+      debug: debug,
+    );
+    await flutter_driver.runWithOutput(
+      driver: driver,
+      target: target,
+      host: host,
+      port: port,
+      verbose: verbose,
+      device: device.name,
+      flavor: flavor,
+      dartDefines: dartDefines,
     );
 
+    await disposeScope.dispose();
     await cancel();
   }
 
-  @override
-  Future<List<Device>> devices() async {
-    final result = await Process.run(
-      'xcrun',
-      ['simctl', 'list', 'devices', '--json'],
-    );
+  /// Forwards ports using iproxy.
+  Future<void> _forwardPorts({
+    required int port,
+    required String deviceId,
+  }) async {
+    final progress = log.progress('Forwarding ports');
 
-    final json = jsonDecode(result.stdout as String) as Map<String, dynamic>;
-    final osVersions = (json['devices'] as Map<String, dynamic>).entries;
+    try {
+      // See https://github.com/libimobiledevice/libusbmuxd/issues/103
+      final process = await Process.start(
+        'stdbuf',
+        [
+          '-i0',
+          '-o0',
+          '-e0',
+          'iproxy',
+          '$port:$port',
+          '--udid',
+          deviceId,
+        ],
+        runInShell: true,
+      );
 
-    final iosDevices = <IOSDevice>[];
-    for (final osVersion in osVersions) {
-      final os = osVersion.key;
-      final devices = osVersion.value as List<dynamic>;
-      if (os.contains('com.apple.CoreSimulator.SimRuntime.iOS')) {
-        for (final device in devices) {
-          final name = (device as Map<String, dynamic>)['name'] as String;
-          final state = device['state'] as String;
-          final udid = device['udid'] as String;
+      disposeScope.addDispose(() async {
+        log.info('Killing iproxy...');
+        process.kill();
+        log.info('iproxy killed');
+      });
 
-          if (state == 'Booted') {
-            iosDevices.add(IOSDevice(name: name, state: state, udid: udid));
+      final completer = Completer<void>();
+
+      process.listenStdOut(
+        (line) {
+          const trigger = 'waiting for connection';
+          if (line.contains(trigger) && !completer.isCompleted) {
+            completer.complete();
           }
-        }
-      }
+        },
+      ).disposed(disposeScope);
+
+      process
+          .listenStdErr((line) => log.warning('iproxy: $line'))
+          .disposed(disposeScope);
+
+      await completer.future;
+    } catch (err) {
+      progress.fail('Failed to forward ports');
+      rethrow;
     }
 
-    return iosDevices.map((device) => Device.iOS(name: device.name)).toList();
+    progress.complete('Forwarded ports');
   }
 
+  /// Runs the server which is an infinite XCUITest.
+  ///
+  /// Returns when the server is installed and running.
   Future<Future<void> Function()> _runServer({
+    required int port,
     required String deviceName,
-    required void Function() onServerInstalled,
+    required bool simulator,
+    required bool debug,
   }) async {
-    // FIXME: Fix failing to build when using Dart x86_64.
+    // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
       'xcodebuild',
       [
-        //'-arm64',
-        //'xcodebuild',
         'test',
-        //'ARCHS=x86_64',
-        //'ONLY_ACTIVE_ARCH=YES',
-        //'-arch',
-        //'"x86_64"',
         '-workspace',
         'AutomatorServer.xcworkspace',
         '-scheme',
         'AutomatorServer',
         '-sdk',
-        'iphonesimulator',
+        if (simulator) 'iphonesimulator' else 'iphoneos',
         '-destination',
-        'platform=iOS Simulator,name=$deviceName',
+        'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
       ],
       runInShell: true,
-      // FIXME: don't hardcode working directory
       workingDirectory:
-          '/Users/bartek/dev/leancode/maestro/AutomatorServer/ios',
+          debug ? paths.debugIOSArtifactDirPath : paths.iosArtifactDirPath,
+      environment: {
+        ...Platform.environment,
+        // See https://stackoverflow.com/a/69237460/7009800
+        'TEST_RUNNER_$envPortKey': port.toString()
+      },
     );
 
-    final stdOutSub = process.stdout.listen((msg) {
-      final lines = systemEncoding
-          .decode(msg)
-          .split('\n')
-          .map((str) => str.trim())
-          .toList()
-        ..removeWhere((element) => element.isEmpty);
+    final completer = Completer<void>();
+    final stdOutSub = process.listenStdOut((line) {
+      if (line.startsWith('MaestroServer')) {
+        log.info(line);
+      } else {
+        log.fine(line);
+      }
 
-      for (final line in lines) {
-        if (line.startsWith('MaestroServer')) {
-          log.info(line);
-        } else {
-          log.fine(line);
-        }
-
-        if (line.contains('Server started')) {
-          onServerInstalled();
+      if (line.contains('Server started')) {
+        if (!completer.isCompleted) {
+          completer.complete();
         }
       }
     });
 
-    final stdErrSub = process.stderr.listen((msg) {
-      final text = systemEncoding.decode(msg).trim();
-      log.severe(text);
-
-      if (text.contains('** TEST FAILED **')) {
+    final stdErrSub = process.listenStdErr((line) {
+      log.severe(line);
+      if (line.contains('** TEST FAILED **')) {
         throw Exception(
           'Test failed. See logs above. Also, consider running with --verbose.',
         );
       }
     });
+
+    completer.complete();
 
     return () async {
       await process.exitCode.then((exitCode) async {
@@ -145,12 +178,4 @@ class IOSDriver extends PlatformDriver {
       });
     };
   }
-}
-
-class IOSDevice {
-  IOSDevice({required this.name, required this.state, required this.udid});
-
-  final String name;
-  final String state;
-  final String udid;
 }

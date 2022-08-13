@@ -36,8 +36,8 @@ Future<void> run({
     runInShell: true,
   );
 
-  if (result.stdErr.isNotEmpty) {
-    throw Exception(result.stdErr);
+  if (result.stdOut.isNotEmpty) {
+    throw Exception(result.stdOut);
   }
 }
 
@@ -84,14 +84,18 @@ Future<void> runWithOutput({
         .toList()
       ..removeWhere((element) => element.isEmpty);
 
-    for (var text in lines) {
-      text = text.trim();
-      final regexp = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
-      if (text.contains(regexp)) {
-        text = text.replaceFirst(regexp, '');
-        log.info(text);
+    for (final line in lines) {
+      // On iOS, "flutter" is not prefixed
+      final flutterPrefix = RegExp('flutter: ');
+
+      // On Android, "flutter" is prefixed with "I\"
+      final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
+      if (line.startsWith(flutterWithPortPrefix)) {
+        log.info(line.replaceFirst(flutterWithPortPrefix, ''));
+      } else if (line.startsWith(flutterPrefix)) {
+        log.info(line.replaceFirst(flutterPrefix, ''));
       } else {
-        log.fine(text);
+        log.fine(line);
       }
     }
   });
@@ -128,9 +132,9 @@ Map<String, String> _dartDefines({
 List<String> _flutterDriveArguments({
   required String driver,
   required String target,
-  String? device,
-  String? flavor,
-  Map<String, String> dartDefines = const {},
+  required String? device,
+  required String? flavor,
+  required Map<String, String> dartDefines,
 }) {
   for (final dartDefine in dartDefines.entries) {
     final key = dartDefine.key;

@@ -8,19 +8,13 @@ import org.junit.runner.RunWith
 class ServerLoop {
     @Test
     fun startServer() {
-        Logger.i("Starting server...")
+        Logger.i("Starting server loop...")
 
-        val maestroServer = MaestroServer.instance
+        val maestroServer = MaestroServer()
         try {
             maestroServer.start()
-            Logger.i("Server started")
-            while (maestroServer.running) {
-            }
         } catch (e: Exception) {
-            e.printStackTrace()
-            Logger.e("Exception thrown: ", e)
+            Logger.e("Failure while running the server: ", e)
         }
-
-        Logger.i("Server stopped")
     }
 }

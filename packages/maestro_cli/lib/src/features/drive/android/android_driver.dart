@@ -1,6 +1,7 @@
 import 'package:adb/adb.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
+import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
@@ -10,35 +11,27 @@ class AndroidDriver implements PlatformDriver {
   final _adb = Adb();
 
   @override
-  Future<List<Device>> devices() async {
-    final adbDevices = await _adb.devices();
-    return adbDevices
-        .map((adbDevice) => Device.android(name: adbDevice))
-        .toList();
-  }
-
-  @override
   Future<void> run({
     required String driver,
     required String target,
     required String host,
     required int port,
-    required String device,
+    required Device device,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
   }) async {
-    await _installServer(device: device, debug: debug);
-    await _installInstrumentation(device: device, debug: debug);
-    await _forwardPorts(port, device: device);
-    _runServer(device: device, port: port);
+    await _installServer(device: device.id, debug: debug);
+    await _installInstrumentation(device: device.id, debug: debug);
+    await _forwardPorts(port, device: device.id);
+    _runServer(device: device.id, port: port);
     await flutter_driver.runWithOutput(
       driver: driver,
       target: target,
       host: host,
       port: port,
-      device: device,
+      device: device.id,
       flavor: flavor,
       dartDefines: dartDefines,
       verbose: verbose,
@@ -50,9 +43,9 @@ class AndroidDriver implements PlatformDriver {
     required String target,
     required String host,
     required int port,
-    required List<String> devices,
+    required List<Device> devices,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
   }) async {
@@ -63,11 +56,11 @@ class AndroidDriver implements PlatformDriver {
           target: target,
           host: host,
           port: port,
+          verbose: verbose,
           debug: debug,
           device: device,
           flavor: flavor,
           dartDefines: dartDefines,
-          verbose: verbose,
         );
       }),
     );
@@ -80,9 +73,9 @@ class AndroidDriver implements PlatformDriver {
     required int port,
     required bool verbose,
     required bool debug,
-    required List<String> devices,
+    required List<Device> devices,
     required String? flavor,
-    Map<String, String> dartDefines = const {},
+    required Map<String, String> dartDefines,
   }) async {
     for (final device in devices) {
       await run(
@@ -94,6 +87,7 @@ class AndroidDriver implements PlatformDriver {
         debug: debug,
         device: device,
         flavor: flavor,
+        dartDefines: dartDefines,
       );
     }
   }
