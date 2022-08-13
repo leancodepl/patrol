@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
+import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
+import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
-import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
@@ -120,55 +121,59 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final drivers = <PlatformDriver>[
-      AndroidDriver(),
-      if (Platform.isMacOS) IOSDriver(),
-    ];
-
-    final availableDevices = [
-      for (final driver in drivers) ...await driver.devices()
-    ];
+    final availableDevices = await DevicesCommand.getDevices();
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
     }
 
     if (wantDevices.isEmpty) {
-      final firstDeviceName = availableDevices.first.name;
-      log.info('No device specified, using the first one ($firstDeviceName)');
-      wantDevices.add(firstDeviceName);
+      final firstDevice = availableDevices.first;
+      wantDevices.add(firstDevice.resolvedName);
+      log.info(
+        'No device specified, using the first one (${firstDevice.resolvedName})',
+      );
     }
 
     final devicesToUse = findOverlap(
       availableDevices: availableDevices,
       wantDevices: wantsAll
-          ? availableDevices.map((device) => device.name).toList()
+          ? availableDevices.map((device) => device.resolvedName).toList()
           : wantDevices,
     );
 
     // TODO: Re-add support for parallel test execution.
     for (final device in devicesToUse) {
-      await device.map(
-        android: (device) => AndroidDriver().run(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          device: device.name,
-          flavor: flavor as String?,
-          verbose: verboseFlag,
-          debug: debugFlag,
-        ),
-        ios: (device) => IOSDriver().run(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          device: device.name,
-          flavor: flavor as String?,
-          verbose: verboseFlag,
-          debug: debugFlag,
-        ),
-      );
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          await AndroidDriver().run(
+            driver: driver,
+            target: target,
+            host: host,
+            port: port,
+            device: device,
+            flavor: flavor as String?,
+            verbose: verboseFlag,
+            debug: debugFlag,
+            dartDefines: dartDefines,
+          );
+          break;
+        case TargetPlatform.iOS:
+          await IOSDriver().run(
+            driver: driver,
+            target: target,
+            host: host,
+            port: port,
+            device: device,
+            flavor: flavor as String?,
+            verbose: verboseFlag,
+            debug: debugFlag,
+            simulator: !device.real,
+            dartDefines: dartDefines,
+          );
+          break;
+        default:
+          throw Exception('Unsupported platform ${device.targetPlatform}');
+      }
     }
 
     return 0;
@@ -179,7 +184,7 @@ class DriveCommand extends Command<int> {
     required List<String> wantDevices,
   }) {
     final availableDevicesSet =
-        availableDevices.map((device) => device.name).toSet();
+        availableDevices.map((device) => device.resolvedName).toSet();
 
     for (final wantDevice in wantDevices) {
       if (!availableDevicesSet.contains(wantDevice)) {
@@ -188,7 +193,7 @@ class DriveCommand extends Command<int> {
     }
 
     return availableDevices
-        .where((device) => wantDevices.contains(device.name))
+        .where((device) => wantDevices.contains(device.resolvedName))
         .toList();
   }
 }

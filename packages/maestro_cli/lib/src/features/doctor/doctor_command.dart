@@ -1,4 +1,5 @@
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 
 class DoctorCommand extends Command<int> {
@@ -22,7 +23,7 @@ class DoctorCommand extends Command<int> {
     }
 
     final extra = artifactPathSetFromEnv
-        ? '(set from $maestroArtifactPathEnv)'
+        ? '(set from ${ArtifactsRepository.artifactPathEnv})'
         : '(default)';
 
     log.info('artifact path: $artifactPath $extra');

@@ -1,12 +1,23 @@
+import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
-import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 const _androidDeviceName = 'Pixel 5';
-const _androidDevice = Device.android(name: _androidDeviceName);
+const _androidDevice = Device(
+  name: _androidDeviceName,
+  id: 'emulator-5554',
+  targetPlatform: TargetPlatform.android,
+  real: true,
+);
+
 const _iosDeviceName = 'iPhone 13';
-const _iosDevice = Device.iOS(name: _iosDeviceName);
+const _iosDevice = Device(
+  name: _iosDeviceName,
+  id: '00008101-001611D026A0001E',
+  targetPlatform: TargetPlatform.iOS,
+  real: true,
+);
 
 void main() {
   group('finds device to use when', () {

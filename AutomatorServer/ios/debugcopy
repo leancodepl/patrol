@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# debugcopy is a convenience program for copying iOS project to $MAESTRO_CACHE.
+
+cache_path="${MAESTRO_CACHE:-$HOME/.cache/maestro}"
+
+if [ "$(basename "$PWD")" = "ios" ]; then
+	mkdir -p "$cache_path/ios"
+	rm -rf "$cache_path/ios"
+	cp -r . "$cache_path/ios"
+else
+	echo "this program must be run from the ios project directory"
+	exit 1
+fi
