@@ -221,7 +221,7 @@ void main() {
         );
       },
       config: const MaestroTestConfig(
-        findTimeout: Duration(milliseconds: 300),
+        visibleTimeout: Duration(milliseconds: 300),
       ),
     );
 
