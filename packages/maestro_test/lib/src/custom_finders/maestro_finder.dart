@@ -172,9 +172,8 @@ class MaestroFinder extends MatchFinder {
   /// Otherwise it throws an exception.
   String? get text {
     final elements = finder.evaluate();
-    if (elements.isEmpty) {
-      throw MaestroFinderFoundNothingException(finder: this);
-    }
+    // TODO: Throw a better error than "StateError, Bad state: No element" if no
+    // element is found
 
     final firstWidget = elements.first.widget;
 
@@ -217,16 +216,17 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [MaestroFinderFoundNothingException] if no widgets  found.
+  /// Throws a [WaitUntilVisibleTimedOutException] if no widgets  found.
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
-    final end = DateTime.now().add(timeout ?? tester.config.existsTimeout);
+    timeout ??= tester.config.existsTimeout;
+    final end = DateTime.now().add(timeout);
 
     while (evaluate().isEmpty) {
       if (DateTime.now().isAfter(end)) {
-        throw MaestroFinderFoundNothingException(finder: this);
+        throw WaitUntilExistsTimedOutException(finder: this, duration: timeout);
       }
 
       await tester.tester.pump(const Duration(milliseconds: 100));
@@ -237,17 +237,21 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one visible widget.
   ///
-  /// Throws a [MaestroFinderFoundNothingException] if more time than specified
+  /// Throws a [WaitUntilVisibleTimedOutException] if more time than specified
   /// by timeout passed and no widgets were found.
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
-    final end = DateTime.now().add(timeout ?? tester.config.visibleTimeout);
+    timeout ??= tester.config.visibleTimeout;
+    final end = DateTime.now().add(timeout);
 
     while (hitTestable().evaluate().isEmpty) {
       if (DateTime.now().isAfter(end)) {
-        throw MaestroFinderFoundNothingException(finder: this);
+        throw WaitUntilVisibleTimedOutException(
+          finder: this,
+          duration: timeout,
+        );
       }
 
       await tester.tester.pump(const Duration(milliseconds: 100));
@@ -268,11 +272,15 @@ class MaestroFinder extends MatchFinder {
 
   @override
   MaestroFinder get first {
+    // TODO: Throw a better error than "StateError, Bad state: No element" if no
+    // element is found
     return MaestroFinder(tester: tester, finder: finder.first);
   }
 
   @override
   MaestroFinder get last {
+    // TODO: Throw a better error than "StateError, Bad state: No element" if no
+    // element is found
     return MaestroFinder(
       tester: tester,
       finder: finder.last,
@@ -281,6 +289,8 @@ class MaestroFinder extends MatchFinder {
 
   @override
   MaestroFinder at(int index) {
+    // TODO: Throw a better error than "StateError, Bad state: No element" if no
+    // element is found
     return MaestroFinder(
       tester: tester,
       finder: finder.at(index),

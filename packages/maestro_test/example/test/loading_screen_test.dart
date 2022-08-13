@@ -23,7 +23,7 @@ void main() {
           final helloText = $('Hello');
           await expectLater(
             helloText.waitUntilVisible,
-            throwsA(isA<MaestroFinderFoundNothingException>()),
+            throwsA(isA<WaitUntilVisibleTimedOutException>()),
           );
         });
       },
