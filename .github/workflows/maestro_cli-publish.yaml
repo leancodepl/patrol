@@ -87,17 +87,16 @@ jobs:
           files: |
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
-            AutomatorServer/ios/${{ env.IOS_ZIP_DIRECTORY }}
+            AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
 
       - name: Upload artifacts to Azure Storage
-        working-directory: AutomatorServer/android
         env:
           AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
           AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
         run: |
-          ./upload_artifact android/${{ env.SERVER_FILE }}
-          ./upload_artifact android/${{ env.INSTRUMENTATION_FILE }}
-          ./upload_artifact ios/${{ env.IOS_ZIP_DIRECTORY }}
+          ./upload_artifact AutomatorServer/android/${{ env.SERVER_FILE }}
+          ./upload_artifact AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
 
   publish_cli:
     runs-on: ubuntu-latest
