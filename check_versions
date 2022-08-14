@@ -29,17 +29,9 @@ checkChangelogVersion() {
     versions[changelog]="$version"
 }
 
-checkApkVersion() {    
-    path="./AutomatorServer/android/app/build.gradle"
-    version=$(grep versionName "$path" | xargs | cut -d ' ' -f 2)
-    versions[apk]="$version"
-}
-
-
 checkPubspecVersion
 checkEmbeddedVersion
 checkChangelogVersion
-checkApkVersion
 
 exitCode=0
 previousValue=""
