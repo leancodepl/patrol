@@ -10,13 +10,12 @@ cd "$(dirname "$0")" || exit 2
 declare -A versions
 
 checkPubspecVersion() {
-    path="./packages/maestro_cli/pubspec.yaml"
-    version=$(grep version "$path" | xargs | cut -d ' ' -f 2)
+    version=$(grep version ./pubspec.yaml | xargs | cut -d ' ' -f 2)
     versions[pubspec]="$version"
 }
 
 checkEmbeddedVersion() {
-    path="./packages/maestro_cli/lib/src/common/constants.dart"
+    path="./lib/src/common/constants.dart"
     version=$(grep 'const version' "$path" | cut -d\' -f 2)
     versions[embedded]="$version"
 }
@@ -24,8 +23,7 @@ checkEmbeddedVersion() {
 # checkChangelogVersion checks whether the first line of CHANGELOG.md contains a
 # h2 element with the version.
 checkChangelogVersion() {    
-    path="./packages/maestro_cli/CHANGELOG.md"
-    version=$(head -n 1 $path | cut -d ' ' -f 2)
+    version=$(head -n 1 ./CHANGELOG.md | cut -d ' ' -f 2)
     versions[changelog]="$version"
 }
 
