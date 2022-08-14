@@ -1,3 +1,7 @@
+## 0.4.4
+
+- Add support for physical iOS devices
+
 ## 0.4.3
 
 - Fix bug with APKs failing to force install when certificates don't match, this
