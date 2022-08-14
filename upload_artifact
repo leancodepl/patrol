@@ -22,7 +22,9 @@ if [ -z "${AZURE_SAS_TOKEN:-}" ]; then
     exit 1
 fi
 
-url="$AZURE_STORAGE_URL/$artifact?$AZURE_SAS_TOKEN"
+filename="$(basename "$artifact")"
+url="$AZURE_STORAGE_URL/$filename?$AZURE_SAS_TOKEN"
+echo "File $filename will be uploaded to $url"
 curl --location -g --request PUT "$url" \
     --header "x-ms-blob-type: BlockBlob" \
     --header "Content-Type: $mime" \
