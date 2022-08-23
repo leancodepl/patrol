@@ -11,6 +11,10 @@ class ArtifactsRepository {
 
   /// Returns true if artifacts for the current maestro_cli version are present
   /// in [paths.artifactPath], false otherwise.
+  ///
+  /// For Android artifacts, this just checks if APKs are present.
+  ///
+  /// For iOS artifacts, this checks if the Xcode project directory exists and
   bool areArtifactsPresent() {
     final serverApk = File(paths.serverArtifactPath);
     final instrumentationApk = File(paths.instrumentationArtifactPath);
@@ -33,12 +37,20 @@ class ArtifactsRepository {
   }
 
   /// Downloads artifacts for the current maestro_cli version.
+  ///
+  /// On iOS, this also does `pod install`.
   Future<void> downloadArtifacts() async {
+    final ios = Platform.isMacOS;
+
     await Future.wait<void>([
       _downloadArtifact(paths.serverArtifactFile),
       _downloadArtifact(paths.instrumentationArtifactFile),
-      _downloadArtifact(paths.iosArtifactZip),
+      if (ios) _downloadArtifact(paths.iosArtifactZip),
     ]);
+
+    if (!ios) {
+      return;
+    }
 
     final bytes = await File(paths.iosArtifactZipPath).readAsBytes();
     final archive = ZipDecoder().decodeBytes(bytes);
@@ -57,6 +69,13 @@ class ArtifactsRepository {
         await directory.create(recursive: true);
       }
     }
+
+    await Process.run(
+      'pod',
+      ['install'],
+      runInShell: true,
+      workingDirectory: paths.iosArtifactDirPath,
+    );
   }
 
   Future<void> _downloadArtifact(String artifact) async {
