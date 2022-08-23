@@ -1,3 +1,7 @@
+## 0.4.4+3
+
+- Fix not working on Windows because of `flutter` command not being found
+
 ## 0.4.4+2
 
 - Fix problem with project not building because of a breaking change in
