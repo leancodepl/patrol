@@ -79,7 +79,7 @@ class MaestroServer {
     Logger.shared.i("Starting server...")
     let server = DefaultHTTPServer(eventLoop: loop, interface: "::", port: port, app: router)
     try server.start()
-    Logger.shared.i("Server started on http://\(automation.ipAddress ?? "localhost"):\(port)")
+    Logger.shared.i("Server started on http://\(automation.ipAddress!):\(port) (http://localhost:\(port))")
     loop.runForever()
     Logger.shared.i("Server stopped (loop finished)")
   }
