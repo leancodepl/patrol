@@ -1,3 +1,8 @@
+## 0.4.4+2
+
+- Fix problem with project not building because of a breaking change in
+  `package:mason_logger` dependency
+
 ## 0.4.4+1
 
 - Fix issue with CI
