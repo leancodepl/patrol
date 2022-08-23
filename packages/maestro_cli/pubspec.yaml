@@ -16,7 +16,7 @@ dependencies:
   freezed_annotation: ^2.0.4
   http: ^0.13.4
   logging: ^1.0.2
-  mason_logger: ^0.1.1
+  mason_logger: ^0.1.2
   path: ^1.8.2
   pub_updater: ^0.2.2
   toml: ^0.12.0
