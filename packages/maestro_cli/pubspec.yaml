@@ -1,6 +1,6 @@
 name: maestro_cli
 description: CLI for Maestro.
-version: 0.4.4+1
+version: 0.4.4+2
 homepage: https://github.com/leancodepl/maestro
 
 environment:
