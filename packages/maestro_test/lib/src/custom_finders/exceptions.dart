@@ -1,23 +1,47 @@
+import 'dart:async';
+
 import 'package:maestro_test/maestro_test.dart';
 
-/// Indicates that something went wrong with [MaestroFinder].
-class MaestroFinderException implements Exception {
-  /// Creates a new [MaestroFinderException].
-  const MaestroFinderException(this.finder);
+/// Thrown when some [MaestroFinder]'s action fails to complete within the
+/// allowed time.
+class MaestroFinderTimeoutException extends TimeoutException {
+  /// Creates a new [MaestroFinderTimeoutException].
+  MaestroFinderTimeoutException({
+    required this.finder,
+    required String message,
+    required Duration duration,
+  }) : super(message, duration);
 
   /// Finder which caused the exception.
   final MaestroFinder finder;
 }
 
+/// Thrown when [MaestroFinder] did not find anything in the allowed time and
+/// timed out.
+class WaitUntilExistsTimedOutException extends MaestroFinderTimeoutException {
+  /// Creates a new [WaitUntilExistsTimedOutException] with [finder] which did
+  /// not find any widget and timed out.
+  WaitUntilExistsTimedOutException({
+    required MaestroFinder finder,
+    required Duration duration,
+  }) : super(
+          finder: finder,
+          duration: duration,
+          message: 'Finder $finder did not find any widgets',
+        );
+}
+
 /// Indicates that [MaestroFinder] did not find anything in the allowed time and
 /// timed out.
-class MaestroFinderFoundNothingException extends MaestroFinderException {
-  /// Creates a new [MaestroFinderFoundNothingException] with [finder] which
-  /// could not find any widget.
-  const MaestroFinderFoundNothingException({
+class WaitUntilVisibleTimedOutException extends MaestroFinderTimeoutException {
+  /// Creates a new [WaitUntilVisibleTimedOutException] with [finder] which did
+  /// not find any visible widget and timed out.
+  WaitUntilVisibleTimedOutException({
     required MaestroFinder finder,
-  }) : super(finder);
-
-  @override
-  String toString() => 'Could not find $finder';
+    required Duration duration,
+  }) : super(
+          finder: finder,
+          duration: duration,
+          message: 'Finder $finder did not find any visible widgets',
+        );
 }
