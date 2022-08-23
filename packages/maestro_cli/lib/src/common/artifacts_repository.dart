@@ -33,12 +33,20 @@ class ArtifactsRepository {
   }
 
   /// Downloads artifacts for the current maestro_cli version.
+  ///
+  /// On iOS, this also does `pod install`.
   Future<void> downloadArtifacts() async {
+    final wantsIos = Platform.isMacOS;
+
     await Future.wait<void>([
       _downloadArtifact(paths.serverArtifactFile),
       _downloadArtifact(paths.instrumentationArtifactFile),
-      _downloadArtifact(paths.iosArtifactZip),
+      if (wantsIos) _downloadArtifact(paths.iosArtifactZip),
     ]);
+
+    if (!wantsIos) {
+      return;
+    }
 
     final bytes = await File(paths.iosArtifactZipPath).readAsBytes();
     final archive = ZipDecoder().decodeBytes(bytes);
@@ -57,6 +65,13 @@ class ArtifactsRepository {
         await directory.create(recursive: true);
       }
     }
+
+    await Process.run(
+      'pod',
+      ['install'],
+      runInShell: true,
+      workingDirectory: paths.iosArtifactDirPath,
+    );
   }
 
   Future<void> _downloadArtifact(String artifact) async {
