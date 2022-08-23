@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
@@ -14,27 +15,31 @@ import 'package:pub_updater/pub_updater.dart';
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
 
-  ProcessSignal.sigint.watch().listen((signal) {
+  ProcessSignal.sigint.watch().listen((signal) async {
     log.info('Caught SIGINT, exiting...');
+    await runner.dispose();
     exit(1);
   });
 
+  int exitCode;
   try {
-    final exitCode = await runner.run(args) ?? 0;
-    return exitCode;
+    exitCode = await runner.run(args) ?? 0;
   } on UsageException catch (err) {
     log.severe(err.message);
-    return 1;
+    exitCode = 1;
   } on FormatException catch (err) {
     log.severe(err.message);
-    return 1;
+    exitCode = 1;
   } on FileSystemException catch (err, st) {
     log.severe('${err.message}: ${err.path}', err, st);
-    return 1;
+    exitCode = 1;
   } catch (err, st) {
     log.severe(null, err, st);
-    return 1;
+    exitCode = 1;
   }
+
+  await runner.dispose();
+  return exitCode;
 }
 
 bool debugFlag = false;
@@ -42,12 +47,14 @@ bool verboseFlag = false;
 
 class MaestroCommandRunner extends CommandRunner<int> {
   MaestroCommandRunner()
-      : super(
+      : _disposeScope = DisposeScope(),
+        _artifactsRepository = ArtifactsRepository(),
+        super(
           'maestro',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
     addCommand(BootstrapCommand());
-    addCommand(DriveCommand());
+    addCommand(DriveCommand(_disposeScope));
     addCommand(DevicesCommand());
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
@@ -64,7 +71,10 @@ class MaestroCommandRunner extends CommandRunner<int> {
       ..addFlag('debug', help: 'Use default, non-versioned artifacts.');
   }
 
-  final artifactsRepository = ArtifactsRepository();
+  final DisposeScope _disposeScope;
+  final ArtifactsRepository _artifactsRepository;
+
+  Future<void> dispose() => _disposeScope.dispose();
 
   @override
   Future<int?> run(Iterable<String> args) async {
@@ -147,18 +157,18 @@ class MaestroCommandRunner extends CommandRunner<int> {
 
   Future<void> _ensureArtifactsArePresent() async {
     if (debugFlag) {
-      if (artifactsRepository.areDebugArtifactsPresent()) {
+      if (_artifactsRepository.areDebugArtifactsPresent()) {
         return;
       } else {
         throw Exception('Debug artifacts are not present.');
       }
-    } else if (artifactsRepository.areArtifactsPresent()) {
+    } else if (_artifactsRepository.areArtifactsPresent()) {
       return;
     }
 
     final progress = log.progress('Artifacts are not present, downloading...');
     try {
-      await artifactsRepository.downloadArtifacts();
+      await _artifactsRepository.downloadArtifacts();
     } catch (_) {
       progress.fail('Failed to download artifacts');
       rethrow;

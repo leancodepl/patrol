@@ -11,9 +11,13 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
 class IOSDriver extends PlatformDriver {
-  IOSDriver();
+  IOSDriver(
+    DisposeScope parentDisposeScope,
+  ) : _disposeScope = DisposeScope() {
+    _disposeScope.disposed(parentDisposeScope);
+  }
 
-  final DisposeScope disposeScope = DisposeScope();
+  final DisposeScope _disposeScope;
 
   @override
   Future<void> run({
@@ -31,7 +35,7 @@ class IOSDriver extends PlatformDriver {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
     }
-    final cancel = await _runServer(
+    await _runServer(
       deviceName: device.name,
       simulator: simulator,
       port: port,
@@ -47,9 +51,6 @@ class IOSDriver extends PlatformDriver {
       flavor: flavor,
       dartDefines: dartDefines,
     );
-
-    await disposeScope.dispose();
-    await cancel();
   }
 
   /// Forwards ports using iproxy.
@@ -75,10 +76,9 @@ class IOSDriver extends PlatformDriver {
         runInShell: true,
       );
 
-      disposeScope.addDispose(() async {
-        log.info('Killing iproxy...');
+      _disposeScope.addDispose(() async {
         process.kill();
-        log.info('iproxy killed');
+        log.fine('iproxy killed');
       });
 
       final completer = Completer<void>();
@@ -90,11 +90,11 @@ class IOSDriver extends PlatformDriver {
             completer.complete();
           }
         },
-      ).disposed(disposeScope);
+      ).disposed(_disposeScope);
 
       process
           .listenStdErr((line) => log.warning('iproxy: $line'))
-          .disposed(disposeScope);
+          .disposed(_disposeScope);
 
       await completer.future;
     } catch (err) {
@@ -108,7 +108,7 @@ class IOSDriver extends PlatformDriver {
   /// Runs the server which is an infinite XCUITest.
   ///
   /// Returns when the server is installed and running.
-  Future<Future<void> Function()> _runServer({
+  Future<void> _runServer({
     required int port,
     required String deviceName,
     required bool simulator,
@@ -137,9 +137,13 @@ class IOSDriver extends PlatformDriver {
         'TEST_RUNNER_$envPortKey': port.toString()
       },
     );
+    _disposeScope.addDispose(() async {
+      process.kill();
+      log.fine('xcodebuild killed');
+    });
 
     final completer = Completer<void>();
-    final stdOutSub = process.listenStdOut((line) {
+    process.listenStdOut((line) {
       if (line.startsWith('MaestroServer')) {
         log.info(line);
       } else {
@@ -151,31 +155,25 @@ class IOSDriver extends PlatformDriver {
           completer.complete();
         }
       }
-    });
+    }).disposed(_disposeScope);
 
-    final stdErrSub = process.listenStdErr((line) {
+    process.listenStdErr((line) {
       log.severe(line);
       if (line.contains('** TEST FAILED **')) {
         throw Exception(
           'Test failed. See logs above. Also, consider running with --verbose.',
         );
       }
-    });
+    }).disposed(_disposeScope);
 
     completer.complete();
 
-    return () async {
-      await process.exitCode.then((exitCode) async {
-        await stdOutSub.cancel();
-        await stdErrSub.cancel();
-
-        final msg = 'xcodebuild exited with code $exitCode';
-        if (exitCode == 0) {
-          log.info(msg);
-        } else {
-          log.severe(msg);
-        }
-      });
-    };
+    await process.exitCode;
+    final msg = 'xcodebuild exited with code $exitCode';
+    if (exitCode == 0) {
+      log.info(msg);
+    } else {
+      log.severe(msg);
+    }
   }
 }

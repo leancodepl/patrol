@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
@@ -10,7 +11,10 @@ import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand() {
+  DriveCommand(DisposeScope parentDisposeScope)
+      : _disposeScope = DisposeScope() {
+    _disposeScope.disposed(parentDisposeScope);
+
     argParser
       ..addOption(
         'host',
@@ -52,6 +56,8 @@ class DriveCommand extends Command<int> {
         help: '(experimental, inactive) Run tests on devices in parallel.',
       );
   }
+
+  final DisposeScope _disposeScope;
 
   @override
   String get name => 'drive';
@@ -158,7 +164,7 @@ class DriveCommand extends Command<int> {
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver().run(
+          await IOSDriver(_disposeScope).run(
             driver: driver,
             target: target,
             host: host,
