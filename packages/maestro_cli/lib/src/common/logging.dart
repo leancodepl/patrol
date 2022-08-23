@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:ansi_styles/ansi_styles.dart';
 import 'package:logging/logging.dart';
@@ -10,9 +9,11 @@ import 'package:mason_logger/mason_logger.dart' as mason_logger;
 final log = Logger('');
 
 extension LoggerX on Logger {
+  static final _logger = mason_logger.Logger();
+
   /// Writes progress message to stdout.
   mason_logger.Progress progress(String message) {
-    return mason_logger.Progress(message, stdout, mason_logger.Level.info);
+    return _logger.progress(message);
   }
 }
 
