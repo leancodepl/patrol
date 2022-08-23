@@ -217,11 +217,11 @@ void main() {
 
         await expectLater(
           () => $('hidden boi').waitUntilVisible(),
-          throwsA(isA<MaestroFinderFoundNothingException>()),
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
         );
       },
       config: const MaestroTestConfig(
-        findTimeout: Duration(milliseconds: 300),
+        visibleTimeout: Duration(milliseconds: 300),
       ),
     );
 
@@ -261,13 +261,25 @@ void main() {
     expect($(#hiddenText), findsOneWidget);
 
     expect($(#visibleText).text, 'visible boi');
-    await expectLater(
+    expect(
       () => $(#hiddenBoi).text,
-      throwsA(isA<MaestroFinderFoundNothingException>()),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          'No element',
+        ),
+      ),
     );
-    await expectLater(
+    expect(
       () => $(#hiddenBoiButWrongKey).text,
-      throwsA(isA<MaestroFinderFoundNothingException>()),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          'No element',
+        ),
+      ),
     );
   });
 }

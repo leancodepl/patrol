@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
+import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
 import 'package:maestro_test/src/custom_finders/maestro_tester.dart';
 import 'package:maestro_test/src/extensions.dart';
 import 'package:meta/meta.dart';
@@ -40,12 +41,7 @@ void maestroTest(
   return testWidgets(
     description,
     (widgetTester) async {
-      final maestroTester = MaestroTester(
-        widgetTester,
-        appName: config.appName,
-        andSettle: config.andSettle,
-        findTimeout: config.findTimeout,
-      );
+      final maestroTester = MaestroTester(tester: widgetTester, config: config);
       await callback(maestroTester);
       if (config.sleep != Duration.zero) {
         maestroTester.log(
@@ -62,33 +58,6 @@ void maestroTest(
     variant: variant,
     tags: tags,
   );
-}
-
-/// Maestro-specific test configuration.
-class MaestroTestConfig {
-  /// Creates a new [MaestroTestConfig].
-  const MaestroTestConfig({
-    this.findTimeout = const Duration(seconds: 10),
-    this.sleep = Duration.zero,
-    this.andSettle = true,
-    this.appName,
-  });
-
-  /// Amount of time to sleep after successful test execution. If set to
-  /// [Duration.zero], then the test completes immediately after successful
-  /// execution.
-  final Duration sleep;
-
-  /// Amount of time
-  final Duration findTimeout;
-
-  /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
-  /// [MaestroFinder.tap] and [MaestroFinder]. If false, only
-  /// [WidgetTester.pump] is called.
-  final bool andSettle;
-
-  /// Name of the application under test.
-  final String? appName;
 }
 
 /// Creates a [Finder] from [matching].

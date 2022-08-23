@@ -15,7 +15,7 @@ void main() {
     });
 
     maestroTest(
-      'throws TimeoutException when takes more than findTimeout',
+      'throws TimeoutException when takes more than visibleTimeout',
       ($) async {
         await $.tester.runAsync(() async {
           await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
@@ -23,12 +23,12 @@ void main() {
           final helloText = $('Hello');
           await expectLater(
             helloText.waitUntilVisible,
-            throwsA(isA<MaestroFinderFoundNothingException>()),
+            throwsA(isA<WaitUntilVisibleTimedOutException>()),
           );
         });
       },
       config: MaestroTestConfig(
-        findTimeout: const Duration(milliseconds: 100),
+        visibleTimeout: const Duration(milliseconds: 100),
       ),
     );
   });
