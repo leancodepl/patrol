@@ -32,6 +32,7 @@ class DevicesCommand extends Command<int> {
     final result = await Process.run(
       'flutter',
       ['devices', '--machine'],
+      runInShell: true,
     );
 
     final jsonOutput = jsonDecode(result.stdout as String) as List<dynamic>;
