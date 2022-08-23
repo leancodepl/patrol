@@ -13,7 +13,7 @@ late String myAppId;
 Future<void> main() async {
   if (Platform.isIOS) {
     mapsId = 'com.apple.Maps';
-    myAppId = 'com.example.example';
+    myAppId = 'pl.leancode.maestro.Example';
   } else if (Platform.isAndroid) {
     mapsId = 'com.google.android.apps.maps';
     myAppId = 'pl.leancode.maestro.example';
