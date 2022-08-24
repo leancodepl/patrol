@@ -151,7 +151,7 @@ class DriveCommand extends Command<int> {
     for (final device in devicesToUse) {
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver().run(
+          await AndroidDriver(_disposeScope).run(
             driver: driver,
             target: target,
             host: host,

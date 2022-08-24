@@ -1,4 +1,5 @@
 import 'package:adb/adb.dart';
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
@@ -8,7 +9,14 @@ import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:path/path.dart' as path;
 
 class AndroidDriver implements PlatformDriver {
-  final _adb = Adb();
+  AndroidDriver(DisposeScope parentDisposeScope)
+      : _disposeScope = DisposeScope(),
+        _adb = Adb() {
+    _disposeScope.disposed(parentDisposeScope);
+  }
+
+  final DisposeScope _disposeScope;
+  final Adb _adb;
 
   @override
   Future<void> run({
