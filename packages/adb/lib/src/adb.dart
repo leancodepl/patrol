@@ -91,7 +91,8 @@ class Adb {
     return result;
   }
 
-  /// Sets up port forwarding on the attached device.
+  /// Sets up port forwarding on the attached device. Returns a function that
+  /// stops the port forwarding when called.
   ///
   /// If there is more than 1 device attached, decide which one to use by
   /// passing [device].
@@ -100,7 +101,7 @@ class Adb {
   ///
   /// See also:
   ///  * https://developer.android.com/studio/command-line/adb#forwardports
-  Future<void> forwardPorts({
+  Future<Future<void> Function()> forwardPorts({
     required int fromHost,
     required int toDevice,
     String? device,
@@ -127,6 +128,28 @@ class Adb {
 
       throw Exception(result.stdErr);
     }
+
+    return () async {
+      final result = await io.Process.run(
+        'adb',
+        [
+          if (device != null) ...[
+            '-s',
+            device,
+          ],
+          'forward',
+          '--remove',
+          '$protocol:$fromHost',
+        ],
+        runInShell: true,
+      );
+
+      if (result.stdErr.isNotEmpty) {
+        _handleAdbExceptions(result.stdErr);
+
+        throw Exception(result.stdErr);
+      }
+    };
   }
 
   /// Runs instrumentation test specified by [packageName] and [intentClass] on
