@@ -15,6 +15,9 @@ class AndroidDriver implements PlatformDriver {
     _disposeScope.disposed(parentDisposeScope);
   }
 
+  static const _serverPackageName = 'pl.leancode.automatorserver';
+  static const _instrumentationPackageName = 'pl.leancode.automatorserver.test';
+
   final DisposeScope _disposeScope;
   final Adb _adb;
 
@@ -30,9 +33,9 @@ class AndroidDriver implements PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
+    await _forwardPorts(port, device: device.id);
     await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
-    await _forwardPorts(port, device: device.id);
     _runServer(device: device.id, port: port);
     await flutter_driver.runWithOutput(
       driver: driver,
@@ -113,8 +116,13 @@ class AndroidDriver implements PlatformDriver {
       await _forceInstallApk(
         path: p,
         device: device,
-        packageName: 'pl.leancode.automatorserver',
+        packageName: _serverPackageName,
       );
+
+      _disposeScope.addDispose(() async {
+        await _adb.uninstall(_serverPackageName, device: device);
+        log.fine('Uninstalled server package $_serverPackageName');
+      });
     } catch (err) {
       progress.fail('Failed to install server');
       rethrow;
@@ -135,8 +143,15 @@ class AndroidDriver implements PlatformDriver {
       await _forceInstallApk(
         path: p,
         device: device,
-        packageName: 'pl.leancode.automatorserver.test',
+        packageName: _instrumentationPackageName,
       );
+
+      _disposeScope.addDispose(() async {
+        await _adb.uninstall(_serverPackageName, device: device);
+        log.fine(
+          'Uninstalled instrumentation package $_instrumentationPackageName',
+        );
+      });
     } catch (err) {
       progress.fail('Failed to install instrumentation');
       rethrow;
@@ -157,7 +172,7 @@ class AndroidDriver implements PlatformDriver {
 
       _disposeScope.addDispose(() async {
         await cancel();
-        log.fine('Port forwarding stopped');
+        log.fine('Stopped port forwarding');
       });
     } catch (err) {
       progress.fail('Failed to forward ports');
@@ -172,7 +187,7 @@ class AndroidDriver implements PlatformDriver {
     required int port,
   }) {
     _adb.instrument(
-      packageName: 'pl.leancode.automatorserver.test',
+      packageName: _instrumentationPackageName,
       intentClass: 'androidx.test.runner.AndroidJUnitRunner',
       device: device,
       onStdout: log.info,
