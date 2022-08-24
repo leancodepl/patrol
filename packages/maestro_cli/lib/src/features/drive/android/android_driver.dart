@@ -34,8 +34,8 @@ class AndroidDriver implements PlatformDriver {
     required bool debug,
   }) async {
     await _forwardPorts(port, device: device.id);
-    await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
+    await _installServer(device: device.id, debug: debug);
     _runServer(device: device.id, port: port);
     await flutter_driver.runWithOutput(
       driver: driver,

@@ -16,7 +16,7 @@ Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
 
   ProcessSignal.sigint.watch().listen((signal) async {
-    log.info('Caught SIGINT, exiting...');
+    log.fine('Caught SIGINT, exiting...');
     await runner.dispose();
     exit(1);
   });
