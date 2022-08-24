@@ -1,3 +1,7 @@
+## 0.2.0
+
+- `Adb.instrument` now returns a `Process`
+
 ## 0.1.6
 
 - Return a cancel function from `Adb.forwardPorts` method
