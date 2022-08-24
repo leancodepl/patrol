@@ -149,11 +149,16 @@ class AndroidDriver implements PlatformDriver {
     final progress = log.progress('Forwarding ports');
 
     try {
-      await _adb.forwardPorts(
+      final cancel = await _adb.forwardPorts(
         fromHost: port,
         toDevice: port,
         device: device,
       );
+
+      _disposeScope.addDispose(() async {
+        await cancel();
+        log.fine('Port forwarding stopped');
+      });
     } catch (err) {
       progress.fail('Failed to forward ports');
       rethrow;
