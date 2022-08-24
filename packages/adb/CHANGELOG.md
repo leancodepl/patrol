@@ -1,3 +1,7 @@
+## 0.1.6
+
+- Return a cancel function from `Adb.forwardPorts` method
+
 ## 0.1.5
 
 - Remove `Adb.forceInstallApk` because it was too high level and flaky
