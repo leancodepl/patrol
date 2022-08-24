@@ -162,12 +162,10 @@ class Adb {
   ///
   /// See also:
   ///  * https://developer.android.com/studio/test/command-line#run-tests-with-adb
-  Future<void> instrument({
+  Future<io.Process> instrument({
     required String packageName,
     required String intentClass,
     String? device,
-    void Function(String)? onStdout,
-    void Function(String)? onStderr,
     Map<String, String> arguments = const {},
   }) async {
     await _ensureRunning();
@@ -193,24 +191,7 @@ class Adb {
       runInShell: true,
     );
 
-    final stdoutSub = process.stdout.listen((data) {
-      final text = io.systemEncoding.decode(data);
-      onStdout?.call(text);
-    });
-
-    final stderrSub = process.stderr.listen((data) {
-      final text = io.systemEncoding.decode(data);
-      onStderr?.call(text);
-    });
-
-    final code = await process.exitCode;
-
-    await stdoutSub.cancel();
-    await stderrSub.cancel();
-
-    if (code != 0) {
-      throw Exception('Instrumentation server exited with code $code');
-    }
+    return process;
   }
 
   /// Returns the list of currently attached devices.
