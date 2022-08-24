@@ -36,7 +36,7 @@ class AndroidDriver implements PlatformDriver {
     await _forwardPorts(port, device: device.id);
     await _installInstrumentation(device: device.id, debug: debug);
     await _installServer(device: device.id, debug: debug);
-    _runServer(device: device.id, port: port);
+    await _runServer(device: device.id, port: port);
     await flutter_driver.runWithOutput(
       driver: driver,
       target: target,
@@ -147,10 +147,18 @@ class AndroidDriver implements PlatformDriver {
       );
 
       _disposeScope.addDispose(() async {
-        await _adb.uninstall(_serverPackageName, device: device);
-        log.fine(
-          'Uninstalled instrumentation package $_instrumentationPackageName',
-        );
+        final result = await _adb.uninstall(_serverPackageName, device: device);
+
+        if (result.exitCode == 0) {
+          log.fine(
+            'Uninstalled instrumentation package $_instrumentationPackageName',
+          );
+        } else {
+          log.severe(
+            'Failed to uninstall instrumentation package $_instrumentationPackageName '
+            '${result.stderr}',
+          );
+        }
       });
     } catch (err) {
       progress.fail('Failed to install instrumentation');
@@ -182,18 +190,23 @@ class AndroidDriver implements PlatformDriver {
     progress.complete('Forwarded ports');
   }
 
-  void _runServer({
+  Future<void> _runServer({
     required String? device,
     required int port,
-  }) {
-    _adb.instrument(
+  }) async {
+    final process = await _adb.instrument(
       packageName: _instrumentationPackageName,
       intentClass: 'androidx.test.runner.AndroidJUnitRunner',
       device: device,
-      onStdout: log.info,
-      onStderr: log.severe,
       arguments: {envPortKey: port.toString()},
     );
+
+    _disposeScope.addDispose(() async {
+      process.kill();
+      log.fine('Killed instrumentation with ADB');
+    });
+    process.listenStdOut(log.info).disposed(_disposeScope);
+    process.listenStdErr(log.severe).disposed(_disposeScope);
   }
 
   Future<void> _forceInstallApk({

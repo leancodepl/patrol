@@ -78,7 +78,7 @@ class IOSDriver extends PlatformDriver {
 
       _disposeScope.addDispose(() async {
         process.kill();
-        log.fine('iproxy killed');
+        log.fine('Killed iproxy');
       });
 
       final completer = Completer<void>();
@@ -139,7 +139,7 @@ class IOSDriver extends PlatformDriver {
     );
     _disposeScope.addDispose(() async {
       process.kill();
-      log.fine('xcodebuild killed');
+      log.fine('Killed xcodebuild');
     });
 
     final completer = Completer<void>();
