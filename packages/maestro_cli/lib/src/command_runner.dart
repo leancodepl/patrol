@@ -17,7 +17,9 @@ Future<int> maestroCommandRunner(List<String> args) async {
 
   ProcessSignal.sigint.watch().listen((signal) async {
     log.fine('Caught SIGINT, exiting...');
-    await runner.dispose();
+    await runner
+        .dispose()
+        .onError((err, st) => log.severe('error while disposing', err, st));
     exit(1);
   });
 
@@ -38,7 +40,9 @@ Future<int> maestroCommandRunner(List<String> args) async {
     exitCode = 1;
   }
 
-  await runner.dispose();
+  await runner
+      .dispose()
+      .onError((err, st) => log.severe('error while disposing', err, st));
   return exitCode;
 }
 

@@ -3,8 +3,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
-import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
-    as flutter_driver;
+import 'package:maestro_cli/src/features/drive/flutter_driver.dart';
 import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:path/path.dart' as path;
 
@@ -34,10 +33,10 @@ class AndroidDriver implements PlatformDriver {
     required bool debug,
   }) async {
     await _forwardPorts(port, device: device.id);
-    await _installInstrumentation(device: device.id, debug: debug);
     await _installServer(device: device.id, debug: debug);
+    await _installInstrumentation(device: device.id, debug: debug);
     await _runServer(device: device.id, port: port);
-    await flutter_driver.runWithOutput(
+    await FlutterDriver(_disposeScope).runWithOutput(
       driver: driver,
       target: target,
       host: host,
@@ -120,8 +119,15 @@ class AndroidDriver implements PlatformDriver {
       );
 
       _disposeScope.addDispose(() async {
-        await _adb.uninstall(_serverPackageName, device: device);
-        log.fine('Uninstalled server package $_serverPackageName');
+        final result = await _adb.uninstall(
+          _serverPackageName,
+          device: device,
+        );
+        final msg = result.exitCode == 0
+            ? 'Uninstalled server package $_serverPackageName'
+            : 'Failed to uninstall server package $_serverPackageName '
+                '(code ${result.exitCode})';
+        log.fine(msg);
       });
     } catch (err) {
       progress.fail('Failed to install server');
@@ -147,18 +153,15 @@ class AndroidDriver implements PlatformDriver {
       );
 
       _disposeScope.addDispose(() async {
-        final result = await _adb.uninstall(_serverPackageName, device: device);
-
-        if (result.exitCode == 0) {
-          log.fine(
-            'Uninstalled instrumentation package $_instrumentationPackageName',
-          );
-        } else {
-          log.severe(
-            'Failed to uninstall instrumentation package $_instrumentationPackageName '
-            '${result.stderr}',
-          );
-        }
+        final result = await _adb.uninstall(
+          _instrumentationPackageName,
+          device: device,
+        );
+        final msg = result.exitCode == 0
+            ? 'Uninstalled instrumentation package $_instrumentationPackageName'
+            : 'Failed to uninstall instrumentation package $_instrumentationPackageName '
+                '(code ${result.exitCode})';
+        log.fine(msg);
       });
     } catch (err) {
       progress.fail('Failed to install instrumentation');
@@ -202,8 +205,10 @@ class AndroidDriver implements PlatformDriver {
     );
 
     _disposeScope.addDispose(() async {
-      process.kill();
-      log.fine('Killed instrumentation with ADB');
+      final msg = process.kill()
+          ? 'Killed instrumentation with ADB'
+          : 'Failed to kill instrumentation with ADB';
+      log.fine(msg);
     });
     process.listenStdOut(log.info).disposed(_disposeScope);
     process.listenStdErr(log.severe).disposed(_disposeScope);

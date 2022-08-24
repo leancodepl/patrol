@@ -41,7 +41,7 @@ class IOSDriver extends PlatformDriver {
       port: port,
       debug: debug,
     );
-    await flutter_driver.runWithOutput(
+    await flutter_driver.FlutterDriver(_disposeScope).runWithOutput(
       driver: driver,
       target: target,
       host: host,
