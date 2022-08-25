@@ -183,7 +183,7 @@ class MaestroAutomator {
 
         val selector = query.toUiSelector()
         Logger.d("entering text \"$text\" to $selector")
-        
+
         val uiObject = uiDevice.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.text = text
     }
