@@ -6,6 +6,4 @@ Future<int> main(List<String> args) async {
   final exitCode = await maestroCommandRunner(args);
 
   exit(exitCode);
-
-  // trigger CI
 }
