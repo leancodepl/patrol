@@ -13,36 +13,47 @@ import 'package:maestro_cli/src/features/update/update_command.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
-  final runner = MaestroCommandRunner();
+  await setUpLogger(); // argParser.parse() can fail, so we setup logger early
 
+  final runner = MaestroCommandRunner();
+  int exitCode;
+
+  var interrupted = false;
   ProcessSignal.sigint.watch().listen((signal) async {
     log.fine('Caught SIGINT, exiting...');
+    interrupted = true;
     await runner
         .dispose()
         .onError((err, st) => log.severe('error while disposing', err, st));
-    exit(1);
+    exitCode = 1;
+    print('set EXIT CODE X');
   });
 
-  int exitCode;
   try {
     exitCode = await runner.run(args) ?? 0;
+    print('0 set EXIT CODE');
   } on UsageException catch (err) {
     log.severe(err.message);
     exitCode = 1;
+    print('1 set EXIT CODE');
   } on FormatException catch (err) {
     log.severe(err.message);
     exitCode = 1;
+    print('2 set EXIT CODE ');
   } on FileSystemException catch (err, st) {
     log.severe('${err.message}: ${err.path}', err, st);
     exitCode = 1;
+    print('3 set EXIT CODE ');
   } catch (err, st) {
     log.severe(null, err, st);
     exitCode = 1;
+    print('4 set EXIT CODE ');
   }
 
-  await runner
-      .dispose()
-      .onError((err, st) => log.severe('error while disposing', err, st));
+  if (!interrupted) {
+    await runner.dispose();
+  }
+
   return exitCode;
 }
 
@@ -78,11 +89,16 @@ class MaestroCommandRunner extends CommandRunner<int> {
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
 
-  Future<void> dispose() => _disposeScope.dispose();
+  Future<void> dispose() async {
+    try {
+      await _disposeScope.dispose();
+    } catch (err, st) {
+      log.severe('error while disposing', err, st);
+    }
+  }
 
   @override
   Future<int?> run(Iterable<String> args) async {
-    await setUpLogger(); // argParser.parse() can fail, so we setup logger early
     final results = argParser.parse(args);
     verboseFlag = results['verbose'] as bool;
     final helpFlag = results['help'] as bool;
