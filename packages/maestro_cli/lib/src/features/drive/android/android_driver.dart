@@ -36,7 +36,7 @@ class AndroidDriver implements PlatformDriver {
     await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
     await _runServer(device: device.id, port: port);
-    await FlutterDriver(_disposeScope).runWithOutput(
+    await FlutterDriver(_disposeScope).run(
       driver: driver,
       target: target,
       host: host,

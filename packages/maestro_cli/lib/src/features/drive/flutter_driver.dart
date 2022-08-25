@@ -14,47 +14,9 @@ class FlutterDriver {
 
   /// Runs flutter driver with the given [driver] and [target] and waits until
   /// the drive is done.
-  Future<void> run({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    String? device,
-    String? flavor,
-    required Map<String, String> dartDefines,
-    required bool verbose,
-  }) async {
-    if (device != null) {
-      log.info('Running $target on $device...');
-    } else {
-      log.info('Running $target...');
-    }
-
-    final env = _dartDefines(host: host, port: port, verbose: verbose);
-
-    final result = await Process.run(
-      'flutter',
-      _flutterDriveArguments(
-        driver: driver,
-        target: target,
-        device: device,
-        flavor: flavor,
-        dartDefines: {...dartDefines, ...env},
-      ),
-      environment: env,
-      runInShell: true,
-    );
-
-    if (result.stdOut.isNotEmpty) {
-      throw Exception(result.stdOut);
-    }
-  }
-
-  /// Runs flutter driver with the given [driver] and [target] and waits until
-  /// the drive is done.
   ///
-  /// Prints standard output of "flutter drive".
-  Future<void> runWithOutput({
+  /// Prints stdout and stderr of "flutter drive".
+  Future<void> run({
     required String driver,
     required String target,
     required String host,
