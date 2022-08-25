@@ -3,7 +3,11 @@ package pl.leancode.automatorserver
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.*
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 

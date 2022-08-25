@@ -25,7 +25,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
-import java.util.*
+import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
