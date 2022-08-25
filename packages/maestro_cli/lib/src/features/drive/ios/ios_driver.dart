@@ -140,6 +140,8 @@ class IOSDriver extends PlatformDriver {
     _disposeScope.addDispose(() async {
       process.kill();
       log.fine('Killed xcodebuild');
+
+      // TODO: Uninstall pl.leancode.AutomatorServer
     });
 
     final completer = Completer<void>();
