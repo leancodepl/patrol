@@ -204,14 +204,14 @@ class AndroidDriver implements PlatformDriver {
       arguments: {envPortKey: port.toString()},
     );
 
+    process.listenStdOut(log.info).disposed(_disposeScope);
+    process.listenStdErr(log.severe).disposed(_disposeScope);
     _disposeScope.addDispose(() async {
       final msg = process.kill()
           ? 'Killed instrumentation with ADB'
           : 'Failed to kill instrumentation with ADB';
       log.fine(msg);
     });
-    process.listenStdOut(log.info).disposed(_disposeScope);
-    process.listenStdErr(log.severe).disposed(_disposeScope);
   }
 
   Future<void> _forceInstallApk({

@@ -27,13 +27,13 @@ class FlutterDriver {
     required bool verbose,
   }) async {
     if (device != null) {
-      log.info('Running $target with output on $device...');
+      log.info('Running $target with flutter_driver on $device...');
     } else {
-      log.info('Running $target with output...');
+      log.info('Running $target with flutter_driver...');
     }
 
     final env = _dartDefines(host: host, port: port, verbose: verbose);
-
+    int? exitCode;
     final process = await Process.start(
       'flutter',
       _flutterDriveArguments(
@@ -46,13 +46,6 @@ class FlutterDriver {
       environment: env,
       runInShell: true,
     );
-
-    _disposeScope.addDispose(() async {
-      final killed = process.kill();
-      final msg =
-          killed ? 'Killed flutter_driver' : 'Failed to kill flutter_driver';
-      log.fine(msg);
-    });
 
     process.stdout.listen((msg) {
       final lines = systemEncoding
@@ -82,7 +75,18 @@ class FlutterDriver {
         .listen((msg) => log.severe(systemEncoding.decode(msg).trim()))
         .disposed(_disposeScope);
 
-    final exitCode = await process.exitCode;
+    _disposeScope.addDispose(() async {
+      if (exitCode != null) {
+        return;
+      }
+
+      final msg = process.kill()
+          ? 'Killed flutter_driver'
+          : 'Failed to kill flutter_driver';
+      log.fine(msg);
+    });
+
+    exitCode = await process.exitCode;
 
     final msg = 'flutter_driver exited with code $exitCode';
     if (exitCode == 0) {

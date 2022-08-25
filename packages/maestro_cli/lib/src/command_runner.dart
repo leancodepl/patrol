@@ -18,13 +18,14 @@ Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
   int exitCode;
 
-  Future<void>? interruption;
+  Future<Never>? interruption;
 
   ProcessSignal.sigint.watch().listen((signal) async {
     log.fine('Caught SIGINT, exiting...');
     interruption = runner
         .dispose()
-        .onError((err, st) => log.severe('error while disposing', err, st));
+        .onError((err, st) => log.severe('error while disposing', err, st))
+        .then((_) => exit(130));
   });
 
   try {
@@ -43,13 +44,12 @@ Future<int> maestroCommandRunner(List<String> args) async {
     exitCode = 1;
   }
 
-  if (interruption == null) {
-    await runner.dispose();
-    return exitCode;
-  } else {
-    await interruption;
-    return 130;
+  if (interruption != null) {
+    await interruption; // will never complete
   }
+
+  await runner.dispose();
+  return exitCode;
 }
 
 bool debugFlag = false;
@@ -65,7 +65,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand());
     addCommand(DriveCommand(_disposeScope));
-    addCommand(DevicesCommand());
+    addCommand(DevicesCommand(_disposeScope));
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
     addCommand(UpdateCommand());
