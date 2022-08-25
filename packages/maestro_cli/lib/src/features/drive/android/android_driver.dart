@@ -197,6 +197,7 @@ class AndroidDriver implements PlatformDriver {
     required String? device,
     required int port,
   }) async {
+    log.fine('Started native Android instrumentation');
     final process = await _adb.instrument(
       packageName: _instrumentationPackageName,
       intentClass: 'androidx.test.runner.AndroidJUnitRunner',
@@ -208,8 +209,8 @@ class AndroidDriver implements PlatformDriver {
     process.listenStdErr(log.severe).disposed(_disposeScope);
     _disposeScope.addDispose(() async {
       final msg = process.kill()
-          ? 'Killed instrumentation with ADB'
-          : 'Failed to kill instrumentation with ADB';
+          ? 'Killed native Android instrumentation'
+          : 'Failed to kill native Android instrumentation';
       log.fine(msg);
     });
   }
