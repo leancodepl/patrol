@@ -127,7 +127,7 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final availableDevices = await DevicesCommand.getDevices();
+    final availableDevices = await DevicesCommand.getDevices(_disposeScope);
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
     }

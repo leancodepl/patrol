@@ -18,43 +18,38 @@ Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
   int exitCode;
 
-  var interrupted = false;
+  Future<void>? interruption;
+
   ProcessSignal.sigint.watch().listen((signal) async {
     log.fine('Caught SIGINT, exiting...');
-    interrupted = true;
-    await runner
+    interruption = runner
         .dispose()
         .onError((err, st) => log.severe('error while disposing', err, st));
-    exitCode = 1;
-    print('set EXIT CODE X');
   });
 
   try {
     exitCode = await runner.run(args) ?? 0;
-    print('0 set EXIT CODE');
   } on UsageException catch (err) {
     log.severe(err.message);
     exitCode = 1;
-    print('1 set EXIT CODE');
-  } on FormatException catch (err) {
-    log.severe(err.message);
+  } on FormatException catch (err, st) {
+    log.severe(null, err, st);
     exitCode = 1;
-    print('2 set EXIT CODE ');
   } on FileSystemException catch (err, st) {
     log.severe('${err.message}: ${err.path}', err, st);
     exitCode = 1;
-    print('3 set EXIT CODE ');
   } catch (err, st) {
     log.severe(null, err, st);
     exitCode = 1;
-    print('4 set EXIT CODE ');
   }
 
-  if (!interrupted) {
+  if (interruption == null) {
     await runner.dispose();
+    return exitCode;
+  } else {
+    await interruption;
+    return 130;
   }
-
-  return exitCode;
 }
 
 bool debugFlag = false;
