@@ -7,7 +7,6 @@ import androidx.test.uiautomator.*
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
-
 @Serializable
 data class Notification(
     val appName: String,
