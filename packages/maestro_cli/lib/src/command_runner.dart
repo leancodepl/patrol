@@ -13,8 +13,6 @@ import 'package:maestro_cli/src/features/update/update_command.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
-  await setUpLogger(); // argParser.parse() can fail, so we setup logger early
-
   final runner = MaestroCommandRunner();
   int exitCode;
 
@@ -94,6 +92,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
 
   @override
   Future<int?> run(Iterable<String> args) async {
+    await setUpLogger(); // argParser.parse() can fail, so we setup logger early
     final results = argParser.parse(args);
     verboseFlag = results['verbose'] as bool;
     final helpFlag = results['help'] as bool;
