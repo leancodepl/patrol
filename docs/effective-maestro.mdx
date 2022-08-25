@@ -13,7 +13,13 @@ are the best way to find widgets.
 
 **Why not strings?**
 
-Strings are cringe.
+At first, strings might seem like a good way to find widgets.
+
+They'll get increasingly annoying to work with as your app grows and changes,
+for example, when the strings in your app change.
+
+Using strings stops making any sense when you have more than 1 language in your
+app. Using strings in such case is asking for trouble.
 
 **Why not classes?**
 
@@ -140,7 +146,7 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-      await $(#phoneNumber).enterText(555-2137)
+      await $(#phoneNumber).enterText("800-555-0199");
       await $(#loginButton).tap();
 
       // lots of lines

@@ -1,15 +1,16 @@
 import XCTest
 
 class ServerLoop: XCTestCase {
-  func testRunMaestroServer() {
-    print("Starting server...")
+  func testRunMaestroServer() throws {
+    Logger.shared.i("Starting server loop...")
 
-    let maestroServer = MaestroServer()
+    
+    let maestroServer = try MaestroServer()
+
     do {
       try maestroServer.start()
-      print("Server started")
-    } catch let error {
-      print("error: \(error)")
+    } catch let err {
+      Logger.shared.e("Failed to start server: \(err)")
       maestroServer.stop()
     }
   }

@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
+import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
 import 'package:maestro_test/src/custom_finders/maestro_tester.dart';
 import 'package:maestro_test/src/extensions.dart';
 import 'package:meta/meta.dart';
@@ -12,16 +13,7 @@ typedef MaestroTesterCallback = Future<void> Function(MaestroTester $);
 
 /// Like [testWidgets], but with support for Maestro custom finders.
 ///
-/// If you want to not close the app immediately after the test completes, use
-/// [sleep].
-///
-/// To call [WidgetTester.pump] instead of [WidgetTester.pumpAndSettle] after
-/// actions such as [MaestroFinder.tap] and [MaestroFinder.enterText], set
-/// [andSettle] to false.
-///
-/// ### Custom finders
-///
-/// Maestro custom finders greatly simplify writing widget tests.
+/// To customize the Maestro-specific configuration, set [config].
 ///
 /// ### Using the default [WidgetTester]
 /// If you need to do something using Flutter's [WidgetTester], you can access
@@ -43,29 +35,21 @@ void maestroTest(
   Timeout? timeout,
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
-  Duration sleep = Duration.zero,
-  Duration findTimeout = const Duration(seconds: 5),
-  String? appName,
-  bool andSettle = true,
   dynamic tags,
+  MaestroTestConfig config = const MaestroTestConfig(),
 }) {
   return testWidgets(
     description,
     (widgetTester) async {
-      final maestroTester = MaestroTester(
-        widgetTester,
-        appName: appName,
-        andSettle: andSettle,
-        findTimeout: findTimeout,
-      );
+      final maestroTester = MaestroTester(tester: widgetTester, config: config);
       await callback(maestroTester);
-      if (sleep != Duration.zero) {
+      if (config.sleep != Duration.zero) {
         maestroTester.log(
-          'sleeping for ${sleep.inSeconds} seconds',
+          'sleeping for ${config.sleep.inSeconds} seconds',
           name: 'maestroTest',
         );
-        io.sleep(sleep);
-        maestroTester.log('sleeping finished', name: 'maestroTest');
+        io.sleep(config.sleep);
+        maestroTester.log('done sleeping', name: 'maestroTest');
       }
     },
     skip: skip,
@@ -150,10 +134,11 @@ Finder createFinder(dynamic matching) {
   }
 
   if (matching is String) {
-    return find.text(matching);
+    return find.text(matching, findRichText: true);
   }
 
   if (matching is Pattern) {
+    // TODO: Re-add `findRichText: true` when minimum SDK version is >= 2.17
     return find.textContaining(matching);
   }
 

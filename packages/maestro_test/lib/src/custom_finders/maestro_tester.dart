@@ -1,8 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/common.dart';
 import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
+import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
 import 'package:meta/meta.dart';
 
 /// Specifies direction in the cartesian plane.
@@ -79,42 +79,26 @@ extension DirectionX on Direction {
 /// [callable class][callable-class].
 ///
 /// [callable-class]:
-/// https://dart.dev/guides/language/language-tour#callable-classes
+/// <https://dart.dev/guides/language/language-tour#callable-classes>
 class MaestroTester {
   /// Creates a new [MaestroTester] which wraps [tester].
-  const MaestroTester(
-    this.tester, {
-    this.appName,
-    required this.andSettle,
-    this.findTimeout = const Duration(seconds: 5),
+  const MaestroTester({
+    required this.tester,
+    required this.config,
   });
+
+  /// Global configuration of this tester.
+  final MaestroTestConfig config;
 
   /// Flutter's widget tester that this [MaestroTester] wraps.
   final WidgetTester tester;
 
-  /// Name of the application under test.
-  ///
-  /// If non-null, [MaestroTester.log] will prefix logs with it.
-  final String? appName;
-
-  /// If true, [pumpAndSettle] is called after every action such as tapping,
-  /// entering text, dragging, etc.
-  ///
-  /// If false, only [pump] is called in these situations.
-  final bool andSettle;
-
-  /// Time after which [MaestroFinder.visible] fails if it doesn't finds a
-  /// widget.
-  ///
-  /// [MaestroFinder.visible] is used internally by [MaestroFinder.tap] and
-  /// [MaestroFinder.enterText].
-  final Duration findTimeout;
-
-  /// Makes it simple to log.
+  /// Makes it simple to log. No need to use `print` or depend on
+  /// `package:logging`.
   void log(Object? object, {String? name}) {
     final log = StringBuffer();
 
-    final tag = appName ?? name;
+    final tag = name ?? config.appName;
     if (tag != null) {
       log.write('$tag: ');
     }
@@ -160,96 +144,26 @@ class MaestroTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration timeout = const Duration(minutes: 10),
   ]) async {
-    await tester.pumpAndSettle();
+    await tester.pumpAndSettle(duration, phase, timeout);
   }
 
-  /// A convenience method combining [WidgetTester.pumpWidget] and
+  /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].
+  ///
+  /// This is a convenience method combining [WidgetTester.pumpWidget] and
   /// [WidgetTester.pumpAndSettle].
   Future<void> pumpWidgetAndSettle(
     Widget widget, {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+    Duration? timeout,
   }) async {
     await tester.pumpWidget(widget, duration, phase);
-    const andSettle = true;
-    await performPump(andSettle);
-  }
-
-  /// Attempts to drag the widget resolved by [finder] by the given [offset], by
-  /// starting a drag in the middle of the widget.
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] or
-  /// [WidgetTester.pump] after the drag is complete. If you want to override
-  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
-  /// false.
-  ///
-  /// See also:
-  ///  - [WidgetController.drag]
-  ///  - [MaestroTester.andSettle], which controls the default behavior if
-  ///    [andSettle] is null
-  Future<void> drag({
-    required Finder finder,
-    required Offset offset,
-    int? pointer,
-    int buttons = kPrimaryButton,
-    double touchSlopX = kDragSlopDefault,
-    double touchSlopY = kDragSlopDefault,
-    bool warnIfMissed = true,
-    PointerDeviceKind kind = PointerDeviceKind.touch,
-    bool? andSettle,
-  }) async {
-    final maestroFinder = MaestroFinder(finder: finder, tester: this);
-
-    await tester.drag(
-      (await maestroFinder.visible()).first,
-      offset,
-      pointer: pointer,
-      buttons: buttons,
-      touchSlopX: touchSlopX,
-      touchSlopY: touchSlopY,
-      kind: kind,
-    );
-    await performPump(andSettle);
-  }
-
-  /// Attempts a drag gesture consisting of a pointer down on [startLocation], a
-  /// move by the given [offset], and a pointer up.
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] or
-  /// [WidgetTester.pump] after the drag is complete. If you want to override
-  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
-  /// false.
-  ///
-  /// See also:
-  ///  - [WidgetController.dragFrom], which this method wraps.
-  ///  - [MaestroTester.andSettle], which controls the default behavior if
-  ///    [andSettle] is null
-  Future<void> dragFrom({
-    required Offset startLocation,
-    required Offset offset,
-    int? pointer,
-    int buttons = kPrimaryButton,
-    double touchSlopX = kDragSlopDefault,
-    double touchSlopY = kDragSlopDefault,
-    PointerDeviceKind kind = PointerDeviceKind.touch,
-    bool? andSettle,
-  }) async {
-    await tester.dragFrom(
-      startLocation,
-      offset,
-      pointer: pointer,
-      buttons: buttons,
-      touchSlopX: touchSlopX,
-      touchSlopY: touchSlopY,
-      kind: kind,
-    );
-
-    await performPump(andSettle);
+    await performPump(andSettle: true, settleTimeout: timeout);
   }
 
   /// Scrolls [view] in [direction] until it finds [finder].
   ///
-  /// [step] is the amount of space to scroll by. It must be positive number.
+  /// [step] is the amount of space to scroll by. It must be a positive number.
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] or
   /// [WidgetTester.pump] after the drag is complete. If you want to override
@@ -258,9 +172,9 @@ class MaestroTester {
   ///
   /// See also:
   ///  - [WidgetController.dragUntilVisible], which this method wraps
-  ///  - [MaestroTester.andSettle], which controls the default behavior if
-  ///    [andSettle] is null
-  Future<void> dragUntilVisible({
+  ///  - [MaestroTester.config.andSettle], which controls the default behavior
+  ///    if [andSettle] is null
+  Future<MaestroFinder> dragUntilVisible({
     required Finder finder,
     required Finder view,
     required Direction direction,
@@ -276,21 +190,34 @@ class MaestroTester {
 
     await tester.dragUntilVisible(
       finder.first,
-      (await maestroFinder.visible()).first,
+      (await maestroFinder.waitUntilVisible()).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
     );
 
-    await performPump(andSettle);
+    await performPump(
+      andSettle: andSettle,
+      settleTimeout: config.settleTimeout,
+    );
+
+    return MaestroFinder(finder: finder.first, tester: this);
   }
 
   @internal
-  // ignore: avoid_positional_boolean_parameters, public_member_api_docs
-  Future<void> performPump(bool? andSettle) async {
-    final settle = andSettle ?? this.andSettle;
+  // ignore: public_member_api_docs
+  Future<void> performPump({
+    required bool? andSettle,
+    required Duration? settleTimeout,
+  }) async {
+    final settle = andSettle ?? config.andSettle;
     if (settle) {
-      await tester.pumpAndSettle();
+      final timeout = settleTimeout ?? config.settleTimeout;
+      await tester.pumpAndSettle(
+        const Duration(milliseconds: 100),
+        EnginePhase.sendSemanticsUpdate,
+        timeout,
+      );
     } else {
       await tester.pump();
     }

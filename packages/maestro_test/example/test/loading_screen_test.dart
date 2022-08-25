@@ -9,25 +9,27 @@ void main() {
       await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
 
       final helloText = $('Hello');
-      await helloText.visible();
+      await helloText.waitUntilVisible();
       await helloText.tap(andSettle: false);
       expect(helloText, findsOneWidget);
     });
 
     maestroTest(
-      'throws TimeoutException when takes more than findTimeout',
+      'throws TimeoutException when takes more than visibleTimeout',
       ($) async {
         await $.tester.runAsync(() async {
           await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
 
           final helloText = $('Hello');
           await expectLater(
-            helloText.visible,
-            throwsA(isA<MaestroFinderFoundNothingException>()),
+            helloText.waitUntilVisible,
+            throwsA(isA<WaitUntilVisibleTimedOutException>()),
           );
         });
       },
-      findTimeout: const Duration(milliseconds: 100),
+      config: MaestroTestConfig(
+        visibleTimeout: const Duration(milliseconds: 100),
+      ),
     );
   });
 }

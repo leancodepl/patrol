@@ -1,3 +1,29 @@
+## 0.4.4+3
+
+- Fix not working on Windows because of `flutter` command not being found
+
+## 0.4.4+2
+
+- Fix problem with project not building because of a breaking change in
+  `package:mason_logger` dependency
+
+## 0.4.4+1
+
+- Fix issue with CI
+
+## 0.4.4
+
+- Add support for physical iOS devices
+
+## 0.4.3
+
+- Fix bug with APKs failing to force install when certificates don't match, this
+  time once and for all
+
+## 0.4.2
+
+- Fix bug with APKs failing to force install when certificates don't match
+
 ## 0.4.1
 
 - Rename `MAESTRO_ARTIFACT_PATH` environment variable to `MAESTRO_CACHE`
@@ -6,7 +32,8 @@
 
 ## 0.4.0
 
-- Support [maestro_test 0.4.0](https://pub.dev/packages/maestro_test/changelog#040)
+- Support [maestro_test
+  0.4.0](https://pub.dev/packages/maestro_test/changelog#040)
 
 ## 0.3.5
 

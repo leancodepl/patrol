@@ -35,20 +35,16 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@main
         with:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
-          cache: true
 
       - name: Install Java
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "11"
-
-      - name: Install swift-format
-        run: brew install swift-format
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
@@ -79,16 +75,20 @@ jobs:
         working-directory: ./AutomatorServer/android
         run: ./gradlew ktlintFormat
 
-      - name: swift-format lint
-        working-directory: ./AutomatorServer/ios/AutomatorServerUITests
-        run: test -z $(swift-format lint --recursive .)
+      # # Temporarily disabled because takes too much time
+      # - name: Install swift-format
+      #   run: brew install swift-format
 
-      - name: swift-format format
-        working-directory: ./AutomatorServer/ios/AutomatorServerUITests
-        run: |
-          swift-format format --recursive --in-place .
-          git update-index --refresh
-          git diff-index --quiet HEAD --
+      # - name: swift-format lint
+      #   working-directory: ./AutomatorServer/ios/AutomatorServerUITests
+      #   run: test -z $(swift-format lint --recursive .)
+
+      # - name: swift-format format
+      #   working-directory: ./AutomatorServer/ios/AutomatorServerUITests
+      #   run: |
+      #     swift-format format --recursive --in-place .
+      #     git update-index --refresh
+      #     git diff-index --quiet HEAD --
 
       - name: Test maestro bootstrap --template basic
         working-directory: ../

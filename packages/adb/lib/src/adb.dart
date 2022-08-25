@@ -48,13 +48,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
-        throw AdbInstallFailedUpdateIncompatible.fromStdErr(result.stdErr);
-      }
-
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -89,9 +83,7 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
@@ -99,7 +91,8 @@ class Adb {
     return result;
   }
 
-  /// Sets up port forwarding on the attached device.
+  /// Sets up port forwarding on the attached device. Returns a function that
+  /// stops the port forwarding when called.
   ///
   /// If there is more than 1 device attached, decide which one to use by
   /// passing [device].
@@ -108,7 +101,7 @@ class Adb {
   ///
   /// See also:
   ///  * https://developer.android.com/studio/command-line/adb#forwardports
-  Future<void> forwardPorts({
+  Future<Future<void> Function()> forwardPorts({
     required int fromHost,
     required int toDevice,
     String? device,
@@ -131,12 +124,32 @@ class Adb {
     );
 
     if (result.stdErr.isNotEmpty) {
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        throw const AdbDaemonNotRunning();
-      }
+      _handleAdbExceptions(result.stdErr);
 
       throw Exception(result.stdErr);
     }
+
+    return () async {
+      final result = await io.Process.run(
+        'adb',
+        [
+          if (device != null) ...[
+            '-s',
+            device,
+          ],
+          'forward',
+          '--remove',
+          '$protocol:$fromHost',
+        ],
+        runInShell: true,
+      );
+
+      if (result.stdErr.isNotEmpty) {
+        _handleAdbExceptions(result.stdErr);
+
+        throw Exception(result.stdErr);
+      }
+    };
   }
 
   /// Runs instrumentation test specified by [packageName] and [intentClass] on
@@ -149,12 +162,10 @@ class Adb {
   ///
   /// See also:
   ///  * https://developer.android.com/studio/test/command-line#run-tests-with-adb
-  Future<void> instrument({
+  Future<io.Process> instrument({
     required String packageName,
     required String intentClass,
     String? device,
-    void Function(String)? onStdout,
-    void Function(String)? onStderr,
     Map<String, String> arguments = const {},
   }) async {
     await _ensureRunning();
@@ -180,38 +191,7 @@ class Adb {
       runInShell: true,
     );
 
-    final stdoutSub = process.stdout.listen((data) {
-      final text = io.systemEncoding.decode(data);
-      onStdout?.call(text);
-    });
-
-    final stderrSub = process.stderr.listen((data) {
-      final text = io.systemEncoding.decode(data);
-      onStderr?.call(text);
-    });
-
-    final code = await process.exitCode;
-
-    await stdoutSub.cancel();
-    await stderrSub.cancel();
-
-    if (code != 0) {
-      throw Exception('Instrumentation server exited with code $code');
-    }
-  }
-
-  /// Like [install], but if the install fails because of
-  /// INSTALL_FAILED_UPDATE_INCOMPATIBLE, the app is uninstalled and installed
-  /// again.
-  Future<void> forceInstallApk(String path, {String? device}) async {
-    await _ensureRunning();
-
-    try {
-      await install(path, device: device);
-    } on AdbInstallFailedUpdateIncompatible catch (err) {
-      await uninstall(err.packageName, device: device);
-      await install(path, device: device);
-    }
+    return process;
   }
 
   /// Returns the list of currently attached devices.
@@ -253,6 +233,20 @@ class Adb {
       } else {
         break;
       }
+    }
+  }
+
+  void _handleAdbExceptions(String stdErr) {
+    if (stdErr.contains(AdbDaemonNotRunning.trigger)) {
+      throw AdbDaemonNotRunning(message: stdErr);
+    }
+
+    if (stdErr.contains(AdbInstallFailedUpdateIncompatible.trigger)) {
+      throw AdbInstallFailedUpdateIncompatible(message: stdErr);
+    }
+
+    if (stdErr.contains(AdbDeleteFailedInternalError.trigger)) {
+      throw AdbDeleteFailedInternalError(message: stdErr);
     }
   }
 }

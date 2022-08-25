@@ -13,15 +13,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check if versions are defined consistently
+        working-directory: packages/maestro_cli
         run: ./check_versions
 
   upload_artifacts:
     runs-on: ubuntu-latest
     needs: check_versions
-
-    defaults:
-      run:
-        working-directory: AutomatorServer/android
 
     steps:
       - name: Clone repository
@@ -34,15 +31,19 @@ jobs:
         run: |
           tag=${{ github.ref_name }}
           prefix=maestro_cli-v
-          version=${tag#"$prefix"}
+          version=${tag#"$prefix"} # version without the prefix
           echo "version: $version"
           server_file="server-$version.apk"
-          echo "server file: $server_file"
           instrumentation_file="instrumentation-$version.apk"
+          ios_zip_directory="ios-$version.zip"
+          echo "server file: $server_file"
           echo "instrumentation file: $instrumentation_file"
+          echo "ios zip directory: $ios_zip_directory"
+          # exporting
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
           echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
+          echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
           # set whether is prerelease
           is_prerelease=false
           if [[ "$version" == 0.* ]]; then
@@ -56,36 +57,46 @@ jobs:
           echo "tag message: $tag_message"
 
       - name: Build server APK
+        working-directory: AutomatorServer/android
         run: |
           echo "server file: $SERVER_FILE"
           ./gradlew assembleDebug
           mv app/build/outputs/apk/debug/app-debug.apk $SERVER_FILE
 
       - name: Build instrumentation APK
+        working-directory: AutomatorServer/android
         run: |
           echo "instrumentation file: $INSTRUMENTATION_FILE"
           ./gradlew assembleDebugAndroidTest
           mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
 
+      - name: Create zip archive from iOS project
+        working-directory: AutomatorServer/ios
+        run: |
+          echo "ios zip directory: $IOS_ZIP_DIRECTORY"
+          ./makearchive "$VERSION"
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           name: "maestro_cli-v${{ env.VERSION }}"
-          body_path: AutomatorServer/android/release_notes.txt
+          body_path: release_notes.txt
           prerelease: ${{ env.IS_PRERELEASE }}
           fail_on_unmatched_files: true
           # see https://github.com/softprops/action-gh-release/issues/158
           files: |
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
+            AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
 
       - name: Upload artifacts to Azure Storage
         env:
           AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
           AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
         run: |
-          ./upload_artifact ${{ env.SERVER_FILE }}
-          ./upload_artifact ${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact AutomatorServer/android/${{ env.SERVER_FILE }}
+          ./upload_artifact AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
 
   publish_cli:
     runs-on: ubuntu-latest

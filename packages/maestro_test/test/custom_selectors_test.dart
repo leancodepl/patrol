@@ -209,18 +209,77 @@ void main() {
     });
 
     maestroTest(
-      'finds only hit testable',
+      'visible() throws exception when widget is not hit testable',
       ($) async {
         await pumpWithOverlays($);
 
         expect(find.text('hidden boi'), findsOneWidget);
 
         await expectLater(
-          () => $('hidden boi').visible(),
-          throwsA(isA<MaestroFinderFoundNothingException>()),
+          () => $('hidden boi').waitUntilVisible(),
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
         );
       },
-      findTimeout: const Duration(milliseconds: 300),
+      config: const MaestroTestConfig(
+        visibleTimeout: Duration(milliseconds: 300),
+      ),
+    );
+
+    maestroTest('finds RichText', ($) async {
+      await $.pumpWidgetAndSettle(
+        const MaterialApp(
+          home: Text.rich(
+            TextSpan(
+              text: 'Some text',
+              children: [
+                TextSpan(text: 'Some more text'),
+                WidgetSpan(child: SizedBox(width: 8)),
+                WidgetSpan(child: Icon(Icons.public)),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect($(RegExp('Some text')), findsOneWidget);
+      expect($(RegExp('Some more text')), findsOneWidget);
+      expect($('Some textSome more text\uFFFC\uFFFC'), findsOneWidget);
+    });
+  });
+
+  maestroTest('text returns the nearest visible Text widget (1)', ($) async {
+    await smallPump($);
+
+    expect($(#helloText), findsOneWidget);
+    expect($(#helloText).text, 'Hello');
+  });
+
+  maestroTest('text returns the nearest visible Text widget (2)', ($) async {
+    await pumpWithOverlays($);
+
+    expect($(#visibleText), findsOneWidget);
+    expect($(#hiddenText), findsOneWidget);
+
+    expect($(#visibleText).text, 'visible boi');
+    expect(
+      () => $(#hiddenBoi).text,
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          'No element',
+        ),
+      ),
+    );
+    expect(
+      () => $(#hiddenBoiButWrongKey).text,
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          'No element',
+        ),
+      ),
     );
   });
 }
@@ -231,7 +290,7 @@ Future<void> smallPump(MaestroTester $) async {
       home: Row(
         children: const [
           Icon(Icons.front_hand),
-          Text('Hello'),
+          Text('Hello', key: Key('helloText')),
         ],
       ),
     ),
@@ -280,9 +339,7 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
       home: Scaffold(
         body: Stack(
           children: [
-            const Center(
-              child: Text('hidden boi'),
-            ),
+            const Center(child: Text('hidden boi', key: Key('hiddenText'))),
             Center(
               child: Container(
                 width: 150,
@@ -290,6 +347,7 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
                 color: Colors.blue,
               ),
             ),
+            const Text('visible boi', key: Key('visibleText')),
           ],
         ),
       ),

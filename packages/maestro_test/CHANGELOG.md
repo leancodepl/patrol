@@ -1,3 +1,29 @@
+## 0.4.6
+
+- Downgrade `package:freezed` to v1 beacuse customer project is not able to
+  update to v2
+
+## 0.4.5
+
+- Create `MaestroTestConfig` class which is accepted by `maestroTest` function.
+  Use it to share common configuration across all tests
+- Upgrade `package:freezed` to v2. Dependent projects should also make this
+  change
+
+## 0.4.4
+
+`MaestroFinder`:
+
+- Rename `visible` method to `waitUntilVisible`
+- Add `waitUntilExists` method
+- Add `exists` getter
+- Add `visible` getter
+
+## 0.4.3
+
+- Add `MaestroFinder.dragTo`
+- Remove unused `MaestroTester.drag` and `MaestroTester.dragFrom`
+
 ## 0.4.2
 
 - Convert `MaestroFinder.visible` getter to a method, which now also takes a
@@ -19,7 +45,7 @@
   timeout can be configured by setting `findTimeout` in `maestroTest()`
 - Remove `index` parameter from `tap()` and `enterText()`. The new way to select
   the widget to be tapped is to use `at()` before tapping. Same goes for
-  entering text.
+  entering text
 - Add `bool andSettle` parameter to `maestroTest` function. This lets you
   globally configure whether to call `pumpAndSettle` after actions such as
   `tap()` or `enterText()`

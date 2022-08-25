@@ -1,6 +1,8 @@
 import 'package:example/main.dart';
 import 'package:maestro_test/maestro_test.dart';
 
+import 'config.dart';
+
 void main() {
   final maestro = Maestro.forTest();
 
@@ -9,7 +11,7 @@ void main() {
     ($) async {
       $.log('Yay, notification_test.dart is starting!');
 
-      await $.pumpWidgetAndSettle(MyApp());
+      await $.pumpWidgetAndSettle(const ExampleApp());
 
       await $('Open notifications screen').tap();
 
@@ -20,10 +22,9 @@ void main() {
 
       await maestro.tapOnNotificationByIndex(1);
       await maestro.tapOnNotificationBySelector(
-        Selector(textContains: 'special offer'),
+        const Selector(textContains: 'special offer'),
       );
     },
-    appName: 'ExampleApp',
-    sleep: Duration(seconds: 5),
+    config: maestroConfig,
   );
 }

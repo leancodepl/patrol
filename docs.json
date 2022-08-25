@@ -3,7 +3,7 @@
   "twitter": "leancodepl",
   "theme": "#FFA03F",
   "sidebar": [
-    ["Overview", "/"],
+    ["About", "/"],
     ["Comparison with other testing frameworks", "/comparison"],
     [
       "Custom finders",

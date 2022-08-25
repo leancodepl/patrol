@@ -1,19 +1,16 @@
-import 'package:example/main.dart';
 import 'package:maestro_test/maestro_test.dart';
+
+import 'config.dart';
 
 void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'counter state is the same after going to Home and switching apps',
+    'taps around',
     ($) async {
-      await $.pumpWidgetAndSettle(MyApp());
-
-      await maestro.pressHome();
-
       await maestro.openQuickSettings();
-      await maestro.tap(Selector(text: 'Bluetooth'));
-      await maestro.tap(Selector(text: 'Bluetooth'));
+      await maestro.tap(const Selector(text: 'Bluetooth'));
+      await maestro.tap(const Selector(text: 'Bluetooth'));
       await maestro.pressBack();
 
       await maestro.openNotifications();
@@ -32,6 +29,6 @@ void main() {
 
       await maestro.pressBack();
     },
-    appName: 'ExampleApp',
+    config: maestroConfig,
   );
 }

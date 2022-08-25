@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:maestro_cli/src/features/clean/clean_command.dart';
@@ -12,6 +13,11 @@ import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
+
+  ProcessSignal.sigint.watch().listen((signal) {
+    log.info('Caught SIGINT, exiting...');
+    exit(1);
+  });
 
   try {
     final exitCode = await runner.run(args) ?? 0;
@@ -58,6 +64,8 @@ class MaestroCommandRunner extends CommandRunner<int> {
       ..addFlag('debug', help: 'Use default, non-versioned artifacts.');
   }
 
+  final artifactsRepository = ArtifactsRepository();
+
   @override
   Future<int?> run(Iterable<String> args) async {
     await setUpLogger(); // argParser.parse() can fail, so we setup logger early
@@ -69,6 +77,10 @@ class MaestroCommandRunner extends CommandRunner<int> {
 
     await setUpLogger(verbose: verboseFlag);
 
+    if (debugFlag) {
+      log.info('Debug mode enabled. Non-versioned artifacts will be used.');
+    }
+
     if (versionFlag) {
       log.info('maestro_cli v$version');
       return 0;
@@ -78,79 +90,80 @@ class MaestroCommandRunner extends CommandRunner<int> {
       return super.run(args);
     }
 
-    if (debugFlag) {
-      log.info('Debug mode enabled. Non-versioned artifacts will be used.');
+    final commandName = results.command?.name;
+
+    if (_wantsVersionCheck(commandName)) {
+      await _checkIfUsingLatestVersion(commandName);
     }
 
-    if (!(results.command?.name == 'update') &&
-        !(results.command?.name == 'doctor')) {
-      await _checkIfUsingLatestVersion();
-    }
-
-    if (_isCommandRequiringArtifacts(results.command?.name)) {
-      try {
-        await _ensureArtifactsArePresent(debugFlag);
-      } catch (err, st) {
-        log.severe(null, err, st);
-        return 1;
-      }
-
-      return super.run(args);
+    if (_wantsArtifacts(commandName)) {
+      await _ensureArtifactsArePresent();
     }
 
     return super.run(args);
   }
-}
 
-bool _isCommandRequiringArtifacts(String? commandName) {
-  if (commandName == 'clean' ||
-      commandName == 'doctor' ||
-      commandName == 'update' ||
-      commandName == 'help') {
-    return false;
-  }
-
-  return true;
-}
-
-Future<void> _checkIfUsingLatestVersion() async {
-  final pubUpdater = PubUpdater();
-
-  final latestVersion = await pubUpdater.getLatestVersion(maestroCliPackage);
-  final isLatestVersion = await pubUpdater.isUpToDate(
-    packageName: maestroCliPackage,
-    currentVersion: version,
-  );
-
-  if (!isLatestVersion && !debugFlag) {
-    log
-      ..info(
-        'Newer version of $maestroCliPackage is available ($latestVersion)',
-      )
-      ..info('Run `maestro update` to update');
-  }
-}
-
-Future<void> _ensureArtifactsArePresent(bool debug) async {
-  if (debug) {
-    if (areDebugArtifactsPresent()) {
-      return;
-    } else {
-      throw Exception('Debug artifacts are not present.');
+  bool _wantsVersionCheck(String? commandName) {
+    if (commandName == 'update' || commandName == 'doctor') {
+      return false;
     }
-  } else {
-    if (areArtifactsPresent()) {
+
+    return true;
+  }
+
+  Future<void> _checkIfUsingLatestVersion(String? commandName) async {
+    if (commandName == 'update' || commandName == 'doctor') {
       return;
+    }
+
+    final pubUpdater = PubUpdater();
+
+    final latestVersion = await pubUpdater.getLatestVersion(maestroCliPackage);
+    final isLatestVersion = await pubUpdater.isUpToDate(
+      packageName: maestroCliPackage,
+      currentVersion: version,
+    );
+
+    if (!isLatestVersion && !debugFlag) {
+      log
+        ..info(
+          'Newer version of $maestroCliPackage is available ($latestVersion)',
+        )
+        ..info('Run `maestro update` to update');
     }
   }
 
-  final progress = log.progress('Downloading artifacts');
-  try {
-    await downloadArtifacts();
-  } catch (_) {
-    progress.fail('Failed to download artifacts');
-    rethrow;
+  bool _wantsArtifacts(String? commandName) {
+    if (commandName == 'clean' ||
+        commandName == 'devices' ||
+        commandName == 'doctor' ||
+        commandName == 'update' ||
+        commandName == 'help') {
+      return false;
+    }
+
+    return true;
   }
 
-  progress.complete('Downloaded artifacts');
+  Future<void> _ensureArtifactsArePresent() async {
+    if (debugFlag) {
+      if (artifactsRepository.areDebugArtifactsPresent()) {
+        return;
+      } else {
+        throw Exception('Debug artifacts are not present.');
+      }
+    } else if (artifactsRepository.areArtifactsPresent()) {
+      return;
+    }
+
+    final progress = log.progress('Artifacts are not present, downloading...');
+    try {
+      await artifactsRepository.downloadArtifacts();
+    } catch (_) {
+      progress.fail('Failed to download artifacts');
+      rethrow;
+    }
+
+    progress.complete('Downloaded artifacts');
+  }
 }

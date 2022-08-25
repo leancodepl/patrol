@@ -2,7 +2,7 @@ name: maestro_test
 description: >
   Simple, easy-to-learn, and powerful Flutter-native UI testing framework eliminating
   limitations of flutter_test and flutter_driver
-version: 0.4.2
+version: 0.4.6
 homepage: https://github.com/leancodepl/maestro/tree/master/packages/maestro_test
 
 environment:
@@ -15,11 +15,10 @@ dependencies:
   flutter_test:
     sdk: flutter
   freezed_annotation: ^1.1.0
-  http: ^0.13.4
+  http: ^0.13.5
   integration_test:
     sdk: flutter
   json_annotation: ^4.5.0
-  logging: ^1.0.2
   meta: ^1.7.0
 
 dev_dependencies:
