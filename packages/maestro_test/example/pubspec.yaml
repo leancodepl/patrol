@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_local_notifications: ^10.0.0-dev.14
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:
