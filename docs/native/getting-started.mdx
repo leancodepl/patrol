@@ -1,3 +1,24 @@
 ## Getting started
 
-// TODO: Add getting started
+Using Maestro's native capabilities requires more setup work than using custom
+finders.
+
+Worry not though, because there's `maestro bootstrap` command, which automates
+everything that can be automated.
+
+1. Install `maestro` executable
+
+   ```bash
+   dart pub global activate maestro_cli
+   ```
+
+2. Perform initial setup in your Flutter project root:
+
+   ```bash
+   maestro bootstrap
+   ```
+
+3. Run the example generated integration test:
+   ```bash
+   maestro drive
+   ```
