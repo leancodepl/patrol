@@ -2,24 +2,25 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/common/paths.dart' as paths;
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
-import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
-class IOSDriver extends PlatformDriver {
+class IOSDriver {
   IOSDriver(
     StatefulDisposeScope parentDisposeScope,
+    this._artifactsRepository,
   ) : _disposeScope = StatefulDisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
   }
 
+  final ArtifactsRepository _artifactsRepository;
+
   final StatefulDisposeScope _disposeScope;
 
-  @override
   Future<void> run({
     required String driver,
     required String target,
@@ -29,7 +30,6 @@ class IOSDriver extends PlatformDriver {
     required String? flavor,
     required Map<String, String> dartDefines,
     required bool verbose,
-    required bool debug,
     bool simulator = false,
   }) async {
     if (device.real) {
@@ -40,7 +40,6 @@ class IOSDriver extends PlatformDriver {
       deviceId: device.id,
       simulator: simulator,
       port: port,
-      debug: debug,
     );
     await flutter_driver.FlutterDriver(_disposeScope).run(
       driver: driver,
@@ -114,7 +113,6 @@ class IOSDriver extends PlatformDriver {
     required String deviceName,
     required String deviceId,
     required bool simulator,
-    required bool debug,
   }) async {
     // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
@@ -131,8 +129,7 @@ class IOSDriver extends PlatformDriver {
         'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
       ],
       runInShell: true,
-      workingDirectory:
-          debug ? paths.debugIOSArtifactDirPath : paths.iosArtifactDirPath,
+      workingDirectory: _artifactsRepository.iosArtifactDirPath,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
@@ -186,14 +183,6 @@ class IOSDriver extends PlatformDriver {
       }
     }).disposed(_disposeScope);
 
-    await completer.future; // .completer.complete();
-
-    // await process.exitCode;
-    // final msg = 'xcodebuild exited with code $exitCode';
-    // if (exitCode == 0) {
-    //   log.info(msg);
-    // } else {
-    //   log.severe(msg);
-    // }
+    await completer.future;
   }
 }

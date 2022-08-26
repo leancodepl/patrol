@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
@@ -10,8 +11,11 @@ import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:maestro_cli/src/top_level_flags.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand(StatefulDisposeScope parentDisposeScope, this._topLevelFlags)
-      : _disposeScope = StatefulDisposeScope() {
+  DriveCommand(
+    StatefulDisposeScope parentDisposeScope,
+    this._topLevelFlags,
+    this._artifactsRepository,
+  ) : _disposeScope = StatefulDisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
 
     argParser
@@ -57,6 +61,7 @@ class DriveCommand extends Command<int> {
   }
 
   final StatefulDisposeScope _disposeScope;
+  final ArtifactsRepository _artifactsRepository;
   final TopLevelFlags _topLevelFlags;
 
   @override
@@ -153,7 +158,7 @@ class DriveCommand extends Command<int> {
     for (final device in devicesToUse) {
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver(_disposeScope).run(
+          await AndroidDriver(_disposeScope, _artifactsRepository).run(
             driver: driver,
             target: target,
             host: host,
@@ -166,7 +171,7 @@ class DriveCommand extends Command<int> {
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver(_disposeScope).run(
+          await IOSDriver(_disposeScope, _artifactsRepository).run(
             driver: driver,
             target: target,
             host: host,
@@ -174,7 +179,6 @@ class DriveCommand extends Command<int> {
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
-            debug: _topLevelFlags.debug,
             simulator: !device.real,
             dartDefines: dartDefines,
           );

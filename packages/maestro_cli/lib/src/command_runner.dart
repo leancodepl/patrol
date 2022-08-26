@@ -53,14 +53,17 @@ Future<int> maestroCommandRunner(List<String> args) async {
 class MaestroCommandRunner extends CommandRunner<int> {
   MaestroCommandRunner()
       : _disposeScope = StatefulDisposeScope(),
-        _artifactsRepository = ArtifactsRepository(),
         _topLevelFlags = TopLevelFlags(),
         super(
           'maestro',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    _artifactsRepository = ArtifactsRepository(_topLevelFlags);
+
     addCommand(BootstrapCommand());
-    addCommand(DriveCommand(_disposeScope, _topLevelFlags));
+    addCommand(
+      DriveCommand(_disposeScope, _topLevelFlags, _artifactsRepository),
+    );
     addCommand(DevicesCommand(_disposeScope));
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
@@ -78,7 +81,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
   }
 
   final StatefulDisposeScope _disposeScope;
-  final ArtifactsRepository _artifactsRepository;
+  late final ArtifactsRepository _artifactsRepository;
 
   final TopLevelFlags _topLevelFlags;
 
