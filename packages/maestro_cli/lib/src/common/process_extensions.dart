@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dispose_scope/dispose_scope.dart';
+
 extension ProcessResultX on ProcessResult {
   /// A shortcut to avoid typing `as String` every time.
   ///
@@ -13,7 +15,7 @@ extension ProcessResultX on ProcessResult {
   String get stdErr => this.stderr as String;
 }
 
-extension ProcessX on Process {
+extension ProcessListeners on Process {
   StreamSubscription<List<int>> listenStdOut(
     void Function(String) onData, {
     Function? onError,
@@ -51,5 +53,11 @@ extension ProcessX on Process {
       onDone: onDone,
       cancelOnError: cancelOnError,
     );
+  }
+}
+
+extension ProcessDisposers on Process {
+  void disposed(DisposeScope disposeScope) {
+    disposeScope.addDispose(() async => kill());
   }
 }

@@ -2,20 +2,25 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/common/paths.dart' as paths;
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
     as flutter_driver;
-import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
-class IOSDriver extends PlatformDriver {
-  IOSDriver();
+class IOSDriver {
+  IOSDriver(
+    StatefulDisposeScope parentDisposeScope,
+    this._artifactsRepository,
+  ) : _disposeScope = StatefulDisposeScope() {
+    _disposeScope.disposed(parentDisposeScope);
+  }
 
-  final DisposeScope disposeScope = DisposeScope();
+  final ArtifactsRepository _artifactsRepository;
 
-  @override
+  final StatefulDisposeScope _disposeScope;
+
   Future<void> run({
     required String driver,
     required String target,
@@ -25,19 +30,18 @@ class IOSDriver extends PlatformDriver {
     required String? flavor,
     required Map<String, String> dartDefines,
     required bool verbose,
-    required bool debug,
     bool simulator = false,
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
     }
-    final cancel = await _runServer(
+    await _runServer(
       deviceName: device.name,
+      deviceId: device.id,
       simulator: simulator,
       port: port,
-      debug: debug,
     );
-    await flutter_driver.runWithOutput(
+    await flutter_driver.FlutterDriver(_disposeScope).run(
       driver: driver,
       target: target,
       host: host,
@@ -47,9 +51,6 @@ class IOSDriver extends PlatformDriver {
       flavor: flavor,
       dartDefines: dartDefines,
     );
-
-    await disposeScope.dispose();
-    await cancel();
   }
 
   /// Forwards ports using iproxy.
@@ -75,10 +76,9 @@ class IOSDriver extends PlatformDriver {
         runInShell: true,
       );
 
-      disposeScope.addDispose(() async {
-        log.info('Killing iproxy...');
+      _disposeScope.addDispose(() async {
         process.kill();
-        log.info('iproxy killed');
+        log.fine('Killed iproxy');
       });
 
       final completer = Completer<void>();
@@ -90,11 +90,11 @@ class IOSDriver extends PlatformDriver {
             completer.complete();
           }
         },
-      ).disposed(disposeScope);
+      ).disposed(_disposeScope);
 
       process
           .listenStdErr((line) => log.warning('iproxy: $line'))
-          .disposed(disposeScope);
+          .disposed(_disposeScope);
 
       await completer.future;
     } catch (err) {
@@ -108,11 +108,11 @@ class IOSDriver extends PlatformDriver {
   /// Runs the server which is an infinite XCUITest.
   ///
   /// Returns when the server is installed and running.
-  Future<Future<void> Function()> _runServer({
+  Future<void> _runServer({
     required int port,
     required String deviceName,
+    required String deviceId,
     required bool simulator,
-    required bool debug,
   }) async {
     // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
@@ -129,8 +129,7 @@ class IOSDriver extends PlatformDriver {
         'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
       ],
       runInShell: true,
-      workingDirectory:
-          debug ? paths.debugIOSArtifactDirPath : paths.iosArtifactDirPath,
+      workingDirectory: _artifactsRepository.iosArtifactDirPath,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
@@ -138,8 +137,37 @@ class IOSDriver extends PlatformDriver {
       },
     );
 
+    _disposeScope
+      // Uninstall AutomatorServer
+      ..addDispose(() async {
+        const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
+        final process = simulator
+            ? await Process.run(
+                'xcrun',
+                ['simctl', 'uninstall', deviceId, bundleId],
+                runInShell: true,
+              )
+            : await Process.run(
+                'ideviceinstaller',
+                ['--uninstall', bundleId, '--udid', deviceId],
+                runInShell: true,
+              );
+
+        final exitCode = process.exitCode;
+        final msg = exitCode == 0
+            ? 'Uninstalled AutomatorServer'
+            : 'Failed to uninstall AutomatorServer (code $exitCode)';
+        log.fine(msg);
+      })
+      ..addDispose(() async {
+        final msg = process.kill()
+            ? 'Killed xcodebuild'
+            : 'Failed to kill xcodebuild (${await process.exitCode})';
+        log.fine(msg);
+      });
+
     final completer = Completer<void>();
-    final stdOutSub = process.listenStdOut((line) {
+    process.listenStdOut((line) {
       if (line.startsWith('MaestroServer')) {
         log.info(line);
       } else {
@@ -151,31 +179,17 @@ class IOSDriver extends PlatformDriver {
           completer.complete();
         }
       }
-    });
+    }).disposed(_disposeScope);
 
-    final stdErrSub = process.listenStdErr((line) {
+    process.listenStdErr((line) {
       log.severe(line);
       if (line.contains('** TEST FAILED **')) {
         throw Exception(
           'Test failed. See logs above. Also, consider running with --verbose.',
         );
       }
-    });
+    }).disposed(_disposeScope);
 
-    completer.complete();
-
-    return () async {
-      await process.exitCode.then((exitCode) async {
-        await stdOutSub.cancel();
-        await stdErrSub.cancel();
-
-        final msg = 'xcodebuild exited with code $exitCode';
-        if (exitCode == 0) {
-          log.info(msg);
-        } else {
-          log.severe(msg);
-        }
-      });
-    };
+    await completer.future;
   }
 }

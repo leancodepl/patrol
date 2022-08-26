@@ -2,10 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:maestro_cli/src/common/logging.dart';
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 
 class DevicesCommand extends Command<int> {
+  DevicesCommand(StatefulDisposeScope parentDisposeScope)
+      : _disposeScope = StatefulDisposeScope() {
+    _disposeScope.disposed(parentDisposeScope);
+  }
+
+  final StatefulDisposeScope _disposeScope;
+
   @override
   String get name => 'devices';
 
@@ -14,10 +22,10 @@ class DevicesCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final devices = await getDevices();
+    final devices = await _getDevices();
 
     if (devices.isEmpty) {
-      log.info('No devices attached');
+      log.warning('No devices attached');
       return 1;
     }
 
@@ -28,14 +36,31 @@ class DevicesCommand extends Command<int> {
     return 0;
   }
 
-  static Future<List<Device>> getDevices() async {
-    final result = await Process.run(
+  Future<List<Device>> _getDevices() async {
+    int? exitCode;
+    final process = await Process.start(
       'flutter',
       ['devices', '--machine'],
       runInShell: true,
     );
 
-    final jsonOutput = jsonDecode(result.stdout as String) as List<dynamic>;
+    _disposeScope.addDispose(() async {
+      if (exitCode != null) {
+        return;
+      }
+
+      final msg = process.kill()
+          ? 'Killed `flutter devices`'
+          : 'Failed to kill `flutter devices`';
+      log.fine(msg);
+    });
+
+    var msg = '';
+    process.listenStdOut((line) => msg += line).disposed(_disposeScope);
+    exitCode = await process.exitCode;
+    log.fine('exit code of `flutter devices`: $exitCode');
+
+    final jsonOutput = jsonDecode(msg) as List<dynamic>;
 
     final devices = <Device>[];
     for (final deviceJson in jsonOutput) {
@@ -58,4 +83,53 @@ class DevicesCommand extends Command<int> {
 
     return devices;
   }
+}
+
+@Deprecated('Cannot be disposed')
+Future<List<Device>> getDevices(StatefulDisposeScope disposeScope) async {
+  int? exitCode;
+  final process = await Process.start(
+    'flutter',
+    ['devices', '--machine'],
+    runInShell: true,
+  );
+
+  disposeScope.addDispose(() async {
+    if (exitCode != null) {
+      return;
+    }
+
+    final msg = process.kill()
+        ? 'Killed `flutter devices`'
+        : 'Failed to kill `flutter devices`';
+    log.fine(msg);
+  });
+
+  var msg = '';
+  process.listenStdOut((line) => msg += line).disposed(disposeScope);
+  exitCode = await process.exitCode;
+  log.fine('exit code of `flutter devices`: $exitCode');
+
+  final jsonOutput = jsonDecode(msg) as List<dynamic>;
+
+  final devices = <Device>[];
+  for (final deviceJson in jsonOutput) {
+    deviceJson as Map<String, dynamic>;
+
+    final targetPlatform = deviceJson['targetPlatform'] as String;
+    if (!targetPlatform.startsWith('android-') && targetPlatform != 'ios') {
+      continue;
+    }
+
+    devices.add(
+      Device(
+        name: deviceJson['name'] as String,
+        id: deviceJson['id'] as String,
+        targetPlatform: TargetPlatformX.fromString(targetPlatform),
+        real: !(deviceJson['emulator'] as bool),
+      ),
+    );
+  }
+
+  return devices;
 }

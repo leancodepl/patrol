@@ -9,46 +9,62 @@ import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
 import 'package:maestro_cli/src/features/update/update_command.dart';
+import 'package:maestro_cli/src/top_level_flags.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
   final runner = MaestroCommandRunner();
+  int exitCode;
 
-  ProcessSignal.sigint.watch().listen((signal) {
-    log.info('Caught SIGINT, exiting...');
-    exit(1);
+  Future<Never>? interruption;
+
+  ProcessSignal.sigint.watch().listen((signal) async {
+    log.fine('Caught SIGINT, exiting...');
+    interruption = runner
+        .dispose()
+        .onError((err, st) => log.severe('error while disposing', err, st))
+        .then((_) => exit(130));
   });
 
   try {
-    final exitCode = await runner.run(args) ?? 0;
-    return exitCode;
+    exitCode = await runner.run(args) ?? 0;
   } on UsageException catch (err) {
     log.severe(err.message);
-    return 1;
-  } on FormatException catch (err) {
-    log.severe(err.message);
-    return 1;
+    exitCode = 1;
+  } on FormatException catch (err, st) {
+    log.severe(null, err, st);
+    exitCode = 1;
   } on FileSystemException catch (err, st) {
     log.severe('${err.message}: ${err.path}', err, st);
-    return 1;
+    exitCode = 1;
   } catch (err, st) {
     log.severe(null, err, st);
-    return 1;
+    exitCode = 1;
   }
-}
 
-bool debugFlag = false;
-bool verboseFlag = false;
+  if (interruption != null) {
+    await interruption; // will never complete
+  }
+
+  await runner.dispose();
+  return exitCode;
+}
 
 class MaestroCommandRunner extends CommandRunner<int> {
   MaestroCommandRunner()
-      : super(
+      : _disposeScope = StatefulDisposeScope(),
+        _topLevelFlags = TopLevelFlags(),
+        super(
           'maestro',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    _artifactsRepository = ArtifactsRepository(_topLevelFlags);
+
     addCommand(BootstrapCommand());
-    addCommand(DriveCommand());
-    addCommand(DevicesCommand());
+    addCommand(
+      DriveCommand(_disposeScope, _topLevelFlags, _artifactsRepository),
+    );
+    addCommand(DevicesCommand(_disposeScope));
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
     addCommand(UpdateCommand());
@@ -64,20 +80,31 @@ class MaestroCommandRunner extends CommandRunner<int> {
       ..addFlag('debug', help: 'Use default, non-versioned artifacts.');
   }
 
-  final artifactsRepository = ArtifactsRepository();
+  final StatefulDisposeScope _disposeScope;
+  late final ArtifactsRepository _artifactsRepository;
+
+  final TopLevelFlags _topLevelFlags;
+
+  Future<void> dispose() async {
+    try {
+      await _disposeScope.dispose();
+    } catch (err, st) {
+      log.severe('error while disposing', err, st);
+    }
+  }
 
   @override
   Future<int?> run(Iterable<String> args) async {
     await setUpLogger(); // argParser.parse() can fail, so we setup logger early
     final results = argParser.parse(args);
-    verboseFlag = results['verbose'] as bool;
+    _topLevelFlags.verbose = results['verbose'] as bool;
     final helpFlag = results['help'] as bool;
     final versionFlag = results['version'] as bool;
-    debugFlag = results['debug'] as bool;
+    _topLevelFlags.debug = results['debug'] as bool;
 
-    await setUpLogger(verbose: verboseFlag);
+    await setUpLogger(verbose: _topLevelFlags.verbose);
 
-    if (debugFlag) {
+    if (_topLevelFlags.debug) {
       log.info('Debug mode enabled. Non-versioned artifacts will be used.');
     }
 
@@ -124,7 +151,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
       currentVersion: version,
     );
 
-    if (!isLatestVersion && !debugFlag) {
+    if (!isLatestVersion && !_topLevelFlags.debug) {
       log
         ..info(
           'Newer version of $maestroCliPackage is available ($latestVersion)',
@@ -146,19 +173,19 @@ class MaestroCommandRunner extends CommandRunner<int> {
   }
 
   Future<void> _ensureArtifactsArePresent() async {
-    if (debugFlag) {
-      if (artifactsRepository.areDebugArtifactsPresent()) {
+    if (_topLevelFlags.debug) {
+      if (_artifactsRepository.areDebugArtifactsPresent()) {
         return;
       } else {
         throw Exception('Debug artifacts are not present.');
       }
-    } else if (artifactsRepository.areArtifactsPresent()) {
+    } else if (_artifactsRepository.areArtifactsPresent()) {
       return;
     }
 
     final progress = log.progress('Artifacts are not present, downloading...');
     try {
-      await artifactsRepository.downloadArtifacts();
+      await _artifactsRepository.downloadArtifacts();
     } catch (_) {
       progress.fail('Failed to download artifacts');
       rethrow;

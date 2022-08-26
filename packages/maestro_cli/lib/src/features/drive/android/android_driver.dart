@@ -1,16 +1,28 @@
 import 'package:adb/adb.dart';
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
-import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
-    as flutter_driver;
-import 'package:maestro_cli/src/features/drive/platform_driver.dart';
-import 'package:path/path.dart' as path;
+import 'package:maestro_cli/src/features/drive/flutter_driver.dart';
 
-class AndroidDriver implements PlatformDriver {
-  final _adb = Adb();
+class AndroidDriver {
+  AndroidDriver(
+    StatefulDisposeScope parentDisposeScope,
+    this._artifactsRepository,
+  )   : _disposeScope = StatefulDisposeScope(),
+        _adb = Adb() {
+    _disposeScope.disposed(parentDisposeScope);
+  }
 
-  @override
+  static const _serverPackage = 'pl.leancode.automatorserver';
+  static const _instrumentationPackage = 'pl.leancode.automatorserver.test';
+
+  final ArtifactsRepository _artifactsRepository;
+
+  final StatefulDisposeScope _disposeScope;
+  final Adb _adb;
+
   Future<void> run({
     required String driver,
     required String target,
@@ -22,11 +34,11 @@ class AndroidDriver implements PlatformDriver {
     required bool verbose,
     required bool debug,
   }) async {
+    await _forwardPorts(port, device: device.id);
     await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
-    await _forwardPorts(port, device: device.id);
-    _runServer(device: device.id, port: port);
-    await flutter_driver.runWithOutput(
+    await _runServer(device: device.id, port: port);
+    await FlutterDriver(_disposeScope).run(
       driver: driver,
       target: target,
       host: host,
@@ -96,76 +108,112 @@ class AndroidDriver implements PlatformDriver {
     required String device,
     required bool debug,
   }) async {
-    final progress = log.progress('Installing server');
-    try {
-      final p = path.join(
-        artifactPath,
-        debug ? debugServerArtifactFile : serverArtifactFile,
-      );
-      await _forceInstallApk(
-        path: p,
-        device: device,
-        packageName: 'pl.leancode.automatorserver',
-      );
-    } catch (err) {
-      progress.fail('Failed to install server');
-      rethrow;
-    }
-    progress.complete('Installed server');
+    await _disposeScope.run((scope) async {
+      final progress = log.progress('Installing server');
+      try {
+        scope.addDispose(() async {
+          final result = await _adb.uninstall(_serverPackage, device: device);
+          final msg = result.exitCode == 0
+              ? 'Uninstalled server package $_serverPackage'
+              : 'Failed to uninstall server package $_serverPackage '
+                  '(code ${result.exitCode})';
+          log.fine(msg);
+        });
+
+        await _forceInstallApk(
+          path: _artifactsRepository.serverArtifactPath,
+          device: device,
+          packageName: _serverPackage,
+        );
+      } catch (err) {
+        progress.fail('Failed to install server');
+        rethrow;
+      }
+
+      progress.complete('Installed server');
+    });
   }
 
   Future<void> _installInstrumentation({
     String? device,
     bool debug = false,
   }) async {
-    final progress = log.progress('Installing instrumentation');
-    try {
-      final p = path.join(
-        artifactPath,
-        debug ? debugInstrumentationArtifactFile : instrumentationArtifactFile,
-      );
-      await _forceInstallApk(
-        path: p,
-        device: device,
-        packageName: 'pl.leancode.automatorserver.test',
-      );
-    } catch (err) {
-      progress.fail('Failed to install instrumentation');
-      rethrow;
-    }
+    await _disposeScope.run((scope) async {
+      final progress = log.progress('Installing instrumentation');
 
-    progress.complete('Installed instrumentation');
+      try {
+        scope.addDispose(() async {
+          final result = await _adb.uninstall(
+            _instrumentationPackage,
+            device: device,
+          );
+          final msg = result.exitCode == 0
+              ? 'Uninstalled instrumentation package $_instrumentationPackage'
+              : 'Failed to uninstall instrumentation package $_instrumentationPackage '
+                  '(code ${result.exitCode})';
+          log.fine(msg);
+        });
+
+        await _forceInstallApk(
+          path: _artifactsRepository.instrumentationArtifactPath,
+          device: device,
+          packageName: _instrumentationPackage,
+        );
+      } catch (err) {
+        progress.fail('Failed to install instrumentation');
+        rethrow;
+      }
+
+      progress.complete('Installed instrumentation');
+    });
   }
 
   Future<void> _forwardPorts(int port, {String? device}) async {
-    final progress = log.progress('Forwarding ports');
+    await _disposeScope.run((scope) async {
+      final progress = log.progress('Forwarding ports');
 
-    try {
-      await _adb.forwardPorts(
-        fromHost: port,
-        toDevice: port,
-        device: device,
-      );
-    } catch (err) {
-      progress.fail('Failed to forward ports');
-      rethrow;
-    }
+      try {
+        final cancel = await _adb.forwardPorts(
+          fromHost: port,
+          toDevice: port,
+          device: device,
+        );
 
-    progress.complete('Forwarded ports');
+        scope.addDispose(() async {
+          await cancel();
+          log.fine('Stopped port forwarding');
+        });
+      } catch (err) {
+        progress.fail('Failed to forward ports');
+        rethrow;
+      }
+
+      progress.complete('Forwarded ports');
+    });
   }
 
-  void _runServer({
+  Future<void> _runServer({
     required String? device,
     required int port,
-  }) {
-    _adb.instrument(
-      packageName: 'pl.leancode.automatorserver.test',
-      intentClass: 'androidx.test.runner.AndroidJUnitRunner',
-      device: device,
-      onStdout: log.info,
-      onStderr: log.severe,
-      arguments: {envPortKey: port.toString()},
-    );
+  }) async {
+    await _disposeScope.run((scope) async {
+      log.fine('Started native Android instrumentation');
+      final process = await _adb.instrument(
+        packageName: _instrumentationPackage,
+        intentClass: 'androidx.test.runner.AndroidJUnitRunner',
+        device: device,
+        arguments: {envPortKey: port.toString()},
+      );
+
+      process.listenStdOut(log.info).disposed(scope);
+      process.listenStdErr(log.severe).disposed(scope);
+      scope.addDispose(() async {
+        final msg = process.kill()
+            ? 'Killed native Android instrumentation'
+            : 'Failed to kill native Android instrumentation';
+        log.fine(msg);
+      });
+    });
   }
 
   Future<void> _forceInstallApk({

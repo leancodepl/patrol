@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.16.0 <3.0.0"
 
 dependencies:
-  adb: ^0.1.5
+  adb: ^0.2.0
   ansi_styles: ^0.3.2+1
   archive: ^3.3.1
   args: ^2.3.1
