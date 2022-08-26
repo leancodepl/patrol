@@ -37,6 +37,7 @@ class IOSDriver extends PlatformDriver {
     }
     await _runServer(
       deviceName: device.name,
+      deviceId: device.id,
       simulator: simulator,
       port: port,
       debug: debug,
@@ -111,6 +112,7 @@ class IOSDriver extends PlatformDriver {
   Future<void> _runServer({
     required int port,
     required String deviceName,
+    required String deviceId,
     required bool simulator,
     required bool debug,
   }) async {
@@ -137,12 +139,28 @@ class IOSDriver extends PlatformDriver {
         'TEST_RUNNER_$envPortKey': port.toString()
       },
     );
-    _disposeScope.addDispose(() async {
-      process.kill();
-      log.fine('Killed xcodebuild');
 
-      // TODO: Uninstall pl.leancode.AutomatorServer
-    });
+    _disposeScope
+      ..addDispose(() async {
+        const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
+        final process = await Process.run(
+          'xcrun',
+          ['simctl', 'uninstall', deviceId, bundleId],
+          runInShell: true,
+        );
+
+        final exitCode = process.exitCode;
+        final msg = exitCode == 0
+            ? 'Uninstalled AutomatorServer'
+            : 'Failed to uninstall AutomatorServer (code $exitCode)';
+        log.fine(msg);
+      })
+      ..addDispose(() async {
+        final msg = process.kill()
+            ? 'Killed xcodebuild'
+            : 'Failed to kill xcodebuild (${await process.exitCode})';
+        log.fine(msg);
+      });
 
     final completer = Completer<void>();
     process.listenStdOut((line) {
@@ -168,14 +186,14 @@ class IOSDriver extends PlatformDriver {
       }
     }).disposed(_disposeScope);
 
-    completer.complete();
+    await completer.future; // .completer.complete();
 
-    await process.exitCode;
-    final msg = 'xcodebuild exited with code $exitCode';
-    if (exitCode == 0) {
-      log.info(msg);
-    } else {
-      log.severe(msg);
-    }
+    // await process.exitCode;
+    // final msg = 'xcodebuild exited with code $exitCode';
+    // if (exitCode == 0) {
+    //   log.info(msg);
+    // } else {
+    //   log.severe(msg);
+    // }
   }
 }
