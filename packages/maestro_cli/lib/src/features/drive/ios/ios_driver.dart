@@ -138,13 +138,20 @@ class IOSDriver {
     );
 
     _disposeScope
+      // Uninstall AutomatorServer
       ..addDispose(() async {
         const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
-        final process = await Process.run(
-          'xcrun',
-          ['simctl', 'uninstall', deviceId, bundleId],
-          runInShell: true,
-        );
+        final process = simulator
+            ? await Process.run(
+                'xcrun',
+                ['simctl', 'uninstall', deviceId, bundleId],
+                runInShell: true,
+              )
+            : await Process.run(
+                'ideviceinstaller',
+                ['--uninstall', bundleId, '--udid', deviceId],
+                runInShell: true,
+              );
 
         final exitCode = process.exitCode;
         final msg = exitCode == 0
