@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:maestro_cli/src/command_runner.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
+import 'package:maestro_cli/src/top_level_flags.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand(DisposeScope parentDisposeScope)
+  DriveCommand(DisposeScope parentDisposeScope, this._topLevelFlags)
       : _disposeScope = DisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
 
@@ -58,6 +58,7 @@ class DriveCommand extends Command<int> {
   }
 
   final DisposeScope _disposeScope;
+  final TopLevelFlags _topLevelFlags;
 
   @override
   String get name => 'drive';
@@ -160,8 +161,8 @@ class DriveCommand extends Command<int> {
             port: port,
             device: device,
             flavor: flavor as String?,
-            verbose: verboseFlag,
-            debug: debugFlag,
+            verbose: _topLevelFlags.verbose,
+            debug: _topLevelFlags.debug,
             dartDefines: dartDefines,
           );
           break;
@@ -173,8 +174,8 @@ class DriveCommand extends Command<int> {
             port: port,
             device: device,
             flavor: flavor as String?,
-            verbose: verboseFlag,
-            debug: debugFlag,
+            verbose: _topLevelFlags.verbose,
+            debug: _topLevelFlags.debug,
             simulator: !device.real,
             dartDefines: dartDefines,
           );

@@ -10,6 +10,7 @@ import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/doctor/doctor_command.dart';
 import 'package:maestro_cli/src/features/drive/drive_command.dart';
 import 'package:maestro_cli/src/features/update/update_command.dart';
+import 'package:maestro_cli/src/top_level_flags.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> maestroCommandRunner(List<String> args) async {
@@ -50,19 +51,17 @@ Future<int> maestroCommandRunner(List<String> args) async {
   return exitCode;
 }
 
-bool debugFlag = false;
-bool verboseFlag = false;
-
 class MaestroCommandRunner extends CommandRunner<int> {
   MaestroCommandRunner()
       : _disposeScope = DisposeScope(),
         _artifactsRepository = ArtifactsRepository(),
+        _topLevelFlags = TopLevelFlags(),
         super(
           'maestro',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
     addCommand(BootstrapCommand());
-    addCommand(DriveCommand(_disposeScope));
+    addCommand(DriveCommand(_disposeScope, _topLevelFlags));
     addCommand(DevicesCommand(_disposeScope));
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
@@ -82,6 +81,8 @@ class MaestroCommandRunner extends CommandRunner<int> {
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
 
+  final TopLevelFlags _topLevelFlags;
+
   Future<void> dispose() async {
     try {
       await _disposeScope.dispose();
@@ -94,14 +95,14 @@ class MaestroCommandRunner extends CommandRunner<int> {
   Future<int?> run(Iterable<String> args) async {
     await setUpLogger(); // argParser.parse() can fail, so we setup logger early
     final results = argParser.parse(args);
-    verboseFlag = results['verbose'] as bool;
+    _topLevelFlags.verbose = results['verbose'] as bool;
     final helpFlag = results['help'] as bool;
     final versionFlag = results['version'] as bool;
-    debugFlag = results['debug'] as bool;
+    _topLevelFlags.debug = results['debug'] as bool;
 
-    await setUpLogger(verbose: verboseFlag);
+    await setUpLogger(verbose: _topLevelFlags.verbose);
 
-    if (debugFlag) {
+    if (_topLevelFlags.debug) {
       log.info('Debug mode enabled. Non-versioned artifacts will be used.');
     }
 
@@ -148,7 +149,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
       currentVersion: version,
     );
 
-    if (!isLatestVersion && !debugFlag) {
+    if (!isLatestVersion && !_topLevelFlags.debug) {
       log
         ..info(
           'Newer version of $maestroCliPackage is available ($latestVersion)',
@@ -170,7 +171,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
   }
 
   Future<void> _ensureArtifactsArePresent() async {
-    if (debugFlag) {
+    if (_topLevelFlags.debug) {
       if (_artifactsRepository.areDebugArtifactsPresent()) {
         return;
       } else {
