@@ -7,12 +7,12 @@ import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 
 class DevicesCommand extends Command<int> {
-  DevicesCommand(DisposeScope parentDisposeScope)
-      : _disposeScope = DisposeScope() {
+  DevicesCommand(StatefulDisposeScope parentDisposeScope)
+      : _disposeScope = StatefulDisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
   }
 
-  final DisposeScope _disposeScope;
+  final StatefulDisposeScope _disposeScope;
 
   @override
   String get name => 'devices';
@@ -86,7 +86,7 @@ class DevicesCommand extends Command<int> {
 }
 
 @Deprecated('Cannot be disposed')
-Future<List<Device>> getDevices(DisposeScope disposeScope) async {
+Future<List<Device>> getDevices(StatefulDisposeScope disposeScope) async {
   int? exitCode;
   final process = await Process.start(
     'flutter',

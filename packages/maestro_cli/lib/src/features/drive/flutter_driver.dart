@@ -5,12 +5,12 @@ import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/constants.dart';
 
 class FlutterDriver {
-  FlutterDriver(DisposeScope parentDisposeScope)
-      : _disposeScope = DisposeScope() {
+  FlutterDriver(StatefulDisposeScope parentDisposeScope)
+      : _disposeScope = StatefulDisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
   }
 
-  final DisposeScope _disposeScope;
+  final StatefulDisposeScope _disposeScope;
 
   /// Runs flutter driver with the given [driver] and [target] and waits until
   /// the drive is done.

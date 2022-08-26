@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
@@ -11,8 +10,8 @@ import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:maestro_cli/src/top_level_flags.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand(DisposeScope parentDisposeScope, this._topLevelFlags)
-      : _disposeScope = DisposeScope() {
+  DriveCommand(StatefulDisposeScope parentDisposeScope, this._topLevelFlags)
+      : _disposeScope = StatefulDisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
 
     argParser
@@ -57,7 +56,7 @@ class DriveCommand extends Command<int> {
       );
   }
 
-  final DisposeScope _disposeScope;
+  final StatefulDisposeScope _disposeScope;
   final TopLevelFlags _topLevelFlags;
 
   @override

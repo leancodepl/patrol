@@ -12,12 +12,12 @@ import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 
 class IOSDriver extends PlatformDriver {
   IOSDriver(
-    DisposeScope parentDisposeScope,
-  ) : _disposeScope = DisposeScope() {
+    StatefulDisposeScope parentDisposeScope,
+  ) : _disposeScope = StatefulDisposeScope() {
     _disposeScope.disposed(parentDisposeScope);
   }
 
-  final DisposeScope _disposeScope;
+  final StatefulDisposeScope _disposeScope;
 
   @override
   Future<void> run({

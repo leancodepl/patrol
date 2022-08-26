@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/bootstrap/bootstrap_command.dart';
@@ -53,7 +52,7 @@ Future<int> maestroCommandRunner(List<String> args) async {
 
 class MaestroCommandRunner extends CommandRunner<int> {
   MaestroCommandRunner()
-      : _disposeScope = DisposeScope(),
+      : _disposeScope = StatefulDisposeScope(),
         _artifactsRepository = ArtifactsRepository(),
         _topLevelFlags = TopLevelFlags(),
         super(
@@ -78,7 +77,7 @@ class MaestroCommandRunner extends CommandRunner<int> {
       ..addFlag('debug', help: 'Use default, non-versioned artifacts.');
   }
 
-  final DisposeScope _disposeScope;
+  final StatefulDisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
 
   final TopLevelFlags _topLevelFlags;

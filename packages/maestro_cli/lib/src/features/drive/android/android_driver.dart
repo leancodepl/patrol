@@ -8,8 +8,8 @@ import 'package:maestro_cli/src/features/drive/platform_driver.dart';
 import 'package:path/path.dart' as path;
 
 class AndroidDriver implements PlatformDriver {
-  AndroidDriver(DisposeScope parentDisposeScope)
-      : _disposeScope = DisposeScope(),
+  AndroidDriver(StatefulDisposeScope parentDisposeScope)
+      : _disposeScope = StatefulDisposeScope(),
         _adb = Adb() {
     _disposeScope.disposed(parentDisposeScope);
   }
@@ -17,7 +17,7 @@ class AndroidDriver implements PlatformDriver {
   static const _serverPackageName = 'pl.leancode.automatorserver';
   static const _instrumentationPackageName = 'pl.leancode.automatorserver.test';
 
-  final DisposeScope _disposeScope;
+  final StatefulDisposeScope _disposeScope;
   final Adb _adb;
 
   @override
@@ -106,69 +106,79 @@ class AndroidDriver implements PlatformDriver {
     required String device,
     required bool debug,
   }) async {
-    final progress = log.progress('Installing server');
-    try {
-      final p = path.join(
-        artifactPath,
-        debug ? debugServerArtifactFile : serverArtifactFile,
-      );
-      await _forceInstallApk(
-        path: p,
-        device: device,
-        packageName: _serverPackageName,
-      );
+    await _disposeScope.run((scope) async {
+      final progress = log.progress('Installing server');
+      try {
+        scope.addDispose(() async {
+          final result = await _adb.uninstall(
+            _serverPackageName,
+            device: device,
+          );
 
-      _disposeScope.addDispose(() async {
-        final result = await _adb.uninstall(
-          _serverPackageName,
-          device: device,
+          final msg = result.exitCode == 0
+              ? 'Uninstalled server package $_serverPackageName'
+              : 'Failed to uninstall server package $_serverPackageName '
+                  '(code ${result.exitCode})';
+          log.fine(msg);
+        });
+
+        final apkPath = path.join(
+          artifactPath,
+          debug ? debugServerArtifactFile : serverArtifactFile,
         );
-        final msg = result.exitCode == 0
-            ? 'Uninstalled server package $_serverPackageName'
-            : 'Failed to uninstall server package $_serverPackageName '
-                '(code ${result.exitCode})';
-        log.fine(msg);
-      });
-    } catch (err) {
-      progress.fail('Failed to install server');
-      rethrow;
-    }
-    progress.complete('Installed server');
+
+        await _forceInstallApk(
+          path: apkPath,
+          device: device,
+          packageName: _serverPackageName,
+        );
+      } catch (err) {
+        progress.fail('Failed to install server');
+        rethrow;
+      }
+
+      progress.complete('Installed server');
+    });
   }
 
   Future<void> _installInstrumentation({
     String? device,
     bool debug = false,
   }) async {
-    final progress = log.progress('Installing instrumentation');
-    try {
-      final p = path.join(
-        artifactPath,
-        debug ? debugInstrumentationArtifactFile : instrumentationArtifactFile,
-      );
-      await _forceInstallApk(
-        path: p,
-        device: device,
-        packageName: _instrumentationPackageName,
-      );
+    await _disposeScope.run((scope) async {
+      final progress = log.progress('Installing instrumentation');
 
-      _disposeScope.addDispose(() async {
-        final result = await _adb.uninstall(
-          _instrumentationPackageName,
-          device: device,
+      try {
+        scope.addDispose(() async {
+          final result = await _adb.uninstall(
+            _instrumentationPackageName,
+            device: device,
+          );
+          final msg = result.exitCode == 0
+              ? 'Uninstalled instrumentation package $_instrumentationPackageName'
+              : 'Failed to uninstall instrumentation package $_instrumentationPackageName '
+                  '(code ${result.exitCode})';
+          log.fine(msg);
+        });
+
+        final apkPath = path.join(
+          artifactPath,
+          debug
+              ? debugInstrumentationArtifactFile
+              : instrumentationArtifactFile,
         );
-        final msg = result.exitCode == 0
-            ? 'Uninstalled instrumentation package $_instrumentationPackageName'
-            : 'Failed to uninstall instrumentation package $_instrumentationPackageName '
-                '(code ${result.exitCode})';
-        log.fine(msg);
-      });
-    } catch (err) {
-      progress.fail('Failed to install instrumentation');
-      rethrow;
-    }
+        await _forceInstallApk(
+          path: apkPath,
+          device: device,
+          packageName: _instrumentationPackageName,
+        );
+      } catch (err) {
+        progress.fail('Failed to install instrumentation');
+        rethrow;
+      }
 
-    progress.complete('Installed instrumentation');
+      progress.complete('Installed instrumentation');
+    });
   }
 
   Future<void> _forwardPorts(int port, {String? device}) async {
