@@ -34,9 +34,6 @@ jobs:
         with:
           sdk: ${{ matrix.sdk }}
 
-      - name: dart version
-        run: dart --version
-
       - name: dart pub get
         run: dart pub get
 

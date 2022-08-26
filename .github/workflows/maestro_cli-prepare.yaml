@@ -49,9 +49,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: dart version
-        run: dart --version
-
       - name: dart pub get
         run: dart pub get
 

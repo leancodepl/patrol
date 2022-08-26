@@ -1,16 +1,23 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:maestro_cli/src/command_runner.dart';
+import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
+import 'package:maestro_cli/src/top_level_flags.dart';
 
 class DriveCommand extends Command<int> {
-  DriveCommand() {
+  DriveCommand(
+    StatefulDisposeScope parentDisposeScope,
+    this._topLevelFlags,
+    this._artifactsRepository,
+  ) : _disposeScope = StatefulDisposeScope() {
+    _disposeScope.disposed(parentDisposeScope);
+
     argParser
       ..addOption(
         'host',
@@ -52,6 +59,10 @@ class DriveCommand extends Command<int> {
         help: '(experimental, inactive) Run tests on devices in parallel.',
       );
   }
+
+  final StatefulDisposeScope _disposeScope;
+  final ArtifactsRepository _artifactsRepository;
+  final TopLevelFlags _topLevelFlags;
 
   @override
   String get name => 'drive';
@@ -121,9 +132,11 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final availableDevices = await DevicesCommand.getDevices();
+    final availableDevices = await getDevices(_disposeScope);
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
+    } else {
+      log.fine('Successfully queried available devices');
     }
 
     if (wantDevices.isEmpty) {
@@ -145,28 +158,27 @@ class DriveCommand extends Command<int> {
     for (final device in devicesToUse) {
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver().run(
+          await AndroidDriver(_disposeScope, _artifactsRepository).run(
             driver: driver,
             target: target,
             host: host,
             port: port,
             device: device,
             flavor: flavor as String?,
-            verbose: verboseFlag,
-            debug: debugFlag,
+            verbose: _topLevelFlags.verbose,
+            debug: _topLevelFlags.debug,
             dartDefines: dartDefines,
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver().run(
+          await IOSDriver(_disposeScope, _artifactsRepository).run(
             driver: driver,
             target: target,
             host: host,
             port: port,
             device: device,
             flavor: flavor as String?,
-            verbose: verboseFlag,
-            debug: debugFlag,
+            verbose: _topLevelFlags.verbose,
             simulator: !device.real,
             dartDefines: dartDefines,
           );

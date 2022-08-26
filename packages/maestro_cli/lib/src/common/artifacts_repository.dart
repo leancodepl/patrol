@@ -2,12 +2,35 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
+import 'package:maestro_cli/src/top_level_flags.dart';
 import 'package:path/path.dart' as path;
 
 import 'paths.dart' as paths;
 
 class ArtifactsRepository {
+  ArtifactsRepository(this._topLevelFlags);
+
   static const artifactPathEnv = 'MAESTRO_CACHE';
+
+  final TopLevelFlags _topLevelFlags;
+
+  String get serverArtifactPath {
+    return _topLevelFlags.debug
+        ? paths.debugServerArtifactPath
+        : paths.serverArtifactPath;
+  }
+
+  String get instrumentationArtifactPath {
+    return _topLevelFlags.debug
+        ? paths.debugInstrumentationArtifactPath
+        : paths.instrumentationArtifactPath;
+  }
+
+  String get iosArtifactDirPath {
+    return _topLevelFlags.debug
+        ? paths.debugIOSArtifactDirPath
+        : paths.iosArtifactDirPath;
+  }
 
   /// Returns true if artifacts for the current maestro_cli version are present
   /// in [paths.artifactPath], false otherwise.
