@@ -11,9 +11,9 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
-  @override
-  LiveTestWidgetsFlutterBindingFramePolicy get framePolicy =>
-      LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+  // @override
+  // LiveTestWidgetsFlutterBindingFramePolicy get framePolicy =>
+  //     LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   @override
   void initInstances() {

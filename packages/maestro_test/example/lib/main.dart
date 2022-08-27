@@ -57,16 +57,17 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
+      body: ListView(
+        children: [
           const Text(
             'You have pushed the button this many times:',
           ),
-          Text(
-            '$_counter',
-            key: const Key('counterText'),
-            style: Theme.of(context).textTheme.headline4,
+          Center(
+            child: Text(
+              '$_counter',
+              key: const Key('counterText'),
+              style: Theme.of(context).textTheme.headline4,
+            ),
           ),
           Container(
             key: const Key('box1'),
@@ -165,7 +166,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 builder: (_) => const WebViewScreen(),
               ),
             ),
-            child: const Text('Open webview screen'),
+            child: const Text(
+              'Open webview screen',
+              semanticsLabel: 'Open webview screen (semantic)',
+            ),
           ),
         ],
       ),

@@ -4,9 +4,6 @@ import 'package:maestro_test/maestro_test.dart';
 
 import 'config.dart';
 
-late String mapsId;
-late String myAppId;
-
 Future<void> main() async {
   Maestro.forTest();
 

@@ -8,7 +8,7 @@ class WebViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scrolling'),
+        title: const Text('WebView'),
       ),
       body: WebView(
         debuggingEnabled: true,
