@@ -1,3 +1,10 @@
+## Unreleased
+
+- Allow for more fine-grained control over timeouts (#191)
+  - `settleTimeout`, which is used for `MaestroTester.pumpAndSettle` (which forwards it to `WidgetTester.pumpAndSettle`)
+  - `existsTimeout`, which is used for `MaestroFinder.waitUntilExists`
+  - `visibleTimeout` (previously `findTimeout`), which is used by `MaestroFinder.waitUntilVisible` (which is then used internally by `MaestroFinder.tap()` and `MaestroFinder.enterText()`.
+
 ## 0.4.6
 
 - Downgrade `package:freezed` to v1 beacuse customer project is not able to
