@@ -186,11 +186,11 @@ class MaestroTester {
     assert(step > 0, 'step must be positive number');
     final moveStep = direction.resolveOffset(step);
 
-    final maestroFinder = MaestroFinder(finder: view, tester: this);
+    final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
 
     await tester.dragUntilVisible(
-      finder.first,
-      (await maestroFinder.waitUntilVisible()).first,
+      finder, //.first,
+      (await viewMaestroFinder.waitUntilVisible()).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
