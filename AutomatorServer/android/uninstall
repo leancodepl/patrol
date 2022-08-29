@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# uninstall uninstalls Maestro's APKs from the device.
+
+adb uninstall pl.leancode.automatorserver || true
+adb uninstall pl.leancode.automatorserver.test || true
