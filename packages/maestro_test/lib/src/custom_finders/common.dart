@@ -38,7 +38,6 @@ void maestroTest(
   return testWidgets(
     description,
     (widgetTester) async {
-      final semanticsHandle = widgetTester.ensureSemantics();
       final maestroTester = MaestroTester(tester: widgetTester, config: config);
       await callback(maestroTester);
       if (config.sleep != Duration.zero) {
@@ -49,7 +48,6 @@ void maestroTest(
         io.sleep(config.sleep);
         maestroTester.log('done sleeping', name: 'maestroTest');
       }
-      semanticsHandle.dispose();
     },
     skip: skip,
     timeout: timeout,

@@ -4,6 +4,7 @@ import 'package:example/overlay_screen.dart';
 import 'package:example/scrolling_screen.dart';
 import 'package:example/webview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 void main() {
   runApp(const ExampleApp());
@@ -171,6 +172,15 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               semanticsLabel: 'Open webview screen (semantic)',
             ),
           ),
+          TextButton(
+            onPressed: () {
+              SemanticsService.announce(
+                'Semantic announcement',
+                TextDirection.ltr,
+              );
+            },
+            child: const Text('Announce on SemanticsService'),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(

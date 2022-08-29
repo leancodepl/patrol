@@ -8,9 +8,12 @@ Future<void> main() async {
   Maestro.forTest();
 
   maestroTest(
-    'a dummy test that does nothing',
+    'wait',
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
+
+      final testBinding = $.tester.binding;
+      testBinding.window.platformDispatcher.semanticsEnabledTestValue = true;
 
       await Future<void>.delayed(const Duration(minutes: 10));
     },
