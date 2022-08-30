@@ -122,8 +122,8 @@ void main() {
     });
   });
 
-  group('Maestro finder', () {
-    maestroTest('waits until widget exists', ($) async {
+  group('Maestro finder waits', () {
+    maestroTest('until widget exists', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: FutureBuilder(
@@ -146,7 +146,7 @@ void main() {
       expect($('done').visible, true);
     });
 
-    maestroTest('waits until widget is visible', ($) async {
+    maestroTest('until widget is visible', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: FutureBuilder(
@@ -168,8 +168,10 @@ void main() {
 
       expect($('done').visible, true);
     });
+  });
 
-    maestroTest('drags to existing and visible widget', ($) async {
+  group('Maestro finder scrolls', () {
+    maestroTest('to existing and visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
@@ -193,7 +195,7 @@ void main() {
       expect($('some text').visible, true);
     });
 
-    maestroTest('drags to existing but not visible widget', ($) async {
+    maestroTest('to existing but not visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
@@ -224,7 +226,7 @@ void main() {
       expect($('bottom text').visible, true);
     });
 
-    maestroTest('drags to non existing and not visible widget', ($) async {
+    maestroTest('to non-existent and non-visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
