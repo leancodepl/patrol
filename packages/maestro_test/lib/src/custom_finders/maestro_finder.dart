@@ -235,28 +235,24 @@ class MaestroFinder extends MatchFinder {
   /// Drags in [direction] until the first widget resolved by this finder
   /// becomes visible.
   ///
-  /// If [view] is null, it defaults to the first found [Scrollable].
+  /// If [scrollable] is null, it defaults to the first found [Scrollable].
   ///
   /// See also:
-  ///  - [MaestroTester.dragUntilVisible]
-  Future<MaestroFinder> dragTo({
-    Finder? view,
-    Direction direction = Direction.down,
+  ///  - [MaestroTester.dragUntilExists]
+  Future<MaestroFinder> scrollTo({
+    Finder? scrollable,
     double step = 16,
-    int maxIteration = 50,
+    int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
-    bool? andSettle,
   }) async {
-    view ??= find.byType(Scrollable);
+    scrollable ??= find.byType(Scrollable);
 
-    final resolvedFinder = await tester.dragUntilVisible(
+    final resolvedFinder = await tester.scrollUntilVisible(
       finder: finder,
-      view: view,
-      direction: direction,
-      step: step,
-      maxIteration: maxIteration,
+      scrollable: scrollable,
+      delta: step,
+      maxScrolls: maxScrolls,
       duration: duration,
-      andSettle: andSettle,
     );
 
     return resolvedFinder;

@@ -161,7 +161,7 @@ class MaestroTester {
     await performPump(andSettle: true, settleTimeout: timeout);
   }
 
-  /// Scrolls [view] in [direction] until it finds [finder].
+  /// Scrolls [view] in [direction] until [finder] exists.
   ///
   /// [step] is the amount of space to scroll by. It must be a positive number.
   ///
@@ -171,25 +171,22 @@ class MaestroTester {
   /// false.
   ///
   /// See also:
-  ///  - [WidgetController.dragUntilVisible], which this method wraps
+  ///  - [WidgetController.dragUntilVisible], which this method wraps and gives
+  ///    it a better name
   ///  - [MaestroTester.config.andSettle], which controls the default behavior
   ///    if [andSettle] is null
-  Future<MaestroFinder> dragUntilVisible({
+  Future<MaestroFinder> dragUntilExists({
     required Finder finder,
     required Finder view,
-    required Direction direction,
-    double step = 16,
+    required Offset moveStep,
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) async {
-    assert(step > 0, 'step must be positive number');
-    final moveStep = direction.resolveOffset(step);
-
     final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
 
     await tester.dragUntilVisible(
-      finder, //.first,
+      finder,
       (await viewMaestroFinder.waitUntilVisible()).first,
       moveStep,
       maxIteration: maxIteration,
@@ -202,6 +199,88 @@ class MaestroTester {
     );
 
     return MaestroFinder(finder: finder.first, tester: this);
+  }
+
+  /// Reimplementation of [WidgetController.dragUntilVisible] that actually
+  /// drags until [finder] finds at least one *visible* widget, not *existing*
+  /// widget.
+  Future<MaestroFinder> dragUntilVisible({
+    required Finder finder,
+    required Finder view,
+    required Offset moveStep,
+    int maxIteration = 50,
+    Duration duration = const Duration(milliseconds: 50),
+    bool? andSettle,
+  }) async {
+    await TestAsyncUtils.guard<void>(() async {
+      while (maxIteration > 0 && finder.hitTestable().evaluate().isEmpty) {
+        await tester.drag(view, moveStep);
+        await tester.pump(duration);
+        maxIteration -= 1;
+        print('maxIteration: $maxIteration');
+      }
+      await Scrollable.ensureVisible(tester.element(finder));
+    });
+
+    return MaestroFinder(finder: finder.first, tester: this);
+  }
+
+  Future<void> scrollUntilExists(
+    Finder finder,
+    double delta, {
+    Finder? scrollable,
+    int maxScrolls = 50,
+    Duration duration = const Duration(milliseconds: 50),
+  }) async {
+    await tester.scrollUntilVisible(
+      finder,
+      delta,
+      scrollable: scrollable,
+      maxScrolls: maxScrolls,
+      duration: duration,
+    );
+  }
+
+  /// Reimplementation of [WidgetController.scrollUntilVisible] that actually
+  /// scrolls until [finder] finds at least one *visible* widget, not *existing*
+  /// widget.
+  Future<MaestroFinder> scrollUntilVisible({
+    required Finder finder,
+    Finder? scrollable,
+    double delta = 32,
+    int maxScrolls = 50,
+    Duration duration = const Duration(milliseconds: 50),
+  }) {
+    assert(maxScrolls > 0, 'maxScrolls must be positive number');
+    scrollable ??= find.byType(Scrollable);
+
+    return TestAsyncUtils.guard<MaestroFinder>(() async {
+      Offset moveStep;
+      switch (tester.widget<Scrollable>(scrollable!).axisDirection) {
+        case AxisDirection.up:
+          moveStep = Offset(0, delta);
+          break;
+        case AxisDirection.down:
+          moveStep = Offset(0, -delta);
+          break;
+        case AxisDirection.left:
+          moveStep = Offset(delta, 0);
+          break;
+        case AxisDirection.right:
+          moveStep = Offset(-delta, 0);
+          break;
+      }
+
+      final resolvedFinder = await dragUntilVisible(
+        finder: finder,
+        view: scrollable,
+        moveStep: moveStep,
+        maxIteration: maxScrolls,
+        duration: duration,
+      );
+
+      return resolvedFinder;
+    });
   }
 
   @internal
