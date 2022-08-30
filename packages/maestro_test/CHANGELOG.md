@@ -1,4 +1,4 @@
-## Unreleased
+## 0.5.0
 
 - Revamp scrolling and dragging (#217)
 
