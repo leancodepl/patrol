@@ -30,19 +30,15 @@ Future<void> main() async {
       await $(FloatingActionButton).tap();
 
       await maestro.pressHome();
-      await Future<void>.delayed(const Duration(seconds: 3));
 
       $.log("I went to home! Now I'm gonna open the mail app");
 
       await maestro.openApp(id: mapsId);
-      await Future<void>.delayed(const Duration(seconds: 3));
       $.log("Opened mail app! Now I'm gonna go to home");
 
       await maestro.pressHome();
-      await Future<void>.delayed(const Duration(seconds: 3));
 
       await maestro.openApp(id: myAppId);
-      await Future<void>.delayed(const Duration(seconds: 1));
       $.log('Opening the app under test again...');
 
       expect($(#counterText).text, '2');
