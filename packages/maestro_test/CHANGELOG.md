@@ -1,9 +1,21 @@
 ## Unreleased
 
+- Revamp scrolling and dragging (#217)
+
+  - New `MaestroTester.dragUntilExists()`
+  - Fixed `MaestroTester.dragUntilVisible()`'s behavior
+  - New `MaestroTester.scrollUntilExists` method
+  - New `MaestroTester.scrollUntilVisible` method
+  - `MaestroFinder.dragTo` was renamed to `MaestroFinder.scrollTo` and now also
+    scrolls to widgets that are not yet built (e.g in a lazily-built `ListView`)
+
 - Allow for more fine-grained control over timeouts (#191)
-  - `settleTimeout`, which is used for `MaestroTester.pumpAndSettle` (which forwards it to `WidgetTester.pumpAndSettle`)
+  - `settleTimeout`, which is used for `MaestroTester.pumpAndSettle` (which
+    forwards it to `WidgetTester.pumpAndSettle`)
   - `existsTimeout`, which is used for `MaestroFinder.waitUntilExists`
-  - `visibleTimeout` (previously `findTimeout`), which is used by `MaestroFinder.waitUntilVisible` (which is then used internally by `MaestroFinder.tap()` and `MaestroFinder.enterText()`.
+  - `visibleTimeout` (previously `findTimeout`), which is used by
+    `MaestroFinder.waitUntilVisible` (which is then used internally by
+    `MaestroFinder.tap()` and `MaestroFinder.enterText()`.
 
 ## 0.4.6
 
