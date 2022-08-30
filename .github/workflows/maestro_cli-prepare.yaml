@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Flutter
-        uses: subosito/flutter-action@main
+        uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
@@ -55,14 +55,14 @@ jobs:
       - name: dart analyze
         run: dart analyze
 
-      - name: Install maestro_cli
-        run: dart pub global activate --source path . && maestro
-
       - name: dart test
         run: dart test
 
       - name: dart format
         run: dart format --set-exit-if-changed .
+
+      - name: Install maestro_cli
+        run: dart pub global activate --source path . && maestro
 
       - name: ktlint check
         working-directory: ./AutomatorServer/android
