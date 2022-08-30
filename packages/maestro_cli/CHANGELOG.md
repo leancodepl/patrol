@@ -1,3 +1,12 @@
+## 0.5.0
+
+- Now `maestro_cli` will clean up after itself, either when it exits normally or
+  is stopped by the user (#209):
+  - port forwarding is automatically stopped
+  - artifacts are automatically uninstalled
+- `pod install` is automatically run when iOS artifacts are downloaded (macOS
+  only) (#206)
+
 ## 0.4.4+3
 
 - Fix not working on Windows because of `flutter` command not being found

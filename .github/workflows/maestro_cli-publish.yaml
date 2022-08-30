@@ -27,7 +27,24 @@ jobs:
           # see https://github.com/actions/virtual-environments/issues/1717#issuecomment-702780142
           ref: ${{ github.ref }}
 
-      - name: Set version data and artifact names
+      - name: Download mobile-tools
+        uses: actions/checkout@v3
+        with:
+          repository: leancodepl/mobile-tools
+          path: mobile-tools
+
+      - name: Add mobile-tools to PATH
+        run: |
+          echo $GITHUB_WORKSPACE/mobile-tools/bin >> $GITHUB_PATH
+
+      - name: Set version data
+        run: |
+          package_name=maestro_cli
+          tag=${{ github.ref_name }}
+          echo "RELEASE_NOTES=$(link_changelog $package_name $tag)" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$(is_prerelease $package_name $tag)" >> $GITHUB_ENV
+
+      - name: Set artifact names
         run: |
           tag=${{ github.ref_name }}
           prefix=maestro_cli-v
@@ -44,17 +61,6 @@ jobs:
           echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
           echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
           echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
-          # set whether is prerelease
-          is_prerelease=false
-          if [[ "$version" == 0.* ]]; then
-            is_prerelease=true
-          fi
-          echo "IS_PRERELEASE=$is_prerelease" >> $GITHUB_ENV
-          echo "is_prerelease: $is_prerelease"
-          # set release notes
-          tag_message="$(git tag -l --format='%(contents)' "$tag")"
-          echo "$tag_message" > release_notes.txt
-          echo "tag message: $tag_message"
 
       - name: Build server APK
         working-directory: AutomatorServer/android
@@ -79,8 +85,8 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          name: "maestro_cli-v${{ env.VERSION }}"
-          body_path: release_notes.txt
+          name: ${{ github.ref_name }}
+          body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ env.IS_PRERELEASE }}
           fail_on_unmatched_files: true
           # see https://github.com/softprops/action-gh-release/issues/158

@@ -21,6 +21,16 @@ jobs:
         with:
           sdk: 2.17.0
 
+      - name: Download mobile-tools
+        uses: actions/checkout@v3
+        with:
+          repository: leancodepl/mobile-tools
+          path: mobile-tools
+
+      - name: Add mobile-tools to PATH
+        run: |
+          echo $GITHUB_WORKSPACE/mobile-tools/bin >> $GITHUB_PATH
+
       - name: Download pub.dev credentials
         env:
           CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
@@ -30,22 +40,10 @@ jobs:
 
       - name: Set version data
         run: |
+          package_name=adb
           tag=${{ github.ref_name }}
-          prefix=adb-v
-          version=${tag#"$prefix"}
-          echo "version: $version"
-          echo "VERSION=$version" >> $GITHUB_ENV
-          # set whether is prerelease
-          is_prerelease=false
-          if [[ "$version" == 0.* ]]; then
-            is_prerelease=true
-          fi
-          echo "IS_PRERELEASE=$is_prerelease" >> $GITHUB_ENV
-          echo "is_prerelease: $is_prerelease"
-          # set release notes
-          tag_message="$(git tag -l --format='%(contents)' "$tag")"
-          echo "$tag_message" > release_notes.txt
-          echo "tag message: $tag_message"
+          echo "RELEASE_NOTES=$(link_changelog $package_name $tag)" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$(is_prerelease $package_name $tag)" >> $GITHUB_ENV
 
       - name: Publish
         run: dart pub publish -f
@@ -53,6 +51,6 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          name: "adb-v${{ env.VERSION }}"
-          body_path: packages/adb/release_notes.txt
+          name: ${{ github.ref_name }}
+          body: ${{ env.RELEASE_NOTES }}
           prerelease: ${{ env.IS_PRERELEASE }}
