@@ -7,11 +7,11 @@ void main() {
     await $.pumpWidgetAndSettle(ExampleApp());
     await $('Open overlay screen').tap();
 
-    expect($('hidden boi'), findsOneWidget);
-    expect($('hidden boi').hitTestable(), findsNothing);
+    expect($('non-visible text'), findsOneWidget);
+    expect($('non-visible text').hitTestable(), findsNothing);
 
     await expectLater(
-      () => $('hidden boi').waitUntilVisible(),
+      () => $('non-visible text').waitUntilVisible(),
       throwsA(isA<WaitUntilVisibleTimedOutException>()),
     );
   });

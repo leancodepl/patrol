@@ -11,7 +11,7 @@ class OverlayScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          const Center(child: Text('hidden boi')),
+          const Center(child: Text('non-visible text')),
           Center(
             child: Container(
               width: 150,

@@ -113,10 +113,10 @@ void main() {
       ($) async {
         await pumpWithOverlays($);
 
-        expect(find.text('hidden boi'), findsOneWidget);
+        expect(find.text('non-visible text'), findsOneWidget);
 
         await expectLater(
-          () => $('hidden boi').waitUntilVisible(),
+          () => $('non-visible text').waitUntilVisible(),
           throwsA(isA<WaitUntilVisibleTimedOutException>()),
         );
       },
@@ -159,19 +159,9 @@ void main() {
       expect($(#visibleText), findsOneWidget);
       expect($(#hiddenText), findsOneWidget);
 
-      expect($(#visibleText).text, 'visible boi');
+      expect($(#visibleText).text, 'visible text');
       expect(
-        () => $(#hiddenBoi).text,
-        throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            'No element',
-          ),
-        ),
-      );
-      expect(
-        () => $(#hiddenBoiButWrongKey).text,
+        () => $(#someWrongKey).text,
         throwsA(
           isA<StateError>().having(
             (error) => error.message,
@@ -239,7 +229,9 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
       home: Scaffold(
         body: Stack(
           children: [
-            const Center(child: Text('hidden boi', key: Key('hiddenText'))),
+            const Center(
+              child: Text('non-visible text', key: Key('hiddenText')),
+            ),
             Center(
               child: Container(
                 width: 150,
@@ -247,7 +239,7 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
                 color: Colors.blue,
               ),
             ),
-            const Text('visible boi', key: Key('visibleText')),
+            const Text('visible text', key: Key('visibleText')),
           ],
         ),
       ),
