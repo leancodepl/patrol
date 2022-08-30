@@ -7,6 +7,10 @@ class MaestroServer {
   private let port: Int
 
   private let loop: EventLoop
+  
+  private let startTime: String
+  
+  private let automation = MaestroAutomation()
 
   init() throws {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -24,9 +28,11 @@ class MaestroServer {
       throw MaestroError.generic("Failed to create SelectorEventLoop")
     }
     self.loop = loop
+    
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "HH:mm:ss"
+    startTime = dateFormatter.string(from: Date())
   }
-
-  private let automation = MaestroAutomation()
 
   func router(
     environ: [String: Any],
@@ -43,7 +49,7 @@ class MaestroServer {
     switch (method, action) {
     case ("GET", ""):
       startResponse("200 OK", [])
-      sendBody(Data("Hello from AutomatorServer on iOS!".utf8))
+      sendBody(Data("Hello from AutomatorServer on iOS!\nStarted on \(startTime)".utf8))
       sendBody(Data())  // send EOF
     case ("GET", "isRunning"):
       startResponse("200 OK", [])
