@@ -5,40 +5,6 @@ import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
 import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
 import 'package:meta/meta.dart';
 
-/// Specifies direction in the cartesian plane.
-enum Direction {
-  /// Left.
-  left,
-
-  /// Up.
-  up,
-
-  /// Right.
-  right,
-
-  /// Down.
-  down,
-}
-
-/// Adds functionality to [Direction].
-extension DirectionX on Direction {
-  /// Resolves the direction to a [Offset].
-  Offset resolveOffset(double step) {
-    assert(step > 0, 'step must be positive number');
-
-    switch (this) {
-      case Direction.left:
-        return Offset(step, 0);
-      case Direction.up:
-        return Offset(0, -step);
-      case Direction.right:
-        return Offset(step, 0);
-      case Direction.down:
-        return Offset(0, step);
-    }
-  }
-}
-
 /// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
 /// custom finder_, a.k.a `$`.
 ///
@@ -161,9 +127,10 @@ class MaestroTester {
     await performPump(andSettle: true, settleTimeout: timeout);
   }
 
-  /// Scrolls [view] in [direction] until [finder] exists.
+  /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
+  /// existing widget.
   ///
-  /// [step] is the amount of space to scroll by. It must be a positive number.
+  /// Between each drag, advances the clock by [duration].
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] or
   /// [WidgetTester.pump] after the drag is complete. If you want to override
@@ -201,9 +168,14 @@ class MaestroTester {
     return MaestroFinder(finder: finder.first, tester: this);
   }
 
-  /// Reimplementation of [WidgetController.dragUntilVisible] that actually
-  /// drags until [finder] finds at least one *visible* widget, not *existing*
-  /// widget.
+  /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
+  /// visible widget.
+  ///
+  /// Between each drag, advances the clock by [duration].
+  ///
+  /// This is a reimplementation of [WidgetController.dragUntilVisible] that
+  /// actually scrolls until [finder] finds at least one *visible* widget, not
+  /// *existing* widget.
   Future<MaestroFinder> dragUntilVisible({
     required Finder finder,
     required Finder view,
@@ -213,22 +185,35 @@ class MaestroTester {
     bool? andSettle,
   }) async {
     await TestAsyncUtils.guard<void>(() async {
-      while (maxIteration > 0 && finder.hitTestable().evaluate().isEmpty) {
+      var iterationsLeft = maxIteration;
+      while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
         await tester.drag(view, moveStep);
         await tester.pump(duration);
-        maxIteration -= 1;
-        print('maxIteration: $maxIteration');
+        iterationsLeft -= 1;
       }
       await Scrollable.ensureVisible(tester.element(finder));
+
+      await performPump(
+        andSettle: andSettle,
+        settleTimeout: config.settleTimeout,
+      );
     });
 
     return MaestroFinder(finder: finder.first, tester: this);
   }
 
-  Future<void> scrollUntilExists(
-    Finder finder,
-    double delta, {
+  /// Scrolls [scrollable] in its scrolling direction until this finders finds
+  /// at least one existing widget.
+  ///
+  /// If [scrollable] is null, it defaults to the first found [Scrollable].
+  ///
+  /// See also:
+  ///  - [MaestroTester.scrollUntilVisible], which this method wraps and gives
+  ///    it a better name
+  Future<void> scrollUntilExists({
+    required Finder finder,
     Finder? scrollable,
+    double delta = 32,
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
@@ -241,9 +226,14 @@ class MaestroTester {
     );
   }
 
-  /// Reimplementation of [WidgetController.scrollUntilVisible] that actually
-  /// scrolls until [finder] finds at least one *visible* widget, not *existing*
-  /// widget.
+  /// Scrolls [scrollable] in its scrolling direction until this finders finds
+  /// at least one existing widget.
+  ///
+  /// If [scrollable] is null, it defaults to the first found [Scrollable].
+  ///
+  /// This is a reimplementation of [WidgetController.scrollUntilVisible] that
+  /// actually scrolls until [finder] finds at least one *visible* widget, not
+  /// *existing* widget.
   Future<MaestroFinder> scrollUntilVisible({
     required Finder finder,
     Finder? scrollable,
