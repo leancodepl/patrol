@@ -37,11 +37,11 @@ jobs:
       - name: dart pub get
         run: dart pub get
 
-      - name: dart analyze
-        run: dart analyze
-
       - name: dart test
         run: dart test
+
+      - name: dart analyze
+        run: dart analyze
 
       - name: dart format
         run: dart format --set-exit-if-changed .
