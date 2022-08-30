@@ -14,7 +14,7 @@ void main() {
     expect(await $(K.topText).waitUntilVisible(), findsOneWidget);
     expect($(K.bottomText).hitTestable(), findsNothing);
 
-    await $(K.bottomText).dragTo();
+    await $(K.bottomText).scrollTo();
 
     expect($(K.bottomText).hitTestable(), findsOneWidget);
   });

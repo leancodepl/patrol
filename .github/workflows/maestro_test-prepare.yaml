@@ -41,11 +41,11 @@ jobs:
       - name: flutter pub get
         run: flutter pub get
 
-      - name: flutter analyze
-        run: flutter analyze
-
       - name: flutter test
         run: flutter test
+
+      - name: flutter analyze
+        run: flutter analyze
 
       - name: flutter format
         run: flutter format --set-exit-if-changed .

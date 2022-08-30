@@ -3,106 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/custom_finders.dart';
 
 void main() {
-  group('MaestroFinders work the same as Flutter Finders', () {
-    maestroTest('(simple case 1)', ($) async {
-      final flutterFinder = find.byType(Text);
-      final maestroFinder = $(Text);
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-
-    maestroTest('(simple case 2)', ($) async {
-      final flutterFinder = find.byKey(const Key('someKey'));
-      final maestroFinder = $(#someKey);
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-
-    maestroTest('(simple case 2)', ($) async {
-      final flutterFinder = find.byIcon(Icons.home);
-      final maestroFinder = $(Icons.home);
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-
-    maestroTest('(complex case 1)', ($) async {
-      final flutterFinder = find.descendant(
-        of: find.byType(Container),
-        matching: find.byType(Text),
-      );
-
-      final maestroFinder = $(Container).$(Text);
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-
-    maestroTest('(complex case 2)', ($) async {
-      final flutterFinder = find.descendant(
-        of: find.descendant(
-          of: find.byType(MaterialApp),
-          matching: find.byType(Container),
-        ),
-        matching: find.byType(Text),
-      );
-
-      final maestroFinder = $(MaterialApp).$(Container).$(Text);
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-
-    maestroTest('(complex case 3)', ($) async {
-      final flutterFinder = find.descendant(
-        of: find.ancestor(
-          of: find.text('layer'),
-          matching: find.byType(MaterialApp),
-        ),
-        matching: find.byKey(const Key('SomeKey')),
-      );
-
-      final maestroFinder = $(MaterialApp).containing('layer').$(#SomeKey);
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-
-    maestroTest('(complex case 4)', ($) async {
-      final flutterFinder = find.ancestor(
-        of: find.ancestor(
-          of: find.byKey(const Key('SomeKey')),
-          matching: find.text('layer'),
-        ),
-        matching: find.byType(MaterialApp),
-      );
-
-      final maestroFinder =
-          $(MaterialApp).containing($('layer').containing(#SomeKey));
-
-      expect(flutterFinder.toString(), maestroFinder.toString());
-    });
-  });
-
-  group('matches widget by', () {
-    maestroTest('first', ($) async {
-      await smallPump($);
-      expect($(Text).first, findsOneWidget);
-      expect($(Icon).first, findsOneWidget);
-      expect($(Row).first, findsOneWidget);
-    });
-
-    maestroTest('last', ($) async {
-      await smallPump($);
-      expect($(Text).last, findsOneWidget);
-      expect($(Icon).last, findsOneWidget);
-      expect($(Row).last, findsOneWidget);
-    });
-
-    maestroTest('at', ($) async {
-      await smallPump($);
-      expect($(Text).at(0), findsOneWidget);
-      expect($(Icon).at(0), findsOneWidget);
-      expect($(Row).at(0), findsOneWidget);
-    });
-  });
-
   group('finds widget by', () {
     maestroTest('type', ($) async {
       await smallPump($);
@@ -213,10 +113,10 @@ void main() {
       ($) async {
         await pumpWithOverlays($);
 
-        expect(find.text('hidden boi'), findsOneWidget);
+        expect(find.text('non-visible text'), findsOneWidget);
 
         await expectLater(
-          () => $('hidden boi').waitUntilVisible(),
+          () => $('non-visible text').waitUntilVisible(),
           throwsA(isA<WaitUntilVisibleTimedOutException>()),
         );
       },
@@ -245,42 +145,32 @@ void main() {
       expect($(RegExp('Some more text')), findsOneWidget);
       expect($('Some textSome more text\uFFFC\uFFFC'), findsOneWidget);
     });
-  });
 
-  maestroTest('text returns the nearest visible Text widget (1)', ($) async {
-    await smallPump($);
+    maestroTest('text returns the nearest visible Text widget (1)', ($) async {
+      await smallPump($);
 
-    expect($(#helloText), findsOneWidget);
-    expect($(#helloText).text, 'Hello');
-  });
+      expect($(#helloText), findsOneWidget);
+      expect($(#helloText).text, 'Hello');
+    });
 
-  maestroTest('text returns the nearest visible Text widget (2)', ($) async {
-    await pumpWithOverlays($);
+    maestroTest('text returns the nearest visible Text widget (2)', ($) async {
+      await pumpWithOverlays($);
 
-    expect($(#visibleText), findsOneWidget);
-    expect($(#hiddenText), findsOneWidget);
+      expect($(#visibleText), findsOneWidget);
+      expect($(#hiddenText), findsOneWidget);
 
-    expect($(#visibleText).text, 'visible boi');
-    expect(
-      () => $(#hiddenBoi).text,
-      throwsA(
-        isA<StateError>().having(
-          (error) => error.message,
-          'message',
-          'No element',
+      expect($(#visibleText).text, 'visible text');
+      expect(
+        () => $(#someWrongKey).text,
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            'No element',
+          ),
         ),
-      ),
-    );
-    expect(
-      () => $(#hiddenBoiButWrongKey).text,
-      throwsA(
-        isA<StateError>().having(
-          (error) => error.message,
-          'message',
-          'No element',
-        ),
-      ),
-    );
+      );
+    });
   });
 }
 
@@ -339,7 +229,9 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
       home: Scaffold(
         body: Stack(
           children: [
-            const Center(child: Text('hidden boi', key: Key('hiddenText'))),
+            const Center(
+              child: Text('non-visible text', key: Key('hiddenText')),
+            ),
             Center(
               child: Container(
                 width: 150,
@@ -347,7 +239,7 @@ Future<void> pumpWithOverlays(MaestroTester $) async {
                 color: Colors.blue,
               ),
             ),
-            const Text('visible boi', key: Key('visibleText')),
+            const Text('visible text', key: Key('visibleText')),
           ],
         ),
       ),
