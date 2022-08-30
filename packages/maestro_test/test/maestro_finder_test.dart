@@ -123,9 +123,51 @@ void main() {
   });
 
   group('Maestro finder', () {
-    maestroTest('waits until widget exists', ($) async {});
+    maestroTest('waits until widget exists', ($) async {
+      await $.pumpWidget(
+        MaterialApp(
+          home: FutureBuilder(
+            future: Future<void>.delayed(const Duration(seconds: 3)),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return const Text('done');
+              } else {
+                return const Text('in progress');
+              }
+            },
+          ),
+        ),
+      );
 
-    maestroTest('waits until widget is visible', ($) async {});
+      expect($('done').visible, false);
+
+      await $('done').waitUntilExists();
+
+      expect($('done').visible, true);
+    });
+
+    maestroTest('waits until widget is visible', ($) async {
+      await $.pumpWidget(
+        MaterialApp(
+          home: FutureBuilder(
+            future: Future<void>.delayed(const Duration(seconds: 3)),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return const Text('done');
+              } else {
+                return const Text('in progress');
+              }
+            },
+          ),
+        ),
+      );
+
+      expect($('done').visible, false);
+
+      await $('done').waitUntilVisible();
+
+      expect($('done').visible, true);
+    });
 
     maestroTest('drags to existing and visible widget', ($) async {
       await $.pumpWidget(
