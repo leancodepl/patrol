@@ -171,8 +171,20 @@ void main() {
     });
   });
 
-  group('Maestro finder scrolls', () {
-    maestroTest('to existing and visible widget', ($) async {
+  group('scrollTo', () {
+    maestroTest(
+      'throws exception when no Scrollable is found within timeout',
+      ($) async {
+        await $.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          $('some text').waitUntilVisible,
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest('scrolls to existing and visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
@@ -197,7 +209,7 @@ void main() {
     });
 
     maestroTest(
-      'to existing and visible widget in first Scrollable',
+      'scrolls to existing and visible widget in first Scrollable',
       ($) async {
         await $.pumpWidget(
           MaterialApp(
@@ -235,7 +247,7 @@ void main() {
       },
     );
 
-    maestroTest('to existing but not visible widget', ($) async {
+    maestroTest('scrolls to existing but not visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
@@ -267,7 +279,7 @@ void main() {
     });
 
     maestroTest(
-      'to existing but not visible widget in Scrollable appearing late',
+      'scrolls to existing but not visible widget in Scrollable appearing late',
       ($) async {
         await $.pumpWidget(
           MaterialApp(
@@ -310,7 +322,7 @@ void main() {
       },
     );
 
-    maestroTest('to non-existent and non-visible widget', ($) async {
+    maestroTest('scrolls  to non-existent and non-visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
