@@ -12,32 +12,7 @@ part of 'maestro_test_config.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-/// @nodoc
-class _$MaestroTestConfigTearOff {
-  const _$MaestroTestConfigTearOff();
-
-  _MaestroTestConfig call(
-      {Duration existsTimeout = const Duration(seconds: 10),
-      Duration visibleTimeout = const Duration(seconds: 10),
-      Duration settleTimeout = const Duration(seconds: 10),
-      Duration sleep = Duration.zero,
-      bool andSettle = true,
-      String? appName}) {
-    return _MaestroTestConfig(
-      existsTimeout: existsTimeout,
-      visibleTimeout: visibleTimeout,
-      settleTimeout: settleTimeout,
-      sleep: sleep,
-      andSettle: andSettle,
-      appName: appName,
-    );
-  }
-}
-
-/// @nodoc
-const $MaestroTestConfig = _$MaestroTestConfigTearOff();
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$MaestroTestConfig {
@@ -137,11 +112,11 @@ class _$MaestroTestConfigCopyWithImpl<$Res>
 }
 
 /// @nodoc
-abstract class _$MaestroTestConfigCopyWith<$Res>
+abstract class _$$_MaestroTestConfigCopyWith<$Res>
     implements $MaestroTestConfigCopyWith<$Res> {
-  factory _$MaestroTestConfigCopyWith(
-          _MaestroTestConfig value, $Res Function(_MaestroTestConfig) then) =
-      __$MaestroTestConfigCopyWithImpl<$Res>;
+  factory _$$_MaestroTestConfigCopyWith(_$_MaestroTestConfig value,
+          $Res Function(_$_MaestroTestConfig) then) =
+      __$$_MaestroTestConfigCopyWithImpl<$Res>;
   @override
   $Res call(
       {Duration existsTimeout,
@@ -153,15 +128,15 @@ abstract class _$MaestroTestConfigCopyWith<$Res>
 }
 
 /// @nodoc
-class __$MaestroTestConfigCopyWithImpl<$Res>
+class __$$_MaestroTestConfigCopyWithImpl<$Res>
     extends _$MaestroTestConfigCopyWithImpl<$Res>
-    implements _$MaestroTestConfigCopyWith<$Res> {
-  __$MaestroTestConfigCopyWithImpl(
-      _MaestroTestConfig _value, $Res Function(_MaestroTestConfig) _then)
-      : super(_value, (v) => _then(v as _MaestroTestConfig));
+    implements _$$_MaestroTestConfigCopyWith<$Res> {
+  __$$_MaestroTestConfigCopyWithImpl(
+      _$_MaestroTestConfig _value, $Res Function(_$_MaestroTestConfig) _then)
+      : super(_value, (v) => _then(v as _$_MaestroTestConfig));
 
   @override
-  _MaestroTestConfig get _value => super._value as _MaestroTestConfig;
+  _$_MaestroTestConfig get _value => super._value as _$_MaestroTestConfig;
 
   @override
   $Res call({
@@ -172,7 +147,7 @@ class __$MaestroTestConfigCopyWithImpl<$Res>
     Object? andSettle = freezed,
     Object? appName = freezed,
   }) {
-    return _then(_MaestroTestConfig(
+    return _then(_$_MaestroTestConfig(
       existsTimeout: existsTimeout == freezed
           ? _value.existsTimeout
           : existsTimeout // ignore: cast_nullable_to_non_nullable
@@ -212,45 +187,44 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
       this.andSettle = true,
       this.appName});
 
-  @JsonKey()
-  @override
-
   /// Time after which [MaestroFinder.waitUntilExists] fails if it doesn't
   /// finds a widget.
-  final Duration existsTimeout;
-  @JsonKey()
   @override
+  @JsonKey()
+  final Duration existsTimeout;
 
   /// Time after which [MaestroFinder.waitUntilVisible] fails if it doesn't
   /// finds a widget.
   ///
   /// [MaestroFinder.waitUntilVisible] is used internally by
   /// [MaestroFinder.tap] and [MaestroFinder.enterText].
-  final Duration visibleTimeout;
-  @JsonKey()
   @override
+  @JsonKey()
+  final Duration visibleTimeout;
 
   /// Time after which [MaestroTester.pumpAndSettle] fails.
-  final Duration settleTimeout;
-  @JsonKey()
   @override
+  @JsonKey()
+  final Duration settleTimeout;
 
   /// Time to sleep after successful test execution. If set to
   /// [Duration.zero], then the test completes immediately after successful
   /// execution.
-  final Duration sleep;
-  @JsonKey()
   @override
+  @JsonKey()
+  final Duration sleep;
 
   /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
   /// [MaestroFinder.tap] and [MaestroFinder]. If false, only
   /// [WidgetTester.pump] is called.
-  final bool andSettle;
   @override
+  @JsonKey()
+  final bool andSettle;
 
   /// Name of the application under test.
   ///
   /// Used in [MaestroTester.log].
+  @override
   final String? appName;
 
   @override
@@ -262,7 +236,7 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _MaestroTestConfig &&
+            other is _$_MaestroTestConfig &&
             const DeepCollectionEquality()
                 .equals(other.existsTimeout, existsTimeout) &&
             const DeepCollectionEquality()
@@ -286,18 +260,19 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
 
   @JsonKey(ignore: true)
   @override
-  _$MaestroTestConfigCopyWith<_MaestroTestConfig> get copyWith =>
-      __$MaestroTestConfigCopyWithImpl<_MaestroTestConfig>(this, _$identity);
+  _$$_MaestroTestConfigCopyWith<_$_MaestroTestConfig> get copyWith =>
+      __$$_MaestroTestConfigCopyWithImpl<_$_MaestroTestConfig>(
+          this, _$identity);
 }
 
 abstract class _MaestroTestConfig implements MaestroTestConfig {
   const factory _MaestroTestConfig(
-      {Duration existsTimeout,
-      Duration visibleTimeout,
-      Duration settleTimeout,
-      Duration sleep,
-      bool andSettle,
-      String? appName}) = _$_MaestroTestConfig;
+      {final Duration existsTimeout,
+      final Duration visibleTimeout,
+      final Duration settleTimeout,
+      final Duration sleep,
+      final bool andSettle,
+      final String? appName}) = _$_MaestroTestConfig;
 
   @override
 
@@ -336,6 +311,6 @@ abstract class _MaestroTestConfig implements MaestroTestConfig {
   String? get appName;
   @override
   @JsonKey(ignore: true)
-  _$MaestroTestConfigCopyWith<_MaestroTestConfig> get copyWith =>
+  _$$_MaestroTestConfigCopyWith<_$_MaestroTestConfig> get copyWith =>
       throw _privateConstructorUsedError;
 }
