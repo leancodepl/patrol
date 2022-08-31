@@ -424,7 +424,7 @@ void main() {
     });
 
     maestroTest(
-      'scrolls to existing and visible widget in first Scrollable',
+      'scrolls to existing and visible widget in the first Scrollable',
       ($) async {
         await $.pumpWidget(
           MaterialApp(
