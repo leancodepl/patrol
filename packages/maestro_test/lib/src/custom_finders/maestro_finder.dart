@@ -90,8 +90,7 @@ Finder createFinder(dynamic matching) {
   }
 
   if (matching is Pattern) {
-    // TODO: Re-add `findRichText: true` when minimum SDK version is >= 2.17
-    return find.textContaining(matching);
+    return find.textContaining(matching, findRichText: true);
   }
 
   if (matching is IconData) {
