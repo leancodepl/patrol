@@ -22,11 +22,9 @@ class WaitUntilExistsTimedOutException extends MaestroFinderTimeoutException {
   /// Creates a new [WaitUntilExistsTimedOutException] with [finder] which did
   /// not find any widget and timed out.
   WaitUntilExistsTimedOutException({
-    required MaestroFinder finder,
-    required Duration duration,
+    required super.finder,
+    required super.duration,
   }) : super(
-          finder: finder,
-          duration: duration,
           message: 'Finder $finder did not find any widgets',
         );
 }
@@ -37,11 +35,9 @@ class WaitUntilVisibleTimedOutException extends MaestroFinderTimeoutException {
   /// Creates a new [WaitUntilVisibleTimedOutException] with [finder] which did
   /// not find any visible widget and timed out.
   WaitUntilVisibleTimedOutException({
-    required MaestroFinder finder,
-    required Duration duration,
+    required super.finder,
+    required super.duration,
   }) : super(
-          finder: finder,
-          duration: duration,
           message: 'Finder $finder did not find any visible widgets',
         );
 }
