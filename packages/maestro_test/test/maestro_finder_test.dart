@@ -160,6 +160,75 @@ void main() {
     });
   });
 
+  group('tap', () {
+    maestroTest(
+      'throws exception when no widget to tap on is found',
+      ($) async {
+        await $.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          $('some text').tap,
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest('taps on widget and pumps', ($) async {
+      var count = 0;
+      await $.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (state, setState) => GestureDetector(
+              child: Column(
+                children: [
+                  Text('count: $count'),
+                  GestureDetector(
+                    onTap: () => setState(() => count++),
+                    child: const Text('Tap'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await $('Tap').tap();
+      expect($('count: 1'), findsOneWidget);
+    });
+
+    maestroTest('taps on the first widget by default and pumps', ($) async {
+      var firstCount = 0;
+      var secondCount = 0;
+
+      await $.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (state, setState) => GestureDetector(
+              child: Column(
+                children: [
+                  Text('firstCount: $firstCount'),
+                  GestureDetector(
+                    onTap: () => setState(() => firstCount++),
+                    child: const Text('Tap'),
+                  ),
+                  Text('secondCount: $secondCount'),
+                  GestureDetector(
+                    onTap: () => setState(() => secondCount++),
+                    child: const Text('Tap'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await $('Tap').tap();
+      expect($('firstCount: 1'), findsOneWidget);
+    });
+  });
+
   group('waitUntilVisible', () {
     maestroTest(
       'throws exception when no visible widget is found within timeout',
