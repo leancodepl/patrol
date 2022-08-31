@@ -194,22 +194,19 @@ void main() {
     });
 
     maestroTest('taps on the first widget by default and pumps', ($) async {
-      var firstCount = 0;
-      var secondCount = 0;
-
+      var count = 0;
       await $.pumpWidget(
         MaterialApp(
           home: StatefulBuilder(
             builder: (state, setState) => Column(
               children: [
-                Text('firstCount: $firstCount'),
+                Text('count: $count'),
                 GestureDetector(
-                  onTap: () => setState(() => firstCount++),
+                  onTap: () => setState(() => count++),
                   child: const Text('Tap'),
                 ),
-                Text('secondCount: $secondCount'),
                 GestureDetector(
-                  onTap: () => setState(() => secondCount++),
+                  onTap: () {},
                   child: const Text('Tap'),
                 ),
               ],
@@ -219,7 +216,7 @@ void main() {
       );
 
       await $('Tap').tap();
-      expect($('firstCount: 1'), findsOneWidget);
+      expect($('count: 1'), findsOneWidget);
     });
   });
   group('enterText', () {
