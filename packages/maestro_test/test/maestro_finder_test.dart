@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart'
-    show CircularProgressIndicator, Icons, MaterialApp;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/custom_finders.dart';
 
@@ -178,16 +176,14 @@ void main() {
       await $.pumpWidget(
         MaterialApp(
           home: StatefulBuilder(
-            builder: (state, setState) => GestureDetector(
-              child: Column(
-                children: [
-                  Text('count: $count'),
-                  GestureDetector(
-                    onTap: () => setState(() => count++),
-                    child: const Text('Tap'),
-                  ),
-                ],
-              ),
+            builder: (state, setState) => Column(
+              children: [
+                Text('count: $count'),
+                GestureDetector(
+                  onTap: () => setState(() => count++),
+                  child: const Text('Tap'),
+                ),
+              ],
             ),
           ),
         ),
@@ -204,21 +200,19 @@ void main() {
       await $.pumpWidget(
         MaterialApp(
           home: StatefulBuilder(
-            builder: (state, setState) => GestureDetector(
-              child: Column(
-                children: [
-                  Text('firstCount: $firstCount'),
-                  GestureDetector(
-                    onTap: () => setState(() => firstCount++),
-                    child: const Text('Tap'),
-                  ),
-                  Text('secondCount: $secondCount'),
-                  GestureDetector(
-                    onTap: () => setState(() => secondCount++),
-                    child: const Text('Tap'),
-                  ),
-                ],
-              ),
+            builder: (state, setState) => Column(
+              children: [
+                Text('firstCount: $firstCount'),
+                GestureDetector(
+                  onTap: () => setState(() => firstCount++),
+                  child: const Text('Tap'),
+                ),
+                Text('secondCount: $secondCount'),
+                GestureDetector(
+                  onTap: () => setState(() => secondCount++),
+                  child: const Text('Tap'),
+                ),
+              ],
             ),
           ),
         ),
@@ -227,6 +221,73 @@ void main() {
       await $('Tap').tap();
       expect($('firstCount: 1'), findsOneWidget);
     });
+  });
+  group('enterText', () {
+    maestroTest(
+      'throws exception when no widget to enter text in is found',
+      ($) async {
+        await $.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          () => $('some text').enterText('some text'),
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest('enters text in widget and pumps', ($) async {
+      var content = '';
+      await $.pumpWidgetAndSettle(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (state, setState) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('You entered: $content'),
+                  TextField(
+                    onChanged: (newValue) => setState(() => content = newValue),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await $(TextField).enterText('some input');
+      expect($('You entered: some input'), findsOneWidget);
+    });
+
+    maestroTest(
+      'enters text in the first widget by default and pumps',
+      ($) async {
+        var content = '';
+        await $.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  children: [
+                    Text('You entered: $content'),
+                    TextField(
+                      onChanged: (newValue) =>
+                          setState(() => content = newValue),
+                    ),
+                    TextField(
+                      onChanged: (_) {},
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await $(TextField).enterText('some text');
+        expect($('You entered: some text'), findsOneWidget);
+      },
+    );
   });
 
   group('waitUntilVisible', () {
