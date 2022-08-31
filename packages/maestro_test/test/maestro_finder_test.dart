@@ -208,6 +208,24 @@ void main() {
       },
     );
 
+    maestroTest(
+      'throws StateError when no widget is found after reaching maxScrolls',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: ListView(
+              children: const [Text('one'), Text('two')],
+            ),
+          ),
+        );
+
+        await expectLater(
+          $('three').scrollTo,
+          throwsStateError,
+        );
+      },
+    );
+
     maestroTest('scrolls to existing and visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
