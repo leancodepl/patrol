@@ -288,7 +288,7 @@ class MaestroFinder extends MatchFinder {
     }
 
     if (firstWidget is RichText) {
-      return (firstWidget.text as TextSpan).text;
+      return (firstWidget.text as TextSpan).toPlainText();
     }
 
     throw Exception(
