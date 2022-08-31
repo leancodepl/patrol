@@ -8,11 +8,11 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart';
 
 class AndroidDriver {
   AndroidDriver(
-    StatefulDisposeScope parentDisposeScope,
+    DisposeScope parentDisposeScope,
     this._artifactsRepository,
-  )   : _disposeScope = StatefulDisposeScope(),
+  )   : _disposeScope = DisposeScope(),
         _adb = Adb() {
-    _disposeScope.disposed(parentDisposeScope);
+    _disposeScope.disposedBy(parentDisposeScope);
   }
 
   static const _serverPackage = 'pl.leancode.automatorserver';
@@ -20,7 +20,7 @@ class AndroidDriver {
 
   final ArtifactsRepository _artifactsRepository;
 
-  final StatefulDisposeScope _disposeScope;
+  final DisposeScope _disposeScope;
   final Adb _adb;
 
   Future<void> run({
@@ -205,8 +205,8 @@ class AndroidDriver {
         arguments: {envPortKey: port.toString()},
       );
 
-      process.listenStdOut(log.info).disposed(scope);
-      process.listenStdErr(log.severe).disposed(scope);
+      process.listenStdOut(log.info).disposedBy(scope);
+      process.listenStdErr(log.severe).disposedBy(scope);
       scope.addDispose(() async {
         final msg = process.kill()
             ? 'Killed native Android instrumentation'
