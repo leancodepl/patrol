@@ -1,3 +1,7 @@
+## 0.5.3
+
+- Make `MaestroFinder.text` getter more robust
+
 ## 0.5.2
 
 - Fix a problem with `StateError` being thrown when
