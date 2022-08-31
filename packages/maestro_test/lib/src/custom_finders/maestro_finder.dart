@@ -234,6 +234,9 @@ class MaestroFinder extends MatchFinder {
   /// Scrolls [scrollable] in its scrolling direction until this finders finds
   /// at least one visible widget.
   ///
+  /// It also ensures that [scrollable] is visible, by calling
+  /// [MaestroFinder.waitUntilVisible].
+  ///
   /// If [scrollable] is null, it defaults to the first found [Scrollable].
   ///
   /// See also:
@@ -246,9 +249,14 @@ class MaestroFinder extends MatchFinder {
   }) async {
     scrollable ??= find.byType(Scrollable);
 
+    final scrollableMaestroFinder = await MaestroFinder(
+      finder: scrollable,
+      tester: tester,
+    ).waitUntilVisible();
+
     final resolvedFinder = await tester.scrollUntilVisible(
       finder: finder,
-      scrollable: scrollable,
+      scrollable: scrollableMaestroFinder.first,
       delta: step,
       maxScrolls: maxScrolls,
       duration: duration,
@@ -320,10 +328,11 @@ class MaestroFinder extends MatchFinder {
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
     timeout ??= tester.config.existsTimeout;
-    final end = DateTime.now().add(timeout);
+    final end = tester.tester.binding.clock.now().add(timeout);
 
     while (evaluate().isEmpty) {
-      if (DateTime.now().isAfter(end)) {
+      final now = tester.tester.binding.clock.now();
+      if (now.isAfter(end)) {
         throw WaitUntilExistsTimedOutException(finder: this, duration: timeout);
       }
 
@@ -342,10 +351,11 @@ class MaestroFinder extends MatchFinder {
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
     timeout ??= tester.config.visibleTimeout;
-    final end = DateTime.now().add(timeout);
+    final end = tester.tester.binding.clock.now().add(timeout);
 
     while (hitTestable().evaluate().isEmpty) {
-      if (DateTime.now().isAfter(end)) {
+      final now = tester.tester.binding.clock.now();
+      if (now.isAfter(end)) {
         throw WaitUntilVisibleTimedOutException(
           finder: this,
           duration: timeout,
