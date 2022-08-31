@@ -232,6 +232,52 @@ void main() {
       },
     );
 
+    maestroTest(
+      'throws StateError when widget is not EditableText',
+      ($) async {
+        await $.pumpWidget(
+          const MaterialApp(
+            home: Text('not a TextField'),
+          ),
+        );
+
+        await expectLater(
+          $('not a TextField').enterText('some text'),
+          throwsStateError,
+        );
+      },
+    );
+
+    maestroTest(
+      'enters text when the target widget has EditableText descendant',
+      ($) async {
+        var content = '';
+        await $.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  key: const Key('columnKey'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('You entered: $content'),
+                    TextField(
+                      onChanged: (newValue) {
+                        setState(() => content = newValue);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await $(#columnKey).enterText('some input');
+        expect($('You entered: some input'), findsOneWidget);
+      },
+    );
+
     maestroTest('enters text in widget and pumps', ($) async {
       var content = '';
       await $.pumpWidgetAndSettle(
