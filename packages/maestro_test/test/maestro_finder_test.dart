@@ -123,8 +123,20 @@ void main() {
     });
   });
 
-  group('Maestro finder waits', () {
-    maestroTest('until widget exists', ($) async {
+  group('waitUntilExists', () {
+    maestroTest(
+      'throws exception when no widget is found within timeout',
+      ($) async {
+        await $.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          $('some text').waitUntilExists,
+          throwsA(isA<WaitUntilExistsTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest('waits until widget exists', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: FutureBuilder(
@@ -146,8 +158,22 @@ void main() {
 
       expect($('done').visible, true);
     });
+  });
 
-    maestroTest('until widget is visible', ($) async {
+  group('waitUntilVisible', () {
+    maestroTest(
+      'throws exception when no visible widget is found within timeout',
+      ($) async {
+        await $.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          $('some text').waitUntilVisible,
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest('waits until widget is visible', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: FutureBuilder(
@@ -164,9 +190,7 @@ void main() {
       );
 
       expect($('done').visible, false);
-
       await $('done').waitUntilVisible();
-
       expect($('done').visible, true);
     });
   });

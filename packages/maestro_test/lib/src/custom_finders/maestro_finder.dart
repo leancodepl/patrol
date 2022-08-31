@@ -328,10 +328,11 @@ class MaestroFinder extends MatchFinder {
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
     timeout ??= tester.config.existsTimeout;
-    final end = DateTime.now().add(timeout);
+    final end = tester.tester.binding.clock.now().add(timeout);
 
     while (evaluate().isEmpty) {
-      if (DateTime.now().isAfter(end)) {
+      final now = tester.tester.binding.clock.now();
+      if (now.isAfter(end)) {
         throw WaitUntilExistsTimedOutException(finder: this, duration: timeout);
       }
 
@@ -350,7 +351,6 @@ class MaestroFinder extends MatchFinder {
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
     timeout ??= tester.config.visibleTimeout;
-    //final end = DateTime.now().add(timeout);
     final end = tester.tester.binding.clock.now().add(timeout);
 
     while (hitTestable().evaluate().isEmpty) {
