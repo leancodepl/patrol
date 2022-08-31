@@ -12,52 +12,11 @@ part of 'selector.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 Selector _$SelectorFromJson(Map<String, dynamic> json) {
   return _Selector.fromJson(json);
 }
-
-/// @nodoc
-class _$SelectorTearOff {
-  const _$SelectorTearOff();
-
-  _Selector call(
-      {String? text,
-      String? textStartsWith,
-      String? textContains,
-      String? className,
-      String? contentDescription,
-      String? contentDescriptionStartsWith,
-      String? contentDescriptionContains,
-      String? resourceId,
-      int? instance,
-      bool? enabled,
-      bool? focused,
-      String? packageName}) {
-    return _Selector(
-      text: text,
-      textStartsWith: textStartsWith,
-      textContains: textContains,
-      className: className,
-      contentDescription: contentDescription,
-      contentDescriptionStartsWith: contentDescriptionStartsWith,
-      contentDescriptionContains: contentDescriptionContains,
-      resourceId: resourceId,
-      instance: instance,
-      enabled: enabled,
-      focused: focused,
-      packageName: packageName,
-    );
-  }
-
-  Selector fromJson(Map<String, Object?> json) {
-    return Selector.fromJson(json);
-  }
-}
-
-/// @nodoc
-const $Selector = _$SelectorTearOff();
 
 /// @nodoc
 mixin _$Selector {
@@ -177,9 +136,10 @@ class _$SelectorCopyWithImpl<$Res> implements $SelectorCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$SelectorCopyWith<$Res> implements $SelectorCopyWith<$Res> {
-  factory _$SelectorCopyWith(_Selector value, $Res Function(_Selector) then) =
-      __$SelectorCopyWithImpl<$Res>;
+abstract class _$$_SelectorCopyWith<$Res> implements $SelectorCopyWith<$Res> {
+  factory _$$_SelectorCopyWith(
+          _$_Selector value, $Res Function(_$_Selector) then) =
+      __$$_SelectorCopyWithImpl<$Res>;
   @override
   $Res call(
       {String? text,
@@ -197,13 +157,14 @@ abstract class _$SelectorCopyWith<$Res> implements $SelectorCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$SelectorCopyWithImpl<$Res> extends _$SelectorCopyWithImpl<$Res>
-    implements _$SelectorCopyWith<$Res> {
-  __$SelectorCopyWithImpl(_Selector _value, $Res Function(_Selector) _then)
-      : super(_value, (v) => _then(v as _Selector));
+class __$$_SelectorCopyWithImpl<$Res> extends _$SelectorCopyWithImpl<$Res>
+    implements _$$_SelectorCopyWith<$Res> {
+  __$$_SelectorCopyWithImpl(
+      _$_Selector _value, $Res Function(_$_Selector) _then)
+      : super(_value, (v) => _then(v as _$_Selector));
 
   @override
-  _Selector get _value => super._value as _Selector;
+  _$_Selector get _value => super._value as _$_Selector;
 
   @override
   $Res call({
@@ -220,7 +181,7 @@ class __$SelectorCopyWithImpl<$Res> extends _$SelectorCopyWithImpl<$Res>
     Object? focused = freezed,
     Object? packageName = freezed,
   }) {
-    return _then(_Selector(
+    return _then(_$_Selector(
       text: text == freezed
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
@@ -327,7 +288,7 @@ class _$_Selector implements _Selector {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _Selector &&
+            other is _$_Selector &&
             const DeepCollectionEquality().equals(other.text, text) &&
             const DeepCollectionEquality()
                 .equals(other.textStartsWith, textStartsWith) &&
@@ -350,6 +311,7 @@ class _$_Selector implements _Selector {
                 .equals(other.packageName, packageName));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -368,29 +330,31 @@ class _$_Selector implements _Selector {
 
   @JsonKey(ignore: true)
   @override
-  _$SelectorCopyWith<_Selector> get copyWith =>
-      __$SelectorCopyWithImpl<_Selector>(this, _$identity);
+  _$$_SelectorCopyWith<_$_Selector> get copyWith =>
+      __$$_SelectorCopyWithImpl<_$_Selector>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SelectorToJson(this);
+    return _$$_SelectorToJson(
+      this,
+    );
   }
 }
 
 abstract class _Selector implements Selector {
   const factory _Selector(
-      {String? text,
-      String? textStartsWith,
-      String? textContains,
-      String? className,
-      String? contentDescription,
-      String? contentDescriptionStartsWith,
-      String? contentDescriptionContains,
-      String? resourceId,
-      int? instance,
-      bool? enabled,
-      bool? focused,
-      String? packageName}) = _$_Selector;
+      {final String? text,
+      final String? textStartsWith,
+      final String? textContains,
+      final String? className,
+      final String? contentDescription,
+      final String? contentDescriptionStartsWith,
+      final String? contentDescriptionContains,
+      final String? resourceId,
+      final int? instance,
+      final bool? enabled,
+      final bool? focused,
+      final String? packageName}) = _$_Selector;
 
   factory _Selector.fromJson(Map<String, dynamic> json) = _$_Selector.fromJson;
 
@@ -420,6 +384,6 @@ abstract class _Selector implements Selector {
   String? get packageName;
   @override
   @JsonKey(ignore: true)
-  _$SelectorCopyWith<_Selector> get copyWith =>
+  _$$_SelectorCopyWith<_$_Selector> get copyWith =>
       throw _privateConstructorUsedError;
 }
