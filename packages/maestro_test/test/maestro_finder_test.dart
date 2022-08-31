@@ -121,6 +121,63 @@ void main() {
     });
   });
 
+  group('text', () {
+    maestroTest('throws StateError if no widget is found', ($) async {
+      await $.pumpWidget(const MaterialApp());
+      expect(() => $('some text').text, throwsStateError);
+    });
+
+    maestroTest(
+      'throws Exception if the first found widget is not Text or RichText',
+      ($) async {
+        await $.pumpWidget(
+          const MaterialApp(
+            home: SizedBox(key: Key('someKey')),
+          ),
+        );
+
+        expect(() => $(#someKey).text, throwsException);
+      },
+    );
+
+    maestroTest(
+      'returns data when the first found widget is Text',
+      ($) async {
+        await $.pumpWidget(
+          const MaterialApp(
+            home: Text(
+              'some data',
+              key: Key('someKey'),
+            ),
+          ),
+        );
+
+        expect($(#someKey).text, 'some data');
+      },
+    );
+
+    maestroTest(
+      'returns data when the first found widget is RichText',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: RichText(
+              key: const Key('someKey'),
+              text: const TextSpan(
+                text: 'some data',
+                children: [
+                  TextSpan(text: 'some data in child'),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect($(#someKey).text, 'some datasome data in child');
+      },
+    );
+  });
+
   group('waitUntilExists', () {
     maestroTest(
       'throws exception when no widget is found within timeout',
@@ -219,6 +276,7 @@ void main() {
       expect($('count: 1'), findsOneWidget);
     });
   });
+
   group('enterText', () {
     maestroTest(
       'throws exception when no widget to enter text in is found',
