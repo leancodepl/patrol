@@ -4,7 +4,6 @@ class ServerLoop: XCTestCase {
   func testRunMaestroServer() throws {
     Logger.shared.i("Starting server loop...")
 
-    
     let maestroServer = try MaestroServer()
 
     do {

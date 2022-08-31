@@ -3,13 +3,13 @@ import EnvoyAmbassador
 
 class MaestroServer {
   private let envPortKey = "MAESTRO_PORT"
-  
+
   private let port: Int
 
   private let loop: EventLoop
-  
+
   private let startTime: String
-  
+
   private let automation = MaestroAutomation()
 
   init() throws {
@@ -28,7 +28,7 @@ class MaestroServer {
       throw MaestroError.generic("Failed to create SelectorEventLoop")
     }
     self.loop = loop
-    
+
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "HH:mm:ss"
     startTime = dateFormatter.string(from: Date())
@@ -85,7 +85,7 @@ class MaestroServer {
     Logger.shared.i("Starting server...")
     let server = DefaultHTTPServer(eventLoop: loop, interface: "::", port: port, app: router)
     try server.start()
-    Logger.shared.i("Server started on http://\(automation.ipAddress!):\(port) (http://localhost:\(port))")
+    logServerStarted()
     loop.runForever()
     Logger.shared.i("Server stopped (loop finished)")
   }
@@ -94,5 +94,13 @@ class MaestroServer {
     Logger.shared.i("Stopping server...")
     loop.stop()
     Logger.shared.i("Server stopped")
+  }
+
+  func logServerStarted() {
+    if let ip = automation.ipAddress {
+      Logger.shared.i("Server started on http://\(ip):\(port) (http://localhost:\(port))")
+    } else {
+      Logger.shared.i("Server started on http://localhost:\(port)")
+    }
   }
 }
