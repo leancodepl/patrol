@@ -537,7 +537,39 @@ void main() {
       },
     );
 
-    maestroTest('scrolls  to non-existent and non-visible widget', ($) async {
+    maestroTest(
+      'scrolls to the first existing but not visible widget',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: LayoutBuilder(
+              builder: (_, constraints) {
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Text('top text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                      const Text('bottom text'),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+        expect($('top text').visible, true);
+        expect($('bottom text').visible, false);
+
+        await $('bottom text').scrollTo();
+
+        expect($('top text').visible, false);
+        expect($('bottom text').visible, true);
+      },
+    );
+
+    maestroTest('scrolls to non-existent and non-visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
           home: LayoutBuilder(
@@ -554,15 +586,12 @@ void main() {
         ),
       );
 
-      expect($('top text').exists, true);
       expect($('top text').visible, true);
-
-      expect($('bottom text').exists, false);
       expect($('bottom text').visible, false);
 
       await $('bottom text').scrollTo();
 
-      expect($('bottom text').exists, true);
+      expect($('top text').visible, false);
       expect($('bottom text').visible, true);
     });
   });
