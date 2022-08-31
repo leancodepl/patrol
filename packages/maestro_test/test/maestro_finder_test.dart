@@ -266,6 +266,50 @@ void main() {
       expect($('bottom text').visible, true);
     });
 
+    maestroTest(
+      'to existing but not visible widget in Scrollable appearing late',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: FutureBuilder(
+              future: Future<void>.delayed(const Duration(milliseconds: 300)),
+              builder: (context, snapshot) {
+                return LayoutBuilder(
+                  builder: (_, constraints) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight),
+                          const Text('bottom text'),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+
+        expect($('top text').exists, false);
+        expect($('top text').visible, false);
+
+        expect($('bottom text').exists, false);
+        expect($('bottom text').visible, false);
+
+        await $('top text').scrollTo();
+        await $('bottom text').scrollTo();
+
+        expect($('top text').visible, false);
+        expect($('bottom text').visible, true);
+      },
+    );
+
     maestroTest('to non-existent and non-visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(

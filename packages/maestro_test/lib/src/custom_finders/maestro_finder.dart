@@ -234,6 +234,9 @@ class MaestroFinder extends MatchFinder {
   /// Scrolls [scrollable] in its scrolling direction until this finders finds
   /// at least one visible widget.
   ///
+  /// It also ensures that [scrollable] is visible, by calling
+  /// [MaestroFinder.waitUntilVisible].
+  ///
   /// If [scrollable] is null, it defaults to the first found [Scrollable].
   ///
   /// See also:
@@ -244,11 +247,16 @@ class MaestroFinder extends MatchFinder {
     int maxScrolls = 200,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    scrollable ??= find.byType(Scrollable).first;
+    scrollable ??= find.byType(Scrollable);
+
+    final scrollableMaestroFinder = await MaestroFinder(
+      finder: scrollable,
+      tester: tester,
+    ).waitUntilVisible();
 
     final resolvedFinder = await tester.scrollUntilVisible(
       finder: finder,
-      scrollable: scrollable,
+      scrollable: scrollableMaestroFinder.first,
       delta: step,
       maxScrolls: maxScrolls,
       duration: duration,
