@@ -7,12 +7,12 @@ import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 
 class DevicesCommand extends Command<int> {
-  DevicesCommand(StatefulDisposeScope parentDisposeScope)
-      : _disposeScope = StatefulDisposeScope() {
-    _disposeScope.disposed(parentDisposeScope);
+  DevicesCommand(DisposeScope parentDisposeScope)
+      : _disposeScope = DisposeScope() {
+    _disposeScope.disposedBy(parentDisposeScope);
   }
 
-  final StatefulDisposeScope _disposeScope;
+  final DisposeScope _disposeScope;
 
   @override
   String get name => 'devices';
@@ -56,7 +56,7 @@ class DevicesCommand extends Command<int> {
     });
 
     var msg = '';
-    process.listenStdOut((line) => msg += line).disposed(_disposeScope);
+    process.listenStdOut((line) => msg += line).disposedBy(_disposeScope);
     exitCode = await process.exitCode;
     log.fine('exit code of `flutter devices`: $exitCode');
 
@@ -86,7 +86,7 @@ class DevicesCommand extends Command<int> {
 }
 
 @Deprecated('Cannot be disposed')
-Future<List<Device>> getDevices(StatefulDisposeScope disposeScope) async {
+Future<List<Device>> getDevices(DisposeScope disposeScope) async {
   int? exitCode;
   final process = await Process.start(
     'flutter',
@@ -106,7 +106,7 @@ Future<List<Device>> getDevices(StatefulDisposeScope disposeScope) async {
   });
 
   var msg = '';
-  process.listenStdOut((line) => msg += line).disposed(disposeScope);
+  process.listenStdOut((line) => msg += line).disposedBy(disposeScope);
   exitCode = await process.exitCode;
   log.fine('exit code of `flutter devices`: $exitCode');
 

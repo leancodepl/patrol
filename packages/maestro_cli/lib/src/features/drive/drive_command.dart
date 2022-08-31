@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
@@ -12,11 +13,11 @@ import 'package:maestro_cli/src/top_level_flags.dart';
 
 class DriveCommand extends Command<int> {
   DriveCommand(
-    StatefulDisposeScope parentDisposeScope,
+    DisposeScope parentDisposeScope,
     this._topLevelFlags,
     this._artifactsRepository,
-  ) : _disposeScope = StatefulDisposeScope() {
-    _disposeScope.disposed(parentDisposeScope);
+  ) : _disposeScope = DisposeScope() {
+    _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
       ..addOption(
@@ -60,7 +61,7 @@ class DriveCommand extends Command<int> {
       );
   }
 
-  final StatefulDisposeScope _disposeScope;
+  final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
   final TopLevelFlags _topLevelFlags;
 

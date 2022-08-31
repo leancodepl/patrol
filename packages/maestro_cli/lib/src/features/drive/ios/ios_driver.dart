@@ -11,15 +11,15 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart'
 
 class IOSDriver {
   IOSDriver(
-    StatefulDisposeScope parentDisposeScope,
+    DisposeScope parentDisposeScope,
     this._artifactsRepository,
-  ) : _disposeScope = StatefulDisposeScope() {
-    _disposeScope.disposed(parentDisposeScope);
+  ) : _disposeScope = DisposeScope() {
+    _disposeScope.disposedBy(parentDisposeScope);
   }
 
   final ArtifactsRepository _artifactsRepository;
 
-  final StatefulDisposeScope _disposeScope;
+  final DisposeScope _disposeScope;
 
   Future<void> run({
     required String driver,
@@ -90,11 +90,11 @@ class IOSDriver {
             completer.complete();
           }
         },
-      ).disposed(_disposeScope);
+      ).disposedBy(_disposeScope);
 
       process
           .listenStdErr((line) => log.warning('iproxy: $line'))
-          .disposed(_disposeScope);
+          .disposedBy(_disposeScope);
 
       await completer.future;
     } catch (err) {
@@ -179,7 +179,7 @@ class IOSDriver {
           completer.complete();
         }
       }
-    }).disposed(_disposeScope);
+    }).disposedBy(_disposeScope);
 
     process.listenStdErr((line) {
       log.severe(line);
@@ -188,7 +188,7 @@ class IOSDriver {
           'Test failed. See logs above. Also, consider running with --verbose.',
         );
       }
-    }).disposed(_disposeScope);
+    }).disposedBy(_disposeScope);
 
     await completer.future;
   }
