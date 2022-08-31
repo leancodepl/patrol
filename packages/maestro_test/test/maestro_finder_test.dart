@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart' show MaterialApp, Icons;
+import 'package:flutter/material.dart'
+    show CircularProgressIndicator, Icons, MaterialApp;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/custom_finders.dart';
@@ -194,6 +195,45 @@ void main() {
       expect($('some text').visible, true);
       expect($('some text').visible, true);
     });
+
+    maestroTest(
+      'to existing and visible widget in first Scrollable',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: LayoutBuilder(
+              builder: (_, constraints) {
+                return Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        children: const [Text('text 1')],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        children: const [Text('text 2')],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+
+        expect($('text 1').exists, true);
+        expect($('text 2').visible, true);
+
+        await $('text 1').scrollTo();
+        await $('text 2').scrollTo();
+
+        expect($('text 1').visible, true);
+        expect($('text 2').visible, true);
+      },
+    );
 
     maestroTest('to existing but not visible widget', ($) async {
       await $.pumpWidget(

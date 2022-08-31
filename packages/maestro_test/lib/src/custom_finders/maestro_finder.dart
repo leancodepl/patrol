@@ -244,7 +244,7 @@ class MaestroFinder extends MatchFinder {
     int maxScrolls = 200,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    scrollable ??= find.byType(Scrollable);
+    scrollable ??= find.byType(Scrollable).first;
 
     final resolvedFinder = await tester.scrollUntilVisible(
       finder: finder,
