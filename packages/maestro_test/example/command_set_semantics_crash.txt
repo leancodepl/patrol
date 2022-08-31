@@ -1,0 +1,111 @@
+$ maestro drive -t integration_test/noop_maestro_test.dart -v
+Verbose mode enabled. More logs will be printed.
+exit code of `flutter devices`: 0
+Successfully queried available devices
+No device specified, using the first one (emulator-5554)
+✓ Forwarded ports (25ms)
+✓ Installed server (0.3s)
+✓ Installed instrumentation (0.3s)
+Started native Android instrumentation
+Running integration_test/noop_maestro_test.dart with flutter_driver on emulator-5554...
+Could not find an option named "driver".
+
+Run 'flutter -h' (or 'flutter <command> -h') for available flutter commands and options.
+Exception: flutter_driver exited with code 64. See logs above.
+#0      FlutterDriver.run (package:maestro_cli/src/features/drive/flutter_driver.dart:98:7)
+<asynchronous suspension>
+#1      AndroidDriver.run (package:maestro_cli/src/features/drive/android/android_driver.dart:41:5)
+<asynchronous suspension>
+#2      DriveCommand.run (package:maestro_cli/src/features/drive/drive_command.dart:162:11)
+<asynchronous suspension>
+#3      CommandRunner.runCommand (package:args/command_runner.dart:209:13)
+<asynchronous suspension>
+#4      maestroCommandRunner (package:maestro_cli/src/command_runner.dart:31:16)
+<asynchronous suspension>
+#5      main (file:///Users/bartek/dev/leancode/maestro/packages/maestro_cli/bin/main.dart:6:20)
+<asynchronous suspension>
+
+Killed native Android instrumentation
+Uninstalled instrumentation package pl.leancode.automatorserver.test
+Uninstalled server package pl.leancode.automatorserver
+Stopped port forwarding
+bartek at Barteks-MacBook in example on feature/native_ios
+$ maestro drive -t integration_test/noop_maestro_test.dart -v                                                        exit 1
+Verbose mode enabled. More logs will be printed.
+exit code of `flutter devices`: 0
+Successfully queried available devices
+No device specified, using the first one (emulator-5554)
+✓ Forwarded ports (26ms)
+✓ Installed server (59ms)
+✓ Installed instrumentation (0.1s)
+Started native Android instrumentation
+Running integration_test/noop_maestro_test.dart with flutter_driver on emulator-5554...
+pl.leancode.automatorserver.ServerLoop:
+Running "flutter pub get" in example...
+1,697ms
+Running Gradle task 'assembleDebug'...
+9.6s
+✓  Built build/app/outputs/flutter-apk/app-debug.apk.
+Installing build/app/outputs/flutter-apk/app.apk...
+511ms
+Creating MaestroDriveHelper instance. Host: localhost, port: 8081
+status code: 200, response body: All is good.
+Maestro automation server is running, starting test drive
+VMServiceFlutterDriver: Connecting to Flutter application at http://127.0.0.1:60867/qbnGTMggIk8=/
+VMServiceFlutterDriver: Isolate found with number: 2671078699037391
+VMServiceFlutterDriver: Isolate is paused at start.
+VMServiceFlutterDriver: Attempting to resume isolate
+here 1!
+Maestro: creating Maestro, host: localhost, port: 8081, verbose: true
+here 2!
+00:00 +0: wait
+VMServiceFlutterDriver: Connected to Flutter application.
+before set semantics
+here 3
+Stopping Maestro automation server
+stopping instrumentation server...
+E/SurfaceSyncer( 5075): Failed to find sync for id=0
+instrumentation server stopped
+Unhandled exception:
+DriverError: Failed to fulfill SetSemantics due to remote error
+Original error: ext.flutter.driver: (-32000) Server error
+{"exception":"UnimplementedError: set_semantics is not implemented","stack":"#0      IOCallbackManager.callback (package:integration_test/_callback_io.dart:49:9)\n#1      IntegrationTestWidgetsFlutterBinding.callback (package:integration_test/integration_test.dart:211:28)\n#2      BindingBase.registerServiceExtension.<anonymous closure> (package:flutter/src/foundation/binding.dart:855:32)\n<asynchronous suspension>\n","method":"ext.flutter.driver"}
+Original stack trace:
+#0      new _OutstandingRequest (package:vm_service/src/vm_service.dart:1746:45)
+#1      VmService._call (package:vm_service/src/vm_service.dart:2262:21)
+#2      VmService.callServiceExtension (package:vm_service/src/vm_service.dart:2233:14)
+#3      VMServiceFlutterDriver.sendCommand (package:flutter_driver/src/driver/vmservice_driver.dart:306:66)
+#4      FlutterDriver.setSemantics (package:flutter_driver/src/driver/driver.dart:537:73)
+#5      integrationDriver (package:integration_test/integration_test_driver.dart:77:16)
+<asynchronous suspension>
+#6      main (file:///Users/bartek/dev/leancode/maestro/packages/maestro_test/example/test_driver/integration_test.dart:13:5)
+<asynchronous suspension>
+
+
+#0      VMServiceFlutterDriver.sendCommand (package:flutter_driver/src/driver/vmservice_driver.dart:318:7)
+<asynchronous suspension>
+#1      FlutterDriver.setSemantics (package:flutter_driver/src/driver/driver.dart:537:67)
+<asynchronous suspension>
+#2      integrationDriver (package:integration_test/integration_test_driver.dart:77:3)
+<asynchronous suspension>
+#3      main (file:///Users/bartek/dev/leancode/maestro/packages/maestro_test/example/test_driver/integration_test.dart:13:5)
+<asynchronous suspension>
+W/Parcel  ( 5075): Expecting binder but got null!
+Exception: flutter_driver exited with code 1. See logs above.
+#0      FlutterDriver.run (package:maestro_cli/src/features/drive/flutter_driver.dart:98:7)
+<asynchronous suspension>
+#1      AndroidDriver.run (package:maestro_cli/src/features/drive/android/android_driver.dart:41:5)
+<asynchronous suspension>
+#2      DriveCommand.run (package:maestro_cli/src/features/drive/drive_command.dart:162:11)
+<asynchronous suspension>
+#3      CommandRunner.runCommand (package:args/command_runner.dart:209:13)
+<asynchronous suspension>
+#4      maestroCommandRunner (package:maestro_cli/src/command_runner.dart:31:16)
+<asynchronous suspension>
+#5      main (file:///Users/bartek/dev/leancode/maestro/packages/maestro_cli/bin/main.dart:6:20)
+<asynchronous suspension>
+
+Killed native Android instrumentation
+Uninstalled instrumentation package pl.leancode.automatorserver.test
+Uninstalled server package pl.leancode.automatorserver
+Stopped port forwarding
