@@ -265,8 +265,8 @@ class MaestroFinder extends MatchFinder {
     return resolvedFinder;
   }
 
-  /// If the first widget resolved by this [MaestroFinder] matches a [Text]
-  /// widget, then this method returns its data.
+  /// If the first widget found by this finder is a [Text] or [RichText] widget,
+  /// then this method returns its data.
   ///
   /// If you want to make sure that that widget is visible, first use
   /// [waitUntilVisible] method:
@@ -283,14 +283,18 @@ class MaestroFinder extends MatchFinder {
 
     final firstWidget = elements.first.widget;
 
-    if (firstWidget is! Text) {
-      throw Exception(
-        'The first ${firstWidget.runtimeType} widget resolved by this finder '
-        'is not a Text widget',
-      );
+    if (firstWidget is Text) {
+      return firstWidget.data;
     }
 
-    return firstWidget.data;
+    if (firstWidget is RichText) {
+      return (firstWidget.text as TextSpan).text;
+    }
+
+    throw Exception(
+      'The first ${firstWidget.runtimeType} widget resolved by this finder '
+      'is not a Text or RichText widget',
+    );
   }
 
   /// Shorthand for [MaestroFinder.resolve].
