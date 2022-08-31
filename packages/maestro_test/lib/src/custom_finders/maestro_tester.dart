@@ -174,8 +174,14 @@ class MaestroTester {
   /// Between each drag, advances the clock by [duration].
   ///
   /// This is a reimplementation of [WidgetController.dragUntilVisible] that
-  /// actually scrolls until [finder] finds at least one *visible* widget, not
-  /// *existing* widget.
+  /// differs from the original in the following ways:
+  ///
+  ///  * actually scrolls until [finder] finds at least one *visible* widget,
+  ///    not an *existing* widget.
+  ///
+  ///  * uses [WidgetController.firstElement] instead of
+  ///    [WidgetController.element], which avoids [StateError] being thrown in
+  ///    situations when [finder] finds more than 1 visible widget
   Future<MaestroFinder> dragUntilVisible({
     required Finder finder,
     required Finder view,
@@ -191,7 +197,7 @@ class MaestroTester {
         await tester.pump(duration);
         iterationsLeft -= 1;
       }
-      await Scrollable.ensureVisible(tester.element(finder));
+      await Scrollable.ensureVisible(tester.firstElement(finder));
 
       await performPump(
         andSettle: andSettle,
