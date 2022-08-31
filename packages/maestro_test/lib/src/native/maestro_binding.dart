@@ -8,6 +8,7 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   MaestroBinding() : super();
 
+  // Remove once https://github.com/flutter/flutter/pull/108430 is merged
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
