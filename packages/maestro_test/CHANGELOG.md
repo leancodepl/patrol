@@ -1,6 +1,10 @@
+## 0.5.1
+
+- Some fixes to the scrolling and dragging
+
 ## 0.5.0+1
 
-- Set minimum Dart version to 2.17
+- Set minimum Dart version to 2.17 (#224)
 
 ## 0.5.0
 
