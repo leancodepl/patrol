@@ -1,3 +1,9 @@
+## 0.5.2
+
+- Fix a problem with `StateError` being thrown when
+  MaestroTester.dragUntilVisible found more than 1 finder after dragging to it
+  (#228)
+
 ## 0.5.1
 
 - Some fixes to the scrolling and dragging
