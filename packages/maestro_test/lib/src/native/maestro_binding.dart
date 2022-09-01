@@ -29,6 +29,12 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   void initInstances() {
     super.initInstances();
     _instance = this;
+
+    /* platformDispatcher
+      ..semanticsEnabledTestValue = true
+      ..accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(
+        accessibleNavigation: true,
+      ); */
   }
 
   /// The singleton instance of this object.

@@ -37,6 +37,14 @@ class ExampleHomePage extends StatefulWidget {
 class _ExampleHomePageState extends State<ExampleHomePage> {
   var _counter = 0;
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print(
+      'accessibleNavigation: ${MediaQuery.of(context).accessibleNavigation}',
+    );
+  }
+
   void _incrementCounter([int value = 1]) {
     final newValue = _counter + value;
     setState(() {
