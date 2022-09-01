@@ -3,6 +3,7 @@ platform :ios, '15.0'
 use_frameworks!
 
 target 'AutomatorServerUITests' do
-  pod 'Embassy', '~> 4.1'
-  pod 'EnvoyAmbassador', '~> 4.0'
+  pod 'SwiftLocalhost'
+#  pod 'Embassy', '~> 4.1'
+#  pod 'EnvoyAmbassador', '~> 4.0'
 end

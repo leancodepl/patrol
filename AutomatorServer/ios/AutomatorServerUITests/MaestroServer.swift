@@ -1,12 +1,11 @@
-import Embassy
-import EnvoyAmbassador
+import SwiftLocalhost
 
 class MaestroServer {
   private let envPortKey = "MAESTRO_PORT"
 
   private let port: Int
 
-  private let loop: EventLoop
+  private let server: LocalhostServer
 
   private let startTime: String
 
@@ -21,13 +20,7 @@ class MaestroServer {
     }
     self.port = port
 
-    guard let kQueueSelector = try? KqueueSelector() else {
-      throw MaestroError.generic("Failed to create KqueueSelector")
-    }
-    guard let loop = try? SelectorEventLoop(selector: kQueueSelector) else {
-      throw MaestroError.generic("Failed to create SelectorEventLoop")
-    }
-    self.loop = loop
+    server = LocalhostServer(portNumber: UInt(port))
 
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "HH:mm:ss"
@@ -43,9 +36,20 @@ class MaestroServer {
     let method = environ["REQUEST_METHOD"]! as! String
     Logger.shared.i("\(method) \(pathInfo)")
 
-    let index = pathInfo.index(pathInfo.startIndex, offsetBy: 1)  // ugly Swift
-    let action = String(pathInfo[index...])
+    //let index = pathInfo.index(pathInfo.startIndex, offsetBy: 1)  // ugly Swift
+    //let action = String(pathInfo[index...])
+    
+    self.server.get("/", routeBlock: { request in
+        let httpUrlResponse = HTTPURLResponse(
+          url: URL(string: "http://localhost:\(self.port)/")!,
+          statusCode: 200,
+          httpVersion: nil,
+          headerFields: ["Content-Type":"application/json"]
+        )
+        return LocalhostServerResponse(httpUrlResponse: httpUrlResponse!, data: Data())
+    })
 
+    /*
     switch (method, action) {
     case ("GET", ""):
       startResponse("200 OK", [])
@@ -79,20 +83,17 @@ class MaestroServer {
       startResponse("404 Not Found", [])
       sendBody(Data())  // send EOF
     }
+    */
   }
 
   func start() throws {
     Logger.shared.i("Starting server...")
-    let server = DefaultHTTPServer(eventLoop: loop, interface: "::", port: port, app: router)
-    try server.start()
-    logServerStarted()
-    loop.runForever()
-    Logger.shared.i("Server stopped (loop finished)")
+    server.startListening()
   }
 
   func stop() {
     Logger.shared.i("Stopping server...")
-    loop.stop()
+    server.stopListening()
     Logger.shared.i("Server stopped")
   }
 
