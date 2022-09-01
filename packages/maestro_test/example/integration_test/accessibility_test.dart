@@ -8,7 +8,7 @@ Future<void> main() async {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'maestroTest works correctly with semantics',
+    'maestroTest works correctly with native semantics',
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
