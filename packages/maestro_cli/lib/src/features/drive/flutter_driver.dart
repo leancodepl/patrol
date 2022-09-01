@@ -136,10 +136,10 @@ class FlutterDriver {
     }
 
     return [
-      'test',
-      //'--driver',
-      //driver,
-      //'--target',
+      'drive',
+      '--driver',
+      driver,
+      '--target',
       target,
       if (device != null) ...[
         '--device-id',
