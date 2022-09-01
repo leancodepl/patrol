@@ -372,6 +372,10 @@ class MaestroServer {
         "disableBluetooth" bind POST to {
             MaestroAutomator.instance.disableBluetooth()
             Response(OK)
+        },
+        "handleLocationPermission" bind POST to {
+            MaestroAutomator.instance.handleLocationPermission()
+            Response(OK)
         }
     )
 

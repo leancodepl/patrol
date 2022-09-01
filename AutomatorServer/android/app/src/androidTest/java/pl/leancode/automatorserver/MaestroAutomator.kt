@@ -11,6 +11,11 @@ import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
+
+enum class PermissionLevel {
+    WHILE_USING, ONLY_THIS_TIME, DENIED
+}
+
 @Serializable
 data class Notification(
     val appName: String,
@@ -285,6 +290,22 @@ class MaestroAutomator {
         obj.click()
 
         delay()
+    }
+
+    fun handleLocationPermission(level: PermissionLevel) {
+        when (level) {
+            PermissionLevel.WHILE_USING -> {
+                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"))
+            }
+
+            PermissionLevel.ONLY_THIS_TIME -> {
+                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_one_time_button"))
+            }
+
+            PermissionLevel.DENIED -> {
+                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_deny_button"))
+            }
+        }
     }
 
     companion object {
