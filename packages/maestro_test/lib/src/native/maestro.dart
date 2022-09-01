@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:integration_test/integration_test.dart';
 import 'package:maestro_test/src/extensions.dart';
+import 'package:maestro_test/src/native/maestro_binding.dart';
 import 'package:maestro_test/src/native/models/models.dart';
 
 typedef _LoggerCallback = void Function(String);
@@ -26,7 +26,7 @@ class Maestro {
         port = const String.fromEnvironment('MAESTRO_PORT'),
         verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true' {
     _logger('creating Maestro, host: $host, port: $port, verbose: $verbose');
-    IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+    MaestroBinding.ensureInitialized();
   }
 
   final _LoggerCallback _logger;

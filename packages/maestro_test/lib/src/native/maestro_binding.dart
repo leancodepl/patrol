@@ -20,7 +20,6 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   void initInstances() {
     super.initInstances();
     _instance = this;
-    print('semanticsEnabled: ${window.semanticsEnabled}');
   }
 
   /// The singleton instance of this object.
@@ -34,7 +33,6 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Returns an instance of the [MaestroBinding], creating and
   /// initializing it if necessary.
   static MaestroBinding ensureInitialized() {
-    print('MaestroBinding.ensureInitialized()');
     if (_instance == null) {
       MaestroBinding();
     }
