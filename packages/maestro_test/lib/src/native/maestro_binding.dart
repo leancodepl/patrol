@@ -8,6 +8,15 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   MaestroBinding() : super();
 
+  /// Returns an instance of the [MaestroBinding], creating and
+  /// initializing it if necessary.
+  factory MaestroBinding.ensureInitialized() {
+    if (_instance == null) {
+      MaestroBinding();
+    }
+    return _instance!;
+  }
+
   // Remove once https://github.com/flutter/flutter/pull/108430 is merged
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
@@ -29,13 +38,4 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   /// [MaestroBinding.ensureInitialized].
   static MaestroBinding get instance => BindingBase.checkInstance(_instance);
   static MaestroBinding? _instance;
-
-  /// Returns an instance of the [MaestroBinding], creating and
-  /// initializing it if necessary.
-  static MaestroBinding ensureInitialized() {
-    if (_instance == null) {
-      MaestroBinding();
-    }
-    return _instance!;
-  }
 }
