@@ -13,11 +13,11 @@ Future<void> main() async {
     'wait',
     ($) async {
       print('here 3');
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidget(const ExampleApp());
       print('here 4');
 
-      final testBinding = $.tester.binding;
-      testBinding.window.platformDispatcher.semanticsEnabledTestValue = true;
+      //final testBinding = $.tester.binding;
+      //testBinding.window.platformDispatcher.semanticsEnabledTestValue = true;
 
       final nativeWidgets = await maestro.getNativeWidgets(
         Selector(contentDescriptionContains: 'screen'),
