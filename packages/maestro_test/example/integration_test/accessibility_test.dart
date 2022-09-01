@@ -16,36 +16,16 @@ Future<void> main() async {
 
       await $.pumpAndSettle();
 
-      late Selector selector;
-      late List<NativeWidget> nativeWidgets;
-
-      // Tap on "Accept cookies"
-      selector = Selector(text: 'Accept cookies');
-      nativeWidgets = await maestro.getNativeWidgets(selector);
-      while (nativeWidgets.isEmpty) {
-        $.log('no "Accept cookies" found, pumping again...');
-        await $.pump();
-        nativeWidgets = await maestro.getNativeWidgets(selector);
-      }
-      await maestro.tap(selector);
-      await $.pumpAndSettle();
-
-      // Tap on "Select items"
-      selector = Selector(text: 'Select items');
-
-      await maestro.tap(selector);
-      await $.pumpAndSettle();
-
-      // Tap on "Developer"
-      selector = Selector(text: 'Developer');
-      nativeWidgets = await maestro.getNativeWidgets(selector);
-      while (nativeWidgets.isEmpty) {
-        $.log('no "Developer" found, pumping again...');
-        await $.pump();
-        nativeWidgets = await maestro.getNativeWidgets(selector);
-      }
-      await maestro.tap(selector);
-      await $.pumpAndSettle();
+      await maestro.waitAndTap($, Selector(text: 'Accept cookies'));
+      await maestro.waitAndTap($, Selector(text: 'Select items'));
+      await maestro.waitAndTap($, Selector(text: 'Developer'));
+      await maestro.waitAndTap($, Selector(text: '1 item selected'));
+      await maestro.waitAndEnterTextByIndex(
+        $,
+        Selector(text: '1 item selected'),
+        text: 'test@leancode.pl',
+        index: 0,
+      );
 
       await Future<void>.delayed(const Duration(seconds: 10));
     },
@@ -53,7 +33,34 @@ Future<void> main() async {
   );
 }
 
-/* extension MaestroX on Maestro {
+extension MaestroX on Maestro {
+  Future<void> waitAndTap(MaestroTester $, Selector selector) async {
+    await waitUntilVisible($, selector);
+    await tap(selector);
+    await $.pumpAndSettle();
+  }
+
+  Future<void> waitAndEnterText(
+    MaestroTester $,
+    Selector selector, {
+    required String text,
+  }) async {
+    await waitUntilVisible($, selector);
+    await enterText(selector, text: text);
+    await $.pumpAndSettle();
+  }
+
+  Future<void> waitAndEnterTextByIndex(
+    MaestroTester $,
+    Selector selector, {
+    required String text,
+    required int index,
+  }) async {
+    await waitUntilVisible($, selector);
+    await enterTextByIndex(text, index: index);
+    await $.pumpAndSettle();
+  }
+
   Future<void> waitUntilVisible(MaestroTester $, Selector selector) async {
     var nativeWidgets = await getNativeWidgets(selector);
     while (nativeWidgets.isEmpty) {
@@ -64,4 +71,3 @@ Future<void> main() async {
     await $.pump();
   }
 }
- */
