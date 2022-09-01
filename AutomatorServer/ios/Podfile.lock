@@ -1,24 +1,21 @@
 PODS:
-  - CocoaAsyncSocket (7.6.5)
-  - Criollo (1.0.1):
-    - CocoaAsyncSocket (~> 7.6.4)
-  - SwiftLocalhost (0.0.8):
-    - Criollo
+  - Embassy (4.1.1)
+  - EnvoyAmbassador (4.0.5):
+    - Embassy (~> 4.0)
 
 DEPENDENCIES:
-  - SwiftLocalhost
+  - Embassy (~> 4.1)
+  - EnvoyAmbassador (~> 4.0)
 
 SPEC REPOS:
   trunk:
-    - CocoaAsyncSocket
-    - Criollo
-    - SwiftLocalhost
+    - Embassy
+    - EnvoyAmbassador
 
 SPEC CHECKSUMS:
-  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  Criollo: 8122c5dbdf7dcf590e0d6b5d9e75e2073cd6234d
-  SwiftLocalhost: 78ad6ca707ef2162aa9ab29407321226d44f5027
+  Embassy: eb36dc783ea20b792426461bbaff8c3f256e0331
+  EnvoyAmbassador: 21cef10e70d003801c68ba5281948684a4e25486
 
-PODFILE CHECKSUM: 3f5db3d5a99dab813790a215247ce851980b4b58
+PODFILE CHECKSUM: 56320fbed890b2e8f4cca12aecc7051ecbb5d820
 
 COCOAPODS: 1.11.3
