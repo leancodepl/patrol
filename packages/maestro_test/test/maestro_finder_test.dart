@@ -520,6 +520,42 @@ void main() {
       },
     );
 
+/*     maestroTest(
+      'scrolls to existing and visible widget in the first Scrollable when many widgets',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: LayoutBuilder(
+              builder: (_, constraints) {
+                return Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        children: const [Text('text 1')],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        children: const [Text('text 1')],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+
+        expect($(Column).$('text 1').visible, true);
+
+        await $('text 1').scrollTo();
+
+        expect($('text 1').visible, true);
+      },
+    ); */
+
     maestroTest('scrolls to existing but not visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(

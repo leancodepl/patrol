@@ -15,6 +15,7 @@ void main() {
             view: find.byType(Scrollable),
             moveStep: const Offset(0, 16),
           ),
+          // because it was waiting for a Scrollable to appear
           throwsA(isA<WaitUntilVisibleTimedOutException>()),
         );
       },
@@ -45,14 +46,10 @@ void main() {
     maestroTest('drags to existing and visible widget', ($) async {
       await $.pumpWidget(
         MaterialApp(
-          home: LayoutBuilder(
-            builder: (_, constraints) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: const [Text('some text')],
-                ),
-              );
-            },
+          home: SingleChildScrollView(
+            child: Column(
+              children: const [Text('some text')],
+            ),
           ),
         ),
       );
@@ -60,7 +57,7 @@ void main() {
       expect($('some text').exists, true);
       expect($('some text').visible, true);
 
-      await $.dragUntilVisible(
+      await $.dragUntilExists(
         finder: find.text('some text'),
         view: find.byType(Scrollable),
         moveStep: const Offset(0, 16),
@@ -69,53 +66,81 @@ void main() {
       expect($('some text').visible, true);
       expect($('some text').visible, true);
     });
-  });
 
-  maestroTest(
-    'drags to existing and visible widget in the first Scrollable',
-    ($) async {
-      await $.pumpWidget(
-        MaterialApp(
-          home: LayoutBuilder(
-            builder: (_, constraints) {
-              return Column(
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: const [Text('text 1')],
-                    ),
+    maestroTest(
+      'drags to existing and visible widget in the first Scrollable',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: const [Text('text 1')],
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: const [Text('text 2')],
-                    ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: const [Text('text 2')],
                   ),
-                ],
-              );
-            },
+                ),
+              ],
+            ),
           ),
-        ),
-      );
+        );
 
-      expect($('text 1').exists, true);
-      expect($('text 2').visible, true);
+        expect($('text 1').visible, true);
+        expect($('text 2').visible, true);
 
-      await $.dragUntilVisible(
-        finder: find.text('text 1'),
-        view: find.byType(Scrollable),
-        moveStep: const Offset(0, 16),
-      );
+        await $.dragUntilExists(
+          finder: find.text('text 1'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
 
-      await $.dragUntilVisible(
-        finder: find.text('text 2'),
-        view: find.byType(Scrollable),
-        moveStep: const Offset(0, 16),
-      );
+        expect($('text 1').visible, true);
+        expect($('text 2').visible, true);
 
-      expect($('text 1').visible, true);
-      expect($('text 2').visible, true);
-    },
-  );
+        await $.dragUntilExists(
+          finder: find.text('text 2'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        expect($('text 1').visible, true);
+        expect($('text 2').visible, true);
+      },
+    );
+
+    maestroTest(
+      'drags to the first existing widget in the first Scrollable',
+      ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Column(
+                children: const [
+                  Text('text 1'),
+                  Text('text 1'),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect($('text 1').visible, true);
+
+        await $.dragUntilExists(
+          finder: find.text('text 1'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        expect($('text 1').visible, true);
+      },
+    );
+  });
 }

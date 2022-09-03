@@ -237,8 +237,6 @@ class MaestroFinder extends MatchFinder {
   /// It also ensures that [scrollable] is visible, by calling
   /// [MaestroFinder.waitUntilVisible].
   ///
-  /// If [scrollable] is null, it defaults to the first found [Scrollable].
-  ///
   /// See also:
   ///  - [MaestroTester.scrollUntilVisible], which this method wraps
   Future<MaestroFinder> scrollTo({
@@ -247,22 +245,13 @@ class MaestroFinder extends MatchFinder {
     int maxScrolls = 200,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    scrollable ??= find.byType(Scrollable);
-
-    final scrollableMaestroFinder = await MaestroFinder(
-      finder: scrollable,
-      tester: tester,
-    ).waitUntilVisible();
-
-    final resolvedFinder = await tester.scrollUntilVisible(
+    return tester.scrollUntilVisible(
       finder: finder,
-      scrollable: scrollableMaestroFinder.first,
+      scrollable: scrollable,
       delta: step,
       maxScrolls: maxScrolls,
       duration: duration,
     );
-
-    return resolvedFinder;
   }
 
   /// If the first widget found by this finder is a [Text] or [RichText] widget,

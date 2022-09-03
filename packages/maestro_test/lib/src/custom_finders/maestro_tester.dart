@@ -137,10 +137,19 @@ class MaestroTester {
   /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
   /// false.
   ///
+  /// This is a reimplementation of [WidgetController.dragUntilVisible] that
+  /// differs from the original in the following ways:
+  ///
+  ///  * has a better name
+  ///
+  ///  * waits until [view] is visible
+  ///
+  ///  * uses [WidgetController.firstElement] instead of
+  ///    [WidgetController.element], which avoids [StateError] being thrown in
+  ///    situations when [finder] finds more than 1 visible widget
+  ///
   /// See also:
-  ///  - [WidgetController.dragUntilVisible], which this method wraps and gives
-  ///    it a better name
-  ///  - [MaestroTester.config.andSettle], which controls the default behavior
+  ///  * [MaestroTester.config.andSettle], which controls the default behavior
   ///    if [andSettle] is null
   Future<MaestroFinder> dragUntilExists({
     required Finder finder,
@@ -152,13 +161,25 @@ class MaestroTester {
   }) async {
     final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
 
-    await tester.dragUntilVisible(
+    await viewMaestroFinder.waitUntilVisible();
+
+    var iterationsLeft = maxIteration;
+    await TestAsyncUtils.guard<void>(() async {
+      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+        await tester.drag(view, moveStep);
+        await tester.pump(duration);
+        iterationsLeft -= 1;
+      }
+      await Scrollable.ensureVisible(tester.firstElement(finder));
+    });
+
+    /* await tester.dragUntilVisible(
       finder,
       (await viewMaestroFinder.waitUntilVisible()).first,
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
-    );
+    ); */
 
     await performPump(
       andSettle: andSettle,
@@ -246,9 +267,14 @@ class MaestroTester {
     double delta = 32,
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
-  }) {
+  }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
+
+    final scrollableMaestroFinder = await MaestroFinder(
+      finder: scrollable,
+      tester: this,
+    ).waitUntilVisible();
 
     return TestAsyncUtils.guard<MaestroFinder>(() async {
       Offset moveStep;
@@ -269,7 +295,7 @@ class MaestroTester {
 
       final resolvedFinder = await dragUntilVisible(
         finder: finder,
-        view: scrollable,
+        view: scrollableMaestroFinder.first,
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
