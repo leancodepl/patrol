@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/custom_finders.dart';
@@ -68,6 +70,18 @@ void main() {
         expect(tester('count: 1'), findsOneWidget);
       },
     );
+
+    maestroTest('is guarded', (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: Text('Tap')));
+
+      expect(
+        () {
+          unawaited(tester.tap(find.text('Tap')));
+          unawaited(tester.tap(find.text('Tap')));
+        },
+        throwsAssertionError,
+      );
+    });
   });
 
   group('enterText', () {
@@ -180,6 +194,20 @@ void main() {
         expect($('You entered: some text'), findsOneWidget);
       },
     );
+
+    maestroTest('is guarded', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: TextField())),
+      );
+
+      expect(
+        () {
+          unawaited(tester.enterText(find.byType(TextField), 'some text'));
+          unawaited(tester.enterText(find.byType(TextField), 'some text'));
+        },
+        throwsAssertionError,
+      );
+    });
   });
 
   group('dragUntilExists', () {
