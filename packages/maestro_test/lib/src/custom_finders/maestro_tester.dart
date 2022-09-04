@@ -358,6 +358,7 @@ class MaestroTester {
         await tester.drag(view, moveStep);
         await tester.pump(duration);
         iterationsLeft -= 1;
+        // print('iterationsLeft: $iterationsLeft');
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 

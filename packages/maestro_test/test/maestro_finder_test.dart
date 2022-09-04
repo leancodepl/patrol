@@ -471,12 +471,10 @@ void main() {
           ),
         );
 
-        expect($('some text').exists, true);
         expect($('some text').visible, true);
 
         await $('some text').scrollTo();
 
-        expect($('some text').visible, true);
         expect($('some text').visible, true);
       });
 
@@ -508,7 +506,7 @@ void main() {
             ),
           );
 
-          expect($('text 1').exists, true);
+          expect($('text 1').visible, true);
           expect($('text 2').visible, true);
 
           await $('text 1').scrollTo();
@@ -519,41 +517,38 @@ void main() {
         },
       );
 
-/*     maestroTest(
-      'scrolls to existing and visible widget in the first Scrollable when many widgets',
-      ($) async {
-        await $.pumpWidget(
-          MaterialApp(
-            home: LayoutBuilder(
-              builder: (_, constraints) {
-                return Column(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Column(
-                        children: const [Text('text 1')],
+      maestroTest(
+        'scrolls to existing and visible widget in the first Scrollable when '
+        'many same widgets are present',
+        ($) async {
+          await $.pumpWidget(
+            MaterialApp(
+              home: LayoutBuilder(
+                builder: (_, constraints) {
+                  return Column(
+                    children: const [
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text('text 1'),
                       ),
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Column(
-                        children: const [Text('text 1')],
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text('text 1'),
                       ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        );
+          );
 
-        expect($(Column).$('text 1').visible, true);
+          expect($(Column).$('text 1').visible, true);
 
-        await $('text 1').scrollTo();
+          await $('text 1').scrollTo();
 
-        expect($('text 1').visible, true);
-      },
-    ); */
+          expect($('text 1').visible, true);
+        },
+      );
 
       maestroTest('scrolls to existing but not visible widget', ($) async {
         await $.pumpWidget(
@@ -574,7 +569,6 @@ void main() {
           ),
         );
 
-        expect($('top text').exists, true);
         expect($('top text').visible, true);
 
         expect($('bottom text').exists, true);
@@ -617,10 +611,7 @@ void main() {
           );
 
           expect($('top text').exists, false);
-          expect($('top text').visible, false);
-
           expect($('bottom text').exists, false);
-          expect($('bottom text').visible, false);
 
           await $('top text').scrollTo();
           await $('bottom text').scrollTo();
