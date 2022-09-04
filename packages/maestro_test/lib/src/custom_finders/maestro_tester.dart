@@ -224,23 +224,25 @@ class MaestroTester {
   Future<MaestroFinder> waitUntilExists(
     MaestroFinder finder, {
     Duration? timeout,
-  }) async {
-    timeout ??= config.existsTimeout;
-    final end = tester.binding.clock.now().add(timeout);
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final duration = timeout ?? config.existsTimeout;
+      final end = tester.binding.clock.now().add(duration);
 
-    while (finder.evaluate().isEmpty) {
-      final now = tester.binding.clock.now();
-      if (now.isAfter(end)) {
-        throw WaitUntilExistsTimedOutException(
-          finder: finder,
-          duration: timeout,
-        );
+      while (finder.evaluate().isEmpty) {
+        final now = tester.binding.clock.now();
+        if (now.isAfter(end)) {
+          throw WaitUntilExistsTimedOutException(
+            finder: finder,
+            duration: duration,
+          );
+        }
+
+        await tester.pump(const Duration(milliseconds: 100));
       }
 
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-
-    return finder;
+      return finder;
+    });
   }
 
   /// Waits until [finder] finds at least one visible widget.
@@ -253,23 +255,25 @@ class MaestroTester {
   Future<MaestroFinder> waitUntilVisible(
     Finder finder, {
     Duration? timeout,
-  }) async {
-    timeout ??= config.visibleTimeout;
-    final end = tester.binding.clock.now().add(timeout);
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final duration = timeout ?? config.visibleTimeout;
+      final end = tester.binding.clock.now().add(duration);
 
-    while (finder.hitTestable().evaluate().isEmpty) {
-      final now = tester.binding.clock.now();
-      if (now.isAfter(end)) {
-        throw WaitUntilVisibleTimedOutException(
-          finder: finder,
-          duration: timeout,
-        );
+      while (finder.hitTestable().evaluate().isEmpty) {
+        final now = tester.binding.clock.now();
+        if (now.isAfter(end)) {
+          throw WaitUntilVisibleTimedOutException(
+            finder: finder,
+            duration: duration,
+          );
+        }
+
+        await tester.pump(const Duration(milliseconds: 100));
       }
 
-      await tester.pump(const Duration(milliseconds: 100));
-    }
-
-    return MaestroFinder(finder: finder, tester: this);
+      return MaestroFinder(finder: finder, tester: this);
+    });
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
@@ -303,27 +307,29 @@ class MaestroTester {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
-  }) async {
-    final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
 
-    await viewMaestroFinder.waitUntilVisible();
+      await viewMaestroFinder.waitUntilVisible();
 
-    var iterationsLeft = maxIteration;
-    await TestAsyncUtils.guard<void>(() async {
-      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-        await tester.drag(view, moveStep);
-        await tester.pump(duration);
-        iterationsLeft -= 1;
-      }
-      await Scrollable.ensureVisible(tester.firstElement(finder));
+      var iterationsLeft = maxIteration;
+      await TestAsyncUtils.guard<void>(() async {
+        while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+          await tester.drag(view, moveStep);
+          await tester.pump(duration);
+          iterationsLeft -= 1;
+        }
+        await Scrollable.ensureVisible(tester.firstElement(finder));
+      });
+
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: config.settleTimeout,
+      );
+
+      return MaestroFinder(finder: finder.first, tester: this);
     });
-
-    await _performPump(
-      andSettle: andSettle,
-      settleTimeout: config.settleTimeout,
-    );
-
-    return MaestroFinder(finder: finder.first, tester: this);
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
@@ -347,23 +353,25 @@ class MaestroTester {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
-  }) async {
-    await TestAsyncUtils.guard<void>(() async {
-      var iterationsLeft = maxIteration;
-      while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-        await tester.drag(view, moveStep);
-        await tester.pump(duration);
-        iterationsLeft -= 1;
-      }
-      await Scrollable.ensureVisible(tester.firstElement(finder));
+  }) {
+    return TestAsyncUtils.guard(() async {
+      await TestAsyncUtils.guard<void>(() async {
+        var iterationsLeft = maxIteration;
+        while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
+          await tester.drag(view, moveStep);
+          await tester.pump(duration);
+          iterationsLeft -= 1;
+        }
+        await Scrollable.ensureVisible(tester.firstElement(finder));
 
-      await _performPump(
-        andSettle: andSettle,
-        settleTimeout: config.settleTimeout,
-      );
+        await _performPump(
+          andSettle: andSettle,
+          settleTimeout: config.settleTimeout,
+        );
+      });
+
+      return MaestroFinder(finder: finder.first, tester: this);
     });
-
-    return MaestroFinder(finder: finder.first, tester: this);
   }
 
   /// Scrolls [scrollable] in its scrolling direction until this finders finds
