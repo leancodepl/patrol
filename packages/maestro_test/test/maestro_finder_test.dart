@@ -662,7 +662,7 @@ void main() {
         },
       );
 
-      maestroTest('scrolls to non-existent and non-visible widget', ($) async {
+      maestroTest('scrolls to non-existent and not visible widget', ($) async {
         await $.pumpWidget(
           MaterialApp(
             home: LayoutBuilder(
