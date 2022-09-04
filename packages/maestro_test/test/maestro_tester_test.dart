@@ -3,7 +3,185 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/custom_finders.dart';
 
 void main() {
-  
+  group('tap', () {
+    maestroTest(
+      'throws exception when no widget to tap on is found',
+      (tester) async {
+        await tester.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          () => tester.tap(find.text('some text')),
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest('taps on widget and pumps', (tester) async {
+      var count = 0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (state, setState) => Column(
+              children: [
+                Text('count: $count'),
+                GestureDetector(
+                  onTap: () => setState(() => count++),
+                  child: const Text('Tap'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Tap'));
+
+      expect(tester('count: 1'), findsOneWidget);
+    });
+
+    maestroTest(
+      'taps on the first widget by default and pumps',
+      (tester) async {
+        var count = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: StatefulBuilder(
+              builder: (state, setState) => Column(
+                children: [
+                  Text('count: $count'),
+                  GestureDetector(
+                    onTap: () => setState(() => count++),
+                    child: const Text('Tap'),
+                  ),
+                  GestureDetector(
+                    onTap: () {},
+                    child: const Text('Tap'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        await tester.tap(find.text('Tap'));
+        expect(tester('count: 1'), findsOneWidget);
+      },
+    );
+  });
+
+  group('enterText', () {
+    maestroTest(
+      'throws exception when no widget to enter text in is found',
+      (tester) async {
+        await tester.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          () => tester.enterText(find.text('some text'), 'some text'),
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest(
+      'throws StateError when widget is not EditableText',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Text('not a TextField')),
+        );
+
+        await expectLater(
+          tester.enterText(find.text('not a TextField'), 'some text'),
+          throwsStateError,
+        );
+      },
+    );
+
+    maestroTest(
+      'enters text when the target widget has EditableText descendant',
+      ($) async {
+        var content = '';
+        await $.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  key: const Key('columnKey'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('You entered: $content'),
+                    TextField(
+                      onChanged: (newValue) {
+                        setState(() => content = newValue);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await $(#columnKey).enterText('some input');
+        expect($('You entered: some input'), findsOneWidget);
+      },
+    );
+
+    maestroTest('enters text in widget and pumps', ($) async {
+      var content = '';
+      await $.pumpWidgetAndSettle(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (state, setState) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('You entered: $content'),
+                  TextField(
+                    onChanged: (newValue) => setState(() => content = newValue),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await $(TextField).enterText('some input');
+      expect($('You entered: some input'), findsOneWidget);
+    });
+
+    maestroTest(
+      'enters text in the first widget by default and pumps',
+      ($) async {
+        var content = '';
+        await $.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  children: [
+                    Text('You entered: $content'),
+                    TextField(
+                      onChanged: (newValue) =>
+                          setState(() => content = newValue),
+                    ),
+                    TextField(
+                      onChanged: (_) {},
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await $(TextField).enterText('some text');
+        expect($('You entered: some text'), findsOneWidget);
+      },
+    );
+  });
+
   group('dragUntilExists', () {
     maestroTest(
       'throws exception when no Scrollable is found within timeout',

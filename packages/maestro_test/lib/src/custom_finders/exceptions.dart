@@ -2,23 +2,22 @@ import 'dart:async';
 
 import 'package:maestro_test/maestro_test.dart';
 
-/// Thrown when some [MaestroFinder]'s action fails to complete within the
-/// allowed time.
-class MaestroFinderTimeoutException extends TimeoutException {
-  /// Creates a new [MaestroFinderTimeoutException].
-  MaestroFinderTimeoutException({
+/// Thrown when some Maestro method fails to complete within the allowed time.
+class MaestroTimeoutException extends TimeoutException {
+  /// Creates a new [MaestroTimeoutException].
+  MaestroTimeoutException({
     required this.finder,
     required String message,
     required Duration duration,
   }) : super(message, duration);
 
   /// Finder which caused the exception.
-  final MaestroFinder finder;
+  final Finder finder;
 }
 
 /// Thrown when [MaestroFinder] did not find anything in the allowed time and
 /// timed out.
-class WaitUntilExistsTimedOutException extends MaestroFinderTimeoutException {
+class WaitUntilExistsTimedOutException extends MaestroTimeoutException {
   /// Creates a new [WaitUntilExistsTimedOutException] with [finder] which did
   /// not find any widget and timed out.
   WaitUntilExistsTimedOutException({
@@ -31,7 +30,7 @@ class WaitUntilExistsTimedOutException extends MaestroFinderTimeoutException {
 
 /// Indicates that [MaestroFinder] did not find anything in the allowed time and
 /// timed out.
-class WaitUntilVisibleTimedOutException extends MaestroFinderTimeoutException {
+class WaitUntilVisibleTimedOutException extends MaestroTimeoutException {
   /// Creates a new [WaitUntilVisibleTimedOutException] with [finder] which did
   /// not find any visible widget and timed out.
   WaitUntilVisibleTimedOutException({

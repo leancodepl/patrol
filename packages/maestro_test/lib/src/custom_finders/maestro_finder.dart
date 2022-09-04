@@ -120,6 +120,7 @@ class MaestroFinder extends MatchFinder {
   /// Usually, you won't use this constructor directly. Instead, you'll use the
   /// [MaestroTester] (which is provided by [MaestroTesterCallback] in
   /// [maestroTest]) and [MaestroFinder.$].
+  @internal
   MaestroFinder({required this.finder, required this.tester});
 
   /// Returns a [MaestroFinder] that looks for [matching] in descendants of

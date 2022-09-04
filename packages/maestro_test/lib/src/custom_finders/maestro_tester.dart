@@ -152,7 +152,7 @@ class MaestroTester {
   ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap(
-    MaestroFinder finder, {
+    Finder finder, {
     bool? andSettle,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -194,7 +194,7 @@ class MaestroTester {
   ///    to appear
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
-    MaestroFinder finder,
+    Finder finder,
     String text, {
     bool? andSettle,
     Duration? visibleTimeout,
@@ -247,7 +247,7 @@ class MaestroTester {
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<MaestroFinder> waitUntilVisible(
-    MaestroFinder finder, {
+    Finder finder, {
     Duration? timeout,
   }) async {
     timeout ??= config.visibleTimeout;
@@ -265,7 +265,7 @@ class MaestroTester {
       await tester.pump(const Duration(milliseconds: 100));
     }
 
-    return finder;
+    return MaestroFinder(finder: finder, tester: this);
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
