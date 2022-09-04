@@ -543,8 +543,21 @@ void main() {
           );
 
           expect($(Column).$('text 1').visible, true);
+          final sp1 = $.tester
+              .firstWidget<Scrollable>(find.byType(Scrollable))
+              .controller
+              ?.position
+              .pixels;
+          print('scroll pos 1: $sp1');
 
           await $('text 1').scrollTo();
+
+          final sp2 = $.tester
+              .firstWidget<Scrollable>(find.byType(Scrollable))
+              .controller
+              ?.position
+              .pixels;
+          print('scroll pos 2: $sp2');
 
           expect($('text 1').visible, true);
         },
@@ -569,12 +582,26 @@ void main() {
           ),
         );
 
+        final sp1 = $.tester
+            .firstWidget<Scrollable>(find.byType(Scrollable))
+            .controller
+            ?.position
+            .pixels;
+        print('scroll pos 1: $sp1');
+
         expect($('top text').visible, true);
 
         expect($('bottom text').exists, true);
         expect($('bottom text').visible, false);
 
         await $('bottom text').scrollTo();
+
+        final sp2 = $.tester
+            .firstWidget<Scrollable>(find.byType(Scrollable))
+            .controller
+            ?.position
+            .pixels;
+        print('scroll pos 2: $sp2');
 
         expect($('top text').visible, false);
         expect($('bottom text').visible, true);
