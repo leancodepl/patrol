@@ -156,16 +156,18 @@ class MaestroTester {
     bool? andSettle,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    final resolvedFinder = await waitUntilVisible(
-      finder,
-      timeout: visibleTimeout,
-    );
-    await tester.tap(resolvedFinder.first);
-    await _performPump(
-      andSettle: andSettle,
-      settleTimeout: settleTimeout,
-    );
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final resolvedFinder = await waitUntilVisible(
+        finder,
+        timeout: visibleTimeout,
+      );
+      await tester.tap(resolvedFinder.first);
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: settleTimeout,
+      );
+    });
   }
 
   /// Waits until [finder] finds at least 1 visible widget and then enters text
@@ -199,16 +201,18 @@ class MaestroTester {
     bool? andSettle,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    final resolvedFinder = await waitUntilVisible(
-      finder,
-      timeout: visibleTimeout,
-    );
-    await tester.enterText(resolvedFinder.first, text);
-    await _performPump(
-      andSettle: andSettle,
-      settleTimeout: settleTimeout,
-    );
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final resolvedFinder = await waitUntilVisible(
+        finder,
+        timeout: visibleTimeout,
+      );
+      await tester.enterText(resolvedFinder.first, text);
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: settleTimeout,
+      );
+    });
   }
 
   /// Waits until this finder finds at least one widget.

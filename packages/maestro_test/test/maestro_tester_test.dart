@@ -91,7 +91,7 @@ void main() {
         );
 
         await expectLater(
-          tester.enterText(find.text('not a TextField'), 'some text'),
+          () => tester.enterText(find.text('not a TextField'), 'some text'),
           throwsStateError,
         );
       },

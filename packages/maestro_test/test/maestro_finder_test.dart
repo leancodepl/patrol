@@ -300,7 +300,7 @@ void main() {
         );
 
         await expectLater(
-          $('not a TextField').enterText('some text'),
+          () => $('not a TextField').enterText('some text'),
           throwsStateError,
         );
       },
