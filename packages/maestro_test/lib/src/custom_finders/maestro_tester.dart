@@ -352,13 +352,14 @@ class MaestroTester {
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) {
+    print('MaestroTester.dragUntilVisible');
     return TestAsyncUtils.guard(() async {
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
         await tester.drag(view, moveStep);
         await tester.pump(duration);
         iterationsLeft -= 1;
-        // print('iterationsLeft: $iterationsLeft');
+        print('iterationsLeft: $iterationsLeft');
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
@@ -379,20 +380,50 @@ class MaestroTester {
   /// See also:
   ///  - [MaestroTester.scrollUntilVisible], which this method wraps and gives
   ///    it a better name
-  Future<void> scrollUntilExists({
+  Future<MaestroFinder> scrollUntilExists({
     required Finder finder,
     Finder? scrollable,
     double delta = 32,
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    await tester.scrollUntilVisible(
-      finder,
-      delta,
-      scrollable: scrollable,
-      maxScrolls: maxScrolls,
-      duration: duration,
-    );
+    print('MaestroFinder.scrollUntilExists()');
+
+    assert(maxScrolls > 0, 'maxScrolls must be positive number');
+    scrollable ??= find.byType(Scrollable);
+
+    final scrollableMaestroFinder = await MaestroFinder(
+      finder: scrollable,
+      tester: this,
+    ).waitUntilVisible();
+
+    return TestAsyncUtils.guard<MaestroFinder>(() async {
+      Offset moveStep;
+      switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
+        case AxisDirection.up:
+          moveStep = Offset(0, delta);
+          break;
+        case AxisDirection.down:
+          moveStep = Offset(0, -delta);
+          break;
+        case AxisDirection.left:
+          moveStep = Offset(delta, 0);
+          break;
+        case AxisDirection.right:
+          moveStep = Offset(-delta, 0);
+          break;
+      }
+
+      final resolvedFinder = await dragUntilExists(
+        finder: finder,
+        view: scrollableMaestroFinder.first,
+        moveStep: moveStep,
+        maxIteration: maxScrolls,
+        duration: duration,
+      );
+
+      return resolvedFinder;
+    });
   }
 
   /// Scrolls [scrollable] in its scrolling direction until this finders finds

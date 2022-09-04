@@ -248,7 +248,8 @@ class MaestroFinder extends MatchFinder {
     double step = 16,
     int maxScrolls = 200,
     Duration duration = const Duration(milliseconds: 50),
-  }) async {
+  }) {
+    print('MaestroFinder.scrollTo(): this:$this');
     return tester.scrollUntilVisible(
       finder: finder,
       scrollable: scrollable,
@@ -264,7 +265,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
-  Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
+  Future<MaestroFinder> waitUntilExists({Duration? timeout}) {
     return tester.waitUntilExists(this, timeout: timeout);
   }
 
@@ -275,7 +276,7 @@ class MaestroFinder extends MatchFinder {
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
-  Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
+  Future<MaestroFinder> waitUntilVisible({Duration? timeout}) {
     return tester.waitUntilVisible(this, timeout: timeout);
   }
 

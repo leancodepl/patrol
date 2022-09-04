@@ -526,12 +526,17 @@ void main() {
               home: LayoutBuilder(
                 builder: (_, constraints) {
                   return Column(
-                    children: const [
+                    children: [
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: Text('text 1'),
+                        child: Column(
+                          children: const [
+                            Text('text 1'),
+                            Text('text 1'),
+                          ],
+                        ),
                       ),
-                      SingleChildScrollView(
+                      const SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Text('text 1'),
                       ),

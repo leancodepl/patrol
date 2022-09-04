@@ -345,6 +345,106 @@ void main() {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Column(
+                    children: const [
+                      Text('text 1'),
+                      Text('text 1'),
+                    ],
+                  ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: const [Text('text 2')],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(2));
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
+
+        await tester.dragUntilExists(
+          finder: find.text('text 1'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(2));
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
+
+        await tester.dragUntilExists(
+          finder: find.text('text 2'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(2));
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
+      },
+    );
+  });
+
+  group('scrollUntilExists', () {
+    maestroTest(
+      'throws exception when no Scrollable is found within timeout',
+      (tester) async {
+        await tester.pumpWidget(const MaterialApp());
+
+        await expectLater(
+          () => tester.scrollUntilExists(finder: find.text('some text')),
+          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+        );
+      },
+    );
+
+    maestroTest(
+      'throws StateError when no widget is found after reaching maxScrolls',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ListView(
+              children: const [Text('one'), Text('two')],
+            ),
+          ),
+        );
+
+        await expectLater(
+          () => tester.scrollUntilExists(finder: find.text('three')),
+          throwsStateError,
+        );
+      },
+    );
+
+    maestroTest('scrolls to existing and visible widget', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SingleChildScrollView(
+            child: Column(
+              children: const [Text('some text')],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('some text').hitTestable(), findsOneWidget);
+
+      await tester.scrollUntilExists(finder: find.text('some text'));
+
+      expect(find.text('some text').hitTestable(), findsOneWidget);
+    });
+
+    maestroTest(
+      'scrolls to existing and visible widget in the first Scrollable',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
                     children: const [Text('text 1')],
                   ),
                 ),
@@ -362,24 +462,176 @@ void main() {
         expect(find.text('text 1').hitTestable(), findsOneWidget);
         expect(find.text('text 2').hitTestable(), findsOneWidget);
 
-        await tester.dragUntilExists(
-          finder: find.text('text 1'),
-          view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
-        );
-
-        expect(find.text('text 1').hitTestable(), findsOneWidget);
-        expect(find.text('text 2').hitTestable(), findsOneWidget);
-
-        await tester.dragUntilExists(
-          finder: find.text('text 2'),
-          view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
-        );
+        await tester.scrollUntilExists(finder: find.text('text 1'));
+        await tester.scrollUntilExists(finder: find.text('text 2'));
 
         expect(find.text('text 1').hitTestable(), findsOneWidget);
         expect(find.text('text 2').hitTestable(), findsOneWidget);
       },
     );
+
+    maestroTest(
+      'scrolls to existing and visible widget in the first Scrollable when '
+      'many same widgets are present',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: const [
+                      Text('text 1'),
+                      Text('text 1'),
+                    ],
+                  ),
+                ),
+                const SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text('text 1'),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(3));
+
+        await tester.scrollUntilExists(finder: find.text('text 1'));
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(3));
+      },
+    );
+
+    maestroTest('scrolls to existing but not visible widget', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: LayoutBuilder(
+            builder: (_, constraints) {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const Text('top text'),
+                    SizedBox(height: constraints.maxHeight),
+                    const Text('bottom text'),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      );
+
+      expect(find.text('top text').hitTestable(), findsOneWidget);
+
+      expect(find.text('bottom text'), findsOneWidget);
+      expect(find.text('bottom text').hitTestable(), findsNothing);
+
+      await tester('bottom text').scrollTo();
+
+      expect(find.text('top text').hitTestable(), findsNothing);
+      expect(find.text('bottom text').hitTestable(), findsOneWidget);
+    });
+
+    maestroTest(
+      'scrolls to existing but not visible widget in Scrollable appearing late',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: FutureBuilder(
+              future: Future<void>.delayed(const Duration(milliseconds: 300)),
+              builder: (context, snapshot) {
+                return LayoutBuilder(
+                  builder: (_, constraints) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight),
+                          const Text('bottom text'),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+
+        expect(find.text('top text').hitTestable(), findsNothing);
+        expect(find.text('bottom text').hitTestable(), findsNothing);
+
+        await tester.scrollUntilExists(finder: find.text('top text'));
+        await tester.scrollUntilExists(finder: find.text('bottom text'));
+
+        expect(find.text('top text').hitTestable(), findsNothing);
+        expect(find.text('bottom text').hitTestable(), findsOneWidget);
+      },
+    );
+
+    maestroTest(
+      'scrolls to the first existing but not visible widget',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: LayoutBuilder(
+              builder: (_, constraints) {
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Text('top text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+
+        expect(find.text('top text').hitTestable(), findsOneWidget);
+        expect(find.text('bottom text').hitTestable(), findsNothing);
+
+        await tester.scrollUntilExists(finder: find.text('bottom text'));
+
+        expect(find.text('top text').hitTestable(), findsNothing);
+        expect(find.text('bottom text').hitTestable(), findsOneWidget);
+      },
+    );
+
+    maestroTest('scrolls to non-existent and not visible widget', ($) async {
+      await $.pumpWidget(
+        MaterialApp(
+          home: LayoutBuilder(
+            builder: (_, constraints) {
+              return ListView(
+                children: [
+                  const Text('top text'),
+                  SizedBox(height: constraints.maxHeight),
+                  const Text('bottom text'), // not built
+                ],
+              );
+            },
+          ),
+        ),
+      );
+
+      expect($('top text').visible, true);
+      expect($('bottom text').visible, false);
+
+      await $('bottom text').scrollTo();
+
+      expect($('top text').visible, false);
+      expect($('bottom text').visible, true);
+    });
   });
 }
