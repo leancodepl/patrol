@@ -381,56 +381,5 @@ void main() {
         expect(find.text('text 2').hitTestable(), findsOneWidget);
       },
     );
-
-    maestroTest(
-      'is a no-op when dragging to the first existing widget in the first Scrollable',
-      (tester) async {
-        await tester.pumpWidgetAndSettle(
-          // TODO: finish this test
-          MaterialApp(
-            home: Column(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: const [
-                      Text('some text'),
-                      SizedBox(width: 801),
-                      Text('xd text'),
-                    ],
-                  ),
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: const [
-                      Text('some text'),
-                      Text('some text'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-
-        expect(find.text('xd text').hitTestable(), findsNothing);
-
-        await tester.dragUntilExists(
-          finder: find.text('xd text'),
-          view: find.byType(Scrollable),
-          moveStep: const Offset(16, 0),
-        );
-
-        final finalScrollPosition = tester.tester
-            .firstWidget<Scrollable>(find.byType(Scrollable))
-            .controller
-            ?.position
-            .pixels;
-
-        expect(find.text('xd text').hitTestable(), findsOneWidget);
-        // expect(finalScrollPosition, isZero);
-      },
-    );
   });
 }
