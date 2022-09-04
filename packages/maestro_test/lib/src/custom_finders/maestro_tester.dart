@@ -278,7 +278,7 @@ class MaestroTester {
 
     return TestAsyncUtils.guard<MaestroFinder>(() async {
       Offset moveStep;
-      switch (tester.widget<Scrollable>(scrollable!).axisDirection) {
+      switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;
