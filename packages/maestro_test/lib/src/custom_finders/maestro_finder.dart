@@ -184,10 +184,10 @@ class MaestroFinder extends MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
-    final resolvedFinder = await waitUntilVisible(timeout: visibleTimeout);
-    await tester.tester.tap(resolvedFinder.first);
-    await tester.performPump(
+    await tester.tap(
+      this,
       andSettle: andSettle,
+      visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
   }
@@ -223,14 +223,17 @@ class MaestroFinder extends MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
-    final resolvedFinder = await waitUntilVisible(timeout: visibleTimeout);
-    await tester.tester.enterText(resolvedFinder.first, text);
-    await tester.performPump(
+    await tester.enterText(
+      this,
+      text,
       andSettle: andSettle,
+      visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
   }
 
+  /// Shorthand for [MaestroTester.scrollUntilVisible].
+  ///
   /// Scrolls [scrollable] in its scrolling direction until this finders finds
   /// at least one visible widget.
   ///
@@ -252,6 +255,27 @@ class MaestroFinder extends MatchFinder {
       maxScrolls: maxScrolls,
       duration: duration,
     );
+  }
+
+  /// Waits until this finder finds at least one widget.
+  ///
+  /// Throws a [WaitUntilVisibleTimedOutException] if no widgets  found.
+  ///
+  /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
+  /// want to override this global setting, set [timeout].
+  Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
+    return tester.waitUntilExists(this, timeout: timeout);
+  }
+
+  /// Waits until this finder finds at least one visible widget.
+  ///
+  /// Throws a [WaitUntilVisibleTimedOutException] if more time than specified
+  /// by timeout passed and no widgets were found.
+  ///
+  /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
+  /// want to override this global setting, set [timeout].
+  Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
+    return tester.waitUntilVisible(this, timeout: timeout);
   }
 
   /// If the first widget found by this finder is a [Text] or [RichText] widget,
@@ -311,54 +335,16 @@ class MaestroFinder extends MatchFinder {
   bool get exists => evaluate().isNotEmpty;
 
   /// Returns true if this finder finds at least 1 visible widget.
-  bool get visible => hitTestable().evaluate().isNotEmpty;
-
-  /// Waits until this finder finds at least one widget.
-  ///
-  /// Throws a [WaitUntilVisibleTimedOutException] if no widgets  found.
-  ///
-  /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
-  Future<MaestroFinder> waitUntilExists({Duration? timeout}) async {
-    timeout ??= tester.config.existsTimeout;
-    final end = tester.tester.binding.clock.now().add(timeout);
-
-    while (evaluate().isEmpty) {
-      final now = tester.tester.binding.clock.now();
-      if (now.isAfter(end)) {
-        throw WaitUntilExistsTimedOutException(finder: this, duration: timeout);
-      }
-
-      await tester.tester.pump(const Duration(milliseconds: 100));
+  bool get visible {
+    final isVisible = hitTestable().evaluate().isNotEmpty;
+    if (isVisible == true) {
+      assert(
+        exists == true,
+        'visible returned true, but exists returned false',
+      );
     }
 
-    return this;
-  }
-
-  /// Waits until this finder finds at least one visible widget.
-  ///
-  /// Throws a [WaitUntilVisibleTimedOutException] if more time than specified
-  /// by timeout passed and no widgets were found.
-  ///
-  /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
-  Future<MaestroFinder> waitUntilVisible({Duration? timeout}) async {
-    timeout ??= tester.config.visibleTimeout;
-    final end = tester.tester.binding.clock.now().add(timeout);
-
-    while (hitTestable().evaluate().isEmpty) {
-      final now = tester.tester.binding.clock.now();
-      if (now.isAfter(end)) {
-        throw WaitUntilVisibleTimedOutException(
-          finder: this,
-          duration: timeout,
-        );
-      }
-
-      await tester.tester.pump(const Duration(milliseconds: 100));
-    }
-
-    return this;
+    return isVisible;
   }
 
   // region Overriden fields
