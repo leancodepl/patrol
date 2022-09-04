@@ -314,14 +314,12 @@ class MaestroTester {
       await viewMaestroFinder.waitUntilVisible();
 
       var iterationsLeft = maxIteration;
-      await TestAsyncUtils.guard<void>(() async {
-        while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-          await tester.drag(view, moveStep);
-          await tester.pump(duration);
-          iterationsLeft -= 1;
-        }
-        await Scrollable.ensureVisible(tester.firstElement(finder));
-      });
+      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+        await tester.drag(view, moveStep);
+        await tester.pump(duration);
+        iterationsLeft -= 1;
+      }
+      await Scrollable.ensureVisible(tester.firstElement(finder));
 
       await _performPump(
         andSettle: andSettle,
@@ -355,20 +353,18 @@ class MaestroTester {
     bool? andSettle,
   }) {
     return TestAsyncUtils.guard(() async {
-      await TestAsyncUtils.guard<void>(() async {
-        var iterationsLeft = maxIteration;
-        while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-          await tester.drag(view, moveStep);
-          await tester.pump(duration);
-          iterationsLeft -= 1;
-        }
-        await Scrollable.ensureVisible(tester.firstElement(finder));
+      var iterationsLeft = maxIteration;
+      while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
+        await tester.drag(view, moveStep);
+        await tester.pump(duration);
+        iterationsLeft -= 1;
+      }
+      await Scrollable.ensureVisible(tester.firstElement(finder));
 
-        await _performPump(
-          andSettle: andSettle,
-          settleTimeout: config.settleTimeout,
-        );
-      });
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: config.settleTimeout,
+      );
 
       return MaestroFinder(finder: finder.first, tester: this);
     });

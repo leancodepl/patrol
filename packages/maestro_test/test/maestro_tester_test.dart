@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_finders/custom_finders.dart';
+import 'package:maestro_test/src/custom_finders/common.dart';
+import 'package:maestro_test/src/custom_finders/exceptions.dart';
 
 void main() {
   group('tap', () {
@@ -39,7 +40,7 @@ void main() {
 
       await tester.tap(find.text('Tap'));
 
-      expect(tester('count: 1'), findsOneWidget);
+      expect(find.text('count: 1'), findsOneWidget);
     });
 
     maestroTest(
@@ -67,7 +68,7 @@ void main() {
         );
 
         await tester.tap(find.text('Tap'));
-        expect(tester('count: 1'), findsOneWidget);
+        expect(find.text('count: 1'), findsOneWidget);
       },
     );
 
@@ -112,18 +113,17 @@ void main() {
     );
 
     maestroTest(
-      'enters text when the target widget has EditableText descendant',
-      ($) async {
+      'enters text when the target widget has an EditableText descendant',
+      (tester) async {
         var content = '';
-        await $.pumpWidgetAndSettle(
+        await tester.pumpWidgetAndSettle(
           MaterialApp(
             home: Scaffold(
               body: StatefulBuilder(
                 builder: (state, setState) => Column(
-                  key: const Key('columnKey'),
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('You entered: $content'),
+                    Text('content: $content'),
                     TextField(
                       onChanged: (newValue) {
                         setState(() => content = newValue);
@@ -136,21 +136,21 @@ void main() {
           ),
         );
 
-        await $(#columnKey).enterText('some input');
-        expect($('You entered: some input'), findsOneWidget);
+        await tester.enterText(find.byType(Scaffold), 'some input');
+        expect(find.text('content: some input'), findsOneWidget);
       },
     );
 
-    maestroTest('enters text in widget and pumps', ($) async {
+    maestroTest('enters text in widget and pumps', (tester) async {
       var content = '';
-      await $.pumpWidgetAndSettle(
+      await tester.pumpWidgetAndSettle(
         MaterialApp(
           home: Scaffold(
             body: StatefulBuilder(
               builder: (state, setState) => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('You entered: $content'),
+                  Text('content: $content'),
                   TextField(
                     onChanged: (newValue) => setState(() => content = newValue),
                   ),
@@ -161,21 +161,21 @@ void main() {
         ),
       );
 
-      await $(TextField).enterText('some input');
-      expect($('You entered: some input'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'some input');
+      expect(find.text('content: some input'), findsOneWidget);
     });
 
     maestroTest(
       'enters text in the first widget by default and pumps',
-      ($) async {
+      (tester) async {
         var content = '';
-        await $.pumpWidgetAndSettle(
+        await tester.pumpWidgetAndSettle(
           MaterialApp(
             home: Scaffold(
               body: StatefulBuilder(
                 builder: (state, setState) => Column(
                   children: [
-                    Text('You entered: $content'),
+                    Text('content: $content'),
                     TextField(
                       onChanged: (newValue) =>
                           setState(() => content = newValue),
@@ -190,8 +190,8 @@ void main() {
           ),
         );
 
-        await $(TextField).enterText('some text');
-        expect($('You entered: some text'), findsOneWidget);
+        await tester.enterText(find.byType(TextField), 'some text');
+        expect(find.text('content: some text'), findsOneWidget);
       },
     );
 
@@ -213,11 +213,11 @@ void main() {
   group('dragUntilExists', () {
     maestroTest(
       'throws exception when no Scrollable is found within timeout',
-      ($) async {
-        await $.pumpWidget(const MaterialApp());
+      (tester) async {
+        await tester.pumpWidget(const MaterialApp());
 
         await expectLater(
-          () => $.dragUntilExists(
+          () => tester.dragUntilExists(
             finder: find.text('text'),
             view: find.byType(Scrollable),
             moveStep: const Offset(0, 16),
@@ -230,8 +230,8 @@ void main() {
 
     maestroTest(
       'throws StateError when no widget is found after reaching maxIteration',
-      ($) async {
-        await $.pumpWidget(
+      (tester) async {
+        await tester.pumpWidget(
           MaterialApp(
             home: ListView(
               children: const [Text('one'), Text('two')],
@@ -240,7 +240,7 @@ void main() {
         );
 
         await expectLater(
-          () => $.dragUntilExists(
+          () => tester.dragUntilExists(
             finder: find.text('three'),
             view: find.byType(Scrollable),
             moveStep: const Offset(0, 16),
@@ -250,8 +250,8 @@ void main() {
       },
     );
 
-    maestroTest('drags to existing and visible widget', ($) async {
-      await $.pumpWidget(
+    maestroTest('drags to existing and visible widget', (tester) async {
+      await tester.pumpWidget(
         MaterialApp(
           home: SingleChildScrollView(
             child: Column(
@@ -261,23 +261,84 @@ void main() {
         ),
       );
 
-      expect($('some text').exists, true);
-      expect($('some text').visible, true);
+      expect(find.text('some text').hitTestable(), findsOneWidget);
 
-      await $.dragUntilExists(
+      await tester.dragUntilExists(
         finder: find.text('some text'),
         view: find.byType(Scrollable),
         moveStep: const Offset(0, 16),
       );
 
-      expect($('some text').visible, true);
-      expect($('some text').visible, true);
+      expect(find.text('some text').hitTestable(), findsOneWidget);
     });
 
     maestroTest(
+      'drags to existing but not visible widget in Scrollable appearing late',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: FutureBuilder(
+              future: Future<void>.delayed(const Duration(milliseconds: 300)),
+              builder: (context, snapshot) {
+                return LayoutBuilder(
+                  builder: (_, constraints) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    return SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight * 2),
+                          const Text('bottom text'),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        );
+
+        expect(find.text('top text').hitTestable(), findsNothing);
+        expect(find.text('bottom text').hitTestable(), findsNothing);
+
+        await tester.dragUntilExists(
+          finder: find.text('top text'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+        final initialScrollPosition = tester.tester
+            .firstWidget<Scrollable>(find.byType(Scrollable))
+            .controller
+            ?.position
+            .pixels;
+
+        await tester.dragUntilExists(
+          finder: find.text('bottom text'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        final finalScrollPosition = tester.tester
+            .firstWidget<Scrollable>(find.byType(Scrollable))
+            .controller
+            ?.position
+            .pixels;
+
+        expect(find.text('top text').hitTestable(), findsNothing);
+        expect(find.text('bottom text').hitTestable(), findsOneWidget);
+        expect(initialScrollPosition, isZero);
+        expect(finalScrollPosition, isPositive);
+      },
+    );
+
+    maestroTest(
       'drags to existing and visible widget in the first Scrollable',
-      ($) async {
-        await $.pumpWidget(
+      (tester) async {
+        await tester.pumpWidget(
           MaterialApp(
             home: Column(
               children: [
@@ -298,55 +359,77 @@ void main() {
           ),
         );
 
-        expect($('text 1').visible, true);
-        expect($('text 2').visible, true);
+        expect(find.text('text 1').hitTestable(), findsOneWidget);
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
 
-        await $.dragUntilExists(
+        await tester.dragUntilExists(
           finder: find.text('text 1'),
           view: find.byType(Scrollable),
           moveStep: const Offset(0, 16),
         );
 
-        expect($('text 1').visible, true);
-        expect($('text 2').visible, true);
+        expect(find.text('text 1').hitTestable(), findsOneWidget);
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
 
-        await $.dragUntilExists(
+        await tester.dragUntilExists(
           finder: find.text('text 2'),
           view: find.byType(Scrollable),
           moveStep: const Offset(0, 16),
         );
 
-        expect($('text 1').visible, true);
-        expect($('text 2').visible, true);
+        expect(find.text('text 1').hitTestable(), findsOneWidget);
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
       },
     );
 
     maestroTest(
-      'drags to the first existing widget in the first Scrollable',
-      ($) async {
-        await $.pumpWidget(
+      'is a no-op when dragging to the first existing widget in the first Scrollable',
+      (tester) async {
+        await tester.pumpWidgetAndSettle(
+          // TODO: finish this test
           MaterialApp(
-            home: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(
-                children: const [
-                  Text('text 1'),
-                  Text('text 1'),
-                ],
-              ),
+            home: Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: const [
+                      Text('some text'),
+                      SizedBox(width: 801),
+                      Text('xd text'),
+                    ],
+                  ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: const [
+                      Text('some text'),
+                      Text('some text'),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         );
 
-        expect($('text 1').visible, true);
+        expect(find.text('xd text').hitTestable(), findsNothing);
 
-        await $.dragUntilExists(
-          finder: find.text('text 1'),
+        await tester.dragUntilExists(
+          finder: find.text('xd text'),
           view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
+          moveStep: const Offset(16, 0),
         );
 
-        expect($('text 1').visible, true);
+        final finalScrollPosition = tester.tester
+            .firstWidget<Scrollable>(find.byType(Scrollable))
+            .controller
+            ?.position
+            .pixels;
+
+        expect(find.text('xd text').hitTestable(), findsOneWidget);
+        // expect(finalScrollPosition, isZero);
       },
     );
   });
