@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:maestro_test/src/custom_finders/common.dart';
-import 'package:maestro_test/src/custom_finders/exceptions.dart';
-import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
-import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
+import 'package:maestro_test/maestro_test.dart';
+
+/// Default amount to drag by when scrolling.
+const defaultScrollDelta = 64.0;
+
+/// Default maximum number of drags during scrolling.
+const defaultScrollMaxIteration = 100;
 
 /// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
 /// custom finder_, a.k.a `$`.
@@ -304,7 +306,7 @@ class MaestroTester {
     required Finder finder,
     required Finder view,
     required Offset moveStep,
-    int maxIteration = 50,
+    int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) {
@@ -348,7 +350,7 @@ class MaestroTester {
     required Finder finder,
     required Finder view,
     required Offset moveStep,
-    int maxIteration = 50,
+    int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) {
@@ -381,8 +383,8 @@ class MaestroTester {
   Future<MaestroFinder> scrollUntilExists({
     required Finder finder,
     Finder? scrollable,
-    double delta = 32,
-    int maxScrolls = 50,
+    double delta = defaultScrollDelta,
+    int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -433,8 +435,8 @@ class MaestroTester {
   Future<MaestroFinder> scrollUntilVisible({
     required Finder finder,
     Finder? scrollable,
-    double delta = 32,
-    int maxScrolls = 50,
+    double delta = defaultScrollDelta,
+    int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
