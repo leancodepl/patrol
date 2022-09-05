@@ -2,25 +2,25 @@
 
 Maestro's feature of interacting with the native platform has a few limitations.
 
-### iOS support
+### Feature parity across platforms
 
-We've already got a basic PoC working on Simulator, but there's no support for
-physical devices yet.
+We strive for high feature parity across iOS and Android, but unfortunately it's
+impossible to reach 100%.
 
-One of our main goals over the coming weeks is to bring iOS support on par with
-Android.
+Differences:
+
+- Back button is not present on iOS
 
 ### Other platforms support
 
-Supporting platforms other than Android and iOS is currently not a part of our
+Supporting platforms other than iOS and Android is currently not a part of our
 roadmap.
 
 ### Zones
 
-Long story short, you can't use Flutter's `integration_test` if you're using a
-package depending on Dart's zones, such as [hydrated_bloc][hydrated_bloc]. This
-is a Flutter bug, but Maestro is affected by it because it depends on
-`integration_test`.
+Long story short, you can't use Flutter's `integration_test` if you're using
+Dart's Zones. This is a Flutter bug, but Maestro is affected by it because it
+depends on `integration_test`.
 
 For more info see [issue #96939 on flutter/flutter][zones_bug].
 

@@ -32,6 +32,7 @@
         ["update", "/cli-commands/update"]
       ]
     ],
-    ["Effective Maestro", "/effective-maestro"]
+    ["Effective Maestro", "/effective-maestro"],
+    ["Tips and tricks", "/tips-and-tricks"]
   ]
 }

@@ -1,4 +1,4 @@
-## Custom finders
+## Custom finders overview
 
 Flutter's finders are powerful, but not very intuitive to use.
 
@@ -54,4 +54,44 @@ maestroTest('signs up', ($) async {
   await $(#signUpButton).tap();
   expect($('Welcome, Bartek!'), findsOneWidget);
 });
+```
+
+### Set up
+
+Starting using custom finders is easy, because they depend only on Flutter. All
+you have to do is to add package `maestro_test` to `dev_dependencies` in your
+project's `pubspec.yaml`.
+
+```bash
+flutter pub add maestro --dev
+```
+
+### Writing
+
+When using Maestro's custom finders, you use `maestroTest` function instead of
+`testWidgets`.
+
+The biggest difference between `testWidgets` and `maestroTest` is the type of
+the _tester_ you get in your callback. `maestroTest` gives you `MaestroTester`,
+which is much more powerful that the default `WidgetTester`.
+
+```dart
+testWidgets('sign in', (WidgetTester tester) async {
+  await tester.tap(find.byKey(Key('signUpButton')));
+}
+```
+
+```dart
+maestroTest('sign in', (MaestroTester $) async {
+  await $(#signUpButton).tap();
+}
+```
+
+### Usage
+
+You run widget tests using Maestro's custom finders the same way as you run
+normal widget tests.
+
+```bash
+flutter test
 ```
