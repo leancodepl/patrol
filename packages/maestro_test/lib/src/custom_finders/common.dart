@@ -37,6 +37,11 @@ void maestroTest(
 }) {
   return testWidgets(
     description,
+    skip: skip,
+    timeout: timeout,
+    semanticsEnabled: semanticsEnabled,
+    variant: variant,
+    tags: tags,
     (widgetTester) async {
       final maestroTester = MaestroTester(tester: widgetTester, config: config);
       await callback(maestroTester);
@@ -49,10 +54,5 @@ void maestroTest(
         maestroTester.log('done sleeping', name: 'maestroTest');
       }
     },
-    skip: skip,
-    timeout: timeout,
-    semanticsEnabled: semanticsEnabled,
-    variant: variant,
-    tags: tags,
   );
 }

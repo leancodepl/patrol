@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/common.dart';
+import 'package:maestro_test/src/custom_finders/exceptions.dart';
 import 'package:maestro_test/src/custom_finders/maestro_finder.dart';
 import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
-import 'package:meta/meta.dart';
 
 /// [MaestroTester] wraps a [WidgetTester]. It provides support for _Maestro
 /// custom finder_, a.k.a `$`.
@@ -124,7 +124,156 @@ class MaestroTester {
     Duration? timeout,
   }) async {
     await tester.pumpWidget(widget, duration, phase);
-    await performPump(andSettle: true, settleTimeout: timeout);
+    await _performPump(andSettle: true, settleTimeout: timeout);
+  }
+
+  /// Waits until this finder finds at least 1 visible widget and then taps on
+  /// it.
+  ///
+  /// Example:
+  /// ```dart
+  /// // taps on the first widget having Key('createAccount')
+  /// await $(#createAccount).tap();
+  /// ```
+  ///
+  /// If the finder resolves to more than 1 widget, you can choose which one to
+  /// tap on:
+  ///
+  /// ```dart
+  /// // taps on the third TextButton widget
+  /// await $(TextButton).at(2).tap();
+  /// ```
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after
+  /// tapping. If you want to disable this behavior, set [andSettle] to false.
+  ///
+  /// See also:
+  ///  - [MaestroFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
+  ///  - [WidgetController.tap]
+  Future<void> tap(
+    Finder finder, {
+    bool? andSettle,
+    Duration? visibleTimeout,
+    Duration? settleTimeout,
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final resolvedFinder = await waitUntilVisible(
+        finder,
+        timeout: visibleTimeout,
+      );
+      await tester.tap(resolvedFinder.first);
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: settleTimeout,
+      );
+    });
+  }
+
+  /// Waits until [finder] finds at least 1 visible widget and then enters text
+  /// into it.
+  ///
+  /// Example:
+  /// ```dart
+  /// // enters text into the first widget having Key('email')
+  /// await $(#email).enterText(user@example.com);
+  /// ```
+  ///
+  /// If the finder resolves to more than 1 widget, you can choose which one to
+  /// enter text into:
+  ///
+  /// ```dart
+  /// // enters text into the third TextField widget
+  /// await $(TextField).at(2).enterText('Code ought to be lean');
+  /// ```
+  ///
+  /// This method automatically calls [WidgetTester.pumpAndSettle] after
+  /// entering text. If you want to disable this behavior, set [andSettle] to
+  /// false.
+  ///
+  /// See also:
+  ///  - [MaestroFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
+  ///  - [WidgetTester.enterText]
+  Future<void> enterText(
+    Finder finder,
+    String text, {
+    bool? andSettle,
+    Duration? visibleTimeout,
+    Duration? settleTimeout,
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final resolvedFinder = await waitUntilVisible(
+        finder,
+        timeout: visibleTimeout,
+      );
+      await tester.enterText(resolvedFinder.first, text);
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: settleTimeout,
+      );
+    });
+  }
+
+  /// Waits until this finder finds at least one widget.
+  ///
+  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
+  ///
+  /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
+  /// want to override this global setting, set [timeout].
+  Future<MaestroFinder> waitUntilExists(
+    MaestroFinder finder, {
+    Duration? timeout,
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final duration = timeout ?? config.existsTimeout;
+      final end = tester.binding.clock.now().add(duration);
+
+      while (finder.evaluate().isEmpty) {
+        final now = tester.binding.clock.now();
+        if (now.isAfter(end)) {
+          throw WaitUntilExistsTimeoutException(
+            finder: finder,
+            duration: duration,
+          );
+        }
+
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      return finder;
+    });
+  }
+
+  /// Waits until [finder] finds at least one visible widget.
+  ///
+  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified
+  /// by the timeout passed and no widgets were found.
+  ///
+  /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
+  /// want to override this global setting, set [timeout].
+  Future<MaestroFinder> waitUntilVisible(
+    Finder finder, {
+    Duration? timeout,
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final duration = timeout ?? config.visibleTimeout;
+      final end = tester.binding.clock.now().add(duration);
+
+      while (finder.hitTestable().evaluate().isEmpty) {
+        final now = tester.binding.clock.now();
+        if (now.isAfter(end)) {
+          throw WaitUntilVisibleTimeoutException(
+            finder: finder,
+            duration: duration,
+          );
+        }
+
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      return MaestroFinder(finder: finder, tester: this);
+    });
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
@@ -137,10 +286,19 @@ class MaestroTester {
   /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
   /// false.
   ///
+  /// This is a reimplementation of [WidgetController.dragUntilVisible] that
+  /// differs from the original in the following ways:
+  ///
+  ///  * has a better name
+  ///
+  ///  * waits until [view] is visible
+  ///
+  ///  * uses [WidgetController.firstElement] instead of
+  ///    [WidgetController.element], which avoids [StateError] being thrown in
+  ///    situations when [finder] finds more than 1 visible widget
+  ///
   /// See also:
-  ///  - [WidgetController.dragUntilVisible], which this method wraps and gives
-  ///    it a better name
-  ///  - [MaestroTester.config.andSettle], which controls the default behavior
+  ///  * [MaestroTester.config.andSettle], which controls the default behavior
   ///    if [andSettle] is null
   Future<MaestroFinder> dragUntilExists({
     required Finder finder,
@@ -149,23 +307,27 @@ class MaestroTester {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
-  }) async {
-    final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
 
-    await tester.dragUntilVisible(
-      finder,
-      (await viewMaestroFinder.waitUntilVisible()).first,
-      moveStep,
-      maxIteration: maxIteration,
-      duration: duration,
-    );
+      await viewMaestroFinder.waitUntilVisible();
 
-    await performPump(
-      andSettle: andSettle,
-      settleTimeout: config.settleTimeout,
-    );
+      var iterationsLeft = maxIteration;
+      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+        await tester.drag(view, moveStep);
+        await tester.pump(duration);
+        iterationsLeft -= 1;
+      }
+      await Scrollable.ensureVisible(tester.firstElement(finder));
 
-    return MaestroFinder(finder: finder.first, tester: this);
+      await _performPump(
+        andSettle: andSettle,
+        settleTimeout: config.settleTimeout,
+      );
+
+      return MaestroFinder(finder: finder.first, tester: this);
+    });
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
@@ -189,8 +351,8 @@ class MaestroTester {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
-  }) async {
-    await TestAsyncUtils.guard<void>(() async {
+  }) {
+    return TestAsyncUtils.guard(() async {
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
         await tester.drag(view, moveStep);
@@ -199,13 +361,13 @@ class MaestroTester {
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
-      await performPump(
+      await _performPump(
         andSettle: andSettle,
         settleTimeout: config.settleTimeout,
       );
-    });
 
-    return MaestroFinder(finder: finder.first, tester: this);
+      return MaestroFinder(finder: finder.first, tester: this);
+    });
   }
 
   /// Scrolls [scrollable] in its scrolling direction until this finders finds
@@ -216,20 +378,48 @@ class MaestroTester {
   /// See also:
   ///  - [MaestroTester.scrollUntilVisible], which this method wraps and gives
   ///    it a better name
-  Future<void> scrollUntilExists({
+  Future<MaestroFinder> scrollUntilExists({
     required Finder finder,
     Finder? scrollable,
     double delta = 32,
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    await tester.scrollUntilVisible(
-      finder,
-      delta,
-      scrollable: scrollable,
-      maxScrolls: maxScrolls,
-      duration: duration,
-    );
+    assert(maxScrolls > 0, 'maxScrolls must be positive number');
+    scrollable ??= find.byType(Scrollable);
+
+    final scrollableMaestroFinder = await MaestroFinder(
+      finder: scrollable,
+      tester: this,
+    ).waitUntilVisible();
+
+    return TestAsyncUtils.guard<MaestroFinder>(() async {
+      Offset moveStep;
+      switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
+        case AxisDirection.up:
+          moveStep = Offset(0, delta);
+          break;
+        case AxisDirection.down:
+          moveStep = Offset(0, -delta);
+          break;
+        case AxisDirection.left:
+          moveStep = Offset(delta, 0);
+          break;
+        case AxisDirection.right:
+          moveStep = Offset(-delta, 0);
+          break;
+      }
+
+      final resolvedFinder = await dragUntilExists(
+        finder: finder,
+        view: scrollableMaestroFinder.first,
+        moveStep: moveStep,
+        maxIteration: maxScrolls,
+        duration: duration,
+      );
+
+      return resolvedFinder;
+    });
   }
 
   /// Scrolls [scrollable] in its scrolling direction until this finders finds
@@ -246,13 +436,18 @@ class MaestroTester {
     double delta = 32,
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
-  }) {
+  }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
 
+    final scrollableMaestroFinder = await MaestroFinder(
+      finder: scrollable,
+      tester: this,
+    ).waitUntilVisible();
+
     return TestAsyncUtils.guard<MaestroFinder>(() async {
       Offset moveStep;
-      switch (tester.widget<Scrollable>(scrollable!).axisDirection) {
+      switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;
@@ -269,7 +464,7 @@ class MaestroTester {
 
       final resolvedFinder = await dragUntilVisible(
         finder: finder,
-        view: scrollable,
+        view: scrollableMaestroFinder.first,
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
@@ -279,9 +474,7 @@ class MaestroTester {
     });
   }
 
-  @internal
-  // ignore: public_member_api_docs
-  Future<void> performPump({
+  Future<void> _performPump({
     required bool? andSettle,
     required Duration? settleTimeout,
   }) async {

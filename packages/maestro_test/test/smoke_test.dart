@@ -117,7 +117,7 @@ void main() {
 
         await expectLater(
           () => $('non-visible text').waitUntilVisible(),
-          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
         );
       },
       config: const MaestroTestConfig(

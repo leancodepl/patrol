@@ -2,5 +2,7 @@
 /// flutter_driver.
 library maestro_test;
 
+export 'package:flutter_test/flutter_test.dart';
+
 export 'src/custom_finders/custom_finders.dart';
 export 'src/native/native.dart';

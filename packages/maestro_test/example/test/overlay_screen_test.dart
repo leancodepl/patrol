@@ -1,5 +1,4 @@
 import 'package:example/main.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 void main() {
@@ -12,7 +11,7 @@ void main() {
 
     await expectLater(
       () => $('non-visible text').waitUntilVisible(),
-      throwsA(isA<WaitUntilVisibleTimedOutException>()),
+      throwsA(isA<WaitUntilVisibleTimeoutException>()),
     );
   });
 }
