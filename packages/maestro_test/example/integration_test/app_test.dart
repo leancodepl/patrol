@@ -7,6 +7,7 @@ void main() {
 
   maestroTest(
     'taps around',
+    config: maestroConfig,
     ($) async {
       await maestro.openQuickSettings();
       await maestro.tap(const Selector(text: 'Bluetooth'));
@@ -29,6 +30,5 @@ void main() {
 
       await maestro.pressBack();
     },
-    config: maestroConfig,
   );
 }

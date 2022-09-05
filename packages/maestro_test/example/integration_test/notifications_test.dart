@@ -8,6 +8,7 @@ void main() {
 
   maestroTest(
     'sends a notification and taps on it',
+    config: maestroConfig,
     ($) async {
       $.log('Yay, notification_test.dart is starting!');
 
@@ -25,6 +26,5 @@ void main() {
         const Selector(textContains: 'special offer'),
       );
     },
-    config: maestroConfig,
   );
 }

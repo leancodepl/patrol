@@ -290,6 +290,30 @@ class MaestroAutomator {
         delay()
     }
 
+    fun handlePermission(code: String) {
+        when (code) {
+            "WHILE_USING" -> {
+                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"))
+            }
+
+            "ONLY_THIS_TIME" -> {
+                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_one_time_button"))
+            }
+
+            "DENIED" -> {
+                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_deny_button"))
+            }
+        }
+    }
+
+    fun selectFineLocation() {
+        tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
+    }
+
+    fun selectCoarseLocation() {
+        tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
+    }
+
     companion object {
         val instance = MaestroAutomator()
     }

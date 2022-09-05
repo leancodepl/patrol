@@ -41,6 +41,9 @@ data class SwipeCommand(
 )
 
 @Serializable
+data class PermissionCommand(var code: String)
+
+@Serializable
 data class TapOnNotificationByIndexCommand(val index: Int)
 
 @Serializable
@@ -371,6 +374,19 @@ class MaestroServer {
         },
         "disableBluetooth" bind POST to {
             MaestroAutomator.instance.disableBluetooth()
+            Response(OK)
+        },
+        "handlePermission" bind POST to {
+            val body = Json.decodeFromString<PermissionCommand>(it.bodyString())
+            MaestroAutomator.instance.handlePermission(body.code)
+            Response(OK)
+        },
+        "selectFineLocation" bind POST to {
+            MaestroAutomator.instance.selectFineLocation()
+            Response(OK)
+        },
+        "selectCoarseLocation" bind POST to {
+            MaestroAutomator.instance.selectCoarseLocation()
             Response(OK)
         }
     )
