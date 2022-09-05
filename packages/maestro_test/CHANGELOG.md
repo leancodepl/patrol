@@ -1,3 +1,7 @@
+## Unreleased
+
+- Re-export `package:flutter_test`
+
 ## 0.5.3
 
 - Make `MaestroFinder.text` getter more robust
