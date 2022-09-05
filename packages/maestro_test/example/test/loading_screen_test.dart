@@ -22,7 +22,7 @@ void main() {
           final helloText = $('Hello');
           await expectLater(
             helloText.waitUntilVisible,
-            throwsA(isA<WaitUntilVisibleTimedOutException>()),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         });
       },

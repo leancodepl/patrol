@@ -260,7 +260,7 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimedOutException] if no widgets  found.
+  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
@@ -270,7 +270,7 @@ class MaestroFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one visible widget.
   ///
-  /// Throws a [WaitUntilVisibleTimedOutException] if more time than specified
+  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified
   /// by timeout passed and no widgets were found.
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you

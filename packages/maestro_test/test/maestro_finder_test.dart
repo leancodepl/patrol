@@ -187,7 +187,7 @@ void main() {
 
           await expectLater(
             $('some text').tap,
-            throwsA(isA<WaitUntilVisibleTimedOutException>()),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );
@@ -249,7 +249,7 @@ void main() {
 
           await expectLater(
             () => $('some text').enterText('some text'),
-            throwsA(isA<WaitUntilVisibleTimedOutException>()),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );
@@ -365,7 +365,7 @@ void main() {
 
           await expectLater(
             $('some text').waitUntilExists,
-            throwsA(isA<WaitUntilExistsTimedOutException>()),
+            throwsA(isA<WaitUntilExistsTimeoutException>()),
           );
         },
       );
@@ -402,7 +402,7 @@ void main() {
 
           await expectLater(
             $('some text').waitUntilVisible,
-            throwsA(isA<WaitUntilVisibleTimedOutException>()),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );
@@ -437,7 +437,7 @@ void main() {
 
           await expectLater(
             $('some text').waitUntilVisible,
-            throwsA(isA<WaitUntilVisibleTimedOutException>()),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );

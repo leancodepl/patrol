@@ -217,7 +217,7 @@ class MaestroTester {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimedOutException] if no widgets  found.
+  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
@@ -232,7 +232,7 @@ class MaestroTester {
       while (finder.evaluate().isEmpty) {
         final now = tester.binding.clock.now();
         if (now.isAfter(end)) {
-          throw WaitUntilExistsTimedOutException(
+          throw WaitUntilExistsTimeoutException(
             finder: finder,
             duration: duration,
           );
@@ -247,7 +247,7 @@ class MaestroTester {
 
   /// Waits until [finder] finds at least one visible widget.
   ///
-  /// Throws a [WaitUntilVisibleTimedOutException] if more time than specified
+  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified
   /// by the timeout passed and no widgets were found.
   ///
   /// Timeout is globally set by [MaestroTester.config.visibleTimeout]. If you
@@ -263,7 +263,7 @@ class MaestroTester {
       while (finder.hitTestable().evaluate().isEmpty) {
         final now = tester.binding.clock.now();
         if (now.isAfter(end)) {
-          throw WaitUntilVisibleTimedOutException(
+          throw WaitUntilVisibleTimeoutException(
             finder: finder,
             duration: duration,
           );

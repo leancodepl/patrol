@@ -14,7 +14,7 @@ void main() {
 
         await expectLater(
           () => tester.tap(find.text('some text')),
-          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
         );
       },
     );
@@ -93,7 +93,7 @@ void main() {
 
         await expectLater(
           () => tester.enterText(find.text('some text'), 'some text'),
-          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
         );
       },
     );
@@ -223,7 +223,7 @@ void main() {
             moveStep: const Offset(0, 16),
           ),
           // because it was waiting for a Scrollable to appear
-          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
         );
       },
     );
@@ -394,7 +394,7 @@ void main() {
 
         await expectLater(
           () => tester.scrollUntilExists(finder: find.text('some text')),
-          throwsA(isA<WaitUntilVisibleTimedOutException>()),
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
         );
       },
     );
