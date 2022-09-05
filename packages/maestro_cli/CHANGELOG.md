@@ -1,3 +1,8 @@
+## 0.5.1
+
+- Add support for handling native permission requests on Android (#232)
+- Fix Android AutomatorServer suppressing all accessibility services (#235)
+
 ## 0.5.0
 
 - Now `maestro_cli` will clean up after itself, either when it exits normally or
