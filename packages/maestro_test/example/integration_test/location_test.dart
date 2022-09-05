@@ -15,7 +15,7 @@ void main() {
 
       await $('Open location screen').tap(andSettle: false);
 
-      await maestro.grantLocationOnlyThisTime();
+      await maestro.grantPermissionOnlyThisTime();
 
       await $.pumpAndSettle();
 

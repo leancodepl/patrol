@@ -41,7 +41,7 @@ data class SwipeCommand(
 )
 
 @Serializable
-data class LocationPermissionCommand(var code: String)
+data class PermissionCommand(var code: String)
 
 @Serializable
 data class TapOnNotificationByIndexCommand(val index: Int)
@@ -69,19 +69,19 @@ data class SelectorQuery(
 ) {
     fun isEmpty(): Boolean {
         return (
-            text == null &&
-                textStartsWith == null &&
-                textContains == null &&
-                className == null &&
-                contentDescription == null &&
-                contentDescriptionStartsWith == null &&
-                contentDescriptionContains == null &&
-                resourceId == null &&
-                instance == null &&
-                enabled == null &&
-                focused == null &&
-                pkg == null
-            )
+                text == null &&
+                        textStartsWith == null &&
+                        textContains == null &&
+                        className == null &&
+                        contentDescription == null &&
+                        contentDescriptionStartsWith == null &&
+                        contentDescriptionContains == null &&
+                        resourceId == null &&
+                        instance == null &&
+                        enabled == null &&
+                        focused == null &&
+                        pkg == null
+                )
     }
 
     fun toUiSelector(): UiSelector {
@@ -376,9 +376,9 @@ class MaestroServer {
             MaestroAutomator.instance.disableBluetooth()
             Response(OK)
         },
-        "handleLocationPermission" bind POST to {
-            val body = Json.decodeFromString<LocationPermissionCommand>(it.bodyString())
-            MaestroAutomator.instance.handleLocationPermission(body.code)
+        "handlePermission" bind POST to {
+            val body = Json.decodeFromString<PermissionCommand>(it.bodyString())
+            MaestroAutomator.instance.handlePermission(body.code)
             Response(OK)
         }
     )

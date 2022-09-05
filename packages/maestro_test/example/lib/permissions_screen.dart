@@ -60,20 +60,28 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               children: [
                 const Text('Camera'),
                 TextButton(
+                  key: const Key('requestCamera'),
                   onPressed: _requestCameraPermission,
                   child: const Text('Request'),
                 ),
-                Text('Granted: $_cameraPermissionGranted'),
+                Text(
+                  key: const Key('cameraStatusText'),
+                  'Granted: $_cameraPermissionGranted',
+                ),
               ],
             ),
             Row(
               children: [
                 const Text('Microphone'),
                 TextButton(
+                  key: const Key('requestMicrophone'),
                   onPressed: _requestMicrophonePermission,
                   child: const Text('Request'),
                 ),
-                Text('Granted: $_microphonePermissionGranted'),
+                Text(
+                  key: const Key('microphoneStatusText'),
+                  'Granted: $_microphonePermissionGranted',
+                ),
               ],
             ),
           ],

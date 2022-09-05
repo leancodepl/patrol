@@ -291,7 +291,7 @@ class MaestroAutomator {
         delay()
     }
 
-    fun handleLocationPermission(code: String) {
+    fun handlePermission(code: String) {
         when (code) {
             "WHILE_USING" -> {
                 tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"))

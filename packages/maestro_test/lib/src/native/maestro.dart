@@ -259,23 +259,35 @@ class Maestro {
         .toList();
   }
 
-  Future<void> grantLocationWhenInUse() {
+  /// Grants the permission that the currently visible native permission dialog
+  /// is asking for. Requires that the permission request dialog to be present.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> grantPermissionWhenInUse() {
     return _wrapPost(
-      'handleLocationPermission',
+      'handlePermission',
       <String, String>{'code': 'WHILE_USING'},
     );
   }
 
-  Future<void> grantLocationOnlyThisTime() {
+  /// Grants the permission that the currently visible native permission dialog
+  /// is asking for. Requires that the permission request dialog to be present.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> grantPermissionOnlyThisTime() {
     return _wrapPost(
-      'handleLocationPermission',
+      'handlePermission',
       <String, String>{'code': 'ONLY_THIS_TIME'},
     );
   }
 
-  Future<void> grantLocationDenied() {
+  /// Denies the permission that the currently visible native permission dialog
+  /// is asking for. Requires that the permission request dialog to be present.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> denyPermission() {
     return _wrapPost(
-      'handleLocationPermission',
+      'handlePermission',
       <String, String>{'code': 'DENIED'},
     );
   }
