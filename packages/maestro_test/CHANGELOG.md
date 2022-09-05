@@ -1,5 +1,7 @@
-## Unreleased
+## 0.5.4
 
+- Add support for handling native permission request dialogs on Android (#232)
+- Attempt to fix a weird issue with scroll not working in some rare cases (#237)
 - Re-export `package:flutter_test`
 
 ## 0.5.3
