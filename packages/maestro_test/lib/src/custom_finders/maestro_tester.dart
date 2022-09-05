@@ -352,14 +352,12 @@ class MaestroTester {
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
   }) {
-    print('MaestroTester.dragUntilVisible');
     return TestAsyncUtils.guard(() async {
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
         await tester.drag(view, moveStep);
         await tester.pump(duration);
         iterationsLeft -= 1;
-        print('iterationsLeft: $iterationsLeft');
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
@@ -387,8 +385,6 @@ class MaestroTester {
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    print('MaestroFinder.scrollUntilExists()');
-
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
 

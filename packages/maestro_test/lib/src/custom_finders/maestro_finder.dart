@@ -249,7 +249,6 @@ class MaestroFinder extends MatchFinder {
     int maxScrolls = 200,
     Duration duration = const Duration(milliseconds: 50),
   }) {
-    print('MaestroFinder.scrollTo(): this:$this');
     return tester.scrollUntilVisible(
       finder: finder,
       scrollable: scrollable,
