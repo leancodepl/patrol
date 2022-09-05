@@ -2,6 +2,7 @@ import 'package:example/loading_screen.dart';
 import 'package:example/location_screen.dart';
 import 'package:example/notifications_screen.dart';
 import 'package:example/overlay_screen.dart';
+import 'package:example/permissions_screen.dart';
 import 'package:example/scrolling_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -138,6 +139,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
+                builder: (_) => const LocationScreen(),
+              ),
+            ),
+            child: const Text('Open location screen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
                 builder: (_) => const NotificationsScreen(),
               ),
             ),
@@ -154,18 +163,18 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const ScrollingScreen(),
+                builder: (_) => const PermissionsScreen(),
               ),
             ),
-            child: const Text('Open scrolling screen'),
+            child: const Text('Open permissions screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const LocationScreen(),
+                builder: (_) => const ScrollingScreen(),
               ),
             ),
-            child: const Text('Open location screen'),
+            child: const Text('Open scrolling screen'),
           ),
         ],
       ),
