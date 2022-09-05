@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import android.app.UiAutomation
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -53,6 +54,8 @@ class MaestroAutomator {
         configurator.waitForSelectorTimeout = 5000
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
+
+        Configurator.getInstance().uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
 
         Logger.i("Android UiAutomator configuration:")
         Logger.i("\twaitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
