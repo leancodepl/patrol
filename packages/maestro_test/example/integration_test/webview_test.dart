@@ -7,7 +7,7 @@ Future<void> main() async {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'maestroTest works correctly with native semantics',
+    'navigates through the app using only native semantics',
     config: maestroConfig,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
