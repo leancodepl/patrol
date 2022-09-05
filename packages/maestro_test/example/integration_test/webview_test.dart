@@ -8,6 +8,7 @@ Future<void> main() async {
 
   maestroTest(
     'maestroTest works correctly with native semantics',
+    config: maestroConfig,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
@@ -28,7 +29,6 @@ Future<void> main() async {
 
       await Future<void>.delayed(const Duration(seconds: 10));
     },
-    config: maestroConfig,
   );
 }
 
