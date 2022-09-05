@@ -110,7 +110,6 @@ class MaestroTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration timeout = const Duration(minutes: 10),
   ]) async {
-    print('pumping and settling');
     await tester.pumpAndSettle(duration, phase, timeout);
   }
 
