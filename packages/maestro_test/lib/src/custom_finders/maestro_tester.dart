@@ -358,7 +358,6 @@ class MaestroTester {
         await tester.drag(view, moveStep);
         await tester.pump(duration);
         iterationsLeft -= 1;
-        print('iterationsLeft: $iterationsLeft');
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
@@ -438,7 +437,6 @@ class MaestroTester {
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
   }) async {
-    print('MaestroTester.scrollUntilVisible()');
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
 
@@ -447,18 +445,9 @@ class MaestroTester {
       tester: this,
     ).waitUntilVisible();
 
-    final elements = scrollableMaestroFinder.evaluate();
-    print(elements);
-
     return TestAsyncUtils.guard<MaestroFinder>(() async {
       Offset moveStep;
-      final firstWidget = tester.firstWidget<Scrollable>(scrollable!);
-      print('key of the first widget: ${firstWidget.key}');
-      print(
-        'toStringDeep() of the first widget: ${firstWidget.toStringDeep()}',
-      );
-
-      switch (firstWidget.axisDirection) {
+      switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;
