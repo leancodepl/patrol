@@ -9,7 +9,7 @@ void main() {
 
   maestroTest(
     'accepts location permission',
-    config: maestroConfig.copyWith(sleep: const Duration(seconds: 5)),
+    config: maestroConfig,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
