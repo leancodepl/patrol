@@ -58,9 +58,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
+      body: ListView(
+        key: const Key('listViewKey'),
+        children: [
           const Text(
             'You have pushed the button this many times:',
           ),

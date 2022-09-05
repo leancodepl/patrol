@@ -245,10 +245,11 @@ class MaestroFinder extends MatchFinder {
   ///  - [MaestroTester.scrollUntilVisible], which this method wraps
   Future<MaestroFinder> scrollTo({
     Finder? scrollable,
-    double step = 16,
+    double step = 64,
     int maxScrolls = 200,
     Duration duration = const Duration(milliseconds: 50),
   }) {
+    print("MaestroFinder.scrollTo()");
     return tester.scrollUntilVisible(
       finder: finder,
       scrollable: scrollable,
