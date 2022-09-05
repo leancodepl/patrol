@@ -10,6 +10,7 @@ void main() {
 
   maestroTest(
     'counter state is the same after going to Home and switching apps',
+    config: maestroConfig,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
@@ -26,6 +27,5 @@ void main() {
       await maestro.openNotifications();
       await maestro.pressBack();
     },
-    config: maestroConfig,
   );
 }

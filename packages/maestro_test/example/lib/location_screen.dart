@@ -44,10 +44,17 @@ class LocationScreen extends StatelessWidget {
               return const CircularProgressIndicator();
             }
 
+            final lat = snapshot.data?.latitude;
+            final lng = snapshot.data?.longitude;
+
+            if (lat == null || lng == null) {
+              return const Text('failed to get location');
+            }
+
             return Column(
               children: [
-                Text('lat: ${snapshot.data?.latitude}'),
-                Text('lng: ${snapshot.data?.longitude}'),
+                Text('lat: $lat'),
+                Text('lng: $lng'),
               ],
             );
           },

@@ -11,7 +11,6 @@ import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
-
 enum class PermissionLevel {
     WHILE_USING, ONLY_THIS_TIME, DENIED
 }

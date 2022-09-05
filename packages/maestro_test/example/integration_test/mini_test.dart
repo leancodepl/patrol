@@ -23,6 +23,7 @@ Future<void> main() async {
 
   maestroTest(
     'counter state is the same after going to Home and switching apps',
+    config: maestroConfig,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
@@ -49,6 +50,5 @@ Future<void> main() async {
 
       $.log("More functionality is not implemented, so I'm gonna head out now");
     },
-    config: maestroConfig,
   );
 }

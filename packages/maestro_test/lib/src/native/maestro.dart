@@ -258,4 +258,25 @@ class Maestro {
         .map((dynamic e) => NativeWidget.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<void> grantLocationWhenInUse() {
+    return _wrapPost(
+      'handleLocationPermission',
+      <String, String>{'code': 'WHILE_USING'},
+    );
+  }
+
+  Future<void> grantLocationOnlyThisTime() {
+    return _wrapPost(
+      'handleLocationPermission',
+      <String, String>{'code': 'ONLY_THIS_TIME'},
+    );
+  }
+
+  Future<void> grantLocationDenied() {
+    return _wrapPost(
+      'handleLocationPermission',
+      <String, String>{'code': 'DENIED'},
+    );
+  }
 }
