@@ -11,10 +11,6 @@ import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
 
-enum class PermissionLevel {
-    WHILE_USING, ONLY_THIS_TIME, DENIED
-}
-
 @Serializable
 data class Notification(
     val appName: String,
@@ -305,6 +301,14 @@ class MaestroAutomator {
                 tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_deny_button"))
             }
         }
+    }
+
+    fun selectFineLocation() {
+        tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
+    }
+
+    fun selectCoarseLocation() {
+        tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
     }
 
     companion object {

@@ -9,12 +9,14 @@ void main() {
 
   maestroTest(
     'accepts location permission',
-    config: maestroConfig,
+    config: maestroConfig.copyWith(sleep: const Duration(seconds: 5)),
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
       await $('Open location screen').tap(andSettle: false);
 
+      await maestro.selectCoarseLocation();
+      await maestro.selectFineLocation();
       await maestro.grantPermissionOnlyThisTime();
 
       await $.pumpAndSettle();

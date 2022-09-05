@@ -69,19 +69,19 @@ data class SelectorQuery(
 ) {
     fun isEmpty(): Boolean {
         return (
-                text == null &&
-                        textStartsWith == null &&
-                        textContains == null &&
-                        className == null &&
-                        contentDescription == null &&
-                        contentDescriptionStartsWith == null &&
-                        contentDescriptionContains == null &&
-                        resourceId == null &&
-                        instance == null &&
-                        enabled == null &&
-                        focused == null &&
-                        pkg == null
-                )
+            text == null &&
+                textStartsWith == null &&
+                textContains == null &&
+                className == null &&
+                contentDescription == null &&
+                contentDescriptionStartsWith == null &&
+                contentDescriptionContains == null &&
+                resourceId == null &&
+                instance == null &&
+                enabled == null &&
+                focused == null &&
+                pkg == null
+            )
     }
 
     fun toUiSelector(): UiSelector {
@@ -379,6 +379,14 @@ class MaestroServer {
         "handlePermission" bind POST to {
             val body = Json.decodeFromString<PermissionCommand>(it.bodyString())
             MaestroAutomator.instance.handlePermission(body.code)
+            Response(OK)
+        },
+        "selectFineLocation" bind POST to {
+            MaestroAutomator.instance.selectFineLocation()
+            Response(OK)
+        },
+        "selectCoarseLocation" bind POST to {
+            MaestroAutomator.instance.selectCoarseLocation()
             Response(OK)
         }
     )
