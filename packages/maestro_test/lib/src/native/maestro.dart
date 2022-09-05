@@ -258,4 +258,49 @@ class Maestro {
         .map((dynamic e) => NativeWidget.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  /// Grants the permission that the currently visible native permission request
+  /// dialog is asking for.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> grantPermissionWhenInUse() {
+    return _wrapPost(
+      'handlePermission',
+      <String, String>{'code': 'WHILE_USING'},
+    );
+  }
+
+  /// Grants the permission that the currently visible native permission request
+  /// dialog is asking for.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> grantPermissionOnlyThisTime() {
+    return _wrapPost(
+      'handlePermission',
+      <String, String>{'code': 'ONLY_THIS_TIME'},
+    );
+  }
+
+  /// Denies the permission that the currently visible native permission request
+  /// dialog is asking for.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> denyPermission() {
+    return _wrapPost(
+      'handlePermission',
+      <String, String>{'code': 'DENIED'},
+    );
+  }
+
+  /// Select the "fine location" (aka "precise") setting on the currently
+  /// visible native permission request dialog.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> selectFineLocation() => _wrapPost('selectFineLocation');
+
+  /// Select the "coarse location" (aka "approximate") setting on the currently
+  /// visible native permission request dialog.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> selectCoarseLocation() => _wrapPost('selectCoarseLocation');
 }
