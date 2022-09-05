@@ -292,17 +292,17 @@ class MaestroAutomator {
         delay()
     }
 
-    fun handleLocationPermission(level: PermissionLevel) {
-        when (level) {
-            PermissionLevel.WHILE_USING -> {
+    fun handleLocationPermission(code: String) {
+        when (code) {
+            "WHILE_USING" -> {
                 tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"))
             }
 
-            PermissionLevel.ONLY_THIS_TIME -> {
+            "ONLY_THIS_TIME" -> {
                 tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_one_time_button"))
             }
 
-            PermissionLevel.DENIED -> {
+            "DENIED" -> {
                 tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_deny_button"))
             }
         }

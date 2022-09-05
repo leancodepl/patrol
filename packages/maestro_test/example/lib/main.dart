@@ -1,4 +1,5 @@
 import 'package:example/loading_screen.dart';
+import 'package:example/location_screen.dart';
 import 'package:example/notifications_screen.dart';
 import 'package:example/overlay_screen.dart';
 import 'package:example/scrolling_screen.dart';
@@ -157,6 +158,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               ),
             ),
             child: const Text('Open scrolling screen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const LocationScreen(),
+              ),
+            ),
+            child: const Text('Open location screen'),
           ),
         ],
       ),

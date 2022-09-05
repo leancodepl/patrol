@@ -41,6 +41,9 @@ data class SwipeCommand(
 )
 
 @Serializable
+data class LocationPermissionCommand(var code: String)
+
+@Serializable
 data class TapOnNotificationByIndexCommand(val index: Int)
 
 @Serializable
@@ -374,7 +377,8 @@ class MaestroServer {
             Response(OK)
         },
         "handleLocationPermission" bind POST to {
-            MaestroAutomator.instance.handleLocationPermission()
+            val body = Json.decodeFromString<LocationPermissionCommand>(it.bodyString())
+            MaestroAutomator.instance.handleLocationPermission(body.code)
             Response(OK)
         }
     )
