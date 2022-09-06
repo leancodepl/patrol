@@ -14,6 +14,7 @@ dependencies:
   flutter_local_notifications: ^10.0.0-dev.14
   geolocator: ^9.0.1
   permission_handler: ^10.0.0
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:
