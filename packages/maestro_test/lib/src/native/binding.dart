@@ -23,6 +23,12 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
   @override
+  void reportExceptionNoticed(FlutterErrorDetails exception) {
+    super.reportExceptionNoticed(exception);
+    print('noticed exception');
+  }
+
+  @override
   void initInstances() {
     super.initInstances();
     _instance = this;
