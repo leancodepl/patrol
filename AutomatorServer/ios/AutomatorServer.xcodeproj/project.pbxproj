@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		982B5EDA28C7949600CD4A88 /* GCDWebServer in Frameworks */ = {isa = PBXBuildFile; productRef = 982B5ED928C7949600CD4A88 /* GCDWebServer */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
+		9891CCAF28C7938E00D0BA5E /* GCDWebServer in Frameworks */ = {isa = PBXBuildFile; productRef = 9891CCAE28C7938E00D0BA5E /* GCDWebServer */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
 		98B3654728903353008B5B8B /* MaestroServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* MaestroServer.swift */; };
 		98B3654928903360008B5B8B /* MaestroAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654828903360008B5B8B /* MaestroAutomation.swift */; };
@@ -56,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				982B5EDA28C7949600CD4A88 /* GCDWebServer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,12 +66,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9891CCAF28C7938E00D0BA5E /* GCDWebServer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		982B5ED828C7949600CD4A88 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		98B3653A28903325008B5B8B /* AutomatorServerUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -90,6 +101,7 @@
 				98E9E57F288FFC0900B62271 /* AutomatorServer */,
 				98B3653A28903325008B5B8B /* AutomatorServerUITests */,
 				98E9E57E288FFC0900B62271 /* Products */,
+				982B5ED828C7949600CD4A88 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,6 +145,9 @@
 				98B3654028903325008B5B8B /* PBXTargetDependency */,
 			);
 			name = AutomatorServerUITests;
+			packageProductDependencies = (
+				982B5ED928C7949600CD4A88 /* GCDWebServer */,
+			);
 			productName = AutomatorServerUITests;
 			productReference = 98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -151,6 +166,7 @@
 			);
 			name = AutomatorServer;
 			packageProductDependencies = (
+				9891CCAE28C7938E00D0BA5E /* GCDWebServer */,
 			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
@@ -186,6 +202,7 @@
 			);
 			mainGroup = 98E9E574288FFC0900B62271;
 			packageReferences = (
+				9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */,
 			);
 			productRefGroup = 98E9E57E288FFC0900B62271 /* Products */;
 			projectDirPath = "";
@@ -523,6 +540,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SlaunchaMan/GCDWebServer";
+			requirement = {
+				branch = "swift-package-manager";
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		982B5ED928C7949600CD4A88 /* GCDWebServer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */;
+			productName = GCDWebServer;
+		};
+		9891CCAE28C7938E00D0BA5E /* GCDWebServer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */;
+			productName = GCDWebServer;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 98E9E575288FFC0900B62271 /* Project object */;
 }

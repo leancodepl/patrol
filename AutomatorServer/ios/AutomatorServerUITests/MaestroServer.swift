@@ -5,11 +5,15 @@ class MaestroServer {
 
   private let port: Int
 
-  private let loop: EventLoop
+  private let server: GCDWebServer
 
   private let startTime: String
 
   private let automation = MaestroAutomation()
+  
+  var isRunning: Bool {
+    get { server.isRunning }
+  }
 
   init() throws {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -19,14 +23,8 @@ class MaestroServer {
       throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
     }
     self.port = port
-
-    guard let kQueueSelector = try? KqueueSelector() else {
-      throw MaestroError.generic("Failed to create KqueueSelector")
-    }
-    guard let loop = try? SelectorEventLoop(selector: kQueueSelector) else {
-      throw MaestroError.generic("Failed to create SelectorEventLoop")
-    }
-    self.loop = loop
+    
+    self.server = GCDWebServer()
 
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "HH:mm:ss"
@@ -63,35 +61,44 @@ class MaestroServer {
       startResponse("200 OK", [])
       sendBody(Data())  // send EOF
     case ("POST", "openApp"):
-      let input = environ["swsgi.input"] as! SWSGIInput
-      JSONReader.read(input) { json in
-        guard let map = json as? [String: Any] else {
-          Logger.shared.i("Failed to type assert")
-          return
-        }
-        let bundleId = map["id"] as! String
-        self.automation.openApp(bundleId)
-        startResponse("200 OK", [])
-        sendBody(Data())  // send EOF
-      }
+      Logger.shared.i("openApp")
+//      let input = environ["swsgi.input"] as! SWSGIInput
+//      JSONReader.read(input) { json in
+//        guard let map = json as? [String: Any] else {
+//          Logger.shared.i("Failed to type assert")
+//          return
+//        }
+//        let bundleId = map["id"] as! String
+//        self.automation.openApp(bundleId)
+//        startResponse("200 OK", [])
+//        sendBody(Data())  // send EOF
+//      }
     default:
       startResponse("404 Not Found", [])
       sendBody(Data())  // send EOF
     }
   }
 
-  func start() throws {
+  func start() {
     Logger.shared.i("Starting server...")
-    let server = DefaultHTTPServer(eventLoop: loop, interface: "::", port: port, app: router)
-    try server.start()
+    server.addHandler { method, url, headers, path, query in
+      return GCDWebServerRequest(method: method, url: url, headers: headers, path: path, query: query)
+    } asyncProcessBlock: { request, block in
+      Logger.shared.i("New request \(request)")
+      do {
+        try request.write(Data("All is good".utf8))
+      } catch let err {
+        Logger.shared.e("Caught error: \(err)")
+      }
+    }
+
+    server.start(withPort: UInt(port), bonjourName: nil)
     logServerStarted()
-    loop.runForever()
-    Logger.shared.i("Server stopped (loop finished)")
   }
 
   func stop() {
     Logger.shared.i("Stopping server...")
-    loop.stop()
+    server.stop()
     Logger.shared.i("Server stopped")
   }
 
