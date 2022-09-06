@@ -12,6 +12,8 @@ Future<void> main() async {
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
+      await $('Open webview screen').scrollTo();
+
       await maestro.tap(const Selector(contentDescriptionContains: 'webview'));
 
       await $.pumpAndSettle();
