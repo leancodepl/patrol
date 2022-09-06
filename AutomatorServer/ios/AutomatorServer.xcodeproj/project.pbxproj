@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
+		987CB20028C769AE00FB25C6 /* GCDWebServers in Frameworks */ = {isa = PBXBuildFile; productRef = 987CB1FF28C769AE00FB25C6 /* GCDWebServers */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
 		98B3654728903353008B5B8B /* MaestroServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* MaestroServer.swift */; };
@@ -19,7 +20,6 @@
 		98E9E588288FFC0900B62271 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98E9E586288FFC0900B62271 /* Main.storyboard */; };
 		98E9E58A288FFC0A00B62271 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98E9E589288FFC0A00B62271 /* Assets.xcassets */; };
 		98E9E58D288FFC0A00B62271 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98E9E58B288FFC0A00B62271 /* LaunchScreen.storyboard */; };
-		98F9CBBB28C7678E00E0DE3D /* GCDWebServers in Frameworks */ = {isa = PBXBuildFile; productRef = 98F9CBBA28C7678E00E0DE3D /* GCDWebServers */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,7 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98F9CBBB28C7678E00E0DE3D /* GCDWebServers in Frameworks */,
+				987CB20028C769AE00FB25C6 /* GCDWebServers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +92,6 @@
 				98E9E57F288FFC0900B62271 /* AutomatorServer */,
 				98B3653A28903325008B5B8B /* AutomatorServerUITests */,
 				98E9E57E288FFC0900B62271 /* Products */,
-				F4A2DACF9E06E8926C14A9FA /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -117,13 +116,6 @@
 				98E9E58E288FFC0A00B62271 /* Info.plist */,
 			);
 			path = AutomatorServer;
-			sourceTree = "<group>";
-		};
-		F4A2DACF9E06E8926C14A9FA /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -161,7 +153,7 @@
 			);
 			name = AutomatorServer;
 			packageProductDependencies = (
-				98F9CBBA28C7678E00E0DE3D /* GCDWebServers */,
+				987CB1FF28C769AE00FB25C6 /* GCDWebServers */,
 			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
@@ -197,7 +189,7 @@
 			);
 			mainGroup = 98E9E574288FFC0900B62271;
 			packageReferences = (
-				98F9CBB928C7678E00E0DE3D /* XCRemoteSwiftPackageReference "GCDWebServer" */,
+				987CB1FE28C769AE00FB25C6 /* XCRemoteSwiftPackageReference "GCDWebServer" */,
 			);
 			productRefGroup = 98E9E57E288FFC0900B62271 /* Products */;
 			projectDirPath = "";
@@ -537,20 +529,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		98F9CBB928C7678E00E0DE3D /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
+		987CB1FE28C769AE00FB25C6 /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/JacobHearst/GCDWebServer";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				branch = master;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		98F9CBBA28C7678E00E0DE3D /* GCDWebServers */ = {
+		987CB1FF28C769AE00FB25C6 /* GCDWebServers */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 98F9CBB928C7678E00E0DE3D /* XCRemoteSwiftPackageReference "GCDWebServer" */;
+			package = 987CB1FE28C769AE00FB25C6 /* XCRemoteSwiftPackageReference "GCDWebServer" */;
 			productName = GCDWebServers;
 		};
 /* End XCSwiftPackageProductDependency section */
