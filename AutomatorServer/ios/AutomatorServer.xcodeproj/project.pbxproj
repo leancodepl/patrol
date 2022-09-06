@@ -19,7 +19,7 @@
 		98E9E588288FFC0900B62271 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98E9E586288FFC0900B62271 /* Main.storyboard */; };
 		98E9E58A288FFC0A00B62271 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 98E9E589288FFC0A00B62271 /* Assets.xcassets */; };
 		98E9E58D288FFC0A00B62271 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98E9E58B288FFC0A00B62271 /* LaunchScreen.storyboard */; };
-		B2EB9543E5C7F184F06F734D /* Pods_AutomatorServerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC655E5A875BCCFF74A4B1C5 /* Pods_AutomatorServerUITests.framework */; };
+		98F9CBBB28C7678E00E0DE3D /* GCDWebServers in Frameworks */ = {isa = PBXBuildFile; productRef = 98F9CBBA28C7678E00E0DE3D /* GCDWebServers */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,7 +33,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2820135DF7306AA17A786AF5 /* Pods-AutomatorServerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AutomatorServerUITests.release.xcconfig"; path = "Target Support Files/Pods-AutomatorServerUITests/Pods-AutomatorServerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		983049F92899206400C87527 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		98619AB628A1248F00C17F49 /* XCUIDevice+WiFiAddr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+WiFiAddr.h"; sourceTree = "<group>"; };
 		98619AB728A124CF00C17F49 /* AutomatorServerUITests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AutomatorServerUITests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -51,8 +50,6 @@
 		98E9E589288FFC0A00B62271 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		98E9E58C288FFC0A00B62271 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		98E9E58E288FFC0A00B62271 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CC655E5A875BCCFF74A4B1C5 /* Pods_AutomatorServerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AutomatorServerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D3025A045BB39CF4205131D5 /* Pods-AutomatorServerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AutomatorServerUITests.debug.xcconfig"; path = "Target Support Files/Pods-AutomatorServerUITests/Pods-AutomatorServerUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +57,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B2EB9543E5C7F184F06F734D /* Pods_AutomatorServerUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,20 +64,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98F9CBBB28C7678E00E0DE3D /* GCDWebServers in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		311B0E662889C0ECD1FB0278 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				CC655E5A875BCCFF74A4B1C5 /* Pods_AutomatorServerUITests.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		98B3653A28903325008B5B8B /* AutomatorServerUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -103,7 +92,6 @@
 				98E9E57F288FFC0900B62271 /* AutomatorServer */,
 				98B3653A28903325008B5B8B /* AutomatorServerUITests */,
 				98E9E57E288FFC0900B62271 /* Products */,
-				311B0E662889C0ECD1FB0278 /* Frameworks */,
 				F4A2DACF9E06E8926C14A9FA /* Pods */,
 			);
 			sourceTree = "<group>";
@@ -134,8 +122,6 @@
 		F4A2DACF9E06E8926C14A9FA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				D3025A045BB39CF4205131D5 /* Pods-AutomatorServerUITests.debug.xcconfig */,
-				2820135DF7306AA17A786AF5 /* Pods-AutomatorServerUITests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -147,11 +133,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 98B3654128903325008B5B8B /* Build configuration list for PBXNativeTarget "AutomatorServerUITests" */;
 			buildPhases = (
-				C972F4ECF3532027CD87AF5B /* [CP] Check Pods Manifest.lock */,
 				98B3653528903325008B5B8B /* Sources */,
 				98B3653628903325008B5B8B /* Frameworks */,
 				98B3653728903325008B5B8B /* Resources */,
-				D7F972C80D87A166B5052971 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -176,6 +160,9 @@
 			dependencies = (
 			);
 			name = AutomatorServer;
+			packageProductDependencies = (
+				98F9CBBA28C7678E00E0DE3D /* GCDWebServers */,
+			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
 			productType = "com.apple.product-type.application";
@@ -209,6 +196,9 @@
 				Base,
 			);
 			mainGroup = 98E9E574288FFC0900B62271;
+			packageReferences = (
+				98F9CBB928C7678E00E0DE3D /* XCRemoteSwiftPackageReference "GCDWebServer" */,
+			);
 			productRefGroup = 98E9E57E288FFC0900B62271 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -238,48 +228,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C972F4ECF3532027CD87AF5B /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AutomatorServerUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D7F972C80D87A166B5052971 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AutomatorServerUITests/Pods-AutomatorServerUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AutomatorServerUITests/Pods-AutomatorServerUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AutomatorServerUITests/Pods-AutomatorServerUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		98B3653528903325008B5B8B /* Sources */ = {
@@ -337,7 +285,6 @@
 /* Begin XCBuildConfiguration section */
 		98B3654228903325008B5B8B /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3025A045BB39CF4205131D5 /* Pods-AutomatorServerUITests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -363,7 +310,6 @@
 		};
 		98B3654328903325008B5B8B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2820135DF7306AA17A786AF5 /* Pods-AutomatorServerUITests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -589,6 +535,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		98F9CBB928C7678E00E0DE3D /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/JacobHearst/GCDWebServer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		98F9CBBA28C7678E00E0DE3D /* GCDWebServers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98F9CBB928C7678E00E0DE3D /* XCRemoteSwiftPackageReference "GCDWebServer" */;
+			productName = GCDWebServers;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 98E9E575288FFC0900B62271 /* Project object */;
 }
