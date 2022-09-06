@@ -17,8 +17,8 @@ class MaestroBinding extends IntegrationTestWidgetsFlutterBinding {
     return _instance!;
   }
 
-  // Remove once https://github.com/flutter/flutter/pull/108430 is available on
-  // the stable channel
+  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
+  // available on the stable channel
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
