@@ -1,30 +1,17 @@
-import GCDWebServer
+import Telegraph
 import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-  var server: GCDWebServer?
+  var server: Server?
 
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    self.server = GCDWebServer()
-    self.server?.addDefaultHandler(
-      forMethod: "GET", request: GCDWebServerRequest.self,
-      processBlock: { request in
-        return GCDWebServerDataResponse(text: "Hello World")
-      })
-
-    do {
-      try server?.start(options: [
-        GCDWebServerOption_Port: 8081,
-        GCDWebServerOption_BindToLocalhost: true,
-      ])
-      print("Server started")
-    } catch let err {
-      print("Failed to start server: \(err)")
-    }
+    self.server = Server()
+    self.server?.route(.GET, "/") { (.ok, "Hello from AutomatorServer example app") }
+    try! server?.start(port: 8081)
 
     return true
   }

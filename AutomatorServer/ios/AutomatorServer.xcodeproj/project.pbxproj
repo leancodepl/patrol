@@ -7,11 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		982B5EDA28C7949600CD4A88 /* GCDWebServer in Frameworks */ = {isa = PBXBuildFile; productRef = 982B5ED928C7949600CD4A88 /* GCDWebServer */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
+		98615FE228C89C11003EAF35 /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 98615FE128C89C11003EAF35 /* Telegraph */; };
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
-		9891CCAF28C7938E00D0BA5E /* GCDWebServer in Frameworks */ = {isa = PBXBuildFile; productRef = 9891CCAE28C7938E00D0BA5E /* GCDWebServer */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
 		98B3654728903353008B5B8B /* MaestroServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* MaestroServer.swift */; };
 		98B3654928903360008B5B8B /* MaestroAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654828903360008B5B8B /* MaestroAutomation.swift */; };
@@ -58,7 +57,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				982B5EDA28C7949600CD4A88 /* GCDWebServer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,7 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9891CCAF28C7938E00D0BA5E /* GCDWebServer in Frameworks */,
+				98615FE228C89C11003EAF35 /* Telegraph in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,7 +144,6 @@
 			);
 			name = AutomatorServerUITests;
 			packageProductDependencies = (
-				982B5ED928C7949600CD4A88 /* GCDWebServer */,
 			);
 			productName = AutomatorServerUITests;
 			productReference = 98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */;
@@ -166,7 +163,7 @@
 			);
 			name = AutomatorServer;
 			packageProductDependencies = (
-				9891CCAE28C7938E00D0BA5E /* GCDWebServer */,
+				98615FE128C89C11003EAF35 /* Telegraph */,
 			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
@@ -202,7 +199,7 @@
 			);
 			mainGroup = 98E9E574288FFC0900B62271;
 			packageReferences = (
-				9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */,
+				98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */,
 			);
 			productRefGroup = 98E9E57E288FFC0900B62271 /* Products */;
 			projectDirPath = "";
@@ -542,26 +539,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */ = {
+		98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SlaunchaMan/GCDWebServer";
+			repositoryURL = "https://github.com/Building42/Telegraph";
 			requirement = {
-				branch = "swift-package-manager";
+				branch = main;
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		982B5ED928C7949600CD4A88 /* GCDWebServer */ = {
+		98615FE128C89C11003EAF35 /* Telegraph */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */;
-			productName = GCDWebServer;
-		};
-		9891CCAE28C7938E00D0BA5E /* GCDWebServer */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9891CCAD28C7938E00D0BA5E /* XCRemoteSwiftPackageReference "GCDWebServer" */;
-			productName = GCDWebServer;
+			package = 98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */;
+			productName = Telegraph;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
