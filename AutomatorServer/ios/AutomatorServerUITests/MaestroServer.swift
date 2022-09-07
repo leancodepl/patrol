@@ -4,6 +4,10 @@ struct OpenAppCommand: Codable {
   var id: String
 }
 
+struct TapCommand: Codable {
+  var text: String
+}
+
 class MaestroServer {
   private let envPortKey = "MAESTRO_PORT"
 
@@ -54,6 +58,17 @@ class MaestroServer {
     server.route(.POST, "pressHome") { request in
       self.automation.pressHome()
       return HTTPResponse(.ok)
+    }
+
+    server.route(.POST, "tap") { request in
+      let decoder = JSONDecoder()
+      do {
+        let command = try decoder.decode(TapCommand.self, from: request.body)
+        self.automation.tap(command.text)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
     }
 
     server.route(.POST, "openApp") { request in

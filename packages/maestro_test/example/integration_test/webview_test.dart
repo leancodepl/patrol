@@ -18,6 +18,8 @@ Future<void> main() async {
 
       await $.pumpAndSettle();
 
+      await Future<void>.delayed(const Duration(seconds: 10));
+
       await maestro.waitAndTap($, const Selector(text: 'Accept cookies'));
       await maestro.waitAndTap($, const Selector(text: 'Select items'));
       await maestro.waitAndTap($, const Selector(text: 'Developer'));

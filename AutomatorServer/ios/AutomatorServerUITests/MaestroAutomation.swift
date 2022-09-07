@@ -26,6 +26,13 @@ class MaestroAutomation {
     }
   }
 
+  func tap(_ text: String) {
+    runAction("tapping on \(text)") {
+      let app = XCUIApplication(bundleIdentifier: "pl.leancode.maestro.Example")
+      app.buttons[text].tap()
+    }
+  }
+
   private func runAction(_ log: String, block: @escaping () -> Void) {
     dispatchOnMainThread {
       Logger.shared.i("\(log)...")
