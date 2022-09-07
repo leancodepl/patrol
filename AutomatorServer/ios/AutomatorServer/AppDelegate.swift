@@ -16,7 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return GCDWebServerDataResponse(text: "Hello World")
       })
 
-    self.server?.start(withPort: 8081, bonjourName: nil)
+    do {
+      try server?.start(options: [
+        GCDWebServerOption_Port: 8081,
+        GCDWebServerOption_BindToLocalhost: true,
+      ])
+      print("Server started")
+    } catch let err {
+      print("Failed to start server: \(err)")
+    }
 
     return true
   }

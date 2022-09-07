@@ -16,13 +16,13 @@ class MaestroServer {
   }
 
   init() throws {
-    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-      throw MaestroError.generic("\(envPortKey) is null")
-    }
-    guard let port = Int(portStr) else {
-      throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
-    }
-    self.port = port
+    //    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+    //      throw MaestroError.generic("\(envPortKey) is null")
+    //    }
+    //    guard let port = Int(portStr) else {
+    //      throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
+    //    }
+    self.port = 8081
 
     self.server = GCDWebServer()
 
@@ -83,13 +83,14 @@ class MaestroServer {
     Logger.shared.i("Starting server...")
     server.addDefaultHandler(
       forMethod: "GET", request: GCDWebServerRequest.self,
-      processBlock: { request in
-        return GCDWebServerDataResponse(html: "<html><body><p>Hello World</p></body></html>")
+      asyncProcessBlock: { request, completionBlock in
+        completionBlock(GCDWebServerDataResponse(text: "Hello world"))
       })
 
     do {
       try server.start(options: [
-        GCDWebServerOption_BindToLocalhost: true, GCDWebServerOption_Port: port,
+        GCDWebServerOption_Port: port,
+        GCDWebServerOption_BindToLocalhost: true,
       ])
       logServerStarted()
     } catch let err {
