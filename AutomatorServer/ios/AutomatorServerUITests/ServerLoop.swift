@@ -5,7 +5,7 @@ class ServerLoop: XCTestCase {
     Logger.shared.i("Starting server loop...")
 
     let maestroServer = try MaestroServer()
-    maestroServer.start()
+    try maestroServer.start()
 
     while maestroServer.isRunning {}
   }

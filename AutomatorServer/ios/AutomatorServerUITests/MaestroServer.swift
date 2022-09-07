@@ -66,7 +66,7 @@ class MaestroServer {
     }
   }
 
-  func start() {
+  func start() throws {
     Logger.shared.i("Starting server...")
     do {
       server.route(.GET, "/") { (.ok, "Hello from AutomatorServer on iOS") }
@@ -75,6 +75,7 @@ class MaestroServer {
       Logger.shared.i("Server started")
     } catch let err {
       Logger.shared.e("Failed to start server: \(err)")
+      throw err
     }
   }
 
