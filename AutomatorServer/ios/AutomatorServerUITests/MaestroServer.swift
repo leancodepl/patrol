@@ -75,7 +75,7 @@ class MaestroServer {
       try server.start(port: 8081)
       setUpRoutes()
       dispatchGroup.enter()
-      Logger.shared.i("Server started")
+      logServerStarted()
     } catch let err {
       Logger.shared.e("Failed to start server: \(err)")
       throw err
