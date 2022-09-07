@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
 		98615FE228C89C11003EAF35 /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 98615FE128C89C11003EAF35 /* Telegraph */; };
+		98615FE428C89D62003EAF35 /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 98615FE328C89D62003EAF35 /* Telegraph */; };
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
@@ -57,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98615FE428C89D62003EAF35 /* Telegraph in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +146,7 @@
 			);
 			name = AutomatorServerUITests;
 			packageProductDependencies = (
+				98615FE328C89D62003EAF35 /* Telegraph */,
 			);
 			productName = AutomatorServerUITests;
 			productReference = 98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */;
@@ -551,6 +554,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		98615FE128C89C11003EAF35 /* Telegraph */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */;
+			productName = Telegraph;
+		};
+		98615FE328C89D62003EAF35 /* Telegraph */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */;
 			productName = Telegraph;

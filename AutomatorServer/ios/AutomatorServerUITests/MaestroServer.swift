@@ -1,11 +1,11 @@
-import GCDWebServer
+import Telegraph
 
 class MaestroServer {
   private let envPortKey = "MAESTRO_PORT"
 
   private let port: Int
 
-  private let server: GCDWebServer
+  private let server: Server
 
   private let startTime: String
 
@@ -24,7 +24,7 @@ class MaestroServer {
     //    }
     self.port = 8081
 
-    self.server = GCDWebServer()
+    self.server = Server()
 
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "HH:mm:ss"
@@ -81,18 +81,10 @@ class MaestroServer {
 
   func start() {
     Logger.shared.i("Starting server...")
-    server.addDefaultHandler(
-      forMethod: "GET", request: GCDWebServerRequest.self,
-      asyncProcessBlock: { request, completionBlock in
-        completionBlock(GCDWebServerDataResponse(text: "Hello world"))
-      })
-
     do {
-      try server.start(options: [
-        GCDWebServerOption_Port: port,
-        GCDWebServerOption_BindToLocalhost: true,
-      ])
-      logServerStarted()
+      server.route(.GET, "/") { (.ok, "Hello from AutomatorServer on iOS") }
+      try server.start(port: 8081)
+      Logger.shared.i("server started")
     } catch let err {
       Logger.shared.e("Failed to start server: \(err)")
     }
