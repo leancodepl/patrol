@@ -29,25 +29,31 @@ Future<void> main() async {
       await $(FloatingActionButton).tap();
       await $(FloatingActionButton).tap();
 
+      await _wait();
+
       await maestro.pressHome();
-      await Future<void>.delayed(const Duration(seconds: 3));
 
       $.log("I went to home! Now I'm gonna open the mail app");
 
+      await _wait();
+
       await maestro.openApp(id: mapsId);
-      await Future<void>.delayed(const Duration(seconds: 3));
       $.log("Opened mail app! Now I'm gonna go to home");
 
+      await _wait();
+
       await maestro.pressHome();
-      await Future<void>.delayed(const Duration(seconds: 3));
 
       await maestro.openApp(id: myAppId);
-      await Future<void>.delayed(const Duration(seconds: 1));
       $.log('Opening the app under test again...');
 
       expect($(#counterText).text, '2');
+
+      await _wait();
 
       $.log("More functionality is not implemented, so I'm gonna head out now");
     },
   );
 }
+
+Future<void> _wait() => Future<void>.delayed(const Duration(seconds: 2));

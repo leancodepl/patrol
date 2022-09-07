@@ -8,10 +8,10 @@ class Logger {
   private init() {}
 
   func i(_ msg: String) {
-    print("\(TAG): INFO: \(msg)")
+    NSLog("\(TAG): INFO: \(msg)")
   }
 
   func e(_ msg: String) {
-    print("\(TAG): ERROR: \(msg)")
+    NSLog("\(TAG): ERROR: \(msg)")
   }
 }

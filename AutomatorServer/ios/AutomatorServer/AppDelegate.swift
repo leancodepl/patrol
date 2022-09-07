@@ -1,13 +1,22 @@
+import Telegraph
 import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+  lazy var server: Server = {
+    let server = Server()
+    server.route(.GET, "/") { (.ok, "Hello from AutomatorServer example app") }
+
+    return server
+  }()
 
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Override point for customization after application launch.
+
+    try! server.start(port: 8081)
+
     return true
   }
 
