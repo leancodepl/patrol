@@ -3,15 +3,19 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-  var server: Server?
+  lazy var server: Server = {
+    let server = Server()
+    server.route(.GET, "/") { (.ok, "Hello from AutomatorServer example app") }
+    
+    return server
+  }()
 
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    self.server = Server()
-    self.server?.route(.GET, "/") { (.ok, "Hello from AutomatorServer example app") }
-    try! server?.start(port: 8081)
+    
+    try! server.start(port: 8081)
 
     return true
   }
