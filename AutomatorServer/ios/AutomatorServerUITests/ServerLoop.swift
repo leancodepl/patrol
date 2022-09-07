@@ -7,6 +7,6 @@ class ServerLoop: XCTestCase {
     let maestroServer = try MaestroServer()
     maestroServer.start()
 
-    try! await Task.sleep(nanoseconds: UInt64(10 * 60 * Double(NSEC_PER_SEC)))
+    while maestroServer.isRunning {}
   }
 }

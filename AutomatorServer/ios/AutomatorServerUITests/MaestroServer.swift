@@ -20,13 +20,13 @@ class MaestroServer {
   }
 
   init() throws {
-    //    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-    //      throw MaestroError.generic("\(envPortKey) is null")
-    //    }
-    //    guard let port = Int(portStr) else {
-    //      throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
-    //    }
-    self.port = 8081
+    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+      throw MaestroError.generic("\(envPortKey) is null")
+    }
+    guard let port = Int(portStr) else {
+      throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
+    }
+    self.port = port
 
     self.server = Server()
 
@@ -56,9 +56,13 @@ class MaestroServer {
 
     server.route(.POST, "openApp") { request in
       let decoder = JSONDecoder()
-      let command = try! decoder.decode(OpenAppCommand.self, from: request.body)
-      self.automation.openApp(command.id)
-      return HTTPResponse(.ok)
+      do {
+        let command = try decoder.decode(OpenAppCommand.self, from: request.body)
+        self.automation.openApp(command.id)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
     }
   }
 
