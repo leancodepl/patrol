@@ -33,7 +33,6 @@ class CounterTemplate extends AppTestTemplate {
   // ignore_for_file: avoid_print
   import 'package:$projectName/main.dart';
   import 'package:flutter/material.dart';
-  import 'package:flutter_test/flutter_test.dart';
   import 'package:maestro_test/maestro_test.dart';
   
   // This is an example integration test using Maestro. Use it as a base to
@@ -108,7 +107,6 @@ class BasicTemplate extends AppTestTemplate {
   String generateCode() => r'''
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/maestro_test.dart';
 
 // This is an example integration test using Maestro. Use it as a base to create
@@ -120,7 +118,7 @@ void main() {
   final maestro = Maestro.forTest();
 
   maestroTest(
-    'counter state is the same after going to Home and switching apps',
+    'counter state is the same after going to home and switching apps',
     ($) async {
       // Replace with your own app widget.
       await $.pumpWidgetAndSettle(

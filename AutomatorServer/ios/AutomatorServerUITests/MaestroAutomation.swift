@@ -14,15 +14,34 @@ class MaestroAutomation {
   }
 
   func pressHome() {
-    Logger.shared.i("pressing home button...")
-    device.press(XCUIDevice.Button.home)
-    Logger.shared.i("done")
+    runAction("pressing home button") {
+      self.device.press(XCUIDevice.Button.home)
+    }
   }
 
   func openApp(_ bundleIdentifier: String) {
-    Logger.shared.i("opening app with bundle id \(bundleIdentifier)...")
-    let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
-    app.activate()
-    Logger.shared.i("done")
+    runAction("opening app with id \(bundleIdentifier)") {
+      let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+      app.activate()
+    }
+  }
+
+  private func runAction(_ log: String, block: @escaping () -> Void) {
+    dispatchOnMainThread {
+      Logger.shared.i("\(log)...")
+      block()
+      Logger.shared.i("done \(log)")
+    }
+  }
+
+  private func dispatchOnMainThread(block: @escaping () -> Void) {
+    let group = DispatchGroup()
+    group.enter()
+    DispatchQueue.main.async {
+      block()
+      group.leave()
+    }
+
+    group.wait()
   }
 }

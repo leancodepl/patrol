@@ -1,3 +1,8 @@
+## Unreleased
+
+- Migrate iOS AutomatorServer to a more stable HTTP server, which doesn't crash
+  randomly
+
 ## 0.5.1
 
 - Add support for handling native permission requests on Android (#232)

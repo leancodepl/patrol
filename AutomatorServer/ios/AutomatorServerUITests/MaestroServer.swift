@@ -1,12 +1,25 @@
-import Embassy
-import EnvoyAmbassador
+import Telegraph
+
+struct OpenAppCommand: Codable {
+  var id: String
+}
 
 class MaestroServer {
   private let envPortKey = "MAESTRO_PORT"
-  
+
   private let port: Int
 
-  private let loop: EventLoop
+  private let server: Server
+
+  private let startTime: String
+
+  private let automation = MaestroAutomation()
+
+  private let dispatchGroup = DispatchGroup()
+
+  var isRunning: Bool {
+    server.isRunning
+  }
 
   init() throws {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -17,76 +30,72 @@ class MaestroServer {
     }
     self.port = port
 
-    guard let kQueueSelector = try? KqueueSelector() else {
-      throw MaestroError.generic("Failed to create KqueueSelector")
-    }
-    guard let loop = try? SelectorEventLoop(selector: kQueueSelector) else {
-      throw MaestroError.generic("Failed to create SelectorEventLoop")
-    }
-    self.loop = loop
+    self.server = Server()
+
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "HH:mm:ss"
+    startTime = dateFormatter.string(from: Date())
   }
 
-  private let automation = MaestroAutomation()
+  func setUpRoutes() {
+    server.route(.GET, "") { request in
+      HTTPResponse(content: "Hello from AutomatorServer on iOS!\nStarted on \(self.startTime)")
+    }
 
-  func router(
-    environ: [String: Any],
-    startResponse: @escaping ((String, [(String, String)]) -> Void),
-    sendBody: @escaping ((Data) -> Void)
-  ) {
-    let pathInfo = environ["PATH_INFO"]! as! String
-    let method = environ["REQUEST_METHOD"]! as! String
-    Logger.shared.i("\(method) \(pathInfo)")
+    server.route(.GET, "isRunning") { request in
+      HTTPResponse(.ok, headers: [:], content: "All is good.")
+    }
 
-    let index = pathInfo.index(pathInfo.startIndex, offsetBy: 1)  // ugly Swift
-    let action = String(pathInfo[index...])
-
-    switch (method, action) {
-    case ("GET", ""):
-      startResponse("200 OK", [])
-      sendBody(Data("Hello from AutomatorServer on iOS!".utf8))
-      sendBody(Data())  // send EOF
-    case ("GET", "isRunning"):
-      startResponse("200 OK", [])
-      sendBody(Data("All is good.".utf8))
-      sendBody(Data())  // send EOF
-    case ("POST", "stop"):
+    server.route(.POST, "stop") { request in
       self.stop()
-      startResponse("200 OK", [])
-      sendBody(Data())  // send EOF
-    case ("POST", "pressHome"):
+      return HTTPResponse(.ok)
+    }
+
+    server.route(.POST, "pressHome") { request in
       self.automation.pressHome()
-      startResponse("200 OK", [])
-      sendBody(Data())  // send EOF
-    case ("POST", "openApp"):
-      let input = environ["swsgi.input"] as! SWSGIInput
-      JSONReader.read(input) { json in
-        guard let map = json as? [String: Any] else {
-          Logger.shared.i("Failed to type assert")
-          return
-        }
-        let bundleId = map["id"] as! String
-        self.automation.openApp(bundleId)
-        startResponse("200 OK", [])
-        sendBody(Data())  // send EOF
+      return HTTPResponse(.ok)
+    }
+
+    server.route(.POST, "openApp") { request in
+      let decoder = JSONDecoder()
+      do {
+        let command = try decoder.decode(OpenAppCommand.self, from: request.body)
+        self.automation.openApp(command.id)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
       }
-    default:
-      startResponse("404 Not Found", [])
-      sendBody(Data())  // send EOF
     }
   }
 
   func start() throws {
     Logger.shared.i("Starting server...")
-    let server = DefaultHTTPServer(eventLoop: loop, interface: "::", port: port, app: router)
-    try server.start()
-    Logger.shared.i("Server started on http://\(automation.ipAddress!):\(port) (http://localhost:\(port))")
-    loop.runForever()
-    Logger.shared.i("Server stopped (loop finished)")
+    do {
+      server.route(.GET, "/") { (.ok, "Hello from AutomatorServer on iOS") }
+      try server.start(port: 8081)
+      setUpRoutes()
+      dispatchGroup.enter()
+      logServerStarted()
+    } catch let err {
+      Logger.shared.e("Failed to start server: \(err)")
+      throw err
+    }
+
+    dispatchGroup.wait()
   }
 
   func stop() {
     Logger.shared.i("Stopping server...")
-    loop.stop()
+    server.stop()
+    dispatchGroup.leave()
     Logger.shared.i("Server stopped")
+  }
+
+  func logServerStarted() {
+    if let ip = automation.ipAddress {
+      Logger.shared.i("Server started on http://\(ip):\(port) (http://localhost:\(port))")
+    } else {
+      Logger.shared.i("Server started on http://localhost:\(port)")
+    }
   }
 }
