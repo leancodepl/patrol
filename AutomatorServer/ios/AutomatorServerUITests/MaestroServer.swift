@@ -1,5 +1,9 @@
 import Telegraph
 
+struct OpenAppCommand: Codable {
+  var id: String
+}
+
 class MaestroServer {
   private let envPortKey = "MAESTRO_PORT"
 
@@ -31,51 +35,30 @@ class MaestroServer {
     startTime = dateFormatter.string(from: Date())
   }
 
-  func router(
-    environ: [String: Any],
-    startResponse: @escaping ((String, [(String, String)]) -> Void),
-    sendBody: @escaping ((Data) -> Void)
-  ) {
-    let pathInfo = environ["PATH_INFO"]! as! String
-    let method = environ["REQUEST_METHOD"]! as! String
-    Logger.shared.i("\(method) \(pathInfo)")
+  func setUpRoutes() {
+    server.route(.GET, "") { request in
+      HTTPResponse(content: "Hello from AutomatorServer on iOS!\nStarted on \(self.startTime)")
+    }
 
-    let index = pathInfo.index(pathInfo.startIndex, offsetBy: 1)  // ugly Swift
-    let action = String(pathInfo[index...])
+    server.route(.GET, "isRunning") { request in
+      HTTPResponse(.ok)
+    }
 
-    switch (method, action) {
-    case ("GET", ""):
-      startResponse("200 OK", [])
-      sendBody(Data("Hello from AutomatorServer on iOS!\nStarted on \(startTime)".utf8))
-      sendBody(Data())  // send EOF
-    case ("GET", "isRunning"):
-      startResponse("200 OK", [])
-      sendBody(Data("All is good.".utf8))
-      sendBody(Data())  // send EOF
-    case ("POST", "stop"):
+    server.route(.POST, "stop") { request in
       self.stop()
-      startResponse("200 OK", [])
-      sendBody(Data())  // send EOF
-    case ("POST", "pressHome"):
+      return HTTPResponse(.ok)
+    }
+
+    server.route(.POST, "pressHome") { request in
       self.automation.pressHome()
-      startResponse("200 OK", [])
-      sendBody(Data())  // send EOF
-    case ("POST", "openApp"):
-      Logger.shared.i("openApp")
-    //      let input = environ["swsgi.input"] as! SWSGIInput
-    //      JSONReader.read(input) { json in
-    //        guard let map = json as? [String: Any] else {
-    //          Logger.shared.i("Failed to type assert")
-    //          return
-    //        }
-    //        let bundleId = map["id"] as! String
-    //        self.automation.openApp(bundleId)
-    //        startResponse("200 OK", [])
-    //        sendBody(Data())  // send EOF
-    //      }
-    default:
-      startResponse("404 Not Found", [])
-      sendBody(Data())  // send EOF
+      return HTTPResponse(.ok)
+    }
+
+    server.route(.POST, "openApp") { request in
+      let decoder = JSONDecoder()
+      let command = try! decoder.decode(OpenAppCommand.self, from: request.body)
+      self.automation.openApp(command.id)
+      return HTTPResponse(.ok)
     }
   }
 
@@ -84,7 +67,8 @@ class MaestroServer {
     do {
       server.route(.GET, "/") { (.ok, "Hello from AutomatorServer on iOS") }
       try server.start(port: 8081)
-      Logger.shared.i("server started")
+      setUpRoutes()
+      Logger.shared.i("Server started")
     } catch let err {
       Logger.shared.e("Failed to start server: \(err)")
     }
