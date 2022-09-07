@@ -15,6 +15,8 @@ class MaestroServer {
 
   private let automation = MaestroAutomation()
 
+  private let dispatchGroup = DispatchGroup()
+
   var isRunning: Bool {
     server.isRunning
   }
@@ -41,7 +43,7 @@ class MaestroServer {
     }
 
     server.route(.GET, "isRunning") { request in
-      HTTPResponse(.ok)
+      HTTPResponse(.ok, headers: [:], content: "All is good.")
     }
 
     server.route(.POST, "stop") { request in
@@ -72,16 +74,20 @@ class MaestroServer {
       server.route(.GET, "/") { (.ok, "Hello from AutomatorServer on iOS") }
       try server.start(port: 8081)
       setUpRoutes()
+      dispatchGroup.enter()
       Logger.shared.i("Server started")
     } catch let err {
       Logger.shared.e("Failed to start server: \(err)")
       throw err
     }
+
+    dispatchGroup.wait()
   }
 
   func stop() {
     Logger.shared.i("Stopping server...")
     server.stop()
+    dispatchGroup.leave()
     Logger.shared.i("Server stopped")
   }
 

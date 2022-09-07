@@ -6,7 +6,5 @@ class ServerLoop: XCTestCase {
 
     let maestroServer = try MaestroServer()
     try maestroServer.start()
-
-    while maestroServer.isRunning {}
   }
 }

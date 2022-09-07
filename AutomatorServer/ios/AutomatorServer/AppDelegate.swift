@@ -6,7 +6,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   lazy var server: Server = {
     let server = Server()
     server.route(.GET, "/") { (.ok, "Hello from AutomatorServer example app") }
-    
+
     return server
   }()
 
@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    
+
     try! server.start(port: 8081)
 
     return true
