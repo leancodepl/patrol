@@ -87,9 +87,10 @@ class MaestroServer {
         return GCDWebServerDataResponse(html: "<html><body><p>Hello World</p></body></html>")
       })
 
-  
     do {
-      try server.start(options: [GCDWebServerOption_BindToLocalhost: true, GCDWebServerOption_Port: port])
+      try server.start(options: [
+        GCDWebServerOption_BindToLocalhost: true, GCDWebServerOption_Port: port,
+      ])
       logServerStarted()
     } catch let err {
       Logger.shared.e("Failed to start server: \(err)")

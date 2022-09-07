@@ -1,13 +1,23 @@
+import GCDWebServer
 import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+  var server: GCDWebServer?
 
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Override point for customization after application launch.
+    self.server = GCDWebServer()
+    self.server?.addDefaultHandler(
+      forMethod: "GET", request: GCDWebServerRequest.self,
+      processBlock: { request in
+        return GCDWebServerDataResponse(text: "Hello World")
+      })
+
+    self.server?.start(withPort: 8081, bonjourName: nil)
+
     return true
   }
 
