@@ -4,8 +4,14 @@ struct OpenAppCommand: Codable {
   var id: String
 }
 
-struct TapCommand: Codable {
+struct EnterTextCommand: Codable {
+  var selector: SelectorQuery
+  var data: String
+}
+
+struct SelectorQuery : Codable {
   var text: String
+  // TODO: Add appId
 }
 
 class MaestroServer {
@@ -20,6 +26,8 @@ class MaestroServer {
   private let automation = MaestroAutomation()
 
   private let dispatchGroup = DispatchGroup()
+  
+  private let decoder = JSONDecoder()
 
   var isRunning: Bool {
     server.isRunning
@@ -61,10 +69,19 @@ class MaestroServer {
     }
 
     server.route(.POST, "tap") { request in
-      let decoder = JSONDecoder()
       do {
-        let command = try decoder.decode(TapCommand.self, from: request.body)
-        self.automation.tap(command.text)
+        let command = try self.decoder.decode(SelectorQuery.self, from: request.body)
+        self.automation.tap(on: command.text)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
+    }
+    
+    server.route(.POST, "enterText") { request in
+      do {
+        let command = try self.decoder.decode(EnterTextCommand.self, from: request.body)
+        self.automation.enterText(into: command.selector.text, withContent: command.data)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)

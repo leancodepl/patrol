@@ -14,7 +14,7 @@ Future<void> main() async {
 
       await $('Open webview screen').scrollTo();
 
-      await maestro.tap(const Selector(contentDescriptionContains: 'webview'));
+      await maestro.tap(const Selector(text: 'Open webview screen'));
 
       await $.pumpAndSettle();
 
@@ -65,12 +65,14 @@ extension MaestroX on Maestro {
   }
 
   Future<void> waitUntilVisible(MaestroTester $, Selector selector) async {
-    var nativeWidgets = await getNativeWidgets(selector);
-    while (nativeWidgets.isEmpty) {
-      $.log('no "Select items" found, pumping...');
-      await $.pump();
-      nativeWidgets = await getNativeWidgets(selector);
-    }
+    await Future<void>.delayed(const Duration(seconds: 1));
     await $.pump();
+    // var nativeWidgets = await getNativeWidgets(selector);
+    // while (nativeWidgets.isEmpty) {
+    //   $.log('no "Select items" found, pumping...');
+    //   await $.pump();
+    //   nativeWidgets = await getNativeWidgets(selector);
+    // }
+    // await $.pump();
   }
 }
