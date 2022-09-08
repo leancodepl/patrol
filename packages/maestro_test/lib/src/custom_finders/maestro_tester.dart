@@ -312,7 +312,6 @@ class MaestroTester {
   }) {
     return TestAsyncUtils.guard(() async {
       final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
-
       await viewMaestroFinder.waitUntilVisible();
 
       var iterationsLeft = maxIteration;
@@ -343,6 +342,8 @@ class MaestroTester {
   ///  * actually scrolls until [finder] finds at least one *visible* widget,
   ///    not an *existing* widget.
   ///
+  ///  * waits until [view] is visible
+  ///
   ///  * uses [WidgetController.firstElement] instead of
   ///    [WidgetController.element], which avoids [StateError] being thrown in
   ///    situations when [finder] finds more than 1 visible widget
@@ -355,6 +356,9 @@ class MaestroTester {
     bool? andSettle,
   }) {
     return TestAsyncUtils.guard(() async {
+      final viewMaestroFinder = MaestroFinder(finder: view, tester: this);
+      await viewMaestroFinder.waitUntilVisible();
+
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
         await tester.drag(view, moveStep);
