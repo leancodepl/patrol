@@ -25,8 +25,6 @@ class MaestroServer {
 
   private let server: Server
 
-  private let startTime: String
-
   private let automation = MaestroAutomation()
 
   private let dispatchGroup = DispatchGroup()
@@ -45,15 +43,11 @@ class MaestroServer {
   init() throws {
     self.port = passedPort ?? 8081
     self.server = Server()
-
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "HH:mm:ss"
-    startTime = dateFormatter.string(from: Date())
   }
 
   func setUpRoutes() {
     server.route(.GET, "") { request in
-      HTTPResponse(content: "Hello from AutomatorServer on iOS!\nStarted on \(self.startTime)")
+      HTTPResponse(content: "Hello from AutomatorServer on iOS!")
     }
 
     server.route(.GET, "isRunning") { request in
@@ -134,7 +128,6 @@ class MaestroServer {
   func start() throws {
     Logger.shared.i("Starting server...")
     do {
-      server.route(.GET, "/") { (.ok, "Hello from AutomatorServer on iOS") }
       try server.start(port: 8081)
       setUpRoutes()
       dispatchGroup.enter()
