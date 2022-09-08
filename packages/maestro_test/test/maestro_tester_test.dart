@@ -560,6 +560,65 @@ void main() {
         expect(find.text('text 2').hitTestable(), findsOneWidget);
       },
     );
+
+    maestroTest(
+      'drags to non-existent and visible widget in the first Scrollable',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: FutureBuilder<void>(
+              future: Future.delayed(const Duration(milliseconds: 300)),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const CircularProgressIndicator();
+                }
+
+                return Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        children: const [
+                          Text('text 1'),
+                          Text('text 1'),
+                        ],
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Column(
+                        children: const [Text('text 2')],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNothing);
+        expect(find.text('text 2').hitTestable(), findsNothing);
+
+        await tester.dragUntilVisible(
+          finder: find.text('text 1'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(2));
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
+
+        await tester.dragUntilVisible(
+          finder: find.text('text 2'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+
+        expect(find.text('text 1').hitTestable(), findsNWidgets(2));
+        expect(find.text('text 2').hitTestable(), findsOneWidget);
+      },
+    );
   });
 
   group('scrollUntilExists', () {
