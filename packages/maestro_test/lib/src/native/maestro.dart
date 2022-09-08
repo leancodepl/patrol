@@ -274,6 +274,9 @@ class Maestro {
   /// dialog is asking for.
   ///
   /// Throws an exception if no permission request dialog is present.
+  ///
+  /// On iOS, this can only be used when granting the location permission.
+  /// Otherwise it will crash.
   Future<void> grantPermissionOnlyThisTime() {
     return _wrapPost(
       'handlePermission',
