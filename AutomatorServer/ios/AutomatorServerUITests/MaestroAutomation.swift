@@ -35,19 +35,20 @@ class MaestroAutomation {
     }
   }
 
-  func tap(on text: String) {
+  func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {
-      let app = XCUIApplication(bundleIdentifier: "pl.leancode.maestro.Example")
+      let app = XCUIApplication(bundleIdentifier: appId)
+      // TODO: Should we use .firstMatch()?
       app.descendants(matching: .any)[text].tap()
     }
   }
 
-  func tap(onSystemDialog text: String) {
-    runAction("tapping on system dialog \(text)") {
-      let alerts = self.springboard.alerts
-      if alerts.buttons[text].exists {
-        alerts.buttons[text].tap()
-      }
+  
+  func doubleTap(on text: String, inApp appId: String) {
+    runAction("double tapping on \"\(text)\"") {
+      let app = XCUIApplication(bundleIdentifier: appId)
+      // TODO: Should we use .firstMatch()?
+      app.descendants(matching: .any)[text].tap()
     }
   }
 
@@ -58,7 +59,7 @@ class MaestroAutomation {
     }
   }
 
-  func getNativeWidgets(query: SelectorQuery) -> [NativeWidget] {
+  func getNativeWidgets(query: Selector) -> [NativeWidget] {
     let app = XCUIApplication(bundleIdentifier: "pl.leancode.maestro.Example")
     let found = app.descendants(matching: .any).containing(
       NSPredicate(format: "label CONTAINS '\(query.text)'"))

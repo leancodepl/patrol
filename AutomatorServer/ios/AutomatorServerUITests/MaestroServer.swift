@@ -4,18 +4,28 @@ struct OpenAppCommand: Codable {
   var id: String
 }
 
+struct TapCommand: Codable {
+  var appId: String
+  var selector: Selector
+}
+
+struct DoubleTapCommand: Codable {
+  var appId: String
+  var selector: Selector
+}
+
+struct EnterTextCommand: Codable {
+  var appId: String
+  var data: String
+  var selector: Selector
+}
+
 struct PermissionCommand: Codable {
   var code: String
 }
 
-struct EnterTextCommand: Codable {
-  var selector: SelectorQuery
-  var data: String
-}
-
-struct SelectorQuery: Codable {
+struct Selector: Codable {
   var text: String
-  // TODO: Add appId
 }
 
 class MaestroServer {
@@ -63,21 +73,31 @@ class MaestroServer {
       self.automation.pressHome()
       return HTTPResponse(.ok)
     }
-
-    server.route(.POST, "tap") { request in
+    
+    server.route(.POST, "openApp") { request in
       do {
-        let command = try self.decoder.decode(SelectorQuery.self, from: request.body)
-        self.automation.tap(on: command.text)
+        let command = try self.decoder.decode(OpenAppCommand.self, from: request.body)
+        self.automation.openApp(command.id)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
       }
     }
 
-    server.route(.POST, "tapOnSystemDialog") { request in
+    server.route(.POST, "tap") { request in
       do {
-        let command = try self.decoder.decode(SelectorQuery.self, from: request.body)
-        self.automation.tap(onSystemDialog: command.text)
+        let command = try self.decoder.decode(TapCommand.self, from: request.body)
+        self.automation.tap(on: command.selector.text, inApp: command.appId)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
+    }
+    
+    server.route(.POST, "doubleTap") { request in
+      do {
+        let command = try self.decoder.decode(DoubleTapCommand.self, from: request.body)
+        self.automation.doubleTap(on: command.selector.text, inApp: command.appId)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -88,16 +108,6 @@ class MaestroServer {
       do {
         let command = try self.decoder.decode(EnterTextCommand.self, from: request.body)
         self.automation.enterText(into: command.selector.text, withContent: command.data)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "openApp") { request in
-      do {
-        let command = try self.decoder.decode(OpenAppCommand.self, from: request.body)
-        self.automation.openApp(command.id)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
