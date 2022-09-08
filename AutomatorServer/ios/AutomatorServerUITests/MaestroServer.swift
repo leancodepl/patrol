@@ -1,7 +1,7 @@
 import Telegraph
 
 struct OpenAppCommand: Codable {
-  var id: String
+  var appId: String
 }
 
 struct TapCommand: Codable {
@@ -46,8 +46,8 @@ class MaestroServer {
       Logger.shared.i("\(envPortKey) is null")
       return nil
     }
-    
-     return Int(portStr)
+
+    return Int(portStr)
   }()
 
   init() throws {
@@ -73,11 +73,11 @@ class MaestroServer {
       self.automation.pressHome()
       return HTTPResponse(.ok)
     }
-    
+
     server.route(.POST, "openApp") { request in
       do {
         let command = try self.decoder.decode(OpenAppCommand.self, from: request.body)
-        self.automation.openApp(command.id)
+        self.automation.openApp(command.appId)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -93,7 +93,7 @@ class MaestroServer {
         return HTTPResponse(.badRequest, headers: [:], error: err)
       }
     }
-    
+
     server.route(.POST, "doubleTap") { request in
       do {
         let command = try self.decoder.decode(DoubleTapCommand.self, from: request.body)
@@ -107,7 +107,11 @@ class MaestroServer {
     server.route(.POST, "enterText") { request in
       do {
         let command = try self.decoder.decode(EnterTextCommand.self, from: request.body)
-        self.automation.enterText(into: command.selector.text, withContent: command.data)
+        self.automation.enterText(
+          into: command.selector.text,
+          withContent: command.data,
+          inApp: command.appId
+        )
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)

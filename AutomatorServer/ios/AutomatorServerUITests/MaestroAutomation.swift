@@ -38,33 +38,22 @@ class MaestroAutomation {
   func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
-      // TODO: Should we use .firstMatch()?
-      app.descendants(matching: .any)[text].tap()
+      app.descendants(matching: .any)[text].firstMatch.tap()
     }
   }
 
-  
   func doubleTap(on text: String, inApp appId: String) {
     runAction("double tapping on \"\(text)\"") {
       let app = XCUIApplication(bundleIdentifier: appId)
-      // TODO: Should we use .firstMatch()?
-      app.descendants(matching: .any)[text].tap()
+      app.descendants(matching: .any)[text].firstMatch.tap()
     }
   }
 
-  func enterText(into text: String, withContent data: String) {
+  func enterText(into text: String, withContent data: String, inApp appId: String) {
     runAction("entering text \"\(text)\"") {
-      let app = XCUIApplication(bundleIdentifier: "pl.leancode.maestro.Example")
-      app.textFields[text].typeText(data)
+      let app = XCUIApplication(bundleIdentifier: appId)
+      app.textFields[text].firstMatch.typeText(data)
     }
-  }
-
-  func getNativeWidgets(query: Selector) -> [NativeWidget] {
-    let app = XCUIApplication(bundleIdentifier: "pl.leancode.maestro.Example")
-    let found = app.descendants(matching: .any).containing(
-      NSPredicate(format: "label CONTAINS '\(query.text)'"))
-
-    return []  // TODO: finish
   }
 
   func handlePermission(code: String) {
