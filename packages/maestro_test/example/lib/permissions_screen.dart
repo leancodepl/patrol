@@ -56,33 +56,71 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       body: Center(
         child: Column(
           children: [
+            _PermissionTile(
+              name: 'Camera',
+              icon: Icons.camera,
+              granted: _cameraPermissionGranted,
+              onTap: _requestCameraPermission,
+            ),
+            _PermissionTile(
+              name: 'Microphone',
+              icon: Icons.mic,
+              granted: _microphonePermissionGranted,
+              onTap: _requestMicrophonePermission,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PermissionTile extends StatelessWidget {
+  const _PermissionTile({
+    required this.name,
+    required this.icon,
+    required this.granted,
+    required this.onTap,
+  });
+
+  final String name;
+  final IconData icon;
+  final bool granted;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: granted
+              ? Theme.of(context).colorScheme.background
+              : Colors.redAccent,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               children: [
-                const Text('Camera'),
-                TextButton(
-                  key: const Key('requestCamera'),
-                  onPressed: _requestCameraPermission,
-                  child: const Text('Request'),
-                ),
+                Icon(icon),
+                const SizedBox(width: 8),
                 Text(
-                  key: const Key('cameraStatusText'),
-                  'Granted: $_cameraPermissionGranted',
+                  name,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
               ],
             ),
-            Row(
-              children: [
-                const Text('Microphone'),
-                TextButton(
-                  key: const Key('requestMicrophone'),
-                  onPressed: _requestMicrophonePermission,
-                  child: const Text('Request'),
-                ),
-                Text(
-                  key: const Key('microphoneStatusText'),
-                  'Granted: $_microphonePermissionGranted',
-                ),
-              ],
+            TextButton(
+              onPressed: onTap,
+              child: Text(
+                'Request ${name.toLowerCase()} permission',
+                style: Theme.of(context)
+                    .textTheme
+                    .button
+                    ?.copyWith(color: Colors.white),
+              ),
             ),
           ],
         ),
