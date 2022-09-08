@@ -91,6 +91,7 @@ class _PermissionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
+      key: Key(name.toLowerCase()),
       padding: const EdgeInsets.all(8),
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -111,6 +112,10 @@ class _PermissionTile extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline5,
                 ),
               ],
+            ),
+            Text(
+              key: const Key('statusText'),
+              granted ? 'Granted' : 'Not granted',
             ),
             TextButton(
               onPressed: onTap,

@@ -263,8 +263,10 @@ class Maestro {
   /// dialog is asking for.
   ///
   /// Throws an exception if no permission request dialog is present.
-  Future<void> grantPermissionWhenInUse() {
-    return _wrapPost(
+  Future<void> grantPermissionWhenInUse() async {
+    // Wait for the dialog to appear
+    // await Future<void>.delayed(Duration(milliseconds: 500));
+    await _wrapPost(
       'handlePermission',
       <String, String>{'code': 'WHILE_USING'},
     );
