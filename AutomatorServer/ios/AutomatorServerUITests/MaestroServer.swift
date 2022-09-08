@@ -19,7 +19,7 @@ struct SelectorQuery: Codable {
 }
 
 class MaestroServer {
-  private let envPortKey = "MAESTRO_PORT"
+  private static let envPortKey = "MAESTRO_PORT"
 
   private let port: Int
 
@@ -33,19 +33,17 @@ class MaestroServer {
 
   private let decoder = JSONDecoder()
 
-  var isRunning: Bool {
-    server.isRunning
-  }
+  private var passedPort: Int? = {
+    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+      Logger.shared.i("\(envPortKey) is null")
+      return nil
+    }
+    
+     return Int(portStr)
+  }()
 
   init() throws {
-    //    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-    //      throw MaestroError.generic("\(envPortKey) is null")
-    //    }
-    //    guard let port = Int(portStr) else {
-    //      throw MaestroError.generic("\(envPortKey)=\(portStr) is not an Int")
-    //    }
-    self.port = 8081
-
+    self.port = passedPort ?? 8081
     self.server = Server()
 
     let dateFormatter = DateFormatter()
