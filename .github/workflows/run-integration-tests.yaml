@@ -61,6 +61,9 @@ jobs:
         with:
           channel: ${{ matrix.flutter-channel }}
 
+      - name: Preload Flutter artifacts
+        run: flutter precache
+
       - name: Install Maestro
         run: dart pub global activate maestro_cli
 
