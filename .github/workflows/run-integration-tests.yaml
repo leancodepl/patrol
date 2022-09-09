@@ -73,8 +73,6 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
+          working-directory: "${{ github.workspace }}/packages/maestro_test/example"
           script: |
-            echo "$PWD"
-            cd "$GITHUB_WORKSPACE/packages/maestro_test/example"
-            echo "$PWD"
-            # maestro drive -t integration_test/app_test.dart -v
+            maestro drive -t integration_test/app_test.dart -v
