@@ -65,6 +65,10 @@ class DriveCommand extends Command<int> {
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
       )
+      ..addOption(
+        'wait',
+        help: 'The amount of seconds to wait after the test fails or succeeds.',
+      )
       ..addFlag(
         'parallel',
         help: '(experimental, inactive) Run tests on devices in parallel.',
@@ -150,6 +154,11 @@ class DriveCommand extends Command<int> {
     final dynamic bundleId =
         argResults?['bundle-id'] ?? config.driveConfig.bundleId;
 
+    final wait = argResults?['wait'].toString() ?? '0';
+    if (int.tryParse(wait) == null) {
+      throw const FormatException('`wait` argument is not an int');
+    }
+
     final availableDevices = await getDevices(_disposeScope);
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
@@ -185,7 +194,7 @@ class DriveCommand extends Command<int> {
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
-            dartDefines: dartDefines,
+            dartDefines: {...dartDefines, 'MAESTRO_WAIT': wait},
             packageName: packageName as String?,
           );
           break;
@@ -198,7 +207,7 @@ class DriveCommand extends Command<int> {
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
-            dartDefines: dartDefines,
+            dartDefines: {...dartDefines, 'MAESTRO_WAIT': wait},
             bundleId: bundleId as String?,
             simulator: !device.real,
           );
