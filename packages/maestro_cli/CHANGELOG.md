@@ -1,4 +1,4 @@
-## Unreleased
+## 0.5.2
 
 - Migrate iOS AutomatorServer to a more stable HTTP server, which doesn't crash
   randomly (#220)
