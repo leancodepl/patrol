@@ -1,5 +1,3 @@
-import 'dart:io' as io;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maestro_test/src/custom_finders/maestro_test_config.dart';
 import 'package:maestro_test/src/custom_finders/maestro_tester.dart';
@@ -45,12 +43,16 @@ void maestroTest(
     (widgetTester) async {
       final maestroTester = MaestroTester(tester: widgetTester, config: config);
       await callback(maestroTester);
-      if (config.sleep != Duration.zero) {
+
+      // ignore: prefer_const_declarations
+      final waitSeconds = const int.fromEnvironment('MAESTRO_WAIT');
+      final waitDuration = Duration(seconds: waitSeconds);
+      if (waitDuration > Duration.zero) {
         maestroTester.log(
-          'sleeping for ${config.sleep.inSeconds} seconds',
+          'sleeping for $waitSeconds seconds',
           name: 'maestroTest',
         );
-        io.sleep(config.sleep);
+        await Future<void>.delayed(waitDuration);
         maestroTester.log('done sleeping', name: 'maestroTest');
       }
     },
