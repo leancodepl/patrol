@@ -2,9 +2,8 @@ name: run integration tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/run_tests_in_ci
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   main:
