@@ -41,7 +41,7 @@ class LocationScreen extends StatelessWidget {
           future: _determinePosition(),
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const CircularProgressIndicator();
+              return const Text('no location');
             }
 
             final lat = snapshot.data?.latitude;

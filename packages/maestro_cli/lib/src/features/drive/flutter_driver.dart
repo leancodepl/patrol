@@ -21,9 +21,11 @@ class FlutterDriver {
     required String target,
     required String host,
     required int port,
-    String? device,
-    String? flavor,
+    required String? device,
+    required String? flavor,
     required Map<String, String> dartDefines,
+    required String? packageName,
+    required String? bundleId,
     required bool verbose,
   }) async {
     if (device != null) {
@@ -32,7 +34,13 @@ class FlutterDriver {
       log.info('Running $target with flutter_driver...');
     }
 
-    final env = _dartDefines(host: host, port: port, verbose: verbose);
+    final env = _dartDefines(
+      host: host,
+      port: port,
+      verbose: verbose,
+      packageName: packageName,
+      bundleId: bundleId,
+    );
     int? exitCode;
     final process = await Process.start(
       'flutter',
@@ -103,11 +111,15 @@ class FlutterDriver {
     required String host,
     required int port,
     required bool verbose,
+    required String? packageName,
+    required String? bundleId,
   }) {
     return {
       envHostKey: host,
       envPortKey: port.toString(),
       envVerboseKey: verbose.toString(),
+      if (packageName != null) envPackageNameKey: packageName,
+      if (bundleId != null) envBundleIdKey: bundleId,
     };
   }
 

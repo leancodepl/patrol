@@ -14,7 +14,7 @@ Future<void> main() async {
 
       await $('Open webview screen').scrollTo();
 
-      await maestro.tap(const Selector(contentDescriptionContains: 'webview'));
+      await maestro.tap(const Selector(text: 'Open webview screen'));
 
       await $.pumpAndSettle();
 
@@ -28,16 +28,13 @@ Future<void> main() async {
         text: 'test@leancode.pl',
         index: 0,
       );
-
-      await Future<void>.delayed(const Duration(seconds: 10));
     },
   );
 }
 
 extension MaestroX on Maestro {
   Future<void> waitAndTap(MaestroTester $, Selector selector) async {
-    await waitUntilVisible($, selector);
-    await tap(selector);
+    await tap(selector, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
 
@@ -46,8 +43,7 @@ extension MaestroX on Maestro {
     Selector selector, {
     required String text,
   }) async {
-    await waitUntilVisible($, selector);
-    await enterText(selector, text: text);
+    await enterText(selector, text: text, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
 
@@ -57,18 +53,7 @@ extension MaestroX on Maestro {
     required String text,
     required int index,
   }) async {
-    await waitUntilVisible($, selector);
-    await enterTextByIndex(text, index: index);
+    await enterTextByIndex(text, index: index, appId: resolvedAppId);
     await $.pumpAndSettle();
-  }
-
-  Future<void> waitUntilVisible(MaestroTester $, Selector selector) async {
-    var nativeWidgets = await getNativeWidgets(selector);
-    while (nativeWidgets.isEmpty) {
-      $.log('no "Select items" found, pumping...');
-      await $.pump();
-      nativeWidgets = await getNativeWidgets(selector);
-    }
-    await $.pump();
   }
 }

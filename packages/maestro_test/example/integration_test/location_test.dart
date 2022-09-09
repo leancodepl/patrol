@@ -12,16 +12,16 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
-      await $('Open location screen').tap(andSettle: false);
+      await $('Open location screen').tap();
 
       await maestro.selectCoarseLocation();
       await maestro.selectFineLocation();
       await maestro.grantPermissionOnlyThisTime();
 
-      await $.pumpAndSettle();
+      await $.pump();
 
-      expect($(RegExp('lat')), findsOneWidget);
-      expect($(RegExp('lng')), findsOneWidget);
+      expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
+      expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
     },
   );
 }

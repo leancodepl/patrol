@@ -55,10 +55,21 @@ class DriveCommand extends Command<int> {
             'app under test.',
         valueHelp: 'SOME_VAR=SOME_VALUE',
       )
+      ..addOption(
+        'package-name',
+        help: 'Package name of the Android app under test.',
+        valueHelp: 'pl.leancode.awesomeapp',
+      )
+      ..addOption(
+        'bundle-id',
+        help: 'Bundle identifier of the iOS app under test.',
+        valueHelp: 'pl.leancode.AwesomeApp',
+      )
       ..addFlag(
         'parallel',
         help: '(experimental, inactive) Run tests on devices in parallel.',
-      );
+      )
+      ..addFlag('packageName');
   }
 
   final DisposeScope _disposeScope;
@@ -133,6 +144,12 @@ class DriveCommand extends Command<int> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
+    final dynamic packageName =
+        argResults?['package-name'] ?? config.driveConfig.packageName;
+
+    final dynamic bundleId =
+        argResults?['bundle-id'] ?? config.driveConfig.bundleId;
+
     final availableDevices = await getDevices(_disposeScope);
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
@@ -169,6 +186,7 @@ class DriveCommand extends Command<int> {
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
             dartDefines: dartDefines,
+            packageName: packageName as String?,
           );
           break;
         case TargetPlatform.iOS:
@@ -180,8 +198,9 @@ class DriveCommand extends Command<int> {
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
-            simulator: !device.real,
             dartDefines: dartDefines,
+            bundleId: bundleId as String?,
+            simulator: !device.real,
           );
           break;
         default:

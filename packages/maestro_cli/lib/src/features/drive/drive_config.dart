@@ -4,8 +4,10 @@ class DriveConfig {
     required this.port,
     required this.target,
     required this.driver,
-    this.flavor,
-    this.dartDefines,
+    required this.flavor,
+    required this.dartDefines,
+    required this.packageName,
+    required this.bundleId,
   });
 
   factory DriveConfig.fromMap(Map<String, dynamic> toml) {
@@ -15,20 +17,22 @@ class DriveConfig {
     final dynamic driver = toml['driver'];
     final dynamic flavor = toml['flavor'];
     final dynamic dartDefines = toml['dart-defines'];
+    final dynamic packageName = toml['packageName'];
+    final dynamic bundleId = toml['bundleId'];
 
-    if (host is! String) {
+    if (port != null && host is! String) {
       throw const FormatException('`host` field is not a string');
     }
 
-    if (port is! int) {
+    if (port != null && port is! int) {
       throw const FormatException('`port` field is not an int');
     }
 
-    if (target is! String) {
+    if (target != null && target is! String) {
       throw const FormatException('`target` field is not a string');
     }
 
-    if (driver is! String) {
+    if (driver != null && driver is! String) {
       throw const FormatException('`driver` field is not a string');
     }
 
@@ -50,14 +54,24 @@ class DriveConfig {
       }
     }
 
+    if (packageName != null && packageName is! String) {
+      throw const FormatException('`packageName` field is not a string');
+    }
+
+    if (bundleId != null && bundleId is! String) {
+      throw const FormatException('`bundleId` field is not a string');
+    }
+
     return DriveConfig(
-      host: host,
-      port: port,
-      target: target,
-      driver: driver,
+      host: host as String?,
+      port: port as int?,
+      target: target as String?,
+      driver: driver as String?,
       flavor: flavor as String?,
       dartDefines: (dartDefines as Map<String, dynamic>?)
           ?.map((key, dynamic value) => MapEntry(key, value.toString())),
+      packageName: packageName as String?,
+      bundleId: bundleId as String?,
     );
   }
 
@@ -67,15 +81,21 @@ class DriveConfig {
       port: 8081,
       target: 'integration_test/app_test.dart',
       driver: 'test_driver/integration_test.dart',
+      flavor: null,
+      dartDefines: {},
+      packageName: null,
+      bundleId: null,
     );
   }
 
-  final String host;
-  final int port;
-  final String target;
-  final String driver;
+  final String? host;
+  final int? port;
+  final String? target;
+  final String? driver;
   final String? flavor;
   final Map<String, String>? dartDefines;
+  final String? packageName;
+  final String? bundleId;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{

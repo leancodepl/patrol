@@ -40,10 +40,9 @@ jobs:
 
       - name: Set version data
         run: |
-          package_name=maestro_test
           tag=${{ github.ref_name }}
-          echo "RELEASE_NOTES=$(link_changelog $package_name $tag)" >> $GITHUB_ENV
-          echo "IS_PRERELEASE=$(is_prerelease $package_name $tag)" >> $GITHUB_ENV
+          echo "RELEASE_NOTES=$(link_changelog $tag)" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$(is_prerelease $tag)" >> $GITHUB_ENV
 
       - name: Publish
         run: dart pub publish -f
@@ -52,5 +51,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ github.ref_name }}
-          body: ${{ env.RELEASE_NOTES }}
+          body: "[See changelog on pub.dev](${{ env.RELEASE_NOTES }})"
           prerelease: ${{ env.IS_PRERELEASE }}
