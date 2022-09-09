@@ -1,8 +1,9 @@
 ## 0.5.5
 
-- Implement native `tap()`, `enterText()`, and `handlePermission()` methods on
-  iOS
-- `Maestro.forTest()`: add optional `packageName` and `bundleId` arguments
+- Bring more functionality to iOS (#246)
+  - Implement native `tap()`, `enterText()`, and `handlePermission()` methods on
+    iOS
+  - `Maestro.forTest()`: add optional `packageName` and `bundleId` arguments
 
 ## 0.5.4
 
