@@ -25,11 +25,6 @@ class MaestroTestConfig with _$MaestroTestConfig {
     /// Time after which [MaestroTester.pumpAndSettle] fails.
     @Default(Duration(seconds: 10)) Duration settleTimeout,
 
-    /// Time to sleep after successful test execution. If set to
-    /// [Duration.zero], then the test completes immediately after successful
-    /// execution.
-    @Default(Duration.zero) Duration sleep,
-
     /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
     /// [MaestroFinder.tap] and [MaestroFinder]. If false, only
     /// [WidgetTester.pump] is called.

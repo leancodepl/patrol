@@ -72,8 +72,7 @@ class DriveCommand extends Command<int> {
       ..addFlag(
         'parallel',
         help: '(experimental, inactive) Run tests on devices in parallel.',
-      )
-      ..addFlag('packageName');
+      );
   }
 
   final DisposeScope _disposeScope;
@@ -154,8 +153,8 @@ class DriveCommand extends Command<int> {
     final dynamic bundleId =
         argResults?['bundle-id'] ?? config.driveConfig.bundleId;
 
-    final wait = argResults?['wait'].toString() ?? '0';
-    if (int.tryParse(wait) == null) {
+    final dynamic wait = argResults?['wait'] ?? '0';
+    if (int.tryParse(wait as String) == null) {
       throw const FormatException('`wait` argument is not an int');
     }
 

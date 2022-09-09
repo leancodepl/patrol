@@ -30,11 +30,6 @@ mixin _$MaestroTestConfig {
   /// Time after which [MaestroTester.pumpAndSettle] fails.
   Duration get settleTimeout => throw _privateConstructorUsedError;
 
-  /// Time to sleep after successful test execution. If set to
-  /// [Duration.zero], then the test completes immediately after successful
-  /// execution.
-  Duration get sleep => throw _privateConstructorUsedError;
-
   /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
   /// [MaestroFinder.tap] and [MaestroFinder]. If false, only
   /// [WidgetTester.pump] is called.
@@ -59,7 +54,6 @@ abstract class $MaestroTestConfigCopyWith<$Res> {
       {Duration existsTimeout,
       Duration visibleTimeout,
       Duration settleTimeout,
-      Duration sleep,
       bool andSettle,
       String? appName});
 }
@@ -78,7 +72,6 @@ class _$MaestroTestConfigCopyWithImpl<$Res>
     Object? existsTimeout = freezed,
     Object? visibleTimeout = freezed,
     Object? settleTimeout = freezed,
-    Object? sleep = freezed,
     Object? andSettle = freezed,
     Object? appName = freezed,
   }) {
@@ -94,10 +87,6 @@ class _$MaestroTestConfigCopyWithImpl<$Res>
       settleTimeout: settleTimeout == freezed
           ? _value.settleTimeout
           : settleTimeout // ignore: cast_nullable_to_non_nullable
-              as Duration,
-      sleep: sleep == freezed
-          ? _value.sleep
-          : sleep // ignore: cast_nullable_to_non_nullable
               as Duration,
       andSettle: andSettle == freezed
           ? _value.andSettle
@@ -122,7 +111,6 @@ abstract class _$$_MaestroTestConfigCopyWith<$Res>
       {Duration existsTimeout,
       Duration visibleTimeout,
       Duration settleTimeout,
-      Duration sleep,
       bool andSettle,
       String? appName});
 }
@@ -143,7 +131,6 @@ class __$$_MaestroTestConfigCopyWithImpl<$Res>
     Object? existsTimeout = freezed,
     Object? visibleTimeout = freezed,
     Object? settleTimeout = freezed,
-    Object? sleep = freezed,
     Object? andSettle = freezed,
     Object? appName = freezed,
   }) {
@@ -159,10 +146,6 @@ class __$$_MaestroTestConfigCopyWithImpl<$Res>
       settleTimeout: settleTimeout == freezed
           ? _value.settleTimeout
           : settleTimeout // ignore: cast_nullable_to_non_nullable
-              as Duration,
-      sleep: sleep == freezed
-          ? _value.sleep
-          : sleep // ignore: cast_nullable_to_non_nullable
               as Duration,
       andSettle: andSettle == freezed
           ? _value.andSettle
@@ -183,7 +166,6 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
       {this.existsTimeout = const Duration(seconds: 10),
       this.visibleTimeout = const Duration(seconds: 10),
       this.settleTimeout = const Duration(seconds: 10),
-      this.sleep = Duration.zero,
       this.andSettle = true,
       this.appName});
 
@@ -207,13 +189,6 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
   @JsonKey()
   final Duration settleTimeout;
 
-  /// Time to sleep after successful test execution. If set to
-  /// [Duration.zero], then the test completes immediately after successful
-  /// execution.
-  @override
-  @JsonKey()
-  final Duration sleep;
-
   /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
   /// [MaestroFinder.tap] and [MaestroFinder]. If false, only
   /// [WidgetTester.pump] is called.
@@ -229,7 +204,7 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
 
   @override
   String toString() {
-    return 'MaestroTestConfig(existsTimeout: $existsTimeout, visibleTimeout: $visibleTimeout, settleTimeout: $settleTimeout, sleep: $sleep, andSettle: $andSettle, appName: $appName)';
+    return 'MaestroTestConfig(existsTimeout: $existsTimeout, visibleTimeout: $visibleTimeout, settleTimeout: $settleTimeout, andSettle: $andSettle, appName: $appName)';
   }
 
   @override
@@ -243,7 +218,6 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
                 .equals(other.visibleTimeout, visibleTimeout) &&
             const DeepCollectionEquality()
                 .equals(other.settleTimeout, settleTimeout) &&
-            const DeepCollectionEquality().equals(other.sleep, sleep) &&
             const DeepCollectionEquality().equals(other.andSettle, andSettle) &&
             const DeepCollectionEquality().equals(other.appName, appName));
   }
@@ -254,7 +228,6 @@ class _$_MaestroTestConfig implements _MaestroTestConfig {
       const DeepCollectionEquality().hash(existsTimeout),
       const DeepCollectionEquality().hash(visibleTimeout),
       const DeepCollectionEquality().hash(settleTimeout),
-      const DeepCollectionEquality().hash(sleep),
       const DeepCollectionEquality().hash(andSettle),
       const DeepCollectionEquality().hash(appName));
 
@@ -270,7 +243,6 @@ abstract class _MaestroTestConfig implements MaestroTestConfig {
       {final Duration existsTimeout,
       final Duration visibleTimeout,
       final Duration settleTimeout,
-      final Duration sleep,
       final bool andSettle,
       final String? appName}) = _$_MaestroTestConfig;
 
@@ -291,12 +263,6 @@ abstract class _MaestroTestConfig implements MaestroTestConfig {
 
   /// Time after which [MaestroTester.pumpAndSettle] fails.
   Duration get settleTimeout;
-  @override
-
-  /// Time to sleep after successful test execution. If set to
-  /// [Duration.zero], then the test completes immediately after successful
-  /// execution.
-  Duration get sleep;
   @override
 
   /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
