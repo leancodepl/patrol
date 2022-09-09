@@ -1,3 +1,8 @@
+## Unreleased
+
+- Remove `sleep` from `MaestroTestConfig`. Use the new `--wait` argument
+  available in the CLI (#251)
+
 ## 0.5.5
 
 - Bring more functionality to iOS (#246)
