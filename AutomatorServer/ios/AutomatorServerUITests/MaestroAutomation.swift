@@ -49,10 +49,24 @@ class MaestroAutomation {
     }
   }
 
-  func enterText(into text: String, withContent data: String, inApp appId: String) {
+  func enterText(_ data: String, by text: String, inApp appId: String) {
     runAction("entering text \"\(text)\"") {
       let app = XCUIApplication(bundleIdentifier: appId)
       app.textFields[text].firstMatch.typeText(data)
+    }
+  }
+
+  func enterText(_ data: String, by index: Int, inApp appId: String) {
+    runAction("entering text \"\(data)\" by index \(index)") {
+      let app = XCUIApplication(bundleIdentifier: appId)
+      let textField = app.textFields.element(boundBy: index)
+      if textField.exists {
+        textField.tap()
+        textField.typeText(data)
+      } else {
+        Logger.shared.e("textField at index \(index) doesn't exist")
+      }
+
     }
   }
 

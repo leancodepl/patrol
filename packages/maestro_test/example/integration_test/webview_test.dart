@@ -4,7 +4,7 @@ import 'package:maestro_test/maestro_test.dart';
 import 'config.dart';
 
 Future<void> main() async {
-  final maestro = Maestro.forTest();
+  final maestro = Maestro.forTest(bundleId: 'pl.leancode.maestro.Example');
 
   maestroTest(
     'navigates through the app using only native semantics',
@@ -39,7 +39,7 @@ Future<void> main() async {
 extension MaestroX on Maestro {
   Future<void> waitAndTap(MaestroTester $, Selector selector) async {
     await waitUntilVisible($, selector);
-    await tap(selector);
+    await tap(selector, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
 
@@ -49,7 +49,7 @@ extension MaestroX on Maestro {
     required String text,
   }) async {
     await waitUntilVisible($, selector);
-    await enterText(selector, text: text);
+    await enterText(selector, text: text, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
 
@@ -60,7 +60,7 @@ extension MaestroX on Maestro {
     required int index,
   }) async {
     await waitUntilVisible($, selector);
-    await enterTextByIndex(text, index: index);
+    await enterTextByIndex(text, index: index, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
 

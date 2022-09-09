@@ -57,7 +57,7 @@ class Maestro {
   String get _baseUri => 'http://$host:$port';
 
   /// Returns the platform-dependent unique identifier of the app under test.
-  String get appId {
+  String get resolvedAppId {
     if (io.Platform.isAndroid) {
       return packageName;
     } else if (io.Platform.isIOS) {
@@ -243,32 +243,54 @@ class Maestro {
   Future<void> tap(Selector selector, {String? appId}) {
     return _wrapPost(
       'tap',
-      <String, dynamic>{'selector': selector.toJson(), 'appId': appId},
+      <String, dynamic>{
+        'appId': appId ?? resolvedAppId,
+        'selector': selector.toJson(),
+      },
     );
   }
 
   /// Double taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
-  Future<void> doubleTap(Selector selector) {
-    return _wrapPost('doubleTap', selector.toJson());
+  Future<void> doubleTap(Selector selector, {String? appId}) {
+    return _wrapPost('doubleTap', <String, dynamic>{
+      'appId': appId ?? resolvedAppId,
+      'selector': selector.toJson(),
+    });
   }
 
   /// Enters text to the native widget specified by [selector].
   ///
   /// The native widget specified by selector must be an EditText on Android.
-  Future<void> enterText(Selector selector, {required String text}) {
+  Future<void> enterText(
+    Selector selector, {
+    required String text,
+    String? appId,
+  }) {
     return _wrapPost(
       'enterTextBySelector',
-      <String, dynamic>{'selector': selector.toJson(), 'text': text},
+      <String, dynamic>{
+        'appId': appId ?? resolvedAppId,
+        'data': text,
+        'selector': selector.toJson(),
+      },
     );
   }
 
   /// Enters text to the [index]-th visible text field.
-  Future<void> enterTextByIndex(String text, {required int index}) {
+  Future<void> enterTextByIndex(
+    String text, {
+    required int index,
+    String? appId,
+  }) {
     return _wrapPost(
       'enterTextByIndex',
-      <String, dynamic>{'index': index, 'text': text},
+      <String, dynamic>{
+        'appId': appId ?? resolvedAppId,
+        'data': text,
+        'index': index,
+      },
     );
   }
 

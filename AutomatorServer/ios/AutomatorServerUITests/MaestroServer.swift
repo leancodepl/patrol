@@ -14,10 +14,16 @@ struct DoubleTapCommand: Codable {
   var selector: Selector
 }
 
-struct EnterTextCommand: Codable {
+struct EnterTextBySelectorCommand: Codable {
   var appId: String
   var data: String
   var selector: Selector
+}
+
+struct EnterTextByIndexCommand: Codable {
+  var appId: String
+  var data: String
+  var index: Int
 }
 
 struct PermissionCommand: Codable {
@@ -104,14 +110,20 @@ class MaestroServer {
       }
     }
 
-    server.route(.POST, "enterText") { request in
+    server.route(.POST, "enterTextBySelector") { request in
       do {
-        let command = try self.decoder.decode(EnterTextCommand.self, from: request.body)
-        self.automation.enterText(
-          into: command.selector.text,
-          withContent: command.data,
-          inApp: command.appId
-        )
+        let command = try self.decoder.decode(EnterTextBySelectorCommand.self, from: request.body)
+        self.automation.enterText(command.data, by: command.selector.text, inApp: command.appId)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
+    }
+
+    server.route(.POST, "enterTextByIndex") { request in
+      do {
+        let command = try self.decoder.decode(EnterTextByIndexCommand.self, from: request.body)
+        self.automation.enterText(command.data, by: command.index, inApp: command.appId)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
