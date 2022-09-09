@@ -4,7 +4,7 @@ import 'package:maestro_test/maestro_test.dart';
 import 'config.dart';
 
 Future<void> main() async {
-  final maestro = Maestro.forTest(bundleId: 'pl.leancode.maestro.Example');
+  final maestro = Maestro.forTest();
 
   maestroTest(
     'navigates through the app using only native semantics',
@@ -18,8 +18,6 @@ Future<void> main() async {
 
       await $.pumpAndSettle();
 
-      await Future<void>.delayed(const Duration(seconds: 10));
-
       await maestro.waitAndTap($, const Selector(text: 'Accept cookies'));
       await maestro.waitAndTap($, const Selector(text: 'Select items'));
       await maestro.waitAndTap($, const Selector(text: 'Developer'));
@@ -30,8 +28,6 @@ Future<void> main() async {
         text: 'test@leancode.pl',
         index: 0,
       );
-
-      await Future<void>.delayed(const Duration(seconds: 10));
     },
   );
 }

@@ -33,6 +33,7 @@ class AndroidDriver {
     required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
+    required String? packageName,
   }) async {
     await _forwardPorts(port, device: device.id);
     await _installServer(device: device.id, debug: debug);
@@ -47,6 +48,8 @@ class AndroidDriver {
       flavor: flavor,
       dartDefines: dartDefines,
       verbose: verbose,
+      packageName: packageName,
+      bundleId: null,
     );
   }
 
@@ -58,6 +61,7 @@ class AndroidDriver {
     required List<Device> devices,
     required String? flavor,
     required Map<String, String> dartDefines,
+    required String? packageName,
     required bool verbose,
     required bool debug,
   }) async {
@@ -73,6 +77,7 @@ class AndroidDriver {
           device: device,
           flavor: flavor,
           dartDefines: dartDefines,
+          packageName: packageName,
         );
       }),
     );
@@ -83,11 +88,12 @@ class AndroidDriver {
     required String target,
     required String host,
     required int port,
-    required bool verbose,
-    required bool debug,
     required List<Device> devices,
     required String? flavor,
     required Map<String, String> dartDefines,
+    required String? packageName,
+    required bool verbose,
+    required bool debug,
   }) async {
     for (final device in devices) {
       await run(
@@ -100,6 +106,7 @@ class AndroidDriver {
         device: device,
         flavor: flavor,
         dartDefines: dartDefines,
+        packageName: packageName,
       );
     }
   }

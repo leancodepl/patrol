@@ -30,6 +30,7 @@ class IOSDriver {
     required String? flavor,
     required Map<String, String> dartDefines,
     required bool verbose,
+    required String? bundleId,
     bool simulator = false,
   }) async {
     if (device.real) {
@@ -50,6 +51,8 @@ class IOSDriver {
       device: device.name,
       flavor: flavor,
       dartDefines: dartDefines,
+      packageName: null,
+      bundleId: bundleId,
     );
   }
 

@@ -21,8 +21,8 @@ class Maestro {
   Maestro.forTest({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
-    this.packageName = const String.fromEnvironment('MAESTRO_PACKAGE_NAME'),
-    this.bundleId = const String.fromEnvironment('MAESTRO_BUNDLE_ID'),
+    this.packageName = const String.fromEnvironment('MAESTRO_APP_PACKAGE_NAME'),
+    this.bundleId = const String.fromEnvironment('MAESTRO_APP_BUNDLE_ID'),
   })  : _logger = logger,
         host = const String.fromEnvironment('MAESTRO_HOST'),
         port = const String.fromEnvironment('MAESTRO_PORT'),
