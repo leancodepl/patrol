@@ -29,7 +29,7 @@ import java.util.Timer
 import kotlin.concurrent.schedule
 
 @Serializable
-data class OpenAppCommand(var id: String)
+data class OpenAppCommand(var appId: String)
 
 @Serializable
 data class SwipeCommand(
@@ -47,10 +47,10 @@ data class PermissionCommand(var code: String)
 data class TapOnNotificationByIndexCommand(val index: Int)
 
 @Serializable
-data class EnterTextByIndexCommand(val index: Int, val text: String)
+data class EnterTextByIndexCommand(val data: String, val index: Int)
 
 @Serializable
-data class EnterTextBySelectorCommand(val selector: SelectorQuery, val text: String)
+data class EnterTextBySelectorCommand(val data: String, val selector: SelectorQuery)
 
 @Serializable
 data class SelectorQuery(
@@ -277,7 +277,7 @@ class MaestroServer {
         },
         "openApp" bind POST to {
             val body = Json.decodeFromString<OpenAppCommand>(it.bodyString())
-            MaestroAutomator.instance.openApp(body.id)
+            MaestroAutomator.instance.openApp(body.appId)
             Response(OK)
         },
         "pressBack" bind POST to {
@@ -326,12 +326,12 @@ class MaestroServer {
         },
         "enterTextByIndex" bind POST to {
             val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
-            MaestroAutomator.instance.enterText(body.text, body.index)
+            MaestroAutomator.instance.enterText(body.data, body.index)
             Response(OK)
         },
         "enterTextBySelector" bind POST to {
             val body = Json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
-            MaestroAutomator.instance.enterText(body.text, body.selector)
+            MaestroAutomator.instance.enterText(body.data, body.selector)
             Response(OK)
         },
         "swipe" bind POST to {
