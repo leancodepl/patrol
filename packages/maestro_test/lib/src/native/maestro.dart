@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' as io;
 
 import 'package:http/http.dart' as http;
 import 'package:maestro_test/src/extensions.dart';
@@ -20,11 +21,14 @@ class Maestro {
   Maestro.forTest({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
+    this.packageName = const String.fromEnvironment('MAESTRO_APP_PACKAGE_NAME'),
+    this.bundleId = const String.fromEnvironment('MAESTRO_APP_BUNDLE_ID'),
   })  : _logger = logger,
         host = const String.fromEnvironment('MAESTRO_HOST'),
         port = const String.fromEnvironment('MAESTRO_PORT'),
         verbose = const String.fromEnvironment('MAESTRO_VERBOSE') == 'true' {
     _logger('creating Maestro, host: $host, port: $port, verbose: $verbose');
+
     MaestroBinding.ensureInitialized();
   }
 
@@ -42,9 +46,26 @@ class Maestro {
   /// Timeout for HTTP requests to Maestro automation server.
   final Duration timeout;
 
+  /// Unique identifier of the app under test on Android.
+  final String packageName;
+
+  /// Unique identifier of the app under test on iOS.
+  final String bundleId;
+
   final _client = http.Client();
 
   String get _baseUri => 'http://$host:$port';
+
+  /// Returns the platform-dependent unique identifier of the app under test.
+  String get resolvedAppId {
+    if (io.Platform.isAndroid) {
+      return packageName;
+    } else if (io.Platform.isIOS) {
+      return bundleId;
+    }
+
+    throw StateError('unsupported platform');
+  }
 
   Future<http.Response> _wrapGet(String action) async {
     _logger('action $action executing');
@@ -134,7 +155,7 @@ class Maestro {
   /// On Android [id] is the package name. On iOS [id] is the bundle name.
   Future<void> openApp({required String id}) => _wrapPost(
         'openApp',
-        <String, dynamic>{'id': id},
+        <String, dynamic>{'appId': id},
       );
 
   /// Presses the recent apps button.
@@ -219,32 +240,57 @@ class Maestro {
   /// Taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
-  Future<void> tap(Selector selector) {
-    return _wrapPost('tap', selector.toJson());
+  Future<void> tap(Selector selector, {String? appId}) {
+    return _wrapPost(
+      'tap',
+      <String, dynamic>{
+        'appId': appId ?? resolvedAppId,
+        'selector': selector.toJson(),
+      },
+    );
   }
 
   /// Double taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
-  Future<void> doubleTap(Selector selector) {
-    return _wrapPost('doubleTap', selector.toJson());
+  Future<void> doubleTap(Selector selector, {String? appId}) {
+    return _wrapPost('doubleTap', <String, dynamic>{
+      'appId': appId ?? resolvedAppId,
+      'selector': selector.toJson(),
+    });
   }
 
   /// Enters text to the native widget specified by [selector].
   ///
   /// The native widget specified by selector must be an EditText on Android.
-  Future<void> enterText(Selector selector, {required String text}) {
+  Future<void> enterText(
+    Selector selector, {
+    required String text,
+    String? appId,
+  }) {
     return _wrapPost(
       'enterTextBySelector',
-      <String, dynamic>{'selector': selector.toJson(), 'text': text},
+      <String, dynamic>{
+        'appId': appId ?? resolvedAppId,
+        'data': text,
+        'selector': selector.toJson(),
+      },
     );
   }
 
   /// Enters text to the [index]-th visible text field.
-  Future<void> enterTextByIndex(String text, {required int index}) {
+  Future<void> enterTextByIndex(
+    String text, {
+    required int index,
+    String? appId,
+  }) {
     return _wrapPost(
       'enterTextByIndex',
-      <String, dynamic>{'index': index, 'text': text},
+      <String, dynamic>{
+        'appId': appId ?? resolvedAppId,
+        'data': text,
+        'index': index,
+      },
     );
   }
 
@@ -263,8 +309,10 @@ class Maestro {
   /// dialog is asking for.
   ///
   /// Throws an exception if no permission request dialog is present.
-  Future<void> grantPermissionWhenInUse() {
-    return _wrapPost(
+  Future<void> grantPermissionWhenInUse() async {
+    // Wait for the dialog to appear await
+    // Future<void>.delayed(Duration(milliseconds: 500));
+    await _wrapPost(
       'handlePermission',
       <String, String>{'code': 'WHILE_USING'},
     );
@@ -274,6 +322,9 @@ class Maestro {
   /// dialog is asking for.
   ///
   /// Throws an exception if no permission request dialog is present.
+  ///
+  /// On iOS, this can only be used when granting the location permission.
+  /// Otherwise it will crash.
   Future<void> grantPermissionOnlyThisTime() {
     return _wrapPost(
       'handlePermission',

@@ -7,17 +7,19 @@ void main() {
   final maestro = Maestro.forTest();
 
   Future<void> requestAndGrantCameraPermission(MaestroTester $) async {
-    await $(#requestCamera).tap();
+    expect($(#camera).$(#statusText).text, 'Not granted');
+    await $('Request camera permission').tap();
     await maestro.grantPermissionWhenInUse();
     await $.pump();
-    expect($(#cameraStatusText).text, 'Granted: true');
+    expect($(#camera).$(#statusText).text, 'Granted');
   }
 
   Future<void> requestAndGrantMicrophonePermission(MaestroTester $) async {
-    await $(#requestMicrophone).tap();
+    expect($(#microphone).$(#statusText).text, 'Not granted');
+    await $('Request microphone permission').tap();
     await maestro.grantPermissionWhenInUse();
     await $.pump();
-    expect($(#microphoneStatusText).text, 'Granted: true');
+    expect($(#microphone).$(#statusText).text, 'Granted');
   }
 
   maestroTest(

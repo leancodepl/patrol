@@ -1,7 +1,9 @@
 ## Unreleased
 
 - Migrate iOS AutomatorServer to a more stable HTTP server, which doesn't crash
-  randomly
+  randomly (#220)
+- Add new `packageName` and `bundleId` fields to `maestro.toml`
+- Add new arguments to the tool: `--package-name` and `--bundle-id`
 
 ## 0.5.1
 
