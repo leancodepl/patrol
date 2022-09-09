@@ -260,6 +260,8 @@ class MaestroServer {
 
     private val arguments get() = InstrumentationRegistry.getArguments()
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     private val router = routes(
         "" bind GET to {
             Response(OK).body("Hello from AutomatorServer on Android!")
@@ -276,7 +278,7 @@ class MaestroServer {
             Response(OK)
         },
         "openApp" bind POST to {
-            val body = Json.decodeFromString<OpenAppCommand>(it.bodyString())
+            val body = json.decodeFromString<OpenAppCommand>(it.bodyString())
             MaestroAutomator.instance.openApp(body.appId)
             Response(OK)
         },
@@ -302,47 +304,47 @@ class MaestroServer {
         },
         "getNotifications" bind GET to {
             val notifications = MaestroAutomator.instance.getNotifications()
-            Response(OK).body(Json.encodeToString(notifications))
+            Response(OK).body(json.encodeToString(notifications))
         },
         "tapOnNotificationByIndex" bind POST to {
-            val body = Json.decodeFromString<TapOnNotificationByIndexCommand>(it.bodyString())
+            val body = json.decodeFromString<TapOnNotificationByIndexCommand>(it.bodyString())
             MaestroAutomator.instance.tapOnNotification(body.index)
             Response(OK)
         },
         "tapOnNotificationBySelector" bind POST to {
-            val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
+            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
             MaestroAutomator.instance.tapOnNotification(body)
             Response(OK)
         },
         "tap" bind POST to {
-            val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
+            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
             MaestroAutomator.instance.tap(body)
             Response(OK)
         },
         "doubleTap" bind POST to {
-            val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
+            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
             MaestroAutomator.instance.doubleTap(body)
             Response(OK)
         },
         "enterTextByIndex" bind POST to {
-            val body = Json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
+            val body = json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
             MaestroAutomator.instance.enterText(body.data, body.index)
             Response(OK)
         },
         "enterTextBySelector" bind POST to {
-            val body = Json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
+            val body = json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
             MaestroAutomator.instance.enterText(body.data, body.selector)
             Response(OK)
         },
         "swipe" bind POST to {
-            val body = Json.decodeFromString<SwipeCommand>(it.bodyString())
+            val body = json.decodeFromString<SwipeCommand>(it.bodyString())
             MaestroAutomator.instance.swipe(body)
             Response(OK)
         },
         "getNativeWidgets" bind POST to {
-            val body = Json.decodeFromString<SelectorQuery>(it.bodyString())
+            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
             val textFields = MaestroAutomator.instance.getNativeWidgets(body)
-            Response(OK).body(Json.encodeToString(textFields))
+            Response(OK).body(json.encodeToString(textFields))
         },
         "enableDarkMode" bind POST to {
             MaestroAutomator.instance.enableDarkMode()
@@ -377,7 +379,7 @@ class MaestroServer {
             Response(OK)
         },
         "handlePermission" bind POST to {
-            val body = Json.decodeFromString<PermissionCommand>(it.bodyString())
+            val body = json.decodeFromString<PermissionCommand>(it.bodyString())
             MaestroAutomator.instance.handlePermission(body.code)
             Response(OK)
         },
