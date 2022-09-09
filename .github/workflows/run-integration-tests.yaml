@@ -8,7 +8,7 @@ on:
 
 jobs:
   main:
-    name: Run integration tests on Android API ${{ matrix.api-level }}
+    name: Run integration tests on Android api-${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}
     runs-on: macos-latest
 
     strategy:
@@ -16,6 +16,8 @@ jobs:
       matrix:
         flutter-channel: [stable]
         api-level: [31]
+        target: [google_apis]
+        arch: [x86_64]
 
     defaults:
       run:
@@ -48,15 +50,11 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          target: google_apis
-          arch: x86_64
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-
-      # - name: Install Android SDK
-      #   uses: android-actions/setup-android@v2
+          script: echo "Generated AVD snapshot for caching"
 
       - name: Install Flutter
         uses: subosito/flutter-action@v2
@@ -70,8 +68,10 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          arch: ${{ matrix.arch }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
+          disable-animations: false
           script: |
             maestro drive -t integration_test/app_test.dart -v
