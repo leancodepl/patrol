@@ -193,8 +193,11 @@ class DriveCommand extends Command<int> {
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
-            dartDefines: {...dartDefines, 'MAESTRO_WAIT': wait},
-            packageName: packageName as String?,
+            dartDefines: _dartDefines({
+              'MAESTRO_WAIT': wait,
+              'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
+              'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+            }),
           );
           break;
         case TargetPlatform.iOS:
@@ -206,8 +209,11 @@ class DriveCommand extends Command<int> {
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
-            dartDefines: {...dartDefines, 'MAESTRO_WAIT': wait},
-            bundleId: bundleId as String?,
+            dartDefines: _dartDefines({
+              'MAESTRO_WAIT': wait,
+              'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
+              'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+            }),
             simulator: !device.real,
           );
           break;
@@ -235,5 +241,12 @@ class DriveCommand extends Command<int> {
     return availableDevices
         .where((device) => wantDevices.contains(device.resolvedName))
         .toList();
+  }
+
+  Map<String, String> _dartDefines(Map<String, String?> defines) {
+    return {
+      for (final entry in defines.entries)
+        if (entry.value != null) entry.key: entry.value!,
+    };
   }
 }
