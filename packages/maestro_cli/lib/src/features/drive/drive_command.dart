@@ -65,11 +65,14 @@ class DriveCommand extends Command<int> {
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
       )
+      ..addOption(
+        'wait',
+        help: 'The amount of seconds to wait after the test fails or succeeds.',
+      )
       ..addFlag(
         'parallel',
         help: '(experimental, inactive) Run tests on devices in parallel.',
-      )
-      ..addFlag('packageName');
+      );
   }
 
   final DisposeScope _disposeScope;
@@ -150,6 +153,11 @@ class DriveCommand extends Command<int> {
     final dynamic bundleId =
         argResults?['bundle-id'] ?? config.driveConfig.bundleId;
 
+    final dynamic wait = argResults?['wait'] ?? '0';
+    if (int.tryParse(wait as String) == null) {
+      throw const FormatException('`wait` argument is not an int');
+    }
+
     final availableDevices = await getDevices(_disposeScope);
     if (availableDevices.isEmpty) {
       throw Exception('No devices are available');
@@ -185,8 +193,11 @@ class DriveCommand extends Command<int> {
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
-            dartDefines: dartDefines,
-            packageName: packageName as String?,
+            dartDefines: _dartDefines({
+              'MAESTRO_WAIT': wait,
+              'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
+              'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+            }),
           );
           break;
         case TargetPlatform.iOS:
@@ -198,8 +209,11 @@ class DriveCommand extends Command<int> {
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
-            dartDefines: dartDefines,
-            bundleId: bundleId as String?,
+            dartDefines: _dartDefines({
+              'MAESTRO_WAIT': wait,
+              'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
+              'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+            }),
             simulator: !device.real,
           );
           break;
@@ -227,5 +241,12 @@ class DriveCommand extends Command<int> {
     return availableDevices
         .where((device) => wantDevices.contains(device.resolvedName))
         .toList();
+  }
+
+  Map<String, String> _dartDefines(Map<String, String?> defines) {
+    return {
+      for (final entry in defines.entries)
+        if (entry.value != null) entry.key: entry.value!,
+    };
   }
 }
