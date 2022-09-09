@@ -74,4 +74,5 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: |
+            cd "$GITHUB_WORKSPACE/packages/maestro_test/example"
             maestro drive -t integration_test/app_test.dart -v
