@@ -34,7 +34,6 @@ Future<void> main() async {
 
 extension MaestroX on Maestro {
   Future<void> waitAndTap(MaestroTester $, Selector selector) async {
-    await waitUntilVisible($, selector);
     await tap(selector, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
@@ -44,7 +43,6 @@ extension MaestroX on Maestro {
     Selector selector, {
     required String text,
   }) async {
-    await waitUntilVisible($, selector);
     await enterText(selector, text: text, appId: resolvedAppId);
     await $.pumpAndSettle();
   }
@@ -55,13 +53,7 @@ extension MaestroX on Maestro {
     required String text,
     required int index,
   }) async {
-    await waitUntilVisible($, selector);
     await enterTextByIndex(text, index: index, appId: resolvedAppId);
     await $.pumpAndSettle();
-  }
-
-  Future<void> waitUntilVisible(MaestroTester $, Selector selector) async {
-    await Future<void>.delayed(const Duration(seconds: 1));
-    await $.pump();
   }
 }
