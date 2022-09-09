@@ -1,3 +1,9 @@
+## 0.5.5
+
+- Implement native `tap()`, `enterText()`, and `handlePermission()` methods on
+  iOS
+- `Maestro.forTest()`: add optional `packageName` and `bundleId` arguments
+
 ## 0.5.4
 
 - Add support for handling native permission request dialogs on Android (#232)
