@@ -2,6 +2,9 @@ name: run integration tests
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature/run_tests_in_ci
 
 jobs:
   main:
