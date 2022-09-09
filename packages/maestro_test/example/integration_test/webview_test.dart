@@ -63,12 +63,5 @@ extension MaestroX on Maestro {
   Future<void> waitUntilVisible(MaestroTester $, Selector selector) async {
     await Future<void>.delayed(const Duration(seconds: 1));
     await $.pump();
-    // var nativeWidgets = await getNativeWidgets(selector);
-    // while (nativeWidgets.isEmpty) {
-    //   $.log('no "Select items" found, pumping...');
-    //   await $.pump();
-    //   nativeWidgets = await getNativeWidgets(selector);
-    // }
-    // await $.pump();
   }
 }
