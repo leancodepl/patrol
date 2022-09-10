@@ -1,7 +1,9 @@
 name: maestro_cli
-description: CLI for Maestro.
+description: >
+  Command-line tool for Maestro, a powerful Flutter-native UI testing framework.
 version: 0.5.2
-homepage: https://github.com/leancodepl/maestro
+repository: https://github.com/leancodepl/maestro
+issue_tracker: https://github.com/leancodepl/maestro/issues
 
 environment:
   sdk: ">=2.17.0 <3.0.0"

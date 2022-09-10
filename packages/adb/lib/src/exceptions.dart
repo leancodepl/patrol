@@ -19,9 +19,7 @@ abstract class AdbException implements Exception {
 ///  - https://developer.android.com/studio/command-line/adb
 class AdbDaemonNotRunning extends AdbException {
   /// Creates a new [AdbDaemonNotRunning].
-  const AdbDaemonNotRunning({
-    required String message,
-  }) : super(message: message);
+  const AdbDaemonNotRunning({required super.message});
 
   /// If this string occurs in `adb`'s stderr, there's a good chance that
   /// [AdbDaemonNotRunning] should be thrown.
@@ -32,9 +30,7 @@ class AdbDaemonNotRunning extends AdbException {
 /// INSTALL_FAILED_UPDATE_INCOMPATIBLE.
 class AdbInstallFailedUpdateIncompatible extends AdbException {
   /// Creates a new [AdbInstallFailedUpdateIncompatible];
-  const AdbInstallFailedUpdateIncompatible({
-    required String message,
-  }) : super(message: message);
+  const AdbInstallFailedUpdateIncompatible({required super.message});
 
   /// If this string occurs in `adb`'s stderr, there's a good chance that
   /// [AdbInstallFailedUpdateIncompatible] should be thrown.
@@ -50,9 +46,7 @@ class AdbInstallFailedUpdateIncompatible extends AdbException {
 /// DELETE_FAILED_INTERNAL_ERROR.
 class AdbDeleteFailedInternalError extends AdbException {
   /// Creates a new [AdbDeleteFailedInternalError];
-  const AdbDeleteFailedInternalError({
-    required String message,
-  }) : super(message: message);
+  const AdbDeleteFailedInternalError({required super.message});
 
   /// If this string occurs in `adb`'s stderr, there's a good chance that
   /// [AdbDeleteFailedInternalError] should be thrown.
