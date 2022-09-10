@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Populate missing fields in `pubspec.yaml`, improve README (#254)
+
 ## 0.2.0
 
 - `Adb.instrument` now returns a `Process`
