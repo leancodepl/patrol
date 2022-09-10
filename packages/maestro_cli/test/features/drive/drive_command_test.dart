@@ -3,23 +3,7 @@ import 'package:maestro_cli/src/features/drive/drive_command.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
-const _androidDeviceName = 'Pixel 5';
-const _androidDeviceId = 'emulator-5554';
-const _androidDevice = Device(
-  name: _androidDeviceName,
-  id: _androidDeviceId,
-  targetPlatform: TargetPlatform.android,
-  real: true,
-);
-
-const _iosDeviceName = 'iPhone 13';
-const _iosDeviceId = '00008101-001611D026A0001E';
-const _iosDevice = Device(
-  name: _iosDeviceName,
-  id: _iosDeviceId,
-  targetPlatform: TargetPlatform.iOS,
-  real: true,
-);
+import 'fixures/devices.dart';
 
 void main() {
   group('finds device to use when', () {
@@ -34,7 +18,7 @@ void main() {
 
     test('1 device available, no devices wanted', () {
       final devicesToUse = DriveCommand.findDevicesToRun(
-        availableDevices: [_androidDevice],
+        availableDevices: [androidDevice],
         wantDevices: [],
       );
 
@@ -43,18 +27,18 @@ void main() {
 
     test('1 device available, 1 device wanted (match)', () {
       final devicesToUse = DriveCommand.findDevicesToRun(
-        availableDevices: [_androidDevice],
-        wantDevices: [_androidDeviceId],
+        availableDevices: [androidDevice],
+        wantDevices: [androidDeviceId],
       );
 
-      expect(devicesToUse, [_androidDevice]);
+      expect(devicesToUse, [androidDevice]);
     });
 
     test('1 device available, 1 device wanted (no match)', () {
       void func() {
         DriveCommand.findDevicesToRun(
-          availableDevices: [_androidDevice],
-          wantDevices: [_iosDeviceName],
+          availableDevices: [androidDevice],
+          wantDevices: [iosDeviceName],
         );
       }
 
@@ -64,7 +48,7 @@ void main() {
           isA<Exception>().having(
             (exception) => exception.toString(),
             'message',
-            'Exception: Device $_iosDeviceName is not available',
+            'Exception: Device $iosDeviceName is not available',
           ),
         ),
       );
@@ -72,29 +56,29 @@ void main() {
 
     test('2 devices available, 1 device wanted (full match)', () {
       final devicesToUse = DriveCommand.findDevicesToRun(
-        availableDevices: [_androidDevice, _iosDevice],
-        wantDevices: [_androidDeviceId],
+        availableDevices: [androidDevice, iosDevice],
+        wantDevices: [androidDeviceId],
       );
 
-      expect(devicesToUse, [_androidDevice]);
+      expect(devicesToUse, [androidDevice]);
     });
 
     test('2 devices available, 2 devices wanted (full match)', () {
       final devicesToUse = DriveCommand.findDevicesToRun(
-        availableDevices: [_androidDevice, _iosDevice],
-        wantDevices: [_androidDeviceId, _iosDeviceName],
+        availableDevices: [androidDevice, iosDevice],
+        wantDevices: [androidDeviceId, iosDeviceName],
       );
 
-      expect(devicesToUse, [_androidDevice, _iosDevice]);
+      expect(devicesToUse, [androidDevice, iosDevice]);
     });
 
     test('0 devices available, 2 devices wanted (full match)', () {
       final devicesToUse = DriveCommand.findDevicesToRun(
-        availableDevices: [_androidDevice, _iosDevice],
-        wantDevices: [_androidDeviceId, _iosDeviceName],
+        availableDevices: [androidDevice, iosDevice],
+        wantDevices: [androidDeviceId, iosDeviceName],
       );
 
-      expect(devicesToUse, [_androidDevice, _iosDevice]);
+      expect(devicesToUse, [androidDevice, iosDevice]);
     });
   });
 }
