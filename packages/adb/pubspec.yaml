@@ -1,7 +1,8 @@
 name: adb
-description: Simple wrapper for adb.
+description: Simple Dart wrapper around Android Debug Bridge.
 version: 0.2.0
-homepage: https://github.com/leancodepl/maestro
+repository: https://github.com/leancodepl/maestro
+issue_tracker: https://github.com/leancodepl/maestro/issues
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
