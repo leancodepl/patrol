@@ -9,28 +9,41 @@ class TestRunner {
   bool _running = false;
 
   void addDevice(Device device) {
-    assert(_running == false, 'devices can only be added before run');
+    if (_running) {
+      throw StateError('devices can only be added before run');
+    }
     _devices.add(device);
   }
 
   void addTest(Test test) {
-    assert(_running == false, 'tests can only be added before run');
+    if (_running) {
+      throw StateError('tests can only be added before run');
+    }
     _tests.add(test);
   }
 
   Future<void> run() async {
-    assert(_running == false, 'tests are already running');
-    assert(_devices.isNotEmpty, 'no devices to run tests on');
-    assert(_tests.isNotEmpty, 'no tests to run');
+    if (_running) {
+      throw StateError('tests are already running');
+    }
+    if (_devices.isEmpty) {
+      throw StateError('no devices to run tests on');
+    }
+    if (_tests.isEmpty) {
+      throw StateError('no tests to run');
+    }
+
     _running = true;
 
-    final testRunsOnAllDevices = <Future>[];
+    final testRunsOnAllDevices = <Future<void>>[];
     for (final device in _devices) {
-      testRunsOnAllDevices.add(() async {
+      Future<void> runTestsOnDevice() async {
         for (final test in _tests) {
           await test(device);
         }
-      }());
+      }
+
+      testRunsOnAllDevices.add(runTestsOnDevice());
     }
 
     await Future.wait<void>(testRunsOnAllDevices);

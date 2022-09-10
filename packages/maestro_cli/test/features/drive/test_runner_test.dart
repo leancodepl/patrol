@@ -3,8 +3,6 @@ import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
-import 'common.dart';
-
 final device1 = Device(
   name: 'sdk gphone64 arm64',
   id: 'emulator-5554',
@@ -34,7 +32,7 @@ void main() {
       ..addTest((device) => Future.delayed(Duration(seconds: 1)))
       ..run();
 
-    expect(() => testRunner.addDevice(device1), throwsAssertionError);
+    expect(() => testRunner.addDevice(device1), throwsStateError);
   });
 
   test('tests cannot be added after run', () {
@@ -43,19 +41,19 @@ void main() {
       ..addTest((device) => Future.delayed(Duration(seconds: 1)))
       ..run();
 
-    expect(() => testRunner.addTest((_) async {}), throwsAssertionError);
+    expect(() => testRunner.addTest((_) async {}), throwsStateError);
   });
 
   test('cannot run with no devices', () {
     testRunner.addTest((device) => Future.delayed(Duration(seconds: 1)));
 
-    expect(testRunner.run, throwsAssertionError);
+    expect(testRunner.run, throwsStateError);
   });
 
   test('cannot run with no tests', () {
     testRunner.addDevice(device1);
 
-    expect(testRunner.run, throwsAssertionError);
+    expect(testRunner.run, throwsStateError);
   });
 
   test('cannot run tests while they are already running', () {
@@ -64,7 +62,7 @@ void main() {
       ..addTest((device) => Future.delayed(Duration(seconds: 1)))
       ..run();
 
-    expect(testRunner.run, throwsAssertionError);
+    expect(testRunner.run, throwsStateError);
   });
 
   test('runs tests sequentially in FIFO order on a single device', () async {

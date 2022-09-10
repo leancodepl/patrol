@@ -9,6 +9,7 @@ import 'package:maestro_cli/src/features/devices/devices_command.dart';
 import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
 import 'package:maestro_cli/src/features/drive/device.dart';
 import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
+import 'package:maestro_cli/src/features/drive/test_runner.dart';
 import 'package:maestro_cli/src/maestro_config.dart';
 import 'package:maestro_cli/src/top_level_flags.dart';
 
@@ -17,7 +18,8 @@ class DriveCommand extends Command<int> {
     DisposeScope parentDisposeScope,
     this._topLevelFlags,
     this._artifactsRepository,
-  ) : _disposeScope = DisposeScope() {
+  )   : _disposeScope = DisposeScope(),
+        _testRunner = TestRunner() {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
@@ -79,6 +81,8 @@ class DriveCommand extends Command<int> {
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
   final TopLevelFlags _topLevelFlags;
+
+  final TestRunner _testRunner;
 
   @override
   String get name => 'drive';
@@ -182,20 +186,18 @@ class DriveCommand extends Command<int> {
       );
     }
 
-    final devicesToUse = findDevicesToRun(
+    findDevicesToRun(
       availableDevices: availableDevices,
       wantDevices: wantsAll
           ? availableDevices.map((device) => device.resolvedName).toList()
           : wantDevices,
-    );
+    ).forEach(_testRunner.addDevice);
 
-    // TODO: Re-add support for parallel test execution.
-    final testRuns = <Future>[];
-    for (final device in devicesToUse) {
-      for (final target in targets) {
+    for (final target in targets) {
+      _testRunner.addTest((device) async {
         switch (device.targetPlatform) {
           case TargetPlatform.android:
-            final run = AndroidDriver(_disposeScope, _artifactsRepository).run(
+            await AndroidDriver(_disposeScope, _artifactsRepository).run(
               driver: driver,
               target: target,
               host: host,
@@ -210,10 +212,9 @@ class DriveCommand extends Command<int> {
                 'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
               }),
             );
-            testRuns.add(run);
             break;
           case TargetPlatform.iOS:
-            final run = IOSDriver(_disposeScope, _artifactsRepository).run(
+            await IOSDriver(_disposeScope, _artifactsRepository).run(
               driver: driver,
               target: target,
               host: host,
@@ -228,13 +229,14 @@ class DriveCommand extends Command<int> {
               }),
               simulator: !device.real,
             );
-            testRuns.add(run);
             break;
         }
-      }
+      });
     }
 
-    await Future.wait<void>(testRuns);
+    print('starting test run');
+    await _testRunner.run();
+    print('done test run');
 
     return 0;
   }
