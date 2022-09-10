@@ -19,6 +19,9 @@ class TestRunner {
   }
 
   Future<void> run() async {
+    assert(_running == false, 'tests are already running');
+    assert(_devices.isNotEmpty, 'no devices to run tests on');
+    assert(_tests.isNotEmpty, 'no tests to run');
     _running = true;
 
     final testRunsOnAllDevices = <Future>[];

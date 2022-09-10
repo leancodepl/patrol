@@ -46,6 +46,27 @@ void main() {
     expect(() => testRunner.addTest((_) async {}), throwsAssertionError);
   });
 
+  test('cannot run with no devices', () {
+    testRunner.addTest((device) => Future.delayed(Duration(seconds: 1)));
+
+    expect(testRunner.run, throwsAssertionError);
+  });
+
+  test('cannot run with no tests', () {
+    testRunner.addDevice(device1);
+
+    expect(testRunner.run, throwsAssertionError);
+  });
+
+  test('cannot run tests while they are already running', () {
+    testRunner
+      ..addDevice(device1)
+      ..addTest((device) => Future.delayed(Duration(seconds: 1)))
+      ..run();
+
+    expect(testRunner.run, throwsAssertionError);
+  });
+
   test('runs tests sequentially in FIFO order on a single device', () async {
     fakeAsync((fakeAsync) {
       var code = '';
