@@ -24,7 +24,7 @@ const _iosDevice = Device(
 void main() {
   group('finds device to use when', () {
     test('no devices available, no devices wanted', () {
-      final devicesToUse = DriveCommand.findOverlap(
+      final devicesToUse = DriveCommand.findDevicesToRun(
         availableDevices: [],
         wantDevices: [],
       );
@@ -33,7 +33,7 @@ void main() {
     });
 
     test('1 device available, no devices wanted', () {
-      final devicesToUse = DriveCommand.findOverlap(
+      final devicesToUse = DriveCommand.findDevicesToRun(
         availableDevices: [_androidDevice],
         wantDevices: [],
       );
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('1 device available, 1 device wanted (match)', () {
-      final devicesToUse = DriveCommand.findOverlap(
+      final devicesToUse = DriveCommand.findDevicesToRun(
         availableDevices: [_androidDevice],
         wantDevices: [_androidDeviceId],
       );
@@ -52,7 +52,7 @@ void main() {
 
     test('1 device available, 1 device wanted (no match)', () {
       void func() {
-        DriveCommand.findOverlap(
+        DriveCommand.findDevicesToRun(
           availableDevices: [_androidDevice],
           wantDevices: [_iosDeviceName],
         );
@@ -71,7 +71,7 @@ void main() {
     });
 
     test('2 devices available, 1 device wanted (full match)', () {
-      final devicesToUse = DriveCommand.findOverlap(
+      final devicesToUse = DriveCommand.findDevicesToRun(
         availableDevices: [_androidDevice, _iosDevice],
         wantDevices: [_androidDeviceId],
       );
@@ -80,7 +80,7 @@ void main() {
     });
 
     test('2 devices available, 2 devices wanted (full match)', () {
-      final devicesToUse = DriveCommand.findOverlap(
+      final devicesToUse = DriveCommand.findDevicesToRun(
         availableDevices: [_androidDevice, _iosDevice],
         wantDevices: [_androidDeviceId, _iosDeviceName],
       );
@@ -89,7 +89,7 @@ void main() {
     });
 
     test('0 devices available, 2 devices wanted (full match)', () {
-      final devicesToUse = DriveCommand.findOverlap(
+      final devicesToUse = DriveCommand.findDevicesToRun(
         availableDevices: [_androidDevice, _iosDevice],
         wantDevices: [_androidDeviceId, _iosDeviceName],
       );

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:maestro_cli/src/common/artifacts_repository.dart';
 import 'package:maestro_cli/src/common/common.dart';
 import 'package:maestro_cli/src/features/devices/devices_command.dart';
@@ -107,9 +108,17 @@ class DriveCommand extends Command<int> {
     }
 
     final dynamic target = argResults?['target'] ?? config.driveConfig.target;
-    if (target is! String) {
+    if (target != null && target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
+
+    if (target != null && !File(target as String).existsSync()) {
+      throw Exception('target file $target does not exist');
+    }
+
+    final targets = target != null
+        ? [target as String]
+        : _findTests(Directory('integration_test'));
 
     final dynamic driver = argResults?['driver'] ?? config.driveConfig.driver;
     if (driver is! String) {
@@ -173,7 +182,7 @@ class DriveCommand extends Command<int> {
       );
     }
 
-    final devicesToUse = findOverlap(
+    final devicesToUse = findDevicesToRun(
       availableDevices: availableDevices,
       wantDevices: wantsAll
           ? availableDevices.map((device) => device.resolvedName).toList()
@@ -181,51 +190,73 @@ class DriveCommand extends Command<int> {
     );
 
     // TODO: Re-add support for parallel test execution.
+    final testRuns = <Future>[];
     for (final device in devicesToUse) {
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          await AndroidDriver(_disposeScope, _artifactsRepository).run(
-            driver: driver,
-            target: target,
-            host: host,
-            port: port,
-            device: device,
-            flavor: flavor as String?,
-            verbose: _topLevelFlags.verbose,
-            debug: _topLevelFlags.debug,
-            dartDefines: _dartDefines({
-              'MAESTRO_WAIT': wait,
-              'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
-              'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
-            }),
-          );
-          break;
-        case TargetPlatform.iOS:
-          await IOSDriver(_disposeScope, _artifactsRepository).run(
-            driver: driver,
-            target: target,
-            host: host,
-            port: port,
-            device: device,
-            flavor: flavor as String?,
-            verbose: _topLevelFlags.verbose,
-            dartDefines: _dartDefines({
-              'MAESTRO_WAIT': wait,
-              'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
-              'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
-            }),
-            simulator: !device.real,
-          );
-          break;
-        default:
-          throw Exception('Unsupported platform ${device.targetPlatform}');
+      for (final target in targets) {
+        switch (device.targetPlatform) {
+          case TargetPlatform.android:
+            final run = AndroidDriver(_disposeScope, _artifactsRepository).run(
+              driver: driver,
+              target: target,
+              host: host,
+              port: port,
+              device: device,
+              flavor: flavor as String?,
+              verbose: _topLevelFlags.verbose,
+              debug: _topLevelFlags.debug,
+              dartDefines: _dartDefines({
+                'MAESTRO_WAIT': wait,
+                'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
+                'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+              }),
+            );
+            testRuns.add(run);
+            break;
+          case TargetPlatform.iOS:
+            final run = IOSDriver(_disposeScope, _artifactsRepository).run(
+              driver: driver,
+              target: target,
+              host: host,
+              port: port,
+              device: device,
+              flavor: flavor as String?,
+              verbose: _topLevelFlags.verbose,
+              dartDefines: _dartDefines({
+                'MAESTRO_WAIT': wait,
+                'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
+                'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+              }),
+              simulator: !device.real,
+            );
+            testRuns.add(run);
+            break;
+          default:
+            throw Exception('Unsupported platform ${device.targetPlatform}');
+        }
       }
     }
+
+    await Future.wait<void>(testRuns);
 
     return 0;
   }
 
-  static List<Device> findOverlap({
+  /// Searches [directory] and returns files that end with `_test.dart` as
+  /// absolute paths.
+  List<String> _findTests(Directory directory) {
+    return directory
+        .listSync(recursive: true, followLinks: false)
+        .where(
+          (entity) =>
+              entity.path.endsWith('_test.dart') &&
+              FileSystemEntity.isFileSync(entity.path),
+        )
+        .map((entity) => entity.absolute.path)
+        .toList();
+  }
+
+  @visibleForTesting
+  static List<Device> findDevicesToRun({
     required List<Device> availableDevices,
     required List<String> wantDevices,
   }) {
