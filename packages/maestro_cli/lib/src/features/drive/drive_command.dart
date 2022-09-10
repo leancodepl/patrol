@@ -230,8 +230,6 @@ class DriveCommand extends Command<int> {
             );
             testRuns.add(run);
             break;
-          default:
-            throw Exception('Unsupported platform ${device.targetPlatform}');
         }
       }
     }
