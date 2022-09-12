@@ -1,6 +1,7 @@
 package pl.leancode.automatorserver
 
 import android.app.UiAutomation
+import android.os.Build
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -291,19 +292,40 @@ class PatrolAutomator {
     }
 
     fun handlePermission(code: String) {
-        when (code) {
+        var newDialog = when {
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> false
+            else -> true
+        }
+
+        val resourceId: String = when (code) {
             "WHILE_USING" -> {
-                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"))
+                if (newDialog) {
+                    "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+                } else {
+                    "com.android.packageinstaller:id/permission_allow_button"
+                }
             }
 
             "ONLY_THIS_TIME" -> {
-                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_one_time_button"))
+                if (newDialog) {
+                    "com.android.permissioncontroller:id/permission_allow_one_time_button"
+                } else {
+                    "com.android.packageinstaller:id/permission_allow_button"
+                }
             }
 
             "DENIED" -> {
-                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_deny_button"))
+                if (newDialog) {
+                    "com.android.permissioncontroller:id/permission_deny_button"
+                } else {
+                    "com.android.packageinstaller:id/permission_deny_button"
+                }
             }
+
+            else -> throw PatrolException("Unknown code $code")
         }
+
+        tap(SelectorQuery(resourceId = resourceId))
     }
 
     fun selectFineLocation() {
