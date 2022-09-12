@@ -1,0 +1,177 @@
+## Effective Patrol
+
+Over the past months, we've written many Patrol tests and often learned the
+hard way what works well and what doesn't. We're sharing our findings hoping
+that they'll help you write robust tests:
+
+### PREFER using keys to find widgets
+
+Patrol's custom finders are very powerful, and you might often be inclined to
+find the widget you want in a variety of ways. While we're encouraging you to
+explore and play with Patrol's custom finders, we are quite confident that keys
+are the best way to find widgets.
+
+**Why not strings?**
+
+At first, strings might seem like a good way to find widgets.
+
+They'll get increasingly annoying to work with as your app grows and changes,
+for example, when the strings in your app change.
+
+Using strings stops making any sense when you have more than 1 language in your
+app. Using strings in such case is asking for trouble.
+
+**Why not classes?**
+
+There are 2 problems with using classes.
+
+First is that they hurt your test's readability. You want to tap on _the_ login
+button or enter text into _the_ username field. You don't want to tap on, say,
+the third button and enter text into the second text field.
+
+The second problem is that classes are almost always an implementation detail.
+As a tester, you shouldn't care if something is a `TextButton` or an
+`OutlineButton`. You care that it is _the_ login button, and you want to tap on
+it. In most cases, that login button should have a key.
+
+Let's consider this simple example:
+
+```dart
+await $(LoginForm).$(Button).at(1).tap(); // taps on the second button, which logs in
+```
+
+This works, but the code is not very self-explanatory. To make it understandable
+at glance, you had to add a comment.
+
+But if you assigned a key to the login button, the above could be simplified to:
+
+```dart
+await $(#loginButton).tap();
+```
+
+Much better!
+
+Let's see another example:
+
+```dart
+await $(Select<String>).tap(); // taps on the first Select<String>
+```
+
+If the type parameter is changed from `String` to, for example, some specialized
+`PersonData` model, that finder won't find anything. You'd have to update it to:
+
+```dart
+await $(Select<PersonTile>).tap();
+```
+
+You had to change your test, even though nothing changed from the user's
+perspective. This is usually a sign that you rely too much on classes to find
+widgets.
+
+This whole section could be summed up to the simple maxim:
+
+> Have tester's mindset.
+
+Treat your finders as if they were the tester's eyes.
+
+### CONSIDER having a file where all keys are defined
+
+The number of keys will get bigger as your app grows and you write more tests.
+To keep track of them, it's a good idea to keep all keys in, say,
+`lib/keys.dart` file.
+
+```dart
+import 'package:flutter/foundation.dart';
+
+typedef K = Keys;
+
+class Keys {
+  const Keys();
+
+  static const usernameTextField = Key('usernameTextField');
+  static const passwordTextField = Key('passwordTextField');
+  static const loginButton = Key('loginButton');
+  static const forgotPasswordButton = Key('forgotPasswordButton');
+  static const privacyPolicyLink = Key('privacyPolicyLink');
+}
+```
+
+Then you can use it in your app's and tests' code:
+
+```dart
+// somehwere in app
+TextField(
+  key: Keys.usernameTextField,
+  // more properties
+)
+```
+
+```dart
+// in test
+await $(K.usernameTextField).enterText('CoolGuy');
+```
+
+This is a good way to make sure that the same keys are used in app and tests. No
+more typos!
+
+### PREFER having one test path
+
+Good tests test one feature, and test it well (this applies to all tests, not
+only Patrol tests). This is often called the "main path". Try to introduce as
+little condional logic as possible to help keep the main path straight. In
+practice, this usually comes down to having as few `if`s as possible.
+
+Keeping your test code simple and to the point will also help you in debugging
+it.
+
+### DO add a good test description explaining the test's purpose
+
+If your app is non-trivial, your Patrol test will become long pretty quickly.
+You may be sure now that you'll always remember what the 200 line long test
+you've just written does and are (rightfully) very proud of it.
+
+Believe us, in 3 months you will not remember what your test does. This is why
+the first argument to `patrolTest` is the test description. Use it well!
+
+```dart
+// GOOD
+import 'package:awesome_app/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  final patrol = Patrol.forTest();
+
+  patrolTest(
+    'signs up for the newsletter and receives a reward',
+    ($) async {
+      await $.pumpWidgetAndSettle(AwesomeApp());
+
+      await $(#phoneNumber).enterText("800-555-0199");
+      await $(#loginButton).tap();
+
+      // lots of lines
+    },
+    appName: 'AwesomeApp',
+  );
+}
+```
+
+```dart
+// BAD
+void main() {
+  final patrol = Patrol.forTest();
+
+  patrolTest(
+    'test',
+    ($) async {
+      await $.pumpWidgetAndSettle(AwesomeApp());
+
+    await $(#phoneNumber).enterText(555-2137)
+    await $(#loginButton).tap();
+
+      // lots of lines
+    },
+    appName: 'AwesomeApp',
+  );
+}
+```
