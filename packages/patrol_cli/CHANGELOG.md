@@ -1,3 +1,7 @@
+## 0.6.0+1
+
+- Fix URL of artifact storage (#259)
+
 ## 0.6.0
 
 - **Rename to patrol_cli** (#258)
