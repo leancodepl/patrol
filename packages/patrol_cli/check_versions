@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# check_versions checks whether the version of patrol_cli is defined
+# consistently across all the places. Exits with code 0 if versions are
+# consistent, exits with non-zero code otherwise.
+
+cd "$(dirname "$0")" || exit 2
+
+declare -A versions
+
+checkPubspecVersion() {
+    version=$(grep version ./pubspec.yaml | xargs | cut -d ' ' -f 2)
+    versions[pubspec]="$version"
+}
+
+checkEmbeddedVersion() {
+    path="./lib/src/common/constants.dart"
+    version=$(grep 'const version' "$path" | cut -d\' -f 2)
+    versions[embedded]="$version"
+}
+
+# checkChangelogVersion checks whether the first line of CHANGELOG.md contains a
+# h2 element with the version.
+checkChangelogVersion() {    
+    version=$(head -n 1 ./CHANGELOG.md | cut -d ' ' -f 2)
+    versions[changelog]="$version"
+}
+
+checkPubspecVersion
+checkEmbeddedVersion
+checkChangelogVersion
+
+exitCode=0
+previousValue=""
+for version in "${!versions[@]}"; do
+    value="${versions[$version]}"
+    echo "$version: $value"
+    if [[ "$previousValue" ]] && [[ "$previousValue" != "$value" ]]; then
+        exitCode=1
+    fi
+    previousValue="$value"
+done
+
+exit "$exitCode"
