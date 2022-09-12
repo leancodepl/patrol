@@ -1,7 +1,7 @@
 /// Version of Patrol CLI. Must be kept in sync with pubspec.yaml.
 const version = '0.5.3';
 
-const patrolPackage = 'patrol_test';
+const patrolPackage = 'patrol';
 const patrolCliPackage = 'patrol_cli';
 const integrationTestPackage = 'integration_test';
 

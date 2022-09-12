@@ -2,5 +2,5 @@
   - packages/adb/**/*
 "p: patrol_cli":
   - packages/patrol_cli/**/*
-"p: patrol_test":
-  - packages/patrol_test/**/*
+"p: patrol":
+  - packages/patrol/**/*

@@ -3,7 +3,7 @@
 [![patrol_cli on pub.dev][pub_badge]][pub_link]
 [![codestyle][pub_badge_style]][pub_badge_link]
 
-Command-line tool to make working with [patrol_test][pub_link_test] easier.
+Command-line tool to make working with [patrol][pub_link_test] easier.
 
 ## Installation
 
@@ -54,7 +54,7 @@ To use Patrol in your Flutter project, you need 4 things:
 
 1. have `patrol.toml` file in the root of the project (i.e next to
    `pubspec.yaml`)
-2. have `patrol_test` added as a `dev_dependency` in `pubspec.yaml`
+2. have `patrol` added as a `dev_dependency` in `pubspec.yaml`
 3. have `integration_test` added as a `dev_dependency` in `pubspec.yaml`
 4. have `test_driver/integration_test.dart`
 5. have `integration_test/app_test.dart`
@@ -77,7 +77,7 @@ $ patrol drive
 
 [pub_badge]: https://img.shields.io/pub/v/patrol_cli.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol_cli
-[pub_link_test]: https://pub.dartlang.org/packages/patrol_test
+[pub_link_test]: https://pub.dartlang.org/packages/patrol
 [pub_badge]: https://img.shields.io/pub/v/patrol_cli.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol_cli
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black

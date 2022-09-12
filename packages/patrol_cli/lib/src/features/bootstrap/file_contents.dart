@@ -33,7 +33,7 @@ class CounterTemplate extends AppTestTemplate {
   // ignore_for_file: avoid_print
   import 'package:$projectName/main.dart';
   import 'package:flutter/material.dart';
-  import 'package:patrol_test/patrol_test.dart';
+  import 'package:patrol/patrol.dart';
   
   // This is an example integration test using Patrol. Use it as a base to
   // create your own Patrol-powered test.
@@ -107,7 +107,7 @@ class BasicTemplate extends AppTestTemplate {
   String generateCode() => r'''
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
-import 'package:patrol_test/patrol_test.dart';
+import 'package:patrol/patrol.dart';
 
 // This is an example integration test using Patrol. Use it as a base to create
 // your own Patrol-powered test.
@@ -152,7 +152,7 @@ void main() {
 const driverFileContent = '''
 // ignore_for_file: avoid_print
 import 'package:integration_test/integration_test_driver.dart';
-import 'package:patrol_test/patrol_drive_helper.dart';
+import 'package:patrol/patrol_drive_helper.dart';
 
 // Runs on our machine. Knows nothing about the app being tested.
 
