@@ -5,7 +5,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
-import 'package:patrol_cli/src/features/devices/devices_command.dart';
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/android/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -21,6 +21,7 @@ class DriveCommand extends Command<int> {
     this._topLevelFlags,
     this._artifactsRepository,
   )   : _disposeScope = DisposeScope(),
+        _deviceFinder = DeviceFinder(),
         _testRunner = TestRunner() {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -84,6 +85,7 @@ class DriveCommand extends Command<int> {
   final ArtifactsRepository _artifactsRepository;
   final TopLevelFlags _topLevelFlags;
 
+  final DeviceFinder _deviceFinder;
   final TestRunner _testRunner;
 
   @override
@@ -173,15 +175,15 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final availableDevices = await getDevices(_disposeScope);
-    if (availableDevices.isEmpty) {
-      throw Exception('No devices are available');
+    final attachedDevices = await _deviceFinder.getDevices();
+    if (attachedDevices.isEmpty) {
+      throw Exception('No devices attached');
     } else {
       log.fine('Successfully queried available devices');
     }
 
     if (wantDevices.isEmpty) {
-      final firstDevice = availableDevices.first;
+      final firstDevice = attachedDevices.first;
       wantDevices.add(firstDevice.resolvedName);
       log.info(
         'No device specified, using the first one (${firstDevice.resolvedName})',
@@ -189,9 +191,9 @@ class DriveCommand extends Command<int> {
     }
 
     final devices = findDevicesToRun(
-      availableDevices: availableDevices,
+      availableDevices: attachedDevices,
       wantDevices: wantsAll
-          ? availableDevices.map((device) => device.resolvedName).toList()
+          ? attachedDevices.map((device) => device.resolvedName).toList()
           : wantDevices,
     )..forEach(_testRunner.addDevice);
 
@@ -205,7 +207,6 @@ class DriveCommand extends Command<int> {
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
           );
-
           break;
         case TargetPlatform.iOS:
           await IOSDriver(_disposeScope, _artifactsRepository).run(
