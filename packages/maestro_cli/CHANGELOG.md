@@ -1,4 +1,4 @@
-## Unreleased
+## 0.5.3
 
 - Add new `--wait` argument which accepts the number of seconds to wait after
   the test finishes (#251)
