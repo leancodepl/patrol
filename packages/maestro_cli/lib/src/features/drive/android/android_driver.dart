@@ -8,12 +8,9 @@ import 'package:maestro_cli/src/features/drive/flutter_driver.dart';
 
 class AndroidDriver {
   AndroidDriver(
-    DisposeScope parentDisposeScope,
+    this._disposeScope,
     this._artifactsRepository,
-  )   : _disposeScope = DisposeScope(),
-        _adb = Adb() {
-    _disposeScope.disposedBy(parentDisposeScope);
-  }
+  ) : _adb = Adb();
 
   static const _serverPackage = 'pl.leancode.automatorserver';
   static const _instrumentationPackage = 'pl.leancode.automatorserver.test';

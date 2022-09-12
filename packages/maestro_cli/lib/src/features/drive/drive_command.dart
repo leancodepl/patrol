@@ -197,6 +197,12 @@ class DriveCommand extends Command<int> {
       _testRunner.addTest((device) async {
         switch (device.targetPlatform) {
           case TargetPlatform.android:
+            final childDisposeScope = DisposeScope();
+            _disposeScope.addDispose(() async {
+              if (childDisposeScope.disposed) {
+                await childDisposeScope.dispose();
+              }
+            });
             await AndroidDriver(_disposeScope, _artifactsRepository).run(
               driver: driver,
               target: target,
@@ -212,6 +218,7 @@ class DriveCommand extends Command<int> {
                 'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
               }),
             );
+            await childDisposeScope.run((scope) => scope.dispose());
             break;
           case TargetPlatform.iOS:
             await IOSDriver(_disposeScope, _artifactsRepository).run(
