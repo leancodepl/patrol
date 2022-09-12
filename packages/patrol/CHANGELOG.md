@@ -1,5 +1,6 @@
-## Unreleased
+## 0.6.0
 
+- **Rename to patrol** (#258)
 - Remove `sleep` from `MaestroTestConfig`. Use the new `--wait` argument
   available in the CLI (#251)
 

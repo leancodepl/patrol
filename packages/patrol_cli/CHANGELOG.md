@@ -1,3 +1,7 @@
+## 0.6.0
+
+- **Rename to patrol_cli** (#258)
+
 ## 0.5.3
 
 - Add new `--wait` argument which accepts the number of seconds to wait after
