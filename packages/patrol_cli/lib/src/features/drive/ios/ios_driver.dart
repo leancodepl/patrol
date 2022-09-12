@@ -6,8 +6,7 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart'
-    as flutter_driver;
+import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 
 class IOSDriver {
   IOSDriver(
@@ -40,7 +39,7 @@ class IOSDriver {
       simulator: !device.real,
       port: port,
     );
-    await flutter_driver.FlutterDriver(_disposeScope).run(
+    await FlutterDriver(_disposeScope).run(
       driver: driver,
       target: target,
       host: host,
@@ -105,8 +104,6 @@ class IOSDriver {
   }
 
   /// Runs the server which is an infinite XCUITest.
-  ///
-  /// Returns when the server is installed and running.
   Future<void> _runServer({
     required int port,
     required String deviceName,

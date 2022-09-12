@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/drive/android/android_driver.dart';
+import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/ios/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
@@ -207,9 +208,9 @@ class DriveCommand extends Command<int> {
               verbose: _topLevelFlags.verbose,
               debug: _topLevelFlags.debug,
               dartDefines: _dartDefines({
-                'PATROL_WAIT': wait,
-                'PATROL_APP_PACKAGE_NAME': packageName as String?,
-                'PATROL_APP_BUNDLE_ID': bundleId as String?,
+                envWaitKey: wait,
+                envPackageNameKey: packageName as String?,
+                envBundleIdKey: bundleId as String?,
               }),
             );
 
@@ -224,9 +225,9 @@ class DriveCommand extends Command<int> {
               flavor: flavor as String?,
               verbose: _topLevelFlags.verbose,
               dartDefines: _dartDefines({
-                'PATROL_WAIT': wait,
-                'PATROL_APP_PACKAGE_NAME': packageName as String?,
-                'PATROL_APP_BUNDLE_ID': bundleId as String?,
+                envWaitKey: wait,
+                envPackageNameKey: packageName as String?,
+                envBundleIdKey: bundleId as String?,
               }),
             );
             break;
