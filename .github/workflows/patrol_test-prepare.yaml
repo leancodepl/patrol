@@ -1,15 +1,15 @@
-name: maestro_test prepare
+name: patrol_test prepare
 
 on:
   push:
     branches: [master]
-    tags-ignore: ["maestro_test-v*"]
+    tags-ignore: ["patrol_test-v*"]
     paths:
-      - "packages/maestro_test/**"
+      - "packages/patrol_test/**"
   pull_request:
     branches: [master]
     paths:
-      - "packages/maestro_test/**"
+      - "packages/patrol_test/**"
 
 jobs:
   main:
@@ -26,7 +26,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro_test
+        working-directory: packages/patrol_test
 
     steps:
       - name: Clone repository
@@ -51,17 +51,17 @@ jobs:
         run: flutter format --set-exit-if-changed .
 
       - name: flutter pub get (example app)
-        working-directory: ./packages/maestro_test/example
+        working-directory: ./packages/patrol_test/example
         run: flutter pub get
 
       - name: flutter format (example app)
-        working-directory: ./packages/maestro_test/example
+        working-directory: ./packages/patrol_test/example
         run: flutter format --set-exit-if-changed .
 
       - name: flutter analyze (example app)
-        working-directory: ./packages/maestro_test/example
+        working-directory: ./packages/patrol_test/example
         run: flutter analyze --no-fatal-infos
 
       - name: flutter test (example app)
-        working-directory: ./packages/maestro_test/example
+        working-directory: ./packages/patrol_test/example
         run: flutter test

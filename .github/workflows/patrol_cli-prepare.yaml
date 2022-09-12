@@ -62,7 +62,7 @@ jobs:
         run: dart format --set-exit-if-changed .
 
       - name: Install patrol_cli
-        run: dart pub global activate --source path . && maestro
+        run: dart pub global activate --source path . && patrol
 
       - name: ktlint check
         working-directory: ./AutomatorServer/android
@@ -87,18 +87,18 @@ jobs:
       #     git update-index --refresh
       #     git diff-index --quiet HEAD --
 
-      - name: Test maestro bootstrap --template basic
+      - name: Test patrol bootstrap --template basic
         working-directory: ../
         run: |
           flutter create my_awesome_app
           cd my_awesome_app
-          maestro bootstrap --template basic
+          patrol bootstrap --template basic
           flutter analyze
 
-      - name: Test maestro bootstrap --template counter
+      - name: Test patrol bootstrap --template counter
         working-directory: ../
         run: |
           flutter create example
           cd example
-          maestro bootstrap --template counter
+          patrol bootstrap --template counter
           flutter analyze

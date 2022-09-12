@@ -1,8 +1,8 @@
-name: maestro_test publish
+name: patrol_test publish
 
 on:
   push:
-    tags: ["maestro_test-v*"]
+    tags: ["patrol_test-v*"]
 
 jobs:
   main:
@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro_test
+        working-directory: packages/patrol_test
 
     steps:
       - name: Clone repository
