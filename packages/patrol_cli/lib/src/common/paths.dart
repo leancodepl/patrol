@@ -23,7 +23,7 @@ String get debugIOSArtifactDir => 'ios';
 /// example: `server-1.0.0.apk` or `ios-4.2.0.zip`.
 Uri getUriForArtifact(String artifact) {
   return Uri.parse(
-    'https://lncdpatrolstorage.blob.core.windows.net/artifacts/$artifact',
+    'https://lncdmaestrostorage.blob.core.windows.net/artifacts/$artifact',
   );
 }
 
