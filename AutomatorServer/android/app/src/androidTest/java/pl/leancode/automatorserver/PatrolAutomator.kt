@@ -48,7 +48,7 @@ data class NativeWidget(
     }
 }
 
-class MaestroAutomator {
+class PatrolAutomator {
     fun configure() {
         val configurator = Configurator.getInstance()
         configurator.waitForSelectorTimeout = 5000
@@ -225,7 +225,7 @@ class MaestroAutomator {
         Logger.d("openNotifications()")
         val success = uiDevice.openNotification()
         if (!success) {
-            throw MaestroException("Could not open notifications")
+            throw PatrolException("Could not open notifications")
         }
         delay()
     }
@@ -234,7 +234,7 @@ class MaestroAutomator {
         Logger.d("openNotifications()")
         val success = uiDevice.openQuickSettings()
         if (!success) {
-            throw MaestroException("Could not open quick settings")
+            throw PatrolException("Could not open quick settings")
         }
         delay()
     }
@@ -315,6 +315,6 @@ class MaestroAutomator {
     }
 
     companion object {
-        val instance = MaestroAutomator()
+        val instance = PatrolAutomator()
     }
 }

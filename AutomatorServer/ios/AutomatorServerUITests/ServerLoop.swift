@@ -1,10 +1,10 @@
 import XCTest
 
 class ServerLoop: XCTestCase {
-  func testRunMaestroServer() async throws {
+  func testRunPatrolServer() async throws {
     Logger.shared.i("Starting server loop...")
 
-    let maestroServer = try MaestroServer()
-    try maestroServer.start()
+    let patrolServer = try PatrolServer()
+    try patrolServer.start()
   }
 }

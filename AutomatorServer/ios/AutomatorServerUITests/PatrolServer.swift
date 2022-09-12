@@ -34,14 +34,14 @@ struct Selector: Codable {
   var text: String
 }
 
-class MaestroServer {
-  private static let envPortKey = "MAESTRO_PORT"
+class PatrolServer {
+  private static let envPortKey = "PATROL_PORT"
 
   private let port: Int
 
   private let server: Server
 
-  private let automation = MaestroAutomation()
+  private let automation = PatrolAutomation()
 
   private let dispatchGroup = DispatchGroup()
 

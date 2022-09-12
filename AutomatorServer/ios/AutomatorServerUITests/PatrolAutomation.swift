@@ -5,7 +5,7 @@ struct NativeWidget: Codable {
   var text: String
 }
 
-class MaestroAutomation {
+class PatrolAutomation {
   private lazy var app: XCUIApplication = {
     return XCUIApplication()
   }()
