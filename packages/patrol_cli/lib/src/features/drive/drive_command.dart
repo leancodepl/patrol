@@ -213,9 +213,9 @@ class DriveCommand extends Command<int> {
               verbose: _topLevelFlags.verbose,
               debug: _topLevelFlags.debug,
               dartDefines: _dartDefines({
-                'MAESTRO_WAIT': wait,
-                'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
-                'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+                'PATROL_WAIT': wait,
+                'PATROL_APP_PACKAGE_NAME': packageName as String?,
+                'PATROL_APP_BUNDLE_ID': bundleId as String?,
               }),
             );
             await childDisposeScope.run((scope) => scope.dispose());
@@ -230,9 +230,9 @@ class DriveCommand extends Command<int> {
               flavor: flavor as String?,
               verbose: _topLevelFlags.verbose,
               dartDefines: _dartDefines({
-                'MAESTRO_WAIT': wait,
-                'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
-                'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
+                'PATROL_WAIT': wait,
+                'PATROL_APP_PACKAGE_NAME': packageName as String?,
+                'PATROL_APP_BUNDLE_ID': bundleId as String?,
               }),
             );
             break;
