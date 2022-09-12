@@ -294,11 +294,6 @@ class PatrolAutomator {
     fun handlePermission(code: String) {
         val sdk = Build.VERSION.SDK_INT
 
-        var newDialog = when {
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> false
-            else -> true
-        }
-
         val resourceId: String = when (code) {
             "WHILE_USING" -> {
                 when {
