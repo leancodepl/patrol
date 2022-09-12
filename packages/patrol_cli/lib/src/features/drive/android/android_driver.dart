@@ -8,9 +8,12 @@ import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 
 class AndroidDriver {
   AndroidDriver(
-    this._disposeScope,
+    DisposeScope parentDisposeScope,
     this._artifactsRepository,
-  ) : _adb = Adb();
+  )   : _disposeScope = DisposeScope(),
+        _adb = Adb() {
+    _disposeScope.disposedBy(parentDisposeScope);
+  }
 
   static const _serverPackage = 'pl.leancode.automatorserver';
   static const _instrumentationPackage = 'pl.leancode.automatorserver.test';
