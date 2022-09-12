@@ -1,14 +1,14 @@
-## Effective Maestro
+## Effective Patrol
 
-Over the past months, we've written many Maestro tests and often learned the
+Over the past months, we've written many Patrol tests and often learned the
 hard way what works well and what doesn't. We're sharing our findings hoping
 that they'll help you write robust tests:
 
 ### PREFER using keys to find widgets
 
-Maestro's custom finders are very powerful, and you might often be inclined to
+Patrol's custom finders are very powerful, and you might often be inclined to
 find the widget you want in a variety of ways. While we're encouraging you to
-explore and play with Maestro's custom finders, we are quite confident that keys
+explore and play with Patrol's custom finders, we are quite confident that keys
 are the best way to find widgets.
 
 **Why not strings?**
@@ -117,7 +117,7 @@ more typos!
 ### PREFER having one test path
 
 Good tests test one feature, and test it well (this applies to all tests, not
-only Maestro tests). This is often called the "main path". Try to introduce as
+only Patrol tests). This is often called the "main path". Try to introduce as
 little condional logic as possible to help keep the main path straight. In
 practice, this usually comes down to having as few `if`s as possible.
 
@@ -126,22 +126,22 @@ it.
 
 ### DO add a good test description explaining the test's purpose
 
-If your app is non-trivial, your Maestro test will become long pretty quickly.
+If your app is non-trivial, your Patrol test will become long pretty quickly.
 You may be sure now that you'll always remember what the 200 line long test
 you've just written does and are (rightfully) very proud of it.
 
 Believe us, in 3 months you will not remember what your test does. This is why
-the first argument to `maestroTest` is the test description. Use it well!
+the first argument to `patrolTest` is the test description. Use it well!
 
 ```dart
 // GOOD
 import 'package:awesome_app/main.dart';
-import 'package:maestro_test/maestro_test.dart';
+import 'package:patrol_test/patrol_test.dart';
 
 void main() {
-  final maestro = Maestro.forTest();
+  final patrol = Patrol.forTest();
 
-  maestroTest(
+  patrolTest(
     'signs up for the newsletter and receives a reward',
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
@@ -159,9 +159,9 @@ void main() {
 ```dart
 // BAD
 void main() {
-  final maestro = Maestro.forTest();
+  final patrol = Patrol.forTest();
 
-  maestroTest(
+  patrolTest(
     'test',
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());

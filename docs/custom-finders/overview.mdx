@@ -4,7 +4,7 @@ Flutter's finders are powerful, but not very intuitive to use.
 
 We took them and made something awesome.
 
-Thanks to Maestro's custom finders, you'll take your tests from this:
+Thanks to Patrol's custom finders, you'll take your tests from this:
 
 ```dart
 testWidgets('signs up', (tester) async {
@@ -44,7 +44,7 @@ testWidgets('signs up', (tester) async {
 to this:
 
 ```dart
-maestroTest('signs up', ($) async {
+patrolTest('signs up', ($) async {
   await $.pumpWidgetAndSettle(AwesomeApp());
 
   await $(#emailTextField).enterText('bartek@awesome.com');
@@ -59,20 +59,20 @@ maestroTest('signs up', ($) async {
 ### Set up
 
 Starting using custom finders is easy, because they depend only on Flutter. All
-you have to do is to add package `maestro_test` to `dev_dependencies` in your
+you have to do is to add package `patrol_test` to `dev_dependencies` in your
 project's `pubspec.yaml`.
 
 ```bash
-flutter pub add maestro --dev
+flutter pub add patrol --dev
 ```
 
 ### Writing
 
-When using Maestro's custom finders, you use `maestroTest` function instead of
+When using Patrol's custom finders, you use `patrolTest` function instead of
 `testWidgets`.
 
-The biggest difference between `testWidgets` and `maestroTest` is the type of
-the _tester_ you get in your callback. `maestroTest` gives you `MaestroTester`,
+The biggest difference between `testWidgets` and `patrolTest` is the type of
+the _tester_ you get in your callback. `patrolTest` gives you `PatrolTester`,
 which is much more powerful that the default `WidgetTester`.
 
 ```dart
@@ -82,14 +82,14 @@ testWidgets('sign in', (WidgetTester tester) async {
 ```
 
 ```dart
-maestroTest('sign in', (MaestroTester $) async {
+patrolTest('sign in', (PatrolTester $) async {
   await $(#signUpButton).tap();
 }
 ```
 
 ### Usage
 
-You run widget tests using Maestro's custom finders the same way as you run
+You run widget tests using Patrol's custom finders the same way as you run
 normal widget tests.
 
 ```bash
