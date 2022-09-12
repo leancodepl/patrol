@@ -1,3 +1,7 @@
+## 0.6.1
+
+- Fix handling native permissions on older Android API levels (#260)
+
 ## 0.6.0+1
 
 - Fix URL of artifact storage (#259)
