@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/drive/android/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 import 'package:patrol_cli/src/features/drive/ios/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/patrol_config.dart';
@@ -187,51 +188,53 @@ class DriveCommand extends Command<int> {
       );
     }
 
-    findDevicesToRun(
+    final devices = findDevicesToRun(
       availableDevices: availableDevices,
       wantDevices: wantsAll
           ? availableDevices.map((device) => device.resolvedName).toList()
           : wantDevices,
-    ).forEach(_testRunner.addDevice);
+    )..forEach(_testRunner.addDevice);
+
+    for (final device in devices) {
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          await AndroidDriver(_disposeScope, _artifactsRepository).run(
+            port: port,
+            device: device,
+            flavor: flavor as String?,
+            verbose: _topLevelFlags.verbose,
+            debug: _topLevelFlags.debug,
+          );
+
+          break;
+        case TargetPlatform.iOS:
+          await IOSDriver(_disposeScope, _artifactsRepository).run(
+            port: port,
+            device: device,
+            flavor: flavor as String?,
+            verbose: _topLevelFlags.verbose,
+          );
+          break;
+      }
+    }
 
     for (final target in targets) {
       _testRunner.addTest((device) async {
-        switch (device.targetPlatform) {
-          case TargetPlatform.android:
-            await AndroidDriver(_disposeScope, _artifactsRepository).run(
-              driver: driver,
-              target: target,
-              host: host,
-              port: port,
-              device: device,
-              flavor: flavor as String?,
-              verbose: _topLevelFlags.verbose,
-              debug: _topLevelFlags.debug,
-              dartDefines: _dartDefines({
-                envWaitKey: wait,
-                envPackageNameKey: packageName as String?,
-                envBundleIdKey: bundleId as String?,
-              }),
-            );
-
-            break;
-          case TargetPlatform.iOS:
-            await IOSDriver(_disposeScope, _artifactsRepository).run(
-              driver: driver,
-              target: target,
-              host: host,
-              port: port,
-              device: device,
-              flavor: flavor as String?,
-              verbose: _topLevelFlags.verbose,
-              dartDefines: _dartDefines({
-                envWaitKey: wait,
-                envPackageNameKey: packageName as String?,
-                envBundleIdKey: bundleId as String?,
-              }),
-            );
-            break;
-        }
+        await FlutterDriver(_disposeScope).run(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          device: device.id,
+          flavor: flavor as String?,
+          verbose: _topLevelFlags.verbose,
+          dartDefines: _dartDefines({
+            ...dartDefines,
+            envWaitKey: wait,
+            envPackageNameKey: packageName as String?,
+            envBundleIdKey: bundleId as String?,
+          }),
+        );
       });
     }
 

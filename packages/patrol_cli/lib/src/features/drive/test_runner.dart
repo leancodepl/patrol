@@ -22,6 +22,11 @@ class TestRunner {
     _tests.add(test);
   }
 
+  /// Runs all tests on all added devices.
+  ///
+  /// Tests are run sequentially on a single device, but many devices can be
+  /// attached at the same time, and thus many tests can be running at the same
+  /// time.
   Future<void> run() async {
     if (_running) {
       throw StateError('tests are already running');

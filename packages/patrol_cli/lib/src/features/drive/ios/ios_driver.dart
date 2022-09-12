@@ -6,7 +6,6 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 
 class IOSDriver {
   IOSDriver(
@@ -21,13 +20,9 @@ class IOSDriver {
   final DisposeScope _disposeScope;
 
   Future<void> run({
-    required String driver,
-    required String target,
-    required String host,
     required int port,
     required Device device,
     required String? flavor,
-    required Map<String, String> dartDefines,
     required bool verbose,
   }) async {
     if (device.real) {
@@ -38,16 +33,6 @@ class IOSDriver {
       deviceId: device.id,
       simulator: !device.real,
       port: port,
-    );
-    await FlutterDriver(_disposeScope).run(
-      driver: driver,
-      target: target,
-      host: host,
-      port: port,
-      verbose: verbose,
-      device: device.name,
-      flavor: flavor,
-      dartDefines: dartDefines,
     );
   }
 
