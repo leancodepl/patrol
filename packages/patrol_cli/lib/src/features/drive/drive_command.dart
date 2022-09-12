@@ -234,7 +234,6 @@ class DriveCommand extends Command<int> {
                 'MAESTRO_APP_PACKAGE_NAME': packageName as String?,
                 'MAESTRO_APP_BUNDLE_ID': bundleId as String?,
               }),
-              simulator: !device.real,
             );
             break;
         }

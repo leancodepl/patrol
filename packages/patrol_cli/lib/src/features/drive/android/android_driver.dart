@@ -47,61 +47,6 @@ class AndroidDriver {
     );
   }
 
-  Future<void> runTestsInParallel({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required List<Device> devices,
-    required String? flavor,
-    required Map<String, String> dartDefines,
-    required bool verbose,
-    required bool debug,
-  }) async {
-    await Future.wait(
-      devices.map((device) async {
-        await run(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          verbose: verbose,
-          debug: debug,
-          device: device,
-          flavor: flavor,
-          dartDefines: dartDefines,
-        );
-      }),
-    );
-  }
-
-  Future<void> runTestsSequentially({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required List<Device> devices,
-    required String? flavor,
-    required Map<String, String> dartDefines,
-    required String? packageName,
-    required bool verbose,
-    required bool debug,
-  }) async {
-    for (final device in devices) {
-      await run(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verbose,
-        debug: debug,
-        device: device,
-        flavor: flavor,
-        dartDefines: dartDefines,
-      );
-    }
-  }
-
   Future<void> _installServer({
     required String device,
     required bool debug,

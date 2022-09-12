@@ -30,7 +30,6 @@ class IOSDriver {
     required String? flavor,
     required Map<String, String> dartDefines,
     required bool verbose,
-    bool simulator = false,
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
@@ -38,7 +37,7 @@ class IOSDriver {
     await _runServer(
       deviceName: device.name,
       deviceId: device.id,
-      simulator: simulator,
+      simulator: !device.real,
       port: port,
     );
     await flutter_driver.FlutterDriver(_disposeScope).run(
