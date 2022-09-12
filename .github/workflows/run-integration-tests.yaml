@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter-channel: [stable]
-        api-level: [31]
+        api-level: [28, 29, 30, 31, 32, 33]
         target: [google_apis]
         arch: [x86_64]
 
@@ -77,4 +77,4 @@ jobs:
           disable-animations: false
           working-directory: "${{ github.workspace }}/packages/maestro_test/example"
           script: |
-            maestro drive -t integration_test/app_test.dart -v
+            maestro drive -t integration_test/permissions_test.dart -v
