@@ -1,6 +1,6 @@
 import 'package:fake_async/fake_async.dart';
-import 'package:maestro_cli/src/features/drive/device.dart';
-import 'package:maestro_cli/src/features/drive/test_runner.dart';
+import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
 final device1 = Device(

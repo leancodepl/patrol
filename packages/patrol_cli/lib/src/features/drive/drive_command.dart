@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:maestro_cli/src/common/artifacts_repository.dart';
-import 'package:maestro_cli/src/common/common.dart';
-import 'package:maestro_cli/src/features/devices/devices_command.dart';
-import 'package:maestro_cli/src/features/drive/android/android_driver.dart';
-import 'package:maestro_cli/src/features/drive/device.dart';
-import 'package:maestro_cli/src/features/drive/ios/ios_driver.dart';
-import 'package:maestro_cli/src/features/drive/test_runner.dart';
-import 'package:maestro_cli/src/maestro_config.dart';
-import 'package:maestro_cli/src/top_level_flags.dart';
+import 'package:patrol_cli/src/common/artifacts_repository.dart';
+import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/features/devices/devices_command.dart';
+import 'package:patrol_cli/src/features/drive/android/android_driver.dart';
+import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:patrol_cli/src/features/drive/ios/ios_driver.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
+import 'package:patrol_cli/src/patrol_config.dart';
+import 'package:patrol_cli/src/top_level_flags.dart';
 
 class DriveCommand extends Command<int> {
   DriveCommand(
@@ -241,9 +241,7 @@ class DriveCommand extends Command<int> {
       });
     }
 
-    print('starting test run');
     await _testRunner.run();
-    print('done test run');
 
     return 0;
   }

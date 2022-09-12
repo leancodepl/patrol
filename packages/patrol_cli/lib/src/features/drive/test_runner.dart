@@ -1,4 +1,4 @@
-import 'package:maestro_cli/src/features/drive/device.dart';
+import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef Test = Future<void> Function(Device device);
 
