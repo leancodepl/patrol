@@ -1,8 +1,8 @@
-name: maestro_cli publish
+name: patrol_cli publish
 
 on:
   push:
-    tags: ["maestro_cli-v*"]
+    tags: ["patrol_cli-v*"]
 
 jobs:
   check_versions:
@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check if versions are defined consistently
-        working-directory: packages/maestro_cli
+        working-directory: packages/patrol_cli
         run: ./check_versions
 
   upload_artifacts:
@@ -46,7 +46,7 @@ jobs:
       - name: Set artifact names
         run: |
           tag=${{ github.ref_name }}
-          prefix=maestro_cli-v
+          prefix=patrol_cli-v
           version=${tag#"$prefix"} # version without the prefix
           echo "version: $version"
           server_file="server-$version.apk"
@@ -109,7 +109,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro_cli
+        working-directory: packages/patrol_cli
 
     steps:
       - name: Clone repository

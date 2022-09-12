@@ -3,13 +3,13 @@
   "configurations": [
     {
       "name": "maestro (empty)",
-      "cwd": "packages/maestro_cli",
+      "cwd": "packages/patrol_cli",
       "request": "launch",
       "type": "dart"
     },
     {
       "name": "maestro (target + driver)",
-      "cwd": "packages/maestro_cli",
+      "cwd": "packages/patrol_cli",
       "request": "launch",
       "type": "dart",
       "args": [

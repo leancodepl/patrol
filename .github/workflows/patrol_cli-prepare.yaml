@@ -1,16 +1,16 @@
-name: maestro_cli prepare
+name: patrol_cli prepare
 
 on:
   push:
     branches: [master]
-    tags-ignore: ["maestro_cli-v*"]
+    tags-ignore: ["patrol_cli-v*"]
     paths:
-      - "packages/maestro_cli/**"
+      - "packages/patrol_cli/**"
       - "AutomatorServer/**"
   pull_request:
     branches: [master]
     paths:
-      - "packages/maestro_cli/**"
+      - "packages/patrol_cli/**"
       - "AutomatorServer/**"
 
 jobs:
@@ -28,7 +28,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/maestro_cli
+        working-directory: packages/patrol_cli
 
     steps:
       - name: Clone repository
@@ -61,7 +61,7 @@ jobs:
       - name: dart format
         run: dart format --set-exit-if-changed .
 
-      - name: Install maestro_cli
+      - name: Install patrol_cli
         run: dart pub global activate --source path . && maestro
 
       - name: ktlint check
