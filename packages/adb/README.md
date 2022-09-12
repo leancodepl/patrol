@@ -1,6 +1,6 @@
 # adb
 
-[![maestro_cli on pub.dev][pub_badge]][pub_link]
+[![package on pub.dev][pub_badge]][pub_link]
 [![codestyle][style_badge]][style_link]
 
 A simple wrapper around [adb][adb].

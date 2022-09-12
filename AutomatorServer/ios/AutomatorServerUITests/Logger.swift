@@ -1,7 +1,7 @@
 import Foundation
 
 class Logger {
-  private let TAG = "MaestroServer"
+  private let TAG = "PatrolServer"
 
   static let shared = Logger()
 

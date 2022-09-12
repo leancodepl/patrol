@@ -1,0 +1,55 @@
+name: patrol publish
+
+on:
+  push:
+    tags: ["patrol-v*"]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/patrol
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 2.17.0
+
+      - name: Download mobile-tools
+        uses: actions/checkout@v3
+        with:
+          repository: leancodepl/mobile-tools
+          path: mobile-tools
+
+      - name: Add mobile-tools to PATH
+        run: |
+          echo $GITHUB_WORKSPACE/mobile-tools/bin >> $GITHUB_PATH
+
+      - name: Download pub.dev credentials
+        env:
+          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.pub-cache
+          echo $CREDENTIALS > ~/.pub-cache/credentials.json
+
+      - name: Set version data
+        run: |
+          tag=${{ github.ref_name }}
+          echo "RELEASE_NOTES=$(link_changelog $tag)" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$(is_prerelease $tag)" >> $GITHUB_ENV
+
+      - name: Publish
+        run: dart pub publish -f
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name }}
+          body: "[See changelog on pub.dev](${{ env.RELEASE_NOTES }})"
+          prerelease: ${{ env.IS_PRERELEASE }}

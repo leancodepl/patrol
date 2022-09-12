@@ -1,0 +1,131 @@
+name: patrol_cli publish
+
+on:
+  push:
+    tags: ["patrol_cli-v*"]
+
+jobs:
+  check_versions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Check if versions are defined consistently
+        working-directory: packages/patrol_cli
+        run: ./check_versions
+
+  upload_artifacts:
+    runs-on: ubuntu-latest
+    needs: check_versions
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          # see https://github.com/actions/virtual-environments/issues/1717#issuecomment-702780142
+          ref: ${{ github.ref }}
+
+      - name: Download mobile-tools
+        uses: actions/checkout@v3
+        with:
+          repository: leancodepl/mobile-tools
+          path: mobile-tools
+
+      - name: Add mobile-tools to PATH
+        run: |
+          echo $GITHUB_WORKSPACE/mobile-tools/bin >> $GITHUB_PATH
+
+      - name: Set version data
+        run: |
+          tag=${{ github.ref_name }}
+          echo "RELEASE_NOTES=$(link_changelog $tag)" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$(is_prerelease $tag)" >> $GITHUB_ENV
+
+      - name: Set artifact names
+        run: |
+          tag=${{ github.ref_name }}
+          prefix=patrol_cli-v
+          version=${tag#"$prefix"} # version without the prefix
+          echo "version: $version"
+          server_file="server-$version.apk"
+          instrumentation_file="instrumentation-$version.apk"
+          ios_zip_directory="ios-$version.zip"
+          echo "server file: $server_file"
+          echo "instrumentation file: $instrumentation_file"
+          echo "ios zip directory: $ios_zip_directory"
+          # exporting
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
+          echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
+          echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
+
+      - name: Build server APK
+        working-directory: AutomatorServer/android
+        run: |
+          echo "server file: $SERVER_FILE"
+          ./gradlew assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk $SERVER_FILE
+
+      - name: Build instrumentation APK
+        working-directory: AutomatorServer/android
+        run: |
+          echo "instrumentation file: $INSTRUMENTATION_FILE"
+          ./gradlew assembleDebugAndroidTest
+          mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
+
+      - name: Create zip archive from iOS project
+        working-directory: AutomatorServer/ios
+        run: |
+          echo "ios zip directory: $IOS_ZIP_DIRECTORY"
+          ./makearchive "$VERSION"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name }}
+          body: "[See changelog on pub.dev](${{ env.RELEASE_NOTES }})"
+          prerelease: ${{ env.IS_PRERELEASE }}
+          fail_on_unmatched_files: true
+          # see https://github.com/softprops/action-gh-release/issues/158
+          files: |
+            AutomatorServer/android/${{ env.SERVER_FILE }}
+            AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
+            AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
+
+      - name: Upload artifacts to Azure Storage
+        env:
+          AZURE_STORAGE_URL: https://lncdmaestrostorage.blob.core.windows.net/artifacts
+          AZURE_SAS_TOKEN: ${{ secrets.AZURE_SAS_TOKEN }}
+        run: |
+          ./upload_artifact AutomatorServer/android/${{ env.SERVER_FILE }}
+          ./upload_artifact AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
+          ./upload_artifact AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
+
+  publish_cli:
+    runs-on: ubuntu-latest
+    needs: upload_artifacts
+
+    defaults:
+      run:
+        working-directory: packages/patrol_cli
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Download pub.dev credentials
+        env:
+          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.pub-cache
+          echo $CREDENTIALS > ~/.pub-cache/credentials.json
+
+      - name: Publish
+        run: dart pub publish -f
