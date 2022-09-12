@@ -1,5 +1,5 @@
 {
-  "name": "Maestro",
+  "name": "Patrol",
   "twitter": "leancodepl",
   "theme": "#FFA03F",
   "sidebar": [
@@ -32,7 +32,7 @@
         ["update", "/cli-commands/update"]
       ]
     ],
-    ["Effective Maestro", "/effective-maestro"],
+    ["Effective Patrol", "/effective-patrol"],
     ["Tips and tricks", "/tips-and-tricks"]
   ]
 }

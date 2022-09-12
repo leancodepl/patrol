@@ -6,7 +6,7 @@ Let's say you want to find some `Text` widget – nothing easier than that!
 find.byType(Text);
 ```
 
-Using Maestro's custom finder, you'd write the above as:
+Using Patrol's custom finder, you'd write the above as:
 
 ```dart
 $(Text);
@@ -18,7 +18,7 @@ Or let's find a `Text` widget with a specific text:
 find.text('Subscribe');
 ```
 
-Using Maestro's custom finder, you'd write the above as:
+Using Patrol's custom finder, you'd write the above as:
 
 ```dart
 $('Subscribe');
@@ -51,7 +51,7 @@ await tester.tap(find.text('Subscribe').first);
 We have to use `first`, because if there were multiple "Subscribe" texts,
 `tap()` would throw an exception.
 
-With Maestro, you get concise code, but you preserve the flexibility:
+With Patrol, you get concise code, but you preserve the flexibility:
 
 ```dart
 await $('Subscribe').tap();
@@ -79,7 +79,7 @@ await tester.tap(
 );
 ```
 
-Flutter's finders are starting to grow, while Maestro stays lean:
+Flutter's finders are starting to grow, while Patrol stays lean:
 
 ```dart
 $(ListView).$('Subscribe').tap();
@@ -100,10 +100,10 @@ await tester.tap(
 );
 ```
 
-Hey, this is starting to look complex! Fortunately, you have Maestro:
+Hey, this is starting to look complex! Fortunately, you have Patrol:
 
 ```dart
 await $(ListView).$(ListTile).$('Subscribe').tap();
 ```
 
-[create_finder_docs]: https://pub.dev/documentation/maestro_test/latest/maestro_test/createFinder.html
+[create_finder_docs]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html

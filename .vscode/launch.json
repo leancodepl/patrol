@@ -2,14 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "maestro (empty)",
-      "cwd": "packages/maestro_cli",
+      "name": "patrol (empty)",
+      "cwd": "packages/patrol_cli",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "maestro (target + driver)",
-      "cwd": "packages/maestro_cli",
+      "name": "patrol (target + driver)",
+      "cwd": "packages/patrol_cli",
       "request": "launch",
       "type": "dart",
       "args": [

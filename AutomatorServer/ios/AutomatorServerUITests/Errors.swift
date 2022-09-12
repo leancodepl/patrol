@@ -1,5 +1,5 @@
 import Foundation
 
-enum MaestroError: Error {
+enum PatrolError: Error {
   case generic(_ message: String)
 }

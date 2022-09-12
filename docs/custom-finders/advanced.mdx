@@ -1,13 +1,13 @@
 ## Advanced
 
-We aim to make Maestro as simple as possible, but there are still a few matters
+We aim to make Patrol as simple as possible, but there are still a few matters
 that we feel require some more attention.
 
-Here we'll explain how Maestro's custom finders work.
+Here we'll explain how Patrol's custom finders work.
 
-### How is Maestro's `tap()` different from Flutter `tap()`?
+### How is Patrol's `tap()` different from Flutter `tap()`?
 
-Let's consider this test, written without Maestro:
+Let's consider this test, written without Patrol:
 
 ```dart
 await tester.tap(find.byKey(Key('addComment')).first);
@@ -45,9 +45,9 @@ Our tiny example got really big, but it's still got two problems.
     possible to be tapped by a normal user, but our `tester` doesn't care. This
     is almost never desirable.
 
-Fortunately, you don't have to overcome these problems. Maestro already did it!
+Fortunately, you don't have to overcome these problems. Patrol already did it!
 
-Below is the same test, with all the problems fixed, written with Maestro's
+Below is the same test, with all the problems fixed, written with Patrol's
 custom finders:
 
 ```dart
@@ -64,7 +64,7 @@ This code:
 The timeout can be configured globally:
 
 ```dart
-maestroTest(
+patrolTest(
   'logs in successfully',
   ($) async {
   // your test code

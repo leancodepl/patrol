@@ -1,6 +1,0 @@
-[drive]
-host = 'localhost'
-port = 8081
-driver = 'test_driver/integration_test.dart'
-packageName = 'pl.leancode.maestro.example'
-bundleId = 'pl.leancode.maestro.Example'

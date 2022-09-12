@@ -10,9 +10,9 @@ class ServerLoop {
     fun startServer() {
         Logger.i("Starting server loop...")
 
-        val maestroServer = MaestroServer()
+        val patrolServer = PatrolServer()
         try {
-            maestroServer.start()
+            patrolServer.start()
         } catch (e: Exception) {
             Logger.e("Failure while running the server: ", e)
         }

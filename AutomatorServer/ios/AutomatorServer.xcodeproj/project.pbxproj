@@ -13,8 +13,8 @@
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
-		98B3654728903353008B5B8B /* MaestroServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* MaestroServer.swift */; };
-		98B3654928903360008B5B8B /* MaestroAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654828903360008B5B8B /* MaestroAutomation.swift */; };
+		98B3654728903353008B5B8B /* PatrolServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* PatrolServer.swift */; };
+		98B3654928903360008B5B8B /* PatrolAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654828903360008B5B8B /* PatrolAutomation.swift */; };
 		98E9E581288FFC0900B62271 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E9E580288FFC0900B62271 /* AppDelegate.swift */; };
 		98E9E583288FFC0900B62271 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E9E582288FFC0900B62271 /* SceneDelegate.swift */; };
 		98E9E585288FFC0900B62271 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E9E584288FFC0900B62271 /* ViewController.swift */; };
@@ -41,8 +41,8 @@
 		988FE74B28A5138800EA2141 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AutomatorServerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		98B365442890333D008B5B8B /* ServerLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerLoop.swift; sourceTree = "<group>"; };
-		98B3654628903353008B5B8B /* MaestroServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroServer.swift; sourceTree = "<group>"; };
-		98B3654828903360008B5B8B /* MaestroAutomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroAutomation.swift; sourceTree = "<group>"; };
+		98B3654628903353008B5B8B /* PatrolServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatrolServer.swift; sourceTree = "<group>"; };
+		98B3654828903360008B5B8B /* PatrolAutomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatrolAutomation.swift; sourceTree = "<group>"; };
 		98E9E57D288FFC0900B62271 /* AutomatorServer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutomatorServer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		98E9E580288FFC0900B62271 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		98E9E582288FFC0900B62271 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -84,8 +84,8 @@
 			isa = PBXGroup;
 			children = (
 				98B365442890333D008B5B8B /* ServerLoop.swift */,
-				98B3654628903353008B5B8B /* MaestroServer.swift */,
-				98B3654828903360008B5B8B /* MaestroAutomation.swift */,
+				98B3654628903353008B5B8B /* PatrolServer.swift */,
+				98B3654828903360008B5B8B /* PatrolAutomation.swift */,
 				983049F92899206400C87527 /* Logger.swift */,
 				98619AB628A1248F00C17F49 /* XCUIDevice+WiFiAddr.h */,
 				98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */,
@@ -239,8 +239,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98B3654928903360008B5B8B /* MaestroAutomation.swift in Sources */,
-				98B3654728903353008B5B8B /* MaestroServer.swift in Sources */,
+				98B3654928903360008B5B8B /* PatrolAutomation.swift in Sources */,
+				98B3654728903353008B5B8B /* PatrolServer.swift in Sources */,
 				98B365452890333D008B5B8B /* ServerLoop.swift in Sources */,
 				983049FA2899206400C87527 /* Logger.swift in Sources */,
 				988FE74C28A5138800EA2141 /* Errors.swift in Sources */,

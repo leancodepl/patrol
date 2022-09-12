@@ -1,4 +1,4 @@
-name: Maestro
+name: Patrol
 
 packages:
   - packages/**
