@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -138,11 +137,7 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final wantDevices = argResults?['devices'] as List<String>? ?? [];
-    final wantsAll = wantDevices.contains('all');
-    if (wantsAll && wantDevices.length > 1) {
-      throw Exception("Device 'all' must be the only device");
-    }
+    final devices = argResults?['devices'] as List<String>? ?? [];
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'];
@@ -175,29 +170,35 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final attachedDevices = await _deviceFinder.getDevices();
+    final attachedDevices = await _deviceFinder.getAttachedDevices();
     if (attachedDevices.isEmpty) {
       throw Exception('No devices attached');
     } else {
       log.fine('Successfully queried available devices');
     }
 
-    if (wantDevices.isEmpty) {
+    if (devices.isEmpty) {
       final firstDevice = attachedDevices.first;
-      wantDevices.add(firstDevice.resolvedName);
+      devices.add(firstDevice.resolvedName);
       log.info(
         'No device specified, using the first one (${firstDevice.resolvedName})',
       );
+    } else if (devices.contains('all')) {
+      if (devices.length > 1) {
+        throw Exception("Device 'all' must be the only device");
+      }
+
+      devices.addAll(attachedDevices.map((e) => e.resolvedName));
     }
 
-    final devices = findDevicesToRun(
-      availableDevices: attachedDevices,
-      wantDevices: wantsAll
-          ? attachedDevices.map((device) => device.resolvedName).toList()
-          : wantDevices,
-    )..forEach(_testRunner.addDevice);
+    final activeDevices = _deviceFinder.findDevicesToUse(
+      attachedDevices: attachedDevices,
+      wantDevices: devices,
+    );
 
-    for (final device in devices) {
+    for (final device in activeDevices) {
+      _testRunner.addDevice(device);
+
       switch (device.targetPlatform) {
         case TargetPlatform.android:
           await AndroidDriver(_disposeScope, _artifactsRepository).run(
@@ -255,25 +256,6 @@ class DriveCommand extends Command<int> {
               FileSystemEntity.isFileSync(entity.path),
         )
         .map((entity) => entity.absolute.path)
-        .toList();
-  }
-
-  @visibleForTesting
-  static List<Device> findDevicesToRun({
-    required List<Device> availableDevices,
-    required List<String> wantDevices,
-  }) {
-    final availableDevicesSet =
-        availableDevices.map((device) => device.resolvedName).toSet();
-
-    for (final wantDevice in wantDevices) {
-      if (!availableDevicesSet.contains(wantDevice)) {
-        throw Exception('Device $wantDevice is not available');
-      }
-    }
-
-    return availableDevices
-        .where((device) => wantDevices.contains(device.resolvedName))
         .toList();
   }
 

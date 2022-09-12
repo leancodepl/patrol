@@ -15,7 +15,7 @@ class DevicesCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final devices = await _deviceFinder.getDevices();
+    final devices = await _deviceFinder.getAttachedDevices();
 
     if (devices.isEmpty) {
       log.warning('No devices attached');

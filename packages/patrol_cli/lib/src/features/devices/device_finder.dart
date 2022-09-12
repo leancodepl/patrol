@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 class DeviceFinder {
   DeviceFinder();
 
-  Future<List<Device>> getDevices() async {
+  Future<List<Device>> getAttachedDevices() async {
     final output = await _getCommandOutput();
     final jsonOutput = jsonDecode(output) as List<dynamic>;
 
@@ -31,6 +32,34 @@ class DeviceFinder {
     }
 
     return devices;
+  }
+
+  // Future<List<Device>> getDevicesToUse(List<String> deviceIds) async {
+  //   final attachedDevices = await getAttachedDevices();
+
+  //   return findDevicesToUse(
+  //     attachedDevices: attachedDevices,
+  //     wantDevices: deviceIds,
+  //   );
+  // }
+
+  //@visibleForTesting
+  List<Device> findDevicesToUse({
+    required List<Device> attachedDevices,
+    required List<String> wantDevices,
+  }) {
+    final attachedDevicesSet =
+        attachedDevices.map((device) => device.resolvedName).toSet();
+
+    for (final wantDevice in wantDevices) {
+      if (!attachedDevicesSet.contains(wantDevice)) {
+        throw Exception('Device $wantDevice is not attached');
+      }
+    }
+
+    return attachedDevices
+        .where((device) => wantDevices.contains(device.resolvedName))
+        .toList();
   }
 
   Future<String> _getCommandOutput() async {
