@@ -8,8 +8,6 @@ import 'package:patrol/src/custom_finders/exceptions.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/extensions.dart';
 
-
-
 /// Creates a [Finder] from [matching].
 ///
 /// This function maps types onto Flutter finders.
