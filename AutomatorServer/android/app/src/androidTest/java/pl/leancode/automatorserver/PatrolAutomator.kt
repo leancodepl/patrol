@@ -292,6 +292,8 @@ class PatrolAutomator {
     }
 
     fun handlePermission(code: String) {
+        val sdk = Build.VERSION.SDK_INT
+
         var newDialog = when {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> false
             else -> true
@@ -299,26 +301,44 @@ class PatrolAutomator {
 
         val resourceId: String = when (code) {
             "WHILE_USING" -> {
-                if (newDialog) {
-                    "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
-                } else {
-                    "com.android.packageinstaller:id/permission_allow_button"
+                when {
+                    sdk <= Build.VERSION_CODES.P -> {
+                        "com.android.packageinstaller:id/permission_allow_button"
+                    }
+
+                    sdk == Build.VERSION_CODES.Q -> {
+                        "com.android.permissioncontroller:id/permission_allow_button"
+                    }
+
+                    else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
                 }
             }
 
             "ONLY_THIS_TIME" -> {
-                if (newDialog) {
-                    "com.android.permissioncontroller:id/permission_allow_one_time_button"
-                } else {
-                    "com.android.packageinstaller:id/permission_allow_button"
+                when {
+                    sdk <= Build.VERSION_CODES.P -> {
+                        "com.android.packageinstaller:id/permission_allow_button"
+                    }
+
+                    sdk == Build.VERSION_CODES.Q -> {
+                        "com.android.permissioncontroller:id/permission_allow_button"
+                    }
+
+                    else -> "com.android.permissioncontroller:id/permission_allow_one_time_button"
                 }
             }
 
             "DENIED" -> {
-                if (newDialog) {
-                    "com.android.permissioncontroller:id/permission_deny_button"
-                } else {
-                    "com.android.packageinstaller:id/permission_deny_button"
+                when {
+                    sdk <= Build.VERSION_CODES.P -> {
+                        "com.android.packageinstaller:id/permission_deny_button"
+                    }
+
+                    sdk == Build.VERSION_CODES.Q -> {
+                        "com.android.permissioncontroller:id/permission_deny_button"
+                    }
+
+                    else -> "com.android.permissioncontroller:id/permission_deny_button"
                 }
             }
 

@@ -1,3 +1,7 @@
+## 0.6.1
+
+- Fix methods for handling native permissions on 
+
 ## 0.6.0+1
 
 - Fix URL of artifact storage (#259)
