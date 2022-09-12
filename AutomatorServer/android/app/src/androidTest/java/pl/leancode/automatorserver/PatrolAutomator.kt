@@ -1,6 +1,7 @@
 package pl.leancode.automatorserver
 
 import android.app.UiAutomation
+import android.os.Build
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -291,19 +292,55 @@ class PatrolAutomator {
     }
 
     fun handlePermission(code: String) {
-        when (code) {
+        val sdk = Build.VERSION.SDK_INT
+
+        val resourceId: String = when (code) {
             "WHILE_USING" -> {
-                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_foreground_only_button"))
+                when {
+                    sdk <= Build.VERSION_CODES.P -> {
+                        "com.android.packageinstaller:id/permission_allow_button"
+                    }
+
+                    sdk == Build.VERSION_CODES.Q -> {
+                        "com.android.permissioncontroller:id/permission_allow_button"
+                    }
+
+                    else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+                }
             }
 
             "ONLY_THIS_TIME" -> {
-                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_allow_one_time_button"))
+                when {
+                    sdk <= Build.VERSION_CODES.P -> {
+                        "com.android.packageinstaller:id/permission_allow_button"
+                    }
+
+                    sdk == Build.VERSION_CODES.Q -> {
+                        "com.android.permissioncontroller:id/permission_allow_button"
+                    }
+
+                    else -> "com.android.permissioncontroller:id/permission_allow_one_time_button"
+                }
             }
 
             "DENIED" -> {
-                tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_deny_button"))
+                when {
+                    sdk <= Build.VERSION_CODES.P -> {
+                        "com.android.packageinstaller:id/permission_deny_button"
+                    }
+
+                    sdk == Build.VERSION_CODES.Q -> {
+                        "com.android.permissioncontroller:id/permission_deny_button"
+                    }
+
+                    else -> "com.android.permissioncontroller:id/permission_deny_button"
+                }
             }
+
+            else -> throw PatrolException("Unknown code $code")
         }
+
+        tap(SelectorQuery(resourceId = resourceId))
     }
 
     fun selectFineLocation() {
