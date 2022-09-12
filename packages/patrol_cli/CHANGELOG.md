@@ -1,6 +1,6 @@
 ## 0.6.1
 
-- Fix methods for handling native permissions on 
+- Fix handling native permissions on older Android API levels (#260)
 
 ## 0.6.0+1
 
