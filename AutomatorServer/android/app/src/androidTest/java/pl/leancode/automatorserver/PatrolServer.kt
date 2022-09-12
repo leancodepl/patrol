@@ -254,8 +254,7 @@ class PatrolServer {
     private val port: Int
 
     init {
-        port = arguments.getString(envPortKey)?.toInt()
-            ?: throw PatrolException("$envPortKey is null")
+        port = arguments.getString(envPortKey)?.toInt() ?: 8081
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()
