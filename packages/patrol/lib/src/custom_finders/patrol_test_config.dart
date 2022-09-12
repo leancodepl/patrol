@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'patrol_finder.dart';
-import 'patroler.dart';
+import 'patrol_tester.dart';
 
-part 'patrol_config.freezed.dart';
+part 'patrol_test_config.freezed.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
 @freezed

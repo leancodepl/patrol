@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/custom_finders/patrol_config.dart';
-import 'package:patrol/src/custom_finders/patroler.dart';
+import 'package:patrol/src/custom_finders/patrol_test_config.dart';
+import 'package:patrol/src/custom_finders/patrol_tester.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
