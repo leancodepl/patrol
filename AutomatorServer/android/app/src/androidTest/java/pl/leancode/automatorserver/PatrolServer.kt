@@ -25,8 +25,6 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @Serializable
 data class OpenAppCommand(var appId: String)
@@ -67,7 +65,7 @@ data class SelectorQuery(
     val focused: Boolean? = null,
     val pkg: String? = null
 ) {
-    fun isEmpty(): Boolean {
+    private fun isEmpty(): Boolean {
         return (
             text == null &&
                 textStartsWith == null &&
@@ -249,13 +247,11 @@ data class SelectorQuery(
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
 
-    var running = false
     private var server: Http4kServer? = null
     private val port: Int
 
     init {
-        port = arguments.getString(envPortKey)?.toInt()
-            ?: throw PatrolException("$envPortKey is null")
+        port = arguments.getString(envPortKey)?.toInt() ?: 8081
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()
@@ -397,7 +393,6 @@ class PatrolServer {
         Logger.i("Starting server...")
         server?.stop()
         PatrolAutomator.instance.configure()
-        running = true
 
         server = router
             .withFilter(catcher)
@@ -412,11 +407,8 @@ class PatrolServer {
 
     private fun stop() {
         Logger.i("Stopping server...")
-        Timer("StopServer", false).schedule(1000) {
-            server?.stop()
-            running = false
-            Logger.i("Server stopped")
-        }
+        server?.stop()
+        Logger.i("Server stopped")
     }
 }
 
