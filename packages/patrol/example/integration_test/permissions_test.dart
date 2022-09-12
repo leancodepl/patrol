@@ -28,7 +28,7 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
-      await $('Open permissions screen').tap();
+      await $('Open permissions screen').scrollTo().tap();
 
       await requestAndGrantCameraPermission($);
       await requestAndGrantMicrophonePermission($);

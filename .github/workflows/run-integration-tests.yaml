@@ -9,6 +9,7 @@ jobs:
   main:
     name: Run integration tests on Android api-${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}
     runs-on: macos-latest
+    timeout-minutes: 30
 
     strategy:
       fail-fast: false
