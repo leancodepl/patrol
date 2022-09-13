@@ -4,7 +4,7 @@ typedef Test = Future<void> Function(Device device);
 
 /// Orchestrates running tests on devices.
 class TestRunner {
-  final List<Device> _devices = [];
+  final Map<String, Device> _devices = {};
   final List<Test> _tests = [];
   bool _running = false;
 
@@ -12,7 +12,12 @@ class TestRunner {
     if (_running) {
       throw StateError('devices can only be added before run');
     }
-    _devices.add(device);
+
+    if (_devices[device.id] != null) {
+      throw StateError('device with id ${device.id} is already added');
+    }
+
+    _devices[device.id] = device;
   }
 
   void addTest(Test test) {
@@ -41,7 +46,7 @@ class TestRunner {
     _running = true;
 
     final testRunsOnAllDevices = <Future<void>>[];
-    for (final device in _devices) {
+    for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
         for (final test in _tests) {
           await test(device);

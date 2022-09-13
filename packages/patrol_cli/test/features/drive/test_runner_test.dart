@@ -24,8 +24,6 @@ void main() {
     testRunner = TestRunner();
   });
 
-  // TODO: decide if the same device can be added many times
-
   test('devices cannot be added after run', () {
     testRunner
       ..addDevice(device1)
@@ -54,6 +52,11 @@ void main() {
     testRunner.addDevice(device1);
 
     expect(testRunner.run, throwsStateError);
+  });
+
+  test('cannot add devices with the same ID', () {
+    testRunner.addDevice(device1);
+    expect(() => testRunner.addDevice(device1), throwsStateError);
   });
 
   test('cannot run tests while they are already running', () {

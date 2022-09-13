@@ -10,6 +10,7 @@ void main() {
   setUp(() {
     deviceFinder = DeviceFinder();
   });
+
   group('finds device to use when', () {
     test('no devices attached, no devices wanted', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
