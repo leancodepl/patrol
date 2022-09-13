@@ -1,5 +1,3 @@
-import 'dart:io' as io;
-
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
@@ -64,7 +62,7 @@ class DriveCommand extends Command<int> {
         help:
             'List of additional key-value pairs that will be available to the '
             'app under test.',
-        valueHelp: 'SOME_VAR=SOME_VALUE',
+        valueHelp: 'KEY=VALUE',
       )
       ..addOption(
         'package-name',
@@ -98,7 +96,7 @@ class DriveCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final toml = io.File(configFileName).readAsStringSync();
+    final toml = globals.fs.file(configFileName).readAsStringSync();
     final config = PatrolConfig.fromToml(toml);
 
     final dynamic host = argResults?['host'] ?? config.driveConfig.host;
@@ -122,7 +120,7 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`target` argument is not a string');
     }
 
-    if (target != null && !io.File(target as String).existsSync()) {
+    if (target != null && !globals.fs.file(target as String).existsSync()) {
       throw Exception('target file $target does not exist');
     }
 
