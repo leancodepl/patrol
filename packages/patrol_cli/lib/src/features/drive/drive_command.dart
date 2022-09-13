@@ -1,9 +1,10 @@
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/globals.dart' as globals;
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -22,7 +23,10 @@ class DriveCommand extends Command<int> {
     this._artifactsRepository,
   )   : _disposeScope = DisposeScope(),
         _deviceFinder = DeviceFinder(),
-        _testFinder = TestFinder(),
+        _testFinder = TestFinder(
+          integrationTestDirectory: globals.fs.directory('integration_test'),
+          fileSystem: globals.fs,
+        ),
         _testRunner = TestRunner() {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -94,7 +98,7 @@ class DriveCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final toml = File(configFileName).readAsStringSync();
+    final toml = io.File(configFileName).readAsStringSync();
     final config = PatrolConfig.fromToml(toml);
 
     final dynamic host = argResults?['host'] ?? config.driveConfig.host;
@@ -118,7 +122,7 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`target` argument is not a string');
     }
 
-    if (target != null && !File(target as String).existsSync()) {
+    if (target != null && !io.File(target as String).existsSync()) {
       throw Exception('target file $target does not exist');
     }
 

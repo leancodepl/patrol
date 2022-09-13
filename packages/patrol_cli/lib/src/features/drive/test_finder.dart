@@ -1,17 +1,24 @@
-import 'dart:io';
+import 'package:file/file.dart';
 
 class TestFinder {
-  Directory get _integrationTestDir => Directory('integration_test');
+  TestFinder({
+    required Directory integrationTestDirectory,
+    required FileSystem fileSystem,
+  })  : _integrationTestDirectory = integrationTestDirectory,
+        _fileSystem = fileSystem;
+
+  final Directory _integrationTestDirectory;
+  final FileSystem _fileSystem;
 
   /// Recursively searches the `integration_test` directory and returns files
   /// that end with `_test.dart` as absolute paths.
   List<String> findTests() {
-    return _integrationTestDir
+    return _integrationTestDirectory
         .listSync(recursive: true, followLinks: false)
         .where(
           (fileSystemEntity) {
             final hasSuffix = fileSystemEntity.path.endsWith('_test.dart');
-            final isFile = FileSystemEntity.isFileSync(fileSystemEntity.path);
+            final isFile = _fileSystem.isFileSync(fileSystemEntity.path);
             return hasSuffix && isFile;
           },
         )
