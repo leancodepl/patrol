@@ -5,11 +5,12 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
+import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/patrol_config.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
@@ -21,6 +22,7 @@ class DriveCommand extends Command<int> {
     this._artifactsRepository,
   )   : _disposeScope = DisposeScope(),
         _deviceFinder = DeviceFinder(),
+        _testFinder = TestFinder(),
         _testRunner = TestRunner() {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -81,6 +83,7 @@ class DriveCommand extends Command<int> {
   final TopLevelFlags _topLevelFlags;
 
   final DeviceFinder _deviceFinder;
+  final TestFinder _testFinder;
   final TestRunner _testRunner;
 
   @override
@@ -119,9 +122,8 @@ class DriveCommand extends Command<int> {
       throw Exception('target file $target does not exist');
     }
 
-    final targets = target != null
-        ? [target as String]
-        : _findTests(Directory('integration_test'));
+    final targets =
+        target != null ? [target as String] : _testFinder.findTests();
 
     final dynamic driver = argResults?['driver'] ?? config.driveConfig.driver;
     if (driver is! String) {
@@ -246,20 +248,6 @@ class DriveCommand extends Command<int> {
     await _testRunner.run();
 
     return 0;
-  }
-
-  /// Searches [directory] and returns files that end with `_test.dart` as
-  /// absolute paths.
-  List<String> _findTests(Directory directory) {
-    return directory
-        .listSync(recursive: true, followLinks: false)
-        .where(
-          (entity) =>
-              entity.path.endsWith('_test.dart') &&
-              FileSystemEntity.isFileSync(entity.path),
-        )
-        .map((entity) => entity.absolute.path)
-        .toList();
   }
 
   Map<String, String> _dartDefines(Map<String, String?> defines) {
