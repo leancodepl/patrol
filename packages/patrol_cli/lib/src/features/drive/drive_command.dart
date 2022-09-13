@@ -73,10 +73,6 @@ class DriveCommand extends Command<int> {
       ..addOption(
         'wait',
         help: 'The amount of seconds to wait after the test fails or succeeds.',
-      )
-      ..addFlag(
-        'parallel',
-        help: '(experimental, inactive) Run tests on devices in parallel.',
       );
   }
 
