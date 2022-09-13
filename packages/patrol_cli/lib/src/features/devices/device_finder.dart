@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
@@ -33,15 +32,6 @@ class DeviceFinder {
 
     return devices;
   }
-
-  // Future<List<Device>> getDevicesToUse(List<String> deviceIds) async {
-  //   final attachedDevices = await getAttachedDevices();
-
-  //   return findDevicesToUse(
-  //     attachedDevices: attachedDevices,
-  //     wantDevices: deviceIds,
-  //   );
-  // }
 
   //@visibleForTesting
   List<Device> findDevicesToUse({

@@ -220,9 +220,16 @@ class DriveCommand extends Command<int> {
       }
     }
 
+    final flutterDriver = FlutterDriver(_disposeScope);
+
     for (final target in targets) {
       _testRunner.addTest((device) async {
-        await FlutterDriver(_disposeScope).run(
+        if (_disposeScope.disposed) {
+          log.fine('Skipping running $target...');
+          return;
+        }
+
+        await flutterDriver.run(
           driver: driver,
           target: target,
           host: host,
