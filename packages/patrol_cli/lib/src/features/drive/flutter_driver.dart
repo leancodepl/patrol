@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
+import 'package:patrol_cli/src/features/drive/device.dart';
 
 class FlutterDriver {
   FlutterDriver(DisposeScope parentDisposeScope)
@@ -21,13 +22,15 @@ class FlutterDriver {
     required String target,
     required String host,
     required int port,
-    required String? device,
+    required Device? device,
     required String? flavor,
     required Map<String, String> dartDefines,
     required bool verbose,
   }) async {
     if (device != null) {
-      log.info('Running $target with flutter_driver on $device...');
+      log.info(
+        'Running $target with flutter_driver on ${device.resolvedName}...',
+      );
     } else {
       log.info('Running $target with flutter_driver...');
     }
@@ -43,7 +46,7 @@ class FlutterDriver {
       _flutterDriveArguments(
         driver: driver,
         target: target,
-        device: device,
+        device: device?.id,
         flavor: flavor,
         dartDefines: {...dartDefines, ...env},
       ),

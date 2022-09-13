@@ -230,7 +230,7 @@ class DriveCommand extends Command<int> {
           target: target,
           host: host,
           port: port,
-          device: device.id,
+          device: device,
           flavor: flavor as String?,
           verbose: _topLevelFlags.verbose,
           dartDefines: _dartDefines({
