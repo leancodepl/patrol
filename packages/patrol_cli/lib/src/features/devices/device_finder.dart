@@ -33,11 +33,14 @@ class DeviceFinder {
     return devices;
   }
 
-  //@visibleForTesting
   List<Device> findDevicesToUse({
     required List<Device> attachedDevices,
     required List<String> wantDevices,
   }) {
+    if (wantDevices.contains('all')) {
+      return attachedDevices;
+    }
+
     final attachedDevicesSet =
         attachedDevices.map((device) => device.resolvedName).toSet();
 
