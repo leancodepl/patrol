@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -27,6 +28,12 @@ class FlutterDriverOptions {
   final bool verbose;
 }
 
+/// Thrown when `flutter_driver` fails to connect within the given timeframe.
+class FlutterDriverConnectionTimeoutException implements Exception {
+  /// Creates a new [FlutterDriverConnectionTimeoutException].
+  FlutterDriverConnectionTimeoutException() : super();
+}
+
 class FlutterDriver {
   FlutterDriver(DisposeScope parentDisposeScope)
       : _disposeScope = DisposeScope() {
@@ -34,6 +41,8 @@ class FlutterDriver {
   }
 
   final DisposeScope _disposeScope;
+
+  static const _maxRetries = 3;
 
   /// Runs flutter driver with the given [options] and waits until the drive
   /// completes.
@@ -43,21 +52,34 @@ class FlutterDriver {
   /// Will attempt to retry the driver run if the driver fails to connect to the
   /// VM within the timeout.
   Future<void> run(FlutterDriverOptions options) async {
-    for (var i = 0; i < 3; i++) {
-      try {
-        await _run(options);
-      } catch (err) {
-        log.info(
-          'flutter_driver failed to connect to the VM. Restarting it and trying again...',
-        );
-        continue;
+    for (var retries = 0; retries < _maxRetries; retries++) {
+      if (_disposeScope.disposed) {
+        break;
       }
 
-      break;
+      log.fine('Will run flutter_driver, retry index: $retries');
+      final runDisposeScope = DisposeScope();
+      Future<void> runDisposer() async {
+        await runDisposeScope.dispose();
+      }
+
+      _disposeScope.addDispose(runDisposer);
+      final a = await runZonedGuarded(
+        () => _run(options, runDisposeScope),
+        // onError
+        (err, st) {
+          log.info('flutter_driver failed to connect to the VM. Retrying...');
+          runDisposeScope.dispose();
+        },
+      );
+      _disposeScope.removeDispose(runDisposer);
     }
   }
 
-  Future<void> _run(FlutterDriverOptions options) async {
+  Future<void> _run(
+    FlutterDriverOptions options,
+    DisposeScope disposeScope,
+  ) async {
     final device = options.device;
     if (device != null) {
       log.info(
@@ -108,21 +130,22 @@ class FlutterDriver {
           log.fine(line);
         }
       }
-    }).disposedBy(_disposeScope);
+    }).disposedBy(disposeScope);
 
-    process.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      log.severe(msg);
+    process.stderr.listen(
+      (rawMsg) {
+        final msg = systemEncoding.decode(rawMsg).trim();
+        log.severe(msg);
 
-      if (msg.contains(
-        'VMServiceFlutterDriver: Unknown pause event type Event. Assuming application is ready.',
-      )) {
-        // TODO(bartekpacia): throw a better exception
-        throw Exception('Failed to start Flutter Driver');
-      }
-    }).disposedBy(_disposeScope);
+        if (msg.contains(
+          'VMServiceFlutterDriver: Unknown pause event type Event. Assuming application is ready.',
+        )) {
+          throw FlutterDriverConnectionTimeoutException();
+        }
+      },
+    ).disposedBy(disposeScope);
 
-    _disposeScope.addDispose(() async {
+    disposeScope.addDispose(() async {
       if (exitCode != null) {
         return;
       }

@@ -172,9 +172,9 @@ packages:
   dispose_scope:
     dependency: "direct main"
     description:
-      name: dispose_scope
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "/Users/bartek/dev/RobertOdrowaz/dispose-scope/packages/dispose_scope"
+      relative: false
+    source: path
     version: "2.0.0"
   fake_async:
     dependency: "direct dev"
