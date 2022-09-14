@@ -56,8 +56,8 @@ import 'package:patrol/src/extensions.dart';
 ///   ```dart
 ///   final finder = createFinder(Icons.add);
 ///   ```
-/// - [PatrolFinder], which returns a [Finder] that the [PatrolFinder]
-///   resolves to, for example:
+/// - [PatrolFinder], which returns a [Finder] that the [PatrolFinder] resolves
+///   to, for example:
 ///   ```dart
 ///   final finder = createFinder($(Text('Sign in with Google')));
 ///   ```
@@ -164,8 +164,8 @@ class PatrolFinder extends MatchFinder {
   /// await $(#createAccount).tap();
   /// ```
   ///
-  /// If the finder resolves to more than 1 widget, you can choose which one to
-  /// tap on:
+  /// If the finder finds more than 1 widget, you can choose which one to tap
+  /// on:
   ///
   /// ```dart
   /// // taps on the third TextButton widget
@@ -201,8 +201,8 @@ class PatrolFinder extends MatchFinder {
   /// await $(#email).enterText(user@example.com);
   /// ```
   ///
-  /// If the finder resolves to more than 1 widget, you can choose which one to
-  /// enter text into:
+  /// If the finder finds more than 1 widget, you can choose which one to enter
+  /// text into:
   ///
   /// ```dart
   /// // enters text into the third TextField widget
@@ -269,8 +269,8 @@ class PatrolFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one visible widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified
-  /// by timeout passed and no widgets were found.
+  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
+  /// timeout passed and no widgets were found.
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
@@ -425,8 +425,8 @@ extension ActionCombiner on Future<PatrolFinder> {
     );
   }
 
-  /// Same as [PatrolFinder.enterText], but on a [PatrolFinder] which is not
-  /// yet visible.
+  /// Same as [PatrolFinder.enterText], but on a [PatrolFinder] which is not yet
+  /// visible.
   Future<void> enterText(
     String text, {
     bool? andSettle,
