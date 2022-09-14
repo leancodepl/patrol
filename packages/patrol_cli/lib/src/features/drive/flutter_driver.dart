@@ -27,6 +27,12 @@ class FlutterDriverOptions {
   final bool verbose;
 }
 
+/// Thrown when `flutter_driver` fails to connect within the given timeframe.
+class FlutterDriverConnectionFailedException implements Exception {
+  /// Creates a new [FlutterDriverConnectionFailedException].
+  FlutterDriverConnectionFailedException() : super();
+}
+
 class FlutterDriver {
   FlutterDriver(DisposeScope parentDisposeScope)
       : _disposeScope = DisposeScope() {
@@ -34,6 +40,8 @@ class FlutterDriver {
   }
 
   final DisposeScope _disposeScope;
+
+  static const _maxRetries = 3;
 
   /// Runs flutter driver with the given [options] and waits until the drive
   /// completes.
@@ -43,10 +51,17 @@ class FlutterDriver {
   /// Will attempt to retry the driver run if the driver fails to connect to the
   /// VM within the timeout.
   Future<void> run(FlutterDriverOptions options) async {
-    for (var i = 0; i < 3; i++) {
+    var retries = 1;
+    while (true) {
       try {
+        log.info('Will run flutter_driver, retry count: $retries');
         await _run(options);
-      } catch (err) {
+      } on FlutterDriverConnectionFailedException {
+        if (retries == 3) {
+          rethrow;
+        }
+
+        retries++;
         log.info(
           'flutter_driver failed to connect to the VM. Restarting it and trying again...',
         );
@@ -73,6 +88,7 @@ class FlutterDriver {
       verbose: options.verbose,
     );
     int? exitCode;
+    var failedToConnect = false;
     final process = await Process.start(
       'flutter',
       _flutterDriveArguments(
@@ -85,6 +101,11 @@ class FlutterDriver {
       environment: env,
       runInShell: true,
     );
+    String kill() {
+      return process.kill()
+          ? 'Killed flutter_driver'
+          : 'Failed to kill flutter_driver';
+    }
 
     process.stdout.listen((msg) {
       final lines = systemEncoding
@@ -117,8 +138,9 @@ class FlutterDriver {
       if (msg.contains(
         'VMServiceFlutterDriver: Unknown pause event type Event. Assuming application is ready.',
       )) {
-        // TODO(bartekpacia): throw a better exception
-        throw Exception('Failed to start Flutter Driver');
+        log.info('flutter_driver failed to connect to the VM, killing it...');
+        failedToConnect = true;
+        kill();
       }
     }).disposedBy(_disposeScope);
 
@@ -127,21 +149,22 @@ class FlutterDriver {
         return;
       }
 
-      final msg = process.kill()
-          ? 'Killed flutter_driver'
-          : 'Failed to kill flutter_driver';
-      log.fine(msg);
+      log.fine(kill());
     });
 
     exitCode = await process.exitCode;
 
     final msg = 'flutter_driver exited with code $exitCode';
-    if (exitCode == 0) {
-      log.info(msg);
-    } else if (exitCode == -15) {
+    log.info(msg);
+
+    if (failedToConnect) {
+      throw FlutterDriverConnectionFailedException();
+    }
+
+    if (exitCode == -15) {
       // Occurs when the VM is killed. Do nothing.
       // https://github.com/dart-lang/sdk/blob/master/pkg/dartdev/test/commands/create_integration_test.dart#L149-L152
-    } else {
+    } else if (exitCode != 0) {
       throw Exception('$msg. See logs above.');
     }
   }
