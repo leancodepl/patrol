@@ -4,7 +4,6 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 
 class AndroidDriver {
   AndroidDriver(
@@ -24,13 +23,9 @@ class AndroidDriver {
   final Adb _adb;
 
   Future<void> run({
-    required String driver,
-    required String target,
-    required String host,
     required int port,
     required Device device,
     required String? flavor,
-    required Map<String, String> dartDefines,
     required bool verbose,
     required bool debug,
   }) async {
@@ -38,71 +33,6 @@ class AndroidDriver {
     await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
     await _runServer(device: device.id, port: port);
-    await FlutterDriver(_disposeScope).run(
-      driver: driver,
-      target: target,
-      host: host,
-      port: port,
-      device: device.id,
-      flavor: flavor,
-      dartDefines: dartDefines,
-      verbose: verbose,
-    );
-  }
-
-  Future<void> runTestsInParallel({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required List<Device> devices,
-    required String? flavor,
-    required Map<String, String> dartDefines,
-    required bool verbose,
-    required bool debug,
-  }) async {
-    await Future.wait(
-      devices.map((device) async {
-        await run(
-          driver: driver,
-          target: target,
-          host: host,
-          port: port,
-          verbose: verbose,
-          debug: debug,
-          device: device,
-          flavor: flavor,
-          dartDefines: dartDefines,
-        );
-      }),
-    );
-  }
-
-  Future<void> runTestsSequentially({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required List<Device> devices,
-    required String? flavor,
-    required Map<String, String> dartDefines,
-    required String? packageName,
-    required bool verbose,
-    required bool debug,
-  }) async {
-    for (final device in devices) {
-      await run(
-        driver: driver,
-        target: target,
-        host: host,
-        port: port,
-        verbose: verbose,
-        debug: debug,
-        device: device,
-        flavor: flavor,
-        dartDefines: dartDefines,
-      );
-    }
   }
 
   Future<void> _installServer({
