@@ -10,13 +10,13 @@ const defaultScrollMaxIteration = 100;
 /// [PatrolTester] wraps a [WidgetTester]. It provides support for _Patrol
 /// custom finder_, a.k.a `$`.
 ///
-/// If you want to do something that [WidgetTester] supports, but
-/// [PatrolTester] does not, you can access the underlying [WidgetTester] via
-/// [tester] field of [PatrolTester].
+/// If you want to do something that [WidgetTester] supports, but [PatrolTester]
+/// does not, you can access the underlying [WidgetTester] via [tester] field of
+/// [PatrolTester].
 ///
 /// Usually, you won't create a [PatrolTester] instance directly. Instead,
-/// you'll use the [PatrolTester] which is provided by [PatrolTesterCallback]
-/// in [patrolTest], like this:
+/// you'll use the [PatrolTester] which is provided by [PatrolTesterCallback] in
+/// [patrolTest], like this:
 ///
 /// ```dart
 /// import 'package:patrol/patrol.dart';
@@ -138,8 +138,8 @@ class PatrolTester {
   /// await $(#createAccount).tap();
   /// ```
   ///
-  /// If the finder resolves to more than 1 widget, you can choose which one to
-  /// tap on:
+  /// If the finder finds more than 1 widget, you can choose which one to tap
+  /// on:
   ///
   /// ```dart
   /// // taps on the third TextButton widget
@@ -181,8 +181,8 @@ class PatrolTester {
   /// await $(#email).enterText(user@example.com);
   /// ```
   ///
-  /// If the finder resolves to more than 1 widget, you can choose which one to
-  /// enter text into:
+  /// If the finder finds more than 1 widget, you can choose which one to enter
+  /// text into:
   ///
   /// ```dart
   /// // enters text into the third TextField widget
@@ -249,8 +249,8 @@ class PatrolTester {
 
   /// Waits until [finder] finds at least one visible widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified
-  /// by the timeout passed and no widgets were found.
+  /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
+  /// the timeout passed and no widgets were found.
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
@@ -300,8 +300,8 @@ class PatrolTester {
   ///    situations when [finder] finds more than 1 visible widget
   ///
   /// See also:
-  ///  * [PatrolTester.config.andSettle], which controls the default behavior
-  ///    if [andSettle] is null
+  ///  * [PatrolTester.config.andSettle], which controls the default behavior if
+  ///    [andSettle] is null
   Future<PatrolFinder> dragUntilExists({
     required Finder finder,
     required Finder view,
@@ -382,8 +382,8 @@ class PatrolTester {
   /// If [scrollable] is null, it defaults to the first found [Scrollable].
   ///
   /// See also:
-  ///  - [PatrolTester.scrollUntilVisible], which this method wraps and gives
-  ///    it a better name
+  ///  - [PatrolTester.scrollUntilVisible], which this method wraps and gives it
+  ///    a better name
   Future<PatrolFinder> scrollUntilExists({
     required Finder finder,
     Finder? scrollable,

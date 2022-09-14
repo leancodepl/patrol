@@ -4,6 +4,7 @@
   "theme": "#FFA03F",
   "sidebar": [
     ["About", "/"],
+    ["Getting started", "/getting-started"],
     ["Comparison with other testing frameworks", "/comparison"],
     [
       "Custom finders",
@@ -18,7 +19,7 @@
       [
         ["Overview", "/native/overview"],
         ["Getting started", "/native/getting-started"],
-        ["Limitations", "/native/limitations"]
+        ["Feature parity", "/native/feature-parity"]
       ]
     ],
     [

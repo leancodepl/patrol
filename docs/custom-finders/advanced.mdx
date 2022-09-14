@@ -66,15 +66,15 @@ The timeout can be configured globally:
 ```dart
 patrolTest(
   'logs in successfully',
+  config: PatrolTestConfig(findTimeout: Duration(seconds: 10)),
   ($) async {
   // your test code
   },
-  findTimeout: Duration(seconds: 10),
 );
 ```
 
 You can also change the timeout ad-hoc:
 
 ```dart
-await $(#addComment).tap(timeout: Duration(seconds: 30));
+await $(#addComment).tap(findTimeout: Duration(seconds: 30));
 ```

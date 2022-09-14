@@ -1,7 +1,7 @@
 # Patrol
 
-Simple, easy-to-learn, Flutter-native UI testing framework overcoming
-limitations of `flutter_driver` and `flutter_test`.
+Simple yet powerful Flutter-native UI testing framework eliminating
+limitations of `flutter_test`, `integration_test`, and `flutter_driver`.
 
 [![patrol on pub.dev][pub_badge_test]][pub_link_test]
 [![patrol_cli on pub.dev][pub_badge_cli]][pub_link_cli]
@@ -17,10 +17,10 @@ See [packages/patrol][patrol].
 
 ## Release process
 
-1. Create a [git annotated tag][annotated_tag]:
+1. Create a git tag:
 
 ```
-$ git tag -a "patrol_cli-v0.3.4" -m "Release notes go here"
+$ git tag patrol_cli-v0.3.4
 ```
 
 2. Push it! GitHub Actions will take care of the rest.
@@ -33,4 +33,3 @@ $ git tag -a "patrol_cli-v0.3.4" -m "Release notes go here"
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
 [pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
 [pub_link_cli]: https://pub.dartlang.org/packages/patrol_cli
-[annotated_tag]: https://git-scm.com/book/en/v2/Git-Basics-Tagging#_annotated_tags
