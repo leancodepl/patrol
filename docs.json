@@ -4,6 +4,7 @@
   "theme": "#FFA03F",
   "sidebar": [
     ["About", "/"],
+    ["Getting started", "/getting-started"],
     ["Comparison with other testing frameworks", "/comparison"],
     [
       "Custom finders",
