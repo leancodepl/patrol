@@ -1,5 +1,7 @@
 ## Getting started
 
+### Just finders
+
 Let's say you want to find some `Text` widget – nothing easier than that!
 
 ```dart
@@ -106,4 +108,30 @@ Hey, this is starting to look complex! Fortunately, you have Patrol:
 await $(ListView).$(ListTile).$('Subscribe').tap();
 ```
 
+Sometimes, you might want to perform a lookahead check. Let's say that you want
+tap on the first widget with the `Key('learnMore')` that is a descendant of some
+`ListTile`, but that `ListTile` must also have the `Text` descendant with the
+`Activated` text.
+
+If you were to express the above as a `Finder`, you'd get:
+
+```dart
+await tester.tap(
+  find.ancestor(
+    of: find.text('Activated'),
+    matching: find.descendant(
+      of: find.byType(ListTile),
+      matching: find.byKey(Key('learnMore')),
+    ),
+  ).first
+);
+```
+
+With the help of Patrol's custom finders, it's much easier:
+
+```dart
+await $(ListTile).containing('Activated').$(#learnMore).tap();
+```
+
+[patrol]: https://pub.dev/packages/patrol
 [create_finder_docs]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html
