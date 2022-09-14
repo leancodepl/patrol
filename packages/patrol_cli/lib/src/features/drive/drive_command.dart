@@ -229,7 +229,7 @@ class DriveCommand extends Command<int> {
           return;
         }
 
-        await flutterDriver.run(
+        final flutterDriverOptions = FlutterDriverOptions(
           driver: driver,
           target: target,
           host: host,
@@ -237,13 +237,15 @@ class DriveCommand extends Command<int> {
           device: device,
           flavor: flavor as String?,
           verbose: _topLevelFlags.verbose,
-          dartDefines: _dartDefines({
+          dartDefines: _createDartDefines({
             ...dartDefines,
             envWaitKey: wait,
             envPackageNameKey: packageName as String?,
             envBundleIdKey: bundleId as String?,
           }),
         );
+
+        await flutterDriver.run(flutterDriverOptions);
       });
     }
 
@@ -252,7 +254,7 @@ class DriveCommand extends Command<int> {
     return 0;
   }
 
-  Map<String, String> _dartDefines(Map<String, String?> defines) {
+  Map<String, String> _createDartDefines(Map<String, String?> defines) {
     return {
       for (final entry in defines.entries)
         if (entry.value != null) entry.key: entry.value!,

@@ -5,6 +5,28 @@ import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
+class FlutterDriverOptions {
+  const FlutterDriverOptions({
+    required this.driver,
+    required this.target,
+    required this.host,
+    required this.port,
+    required this.device,
+    required this.flavor,
+    required this.dartDefines,
+    required this.verbose,
+  });
+
+  final String driver;
+  final String target;
+  final String host;
+  final int port;
+  final Device? device;
+  final String? flavor;
+  final Map<String, String> dartDefines;
+  final bool verbose;
+}
+
 class FlutterDriver {
   FlutterDriver(DisposeScope parentDisposeScope)
       : _disposeScope = DisposeScope() {
@@ -13,42 +35,52 @@ class FlutterDriver {
 
   final DisposeScope _disposeScope;
 
-  /// Runs flutter driver with the given [driver] and [target] and waits until
-  /// the drive is done.
+  /// Runs flutter driver with the given [options] and waits until the drive
+  /// completes.
   ///
   /// Prints stdout and stderr of "flutter drive".
-  Future<void> run({
-    required String driver,
-    required String target,
-    required String host,
-    required int port,
-    required Device? device,
-    required String? flavor,
-    required Map<String, String> dartDefines,
-    required bool verbose,
-  }) async {
+  ///
+  /// Will attempt to retry the driver run if the driver fails to connect to the
+  /// VM within the timeout.
+  Future<void> run(FlutterDriverOptions options) async {
+    for (var i = 0; i < 3; i++) {
+      try {
+        await _run(options);
+      } catch (err) {
+        log.info(
+          'flutter_driver failed to connect to the VM. Restarting it and trying again...',
+        );
+        continue;
+      }
+
+      break;
+    }
+  }
+
+  Future<void> _run(FlutterDriverOptions options) async {
+    final device = options.device;
     if (device != null) {
       log.info(
-        'Running $target with flutter_driver on ${device.resolvedName}...',
+        'Running ${options.target} with flutter_driver on ${device.resolvedName}...',
       );
     } else {
-      log.info('Running $target with flutter_driver...');
+      log.info('Running ${options.target} with flutter_driver...');
     }
 
     final env = _createEnv(
-      host: host,
-      port: port,
-      verbose: verbose,
+      host: options.host,
+      port: options.port,
+      verbose: options.verbose,
     );
     int? exitCode;
     final process = await Process.start(
       'flutter',
       _flutterDriveArguments(
-        driver: driver,
-        target: target,
+        driver: options.driver,
+        target: options.target,
         device: device?.id,
-        flavor: flavor,
-        dartDefines: {...dartDefines, ...env},
+        flavor: options.flavor,
+        dartDefines: {...options.dartDefines, ...env},
       ),
       environment: env,
       runInShell: true,
@@ -78,9 +110,17 @@ class FlutterDriver {
       }
     }).disposedBy(_disposeScope);
 
-    process.stderr
-        .listen((msg) => log.severe(systemEncoding.decode(msg).trim()))
-        .disposedBy(_disposeScope);
+    process.stderr.listen((rawMsg) {
+      final msg = systemEncoding.decode(rawMsg).trim();
+      log.severe(msg);
+
+      if (msg.contains(
+        'VMServiceFlutterDriver: Unknown pause event type Event. Assuming application is ready.',
+      )) {
+        // TODO(bartekpacia): throw a better exception
+        throw Exception('Failed to start Flutter Driver');
+      }
+    }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
       if (exitCode != null) {
