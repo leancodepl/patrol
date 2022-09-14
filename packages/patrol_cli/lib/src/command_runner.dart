@@ -65,7 +65,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(
       DriveCommand(_disposeScope, _topLevelFlags, _artifactsRepository),
     );
-    addCommand(DevicesCommand(_disposeScope));
+    addCommand(DevicesCommand());
     addCommand(DoctorCommand());
     addCommand(CleanCommand());
     addCommand(UpdateCommand());

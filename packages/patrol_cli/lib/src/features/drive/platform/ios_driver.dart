@@ -6,8 +6,6 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart'
-    as flutter_driver;
 
 class IOSDriver {
   IOSDriver(
@@ -22,15 +20,10 @@ class IOSDriver {
   final DisposeScope _disposeScope;
 
   Future<void> run({
-    required String driver,
-    required String target,
-    required String host,
     required int port,
     required Device device,
     required String? flavor,
-    required Map<String, String> dartDefines,
     required bool verbose,
-    bool simulator = false,
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
@@ -38,18 +31,8 @@ class IOSDriver {
     await _runServer(
       deviceName: device.name,
       deviceId: device.id,
-      simulator: simulator,
+      simulator: !device.real,
       port: port,
-    );
-    await flutter_driver.FlutterDriver(_disposeScope).run(
-      driver: driver,
-      target: target,
-      host: host,
-      port: port,
-      verbose: verbose,
-      device: device.name,
-      flavor: flavor,
-      dartDefines: dartDefines,
     );
   }
 
@@ -106,8 +89,6 @@ class IOSDriver {
   }
 
   /// Runs the server which is an infinite XCUITest.
-  ///
-  /// Returns when the server is installed and running.
   Future<void> _runServer({
     required int port,
     required String deviceName,

@@ -1,13 +1,16 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
-import 'package:patrol_cli/src/features/devices/devices_command.dart';
-import 'package:patrol_cli/src/features/drive/android/android_driver.dart';
+import 'package:patrol_cli/src/common/globals.dart' as globals;
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/ios/ios_driver.dart';
+import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
+import 'package:patrol_cli/src/features/drive/test_finder.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/patrol_config.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 
@@ -16,7 +19,13 @@ class DriveCommand extends Command<int> {
     DisposeScope parentDisposeScope,
     this._topLevelFlags,
     this._artifactsRepository,
-  ) : _disposeScope = DisposeScope() {
+  )   : _disposeScope = DisposeScope(),
+        _deviceFinder = DeviceFinder(),
+        _testFinder = TestFinder(
+          integrationTestDirectory: globals.fs.directory('integration_test'),
+          fileSystem: globals.fs,
+        ),
+        _testRunner = TestRunner() {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
@@ -53,7 +62,7 @@ class DriveCommand extends Command<int> {
         help:
             'List of additional key-value pairs that will be available to the '
             'app under test.',
-        valueHelp: 'SOME_VAR=SOME_VALUE',
+        valueHelp: 'KEY=VALUE',
       )
       ..addOption(
         'package-name',
@@ -68,16 +77,16 @@ class DriveCommand extends Command<int> {
       ..addOption(
         'wait',
         help: 'The amount of seconds to wait after the test fails or succeeds.',
-      )
-      ..addFlag(
-        'parallel',
-        help: '(experimental, inactive) Run tests on devices in parallel.',
       );
   }
 
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
   final TopLevelFlags _topLevelFlags;
+
+  final DeviceFinder _deviceFinder;
+  final TestFinder _testFinder;
+  final TestRunner _testRunner;
 
   @override
   String get name => 'drive';
@@ -87,7 +96,7 @@ class DriveCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final toml = File(configFileName).readAsStringSync();
+    final toml = globals.fs.file(configFileName).readAsStringSync();
     final config = PatrolConfig.fromToml(toml);
 
     final dynamic host = argResults?['host'] ?? config.driveConfig.host;
@@ -107,9 +116,16 @@ class DriveCommand extends Command<int> {
     }
 
     final dynamic target = argResults?['target'] ?? config.driveConfig.target;
-    if (target is! String) {
+    if (target != null && target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
+
+    if (target != null && !globals.fs.file(target as String).existsSync()) {
+      throw Exception('target file $target does not exist');
+    }
+
+    final targets =
+        target != null ? [target as String] : _testFinder.findTests();
 
     final dynamic driver = argResults?['driver'] ?? config.driveConfig.driver;
     if (driver is! String) {
@@ -121,11 +137,7 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final wantDevices = argResults?['devices'] as List<String>? ?? [];
-    final wantsAll = wantDevices.contains('all');
-    if (wantsAll && wantDevices.length > 1) {
-      throw Exception("Device 'all' must be the only device");
-    }
+    final devices = argResults?['devices'] as List<String>? ?? [];
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'];
@@ -158,89 +170,86 @@ class DriveCommand extends Command<int> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final availableDevices = await getDevices(_disposeScope);
-    if (availableDevices.isEmpty) {
-      throw Exception('No devices are available');
+    final attachedDevices = await _deviceFinder.getAttachedDevices();
+    if (attachedDevices.isEmpty) {
+      throw Exception('No devices attached');
     } else {
       log.fine('Successfully queried available devices');
     }
 
-    if (wantDevices.isEmpty) {
-      final firstDevice = availableDevices.first;
-      wantDevices.add(firstDevice.resolvedName);
+    if (devices.isEmpty) {
+      final firstDevice = attachedDevices.first;
+      devices.add(firstDevice.resolvedName);
       log.info(
         'No device specified, using the first one (${firstDevice.resolvedName})',
       );
+    } else if (devices.contains('all')) {
+      if (devices.length > 1) {
+        throw Exception("Device 'all' must be the only device");
+      }
+
+      devices.addAll(attachedDevices.map((e) => e.resolvedName));
     }
 
-    final devicesToUse = findOverlap(
-      availableDevices: availableDevices,
-      wantDevices: wantsAll
-          ? availableDevices.map((device) => device.resolvedName).toList()
-          : wantDevices,
+    final activeDevices = _deviceFinder.findDevicesToUse(
+      attachedDevices: attachedDevices,
+      wantDevices: devices,
     );
 
-    // TODO: Re-add support for parallel test execution.
-    for (final device in devicesToUse) {
+    for (final device in activeDevices) {
+      _testRunner.addDevice(device);
+
       switch (device.targetPlatform) {
         case TargetPlatform.android:
           await AndroidDriver(_disposeScope, _artifactsRepository).run(
-            driver: driver,
-            target: target,
-            host: host,
             port: port,
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
-            dartDefines: _dartDefines({
-              'PATROL_WAIT': wait,
-              'PATROL_APP_PACKAGE_NAME': packageName as String?,
-              'PATROL_APP_BUNDLE_ID': bundleId as String?,
-            }),
           );
           break;
         case TargetPlatform.iOS:
           await IOSDriver(_disposeScope, _artifactsRepository).run(
-            driver: driver,
-            target: target,
-            host: host,
             port: port,
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
-            dartDefines: _dartDefines({
-              'PATROL_WAIT': wait,
-              'PATROL_APP_PACKAGE_NAME': packageName as String?,
-              'PATROL_APP_BUNDLE_ID': bundleId as String?,
-            }),
-            simulator: !device.real,
           );
           break;
-        default:
-          throw Exception('Unsupported platform ${device.targetPlatform}');
       }
     }
+
+    final flutterDriver = FlutterDriver(_disposeScope);
+
+    for (final target in targets) {
+      _testRunner.addTest((device) async {
+        if (_disposeScope.disposed) {
+          log.fine('Skipping running $target...');
+          return;
+        }
+
+        await flutterDriver.run(
+          driver: driver,
+          target: target,
+          host: host,
+          port: port,
+          device: device,
+          flavor: flavor as String?,
+          verbose: _topLevelFlags.verbose,
+          dartDefines: _dartDefines({
+            ...dartDefines,
+            envWaitKey: wait,
+            envPackageNameKey: packageName as String?,
+            envBundleIdKey: bundleId as String?,
+          }),
+        );
+      });
+    }
+
+    await _testRunner.run();
 
     return 0;
-  }
-
-  static List<Device> findOverlap({
-    required List<Device> availableDevices,
-    required List<String> wantDevices,
-  }) {
-    final availableDevicesSet =
-        availableDevices.map((device) => device.resolvedName).toSet();
-
-    for (final wantDevice in wantDevices) {
-      if (!availableDevicesSet.contains(wantDevice)) {
-        throw Exception('Device $wantDevice is not available');
-      }
-    }
-
-    return availableDevices
-        .where((device) => wantDevices.contains(device.resolvedName))
-        .toList();
   }
 
   Map<String, String> _dartDefines(Map<String, String?> defines) {
