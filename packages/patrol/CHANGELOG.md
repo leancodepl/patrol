@@ -1,4 +1,10 @@
-## 0.6.0
+## 0.6.2
+
+- Fix handling native permission request dialogs on older Android versions
+  (#260)
+- Populate `homepage` field in `pubspec.yaml` (#254)
+
+## 0.6.1
 
 - **Rename to patrol** (#258)
 - Remove `sleep` from `MaestroTestConfig`. Use the new `--wait` argument
