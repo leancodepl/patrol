@@ -1,3 +1,7 @@
+# 0.2.1+1
+
+- Populate `homepage` field in `pubspec.yaml` (#254)
+
 ## 0.2.1
 
 - Populate missing fields in `pubspec.yaml`, improve README (#254)

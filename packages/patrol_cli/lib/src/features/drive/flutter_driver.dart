@@ -57,7 +57,7 @@ class FlutterDriver {
         log.info('Will run flutter_driver, retry count: $retries');
         await _run(options);
       } on FlutterDriverConnectionFailedException {
-        if (retries == 3) {
+        if (retries == _maxRetries) {
           rethrow;
         }
 
