@@ -12,6 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.ContentType
 import org.http4k.core.Filter
+import org.http4k.core.MemoryBody
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response
@@ -30,28 +31,48 @@ import org.http4k.server.asServer
 data class OpenAppCommand(var appId: String)
 
 @Serializable
-data class SwipeCommand(
-    var startX: Float,
-    var startY: Float,
-    var endX: Float,
-    var endY: Float,
-    var steps: Int
+data class TapCommand(
+    val appId: String,
+    val selector: Selector,
 )
 
 @Serializable
-data class PermissionCommand(var code: String)
+data class DoubleTapCommand(
+    val appId: String,
+    val selector: Selector,
+)
+
+@Serializable
+data class EnterTextBySelectorCommand(
+    val appId: String,
+    val data: String,
+    val selector: Selector,
+)
+
+@Serializable
+data class EnterTextByIndexCommand(
+    val appId: String,
+    val data: String,
+    val index: Int,
+)
+
+@Serializable
+data class PermissionCommand(val code: String)
+
+@Serializable
+data class SwipeCommand(
+    val startX: Float,
+    val startY: Float,
+    val endX: Float,
+    val endY: Float,
+    val steps: Int
+)
 
 @Serializable
 data class TapOnNotificationByIndexCommand(val index: Int)
 
 @Serializable
-data class EnterTextByIndexCommand(val data: String, val index: Int)
-
-@Serializable
-data class EnterTextBySelectorCommand(val data: String, val selector: SelectorQuery)
-
-@Serializable
-data class SelectorQuery(
+data class Selector(
     val text: String? = null,
     val textStartsWith: String? = null,
     val textContains: String? = null,
@@ -244,6 +265,8 @@ data class SelectorQuery(
     }
 }
 
+val json = Json { ignoreUnknownKeys = true }
+
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
 
@@ -255,8 +278,6 @@ class PatrolServer {
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()
-
-    private val json = Json { ignoreUnknownKeys = true }
 
     private val router = routes(
         "" bind GET to {
@@ -308,18 +329,18 @@ class PatrolServer {
             Response(OK)
         },
         "tapOnNotificationBySelector" bind POST to {
-            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
+            val body = json.decodeFromString<Selector>(it.bodyString())
             PatrolAutomator.instance.tapOnNotification(body)
             Response(OK)
         },
         "tap" bind POST to {
-            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
-            PatrolAutomator.instance.tap(body)
+            val body = json.decodeFromString<TapCommand>(it.bodyString())
+            PatrolAutomator.instance.tap(body.selector)
             Response(OK)
         },
         "doubleTap" bind POST to {
-            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
-            PatrolAutomator.instance.doubleTap(body)
+            val body = json.decodeFromString<DoubleTapCommand>(it.bodyString())
+            PatrolAutomator.instance.doubleTap(body.selector)
             Response(OK)
         },
         "enterTextByIndex" bind POST to {
@@ -338,7 +359,7 @@ class PatrolServer {
             Response(OK)
         },
         "getNativeWidgets" bind POST to {
-            val body = json.decodeFromString<SelectorQuery>(it.bodyString())
+            val body = json.decodeFromString<Selector>(it.bodyString())
             val textFields = PatrolAutomator.instance.getNativeWidgets(body)
             Response(OK).body(json.encodeToString(textFields))
         },
@@ -433,10 +454,26 @@ val catcher = Filter { next ->
             Response(BAD_REQUEST).body(err.stackTraceToString())
         } catch (err: UiObjectNotFoundException) {
             Logger.e("caught UiObjectNotFoundException", err)
-            Response(NOT_FOUND).body(err.stackTraceToString())
+            val msg = "selector ${err.message} found nothing"
+            Response(NOT_FOUND).body(
+                MemoryBody(
+                    json.encodeToString(
+                        UiObjectNotFoundResponse(
+                            message = msg,
+                            stackTrace = err.stackTraceToString()
+                        )
+                    )
+                )
+            )
         } catch (err: Exception) {
             Logger.e("caught Exception", err)
             Response(INTERNAL_SERVER_ERROR).body(err.stackTraceToString())
         }
     }
 }
+
+@Serializable
+data class UiObjectNotFoundResponse(
+    val message: String?,
+    val stackTrace: String,
+)

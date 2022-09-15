@@ -132,7 +132,7 @@ class PatrolAutomator {
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
-    fun getNativeWidgets(query: SelectorQuery): List<NativeWidget> {
+    fun getNativeWidgets(query: Selector): List<NativeWidget> {
         Logger.d("getNativeWidgets()")
 
         val selector = query.toBySelector()
@@ -140,7 +140,7 @@ class PatrolAutomator {
         return uiObjects2.map { NativeWidget.fromUiObject2(it) }
     }
 
-    fun tap(query: SelectorQuery) {
+    fun tap(query: Selector) {
         Logger.d("tap()")
 
         val selector = query.toUiSelector()
@@ -153,7 +153,7 @@ class PatrolAutomator {
         delay()
     }
 
-    fun doubleTap(query: SelectorQuery) {
+    fun doubleTap(query: Selector) {
         Logger.d("doubleTap()")
 
         val selector = query.toUiSelector()
@@ -185,7 +185,7 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(text: String, query: SelectorQuery) {
+    fun enterText(text: String, query: Selector) {
         Logger.d("enterText(text: $text, query: $query")
 
         val selector = query.toUiSelector()
@@ -273,14 +273,14 @@ class PatrolAutomator {
 
         openNotifications()
 
-        val query = SelectorQuery(resourceId = "android:id/status_bar_latest_event_content", instance = index)
+        val query = Selector(resourceId = "android:id/status_bar_latest_event_content", instance = index)
         val obj = uiDevice.findObject(query.toUiSelector())
         obj.click()
 
         delay()
     }
 
-    fun tapOnNotification(selector: SelectorQuery) {
+    fun tapOnNotification(selector: Selector) {
         Logger.d("tapOnNotification()")
 
         openNotifications()
@@ -340,15 +340,15 @@ class PatrolAutomator {
             else -> throw PatrolException("Unknown code $code")
         }
 
-        tap(SelectorQuery(resourceId = resourceId))
+        tap(Selector(resourceId = resourceId))
     }
 
     fun selectFineLocation() {
-        tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
+        tap(Selector(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
     }
 
     fun selectCoarseLocation() {
-        tap(SelectorQuery(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
+        tap(Selector(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
     }
 
     companion object {
