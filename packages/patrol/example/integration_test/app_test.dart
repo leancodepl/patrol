@@ -3,32 +3,31 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'taps around',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
-      await patrol.openQuickSettings();
-      await patrol.tap(const Selector(text: 'Bluetooth'));
-      await patrol.tap(const Selector(text: 'Bluetooth'));
-      await patrol.pressBack();
+      await $.native.openQuickSettings();
+      await $.native.tap(const Selector(text: 'Bluetooth'));
+      await $.native.tap(const Selector(text: 'Bluetooth'));
+      await $.native.pressBack();
 
-      await patrol.openNotifications();
+      await $.native.openNotifications();
 
-      await patrol.enableWifi();
-      await patrol.disableWifi();
-      await patrol.enableWifi();
+      await $.native.enableWifi();
+      await $.native.disableWifi();
+      await $.native.enableWifi();
 
-      await patrol.enableCelluar();
-      await patrol.disableCelluar();
-      await patrol.enableCelluar();
+      await $.native.enableCelluar();
+      await $.native.disableCelluar();
+      await $.native.enableCelluar();
 
-      await patrol.enableDarkMode();
-      await patrol.disableDarkMode();
-      await patrol.enableDarkMode();
+      await $.native.enableDarkMode();
+      await $.native.disableDarkMode();
+      await $.native.enableDarkMode();
 
-      await patrol.pressBack();
+      await $.native.pressBack();
     },
   );
 }
