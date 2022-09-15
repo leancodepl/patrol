@@ -11,6 +11,14 @@ typedef _LoggerCallback = void Function(String);
 // ignore: avoid_print
 void _defaultPrintLogger(String message) => print('Patrol: $message');
 
+class PatrolActionException implements Exception {
+  PatrolActionException(this.message);
+  String message;
+
+  @override
+  String toString() => 'Patrol action failed: $message';
+}
+
 /// Provides functionality to control the device.
 ///
 /// Communicates over HTTP with the Patrol server app running on the target
@@ -76,8 +84,7 @@ class Patrol {
     ).timeout(timeout);
 
     if (!response.successful) {
-      final msg = 'action $action failed with code ${response.statusCode}';
-      _handleErrorResponse(msg, response);
+      _handleErrorResponse(action, response);
     } else {
       _logger('action $action succeeded');
     }
@@ -102,8 +109,7 @@ class Patrol {
     ).timeout(timeout);
 
     if (!response.successful) {
-      final msg = 'action $action failed with code ${response.statusCode}';
-      _handleErrorResponse(msg, response);
+      _handleErrorResponse(action, response);
     } else {
       _logger('action $action succeeded');
     }
@@ -111,13 +117,15 @@ class Patrol {
     return response;
   }
 
-  void _handleErrorResponse(String msg, http.Response response) {
-    if (response.statusCode == 404) {
-      _logger('Matching UI object could not be found');
-      _logger(msg);
-    }
+  void _handleErrorResponse(String action, http.Response response) {
+    final responseBody = jsonDecode(response.body) as Map<String, dynamic>?;
+    final message = responseBody?['message'] as String? ?? 'no message';
 
-    throw Exception('$msg\n${response.body}');
+    final log = 'action $action failed with code ${response.statusCode} '
+        '($message)';
+    _logger(log);
+
+    throw PatrolActionException(message);
   }
 
   /// Returns whether the Patrol automation server is running on the target

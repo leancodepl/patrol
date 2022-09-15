@@ -12,7 +12,10 @@ Future<void> main() async {
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
-      await patrol.tap(const Selector(text: 'nothing'));
+      await patrol.pressHome();
+      await patrol.pressDoubleRecentApps();
+
+      await patrol.tap(const Selector(text: 'Some strange button'));
 
       await Future<void>.delayed(const Duration(minutes: 10));
     },
