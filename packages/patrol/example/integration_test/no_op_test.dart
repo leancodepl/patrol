@@ -4,18 +4,17 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 Future<void> main() async {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'does nothing',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
-      await patrol.pressHome();
-      await patrol.pressDoubleRecentApps();
+      await $.native.pressHome();
+      await $.native.pressDoubleRecentApps();
 
-      await patrol.tap(const Selector(text: 'Some strange button'));
+      await $.native.tap(const Selector(text: 'Some strange button'));
 
       await Future<void>.delayed(const Duration(minutes: 10));
     },

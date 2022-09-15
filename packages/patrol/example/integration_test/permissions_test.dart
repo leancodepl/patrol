@@ -4,7 +4,7 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
+  final patrol = NativeAutomator.forTest();
 
   Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
     expect($(#camera).$(#statusText).text, 'Not granted');

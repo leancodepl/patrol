@@ -4,7 +4,7 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 Future<void> main() async {
-  final patrol = Patrol.forTest();
+  final patrol = NativeAutomator.forTest();
 
   patrolTest(
     'navigates through the app using only native semantics',
@@ -32,7 +32,7 @@ Future<void> main() async {
   );
 }
 
-extension PatrolX on Patrol {
+extension PatrolX on NativeAutomator {
   Future<void> waitAndTap(PatrolTester $, Selector selector) async {
     await tap(selector, appId: resolvedAppId);
     await $.pumpAndSettle();

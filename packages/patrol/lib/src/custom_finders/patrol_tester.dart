@@ -63,10 +63,10 @@ class PatrolTester {
   final WidgetTester tester;
 
   /// Native automator that allows for interaction with the host OS.
-  final Patrol? nativeAutomator;
+  final NativeAutomator? nativeAutomator;
 
   /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null.
-  Patrol get native {
+  NativeAutomator get native {
     assert(nativeAutomator != null, 'native automator is null');
     return nativeAutomator!;
   }

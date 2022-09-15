@@ -18,7 +18,7 @@ Future<void> main() async {
     myAppId = 'pl.leancode.patrol.example';
   }
 
-  final patrol = Patrol.forTest();
+  final patrol = NativeAutomator.forTest();
 
   patrolTest(
     'counter state is the same after going to Home and switching apps',
