@@ -1,4 +1,8 @@
-# 0.2.1+1
+## 0.2.1+2
+
+- Fix broken changelog display (#294)
+
+## 0.2.1+1
 
 - Populate `homepage` field in `pubspec.yaml` (#254)
 
