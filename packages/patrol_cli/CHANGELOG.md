@@ -1,3 +1,9 @@
+## 0.6.2
+
+- Restart `flutter drive` on connection failure (#280)
+- Rename `--devices` to `--device` to be more consistent (#280)
+- Populate `homepage` field in `pubspec.yaml` (#254)
+
 ## 0.6.1
 
 - Fix handling native permissions on older Android API levels (#260)
