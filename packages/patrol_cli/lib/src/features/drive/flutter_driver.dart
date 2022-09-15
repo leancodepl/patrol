@@ -27,10 +27,22 @@ class FlutterDriverOptions {
   final bool verbose;
 }
 
-/// Thrown when `flutter_driver` fails to connect within the given timeframe.
+/// Thrown when `flutter drive` fails to connect to the VM.
 class FlutterDriverConnectionFailedException implements Exception {
-  /// Creates a new [FlutterDriverConnectionFailedException].
   FlutterDriverConnectionFailedException() : super();
+
+  @override
+  String toString() => 'Failed to connect to flutter_driver';
+}
+
+/// Thrown when `flutter drive` exits with non-zero exit code.
+class FlutterDriverFailedException implements Exception {
+  FlutterDriverFailedException(this.code) : super();
+
+  final int code;
+
+  @override
+  String toString() => 'flutter_driver exited with code $code';
 }
 
 class FlutterDriver {
@@ -51,17 +63,17 @@ class FlutterDriver {
   /// Will attempt to retry the driver run if the driver fails to connect to the
   /// VM within the timeout.
   Future<void> run(FlutterDriverOptions options) async {
-    var retries = 1;
+    var retryIndex = 0;
     while (true) {
       try {
-        log.info('Will run flutter_driver, retry count: $retries');
+        log.info('Will run flutter_driver, run index: $retryIndex');
         await _run(options);
       } on FlutterDriverConnectionFailedException {
-        if (retries == _maxRetries) {
+        if (retryIndex == _maxRetries - 1) {
           rethrow;
         }
 
-        retries++;
+        retryIndex++;
         log.info(
           'flutter_driver failed to connect to the VM. Restarting it and trying again...',
         );
@@ -135,6 +147,7 @@ class FlutterDriver {
       final msg = systemEncoding.decode(rawMsg).trim();
       log.severe(msg);
 
+      // If this log message is present, `flutter drive` hangs forever
       if (msg.contains(
         'VMServiceFlutterDriver: Unknown pause event type Event. Assuming application is ready.',
       )) {
@@ -162,10 +175,11 @@ class FlutterDriver {
     }
 
     if (exitCode == -15) {
-      // Occurs when the VM is killed. Do nothing.
+      // Occurs when the VM is killed. Do nothing because it was most probably
+      // killed by us.
       // https://github.com/dart-lang/sdk/blob/master/pkg/dartdev/test/commands/create_integration_test.dart#L149-L152
     } else if (exitCode != 0) {
-      throw Exception('$msg. See logs above.');
+      throw FlutterDriverFailedException(exitCode);
     }
   }
 
