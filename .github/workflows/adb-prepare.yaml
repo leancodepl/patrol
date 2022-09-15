@@ -3,7 +3,7 @@ name: adb prepare
 on:
   push:
     branches: [master]
-    tags-ignore: ["adb-v*"]
+    tags-ignore: ["adb-v*", "patrol_cli-v*", "patrol-v*"]
     paths:
       - "packages/adb/**"
   pull_request:
