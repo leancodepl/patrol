@@ -3,7 +3,7 @@ name: patrol_cli prepare
 on:
   push:
     branches: [master]
-    tags-ignore: ["patrol_cli-v*"]
+    tags-ignore: ["*"]
     paths:
       - "packages/patrol_cli/**"
       - "AutomatorServer/**"
