@@ -1,3 +1,4 @@
+import 'package:convenient_test/convenient_test.dart';
 import 'package:example/loading_screen.dart';
 import 'package:example/location_screen.dart';
 import 'package:example/notifications_screen.dart';
@@ -14,14 +15,18 @@ void main() {
 class ExampleApp extends StatelessWidget {
   const ExampleApp({super.key});
 
+  static final navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return ConvenientTestWrapperWidget(
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: const ExampleHomePage(title: 'Flutter Demo Home Page'),
       ),
-      home: const ExampleHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

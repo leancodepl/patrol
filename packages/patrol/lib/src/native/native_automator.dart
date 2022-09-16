@@ -36,6 +36,7 @@ class NativeAutomator {
     _LoggerCallback logger = _defaultPrintLogger,
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
+    bool useBinding = true,
   })  : _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
@@ -47,7 +48,9 @@ class NativeAutomator {
         ) {
     _logger('creating Patrol, host: $host, port: $port');
 
-    PatrolBinding.ensureInitialized();
+    if (useBinding) {
+      PatrolBinding.ensureInitialized();
+    }
   }
 
   final _LoggerCallback _logger;

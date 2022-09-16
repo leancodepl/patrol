@@ -8,7 +8,7 @@ environment:
   flutter: ">=3.0.0 <4.0.0"
 
 dependencies:
-  cupertino_icons: ^1.0.5
+  convenient_test: ^1.1.1
   flutter:
     sdk: flutter
   flutter_local_notifications: ^11.0.0
@@ -17,6 +17,7 @@ dependencies:
   webview_flutter: ^3.0.4
 
 dev_dependencies:
+  convenient_test_dev: ^1.1.1
   flutter_test:
     sdk: flutter
   integration_test:
