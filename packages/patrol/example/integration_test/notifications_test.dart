@@ -7,6 +7,7 @@ void main() {
   patrolTest(
     'sends a notification and taps on it',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
       $.log('Yay, notification_test.dart is starting!');
 
