@@ -1,3 +1,9 @@
+## 0.6.3
+
+- Don't require `host` and `port` to be defined in `patrol.toml` or passed in as
+  command-line arguments (#301)
+- Print cleaner, more readable logs when native action fails (#295)
+
 ## 0.6.2
 
 - Restart `flutter drive` on connection failure (#280)
