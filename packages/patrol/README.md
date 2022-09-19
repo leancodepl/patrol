@@ -3,12 +3,13 @@
 [![patrol on pub.dev][pub_badge]][pub_link]
 [![codestyle][pub_badge_style]][pub_badge_link]
 
-`patrol` package builds on top of `flutter_driver` to make it easy to
-control the native device from Dart. It does this by using Android's
-[UIAutomator][ui_automator] library.
+`patrol` package builds on top of `flutter_test` and `integration_test` to make
+it easy to control the native UI from Dart test code.
 
 It also provides a new custom finder system to make Flutter widget tests more
 concise and understandable, and writing them – faster and more fun.
+
+It can be used on its own or with [patrol_cli].
 
 ### Installation
 
@@ -84,6 +85,7 @@ void main() {
 }
 ```
 
+[patrol_ci]: https://pub.dev/packages/patrol_cli
 [pub_badge]: https://img.shields.io/pub/v/patrol.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
