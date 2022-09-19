@@ -23,12 +23,14 @@ class AndroidDriver {
   final Adb _adb;
 
   Future<void> run({
-    required int port,
+    required String? port,
     required Device device,
     required String? flavor,
     required bool verbose,
     required bool debug,
   }) async {
+    port ??= envPortDefaultValue;
+
     await _forwardPorts(port, device: device.id);
     await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
@@ -99,14 +101,14 @@ class AndroidDriver {
     });
   }
 
-  Future<void> _forwardPorts(int port, {String? device}) async {
+  Future<void> _forwardPorts(String port, {String? device}) async {
     await _disposeScope.run((scope) async {
       final progress = log.progress('Forwarding ports');
 
       try {
         final cancel = await _adb.forwardPorts(
-          fromHost: port,
-          toDevice: port,
+          fromHost: int.parse(port),
+          toDevice: int.parse(port),
           device: device,
         );
 
@@ -125,7 +127,7 @@ class AndroidDriver {
 
   Future<void> _runServer({
     required String? device,
-    required int port,
+    required String port,
   }) async {
     await _disposeScope.run((scope) async {
       log.fine('Started native Android instrumentation');
@@ -133,7 +135,7 @@ class AndroidDriver {
         packageName: _instrumentationPackage,
         intentClass: 'androidx.test.runner.AndroidJUnitRunner',
         device: device,
-        arguments: {envPortKey: port.toString()},
+        arguments: {envPortKey: port},
       );
 
       process.listenStdOut(log.info).disposedBy(scope);

@@ -2,6 +2,7 @@ import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/globals.dart' as globals;
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -100,19 +101,13 @@ class DriveCommand extends Command<int> {
     final config = PatrolConfig.fromToml(toml);
 
     final dynamic host = argResults?['host'] ?? config.driveConfig.host;
-    if (host is! String) {
+    if (host != null && host is! String) {
       throw const FormatException('`host` argument is not a string');
     }
 
-    dynamic portStr = argResults?['port'];
-    portStr ??= config.driveConfig.port.toString();
-    if (portStr is! String) {
-      throw const FormatException('`port` argument is not a string');
-    }
-
-    final port = int.tryParse(portStr);
-    if (port == null) {
-      throw const FormatException('`port` cannot be parsed into an integer');
+    final dynamic port = argResults?['port'] ?? config.driveConfig.port;
+    if (port != null && port is String && int.tryParse(port) == null) {
+      throw const FormatException('`port` argument does not represent an int');
     }
 
     final dynamic target = argResults?['target'] ?? config.driveConfig.target;
@@ -202,7 +197,7 @@ class DriveCommand extends Command<int> {
       switch (device.targetPlatform) {
         case TargetPlatform.android:
           await AndroidDriver(_disposeScope, _artifactsRepository).run(
-            port: port,
+            port: port as String?,
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
@@ -211,7 +206,7 @@ class DriveCommand extends Command<int> {
           break;
         case TargetPlatform.iOS:
           await IOSDriver(_disposeScope, _artifactsRepository).run(
-            port: port,
+            port: port as String?,
             device: device,
             flavor: flavor as String?,
             verbose: _topLevelFlags.verbose,
@@ -232,17 +227,17 @@ class DriveCommand extends Command<int> {
         final flutterDriverOptions = FlutterDriverOptions(
           driver: driver,
           target: target,
-          host: host,
-          port: port,
+          host: host as String?,
+          port: port as String?,
           device: device,
           flavor: flavor as String?,
           verbose: _topLevelFlags.verbose,
-          dartDefines: _createDartDefines({
+          dartDefines: {
             ...dartDefines,
             envWaitKey: wait,
             envPackageNameKey: packageName as String?,
             envBundleIdKey: bundleId as String?,
-          }),
+          }.withNullsRemoved(),
         );
 
         await flutterDriver.run(flutterDriverOptions);
@@ -252,12 +247,5 @@ class DriveCommand extends Command<int> {
     await _testRunner.run();
 
     return 0;
-  }
-
-  Map<String, String> _createDartDefines(Map<String, String?> defines) {
-    return {
-      for (final entry in defines.entries)
-        if (entry.value != null) entry.key: entry.value!,
-    };
   }
 }

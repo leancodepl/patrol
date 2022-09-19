@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
@@ -19,8 +20,8 @@ class FlutterDriverOptions {
 
   final String driver;
   final String target;
-  final String host;
-  final int port;
+  final String? host;
+  final String? port;
   final Device? device;
   final String? flavor;
   final Map<String, String> dartDefines;
@@ -94,11 +95,11 @@ class FlutterDriver {
       log.info('Running ${options.target} with flutter_driver...');
     }
 
-    final env = _createEnv(
-      host: options.host,
-      port: options.port,
-      verbose: options.verbose,
-    );
+    final env = {
+      envHostKey: options.host,
+      envPortKey: options.port,
+    }.withNullsRemoved();
+
     int? exitCode;
     var failedToConnect = false;
     final process = await Process.start(
@@ -181,18 +182,6 @@ class FlutterDriver {
     } else if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
     }
-  }
-
-  Map<String, String> _createEnv({
-    required String host,
-    required int port,
-    required bool verbose,
-  }) {
-    return {
-      envHostKey: host,
-      envPortKey: port.toString(),
-      envVerboseKey: verbose.toString(),
-    };
   }
 
   List<String> _flutterDriveArguments({

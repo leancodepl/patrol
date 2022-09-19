@@ -20,11 +20,13 @@ class IOSDriver {
   final DisposeScope _disposeScope;
 
   Future<void> run({
-    required int port,
+    required String? port,
     required Device device,
     required String? flavor,
     required bool verbose,
   }) async {
+    port ??= envPortDefaultValue;
+
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
     }
@@ -38,7 +40,7 @@ class IOSDriver {
 
   /// Forwards ports using iproxy.
   Future<void> _forwardPorts({
-    required int port,
+    required String port,
     required String deviceId,
   }) async {
     final progress = log.progress('Forwarding ports');
@@ -90,7 +92,7 @@ class IOSDriver {
 
   /// Runs the server which is an infinite XCUITest.
   Future<void> _runServer({
-    required int port,
+    required String port,
     required String deviceName,
     required String deviceId,
     required bool simulator,
@@ -114,7 +116,7 @@ class IOSDriver {
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
-        'TEST_RUNNER_$envPortKey': port.toString()
+        'TEST_RUNNER_$envPortKey': port,
       },
     );
 
