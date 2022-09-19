@@ -4,12 +4,10 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
     expect($(#camera).$(#statusText).text, 'Not granted');
     await $('Request camera permission').tap();
-    await patrol.grantPermissionWhenInUse();
+    await $.native.grantPermissionWhenInUse();
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
   }
@@ -17,7 +15,7 @@ void main() {
   Future<void> requestAndGrantMicrophonePermission(PatrolTester $) async {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
-    await patrol.grantPermissionWhenInUse();
+    await $.native.grantPermissionWhenInUse();
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
   }
@@ -25,6 +23,7 @@ void main() {
   patrolTest(
     'grants various permissions',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 

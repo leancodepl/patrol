@@ -23,14 +23,15 @@ class PatrolActionException implements Exception {
   String toString() => 'Patrol action failed: $message';
 }
 
-/// Provides functionality to control the device.
+/// Provides functionality to interact with the host OS that the app under test
+/// is running on.
 ///
-/// Communicates over HTTP with the Patrol server app running on the target
-/// device.
-class Patrol {
-  /// Creates a new [Patrol] instance for use in testing environment (on the
-  /// target device).
-  Patrol.forTest({
+/// Communicates over HTTP with the Patrol automator server running on the
+/// target device.
+class NativeAutomator {
+  /// Creates a new [NativeAutomator] instance for use in testing environment
+  /// (on the target device).
+  NativeAutomator.forTest({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),

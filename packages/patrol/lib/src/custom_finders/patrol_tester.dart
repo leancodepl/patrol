@@ -52,6 +52,7 @@ class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
   const PatrolTester({
     required this.tester,
+    required this.nativeAutomator,
     required this.config,
   });
 
@@ -60,6 +61,15 @@ class PatrolTester {
 
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
+
+  /// Native automator that allows for interaction with the host OS.
+  final NativeAutomator? nativeAutomator;
+
+  /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null.
+  NativeAutomator get native {
+    assert(nativeAutomator != null, 'native automator is null');
+    return nativeAutomator!;
+  }
 
   /// Makes it simple to log. No need to use `print` or depend on
   /// `package:logging`.

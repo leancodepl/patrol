@@ -4,8 +4,6 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 Future<void> main() async {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'navigates through the app using only native semantics',
     config: patrolConfig,
@@ -14,15 +12,15 @@ Future<void> main() async {
 
       await $('Open webview screen').scrollTo();
 
-      await patrol.tap(const Selector(text: 'Open webview screen'));
+      await $.native.tap(const Selector(text: 'Open webview screen'));
 
       await $.pumpAndSettle();
 
-      await patrol.waitAndTap($, const Selector(text: 'Accept cookies'));
-      await patrol.waitAndTap($, const Selector(text: 'Select items'));
-      await patrol.waitAndTap($, const Selector(text: 'Developer'));
-      await patrol.waitAndTap($, const Selector(text: '1 item selected'));
-      await patrol.waitAndEnterTextByIndex(
+      await $.native.waitAndTap($, const Selector(text: 'Accept cookies'));
+      await $.native.waitAndTap($, const Selector(text: 'Select items'));
+      await $.native.waitAndTap($, const Selector(text: 'Developer'));
+      await $.native.waitAndTap($, const Selector(text: '1 item selected'));
+      await $.native.waitAndEnterTextByIndex(
         $,
         const Selector(text: '1 item selected'),
         text: 'test@leancode.pl',
@@ -32,7 +30,7 @@ Future<void> main() async {
   );
 }
 
-extension PatrolX on Patrol {
+extension PatrolX on NativeAutomator {
   Future<void> waitAndTap(PatrolTester $, Selector selector) async {
     await tap(selector, appId: resolvedAppId);
     await $.pumpAndSettle();

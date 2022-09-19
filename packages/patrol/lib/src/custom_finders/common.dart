@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/custom_finders/patrol_test_config.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
+import 'package:patrol/src/native/native.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
@@ -32,7 +33,10 @@ void patrolTest(
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
   PatrolTestConfig config = const PatrolTestConfig(),
+  bool nativeAutomation = false,
 }) {
+  final patrol = nativeAutomation ? NativeAutomator.forTest() : null;
+
   return testWidgets(
     description,
     skip: skip,
@@ -41,7 +45,11 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      final patrolTester = PatrolTester(tester: widgetTester, config: config);
+      final patrolTester = PatrolTester(
+        tester: widgetTester,
+        nativeAutomator: patrol,
+        config: config,
+      );
       await callback(patrolTester);
 
       // ignore: prefer_const_declarations

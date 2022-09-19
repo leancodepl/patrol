@@ -4,19 +4,18 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'accepts location permission',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
       await $('Open location screen').tap();
 
-      await patrol.selectCoarseLocation();
-      await patrol.selectFineLocation();
-      await patrol.grantPermissionOnlyThisTime();
+      await $.native.selectCoarseLocation();
+      await $.native.selectFineLocation();
+      await $.native.grantPermissionOnlyThisTime();
 
       await $.pump();
 
