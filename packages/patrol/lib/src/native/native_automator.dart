@@ -38,9 +38,8 @@ class NativeAutomator {
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
   })  : _logger = logger,
         host = const String.fromEnvironment('PATROL_HOST'),
-        port = const String.fromEnvironment('PATROL_PORT'),
-        verbose = const String.fromEnvironment('PATROL_VERBOSE') == 'true' {
-    _logger('creating Patrol, host: $host, port: $port, verbose: $verbose');
+        port = const String.fromEnvironment('PATROL_PORT') {
+    _logger('creating Patrol, host: $host, port: $port');
 
     PatrolBinding.ensureInitialized();
   }
@@ -52,9 +51,6 @@ class NativeAutomator {
 
   /// Port on [host] on which Patrol server instrumentation is running.
   final String port;
-
-  /// Whether to print more logs.
-  final bool verbose;
 
   /// Timeout for HTTP requests to Patrol automation server.
   final Duration timeout;
