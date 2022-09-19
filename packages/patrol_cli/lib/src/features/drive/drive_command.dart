@@ -1,9 +1,9 @@
-import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/globals.dart' as globals;
+import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -15,7 +15,31 @@ import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/patrol_config.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 
-class DriveCommand extends Command<int> {
+class DriveCommandConfig {
+  const DriveCommandConfig({
+    required this.targets,
+    required this.devices,
+    required this.host,
+    required this.port,
+    required this.driver,
+    required this.flavor,
+    required this.dartDefines,
+    required this.packageName,
+    required this.bundleId,
+  });
+
+  final List<Device> devices;
+  final List<String> targets;
+  final String host;
+  final String port;
+  final String driver;
+  final String? flavor;
+  final Map<String, String> dartDefines;
+  final String? packageName;
+  final String? bundleId;
+}
+
+class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand(
     DisposeScope parentDisposeScope,
     this._topLevelFlags,
@@ -26,7 +50,8 @@ class DriveCommand extends Command<int> {
           integrationTestDirectory: globals.fs.directory('integration_test'),
           fileSystem: globals.fs,
         ),
-        _testRunner = TestRunner() {
+        _testRunner = TestRunner(),
+        super() {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
@@ -36,7 +61,6 @@ class DriveCommand extends Command<int> {
       )
       ..addOption(
         'port',
-        abbr: 'p',
         help: 'Port on host on which the automator server app is listening.',
       )
       ..addOption(
@@ -46,7 +70,6 @@ class DriveCommand extends Command<int> {
       )
       ..addOption(
         'driver',
-        abbr: 'd',
         help: 'Dart file which starts flutter_driver.',
       )
       ..addOption(
@@ -56,7 +79,7 @@ class DriveCommand extends Command<int> {
       ..addMultiOption(
         'devices',
         help: 'List of devices to drive the app on.',
-        valueHelp: 'all, emulator-5554',
+        valueHelp: "all, emulator-5554, 'iPhone 14'",
       )
       ..addMultiOption(
         'dart-define',
@@ -96,7 +119,7 @@ class DriveCommand extends Command<int> {
   String get description => 'Drive the app using flutter_driver.';
 
   @override
-  Future<int> run() async {
+  Future<DriveCommandConfig> parseInput() async {
     final toml = globals.fs.file(configFileName).readAsStringSync();
     final config = PatrolConfig.fromToml(toml);
 
@@ -191,24 +214,44 @@ class DriveCommand extends Command<int> {
       wantDevices: devices,
     );
 
-    for (final device in activeDevices) {
+    return DriveCommandConfig(
+      devices: activeDevices,
+      targets: targets,
+      host: host as String? ?? envHostDefaultValue,
+      port: port as String? ?? envPortDefaultValue,
+      driver: driver,
+      flavor: flavor as String?,
+      dartDefines: {
+        ...dartDefines,
+        envWaitKey: wait,
+        envPackageNameKey: packageName as String?,
+        envBundleIdKey: bundleId as String?,
+      }.withNullsRemoved(),
+      packageName: packageName,
+      bundleId: bundleId,
+    );
+  }
+
+  @override
+  Future<int> execute(DriveCommandConfig config) async {
+    for (final device in config.devices) {
       _testRunner.addDevice(device);
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
           await AndroidDriver(_disposeScope, _artifactsRepository).run(
-            port: port as String?,
+            port: config.port,
             device: device,
-            flavor: flavor as String?,
+            flavor: config.flavor,
             verbose: _topLevelFlags.verbose,
             debug: _topLevelFlags.debug,
           );
           break;
         case TargetPlatform.iOS:
           await IOSDriver(_disposeScope, _artifactsRepository).run(
-            port: port as String?,
+            port: config.port,
             device: device,
-            flavor: flavor as String?,
+            flavor: config.flavor,
             verbose: _topLevelFlags.verbose,
           );
           break;
@@ -217,7 +260,7 @@ class DriveCommand extends Command<int> {
 
     final flutterDriver = FlutterDriver(_disposeScope);
 
-    for (final target in targets) {
+    for (final target in config.targets) {
       _testRunner.addTest((device) async {
         if (_disposeScope.disposed) {
           log.fine('Skipping running $target...');
@@ -225,19 +268,14 @@ class DriveCommand extends Command<int> {
         }
 
         final flutterDriverOptions = FlutterDriverOptions(
-          driver: driver,
+          driver: config.driver,
           target: target,
-          host: host as String?,
-          port: port as String?,
+          host: config.host,
+          port: config.port,
           device: device,
-          flavor: flavor as String?,
+          flavor: config.flavor,
           verbose: _topLevelFlags.verbose,
-          dartDefines: {
-            ...dartDefines,
-            envWaitKey: wait,
-            envPackageNameKey: packageName as String?,
-            envBundleIdKey: bundleId as String?,
-          }.withNullsRemoved(),
+          dartDefines: config.dartDefines,
         );
 
         await flutterDriver.run(flutterDriverOptions);
