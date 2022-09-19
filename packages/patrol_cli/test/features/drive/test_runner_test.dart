@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fake_async/fake_async.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
@@ -27,8 +29,8 @@ void main() {
   test('devices cannot be added after run', () {
     testRunner
       ..addDevice(device1)
-      ..addTest((device) => Future.delayed(Duration(seconds: 1)))
-      ..run();
+      ..addTest((device) => Future.delayed(Duration(seconds: 1)));
+    unawaited(testRunner.run());
 
     expect(() => testRunner.addDevice(device1), throwsStateError);
   });
@@ -36,8 +38,8 @@ void main() {
   test('tests cannot be added after run', () {
     testRunner
       ..addDevice(device1)
-      ..addTest((device) => Future.delayed(Duration(seconds: 1)))
-      ..run();
+      ..addTest((device) => Future.delayed(Duration(seconds: 1)));
+    unawaited(testRunner.run());
 
     expect(() => testRunner.addTest((_) async {}), throwsStateError);
   });
@@ -62,8 +64,8 @@ void main() {
   test('cannot run tests while they are already running', () {
     testRunner
       ..addDevice(device1)
-      ..addTest((device) => Future.delayed(Duration(seconds: 1)))
-      ..run();
+      ..addTest((device) => Future.delayed(Duration(seconds: 1)));
+    unawaited(testRunner.run());
 
     expect(testRunner.run, throwsStateError);
   });
@@ -122,7 +124,7 @@ void main() {
         });
 
       expect(code, equals(<String>[]));
-      testRunner.run();
+      unawaited(testRunner.run());
 
       fakeAsync.elapse(Duration(seconds: 1));
       expect(code, equals(['emulator-5554 A', 'emulator-5556 A']));

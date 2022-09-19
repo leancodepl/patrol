@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -30,20 +32,24 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   void initState() {
     super.initState();
 
-    Permission.camera.status.then(
-      (value) {
-        setState(() {
-          _cameraPermissionGranted = value == PermissionStatus.granted;
-        });
-      },
+    unawaited(
+      Permission.camera.status.then(
+        (value) {
+          setState(() {
+            _cameraPermissionGranted = value == PermissionStatus.granted;
+          });
+        },
+      ),
     );
 
-    Permission.microphone.status.then(
-      (value) {
-        setState(() {
-          _microphonePermissionGranted = value == PermissionStatus.granted;
-        });
-      },
+    unawaited(
+      Permission.microphone.status.then(
+        (value) {
+          setState(() {
+            _microphonePermissionGranted = value == PermissionStatus.granted;
+          });
+        },
+      ),
     );
   }
 
