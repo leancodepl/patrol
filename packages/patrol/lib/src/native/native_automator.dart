@@ -37,8 +37,14 @@ class NativeAutomator {
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
   })  : _logger = logger,
-        host = const String.fromEnvironment('PATROL_HOST'),
-        port = const String.fromEnvironment('PATROL_PORT') {
+        host = const String.fromEnvironment(
+          'PATROL_HOST',
+          defaultValue: 'localhost',
+        ),
+        port = const String.fromEnvironment(
+          'PATROL_PORT',
+          defaultValue: '8081',
+        ) {
     _logger('creating Patrol, host: $host, port: $port');
 
     PatrolBinding.ensureInitialized();
