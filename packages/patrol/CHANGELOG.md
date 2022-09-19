@@ -1,3 +1,10 @@
+## 0.6.2
+
+- Don't require `host` and `port` to be defined in `patrol.toml` or passed in as
+  command-line arguments (#301)
+- Rename `Patrol` to `NativeAutomator` and embed it in `PatrolTester` (#297)
+- Print cleaner, more readable logs when native action fails (#295)
+
 ## 0.6.1
 
 - Fix handling native permission request dialogs on older Android versions
