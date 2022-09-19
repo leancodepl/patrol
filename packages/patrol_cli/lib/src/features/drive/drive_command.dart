@@ -55,6 +55,19 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
+      ..addMultiOption(
+        'targets',
+        abbr: 't',
+        help: 'Integration tests to run. If empty, all tests are run.',
+        valueHelp: 'integration_test/app_test.dart',
+      )
+      ..addMultiOption(
+        'devices',
+        abbr: 'd',
+        help:
+            'Devices to run the tests on. If empty, the first device is used.',
+        valueHelp: "all, emulator-5554, 'iPhone 14'",
+      )
       ..addOption(
         'host',
         help: 'Host on which the automator server app is listening.',
@@ -64,23 +77,13 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         help: 'Port on host on which the automator server app is listening.',
       )
       ..addOption(
-        'targets',
-        abbr: 't',
-        help: 'Integration test files to run.',
-      )
-      ..addOption(
         'driver',
         help: 'Dart file which starts flutter_driver.',
+        defaultsTo: 'test_driver/integration_test.dart',
       )
       ..addOption(
         'flavor',
         help: 'Flavor of the app to run.',
-      )
-      ..addMultiOption(
-        'devices',
-        abbr: 'd',
-        help: 'Devices to drive the app on.',
-        valueHelp: "all, emulator-5554, 'iPhone 14'",
       )
       ..addMultiOption(
         'dart-define',
@@ -100,7 +103,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       )
       ..addOption(
         'wait',
-        help: 'The amount of seconds to wait after the test fails or succeeds.',
+        help: 'Seconds to wait after the test fails or succeeds.',
+        defaultsTo: '0',
       );
   }
 

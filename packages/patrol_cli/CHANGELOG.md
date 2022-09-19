@@ -1,3 +1,8 @@
+## Unreleased
+
+- Rename option `target` to `targets` to let the users fine-tune the tests they
+  want to run
+
 ## 0.6.3
 
 - Don't require `host` and `port` to be defined in `patrol.toml` or passed in as

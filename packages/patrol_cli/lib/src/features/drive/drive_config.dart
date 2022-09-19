@@ -11,9 +11,9 @@ class DriveConfig {
   });
 
   factory DriveConfig.fromMap(Map<String, dynamic> toml) {
+    final dynamic target = toml['target'];
     final dynamic host = toml['host'];
     final dynamic port = toml['port'];
-    final dynamic target = toml['target'];
     final dynamic driver = toml['driver'];
     final dynamic flavor = toml['flavor'];
     final dynamic dartDefines = toml['dart-defines'];
