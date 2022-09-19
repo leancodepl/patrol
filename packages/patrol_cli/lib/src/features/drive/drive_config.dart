@@ -1,5 +1,3 @@
-import 'package:patrol_cli/src/features/drive/constants.dart';
-
 class DriveConfig {
   const DriveConfig({
     required this.host,
@@ -79,8 +77,8 @@ class DriveConfig {
 
   factory DriveConfig.defaultConfig() {
     return const DriveConfig(
-      host: envHostDefaultValue,
-      port: envPortDefaultValue,
+      host: null,
+      port: null,
       target: 'integration_test/app_test.dart',
       driver: 'test_driver/integration_test.dart',
       flavor: null,
@@ -101,10 +99,10 @@ class DriveConfig {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'host': host,
-      'port': port,
-      'target': target,
-      'driver': driver,
+      if (host != null) 'host': host,
+      if (port != null) 'port': port,
+      if (target != null) 'target': target,
+      if (driver != null) 'driver': driver,
       if (flavor != null) 'flavor': flavor,
       if (dartDefines != null) 'dartDefines': dartDefines,
     };

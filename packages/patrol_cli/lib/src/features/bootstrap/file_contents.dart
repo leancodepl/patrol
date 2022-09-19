@@ -112,13 +112,12 @@ import 'package:patrol/patrol.dart';
 // This is an example integration test using Patrol. Use it as a base to create
 // your own Patrol-powered test.
 //
-// It runs on target device.
+// It runs on the target device.
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'counter state is the same after going to home and switching apps',
+    nativeAutomation: true,
     ($) async {
       // Replace with your own app widget.
       await $.pumpWidgetAndSettle(
@@ -130,17 +129,17 @@ void main() {
         ),
       );
 
-      await patrol.pressHome();
+      await $.native.pressHome();
 
-      await patrol.pressDoubleRecentApps();
+      await $.native.pressDoubleRecentApps();
 
-      await patrol.openNotifications();
+      await $.native.openNotifications();
 
-      await patrol.enableWifi();
-      await patrol.disableWifi();
-      await patrol.enableWifi();
+      await $.native.enableWifi();
+      await $.native.disableWifi();
+      await $.native.enableWifi();
 
-      await patrol.pressBack();
+      await $.native.pressBack();
 
       expect($('app'), findsOneWidget);
     },
