@@ -1,5 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
@@ -16,28 +17,21 @@ import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/patrol_config.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 
-class DriveCommandConfig {
-  const DriveCommandConfig({
-    required this.targets,
-    required this.devices,
-    required this.host,
-    required this.port,
-    required this.driver,
-    required this.flavor,
-    required this.dartDefines,
-    required this.packageName,
-    required this.bundleId,
-  });
+part 'drive_command.freezed.dart';
 
-  final List<Device> devices;
-  final List<String> targets;
-  final String host;
-  final String port;
-  final String driver;
-  final String? flavor;
-  final Map<String, String> dartDefines;
-  final String? packageName;
-  final String? bundleId;
+@freezed
+class DriveCommandConfig with _$DriveCommandConfig {
+  const factory DriveCommandConfig({
+    required List<Device> devices,
+    required List<String> targets,
+    required String host,
+    required String port,
+    required String driver,
+    required String? flavor,
+    required Map<String, String> dartDefines,
+    required String? packageName,
+    required String? bundleId,
+  }) = _DriveCommandConfig;
 }
 
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
@@ -45,16 +39,16 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     DisposeScope parentDisposeScope,
     this._topLevelFlags,
     this._artifactsRepository, [
+    DeviceFinder? deviceFinder,
     TestFinder? testFinder,
   ])  : _disposeScope = DisposeScope(),
-        _deviceFinder = DeviceFinder(),
+        _deviceFinder = deviceFinder ?? DeviceFinder(),
         _testFinder = testFinder ??
             TestFinder(
               integrationTestDir: globals.fs.directory('integration_test'),
               fileSystem: globals.fs,
             ),
-        _testRunner = TestRunner(),
-        super() {
+        _testRunner = TestRunner() {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
