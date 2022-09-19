@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 /// Thrown when some Patrol method fails to complete within the allowed time.
