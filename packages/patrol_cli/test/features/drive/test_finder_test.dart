@@ -14,7 +14,7 @@ void main() {
     fs.currentDirectory = wd;
 
     testFinder = TestFinder(
-      integrationTestDirectory: fs.directory('integration_test'),
+      integrationTestDir: fs.directory('integration_test'),
       fileSystem: fs,
     );
   });
