@@ -1,3 +1,7 @@
+## Unreleased
+
+- Stop re-exporting `package:flutter_test (#308)
+
 ## 0.6.2
 
 - Don't require `host` and `port` to be defined in `patrol.toml` or passed in as
