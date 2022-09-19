@@ -1,3 +1,5 @@
+import 'package:patrol_cli/src/features/drive/constants.dart';
+
 class DriveConfig {
   const DriveConfig({
     required this.host,
@@ -24,8 +26,8 @@ class DriveConfig {
       throw const FormatException('`host` field is not a string');
     }
 
-    if (port != null && port is! int) {
-      throw const FormatException('`port` field is not an int');
+    if (port != null && port is! String) {
+      throw const FormatException('`port` field is not an string');
     }
 
     if (target != null && target is! String) {
@@ -64,7 +66,7 @@ class DriveConfig {
 
     return DriveConfig(
       host: host as String?,
-      port: port as int?,
+      port: port as String?,
       target: target as String?,
       driver: driver as String?,
       flavor: flavor as String?,
@@ -77,8 +79,8 @@ class DriveConfig {
 
   factory DriveConfig.defaultConfig() {
     return const DriveConfig(
-      host: 'localhost',
-      port: 8081,
+      host: envHostDefaultValue,
+      port: envPortDefaultValue,
       target: 'integration_test/app_test.dart',
       driver: 'test_driver/integration_test.dart',
       flavor: null,
@@ -89,7 +91,7 @@ class DriveConfig {
   }
 
   final String? host;
-  final int? port;
+  final String? port;
   final String? target;
   final String? driver;
   final String? flavor;

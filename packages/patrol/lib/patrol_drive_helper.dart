@@ -10,8 +10,8 @@ class PatrolDriveHelper {
   /// Creates a new [PatrolDriveHelper] instance for use in the driver file (on
   /// test host).
   PatrolDriveHelper()
-      : host = Platform.environment['PATROL_HOST']!,
-        port = Platform.environment['PATROL_PORT']! {
+      : host = Platform.environment['PATROL_HOST'] ?? 'localhost',
+        port = Platform.environment['PATROL_PORT'] ?? '8081' {
     print('Creating PatrolDriveHelper instance. Host: $host, port: $port');
   }
 
