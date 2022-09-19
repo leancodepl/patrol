@@ -54,38 +54,11 @@ class FlutterDriver {
 
   final DisposeScope _disposeScope;
 
-  static const _maxRetries = 3;
-
   /// Runs flutter driver with the given [options] and waits until the drive
   /// completes.
   ///
   /// Prints stdout and stderr of "flutter drive".
-  ///
-  /// Will attempt to retry the driver run if the driver fails to connect to the
-  /// VM within the timeout.
   Future<void> run(FlutterDriverOptions options) async {
-    var retryIndex = 0;
-    while (true) {
-      try {
-        log.info('Will run flutter_driver, run index: $retryIndex');
-        await _run(options);
-      } on FlutterDriverConnectionFailedException {
-        if (retryIndex == _maxRetries - 1) {
-          rethrow;
-        }
-
-        retryIndex++;
-        log.info(
-          'flutter_driver failed to connect to the VM. Restarting it and trying again...',
-        );
-        continue;
-      }
-
-      break;
-    }
-  }
-
-  Future<void> _run(FlutterDriverOptions options) async {
     final device = options.device;
     if (device != null) {
       log.info(
