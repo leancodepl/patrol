@@ -41,10 +41,9 @@ class CounterTemplate extends AppTestTemplate {
   // It runs on target device.
   
   void main() {
-  final patrol = Patrol.forTest();
-  
   patrolTest(
     'counter state is the same after going to Home and switching apps',
+    nativeAutomation: true,
     (\$) async {
       /// Find the first Text widget whose content is a String which represents
       /// a num.
@@ -73,21 +72,21 @@ class CounterTemplate extends AppTestTemplate {
       await \$(FloatingActionButton).tap();
       expect(findCounterText()!.data, '1');
   
-      await patrol.pressHome();
+      await \$.native.pressHome();
   
-      await patrol.pressDoubleRecentApps();
+      await \$.native.pressDoubleRecentApps();
   
       expect(findCounterText()!.data, '1');
       await \$(FloatingActionButton).tap();
       expect(findCounterText()!.data, '2');
   
-      await patrol.pressHome();
+      await \$.native.pressHome();
   
-      await patrol.openNotifications();
+      await \$.native.openNotifications();
   
-      await patrol.pressBack();
+      await \$.native.pressBack();
   
-      await patrol.pressDoubleRecentApps();
+      await \$.native.pressDoubleRecentApps();
     },
   );
   }
