@@ -14,8 +14,6 @@ Future<void> main() async {
       await $.native.pressHome();
       await $.native.pressDoubleRecentApps();
 
-      await $.native.tap(const Selector(text: 'Some strange button'));
-
       await Future<void>.delayed(const Duration(minutes: 10));
     },
   );

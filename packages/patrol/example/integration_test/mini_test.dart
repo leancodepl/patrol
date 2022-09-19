@@ -18,11 +18,10 @@ Future<void> main() async {
     myAppId = 'pl.leancode.patrol.example';
   }
 
-  final patrol = NativeAutomator.forTest();
-
   patrolTest(
     'counter state is the same after going to Home and switching apps',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 
@@ -31,20 +30,20 @@ Future<void> main() async {
 
       await _wait();
 
-      await patrol.pressHome();
+      await $.native.pressHome();
 
       $.log("I went to home! Now I'm gonna open the mail app");
 
       await _wait();
 
-      await patrol.openApp(id: mapsId);
+      await $.native.openApp(id: mapsId);
       $.log("Opened mail app! Now I'm gonna go to home");
 
       await _wait();
 
-      await patrol.pressHome();
+      await $.native.pressHome();
 
-      await patrol.openApp(id: myAppId);
+      await $.native.openApp(id: myAppId);
       $.log('Opening the app under test again...');
 
       expect($(#counterText).text, '2');

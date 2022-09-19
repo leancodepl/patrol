@@ -4,8 +4,6 @@ import 'package:patrol/patrol.dart';
 import 'config.dart';
 
 void main() {
-  final patrol = NativeAutomator.forTest();
-
   patrolTest(
     'sends a notification and taps on it',
     config: patrolConfig,
@@ -19,10 +17,10 @@ void main() {
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
-      (await patrol.getNotifications()).forEach($.log);
+      (await $.native.getNotifications()).forEach($.log);
 
-      await patrol.tapOnNotificationByIndex(1);
-      await patrol.tapOnNotificationBySelector(
+      await $.native.tapOnNotificationByIndex(1);
+      await $.native.tapOnNotificationBySelector(
         const Selector(textContains: 'special offer'),
       );
     },
