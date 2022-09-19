@@ -64,9 +64,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         help: 'Port on host on which the automator server app is listening.',
       )
       ..addOption(
-        'target',
+        'targets',
         abbr: 't',
-        help: 'Dart file to run.',
+        help: 'Integration test files to run.',
       )
       ..addOption(
         'driver',
@@ -78,14 +78,14 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       )
       ..addMultiOption(
         'devices',
-        help: 'List of devices to drive the app on.',
+        abbr: 'd',
+        help: 'Devices to drive the app on.',
         valueHelp: "all, emulator-5554, 'iPhone 14'",
       )
       ..addMultiOption(
         'dart-define',
-        help:
-            'List of additional key-value pairs that will be available to the '
-            'app under test.',
+        help: 'Additional key-value pairs that will be available to the app '
+            'under test.',
         valueHelp: 'KEY=VALUE',
       )
       ..addOption(
@@ -133,7 +133,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`port` argument does not represent an int');
     }
 
-    final dynamic target = argResults?['target'] ?? config.driveConfig.target;
+    final dynamic target = argResults?['targets'] ?? config.driveConfig.target;
     if (target != null && target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
@@ -156,6 +156,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     final devices = argResults?['devices'] as List<String>? ?? [];
+    for (var i = 0; i < devices.length; i++) {
+      devices[i] = devices[i].trim();
+    }
 
     final dartDefines = config.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'];
