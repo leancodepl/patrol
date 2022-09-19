@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 class LocationScreen extends StatelessWidget {
   const LocationScreen({super.key});
 
-  Future<Position> _determinePosition() async {
+  Future<Position> get _determinePosition async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -38,7 +38,7 @@ class LocationScreen extends StatelessWidget {
       ),
       body: Center(
         child: FutureBuilder<Position>(
-          future: _determinePosition(),
+          future: _determinePosition,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return const Text('no location');

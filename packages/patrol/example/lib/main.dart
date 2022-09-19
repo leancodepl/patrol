@@ -130,7 +130,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const LoadingScreen(),
               ),
@@ -138,7 +138,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open loading screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const LocationScreen(),
               ),
@@ -146,7 +146,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open location screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const NotificationsScreen(),
               ),
@@ -154,7 +154,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open notifications screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const OverlayScreen(),
               ),
@@ -162,7 +162,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open overlay screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const PermissionsScreen(),
               ),
@@ -170,7 +170,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open permissions screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const ScrollingScreen(),
               ),
@@ -178,7 +178,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open scrolling screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
+            onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const WebViewScreen(),
               ),

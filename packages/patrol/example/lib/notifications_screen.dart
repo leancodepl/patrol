@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -15,25 +17,27 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
 
-    _notificationsPlugin.initialize(
-      const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-        iOS: DarwinInitializationSettings(),
+    unawaited(
+      _notificationsPlugin.initialize(
+        const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          iOS: DarwinInitializationSettings(),
+        ),
+        onDidReceiveNotificationResponse: (notificationResponse) {
+          print(
+            'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
+          );
+        },
       ),
-      onDidReceiveNotificationResponse: (notificationResponse) {
-        print(
-          'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
-        );
-      },
     );
   }
 
-  void _showNotification({
+  Future<void> _showNotification({
     required String title,
     required String body,
     required int id,
-  }) {
-    _notificationsPlugin.show(
+  }) async {
+    await _notificationsPlugin.show(
       id,
       title,
       '$body. BTW, this notification has ID $id',
@@ -56,7 +60,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           TextButton(
-            onPressed: () => _showNotification(
+            onPressed: () async => _showNotification(
               id: 1,
               title: 'Someone liked your recent post',
               body: 'Tap to see who!',
@@ -64,7 +68,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             child: const Text('Show "someone liked" notification'),
           ),
           TextButton(
-            onPressed: () => _showNotification(
+            onPressed: () async => _showNotification(
               id: 2,
               title: 'Special offer',
               body: 'We have something special for you!',

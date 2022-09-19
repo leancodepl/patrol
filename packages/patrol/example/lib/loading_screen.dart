@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -14,12 +16,14 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void initState() {
     super.initState();
 
-    Future<void>.delayed(const Duration(seconds: 3)).then(
-      (_) {
-        setState(() {
-          _visible = true;
-        });
-      },
+    unawaited(
+      Future<void>.delayed(const Duration(seconds: 3)).then(
+        (_) {
+          setState(() {
+            _visible = true;
+          });
+        },
+      ),
     );
   }
 

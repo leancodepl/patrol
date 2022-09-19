@@ -11,7 +11,7 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^10.0.0-dev.14
+  flutter_local_notifications: ^11.0.0
   geolocator: ^9.0.1
   permission_handler: ^10.0.0
   webview_flutter: ^3.0.4
@@ -21,7 +21,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  leancode_lint: ^1.2.1
+  leancode_lint: ^1.3.0
   patrol:
     path: ../
 
