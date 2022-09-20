@@ -1,6 +1,6 @@
-## Unreleased
+## 0.6.3
 
-- Stop re-exporting `package:flutter_test (#308)
+- Stop re-exporting `package:flutter_test` (#308)
 
 ## 0.6.2
 
