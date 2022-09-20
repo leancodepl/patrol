@@ -21,7 +21,7 @@ Future<void> main() async {
     myAppId = 'pl.leancode.patrol.example';
   }
 
-  final patrol = NativeAutomator.forTest(useBinding: false);
+  final nativeAutomator = NativeAutomator.forTest(useBinding: false);
 
   await convenientTestMain(MyConvenientTestSlot(), () {
     tTestWidgets(
@@ -29,7 +29,7 @@ Future<void> main() async {
       (t) async {
         final $ = PatrolTester(
           tester: t.tester,
-          nativeAutomator: patrol,
+          nativeAutomator: nativeAutomator,
           config: patrolConfig,
         );
 
