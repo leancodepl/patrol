@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 
 @Serializable
 data class Notification(
-    val appName: String,
+    val appName: String?,
     val title: String,
     val content: String
 )
@@ -252,7 +252,6 @@ class PatrolAutomator {
         for (notificationContainer in notificationContainers) {
             try {
                 val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
-                    ?: throw NullPointerException("Could not find app name text")
                 val title = notificationContainer.findObject(By.res("android:id/title"))?.text
                     ?: throw NullPointerException("Could not find title text")
                 val content = notificationContainer.findObject(By.res("android:id/text"))?.text
