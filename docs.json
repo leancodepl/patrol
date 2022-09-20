@@ -2,6 +2,7 @@
   "name": "Patrol",
   "twitter": "leancodepl",
   "theme": "#FFA03F",
+  "favicon": "/assets/square.svg",
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
