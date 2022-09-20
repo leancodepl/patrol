@@ -28,14 +28,6 @@ class FlutterDriverOptions {
   final bool verbose;
 }
 
-/// Thrown when `flutter drive` fails to connect to the VM.
-class FlutterDriverConnectionFailedException implements Exception {
-  FlutterDriverConnectionFailedException() : super();
-
-  @override
-  String toString() => 'Failed to connect to flutter_driver';
-}
-
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
   FlutterDriverFailedException(this.code) : super();
@@ -74,7 +66,6 @@ class FlutterDriver {
     }.withNullsRemoved();
 
     int? exitCode;
-    var failedToConnect = false;
     final process = await Process.start(
       'flutter',
       _flutterDriveArguments(
@@ -120,15 +111,6 @@ class FlutterDriver {
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
       log.severe(msg);
-
-      // If this log message is present, `flutter drive` hangs forever
-      if (msg.contains(
-        'VMServiceFlutterDriver: Unknown pause event type Event. Assuming application is ready.',
-      )) {
-        log.info('flutter_driver failed to connect to the VM, killing it...');
-        failedToConnect = true;
-        kill();
-      }
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -143,10 +125,6 @@ class FlutterDriver {
 
     final msg = 'flutter_driver exited with code $exitCode';
     log.info(msg);
-
-    if (failedToConnect) {
-      throw FlutterDriverConnectionFailedException();
-    }
 
     if (exitCode == -15) {
       // Occurs when the VM is killed. Do nothing because it was most probably
