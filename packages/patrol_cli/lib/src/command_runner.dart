@@ -11,7 +11,6 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
@@ -36,14 +35,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
     exitCode = await runner.run(args) ?? 0;
   } on UsageException catch (err) {
     log.severe(err.message);
-    exitCode = 1;
-  } on FlutterDriverFailedException catch (err) {
-    log
-      ..severe(err)
-      ..severe(
-        "See the logs above to learn what happened. If the logs above aren't "
-        "useful then it's a bug – please report it.",
-      );
     exitCode = 1;
   } on FormatException catch (err, st) {
     log.severe(null, err, st);

@@ -227,7 +227,16 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           dartDefines: config.dartDefines,
         );
 
-        await flutterDriver.run(flutterDriverOptions);
+        try {
+          await flutterDriver.run(flutterDriverOptions);
+        } on FlutterDriverFailedException catch (err) {
+          log
+            ..severe(err)
+            ..severe(
+              "See the logs above to learn what happened. If the logs above aren't "
+              "useful then it's a bug – please report it.",
+            );
+        }
       });
     }
 
