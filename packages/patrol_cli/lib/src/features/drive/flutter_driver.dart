@@ -52,13 +52,12 @@ class FlutterDriver {
   ///
   /// Prints stdout and stderr of "flutter drive".
   Future<void> run(FlutterDriverOptions options) async {
-    final device = options.device;
-
-    final filename = basename(options.target);
-    if (device != null) {
-      log.info('Running $filename flutter_driver on ${device.resolvedName}...');
+    final deviceName = options.device?.resolvedName;
+    final targetName = basename(options.target);
+    if (deviceName != null) {
+      log.info('Running $targetName with flutter_driver on $deviceName...');
     } else {
-      log.info('Running $filename with flutter_driver...');
+      log.info('Running $targetName with flutter_driver...');
     }
 
     final env = {
@@ -72,7 +71,7 @@ class FlutterDriver {
       _flutterDriveArguments(
         driver: options.driver,
         target: options.target,
-        device: device?.id,
+        device: options.device?.id,
         flavor: options.flavor,
         dartDefines: {...options.dartDefines, ...env},
       ),

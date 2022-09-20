@@ -5,6 +5,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/globals.dart' as globals;
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:patrol_cli/src/features/clean/clean_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -31,8 +32,18 @@ Future<int> patrolCommandRunner(List<String> args) async {
         .then((_) => exit(130));
   });
 
+  // ArgParser doesn't exist yet, we have to parse args manually.
+  final verbose = args.contains('--verbose') || args.contains('-v');
+
   try {
     exitCode = await runner.run(args) ?? 0;
+  } on ToolExit catch (err, st) {
+    if (verbose) {
+      log.severe(null, err, st);
+    } else {
+      log.severe(err);
+    }
+    exitCode = 1;
   } on UsageException catch (err) {
     log.severe(err.message);
     exitCode = 1;
