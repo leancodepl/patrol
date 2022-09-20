@@ -5,7 +5,11 @@ import 'package:patrol_cli/src/common/common.dart';
 class DoctorCommand extends Command<int> {
   DoctorCommand({required ArtifactsRepository artifactsRepository})
       : _artifactsRepository = artifactsRepository {
-    argParser.addFlag('artifact-path', help: 'Show only artifact path.');
+    argParser.addFlag(
+      'artifact-path',
+      help: 'Print only artifact path.',
+      negatable: false,
+    );
   }
 
   final ArtifactsRepository _artifactsRepository;
