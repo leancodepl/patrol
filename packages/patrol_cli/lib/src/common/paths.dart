@@ -55,9 +55,7 @@ String get debugIOSArtifactDirPath {
   return path.join(artifactPath, debugIOSArtifactDir);
 }
 
-bool get artifactPathSetFromEnv {
-  return Platform.environment.containsKey(ArtifactsRepository.artifactPathEnv);
-}
+
 
 String get artifactPath {
   final env = Platform.environment;

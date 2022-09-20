@@ -93,7 +93,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       ),
     );
     addCommand(DevicesCommand());
-    addCommand(DoctorCommand());
+    addCommand(DoctorCommand(artifactsRepository: _artifactsRepository));
     addCommand(CleanCommand());
     addCommand(UpdateCommand());
 

@@ -20,6 +20,10 @@ class ArtifactsRepository {
   final Platform _platform;
   final bool useDebugArtifacts;
 
+  bool get artifactPathSetFromEnv {
+    return _platform.environment.containsKey(artifactPathEnv);
+  }
+
   String get serverArtifactPath {
     return useDebugArtifacts
         ? paths.debugServerArtifactPath
