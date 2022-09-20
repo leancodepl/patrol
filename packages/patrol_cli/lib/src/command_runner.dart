@@ -4,12 +4,16 @@ import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/globals.dart' as globals;
 import 'package:patrol_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:patrol_cli/src/features/clean/clean_command.dart';
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/test_finder.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -72,7 +76,17 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     addCommand(BootstrapCommand());
     addCommand(
-      DriveCommand(_disposeScope, _topLevelFlags, _artifactsRepository),
+      DriveCommand(
+        parentDisposeScope: _disposeScope,
+        topLevelFlags: _topLevelFlags,
+        artifactsRepository: _artifactsRepository,
+        deviceFinder: DeviceFinder(),
+        testFinder: TestFinder(
+          integrationTestDir: globals.fs.directory('integration_test'),
+          fileSystem: globals.fs,
+        ),
+        testRunner: TestRunner(),
+      ),
     );
     addCommand(DevicesCommand());
     addCommand(DoctorCommand());
@@ -96,7 +110,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   final DisposeScope _disposeScope;
   late final ArtifactsRepository _artifactsRepository;
-
   final TopLevelFlags _topLevelFlags;
 
   Future<void> dispose() async {

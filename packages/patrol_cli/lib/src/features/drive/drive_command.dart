@@ -33,20 +33,19 @@ class DriveCommandConfig with _$DriveCommandConfig {
 }
 
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
-  DriveCommand(
-    DisposeScope parentDisposeScope,
-    this._topLevelFlags,
-    this._artifactsRepository, [
-    DeviceFinder? deviceFinder,
-    TestFinder? testFinder,
-  ])  : _disposeScope = DisposeScope(),
-        _deviceFinder = deviceFinder ?? DeviceFinder(),
-        _testFinder = testFinder ??
-            TestFinder(
-              integrationTestDir: globals.fs.directory('integration_test'),
-              fileSystem: globals.fs,
-            ),
-        _testRunner = TestRunner() {
+  DriveCommand({
+    required DisposeScope parentDisposeScope,
+    required TopLevelFlags topLevelFlags,
+    required ArtifactsRepository artifactsRepository,
+    required DeviceFinder deviceFinder,
+    required TestFinder testFinder,
+    required TestRunner testRunner,
+  })  : _disposeScope = parentDisposeScope,
+        _topLevelFlags = topLevelFlags,
+        _artifactsRepository = artifactsRepository,
+        _deviceFinder = deviceFinder,
+        _testFinder = testFinder,
+        _testRunner = testRunner {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser

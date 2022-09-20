@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:test/test.dart';
 
@@ -59,11 +60,12 @@ void main() {
       );
 
       driveCommand = DriveCommand(
-        parentDisposeScope,
-        topLevelFlags,
-        artifactsRepository,
-        deviceFinder,
-        testFinder,
+        parentDisposeScope: parentDisposeScope,
+        topLevelFlags: topLevelFlags,
+        artifactsRepository: artifactsRepository,
+        deviceFinder: deviceFinder,
+        testFinder: testFinder,
+        testRunner: TestRunner(),
       );
     });
 
