@@ -28,8 +28,6 @@ class FlutterDriverOptions {
   final bool verbose;
 }
 
-
-
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
   FlutterDriverFailedException(this.code) : super();
