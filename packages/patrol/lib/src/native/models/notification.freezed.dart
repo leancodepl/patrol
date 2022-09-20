@@ -20,7 +20,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Notification {
-  String get appName => throw _privateConstructorUsedError;
+  String? get appName => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
 
@@ -35,7 +35,7 @@ abstract class $NotificationCopyWith<$Res> {
   factory $NotificationCopyWith(
           Notification value, $Res Function(Notification) then) =
       _$NotificationCopyWithImpl<$Res>;
-  $Res call({String appName, String title, String content});
+  $Res call({String? appName, String title, String content});
 }
 
 /// @nodoc
@@ -56,7 +56,7 @@ class _$NotificationCopyWithImpl<$Res> implements $NotificationCopyWith<$Res> {
       appName: appName == freezed
           ? _value.appName
           : appName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       title: title == freezed
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,7 @@ abstract class _$$_NotificationCopyWith<$Res>
           _$_Notification value, $Res Function(_$_Notification) then) =
       __$$_NotificationCopyWithImpl<$Res>;
   @override
-  $Res call({String appName, String title, String content});
+  $Res call({String? appName, String title, String content});
 }
 
 /// @nodoc
@@ -100,7 +100,7 @@ class __$$_NotificationCopyWithImpl<$Res>
       appName: appName == freezed
           ? _value.appName
           : appName // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       title: title == freezed
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -123,7 +123,7 @@ class _$_Notification implements _Notification {
       _$$_NotificationFromJson(json);
 
   @override
-  final String appName;
+  final String? appName;
   @override
   final String title;
   @override
@@ -167,7 +167,7 @@ class _$_Notification implements _Notification {
 
 abstract class _Notification implements Notification {
   const factory _Notification(
-      {required final String appName,
+      {required final String? appName,
       required final String title,
       required final String content}) = _$_Notification;
 
@@ -175,7 +175,7 @@ abstract class _Notification implements Notification {
       _$_Notification.fromJson;
 
   @override
-  String get appName;
+  String? get appName;
   @override
   String get title;
   @override

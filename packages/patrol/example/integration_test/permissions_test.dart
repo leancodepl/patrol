@@ -26,7 +26,7 @@ void main() {
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open permissions screen').scrollTo().tap();
 
