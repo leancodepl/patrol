@@ -72,7 +72,11 @@ class PatrolCommandRunner extends CommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
-    _artifactsRepository = ArtifactsRepository(_topLevelFlags);
+    _artifactsRepository = ArtifactsRepository(
+      fs: globals.fs,
+      platform: globals.platform,
+      useDebugArtifacts: _topLevelFlags.debug,
+    );
 
     addCommand(BootstrapCommand());
     addCommand(
