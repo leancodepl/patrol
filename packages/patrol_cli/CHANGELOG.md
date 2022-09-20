@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `--targets` argument to `patrol drive`
+
 ## 0.6.4
 
 - Add the `targets` alias for `target` option for `patrol drive` (#314)

@@ -16,7 +16,7 @@ class TestFinder {
   List<String> findTests(List<String> targets) {
     for (final target in targets) {
       final hasSuffix = target.endsWith('_test.dart');
-      if (hasSuffix) {
+      if (!hasSuffix) {
         throwToolExit('target file $target has invalid suffix');
       }
 
