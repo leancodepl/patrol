@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.4
 
 - Add the `targets` alias for `target` option for `patrol drive` (#314)
 - Add the `devices` alias for `device` option for `patrol drive` (#314)
