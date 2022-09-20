@@ -11,7 +11,7 @@ class DoctorCommand extends Command<int> {
   String get name => 'doctor';
 
   @override
-  String get description => 'Show configuration.';
+  String get description => 'Print configuration.';
 
   @override
   Future<int> run() async {

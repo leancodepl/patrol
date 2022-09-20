@@ -1,5 +1,4 @@
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:file/file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
@@ -14,7 +13,6 @@ import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
-import 'package:patrol_cli/src/patrol_config.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 
 part 'drive_command.freezed.dart';
@@ -121,25 +119,17 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   @override
   Future<DriveCommandConfig> parseInput() async {
-    PatrolConfig? config;
-    try {
-      final toml = globals.fs.file(configFileName).readAsStringSync();
-      config = PatrolConfig.fromToml(toml);
-    } on FileSystemException {
-      log.info("patrol.toml doesn't exist");
-    }
-
-    final dynamic host = argResults?['host'] ?? config?.driveConfig.host;
+    final dynamic host = argResults?['host'];
     if (host != null && host is! String) {
       throw const FormatException('`host` argument is not a string');
     }
 
-    final dynamic port = argResults?['port'] ?? config?.driveConfig.port;
+    final dynamic port = argResults?['port'];
     if (port != null && port is String && int.tryParse(port) == null) {
       throw const FormatException('`port` argument does not represent an int');
     }
 
-    final dynamic target = argResults?['targets'] ?? config?.driveConfig.target;
+    final dynamic target = argResults?['targets'];
     if (target != null && target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
@@ -151,12 +141,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     final targets =
         target != null ? [target as String] : _testFinder.findTests();
 
-    final dynamic driver = argResults?['driver'] ?? config?.driveConfig.driver;
+    final dynamic driver = argResults?['driver'];
     if (driver != null && driver is! String) {
       throw const FormatException('`driver` argument is not a string');
     }
 
-    final dynamic flavor = argResults?['flavor'] ?? config?.driveConfig.flavor;
+    final dynamic flavor = argResults?['flavor'];
     if (flavor != null && flavor is! String) {
       throw const FormatException('`flavor` argument is not a string');
     }
@@ -166,7 +156,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       devices[i] = devices[i].trim();
     }
 
-    final dartDefines = config?.driveConfig.dartDefines ?? {};
     final dynamic cliDartDefines = argResults?['dart-define'] ?? <String>[];
     if (cliDartDefines != null && cliDartDefines is! List<String>) {
       throw FormatException(
@@ -174,6 +163,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       );
     }
 
+    final dartDefines = <String, String>{};
     for (final entry in cliDartDefines as List<String>) {
       final split = entry.split('=');
       if (split.length != 2) {
@@ -186,11 +176,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
     }
 
-    final dynamic packageName =
-        argResults?['package-name'] ?? config?.driveConfig.packageName;
-
-    final dynamic bundleId =
-        argResults?['bundle-id'] ?? config?.driveConfig.bundleId;
+    final dynamic packageName = argResults?['package-name'];
+    final dynamic bundleId = argResults?['bundle-id'];
 
     final dynamic wait = argResults?['wait'] ?? '0';
     if (int.tryParse(wait as String) == null) {

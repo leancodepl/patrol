@@ -1,7 +1,8 @@
 ## Unreleased
 
 - Rename option `target` to `targets` to let the users fine-tune the tests they
-  want to run
+  want to run (#305)
+- Remove support for the `patrol.toml` config file
 
 ## 0.6.3
 
