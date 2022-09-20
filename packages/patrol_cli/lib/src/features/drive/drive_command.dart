@@ -120,58 +120,28 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   @override
   Future<DriveCommandConfig> parseInput() async {
-    final dynamic host = argResults?['host'];
-    if (host != null && host is! String) {
-      throw const FormatException('`host` argument is not a string');
+    final host = argResults?['host'] as String?;
+
+    final port = argResults?['port'] as String?;
+    if (port is String && int.tryParse(port) == null) {
+      throw const FormatException('`port` is not an int');
     }
 
-    final dynamic port = argResults?['port'];
-    if (port != null && port is String && int.tryParse(port) == null) {
-      throw const FormatException('`port` argument does not represent an int');
-    }
-
-    final dynamic target = argResults?['target'];
-    if (target != null && target is! List<String>) {
-      throw const FormatException('`target` argument is not a string list');
-    }
-    target as List<String>?;
-
-    final targets = target != null
+    final target = argResults?['target'] as List<String>? ?? [];
+    final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
         : _testFinder.findAllTests();
 
-    final dynamic driver = argResults?['driver'] as String?;
-    if (driver != null && driver is! String) {
-      throw const FormatException('`driver` argument is not a string list');
-    }
+    final driver = argResults?['driver'] as String?;
 
-    final dynamic flavor = argResults?['flavor'];
-    if (flavor != null && flavor is! String) {
-      throw const FormatException('`flavor` argument is not a string');
-    }
+    final flavor = argResults?['flavor'] as String?;
 
-    final dynamic devices = argResults?['device'] as List<String>?;
-    if (devices != null && devices is! List<String>) {
-      throw const FormatException('`device` argument is not a string list');
-    }
-    devices as List<String>;
+    final devices = argResults?['device'] as List<String>? ?? [];
 
-    // if (devices != null) {}
-
-    // TODO: move to DeviceFinder
-    for (var i = 0; i < devices.length; i++) {
-      devices[i] = devices[i].trim();
-    }
-
-    final dynamic cliDartDefines = argResults?['dart-define'] ?? <String>[];
-    if (cliDartDefines != null && cliDartDefines is! List<String>) {
-      throw FormatException(
-        '`dart-define` argument $cliDartDefines is not a list',
-      );
-    }
+    final cliDartDefines = argResults?['dart-define'] as List<String>? ?? [];
 
     final dartDefines = <String, String>{};
-    for (final entry in cliDartDefines as List<String>) {
+    for (final entry in cliDartDefines) {
       final split = entry.split('=');
       if (split.length != 2) {
         throw FormatException('`dart-define` value $split is not valid');
@@ -191,39 +161,15 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final attachedDevices = await _deviceFinder.getAttachedDevices();
-    if (attachedDevices.isEmpty) {
-      throw Exception('No devices attached');
-    } else {
-      log.fine('Successfully queried available devices');
-    }
-
-    if (devices.isEmpty) {
-      final firstDevice = attachedDevices.first;
-      devices.add(firstDevice.resolvedName);
-      log.info(
-        'No device specified, using the first one (${firstDevice.resolvedName})',
-      );
-    } else if (devices.contains('all')) {
-      if (devices.length > 1) {
-        throw Exception("Device 'all' must be the only device");
-      }
-
-      devices.addAll(attachedDevices.map((e) => e.resolvedName));
-    }
-
-    final activeDevices = _deviceFinder.findDevicesToUse(
-      attachedDevices: attachedDevices,
-      wantDevices: devices,
-    );
+    final attachedDevices = await _deviceFinder.find(devices);
 
     return DriveCommandConfig(
-      devices: activeDevices,
+      devices: attachedDevices,
       targets: targets,
-      host: host as String? ?? envHostDefaultValue,
-      port: port as String? ?? envPortDefaultValue,
-      driver: driver as String? ?? 'test_driver/integration_test.dart',
-      flavor: flavor as String?,
+      host: host ?? envHostDefaultValue,
+      port: port ?? envPortDefaultValue,
+      driver: driver ?? 'test_driver/integration_test.dart',
+      flavor: flavor,
       dartDefines: <String, String?>{
         ...dartDefines,
         envWaitKey: wait as String? ?? '0',

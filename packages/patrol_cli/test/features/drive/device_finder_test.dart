@@ -1,3 +1,4 @@
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:test/test.dart';
@@ -11,24 +12,35 @@ void main() {
     deviceFinder = DeviceFinder();
   });
 
-  group('finds device to use when', () {
+  group('findDevicesToUse', () {
     test('no devices attached, no devices wanted', () {
-      final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [],
-        wantDevices: [],
+      expect(
+        () => deviceFinder.findDevicesToUse(
+          attachedDevices: [],
+          wantDevices: [],
+        ),
+        throwsA(
+          isA<ToolExit>().having(
+            (err) => err.message,
+            'message',
+            'No devices attached',
+          ),
+        ),
       );
-
-      expect(devicesToUse, <String>[]);
     });
 
-    test('1 device attached, no devices wanted', () {
-      final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [androidDevice],
-        wantDevices: [],
-      );
+    test(
+      'returns the first device when 1 device is attached and no devices are '
+      'wanted',
+      () {
+        final devicesToUse = deviceFinder.findDevicesToUse(
+          attachedDevices: [androidDevice],
+          wantDevices: [],
+        );
 
-      expect(devicesToUse, <Device>[]);
-    });
+        expect(devicesToUse, <Device>[androidDevice]);
+      },
+    );
 
     test('1 device attached, 1 device wanted (match)', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
@@ -48,10 +60,10 @@ void main() {
           );
         },
         throwsA(
-          isA<Exception>().having(
-            (exception) => exception.toString(),
+          isA<ToolExit>().having(
+            (err) => err.message,
             'message',
-            'Exception: Device $iosDeviceName is not attached',
+            'Device $iosDeviceName is not attached',
           ),
         ),
       );

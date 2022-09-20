@@ -45,14 +45,9 @@ void main() {
       final integrationTestDir = fs.directory('integration_test')..createSync();
 
       final deviceFinder = MockDeviceFinder();
-      when(deviceFinder.getAttachedDevices)
-          .thenAnswer((_) async => [androidDevice]);
       when(
-        () => deviceFinder.findDevicesToUse(
-          attachedDevices: any(named: 'attachedDevices'),
-          wantDevices: any(named: 'wantDevices'),
-        ),
-      ).thenReturn([androidDevice]);
+        () => deviceFinder.find(any()),
+      ).thenAnswer((_) async => [androidDevice]);
 
       final testFinder = TestFinder(
         integrationTestDir: fs.directory(integrationTestDir),
@@ -68,14 +63,6 @@ void main() {
         testRunner: TestRunner(),
       );
     });
-
-    test(
-      'creates empty default config when config file does not exist',
-      () async {
-        final config = await driveCommand.parseInput();
-        expect(config, _defaultConfig);
-      },
-    );
 
     test('creates empty default config when config file is empty', () async {
       final config = await driveCommand.parseInput();
