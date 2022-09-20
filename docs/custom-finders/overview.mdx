@@ -34,8 +34,6 @@ testWidgets('signs up', (tester) async {
 
   await tester.tap(find.byKey(Key('signUpButton')));
   await tester.pumpAndSettle();
-  await tester.tap(find.byKey(Key('signUpButton')));
-  await tester.pumpAndSettle();
 
   expect(find.text('Welcome, Bartek!'), findsOneWidget);
 });
@@ -49,7 +47,7 @@ patrolTest('signs up', ($) async {
 
   await $(#emailTextField).enterText('bartek@awesome.com');
   await $(#nameTextField).enterText('Bartek');
-  await $(#emailTextField).enterText('ny4ncat');
+  await $(#passwordTextField).enterText('ny4ncat');
   await $(#termsCheckbox).tap();
   await $(#signUpButton).tap();
   expect($('Welcome, Bartek!'), findsOneWidget);

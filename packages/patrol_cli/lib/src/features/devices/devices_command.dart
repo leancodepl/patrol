@@ -3,7 +3,8 @@ import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 
 class DevicesCommand extends Command<int> {
-  DevicesCommand() : _deviceFinder = DeviceFinder();
+  DevicesCommand({required DeviceFinder deviceFinder})
+      : _deviceFinder = deviceFinder;
 
   final DeviceFinder _deviceFinder;
 

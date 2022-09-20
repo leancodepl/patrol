@@ -1,0 +1,24 @@
+## Setup
+
+Using Patrol's native capabilities requires more setup work than using custom
+finders.
+
+Worry not though, because there's `patrol bootstrap` command, which automates
+everything that can be automated.
+
+1. Install `patrol` executable:
+
+   ```bash
+   dart pub global activate patrol_cli
+   ```
+
+2. Perform initial setup in your Flutter project root:
+
+   ```bash
+   patrol bootstrap
+   ```
+
+3. Run the example generated integration test:
+   ```bash
+   patrol drive
+   ```

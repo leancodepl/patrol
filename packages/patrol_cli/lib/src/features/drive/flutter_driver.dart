@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -51,13 +52,12 @@ class FlutterDriver {
   ///
   /// Prints stdout and stderr of "flutter drive".
   Future<void> run(FlutterDriverOptions options) async {
-    final device = options.device;
-    if (device != null) {
-      log.info(
-        'Running ${options.target} with flutter_driver on ${device.resolvedName}...',
-      );
+    final deviceName = options.device?.resolvedName;
+    final targetName = basename(options.target);
+    if (deviceName != null) {
+      log.info('Running $targetName with flutter_driver on $deviceName...');
     } else {
-      log.info('Running ${options.target} with flutter_driver...');
+      log.info('Running $targetName with flutter_driver...');
     }
 
     final env = {
@@ -71,7 +71,7 @@ class FlutterDriver {
       _flutterDriveArguments(
         driver: options.driver,
         target: options.target,
-        device: device?.id,
+        device: options.device?.id,
         flavor: options.flavor,
         dartDefines: {...options.dartDefines, ...env},
       ),

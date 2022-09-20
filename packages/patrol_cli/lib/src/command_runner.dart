@@ -4,12 +4,16 @@ import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/globals.dart' as globals;
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:patrol_cli/src/features/clean/clean_command.dart';
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/test_finder.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -28,18 +32,20 @@ Future<int> patrolCommandRunner(List<String> args) async {
         .then((_) => exit(130));
   });
 
+  // ArgParser doesn't exist yet, we have to parse args manually.
+  final verbose = args.contains('--verbose') || args.contains('-v');
+
   try {
     exitCode = await runner.run(args) ?? 0;
+  } on ToolExit catch (err, st) {
+    if (verbose) {
+      log.severe(null, err, st);
+    } else {
+      log.severe(err);
+    }
+    exitCode = 1;
   } on UsageException catch (err) {
     log.severe(err.message);
-    exitCode = 1;
-  } on FlutterDriverFailedException catch (err) {
-    log
-      ..severe(err)
-      ..severe(
-        "See the logs above to learn what happened. If the logs above aren't "
-        "useful then it's a bug – please report it.",
-      );
     exitCode = 1;
   } on FormatException catch (err, st) {
     log.severe(null, err, st);
@@ -68,15 +74,29 @@ class PatrolCommandRunner extends CommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
-    _artifactsRepository = ArtifactsRepository(_topLevelFlags);
+    _artifactsRepository = ArtifactsRepository(
+      fs: globals.fs,
+      platform: globals.platform,
+      useDebugArtifacts: _topLevelFlags.debug,
+    );
 
     addCommand(BootstrapCommand());
     addCommand(
-      DriveCommand(_disposeScope, _topLevelFlags, _artifactsRepository),
+      DriveCommand(
+        parentDisposeScope: _disposeScope,
+        topLevelFlags: _topLevelFlags,
+        artifactsRepository: _artifactsRepository,
+        deviceFinder: DeviceFinder(),
+        testFinder: TestFinder(
+          integrationTestDir: globals.fs.directory('integration_test'),
+          fs: globals.fs,
+        ),
+        testRunner: TestRunner(),
+      ),
     );
-    addCommand(DevicesCommand());
-    addCommand(DoctorCommand());
-    addCommand(CleanCommand());
+    addCommand(DevicesCommand(deviceFinder: DeviceFinder()));
+    addCommand(DoctorCommand(artifactsRepository: _artifactsRepository));
+    addCommand(CleanCommand(artifactsRepository: _artifactsRepository));
     addCommand(UpdateCommand());
 
     argParser
@@ -96,7 +116,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   final DisposeScope _disposeScope;
   late final ArtifactsRepository _artifactsRepository;
-
   final TopLevelFlags _topLevelFlags;
 
   Future<void> dispose() async {

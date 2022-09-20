@@ -7,6 +7,7 @@ Future<void> main() async {
   patrolTest(
     'navigates through the app using only native semantics',
     config: patrolConfig,
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(const ExampleApp());
 

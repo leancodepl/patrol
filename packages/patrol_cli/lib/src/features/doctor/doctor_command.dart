@@ -3,9 +3,16 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 
 class DoctorCommand extends Command<int> {
-  DoctorCommand() {
-    argParser.addFlag('artifact-path', help: 'Show only artifact path.');
+  DoctorCommand({required ArtifactsRepository artifactsRepository})
+      : _artifactsRepository = artifactsRepository {
+    argParser.addFlag(
+      'artifact-path',
+      help: 'Print only artifact path.',
+      negatable: false,
+    );
   }
+
+  final ArtifactsRepository _artifactsRepository;
 
   @override
   String get name => 'doctor';
@@ -15,6 +22,8 @@ class DoctorCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    final artifactPath = _artifactsRepository.artifactPath;
+
     final artifactPathFlag = argResults?['artifact-path'] as bool?;
 
     if (artifactPathFlag ?? false) {
@@ -22,7 +31,7 @@ class DoctorCommand extends Command<int> {
       return 0;
     }
 
-    final extra = artifactPathSetFromEnv
+    final extra = _artifactsRepository.artifactPathSetFromEnv
         ? '(set from ${ArtifactsRepository.artifactPathEnv})'
         : '(default)';
 

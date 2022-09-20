@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 class DeviceFinder {
@@ -33,11 +35,52 @@ class DeviceFinder {
     return devices;
   }
 
+  Future<List<Device>> find(List<String> devices) async {
+    final attachedDevices = await getAttachedDevices();
+
+    return findDevicesToUse(
+      attachedDevices: attachedDevices,
+      wantDevices: devices,
+    );
+  }
+
+  /// Transforms device names into [Device] objects.
+  ///
+  /// ### Edge cases
+  ///
+  /// * Throws if no devices are attached.
+  ///
+  /// * Returns the first attached device if [wantDevices] is empty.
+  ///
+  /// * Returns all attached devices if [wantDevices] contains a single element
+  ///   `'all'`.
+  ///
+  /// * Throws if any of the [wantDevices] isn't attached.
+  @visibleForTesting
   List<Device> findDevicesToUse({
     required List<Device> attachedDevices,
     required List<String> wantDevices,
   }) {
+    // sanitize device names
+    for (var i = 0; i < wantDevices.length; i++) {
+      wantDevices[i] = wantDevices[i].trim();
+    }
+
+    if (attachedDevices.isEmpty) {
+      throwToolExit('No devices attached');
+    }
+
+    if (wantDevices.isEmpty) {
+      final firstDeviceName = attachedDevices.first.resolvedName;
+      log.info('No device specified, using the first one ($firstDeviceName)');
+      return attachedDevices;
+    }
+
     if (wantDevices.contains('all')) {
+      if (wantDevices.length != 1) {
+        throwToolExit("No other devices can be specified when using 'all'");
+      }
+
       return attachedDevices;
     }
 
@@ -46,7 +89,7 @@ class DeviceFinder {
 
     for (final wantDevice in wantDevices) {
       if (!attachedDevicesSet.contains(wantDevice)) {
-        throw Exception('Device $wantDevice is not attached');
+        throwToolExit('Device $wantDevice is not attached');
       }
     }
 
