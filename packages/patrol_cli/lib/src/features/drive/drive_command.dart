@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
-import 'package:patrol_cli/src/common/globals.dart' as globals;
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -132,20 +131,18 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     final dynamic target = argResults?['target'];
-    if (target != null && target is! String) {
-      throw const FormatException('`target` argument is not a string');
+    if (target != null && target is! List<String>) {
+      throw const FormatException('`target` argument is not a string list');
     }
+    target as List<String>?;
 
-    if (target != null && !globals.fs.file(target as String).existsSync()) {
-      throw Exception('target file $target does not exist');
-    }
+    final targets = target != null
+        ? _testFinder.findTests(target)
+        : _testFinder.findAllTests();
 
-    final targets =
-        target != null ? [target as String] : _testFinder.findTests();
-
-    final dynamic driver = argResults?['driver'];
+    final dynamic driver = argResults?['driver'] as String?;
     if (driver != null && driver is! String) {
-      throw const FormatException('`driver` argument is not a string');
+      throw const FormatException('`driver` argument is not a string list');
     }
 
     final dynamic flavor = argResults?['flavor'];
@@ -153,7 +150,15 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final devices = argResults?['device'] as List<String>? ?? [];
+    final dynamic devices = argResults?['device'] as List<String>?;
+    if (devices != null && devices is! List<String>) {
+      throw const FormatException('`device` argument is not a string list');
+    }
+    devices as List<String>;
+
+    // if (devices != null) {}
+
+    // TODO: move to DeviceFinder
     for (var i = 0; i < devices.length; i++) {
       devices[i] = devices[i].trim();
     }
@@ -181,8 +186,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     final dynamic packageName = argResults?['package-name'];
     final dynamic bundleId = argResults?['bundle-id'];
 
-    final dynamic wait = argResults?['wait'] ?? '0';
-    if (int.tryParse(wait as String) == null) {
+    final dynamic wait = argResults?['wait'];
+    if (wait != null && int.tryParse(wait as String) == null) {
       throw const FormatException('`wait` argument is not an int');
     }
 
@@ -219,9 +224,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       port: port as String? ?? envPortDefaultValue,
       driver: driver as String? ?? 'test_driver/integration_test.dart',
       flavor: flavor as String?,
-      dartDefines: {
+      dartDefines: <String, String?>{
         ...dartDefines,
-        envWaitKey: wait,
+        envWaitKey: wait as String? ?? '0',
         envPackageNameKey: packageName as String?,
         envBundleIdKey: bundleId as String?,
       }.withNullsRemoved(),

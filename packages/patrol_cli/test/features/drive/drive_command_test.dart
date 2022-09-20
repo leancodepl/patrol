@@ -56,7 +56,7 @@ void main() {
 
       final testFinder = TestFinder(
         integrationTestDir: fs.directory(integrationTestDir),
-        fileSystem: fs,
+        fs: fs,
       );
 
       driveCommand = DriveCommand(

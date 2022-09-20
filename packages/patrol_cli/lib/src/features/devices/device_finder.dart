@@ -33,6 +33,14 @@ class DeviceFinder {
     return devices;
   }
 
+  /// Transforms device names into [Device] objects.
+  ///
+  /// Throws if any of the [wantDevices] isn't attached.
+  ///
+  /// Returns all attached devices if [wantDevices] contains a single element
+  /// `'all'`.
+  //List<Device> findDevicesToUse({required List<String> wantDevices}) {}
+
   List<Device> findDevicesToUse({
     required List<Device> attachedDevices,
     required List<String> wantDevices,

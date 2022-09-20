@@ -87,7 +87,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         deviceFinder: DeviceFinder(),
         testFinder: TestFinder(
           integrationTestDir: globals.fs.directory('integration_test'),
-          fileSystem: globals.fs,
+          fs: globals.fs,
         ),
         testRunner: TestRunner(),
       ),
