@@ -8,14 +8,22 @@ part of 'notification.dart';
 
 _$_Notification _$$_NotificationFromJson(Map<String, dynamic> json) =>
     _$_Notification(
-      appName: json['appName'] as String,
+      appName: json['appName'] as String?,
       title: json['title'] as String,
       content: json['content'] as String,
     );
 
-Map<String, dynamic> _$$_NotificationToJson(_$_Notification instance) =>
-    <String, dynamic>{
-      'appName': instance.appName,
-      'title': instance.title,
-      'content': instance.content,
-    };
+Map<String, dynamic> _$$_NotificationToJson(_$_Notification instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('appName', instance.appName);
+  val['title'] = instance.title;
+  val['content'] = instance.content;
+  return val;
+}

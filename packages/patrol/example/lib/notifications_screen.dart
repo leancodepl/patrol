@@ -73,7 +73,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               title: 'Special offer',
               body: 'We have something special for you!',
             ),
-            child: const Text('Show special offer notification'),
+            child: const Text('Show "special offer" notification'),
           ),
         ],
       ),

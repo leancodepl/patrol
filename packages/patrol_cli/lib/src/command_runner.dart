@@ -77,7 +77,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     _artifactsRepository = ArtifactsRepository(
       fs: globals.fs,
       platform: globals.platform,
-      useDebugArtifacts: _topLevelFlags.debug,
+      topLevelFlags: _topLevelFlags,
     );
 
     addCommand(BootstrapCommand());

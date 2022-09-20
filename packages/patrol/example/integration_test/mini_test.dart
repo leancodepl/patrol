@@ -24,7 +24,7 @@ Future<void> main() async {
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $(FloatingActionButton).tap();
       await $(FloatingActionButton).tap();
@@ -56,4 +56,4 @@ Future<void> main() async {
   );
 }
 
-Future<void> _wait() => Future<void>.delayed(const Duration(seconds: 2));
+Future<void> _wait() => Future<void>.delayed(Duration(seconds: 2));

@@ -45,7 +45,7 @@ class NativeAutomator {
           'PATROL_PORT',
           defaultValue: '8081',
         ) {
-    _logger('creating Patrol, host: $host, port: $port');
+    _logger('creating NativeAutomator, host: $host, port: $port');
 
     PatrolBinding.ensureInitialized();
   }

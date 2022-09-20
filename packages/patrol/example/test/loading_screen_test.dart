@@ -6,7 +6,7 @@ import 'package:patrol/patrol.dart';
 void main() {
   group('LoadingScreen', () {
     patrolTest('shows hello text when loading completes', ($) async {
-      await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
+      await $.pumpWidget(MaterialApp(home: LoadingScreen()));
 
       final helloText = $('Hello');
       await helloText.waitUntilVisible();
@@ -18,7 +18,7 @@ void main() {
       'throws TimeoutException when takes more than visibleTimeout',
       ($) async {
         await $.tester.runAsync(() async {
-          await $.pumpWidget(const MaterialApp(home: LoadingScreen()));
+          await $.pumpWidget(MaterialApp(home: LoadingScreen()));
 
           final helloText = $('Hello');
           await expectLater(
@@ -27,9 +27,7 @@ void main() {
           );
         });
       },
-      config: PatrolTestConfig(
-        visibleTimeout: const Duration(milliseconds: 100),
-      ),
+      config: PatrolTestConfig(visibleTimeout: Duration(milliseconds: 100)),
     );
   });
 }

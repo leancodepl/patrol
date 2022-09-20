@@ -8,7 +8,7 @@ part 'notification.g.dart';
 class Notification with _$Notification {
   /// Creates a new [Notification].
   const factory Notification({
-    required String appName,
+    required String? appName,
     required String title,
     required String content,
   }) = _Notification;

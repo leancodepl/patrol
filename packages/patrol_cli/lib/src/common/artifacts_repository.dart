@@ -3,15 +3,17 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
 import 'package:patrol_cli/src/common/constants.dart' show version;
+import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:platform/platform.dart';
 
 class ArtifactsRepository {
   ArtifactsRepository({
     required FileSystem fs,
     required Platform platform,
-    required this.useDebugArtifacts,
+    required TopLevelFlags topLevelFlags,
   })  : _fs = fs,
-        _platform = platform {
+        _platform = platform,
+        _topLevelFlags = topLevelFlags {
     _paths = _Paths(artifactPath);
   }
 
@@ -19,7 +21,7 @@ class ArtifactsRepository {
 
   final FileSystem _fs;
   final Platform _platform;
-  final bool useDebugArtifacts;
+  final TopLevelFlags _topLevelFlags;
 
   late final _Paths _paths;
 
@@ -55,19 +57,19 @@ class ArtifactsRepository {
   }
 
   String get serverArtifactPath {
-    return useDebugArtifacts
+    return _topLevelFlags.debug
         ? _paths.debugServerArtifactPath
         : _paths.serverArtifactPath;
   }
 
   String get instrumentationArtifactPath {
-    return useDebugArtifacts
+    return _topLevelFlags.debug
         ? _paths.debugInstrumentationArtifactPath
         : _paths.instrumentationArtifactPath;
   }
 
   String get iosArtifactDirPath {
-    return useDebugArtifacts
+    return _topLevelFlags.debug
         ? _paths.debugIOSArtifactDirPath
         : _paths.iosArtifactDirPath;
   }

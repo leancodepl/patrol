@@ -11,18 +11,20 @@ void main() {
     ($) async {
       $.log('Yay, notification_test.dart is starting!');
 
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
 
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
-      (await $.native.getNotifications()).forEach($.log);
+      final notifications = await $.native.getNotifications();
+      $.log('Found ${notifications.length} notifications');
+      notifications.forEach($.log);
 
-      await $.native.tapOnNotificationByIndex(1);
+      await $.native.tapOnNotificationByIndex(notifications.length - 1);
       await $.native.tapOnNotificationBySelector(
-        const Selector(textContains: 'special offer'),
+        Selector(textContains: 'Special offer'),
       );
     },
   );

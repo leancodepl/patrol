@@ -10,7 +10,7 @@ void main() {
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open location screen').tap();
 

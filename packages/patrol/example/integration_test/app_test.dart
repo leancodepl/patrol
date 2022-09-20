@@ -9,8 +9,8 @@ void main() {
     nativeAutomation: true,
     ($) async {
       await $.native.openQuickSettings();
-      await $.native.tap(const Selector(text: 'Bluetooth'));
-      await $.native.tap(const Selector(text: 'Bluetooth'));
+      await $.native.tap(Selector(text: 'Bluetooth'));
+      await $.native.tap(Selector(text: 'Bluetooth'));
       await $.native.pressBack();
 
       await $.native.openNotifications();
