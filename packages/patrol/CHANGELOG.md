@@ -1,3 +1,7 @@
+## 0.6.4
+
+- A bunch of post-release fixes (#330)
+
 ## 0.6.3
 
 - Stop re-exporting `package:flutter_test` (#308)
