@@ -13,7 +13,7 @@ void main() {
   });
 
   group('findDevicesToUse', () {
-    test('no devices attached, no devices wanted', () {
+    test('throws when no devices are attached', () {
       expect(
         () => deviceFinder.findDevicesToUse(
           attachedDevices: [],
@@ -42,23 +42,24 @@ void main() {
       },
     );
 
-    test('1 device attached, 1 device wanted (match)', () {
-      final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [androidDevice],
-        wantDevices: [androidDeviceId],
-      );
+    test(
+      'returns the device when 1 device is attached and it is also wanted',
+      () {
+        final devicesToUse = deviceFinder.findDevicesToUse(
+          attachedDevices: [androidDevice],
+          wantDevices: [androidDeviceId],
+        );
 
-      expect(devicesToUse, [androidDevice]);
-    });
+        expect(devicesToUse, [androidDevice]);
+      },
+    );
 
-    test('1 device attached, 1 device wanted (no match)', () {
+    test('throws when the wanted device is not attached', () {
       expect(
-        () {
-          deviceFinder.findDevicesToUse(
-            attachedDevices: [androidDevice],
-            wantDevices: [iosDeviceName],
-          );
-        },
+        () => deviceFinder.findDevicesToUse(
+          attachedDevices: [androidDevice],
+          wantDevices: [iosDeviceName],
+        ),
         throwsA(
           isA<ToolExit>().having(
             (err) => err.message,
@@ -69,7 +70,7 @@ void main() {
       );
     });
 
-    test('2 devices attached, 1 device wanted (full match)', () {
+    test('returns the wanted device from the pool of attached devices', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
         attachedDevices: [androidDevice, iosDevice],
         wantDevices: [androidDeviceId],
@@ -78,7 +79,7 @@ void main() {
       expect(devicesToUse, [androidDevice]);
     });
 
-    test('2 devices attached, 2 devices wanted (full match)', () {
+    test('returns the wanted devices from the pool of attached devices', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
         attachedDevices: [androidDevice, iosDevice],
         wantDevices: [androidDeviceId, iosDeviceName],
@@ -87,13 +88,20 @@ void main() {
       expect(devicesToUse, [androidDevice, iosDevice]);
     });
 
-    test('0 devices attached, 2 devices wanted (full match)', () {
-      final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [androidDevice, iosDevice],
-        wantDevices: [androidDeviceId, iosDeviceName],
+    test("throws when 'all' is not the only wanted device", () {
+      expect(
+        () => deviceFinder.findDevicesToUse(
+          attachedDevices: [androidDevice, iosDevice],
+          wantDevices: ['all', iosDeviceName],
+        ),
+        throwsA(
+          isA<ToolExit>().having(
+            (err) => err.message,
+            'description',
+            "No other devices can be specified when using 'all'",
+          ),
+        ),
       );
-
-      expect(devicesToUse, [androidDevice, iosDevice]);
     });
   });
 }
