@@ -20,13 +20,11 @@ class IOSDriver {
   final DisposeScope _disposeScope;
 
   Future<void> run({
-    required String? port,
+    required String port,
     required Device device,
     required String? flavor,
     required bool verbose,
   }) async {
-    port ??= envPortDefaultValue;
-
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
     }

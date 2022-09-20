@@ -2,9 +2,9 @@ import 'package:file/file.dart';
 
 class TestFinder {
   TestFinder({
-    required Directory integrationTestDirectory,
+    required Directory integrationTestDir,
     required FileSystem fileSystem,
-  })  : _integrationTestDirectory = integrationTestDirectory,
+  })  : _integrationTestDirectory = integrationTestDir,
         _fileSystem = fileSystem;
 
   final Directory _integrationTestDirectory;

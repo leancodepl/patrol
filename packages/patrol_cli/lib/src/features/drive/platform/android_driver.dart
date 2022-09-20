@@ -23,14 +23,12 @@ class AndroidDriver {
   final Adb _adb;
 
   Future<void> run({
-    required String? port,
+    required String port,
     required Device device,
     required String? flavor,
     required bool verbose,
     required bool debug,
   }) async {
-    port ??= envPortDefaultValue;
-
     await _forwardPorts(port, device: device.id);
     await _installServer(device: device.id, debug: debug);
     await _installInstrumentation(device: device.id, debug: debug);
