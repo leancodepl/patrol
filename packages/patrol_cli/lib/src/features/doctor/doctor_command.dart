@@ -18,6 +18,8 @@ class DoctorCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    final artifactPath = _artifactsRepository.artifactPath;
+
     final artifactPathFlag = argResults?['artifact-path'] as bool?;
 
     if (artifactPathFlag ?? false) {

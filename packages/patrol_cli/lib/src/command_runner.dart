@@ -92,9 +92,9 @@ class PatrolCommandRunner extends CommandRunner<int> {
         testRunner: TestRunner(),
       ),
     );
-    addCommand(DevicesCommand());
+    addCommand(DevicesCommand(deviceFinder: DeviceFinder()));
     addCommand(DoctorCommand(artifactsRepository: _artifactsRepository));
-    addCommand(CleanCommand());
+    addCommand(CleanCommand(artifactsRepository: _artifactsRepository));
     addCommand(UpdateCommand());
 
     argParser

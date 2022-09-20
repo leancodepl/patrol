@@ -1,9 +1,16 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 
 class CleanCommand extends Command<int> {
+  CleanCommand({
+    required ArtifactsRepository artifactsRepository,
+  }) : _artifactsRepository = artifactsRepository;
+
+  final ArtifactsRepository _artifactsRepository;
+
   @override
   String get name => 'clean';
 
@@ -12,6 +19,8 @@ class CleanCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    final artifactPath = _artifactsRepository.artifactPath;
+
     final progress = log.progress('Deleting $artifactPath');
 
     try {
