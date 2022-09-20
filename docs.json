@@ -19,6 +19,7 @@
       "Native",
       [
         ["Overview", "/native/overview"],
+        ["Setup", "/native/setup"],
         ["Getting started", "/native/getting-started"],
         ["Feature parity", "/native/feature-parity"]
       ]
