@@ -85,7 +85,7 @@ void main() {
 }
 ```
 
-[patrol_ci]: https://pub.dev/packages/patrol_cli
+[patrol_cli]: https://pub.dev/packages/patrol_cli
 [pub_badge]: https://img.shields.io/pub/v/patrol.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
