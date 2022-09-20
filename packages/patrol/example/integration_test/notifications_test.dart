@@ -24,7 +24,7 @@ void main() {
 
       await $.native.tapOnNotificationByIndex(notifications.length - 1);
       await $.native.tapOnNotificationBySelector(
-        Selector(textContains: 'someone liked'),
+        Selector(textContains: 'Special offer'),
       );
     },
   );
