@@ -40,7 +40,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
-  })  : _disposeScope = parentDisposeScope,
+  })  : _disposeScope = DisposeScope(),
         _topLevelFlags = topLevelFlags,
         _artifactsRepository = artifactsRepository,
         _deviceFinder = deviceFinder,
@@ -50,13 +50,15 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
     argParser
       ..addMultiOption(
-        'targets',
+        'target',
+        aliases: ['targets'],
         abbr: 't',
         help: 'Integration tests to run. If empty, all tests are run.',
         valueHelp: 'integration_test/app_test.dart',
       )
       ..addMultiOption(
-        'devices',
+        'device',
+        aliases: ['devices'],
         abbr: 'd',
         help:
             'Devices to run the tests on. If empty, the first device is used.',
@@ -81,6 +83,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       )
       ..addMultiOption(
         'dart-define',
+        aliases: ['dart-defines'],
         help: 'Additional key-value pairs that will be available to the app '
             'under test.',
         valueHelp: 'KEY=VALUE',
@@ -128,7 +131,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`port` argument does not represent an int');
     }
 
-    final dynamic target = argResults?['targets'];
+    final dynamic target = argResults?['target'];
     if (target != null && target is! String) {
       throw const FormatException('`target` argument is not a string');
     }
@@ -150,7 +153,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`flavor` argument is not a string');
     }
 
-    final devices = argResults?['devices'] as List<String>? ?? [];
+    final devices = argResults?['device'] as List<String>? ?? [];
     for (var i = 0; i < devices.length; i++) {
       devices[i] = devices[i].trim();
     }

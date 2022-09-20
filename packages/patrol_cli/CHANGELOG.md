@@ -1,8 +1,10 @@
 ## Unreleased
 
-- Rename option `target` to `targets` to let the users fine-tune the tests they
-  want to run (#305)
-- Remove support for the `patrol.toml` config file
+- Add the `targets` alias for `target` option for `patrol drive` (#314)
+- Add the `devices` alias for `device` option for `patrol drive` (#314)
+- Add the `dart-defines` alias for `dart-define` option for `patrol drive`
+  (#314)
+- Remove support for the `patrol.toml` config file (#313)
 
 ## 0.6.3
 
