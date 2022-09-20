@@ -6,7 +6,6 @@ const patrolCliPackage = 'patrol_cli';
 const integrationTestPackage = 'integration_test';
 
 const pubspecFileName = 'pubspec.yaml';
-const configFileName = 'patrol.toml';
 
 const driverDirName = 'test_driver';
 const driverFileName = 'integration_test.dart';

@@ -358,13 +358,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.2"
-  petitparser:
-    dependency: transitive
-    description:
-      name: petitparser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.0"
   platform:
     dependency: transitive
     description:
@@ -526,13 +519,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  toml:
-    dependency: "direct main"
-    description:
-      name: toml
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.13.1"
   typed_data:
     dependency: transitive
     description:

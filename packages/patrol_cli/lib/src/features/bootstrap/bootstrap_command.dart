@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/bootstrap/file_contents.dart';
 import 'package:patrol_cli/src/features/bootstrap/pubspec.dart' as pubspec;
-import 'package:patrol_cli/src/patrol_config.dart';
 
 class BootstrapCommand extends Command<int> {
   BootstrapCommand() {
@@ -32,7 +31,6 @@ class BootstrapCommand extends Command<int> {
     }
 
     _ensureHasPubspec();
-    await _createConfigFile();
     await _addPatrolToPubspec();
     await _addIntegrationTestToPubspec();
     await _createDefaultTestDriverFile();
@@ -50,26 +48,6 @@ void _ensureHasPubspec() {
       'No pubspec.yaml found. Patrol must be run from Flutter project root.',
     );
   }
-}
-
-Future<void> _createConfigFile() async {
-  final file = File(configFileName);
-  if (file.existsSync()) {
-    file.deleteSync();
-    log.info('Deleted existing $configFileName');
-  }
-
-  final progress = log.progress('Creating default $configFileName');
-
-  try {
-    final contents = PatrolConfig.defaultConfig().toToml();
-    await File(configFileName).writeAsString(contents);
-  } catch (err) {
-    progress.fail('Failed to create default $configFileName');
-    rethrow;
-  }
-
-  progress.complete('Created default $configFileName');
 }
 
 Future<void> _addPatrolToPubspec() async {

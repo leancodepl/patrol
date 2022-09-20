@@ -15,7 +15,7 @@ $ dart pub global activate patrol_cli
 
 ### From git
 
-1. Make sure that you have Dart >= 2.16 installed.
+1. Make sure that you have Dart >= 2.17 installed.
 
    ```
    $ dart --version
@@ -27,8 +27,8 @@ $ dart pub global activate patrol_cli
 
 ### Troubleshooting
 
-If you can't run `patrol` from the terminal and the error is something along
-the lines of "command not found", make sure that you've added appropriate
+If you can't run `patrol` from the terminal and the error is something along the
+lines of "command not found", make sure that you've added appropriate
 directories to PATH:
 
 - on Unix-like systems, add `$HOME/.pub-cache/bin`
@@ -38,9 +38,10 @@ directories to PATH:
 
 ### First run
 
-On first run, `patrol` will download artifacts it needs to the _artifact path_.
-By default it is `$HOME/.patrol`, but you can change it by setting
-`PATROL_CACHE` environment variable.
+On first run, `patrol_cli` will download artifacts it needs to the _artifact
+path_. By default it is `$XDG_CACHE_HOME` (on Unix-like systems) or
+`$HOME/.patrol` (on Windows), but you can change it by setting `PATROL_CACHE`
+environment variable.
 
 To learn about commands, run:
 
@@ -50,16 +51,14 @@ $ patrol --help
 
 ### Bootstrap
 
-To use Patrol in your Flutter project, you need 4 things:
+To use Patrol in your Flutter project, you need to:
 
-1. have `patrol.toml` file in the root of the project (i.e next to
-   `pubspec.yaml`)
-2. have `patrol` added as a `dev_dependency` in `pubspec.yaml`
-3. have `integration_test` added as a `dev_dependency` in `pubspec.yaml`
-4. have `test_driver/integration_test.dart`
-5. have `integration_test/app_test.dart`
+1. add `patrol` as a `dev_dependency` in `pubspec.yaml`
+1. add `integration_test` as a `dev_dependency` in `pubspec.yaml`
+1. create `test_driver/integration_test.dart`
+1. create `integration_test/app_test.dart`
 
-Run `patrol bootstrap` to automatically do 1, 2, 3, 4, and most of 5.
+Run `patrol bootstrap` to automatically perform these steps.
 
 ### First drive
 

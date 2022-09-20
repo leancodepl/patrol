@@ -83,11 +83,15 @@ class PatrolCommandRunner extends CommandRunner<int> {
       ..addFlag(
         'verbose',
         abbr: 'v',
-        help: 'Increase logging.',
+        help: 'Print more logs.',
         negatable: false,
       )
-      ..addFlag('version', help: 'Show version.', negatable: false)
-      ..addFlag('debug', help: 'Use default, non-versioned artifacts.');
+      ..addFlag('version', abbr: 'V', help: 'Print version.', negatable: false)
+      ..addFlag(
+        'debug',
+        help: 'Use default, non-versioned artifacts.',
+        negatable: false,
+      );
   }
 
   final DisposeScope _disposeScope;
