@@ -1,39 +1,5 @@
 import Telegraph
 
-struct OpenAppCommand: Codable {
-  var appId: String
-}
-
-struct TapCommand: Codable {
-  var appId: String
-  var selector: Selector
-}
-
-struct DoubleTapCommand: Codable {
-  var appId: String
-  var selector: Selector
-}
-
-struct EnterTextBySelectorCommand: Codable {
-  var appId: String
-  var data: String
-  var selector: Selector
-}
-
-struct EnterTextByIndexCommand: Codable {
-  var appId: String
-  var data: String
-  var index: Int
-}
-
-struct PermissionCommand: Codable {
-  var code: String
-}
-
-struct Selector: Codable {
-  var text: String
-}
-
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
 
@@ -62,6 +28,8 @@ class PatrolServer {
   }
 
   func setUpRoutes() {
+    
+  
     server.route(.GET, "") { request in
       HTTPResponse(content: "Hello from AutomatorServer on iOS!")
     }
@@ -82,8 +50,8 @@ class PatrolServer {
 
     server.route(.POST, "openApp") { request in
       do {
-        let command = try self.decoder.decode(OpenAppCommand.self, from: request.body)
-        self.automation.openApp(command.appId)
+        let command = try Patrol_OpenAppCommand(jsonUTF8Data: request.body)
+        self.automation.openApp(command.appID)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -92,8 +60,8 @@ class PatrolServer {
 
     server.route(.POST, "tap") { request in
       do {
-        let command = try self.decoder.decode(TapCommand.self, from: request.body)
-        self.automation.tap(on: command.selector.text, inApp: command.appId)
+        let command = try Patrol_TapCommand(jsonUTF8Data: request.body)
+        self.automation.tap(on: command.selector.text, inApp: command.appID)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -102,8 +70,8 @@ class PatrolServer {
 
     server.route(.POST, "doubleTap") { request in
       do {
-        let command = try self.decoder.decode(DoubleTapCommand.self, from: request.body)
-        self.automation.doubleTap(on: command.selector.text, inApp: command.appId)
+        let command = try Patrol_DoubleTapCommand(jsonUTF8Data: request.body)
+        self.automation.doubleTap(on: command.selector.text, inApp: command.appID)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -112,8 +80,8 @@ class PatrolServer {
 
     server.route(.POST, "enterTextBySelector") { request in
       do {
-        let command = try self.decoder.decode(EnterTextBySelectorCommand.self, from: request.body)
-        self.automation.enterText(command.data, by: command.selector.text, inApp: command.appId)
+        let command = try Patrol_EnterTextBySelectorCommand(jsonUTF8Data: request.body)
+        self.automation.enterText(command.data, by: command.selector.text, inApp: command.appID)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -122,8 +90,8 @@ class PatrolServer {
 
     server.route(.POST, "enterTextByIndex") { request in
       do {
-        let command = try self.decoder.decode(EnterTextByIndexCommand.self, from: request.body)
-        self.automation.enterText(command.data, by: command.index, inApp: command.appId)
+        let command = try Patrol_EnterTextByIndexCommand(jsonUTF8Data: request.body)
+        self.automation.enterText(command.data, by: Int(command.index), inApp: command.appID)
         return HTTPResponse(.ok)
       } catch let err {
         return HTTPResponse(.badRequest, headers: [:], error: err)
@@ -132,7 +100,7 @@ class PatrolServer {
 
     server.route(.POST, "handlePermission") { request in
       do {
-        let command = try self.decoder.decode(PermissionCommand.self, from: request.body)
+        let command = try Patrol_HandlePermissionCommand(jsonUTF8Data: request.body)
         self.automation.handlePermission(code: command.code)
         return HTTPResponse(.ok)
       } catch let err {

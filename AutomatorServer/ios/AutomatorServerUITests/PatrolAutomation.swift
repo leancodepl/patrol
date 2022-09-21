@@ -70,11 +70,11 @@ class PatrolAutomation {
     }
   }
 
-  func handlePermission(code: String) {
+  func handlePermission(code: Patrol_HandlePermissionCommand.Code) {
     runAction("handling permission with code \(code)") {
       let systemAlerts = self.springboard.alerts
       switch code {
-      case "WHILE_USING":
+      case .whileUsing:
         let okButton = systemAlerts.buttons["OK"]
         if okButton.exists {
           okButton.tap()
@@ -84,17 +84,17 @@ class PatrolAutomation {
         if allowWhileUsingButton.exists {
           allowWhileUsingButton.tap()
         }
-      case "ONLY_THIS_TIME":
+      case .onlyThisTime:
         let allowOnceButton = systemAlerts.buttons["Allow Once"]
         if allowOnceButton.exists {
           allowOnceButton.tap()
         }
-      case "DENIED":
+      case .denied:
         let denyButton = systemAlerts.buttons["Don't Allow"]
         if denyButton.exists {
           denyButton.tap()
         }
-      default:
+      case .UNRECOGNIZED:
         Logger.shared.e("Invalid code: \(code)")
       }
     }
