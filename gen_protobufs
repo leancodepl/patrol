@@ -9,8 +9,8 @@ java_out="./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automat
 kotlin_out="./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts"
 swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
-protoc -I="$SRC_DIR" --dart_out="$dart_out" "$SRC_DIR/contracts.proto"
+protoc --dart_out="$dart_out" "$SRC_DIR/contracts.proto"
 
-protoc -I="$SRC_DIR" --java_out="$java_out" --kotlin_out="$kotlin_out" "$SRC_DIR/contracts.proto"
+protoc --java_out="$java_out" --kotlin_out="$kotlin_out" "$SRC_DIR/contracts.proto"
 
-protoc -I="$SRC_DIR" --swift_out="$swift_out" "$SRC_DIR/contracts.proto"
+protoc --swift_out="$swift_out" "$SRC_DIR/contracts.proto"
