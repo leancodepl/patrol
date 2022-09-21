@@ -68,7 +68,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           Text(
             '$_counter',
             key: const Key('counterText'),
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           Container(
             key: const Key('box1'),
