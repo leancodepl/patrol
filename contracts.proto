@@ -1,0 +1,59 @@
+syntax = "proto3";
+package patrol;
+
+message OpenApp { string appId = 1; }
+
+message TapCommand {
+  string appId = 1;
+  Selector selector = 2;
+}
+
+message DoubleTapCommand {
+  string appId = 1;
+  Selector selector = 2;
+}
+
+message EnterTextBySelectorCommand {
+  string appId = 1;
+  string data = 2;
+  Selector selector = 3;
+}
+
+message EnterTextByIndexCommand {
+  string appId = 1;
+  string data = 2;
+  int32 index = 3; // TODO: should be uint32?
+}
+
+message SwipeCommand {
+  float startX = 1;
+  float startY = 2;
+  float endX = 3;
+  float endY = 4;
+  int32 steps = 5; // TODO: should be uint32?
+}
+
+message HandlePermissionCommand {
+  Code code = 1;
+
+  enum Code {
+    WHILE_USING = 0;
+    ONLY_THIS_TIME = 1;
+    DENIED = 2;
+  }
+}
+
+message Selector {
+  string text = 1;
+  string textStartsWith = 2;
+  string textContains = 3;
+  string className = 4;
+  string contentDescription = 5;
+  string contentDescriptionStartsWith = 6;
+  string contentDescriptionContains = 7;
+  string resourceId = 8;
+  int32 instance = 9; // TODO: should be uint32?
+  bool enabled = 10;
+  bool focused = 11;
+  string pkg = 12;
+}
