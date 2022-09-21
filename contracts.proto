@@ -1,7 +1,7 @@
 syntax = "proto3";
 package patrol;
 
-message OpenApp { string appId = 1; }
+message OpenAppCommand { string appId = 1; }
 
 message TapCommand {
   string appId = 1;
@@ -24,6 +24,12 @@ message EnterTextByIndexCommand {
   string data = 2;
   int32 index = 3; // TODO: should be uint32?
 }
+
+message TapOnNotificationByIndexCommand {
+  int32 index = 1; // TODO: should be uint32?
+}
+
+message TapOnNotificationBySelectorCommand { Selector selector = 1; }
 
 message SwipeCommand {
   float startX = 1;

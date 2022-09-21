@@ -4,9 +4,9 @@ cd "$(dirname "$0")"
 
 SRC_DIR="."
 
-dart_out="./packages/patrol/lib/src"
-java_out="./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver"
-kotlin_out="./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver"
+dart_out="./packages/patrol/lib/src/native/contracts"
+java_out="./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts"
+kotlin_out="./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts"
 swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
 protoc -I="$SRC_DIR" --dart_out="$dart_out" "$SRC_DIR/contracts.proto"

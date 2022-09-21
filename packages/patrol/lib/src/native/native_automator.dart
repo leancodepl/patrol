@@ -6,6 +6,8 @@ import 'package:patrol/src/extensions.dart';
 import 'package:patrol/src/native/binding.dart';
 import 'package:patrol/src/native/models/models.dart';
 
+import 'contracts/contracts.dart';
+
 typedef _LoggerCallback = void Function(String);
 
 // ignore: avoid_print
@@ -170,7 +172,7 @@ class NativeAutomator {
   /// On Android [id] is the package name. On iOS [id] is the bundle name.
   Future<void> openApp({required String id}) => _wrapPost(
         'openApp',
-        <String, dynamic>{'appId': id},
+        OpenAppCommand(appId: id).writeToJsonMap(),
       );
 
   /// Presses the recent apps button.
@@ -223,7 +225,7 @@ class NativeAutomator {
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapPost(
       'tapOnNotificationByIndex',
-      <String, dynamic>{'index': index},
+      TapOnNotificationByIndexCommand(index: index).writeToJsonMap(),
     );
   }
 
@@ -231,7 +233,10 @@ class NativeAutomator {
   ///
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
-    await _wrapPost('tapOnNotificationBySelector', selector.toJson());
+    await _wrapPost(
+      'tapOnNotificationBySelector',
+      TapOnNotificationBySelectorCommand(selector: selector).writeToJsonMap(),
+    );
   }
 
   /// Enables dark mode.
@@ -258,10 +263,7 @@ class NativeAutomator {
   Future<void> tap(Selector selector, {String? appId}) {
     return _wrapPost(
       'tap',
-      <String, dynamic>{
-        'appId': appId ?? resolvedAppId,
-        'selector': selector.toJson(),
-      },
+      TapCommand(selector: selector).writeToJsonMap(),
     );
   }
 
@@ -269,10 +271,10 @@ class NativeAutomator {
   ///
   /// If the native widget is not found, an exception is thrown.
   Future<void> doubleTap(Selector selector, {String? appId}) {
-    return _wrapPost('doubleTap', <String, dynamic>{
-      'appId': appId ?? resolvedAppId,
-      'selector': selector.toJson(),
-    });
+    return _wrapPost(
+      'doubleTap',
+      DoubleTapCommand(selector: selector, appId: appId).writeToJsonMap(),
+    );
   }
 
   /// Enters text to the native widget specified by [selector].
@@ -285,11 +287,11 @@ class NativeAutomator {
   }) {
     return _wrapPost(
       'enterTextBySelector',
-      <String, dynamic>{
-        'appId': appId ?? resolvedAppId,
-        'data': text,
-        'selector': selector.toJson(),
-      },
+      EnterTextBySelectorCommand(
+        appId: appId,
+        data: text,
+        selector: selector,
+      ).writeToJsonMap(),
     );
   }
 
@@ -301,18 +303,21 @@ class NativeAutomator {
   }) {
     return _wrapPost(
       'enterTextByIndex',
-      <String, dynamic>{
-        'appId': appId ?? resolvedAppId,
-        'data': text,
-        'index': index,
-      },
+      EnterTextByIndexCommand(
+        appId: appId,
+        data: text,
+        index: index,
+      ).writeToJsonMap(),
     );
   }
 
-  /// Returns a list of native UI controls, specified by [selector], which are
-  /// currently visible on screen.
+  /// Returns a list of currently visible native UI controls, specified by
+  /// [selector], which are currently visible on screen.
   Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
-    final response = await _wrapPost('getNativeWidgets', selector.toJson());
+    final response = await _wrapPost(
+      'getNativeWidgets',
+      selector.writeToJsonMap(),
+    );
 
     final nativeWidgets = json.decode(response.body) as List<dynamic>;
     return nativeWidgets
@@ -329,7 +334,9 @@ class NativeAutomator {
     // Future<void>.delayed(Duration(milliseconds: 500));
     await _wrapPost(
       'handlePermission',
-      <String, String>{'code': 'WHILE_USING'},
+      HandlePermissionCommand(
+        code: HandlePermissionCommand_Code.WHILE_USING,
+      ).writeToJsonMap(),
     );
   }
 
@@ -343,7 +350,9 @@ class NativeAutomator {
   Future<void> grantPermissionOnlyThisTime() {
     return _wrapPost(
       'handlePermission',
-      <String, String>{'code': 'ONLY_THIS_TIME'},
+      HandlePermissionCommand(
+        code: HandlePermissionCommand_Code.ONLY_THIS_TIME,
+      ).writeToJsonMap(),
     );
   }
 
@@ -354,7 +363,9 @@ class NativeAutomator {
   Future<void> denyPermission() {
     return _wrapPost(
       'handlePermission',
-      <String, String>{'code': 'DENIED'},
+      HandlePermissionCommand(
+        code: HandlePermissionCommand_Code.DENIED,
+      ).writeToJsonMap(),
     );
   }
 
