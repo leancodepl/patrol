@@ -33,6 +33,7 @@ class CounterTemplate extends AppTestTemplate {
   // ignore_for_file: avoid_print
   import 'package:$projectName/main.dart';
   import 'package:flutter/material.dart';
+  import 'package:flutter_test/flutter_test.dart';
   import 'package:patrol/patrol.dart';
   
   // This is an example integration test using Patrol. Use it as a base to
@@ -106,6 +107,7 @@ class BasicTemplate extends AppTestTemplate {
   String generateCode() => r'''
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 // This is an example integration test using Patrol. Use it as a base to create

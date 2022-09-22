@@ -19,9 +19,9 @@ void main() {
       await $.native.disableWifi();
       await $.native.enableWifi();
 
-      await $.native.enableCelluar();
-      await $.native.disableCelluar();
-      await $.native.enableCelluar();
+      await $.native.enableCellular();
+      await $.native.disableCellular();
+      await $.native.enableCellular();
 
       await $.native.enableDarkMode();
       await $.native.disableDarkMode();

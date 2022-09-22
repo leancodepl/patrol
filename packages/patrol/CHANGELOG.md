@@ -206,7 +206,7 @@ Native:
 
 - Add basic means of controlling platform-native Widgets (`TextView`,
   `EditText`, and `Button` on Android). This also applies to WebView.
-- Add enabling and disabling of Wi-Fi, Celluar, and Night Mode
+- Add enabling and disabling of Wi-Fi, Cellular, and Night Mode
 - Improve stability
 
 ## 0.0.6
