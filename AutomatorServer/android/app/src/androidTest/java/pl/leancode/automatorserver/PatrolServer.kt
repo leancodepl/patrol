@@ -27,77 +27,73 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
-import pl.leancode.automatorserver.Contracts.Notification
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.io.OutputStream
 
 
 private fun Contracts.Selector.isEmpty(): Boolean {
     return (
-            text == null &&
-                    textStartsWith == null &&
-                    textContains == null &&
-                    className == null &&
-                    contentDescription == null &&
-                    contentDescriptionStartsWith == null &&
-                    contentDescriptionContains == null &&
-                    resourceId == null &&
-                    instance == null &&
-                    enabled == null &&
-                    focused == null &&
-                    pkg == null
+            !hasText() &&
+                    !hasTextStartsWith() &&
+                    !hasTextContains() &&
+                    !hasClassName() &&
+                    !hasContentDescription() &&
+                    !hasContentDescriptionStartsWith() &&
+                    !hasContentDescriptionContains() &&
+                    !hasResourceId() &&
+                    !hasInstance() &&
+                    !hasEnabled() &&
+                    !hasFocused() &&
+                    !hasPkg()
             )
 }
 
 fun Contracts.Selector.toUiSelector(): UiSelector {
     var selector = UiSelector()
 
-    if (text != null) {
+    if (hasText()) {
         selector = selector.text(text)
     }
 
-    if (textStartsWith != null) {
+    if (hasTextStartsWith()) {
         selector = selector.textStartsWith(textStartsWith)
     }
 
-    if (textContains != null) {
+    if (hasTextContains()) {
         selector = selector.textContains(textContains)
     }
 
-    if (className != null) {
+    if (hasClassName()) {
         selector = selector.className(className)
     }
 
-    if (contentDescription != null) {
+    if (hasContentDescription()) {
         selector = selector.description(contentDescription)
     }
 
-    if (contentDescriptionStartsWith != null) {
+    if (hasContentDescriptionStartsWith()) {
         selector = selector.descriptionStartsWith(contentDescriptionStartsWith)
     }
 
-    if (contentDescriptionContains != null) {
+    if (hasContentDescriptionContains()) {
         selector = selector.descriptionContains(contentDescriptionContains)
     }
 
-    if (resourceId != null) {
+    if (hasResourceId()) {
         selector = selector.resourceId(resourceId)
     }
 
-    if (instance != null) {
+    if (hasInstance()) {
         selector = selector.instance(instance)
     }
 
-    if (enabled != null) {
+    if (hasEnabled()) {
         selector = selector.enabled(enabled)
     }
 
-    if (focused != null) {
+    if (hasFocused()) {
         selector = selector.focused(focused)
     }
 
-    if (pkg != null) {
+    if (hasPkg()) {
         selector = selector.packageName(pkg)
     }
 
@@ -106,7 +102,7 @@ fun Contracts.Selector.toUiSelector(): UiSelector {
 
 fun Contracts.Selector.toBySelector(): BySelector {
     if (isEmpty()) {
-        throw PatrolException("SelectorQuery is empty")
+        throw PatrolException("Selector is empty")
     }
 
     var matchedText = false

@@ -6383,126 +6383,186 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string text = 1;</code>
+     * <code>optional string text = 1;</code>
+     * @return Whether the text field is set.
+     */
+    boolean hasText();
+    /**
+     * <code>optional string text = 1;</code>
      * @return The text.
      */
     java.lang.String getText();
     /**
-     * <code>string text = 1;</code>
+     * <code>optional string text = 1;</code>
      * @return The bytes for text.
      */
     com.google.protobuf.ByteString
         getTextBytes();
 
     /**
-     * <code>string textStartsWith = 2;</code>
+     * <code>optional string textStartsWith = 2;</code>
+     * @return Whether the textStartsWith field is set.
+     */
+    boolean hasTextStartsWith();
+    /**
+     * <code>optional string textStartsWith = 2;</code>
      * @return The textStartsWith.
      */
     java.lang.String getTextStartsWith();
     /**
-     * <code>string textStartsWith = 2;</code>
+     * <code>optional string textStartsWith = 2;</code>
      * @return The bytes for textStartsWith.
      */
     com.google.protobuf.ByteString
         getTextStartsWithBytes();
 
     /**
-     * <code>string textContains = 3;</code>
+     * <code>optional string textContains = 3;</code>
+     * @return Whether the textContains field is set.
+     */
+    boolean hasTextContains();
+    /**
+     * <code>optional string textContains = 3;</code>
      * @return The textContains.
      */
     java.lang.String getTextContains();
     /**
-     * <code>string textContains = 3;</code>
+     * <code>optional string textContains = 3;</code>
      * @return The bytes for textContains.
      */
     com.google.protobuf.ByteString
         getTextContainsBytes();
 
     /**
-     * <code>string className = 4;</code>
+     * <code>optional string className = 4;</code>
+     * @return Whether the className field is set.
+     */
+    boolean hasClassName();
+    /**
+     * <code>optional string className = 4;</code>
      * @return The className.
      */
     java.lang.String getClassName();
     /**
-     * <code>string className = 4;</code>
+     * <code>optional string className = 4;</code>
      * @return The bytes for className.
      */
     com.google.protobuf.ByteString
         getClassNameBytes();
 
     /**
-     * <code>string contentDescription = 5;</code>
+     * <code>optional string contentDescription = 5;</code>
+     * @return Whether the contentDescription field is set.
+     */
+    boolean hasContentDescription();
+    /**
+     * <code>optional string contentDescription = 5;</code>
      * @return The contentDescription.
      */
     java.lang.String getContentDescription();
     /**
-     * <code>string contentDescription = 5;</code>
+     * <code>optional string contentDescription = 5;</code>
      * @return The bytes for contentDescription.
      */
     com.google.protobuf.ByteString
         getContentDescriptionBytes();
 
     /**
-     * <code>string contentDescriptionStartsWith = 6;</code>
+     * <code>optional string contentDescriptionStartsWith = 6;</code>
+     * @return Whether the contentDescriptionStartsWith field is set.
+     */
+    boolean hasContentDescriptionStartsWith();
+    /**
+     * <code>optional string contentDescriptionStartsWith = 6;</code>
      * @return The contentDescriptionStartsWith.
      */
     java.lang.String getContentDescriptionStartsWith();
     /**
-     * <code>string contentDescriptionStartsWith = 6;</code>
+     * <code>optional string contentDescriptionStartsWith = 6;</code>
      * @return The bytes for contentDescriptionStartsWith.
      */
     com.google.protobuf.ByteString
         getContentDescriptionStartsWithBytes();
 
     /**
-     * <code>string contentDescriptionContains = 7;</code>
+     * <code>optional string contentDescriptionContains = 7;</code>
+     * @return Whether the contentDescriptionContains field is set.
+     */
+    boolean hasContentDescriptionContains();
+    /**
+     * <code>optional string contentDescriptionContains = 7;</code>
      * @return The contentDescriptionContains.
      */
     java.lang.String getContentDescriptionContains();
     /**
-     * <code>string contentDescriptionContains = 7;</code>
+     * <code>optional string contentDescriptionContains = 7;</code>
      * @return The bytes for contentDescriptionContains.
      */
     com.google.protobuf.ByteString
         getContentDescriptionContainsBytes();
 
     /**
-     * <code>string resourceId = 8;</code>
+     * <code>optional string resourceId = 8;</code>
+     * @return Whether the resourceId field is set.
+     */
+    boolean hasResourceId();
+    /**
+     * <code>optional string resourceId = 8;</code>
      * @return The resourceId.
      */
     java.lang.String getResourceId();
     /**
-     * <code>string resourceId = 8;</code>
+     * <code>optional string resourceId = 8;</code>
      * @return The bytes for resourceId.
      */
     com.google.protobuf.ByteString
         getResourceIdBytes();
 
     /**
-     * <code>uint32 instance = 9;</code>
+     * <code>optional uint32 instance = 9;</code>
+     * @return Whether the instance field is set.
+     */
+    boolean hasInstance();
+    /**
+     * <code>optional uint32 instance = 9;</code>
      * @return The instance.
      */
     int getInstance();
 
     /**
-     * <code>bool enabled = 10;</code>
+     * <code>optional bool enabled = 10;</code>
+     * @return Whether the enabled field is set.
+     */
+    boolean hasEnabled();
+    /**
+     * <code>optional bool enabled = 10;</code>
      * @return The enabled.
      */
     boolean getEnabled();
 
     /**
-     * <code>bool focused = 11;</code>
+     * <code>optional bool focused = 11;</code>
+     * @return Whether the focused field is set.
+     */
+    boolean hasFocused();
+    /**
+     * <code>optional bool focused = 11;</code>
      * @return The focused.
      */
     boolean getFocused();
 
     /**
-     * <code>string pkg = 12;</code>
+     * <code>optional string pkg = 12;</code>
+     * @return Whether the pkg field is set.
+     */
+    boolean hasPkg();
+    /**
+     * <code>optional string pkg = 12;</code>
      * @return The pkg.
      */
     java.lang.String getPkg();
     /**
-     * <code>string pkg = 12;</code>
+     * <code>optional string pkg = 12;</code>
      * @return The bytes for pkg.
      */
     com.google.protobuf.ByteString
@@ -6552,6 +6612,7 @@ public final class Contracts {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -6564,70 +6625,70 @@ public final class Contracts {
               break;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000001;
               text_ = s;
               break;
             }
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000002;
               textStartsWith_ = s;
               break;
             }
             case 26: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000004;
               textContains_ = s;
               break;
             }
             case 34: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000008;
               className_ = s;
               break;
             }
             case 42: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000010;
               contentDescription_ = s;
               break;
             }
             case 50: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000020;
               contentDescriptionStartsWith_ = s;
               break;
             }
             case 58: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000040;
               contentDescriptionContains_ = s;
               break;
             }
             case 66: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000080;
               resourceId_ = s;
               break;
             }
             case 72: {
-
+              bitField0_ |= 0x00000100;
               instance_ = input.readUInt32();
               break;
             }
             case 80: {
-
+              bitField0_ |= 0x00000200;
               enabled_ = input.readBool();
               break;
             }
             case 88: {
-
+              bitField0_ |= 0x00000400;
               focused_ = input.readBool();
               break;
             }
             case 98: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000800;
               pkg_ = s;
               break;
             }
@@ -6665,10 +6726,19 @@ public final class Contracts {
               pl.leancode.automatorserver.Contracts.Selector.class, pl.leancode.automatorserver.Contracts.Selector.Builder.class);
     }
 
+    private int bitField0_;
     public static final int TEXT_FIELD_NUMBER = 1;
     private volatile java.lang.Object text_;
     /**
-     * <code>string text = 1;</code>
+     * <code>optional string text = 1;</code>
+     * @return Whether the text field is set.
+     */
+    @java.lang.Override
+    public boolean hasText() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional string text = 1;</code>
      * @return The text.
      */
     @java.lang.Override
@@ -6685,7 +6755,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string text = 1;</code>
+     * <code>optional string text = 1;</code>
      * @return The bytes for text.
      */
     @java.lang.Override
@@ -6706,7 +6776,15 @@ public final class Contracts {
     public static final int TEXTSTARTSWITH_FIELD_NUMBER = 2;
     private volatile java.lang.Object textStartsWith_;
     /**
-     * <code>string textStartsWith = 2;</code>
+     * <code>optional string textStartsWith = 2;</code>
+     * @return Whether the textStartsWith field is set.
+     */
+    @java.lang.Override
+    public boolean hasTextStartsWith() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>optional string textStartsWith = 2;</code>
      * @return The textStartsWith.
      */
     @java.lang.Override
@@ -6723,7 +6801,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string textStartsWith = 2;</code>
+     * <code>optional string textStartsWith = 2;</code>
      * @return The bytes for textStartsWith.
      */
     @java.lang.Override
@@ -6744,7 +6822,15 @@ public final class Contracts {
     public static final int TEXTCONTAINS_FIELD_NUMBER = 3;
     private volatile java.lang.Object textContains_;
     /**
-     * <code>string textContains = 3;</code>
+     * <code>optional string textContains = 3;</code>
+     * @return Whether the textContains field is set.
+     */
+    @java.lang.Override
+    public boolean hasTextContains() {
+      return ((bitField0_ & 0x00000004) != 0);
+    }
+    /**
+     * <code>optional string textContains = 3;</code>
      * @return The textContains.
      */
     @java.lang.Override
@@ -6761,7 +6847,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string textContains = 3;</code>
+     * <code>optional string textContains = 3;</code>
      * @return The bytes for textContains.
      */
     @java.lang.Override
@@ -6782,7 +6868,15 @@ public final class Contracts {
     public static final int CLASSNAME_FIELD_NUMBER = 4;
     private volatile java.lang.Object className_;
     /**
-     * <code>string className = 4;</code>
+     * <code>optional string className = 4;</code>
+     * @return Whether the className field is set.
+     */
+    @java.lang.Override
+    public boolean hasClassName() {
+      return ((bitField0_ & 0x00000008) != 0);
+    }
+    /**
+     * <code>optional string className = 4;</code>
      * @return The className.
      */
     @java.lang.Override
@@ -6799,7 +6893,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string className = 4;</code>
+     * <code>optional string className = 4;</code>
      * @return The bytes for className.
      */
     @java.lang.Override
@@ -6820,7 +6914,15 @@ public final class Contracts {
     public static final int CONTENTDESCRIPTION_FIELD_NUMBER = 5;
     private volatile java.lang.Object contentDescription_;
     /**
-     * <code>string contentDescription = 5;</code>
+     * <code>optional string contentDescription = 5;</code>
+     * @return Whether the contentDescription field is set.
+     */
+    @java.lang.Override
+    public boolean hasContentDescription() {
+      return ((bitField0_ & 0x00000010) != 0);
+    }
+    /**
+     * <code>optional string contentDescription = 5;</code>
      * @return The contentDescription.
      */
     @java.lang.Override
@@ -6837,7 +6939,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string contentDescription = 5;</code>
+     * <code>optional string contentDescription = 5;</code>
      * @return The bytes for contentDescription.
      */
     @java.lang.Override
@@ -6858,7 +6960,15 @@ public final class Contracts {
     public static final int CONTENTDESCRIPTIONSTARTSWITH_FIELD_NUMBER = 6;
     private volatile java.lang.Object contentDescriptionStartsWith_;
     /**
-     * <code>string contentDescriptionStartsWith = 6;</code>
+     * <code>optional string contentDescriptionStartsWith = 6;</code>
+     * @return Whether the contentDescriptionStartsWith field is set.
+     */
+    @java.lang.Override
+    public boolean hasContentDescriptionStartsWith() {
+      return ((bitField0_ & 0x00000020) != 0);
+    }
+    /**
+     * <code>optional string contentDescriptionStartsWith = 6;</code>
      * @return The contentDescriptionStartsWith.
      */
     @java.lang.Override
@@ -6875,7 +6985,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string contentDescriptionStartsWith = 6;</code>
+     * <code>optional string contentDescriptionStartsWith = 6;</code>
      * @return The bytes for contentDescriptionStartsWith.
      */
     @java.lang.Override
@@ -6896,7 +7006,15 @@ public final class Contracts {
     public static final int CONTENTDESCRIPTIONCONTAINS_FIELD_NUMBER = 7;
     private volatile java.lang.Object contentDescriptionContains_;
     /**
-     * <code>string contentDescriptionContains = 7;</code>
+     * <code>optional string contentDescriptionContains = 7;</code>
+     * @return Whether the contentDescriptionContains field is set.
+     */
+    @java.lang.Override
+    public boolean hasContentDescriptionContains() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <code>optional string contentDescriptionContains = 7;</code>
      * @return The contentDescriptionContains.
      */
     @java.lang.Override
@@ -6913,7 +7031,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string contentDescriptionContains = 7;</code>
+     * <code>optional string contentDescriptionContains = 7;</code>
      * @return The bytes for contentDescriptionContains.
      */
     @java.lang.Override
@@ -6934,7 +7052,15 @@ public final class Contracts {
     public static final int RESOURCEID_FIELD_NUMBER = 8;
     private volatile java.lang.Object resourceId_;
     /**
-     * <code>string resourceId = 8;</code>
+     * <code>optional string resourceId = 8;</code>
+     * @return Whether the resourceId field is set.
+     */
+    @java.lang.Override
+    public boolean hasResourceId() {
+      return ((bitField0_ & 0x00000080) != 0);
+    }
+    /**
+     * <code>optional string resourceId = 8;</code>
      * @return The resourceId.
      */
     @java.lang.Override
@@ -6951,7 +7077,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string resourceId = 8;</code>
+     * <code>optional string resourceId = 8;</code>
      * @return The bytes for resourceId.
      */
     @java.lang.Override
@@ -6972,7 +7098,15 @@ public final class Contracts {
     public static final int INSTANCE_FIELD_NUMBER = 9;
     private int instance_;
     /**
-     * <code>uint32 instance = 9;</code>
+     * <code>optional uint32 instance = 9;</code>
+     * @return Whether the instance field is set.
+     */
+    @java.lang.Override
+    public boolean hasInstance() {
+      return ((bitField0_ & 0x00000100) != 0);
+    }
+    /**
+     * <code>optional uint32 instance = 9;</code>
      * @return The instance.
      */
     @java.lang.Override
@@ -6983,7 +7117,15 @@ public final class Contracts {
     public static final int ENABLED_FIELD_NUMBER = 10;
     private boolean enabled_;
     /**
-     * <code>bool enabled = 10;</code>
+     * <code>optional bool enabled = 10;</code>
+     * @return Whether the enabled field is set.
+     */
+    @java.lang.Override
+    public boolean hasEnabled() {
+      return ((bitField0_ & 0x00000200) != 0);
+    }
+    /**
+     * <code>optional bool enabled = 10;</code>
      * @return The enabled.
      */
     @java.lang.Override
@@ -6994,7 +7136,15 @@ public final class Contracts {
     public static final int FOCUSED_FIELD_NUMBER = 11;
     private boolean focused_;
     /**
-     * <code>bool focused = 11;</code>
+     * <code>optional bool focused = 11;</code>
+     * @return Whether the focused field is set.
+     */
+    @java.lang.Override
+    public boolean hasFocused() {
+      return ((bitField0_ & 0x00000400) != 0);
+    }
+    /**
+     * <code>optional bool focused = 11;</code>
      * @return The focused.
      */
     @java.lang.Override
@@ -7005,7 +7155,15 @@ public final class Contracts {
     public static final int PKG_FIELD_NUMBER = 12;
     private volatile java.lang.Object pkg_;
     /**
-     * <code>string pkg = 12;</code>
+     * <code>optional string pkg = 12;</code>
+     * @return Whether the pkg field is set.
+     */
+    @java.lang.Override
+    public boolean hasPkg() {
+      return ((bitField0_ & 0x00000800) != 0);
+    }
+    /**
+     * <code>optional string pkg = 12;</code>
      * @return The pkg.
      */
     @java.lang.Override
@@ -7022,7 +7180,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string pkg = 12;</code>
+     * <code>optional string pkg = 12;</code>
      * @return The bytes for pkg.
      */
     @java.lang.Override
@@ -7054,40 +7212,40 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(text_)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, text_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(textStartsWith_)) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, textStartsWith_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(textContains_)) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, textContains_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(className_)) {
+      if (((bitField0_ & 0x00000008) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, className_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(contentDescription_)) {
+      if (((bitField0_ & 0x00000010) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, contentDescription_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(contentDescriptionStartsWith_)) {
+      if (((bitField0_ & 0x00000020) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, contentDescriptionStartsWith_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(contentDescriptionContains_)) {
+      if (((bitField0_ & 0x00000040) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 7, contentDescriptionContains_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceId_)) {
+      if (((bitField0_ & 0x00000080) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 8, resourceId_);
       }
-      if (instance_ != 0) {
+      if (((bitField0_ & 0x00000100) != 0)) {
         output.writeUInt32(9, instance_);
       }
-      if (enabled_ != false) {
+      if (((bitField0_ & 0x00000200) != 0)) {
         output.writeBool(10, enabled_);
       }
-      if (focused_ != false) {
+      if (((bitField0_ & 0x00000400) != 0)) {
         output.writeBool(11, focused_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(pkg_)) {
+      if (((bitField0_ & 0x00000800) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 12, pkg_);
       }
       unknownFields.writeTo(output);
@@ -7099,43 +7257,43 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(text_)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, text_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(textStartsWith_)) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, textStartsWith_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(textContains_)) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, textContains_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(className_)) {
+      if (((bitField0_ & 0x00000008) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, className_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(contentDescription_)) {
+      if (((bitField0_ & 0x00000010) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, contentDescription_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(contentDescriptionStartsWith_)) {
+      if (((bitField0_ & 0x00000020) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, contentDescriptionStartsWith_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(contentDescriptionContains_)) {
+      if (((bitField0_ & 0x00000040) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, contentDescriptionContains_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceId_)) {
+      if (((bitField0_ & 0x00000080) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(8, resourceId_);
       }
-      if (instance_ != 0) {
+      if (((bitField0_ & 0x00000100) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(9, instance_);
       }
-      if (enabled_ != false) {
+      if (((bitField0_ & 0x00000200) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(10, enabled_);
       }
-      if (focused_ != false) {
+      if (((bitField0_ & 0x00000400) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(11, focused_);
       }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(pkg_)) {
+      if (((bitField0_ & 0x00000800) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, pkg_);
       }
       size += unknownFields.getSerializedSize();
@@ -7153,30 +7311,66 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.Contracts.Selector other = (pl.leancode.automatorserver.Contracts.Selector) obj;
 
-      if (!getText()
-          .equals(other.getText())) return false;
-      if (!getTextStartsWith()
-          .equals(other.getTextStartsWith())) return false;
-      if (!getTextContains()
-          .equals(other.getTextContains())) return false;
-      if (!getClassName()
-          .equals(other.getClassName())) return false;
-      if (!getContentDescription()
-          .equals(other.getContentDescription())) return false;
-      if (!getContentDescriptionStartsWith()
-          .equals(other.getContentDescriptionStartsWith())) return false;
-      if (!getContentDescriptionContains()
-          .equals(other.getContentDescriptionContains())) return false;
-      if (!getResourceId()
-          .equals(other.getResourceId())) return false;
-      if (getInstance()
-          != other.getInstance()) return false;
-      if (getEnabled()
-          != other.getEnabled()) return false;
-      if (getFocused()
-          != other.getFocused()) return false;
-      if (!getPkg()
-          .equals(other.getPkg())) return false;
+      if (hasText() != other.hasText()) return false;
+      if (hasText()) {
+        if (!getText()
+            .equals(other.getText())) return false;
+      }
+      if (hasTextStartsWith() != other.hasTextStartsWith()) return false;
+      if (hasTextStartsWith()) {
+        if (!getTextStartsWith()
+            .equals(other.getTextStartsWith())) return false;
+      }
+      if (hasTextContains() != other.hasTextContains()) return false;
+      if (hasTextContains()) {
+        if (!getTextContains()
+            .equals(other.getTextContains())) return false;
+      }
+      if (hasClassName() != other.hasClassName()) return false;
+      if (hasClassName()) {
+        if (!getClassName()
+            .equals(other.getClassName())) return false;
+      }
+      if (hasContentDescription() != other.hasContentDescription()) return false;
+      if (hasContentDescription()) {
+        if (!getContentDescription()
+            .equals(other.getContentDescription())) return false;
+      }
+      if (hasContentDescriptionStartsWith() != other.hasContentDescriptionStartsWith()) return false;
+      if (hasContentDescriptionStartsWith()) {
+        if (!getContentDescriptionStartsWith()
+            .equals(other.getContentDescriptionStartsWith())) return false;
+      }
+      if (hasContentDescriptionContains() != other.hasContentDescriptionContains()) return false;
+      if (hasContentDescriptionContains()) {
+        if (!getContentDescriptionContains()
+            .equals(other.getContentDescriptionContains())) return false;
+      }
+      if (hasResourceId() != other.hasResourceId()) return false;
+      if (hasResourceId()) {
+        if (!getResourceId()
+            .equals(other.getResourceId())) return false;
+      }
+      if (hasInstance() != other.hasInstance()) return false;
+      if (hasInstance()) {
+        if (getInstance()
+            != other.getInstance()) return false;
+      }
+      if (hasEnabled() != other.hasEnabled()) return false;
+      if (hasEnabled()) {
+        if (getEnabled()
+            != other.getEnabled()) return false;
+      }
+      if (hasFocused() != other.hasFocused()) return false;
+      if (hasFocused()) {
+        if (getFocused()
+            != other.getFocused()) return false;
+      }
+      if (hasPkg() != other.hasPkg()) return false;
+      if (hasPkg()) {
+        if (!getPkg()
+            .equals(other.getPkg())) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -7188,32 +7382,56 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + TEXT_FIELD_NUMBER;
-      hash = (53 * hash) + getText().hashCode();
-      hash = (37 * hash) + TEXTSTARTSWITH_FIELD_NUMBER;
-      hash = (53 * hash) + getTextStartsWith().hashCode();
-      hash = (37 * hash) + TEXTCONTAINS_FIELD_NUMBER;
-      hash = (53 * hash) + getTextContains().hashCode();
-      hash = (37 * hash) + CLASSNAME_FIELD_NUMBER;
-      hash = (53 * hash) + getClassName().hashCode();
-      hash = (37 * hash) + CONTENTDESCRIPTION_FIELD_NUMBER;
-      hash = (53 * hash) + getContentDescription().hashCode();
-      hash = (37 * hash) + CONTENTDESCRIPTIONSTARTSWITH_FIELD_NUMBER;
-      hash = (53 * hash) + getContentDescriptionStartsWith().hashCode();
-      hash = (37 * hash) + CONTENTDESCRIPTIONCONTAINS_FIELD_NUMBER;
-      hash = (53 * hash) + getContentDescriptionContains().hashCode();
-      hash = (37 * hash) + RESOURCEID_FIELD_NUMBER;
-      hash = (53 * hash) + getResourceId().hashCode();
-      hash = (37 * hash) + INSTANCE_FIELD_NUMBER;
-      hash = (53 * hash) + getInstance();
-      hash = (37 * hash) + ENABLED_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getEnabled());
-      hash = (37 * hash) + FOCUSED_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getFocused());
-      hash = (37 * hash) + PKG_FIELD_NUMBER;
-      hash = (53 * hash) + getPkg().hashCode();
+      if (hasText()) {
+        hash = (37 * hash) + TEXT_FIELD_NUMBER;
+        hash = (53 * hash) + getText().hashCode();
+      }
+      if (hasTextStartsWith()) {
+        hash = (37 * hash) + TEXTSTARTSWITH_FIELD_NUMBER;
+        hash = (53 * hash) + getTextStartsWith().hashCode();
+      }
+      if (hasTextContains()) {
+        hash = (37 * hash) + TEXTCONTAINS_FIELD_NUMBER;
+        hash = (53 * hash) + getTextContains().hashCode();
+      }
+      if (hasClassName()) {
+        hash = (37 * hash) + CLASSNAME_FIELD_NUMBER;
+        hash = (53 * hash) + getClassName().hashCode();
+      }
+      if (hasContentDescription()) {
+        hash = (37 * hash) + CONTENTDESCRIPTION_FIELD_NUMBER;
+        hash = (53 * hash) + getContentDescription().hashCode();
+      }
+      if (hasContentDescriptionStartsWith()) {
+        hash = (37 * hash) + CONTENTDESCRIPTIONSTARTSWITH_FIELD_NUMBER;
+        hash = (53 * hash) + getContentDescriptionStartsWith().hashCode();
+      }
+      if (hasContentDescriptionContains()) {
+        hash = (37 * hash) + CONTENTDESCRIPTIONCONTAINS_FIELD_NUMBER;
+        hash = (53 * hash) + getContentDescriptionContains().hashCode();
+      }
+      if (hasResourceId()) {
+        hash = (37 * hash) + RESOURCEID_FIELD_NUMBER;
+        hash = (53 * hash) + getResourceId().hashCode();
+      }
+      if (hasInstance()) {
+        hash = (37 * hash) + INSTANCE_FIELD_NUMBER;
+        hash = (53 * hash) + getInstance();
+      }
+      if (hasEnabled()) {
+        hash = (37 * hash) + ENABLED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getEnabled());
+      }
+      if (hasFocused()) {
+        hash = (37 * hash) + FOCUSED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getFocused());
+      }
+      if (hasPkg()) {
+        hash = (37 * hash) + PKG_FIELD_NUMBER;
+        hash = (53 * hash) + getPkg().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -7348,29 +7566,29 @@ public final class Contracts {
       public Builder clear() {
         super.clear();
         text_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000001);
         textStartsWith_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         textContains_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000004);
         className_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000008);
         contentDescription_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000010);
         contentDescriptionStartsWith_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000020);
         contentDescriptionContains_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000040);
         resourceId_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000080);
         instance_ = 0;
-
+        bitField0_ = (bitField0_ & ~0x00000100);
         enabled_ = false;
-
+        bitField0_ = (bitField0_ & ~0x00000200);
         focused_ = false;
-
+        bitField0_ = (bitField0_ & ~0x00000400);
         pkg_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
 
@@ -7397,18 +7615,57 @@ public final class Contracts {
       @java.lang.Override
       public pl.leancode.automatorserver.Contracts.Selector buildPartial() {
         pl.leancode.automatorserver.Contracts.Selector result = new pl.leancode.automatorserver.Contracts.Selector(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
         result.text_ = text_;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.textStartsWith_ = textStartsWith_;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          to_bitField0_ |= 0x00000004;
+        }
         result.textContains_ = textContains_;
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          to_bitField0_ |= 0x00000008;
+        }
         result.className_ = className_;
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          to_bitField0_ |= 0x00000010;
+        }
         result.contentDescription_ = contentDescription_;
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          to_bitField0_ |= 0x00000020;
+        }
         result.contentDescriptionStartsWith_ = contentDescriptionStartsWith_;
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          to_bitField0_ |= 0x00000040;
+        }
         result.contentDescriptionContains_ = contentDescriptionContains_;
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          to_bitField0_ |= 0x00000080;
+        }
         result.resourceId_ = resourceId_;
-        result.instance_ = instance_;
-        result.enabled_ = enabled_;
-        result.focused_ = focused_;
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          result.instance_ = instance_;
+          to_bitField0_ |= 0x00000100;
+        }
+        if (((from_bitField0_ & 0x00000200) != 0)) {
+          result.enabled_ = enabled_;
+          to_bitField0_ |= 0x00000200;
+        }
+        if (((from_bitField0_ & 0x00000400) != 0)) {
+          result.focused_ = focused_;
+          to_bitField0_ |= 0x00000400;
+        }
+        if (((from_bitField0_ & 0x00000800) != 0)) {
+          to_bitField0_ |= 0x00000800;
+        }
         result.pkg_ = pkg_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -7457,48 +7714,57 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.Contracts.Selector other) {
         if (other == pl.leancode.automatorserver.Contracts.Selector.getDefaultInstance()) return this;
-        if (!other.getText().isEmpty()) {
+        if (other.hasText()) {
+          bitField0_ |= 0x00000001;
           text_ = other.text_;
           onChanged();
         }
-        if (!other.getTextStartsWith().isEmpty()) {
+        if (other.hasTextStartsWith()) {
+          bitField0_ |= 0x00000002;
           textStartsWith_ = other.textStartsWith_;
           onChanged();
         }
-        if (!other.getTextContains().isEmpty()) {
+        if (other.hasTextContains()) {
+          bitField0_ |= 0x00000004;
           textContains_ = other.textContains_;
           onChanged();
         }
-        if (!other.getClassName().isEmpty()) {
+        if (other.hasClassName()) {
+          bitField0_ |= 0x00000008;
           className_ = other.className_;
           onChanged();
         }
-        if (!other.getContentDescription().isEmpty()) {
+        if (other.hasContentDescription()) {
+          bitField0_ |= 0x00000010;
           contentDescription_ = other.contentDescription_;
           onChanged();
         }
-        if (!other.getContentDescriptionStartsWith().isEmpty()) {
+        if (other.hasContentDescriptionStartsWith()) {
+          bitField0_ |= 0x00000020;
           contentDescriptionStartsWith_ = other.contentDescriptionStartsWith_;
           onChanged();
         }
-        if (!other.getContentDescriptionContains().isEmpty()) {
+        if (other.hasContentDescriptionContains()) {
+          bitField0_ |= 0x00000040;
           contentDescriptionContains_ = other.contentDescriptionContains_;
           onChanged();
         }
-        if (!other.getResourceId().isEmpty()) {
+        if (other.hasResourceId()) {
+          bitField0_ |= 0x00000080;
           resourceId_ = other.resourceId_;
           onChanged();
         }
-        if (other.getInstance() != 0) {
+        if (other.hasInstance()) {
           setInstance(other.getInstance());
         }
-        if (other.getEnabled() != false) {
+        if (other.hasEnabled()) {
           setEnabled(other.getEnabled());
         }
-        if (other.getFocused() != false) {
+        if (other.hasFocused()) {
           setFocused(other.getFocused());
         }
-        if (!other.getPkg().isEmpty()) {
+        if (other.hasPkg()) {
+          bitField0_ |= 0x00000800;
           pkg_ = other.pkg_;
           onChanged();
         }
@@ -7530,10 +7796,18 @@ public final class Contracts {
         }
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object text_ = "";
       /**
-       * <code>string text = 1;</code>
+       * <code>optional string text = 1;</code>
+       * @return Whether the text field is set.
+       */
+      public boolean hasText() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>optional string text = 1;</code>
        * @return The text.
        */
       public java.lang.String getText() {
@@ -7549,7 +7823,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string text = 1;</code>
+       * <code>optional string text = 1;</code>
        * @return The bytes for text.
        */
       public com.google.protobuf.ByteString
@@ -7566,7 +7840,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string text = 1;</code>
+       * <code>optional string text = 1;</code>
        * @param value The text to set.
        * @return This builder for chaining.
        */
@@ -7575,23 +7849,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000001;
         text_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string text = 1;</code>
+       * <code>optional string text = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearText() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         text_ = getDefaultInstance().getText();
         onChanged();
         return this;
       }
       /**
-       * <code>string text = 1;</code>
+       * <code>optional string text = 1;</code>
        * @param value The bytes for text to set.
        * @return This builder for chaining.
        */
@@ -7601,7 +7875,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000001;
         text_ = value;
         onChanged();
         return this;
@@ -7609,7 +7883,14 @@ public final class Contracts {
 
       private java.lang.Object textStartsWith_ = "";
       /**
-       * <code>string textStartsWith = 2;</code>
+       * <code>optional string textStartsWith = 2;</code>
+       * @return Whether the textStartsWith field is set.
+       */
+      public boolean hasTextStartsWith() {
+        return ((bitField0_ & 0x00000002) != 0);
+      }
+      /**
+       * <code>optional string textStartsWith = 2;</code>
        * @return The textStartsWith.
        */
       public java.lang.String getTextStartsWith() {
@@ -7625,7 +7906,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string textStartsWith = 2;</code>
+       * <code>optional string textStartsWith = 2;</code>
        * @return The bytes for textStartsWith.
        */
       public com.google.protobuf.ByteString
@@ -7642,7 +7923,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string textStartsWith = 2;</code>
+       * <code>optional string textStartsWith = 2;</code>
        * @param value The textStartsWith to set.
        * @return This builder for chaining.
        */
@@ -7651,23 +7932,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000002;
         textStartsWith_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string textStartsWith = 2;</code>
+       * <code>optional string textStartsWith = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearTextStartsWith() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         textStartsWith_ = getDefaultInstance().getTextStartsWith();
         onChanged();
         return this;
       }
       /**
-       * <code>string textStartsWith = 2;</code>
+       * <code>optional string textStartsWith = 2;</code>
        * @param value The bytes for textStartsWith to set.
        * @return This builder for chaining.
        */
@@ -7677,7 +7958,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000002;
         textStartsWith_ = value;
         onChanged();
         return this;
@@ -7685,7 +7966,14 @@ public final class Contracts {
 
       private java.lang.Object textContains_ = "";
       /**
-       * <code>string textContains = 3;</code>
+       * <code>optional string textContains = 3;</code>
+       * @return Whether the textContains field is set.
+       */
+      public boolean hasTextContains() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <code>optional string textContains = 3;</code>
        * @return The textContains.
        */
       public java.lang.String getTextContains() {
@@ -7701,7 +7989,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string textContains = 3;</code>
+       * <code>optional string textContains = 3;</code>
        * @return The bytes for textContains.
        */
       public com.google.protobuf.ByteString
@@ -7718,7 +8006,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string textContains = 3;</code>
+       * <code>optional string textContains = 3;</code>
        * @param value The textContains to set.
        * @return This builder for chaining.
        */
@@ -7727,23 +8015,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000004;
         textContains_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string textContains = 3;</code>
+       * <code>optional string textContains = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearTextContains() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         textContains_ = getDefaultInstance().getTextContains();
         onChanged();
         return this;
       }
       /**
-       * <code>string textContains = 3;</code>
+       * <code>optional string textContains = 3;</code>
        * @param value The bytes for textContains to set.
        * @return This builder for chaining.
        */
@@ -7753,7 +8041,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000004;
         textContains_ = value;
         onChanged();
         return this;
@@ -7761,7 +8049,14 @@ public final class Contracts {
 
       private java.lang.Object className_ = "";
       /**
-       * <code>string className = 4;</code>
+       * <code>optional string className = 4;</code>
+       * @return Whether the className field is set.
+       */
+      public boolean hasClassName() {
+        return ((bitField0_ & 0x00000008) != 0);
+      }
+      /**
+       * <code>optional string className = 4;</code>
        * @return The className.
        */
       public java.lang.String getClassName() {
@@ -7777,7 +8072,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string className = 4;</code>
+       * <code>optional string className = 4;</code>
        * @return The bytes for className.
        */
       public com.google.protobuf.ByteString
@@ -7794,7 +8089,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string className = 4;</code>
+       * <code>optional string className = 4;</code>
        * @param value The className to set.
        * @return This builder for chaining.
        */
@@ -7803,23 +8098,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000008;
         className_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string className = 4;</code>
+       * <code>optional string className = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearClassName() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         className_ = getDefaultInstance().getClassName();
         onChanged();
         return this;
       }
       /**
-       * <code>string className = 4;</code>
+       * <code>optional string className = 4;</code>
        * @param value The bytes for className to set.
        * @return This builder for chaining.
        */
@@ -7829,7 +8124,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000008;
         className_ = value;
         onChanged();
         return this;
@@ -7837,7 +8132,14 @@ public final class Contracts {
 
       private java.lang.Object contentDescription_ = "";
       /**
-       * <code>string contentDescription = 5;</code>
+       * <code>optional string contentDescription = 5;</code>
+       * @return Whether the contentDescription field is set.
+       */
+      public boolean hasContentDescription() {
+        return ((bitField0_ & 0x00000010) != 0);
+      }
+      /**
+       * <code>optional string contentDescription = 5;</code>
        * @return The contentDescription.
        */
       public java.lang.String getContentDescription() {
@@ -7853,7 +8155,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string contentDescription = 5;</code>
+       * <code>optional string contentDescription = 5;</code>
        * @return The bytes for contentDescription.
        */
       public com.google.protobuf.ByteString
@@ -7870,7 +8172,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string contentDescription = 5;</code>
+       * <code>optional string contentDescription = 5;</code>
        * @param value The contentDescription to set.
        * @return This builder for chaining.
        */
@@ -7879,23 +8181,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000010;
         contentDescription_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string contentDescription = 5;</code>
+       * <code>optional string contentDescription = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearContentDescription() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         contentDescription_ = getDefaultInstance().getContentDescription();
         onChanged();
         return this;
       }
       /**
-       * <code>string contentDescription = 5;</code>
+       * <code>optional string contentDescription = 5;</code>
        * @param value The bytes for contentDescription to set.
        * @return This builder for chaining.
        */
@@ -7905,7 +8207,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000010;
         contentDescription_ = value;
         onChanged();
         return this;
@@ -7913,7 +8215,14 @@ public final class Contracts {
 
       private java.lang.Object contentDescriptionStartsWith_ = "";
       /**
-       * <code>string contentDescriptionStartsWith = 6;</code>
+       * <code>optional string contentDescriptionStartsWith = 6;</code>
+       * @return Whether the contentDescriptionStartsWith field is set.
+       */
+      public boolean hasContentDescriptionStartsWith() {
+        return ((bitField0_ & 0x00000020) != 0);
+      }
+      /**
+       * <code>optional string contentDescriptionStartsWith = 6;</code>
        * @return The contentDescriptionStartsWith.
        */
       public java.lang.String getContentDescriptionStartsWith() {
@@ -7929,7 +8238,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string contentDescriptionStartsWith = 6;</code>
+       * <code>optional string contentDescriptionStartsWith = 6;</code>
        * @return The bytes for contentDescriptionStartsWith.
        */
       public com.google.protobuf.ByteString
@@ -7946,7 +8255,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string contentDescriptionStartsWith = 6;</code>
+       * <code>optional string contentDescriptionStartsWith = 6;</code>
        * @param value The contentDescriptionStartsWith to set.
        * @return This builder for chaining.
        */
@@ -7955,23 +8264,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000020;
         contentDescriptionStartsWith_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string contentDescriptionStartsWith = 6;</code>
+       * <code>optional string contentDescriptionStartsWith = 6;</code>
        * @return This builder for chaining.
        */
       public Builder clearContentDescriptionStartsWith() {
-        
+        bitField0_ = (bitField0_ & ~0x00000020);
         contentDescriptionStartsWith_ = getDefaultInstance().getContentDescriptionStartsWith();
         onChanged();
         return this;
       }
       /**
-       * <code>string contentDescriptionStartsWith = 6;</code>
+       * <code>optional string contentDescriptionStartsWith = 6;</code>
        * @param value The bytes for contentDescriptionStartsWith to set.
        * @return This builder for chaining.
        */
@@ -7981,7 +8290,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000020;
         contentDescriptionStartsWith_ = value;
         onChanged();
         return this;
@@ -7989,7 +8298,14 @@ public final class Contracts {
 
       private java.lang.Object contentDescriptionContains_ = "";
       /**
-       * <code>string contentDescriptionContains = 7;</code>
+       * <code>optional string contentDescriptionContains = 7;</code>
+       * @return Whether the contentDescriptionContains field is set.
+       */
+      public boolean hasContentDescriptionContains() {
+        return ((bitField0_ & 0x00000040) != 0);
+      }
+      /**
+       * <code>optional string contentDescriptionContains = 7;</code>
        * @return The contentDescriptionContains.
        */
       public java.lang.String getContentDescriptionContains() {
@@ -8005,7 +8321,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string contentDescriptionContains = 7;</code>
+       * <code>optional string contentDescriptionContains = 7;</code>
        * @return The bytes for contentDescriptionContains.
        */
       public com.google.protobuf.ByteString
@@ -8022,7 +8338,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string contentDescriptionContains = 7;</code>
+       * <code>optional string contentDescriptionContains = 7;</code>
        * @param value The contentDescriptionContains to set.
        * @return This builder for chaining.
        */
@@ -8031,23 +8347,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000040;
         contentDescriptionContains_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string contentDescriptionContains = 7;</code>
+       * <code>optional string contentDescriptionContains = 7;</code>
        * @return This builder for chaining.
        */
       public Builder clearContentDescriptionContains() {
-        
+        bitField0_ = (bitField0_ & ~0x00000040);
         contentDescriptionContains_ = getDefaultInstance().getContentDescriptionContains();
         onChanged();
         return this;
       }
       /**
-       * <code>string contentDescriptionContains = 7;</code>
+       * <code>optional string contentDescriptionContains = 7;</code>
        * @param value The bytes for contentDescriptionContains to set.
        * @return This builder for chaining.
        */
@@ -8057,7 +8373,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000040;
         contentDescriptionContains_ = value;
         onChanged();
         return this;
@@ -8065,7 +8381,14 @@ public final class Contracts {
 
       private java.lang.Object resourceId_ = "";
       /**
-       * <code>string resourceId = 8;</code>
+       * <code>optional string resourceId = 8;</code>
+       * @return Whether the resourceId field is set.
+       */
+      public boolean hasResourceId() {
+        return ((bitField0_ & 0x00000080) != 0);
+      }
+      /**
+       * <code>optional string resourceId = 8;</code>
        * @return The resourceId.
        */
       public java.lang.String getResourceId() {
@@ -8081,7 +8404,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string resourceId = 8;</code>
+       * <code>optional string resourceId = 8;</code>
        * @return The bytes for resourceId.
        */
       public com.google.protobuf.ByteString
@@ -8098,7 +8421,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string resourceId = 8;</code>
+       * <code>optional string resourceId = 8;</code>
        * @param value The resourceId to set.
        * @return This builder for chaining.
        */
@@ -8107,23 +8430,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000080;
         resourceId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string resourceId = 8;</code>
+       * <code>optional string resourceId = 8;</code>
        * @return This builder for chaining.
        */
       public Builder clearResourceId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000080);
         resourceId_ = getDefaultInstance().getResourceId();
         onChanged();
         return this;
       }
       /**
-       * <code>string resourceId = 8;</code>
+       * <code>optional string resourceId = 8;</code>
        * @param value The bytes for resourceId to set.
        * @return This builder for chaining.
        */
@@ -8133,7 +8456,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000080;
         resourceId_ = value;
         onChanged();
         return this;
@@ -8141,7 +8464,15 @@ public final class Contracts {
 
       private int instance_ ;
       /**
-       * <code>uint32 instance = 9;</code>
+       * <code>optional uint32 instance = 9;</code>
+       * @return Whether the instance field is set.
+       */
+      @java.lang.Override
+      public boolean hasInstance() {
+        return ((bitField0_ & 0x00000100) != 0);
+      }
+      /**
+       * <code>optional uint32 instance = 9;</code>
        * @return The instance.
        */
       @java.lang.Override
@@ -8149,22 +8480,22 @@ public final class Contracts {
         return instance_;
       }
       /**
-       * <code>uint32 instance = 9;</code>
+       * <code>optional uint32 instance = 9;</code>
        * @param value The instance to set.
        * @return This builder for chaining.
        */
       public Builder setInstance(int value) {
-        
+        bitField0_ |= 0x00000100;
         instance_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 instance = 9;</code>
+       * <code>optional uint32 instance = 9;</code>
        * @return This builder for chaining.
        */
       public Builder clearInstance() {
-        
+        bitField0_ = (bitField0_ & ~0x00000100);
         instance_ = 0;
         onChanged();
         return this;
@@ -8172,7 +8503,15 @@ public final class Contracts {
 
       private boolean enabled_ ;
       /**
-       * <code>bool enabled = 10;</code>
+       * <code>optional bool enabled = 10;</code>
+       * @return Whether the enabled field is set.
+       */
+      @java.lang.Override
+      public boolean hasEnabled() {
+        return ((bitField0_ & 0x00000200) != 0);
+      }
+      /**
+       * <code>optional bool enabled = 10;</code>
        * @return The enabled.
        */
       @java.lang.Override
@@ -8180,22 +8519,22 @@ public final class Contracts {
         return enabled_;
       }
       /**
-       * <code>bool enabled = 10;</code>
+       * <code>optional bool enabled = 10;</code>
        * @param value The enabled to set.
        * @return This builder for chaining.
        */
       public Builder setEnabled(boolean value) {
-        
+        bitField0_ |= 0x00000200;
         enabled_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool enabled = 10;</code>
+       * <code>optional bool enabled = 10;</code>
        * @return This builder for chaining.
        */
       public Builder clearEnabled() {
-        
+        bitField0_ = (bitField0_ & ~0x00000200);
         enabled_ = false;
         onChanged();
         return this;
@@ -8203,7 +8542,15 @@ public final class Contracts {
 
       private boolean focused_ ;
       /**
-       * <code>bool focused = 11;</code>
+       * <code>optional bool focused = 11;</code>
+       * @return Whether the focused field is set.
+       */
+      @java.lang.Override
+      public boolean hasFocused() {
+        return ((bitField0_ & 0x00000400) != 0);
+      }
+      /**
+       * <code>optional bool focused = 11;</code>
        * @return The focused.
        */
       @java.lang.Override
@@ -8211,22 +8558,22 @@ public final class Contracts {
         return focused_;
       }
       /**
-       * <code>bool focused = 11;</code>
+       * <code>optional bool focused = 11;</code>
        * @param value The focused to set.
        * @return This builder for chaining.
        */
       public Builder setFocused(boolean value) {
-        
+        bitField0_ |= 0x00000400;
         focused_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bool focused = 11;</code>
+       * <code>optional bool focused = 11;</code>
        * @return This builder for chaining.
        */
       public Builder clearFocused() {
-        
+        bitField0_ = (bitField0_ & ~0x00000400);
         focused_ = false;
         onChanged();
         return this;
@@ -8234,7 +8581,14 @@ public final class Contracts {
 
       private java.lang.Object pkg_ = "";
       /**
-       * <code>string pkg = 12;</code>
+       * <code>optional string pkg = 12;</code>
+       * @return Whether the pkg field is set.
+       */
+      public boolean hasPkg() {
+        return ((bitField0_ & 0x00000800) != 0);
+      }
+      /**
+       * <code>optional string pkg = 12;</code>
        * @return The pkg.
        */
       public java.lang.String getPkg() {
@@ -8250,7 +8604,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string pkg = 12;</code>
+       * <code>optional string pkg = 12;</code>
        * @return The bytes for pkg.
        */
       public com.google.protobuf.ByteString
@@ -8267,7 +8621,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string pkg = 12;</code>
+       * <code>optional string pkg = 12;</code>
        * @param value The pkg to set.
        * @return This builder for chaining.
        */
@@ -8276,23 +8630,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000800;
         pkg_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string pkg = 12;</code>
+       * <code>optional string pkg = 12;</code>
        * @return This builder for chaining.
        */
       public Builder clearPkg() {
-        
+        bitField0_ = (bitField0_ & ~0x00000800);
         pkg_ = getDefaultInstance().getPkg();
         onChanged();
         return this;
       }
       /**
-       * <code>string pkg = 12;</code>
+       * <code>optional string pkg = 12;</code>
        * @param value The bytes for pkg to set.
        * @return This builder for chaining.
        */
@@ -8302,7 +8656,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000800;
         pkg_ = value;
         onChanged();
         return this;
@@ -13319,28 +13673,34 @@ public final class Contracts {
       "\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027HandlePermissionComm" +
       "and\0222\n\004code\030\001 \001(\0162$.patrol.HandlePermiss" +
       "ionCommand.Code\"7\n\004Code\022\017\n\013WHILE_USING\020\000" +
-      "\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"\224\002\n\010Sel" +
-      "ector\022\014\n\004text\030\001 \001(\t\022\026\n\016textStartsWith\030\002 " +
-      "\001(\t\022\024\n\014textContains\030\003 \001(\t\022\021\n\tclassName\030\004" +
-      " \001(\t\022\032\n\022contentDescription\030\005 \001(\t\022$\n\034cont" +
-      "entDescriptionStartsWith\030\006 \001(\t\022\"\n\032conten" +
-      "tDescriptionContains\030\007 \001(\t\022\022\n\nresourceId" +
-      "\030\010 \001(\t\022\020\n\010instance\030\t \001(\r\022\017\n\007enabled\030\n \001(" +
-      "\010\022\017\n\007focused\030\013 \001(\010\022\013\n\003pkg\030\014 \001(\t\"\333\001\n\014Nati" +
-      "veWidget\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001(" +
-      "\t\022\032\n\022contentDescription\030\003 \001(\t\022\017\n\007focused" +
-      "\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006 " +
-      "\001(\005\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022application" +
-      "Package\030\010 \001(\t\022&\n\010children\030\t \003(\0132\024.patrol" +
-      ".NativeWidget\"8\n\022NativeWidgetsQuery\022\"\n\010s" +
-      "elector\030\001 \001(\0132\020.patrol.Selector\"?\n\014Notif" +
-      "ication\022\017\n\007appName\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022" +
-      "\017\n\007content\030\003 \001(\t\"I\n\032NotificationsQueryRe" +
-      "sponse\022+\n\rnotifications\030\001 \003(\0132\024.patrol.N" +
-      "otification\"I\n\032NativeWidgetsQueryRespons" +
-      "e\022+\n\rnativeWidgets\030\001 \003(\0132\024.patrol.Native" +
-      "WidgetB\035\n\033pl.leancode.automatorserverb\006p" +
-      "roto3"
+      "\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"\236\004\n\010Sel" +
+      "ector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsWi" +
+      "th\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001\001" +
+      "\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDescr" +
+      "iption\030\005 \001(\tH\004\210\001\001\022)\n\034contentDescriptionS" +
+      "tartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescripti" +
+      "onContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001(" +
+      "\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabled" +
+      "\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg" +
+      "\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textStartsWithB" +
+      "\017\n\r_textContainsB\014\n\n_classNameB\025\n\023_conte" +
+      "ntDescriptionB\037\n\035_contentDescriptionStar" +
+      "tsWithB\035\n\033_contentDescriptionContainsB\r\n" +
+      "\013_resourceIdB\013\n\t_instanceB\n\n\010_enabledB\n\n" +
+      "\010_focusedB\006\n\004_pkg\"\333\001\n\014NativeWidget\022\021\n\tcl" +
+      "assName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022contentDe" +
+      "scription\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enab" +
+      "led\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resourc" +
+      "eName\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(\t\022" +
+      "&\n\010children\030\t \003(\0132\024.patrol.NativeWidget\"" +
+      "8\n\022NativeWidgetsQuery\022\"\n\010selector\030\001 \001(\0132" +
+      "\020.patrol.Selector\"?\n\014Notification\022\017\n\007app" +
+      "Name\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001" +
+      "(\t\"I\n\032NotificationsQueryResponse\022+\n\rnoti" +
+      "fications\030\001 \003(\0132\024.patrol.Notification\"I\n" +
+      "\032NativeWidgetsQueryResponse\022+\n\rnativeWid" +
+      "gets\030\001 \003(\0132\024.patrol.NativeWidgetB\035\n\033pl.l" +
+      "eancode.automatorserverb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -13405,7 +13765,7 @@ public final class Contracts {
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
-        new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
+        new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeWidget_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_patrol_NativeWidget_fieldAccessorTable = new

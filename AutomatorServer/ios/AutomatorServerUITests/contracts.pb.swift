@@ -233,33 +233,130 @@ struct Patrol_Selector {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var text: String = String()
+  var text: String {
+    get {return _text ?? String()}
+    set {_text = newValue}
+  }
+  /// Returns true if `text` has been explicitly set.
+  var hasText: Bool {return self._text != nil}
+  /// Clears the value of `text`. Subsequent reads from it will return its default value.
+  mutating func clearText() {self._text = nil}
 
-  var textStartsWith: String = String()
+  var textStartsWith: String {
+    get {return _textStartsWith ?? String()}
+    set {_textStartsWith = newValue}
+  }
+  /// Returns true if `textStartsWith` has been explicitly set.
+  var hasTextStartsWith: Bool {return self._textStartsWith != nil}
+  /// Clears the value of `textStartsWith`. Subsequent reads from it will return its default value.
+  mutating func clearTextStartsWith() {self._textStartsWith = nil}
 
-  var textContains: String = String()
+  var textContains: String {
+    get {return _textContains ?? String()}
+    set {_textContains = newValue}
+  }
+  /// Returns true if `textContains` has been explicitly set.
+  var hasTextContains: Bool {return self._textContains != nil}
+  /// Clears the value of `textContains`. Subsequent reads from it will return its default value.
+  mutating func clearTextContains() {self._textContains = nil}
 
-  var className: String = String()
+  var className: String {
+    get {return _className ?? String()}
+    set {_className = newValue}
+  }
+  /// Returns true if `className` has been explicitly set.
+  var hasClassName: Bool {return self._className != nil}
+  /// Clears the value of `className`. Subsequent reads from it will return its default value.
+  mutating func clearClassName() {self._className = nil}
 
-  var contentDescription: String = String()
+  var contentDescription: String {
+    get {return _contentDescription ?? String()}
+    set {_contentDescription = newValue}
+  }
+  /// Returns true if `contentDescription` has been explicitly set.
+  var hasContentDescription: Bool {return self._contentDescription != nil}
+  /// Clears the value of `contentDescription`. Subsequent reads from it will return its default value.
+  mutating func clearContentDescription() {self._contentDescription = nil}
 
-  var contentDescriptionStartsWith: String = String()
+  var contentDescriptionStartsWith: String {
+    get {return _contentDescriptionStartsWith ?? String()}
+    set {_contentDescriptionStartsWith = newValue}
+  }
+  /// Returns true if `contentDescriptionStartsWith` has been explicitly set.
+  var hasContentDescriptionStartsWith: Bool {return self._contentDescriptionStartsWith != nil}
+  /// Clears the value of `contentDescriptionStartsWith`. Subsequent reads from it will return its default value.
+  mutating func clearContentDescriptionStartsWith() {self._contentDescriptionStartsWith = nil}
 
-  var contentDescriptionContains: String = String()
+  var contentDescriptionContains: String {
+    get {return _contentDescriptionContains ?? String()}
+    set {_contentDescriptionContains = newValue}
+  }
+  /// Returns true if `contentDescriptionContains` has been explicitly set.
+  var hasContentDescriptionContains: Bool {return self._contentDescriptionContains != nil}
+  /// Clears the value of `contentDescriptionContains`. Subsequent reads from it will return its default value.
+  mutating func clearContentDescriptionContains() {self._contentDescriptionContains = nil}
 
-  var resourceID: String = String()
+  var resourceID: String {
+    get {return _resourceID ?? String()}
+    set {_resourceID = newValue}
+  }
+  /// Returns true if `resourceID` has been explicitly set.
+  var hasResourceID: Bool {return self._resourceID != nil}
+  /// Clears the value of `resourceID`. Subsequent reads from it will return its default value.
+  mutating func clearResourceID() {self._resourceID = nil}
 
-  var instance: UInt32 = 0
+  var instance: UInt32 {
+    get {return _instance ?? 0}
+    set {_instance = newValue}
+  }
+  /// Returns true if `instance` has been explicitly set.
+  var hasInstance: Bool {return self._instance != nil}
+  /// Clears the value of `instance`. Subsequent reads from it will return its default value.
+  mutating func clearInstance() {self._instance = nil}
 
-  var enabled: Bool = false
+  var enabled: Bool {
+    get {return _enabled ?? false}
+    set {_enabled = newValue}
+  }
+  /// Returns true if `enabled` has been explicitly set.
+  var hasEnabled: Bool {return self._enabled != nil}
+  /// Clears the value of `enabled`. Subsequent reads from it will return its default value.
+  mutating func clearEnabled() {self._enabled = nil}
 
-  var focused: Bool = false
+  var focused: Bool {
+    get {return _focused ?? false}
+    set {_focused = newValue}
+  }
+  /// Returns true if `focused` has been explicitly set.
+  var hasFocused: Bool {return self._focused != nil}
+  /// Clears the value of `focused`. Subsequent reads from it will return its default value.
+  mutating func clearFocused() {self._focused = nil}
 
-  var pkg: String = String()
+  var pkg: String {
+    get {return _pkg ?? String()}
+    set {_pkg = newValue}
+  }
+  /// Returns true if `pkg` has been explicitly set.
+  var hasPkg: Bool {return self._pkg != nil}
+  /// Clears the value of `pkg`. Subsequent reads from it will return its default value.
+  mutating func clearPkg() {self._pkg = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
+
+  fileprivate var _text: String? = nil
+  fileprivate var _textStartsWith: String? = nil
+  fileprivate var _textContains: String? = nil
+  fileprivate var _className: String? = nil
+  fileprivate var _contentDescription: String? = nil
+  fileprivate var _contentDescriptionStartsWith: String? = nil
+  fileprivate var _contentDescriptionContains: String? = nil
+  fileprivate var _resourceID: String? = nil
+  fileprivate var _instance: UInt32? = nil
+  fileprivate var _enabled: Bool? = nil
+  fileprivate var _focused: Bool? = nil
+  fileprivate var _pkg: String? = nil
 }
 
 /// Represents a native UI control.
@@ -773,76 +870,80 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.text) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.textStartsWith) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.textContains) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.className) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.contentDescription) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.contentDescriptionStartsWith) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self.contentDescriptionContains) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self.resourceID) }()
-      case 9: try { try decoder.decodeSingularUInt32Field(value: &self.instance) }()
-      case 10: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
-      case 11: try { try decoder.decodeSingularBoolField(value: &self.focused) }()
-      case 12: try { try decoder.decodeSingularStringField(value: &self.pkg) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self._text) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._textStartsWith) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._textContains) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._className) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._contentDescription) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self._contentDescriptionStartsWith) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self._contentDescriptionContains) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self._resourceID) }()
+      case 9: try { try decoder.decodeSingularUInt32Field(value: &self._instance) }()
+      case 10: try { try decoder.decodeSingularBoolField(value: &self._enabled) }()
+      case 11: try { try decoder.decodeSingularBoolField(value: &self._focused) }()
+      case 12: try { try decoder.decodeSingularStringField(value: &self._pkg) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.text.isEmpty {
-      try visitor.visitSingularStringField(value: self.text, fieldNumber: 1)
-    }
-    if !self.textStartsWith.isEmpty {
-      try visitor.visitSingularStringField(value: self.textStartsWith, fieldNumber: 2)
-    }
-    if !self.textContains.isEmpty {
-      try visitor.visitSingularStringField(value: self.textContains, fieldNumber: 3)
-    }
-    if !self.className.isEmpty {
-      try visitor.visitSingularStringField(value: self.className, fieldNumber: 4)
-    }
-    if !self.contentDescription.isEmpty {
-      try visitor.visitSingularStringField(value: self.contentDescription, fieldNumber: 5)
-    }
-    if !self.contentDescriptionStartsWith.isEmpty {
-      try visitor.visitSingularStringField(value: self.contentDescriptionStartsWith, fieldNumber: 6)
-    }
-    if !self.contentDescriptionContains.isEmpty {
-      try visitor.visitSingularStringField(value: self.contentDescriptionContains, fieldNumber: 7)
-    }
-    if !self.resourceID.isEmpty {
-      try visitor.visitSingularStringField(value: self.resourceID, fieldNumber: 8)
-    }
-    if self.instance != 0 {
-      try visitor.visitSingularUInt32Field(value: self.instance, fieldNumber: 9)
-    }
-    if self.enabled != false {
-      try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 10)
-    }
-    if self.focused != false {
-      try visitor.visitSingularBoolField(value: self.focused, fieldNumber: 11)
-    }
-    if !self.pkg.isEmpty {
-      try visitor.visitSingularStringField(value: self.pkg, fieldNumber: 12)
-    }
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._text {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._textStartsWith {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._textContains {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._className {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._contentDescription {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._contentDescriptionStartsWith {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+    } }()
+    try { if let v = self._contentDescriptionContains {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._resourceID {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
+    } }()
+    try { if let v = self._instance {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+    } }()
+    try { if let v = self._enabled {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 10)
+    } }()
+    try { if let v = self._focused {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 11)
+    } }()
+    try { if let v = self._pkg {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 12)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: Patrol_Selector, rhs: Patrol_Selector) -> Bool {
-    if lhs.text != rhs.text {return false}
-    if lhs.textStartsWith != rhs.textStartsWith {return false}
-    if lhs.textContains != rhs.textContains {return false}
-    if lhs.className != rhs.className {return false}
-    if lhs.contentDescription != rhs.contentDescription {return false}
-    if lhs.contentDescriptionStartsWith != rhs.contentDescriptionStartsWith {return false}
-    if lhs.contentDescriptionContains != rhs.contentDescriptionContains {return false}
-    if lhs.resourceID != rhs.resourceID {return false}
-    if lhs.instance != rhs.instance {return false}
-    if lhs.enabled != rhs.enabled {return false}
-    if lhs.focused != rhs.focused {return false}
-    if lhs.pkg != rhs.pkg {return false}
+    if lhs._text != rhs._text {return false}
+    if lhs._textStartsWith != rhs._textStartsWith {return false}
+    if lhs._textContains != rhs._textContains {return false}
+    if lhs._className != rhs._className {return false}
+    if lhs._contentDescription != rhs._contentDescription {return false}
+    if lhs._contentDescriptionStartsWith != rhs._contentDescriptionStartsWith {return false}
+    if lhs._contentDescriptionContains != rhs._contentDescriptionContains {return false}
+    if lhs._resourceID != rhs._resourceID {return false}
+    if lhs._instance != rhs._instance {return false}
+    if lhs._enabled != rhs._enabled {return false}
+    if lhs._focused != rhs._focused {return false}
+    if lhs._pkg != rhs._pkg {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

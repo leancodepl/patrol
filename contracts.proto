@@ -50,18 +50,18 @@ message HandlePermissionCommand {
 }
 
 message Selector {
-  string text = 1;
-  string textStartsWith = 2;
-  string textContains = 3;
-  string className = 4;
-  string contentDescription = 5;
-  string contentDescriptionStartsWith = 6;
-  string contentDescriptionContains = 7;
-  string resourceId = 8;
-  uint32 instance = 9;
-  bool enabled = 10;
-  bool focused = 11;
-  string pkg = 12;
+  optional string text = 1;
+  optional string textStartsWith = 2;
+  optional string textContains = 3;
+  optional string className = 4;
+  optional string contentDescription = 5;
+  optional string contentDescriptionStartsWith = 6;
+  optional string contentDescriptionContains = 7;
+  optional string resourceId = 8;
+  optional uint32 instance = 9;
+  optional bool enabled = 10;
+  optional bool focused = 11;
+  optional string pkg = 12;
 }
 
 // Represents a native UI control.

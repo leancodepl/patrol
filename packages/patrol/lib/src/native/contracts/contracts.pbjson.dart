@@ -123,23 +123,37 @@ final $typed_data.Uint8List handlePermissionCommandDescriptor = $convert.base64D
 const Selector$json = const {
   '1': 'Selector',
   '2': const [
-    const {'1': 'text', '3': 1, '4': 1, '5': 9, '10': 'text'},
-    const {'1': 'textStartsWith', '3': 2, '4': 1, '5': 9, '10': 'textStartsWith'},
-    const {'1': 'textContains', '3': 3, '4': 1, '5': 9, '10': 'textContains'},
-    const {'1': 'className', '3': 4, '4': 1, '5': 9, '10': 'className'},
-    const {'1': 'contentDescription', '3': 5, '4': 1, '5': 9, '10': 'contentDescription'},
-    const {'1': 'contentDescriptionStartsWith', '3': 6, '4': 1, '5': 9, '10': 'contentDescriptionStartsWith'},
-    const {'1': 'contentDescriptionContains', '3': 7, '4': 1, '5': 9, '10': 'contentDescriptionContains'},
-    const {'1': 'resourceId', '3': 8, '4': 1, '5': 9, '10': 'resourceId'},
-    const {'1': 'instance', '3': 9, '4': 1, '5': 13, '10': 'instance'},
-    const {'1': 'enabled', '3': 10, '4': 1, '5': 8, '10': 'enabled'},
-    const {'1': 'focused', '3': 11, '4': 1, '5': 8, '10': 'focused'},
-    const {'1': 'pkg', '3': 12, '4': 1, '5': 9, '10': 'pkg'},
+    const {'1': 'text', '3': 1, '4': 1, '5': 9, '9': 0, '10': 'text', '17': true},
+    const {'1': 'textStartsWith', '3': 2, '4': 1, '5': 9, '9': 1, '10': 'textStartsWith', '17': true},
+    const {'1': 'textContains', '3': 3, '4': 1, '5': 9, '9': 2, '10': 'textContains', '17': true},
+    const {'1': 'className', '3': 4, '4': 1, '5': 9, '9': 3, '10': 'className', '17': true},
+    const {'1': 'contentDescription', '3': 5, '4': 1, '5': 9, '9': 4, '10': 'contentDescription', '17': true},
+    const {'1': 'contentDescriptionStartsWith', '3': 6, '4': 1, '5': 9, '9': 5, '10': 'contentDescriptionStartsWith', '17': true},
+    const {'1': 'contentDescriptionContains', '3': 7, '4': 1, '5': 9, '9': 6, '10': 'contentDescriptionContains', '17': true},
+    const {'1': 'resourceId', '3': 8, '4': 1, '5': 9, '9': 7, '10': 'resourceId', '17': true},
+    const {'1': 'instance', '3': 9, '4': 1, '5': 13, '9': 8, '10': 'instance', '17': true},
+    const {'1': 'enabled', '3': 10, '4': 1, '5': 8, '9': 9, '10': 'enabled', '17': true},
+    const {'1': 'focused', '3': 11, '4': 1, '5': 8, '9': 10, '10': 'focused', '17': true},
+    const {'1': 'pkg', '3': 12, '4': 1, '5': 9, '9': 11, '10': 'pkg', '17': true},
+  ],
+  '8': const [
+    const {'1': '_text'},
+    const {'1': '_textStartsWith'},
+    const {'1': '_textContains'},
+    const {'1': '_className'},
+    const {'1': '_contentDescription'},
+    const {'1': '_contentDescriptionStartsWith'},
+    const {'1': '_contentDescriptionContains'},
+    const {'1': '_resourceId'},
+    const {'1': '_instance'},
+    const {'1': '_enabled'},
+    const {'1': '_focused'},
+    const {'1': '_pkg'},
   ],
 };
 
 /// Descriptor for `Selector`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List selectorDescriptor = $convert.base64Decode('CghTZWxlY3RvchISCgR0ZXh0GAEgASgJUgR0ZXh0EiYKDnRleHRTdGFydHNXaXRoGAIgASgJUg50ZXh0U3RhcnRzV2l0aBIiCgx0ZXh0Q29udGFpbnMYAyABKAlSDHRleHRDb250YWlucxIcCgljbGFzc05hbWUYBCABKAlSCWNsYXNzTmFtZRIuChJjb250ZW50RGVzY3JpcHRpb24YBSABKAlSEmNvbnRlbnREZXNjcmlwdGlvbhJCChxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoGAYgASgJUhxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoEj4KGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5zGAcgASgJUhpjb250ZW50RGVzY3JpcHRpb25Db250YWlucxIeCgpyZXNvdXJjZUlkGAggASgJUgpyZXNvdXJjZUlkEhoKCGluc3RhbmNlGAkgASgNUghpbnN0YW5jZRIYCgdlbmFibGVkGAogASgIUgdlbmFibGVkEhgKB2ZvY3VzZWQYCyABKAhSB2ZvY3VzZWQSEAoDcGtnGAwgASgJUgNwa2c=');
+final $typed_data.Uint8List selectorDescriptor = $convert.base64Decode('CghTZWxlY3RvchIXCgR0ZXh0GAEgASgJSABSBHRleHSIAQESKwoOdGV4dFN0YXJ0c1dpdGgYAiABKAlIAVIOdGV4dFN0YXJ0c1dpdGiIAQESJwoMdGV4dENvbnRhaW5zGAMgASgJSAJSDHRleHRDb250YWluc4gBARIhCgljbGFzc05hbWUYBCABKAlIA1IJY2xhc3NOYW1liAEBEjMKEmNvbnRlbnREZXNjcmlwdGlvbhgFIAEoCUgEUhJjb250ZW50RGVzY3JpcHRpb26IAQESRwocY29udGVudERlc2NyaXB0aW9uU3RhcnRzV2l0aBgGIAEoCUgFUhxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoiAEBEkMKGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5zGAcgASgJSAZSGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5ziAEBEiMKCnJlc291cmNlSWQYCCABKAlIB1IKcmVzb3VyY2VJZIgBARIfCghpbnN0YW5jZRgJIAEoDUgIUghpbnN0YW5jZYgBARIdCgdlbmFibGVkGAogASgISAlSB2VuYWJsZWSIAQESHQoHZm9jdXNlZBgLIAEoCEgKUgdmb2N1c2VkiAEBEhUKA3BrZxgMIAEoCUgLUgNwa2eIAQFCBwoFX3RleHRCEQoPX3RleHRTdGFydHNXaXRoQg8KDV90ZXh0Q29udGFpbnNCDAoKX2NsYXNzTmFtZUIVChNfY29udGVudERlc2NyaXB0aW9uQh8KHV9jb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoQh0KG19jb250ZW50RGVzY3JpcHRpb25Db250YWluc0INCgtfcmVzb3VyY2VJZEILCglfaW5zdGFuY2VCCgoIX2VuYWJsZWRCCgoIX2ZvY3VzZWRCBgoEX3BrZw==');
 @$core.Deprecated('Use nativeWidgetDescriptor instead')
 const NativeWidget$json = const {
   '1': 'NativeWidget',

@@ -110,6 +110,7 @@ class NativeAutomator {
       _logger('action $action executing');
     }
 
+    print('encoded body: ${jsonEncode(body)}');
     final response = await _client.post(
       Uri.parse('$_baseUri/$action'),
       body: jsonEncode(body),
@@ -169,10 +170,12 @@ class NativeAutomator {
   /// Opens the app specified by [id].
   ///
   /// On Android [id] is the package name. On iOS [id] is the bundle name.
-  Future<void> openApp({required String id}) => _wrapPost(
-        'openApp',
-        OpenAppCommand(appId: id).writeToJsonMap(),
-      );
+  Future<void> openApp({required String id}) {
+    return _wrapPost(
+      'openApp',
+      OpenAppCommand(appId: id).toProto3Json() as Map<String, dynamic>,
+    );
+  }
 
   /// Presses the recent apps button.
   ///
@@ -224,7 +227,8 @@ class NativeAutomator {
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapPost(
       'tapOnNotificationByIndex',
-      TapOnNotificationByIndexCommand(index: index).writeToJsonMap(),
+      TapOnNotificationByIndexCommand(index: index).toProto3Json()
+          as Map<String, dynamic>,
     );
   }
 
@@ -234,7 +238,8 @@ class NativeAutomator {
   Future<void> tapOnNotificationBySelector(Selector selector) async {
     await _wrapPost(
       'tapOnNotificationBySelector',
-      TapOnNotificationBySelectorCommand(selector: selector).writeToJsonMap(),
+      TapOnNotificationBySelectorCommand(selector: selector).toProto3Json()
+          as Map<String, dynamic>,
     );
   }
 
@@ -262,7 +267,7 @@ class NativeAutomator {
   Future<void> tap(Selector selector, {String? appId}) {
     return _wrapPost(
       'tap',
-      TapCommand(selector: selector).writeToJsonMap(),
+      TapCommand(selector: selector).toProto3Json() as Map<String, dynamic>,
     );
   }
 
@@ -272,7 +277,8 @@ class NativeAutomator {
   Future<void> doubleTap(Selector selector, {String? appId}) {
     return _wrapPost(
       'doubleTap',
-      DoubleTapCommand(selector: selector, appId: appId).writeToJsonMap(),
+      DoubleTapCommand(selector: selector, appId: appId).toProto3Json()
+          as Map<String, dynamic>,
     );
   }
 
@@ -290,7 +296,7 @@ class NativeAutomator {
         appId: appId,
         data: text,
         selector: selector,
-      ).writeToJsonMap(),
+      ).toProto3Json() as Map<String, dynamic>,
     );
   }
 
@@ -306,7 +312,7 @@ class NativeAutomator {
         appId: appId,
         data: text,
         index: index,
-      ).writeToJsonMap(),
+      ).toProto3Json() as Map<String, dynamic>,
     );
   }
 
@@ -315,7 +321,7 @@ class NativeAutomator {
   Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
     final response = await _wrapPost(
       'getNativeWidgets',
-      selector.writeToJsonMap(),
+      selector.toProto3Json() as Map<String, dynamic>,
     );
 
     final nativeWidgets = json.decode(response.body) as List<dynamic>;
@@ -335,7 +341,7 @@ class NativeAutomator {
       'handlePermission',
       HandlePermissionCommand(
         code: HandlePermissionCommand_Code.WHILE_USING,
-      ).writeToJsonMap(),
+      ).toProto3Json() as Map<String, dynamic>,
     );
   }
 
@@ -351,7 +357,7 @@ class NativeAutomator {
       'handlePermission',
       HandlePermissionCommand(
         code: HandlePermissionCommand_Code.ONLY_THIS_TIME,
-      ).writeToJsonMap(),
+      ).toProto3Json() as Map<String, dynamic>,
     );
   }
 
@@ -364,7 +370,7 @@ class NativeAutomator {
       'handlePermission',
       HandlePermissionCommand(
         code: HandlePermissionCommand_Code.DENIED,
-      ).writeToJsonMap(),
+      ).toProto3Json() as Map<String, dynamic>,
     );
   }
 
