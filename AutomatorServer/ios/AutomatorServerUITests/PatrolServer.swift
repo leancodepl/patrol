@@ -109,6 +109,16 @@ class PatrolServer {
         return HTTPResponse(.badRequest, headers: [:], error: err)
       }
     }
+    
+    server.route(.POST, "enableDarkMode") { request in
+      self.automation.enableDarkMode()
+      return HTTPResponse(.ok)
+    }
+    
+    server.route(.POST, "disableDarkMode") { request in
+      self.automation.disableDarkMode()
+      return HTTPResponse(.ok)
+    }
 
     server.route(.POST, "enterTextBySelector") { request in
       do {

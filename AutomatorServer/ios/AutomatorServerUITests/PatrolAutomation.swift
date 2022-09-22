@@ -17,6 +17,12 @@ class PatrolAutomation {
   private lazy var springboard: XCUIApplication = {
     return XCUIApplication(bundleIdentifier: "com.apple.springboard")
   }()
+  
+  private lazy var preferences: XCUIApplication = {
+    return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+  }()
+  
+  
 
   var ipAddress: String? {
     return device.wiFiIPAddress()
@@ -34,7 +40,59 @@ class PatrolAutomation {
       app.activate()
     }
   }
-
+  
+  func enableDarkMode() {
+    runAction("enabling dark mode") {
+      #if targetEnvironment(simulator)
+        let isSimulator = true
+      #else
+        let isSimulator = false
+      #endif
+      
+      if (isSimulator) {
+        self.springboard.activate()
+        self.preferences.terminate() // reset to a known state
+        self.preferences.activate()
+        self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+        
+        let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
+        if value == "0" {
+          self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+        }
+        
+        self.preferences.terminate()
+      } else {
+        // TODO
+      }
+    }
+  }
+  
+  func disableDarkMode() {
+    runAction("disabling dark mode") {
+      #if targetEnvironment(simulator)
+        let isSimulator = true
+      #else
+        let isSimulator = false
+      #endif
+      
+      if (isSimulator) {
+        self.springboard.activate()
+        self.preferences.terminate() // reset to a known state
+        self.preferences.activate()
+        self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+        
+        let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
+        if value == "1" {
+          self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+        }
+        
+        self.preferences.terminate()
+      } else {
+        // TODO
+      }
+    }
+  }
+ 
   func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
@@ -66,7 +124,6 @@ class PatrolAutomation {
       } else {
         Logger.shared.e("textField at index \(index) doesn't exist")
       }
-
     }
   }
 
