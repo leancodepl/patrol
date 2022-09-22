@@ -47,6 +47,11 @@ class PatrolServer {
       self.automation.pressHome()
       return HTTPResponse(.ok)
     }
+    
+    server.route(.POST, "pressRecentApps") { request in
+      self.automation.openAppSwitcher()
+      return HTTPResponse(.ok)
+    }
 
     server.route(.POST, "openApp") { request in
       do {

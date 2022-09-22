@@ -34,6 +34,14 @@ class PatrolAutomation {
       app.activate()
     }
   }
+  
+  func openAppSwitcher() {
+    runAction("opening app switcher") {
+      let swipeStart = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
+      let swipeEnd = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
+      swipeStart.press(forDuration: 0.1, thenDragTo: swipeEnd)
+    }
+  }
 
   func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {
