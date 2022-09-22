@@ -259,6 +259,7 @@ class NativeAutomator {
   /// Disables WiFi.
   Future<void> disableWifi() => _wrapPost(action: 'disableWifi');
 
+  /// Enables cellular (aka mobile data connection).
   Future<void> enableCellular() => _wrapPost(action: 'enableCellular');
 
   /// Disables cellular (aka mobile data connection).
