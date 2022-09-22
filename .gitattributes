@@ -1,3 +1,4 @@
 *.apk filter=lfs diff=lfs merge=lfs -text
 *.freezed.dart linguist-generated=true
 *.g.dart linguist-generated=true
+AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts/ linguist-generated=true
