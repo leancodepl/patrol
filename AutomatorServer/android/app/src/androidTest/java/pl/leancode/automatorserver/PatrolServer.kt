@@ -117,90 +117,90 @@ fun Contracts.Selector.toBySelector(): BySelector {
     var matchedFocused = false
     var matchedPkg = false
 
-    var bySelector = if (text != null) {
+    var bySelector = if (hasText()) {
         matchedText = true
         By.text(text)
-    } else if (textStartsWith != null) {
+    } else if (hasTextStartsWith()) {
         matchedTextStartsWith = true
         By.textStartsWith(textStartsWith)
-    } else if (textContains != null) {
+    } else if (hasTextContains()) {
         matchedTextContains = true
         By.textContains(textContains)
-    } else if (className != null) {
+    } else if (hasClassName()) {
         matchedClassName = true
         By.clazz(className)
-    } else if (contentDescription != null) {
+    } else if (hasContentDescription()) {
         matchedContentDescription = true
         By.desc(contentDescription)
-    } else if (contentDescriptionStartsWith != null) {
+    } else if (hasContentDescriptionStartsWith()) {
         matchedContentDescriptionStartsWith = true
         By.descStartsWith(contentDescriptionStartsWith)
-    } else if (contentDescriptionContains != null) {
+    } else if (hasContentDescriptionContains()) {
         matchedContentDescriptionContains = true
         By.descContains(contentDescriptionContains)
-    } else if (resourceId != null) {
+    } else if (hasResourceId()) {
         matchedResourceId = true
         By.res(resourceId)
-    } else if (instance != null) {
+    } else if (hasInstance()) {
         throw IllegalArgumentException("instance() argument is not supported for BySelector")
-    } else if (enabled != null) {
+    } else if (hasEnabled()) {
         matchedEnabled = true
         By.enabled(enabled)
-    } else if (focused != null) {
+    } else if (hasFocused()) {
         matchedFocused = true
         By.focused(focused)
-    } else if (pkg != null) {
+    } else if (hasPkg()) {
         matchedPkg = true
         By.pkg(pkg)
     } else {
         throw IllegalArgumentException("SelectorQuery is empty")
     }
 
-    if (!matchedText && text != null) {
+    if (!matchedText && hasText()) {
         bySelector = By.copy(bySelector).text(text)
     }
 
-    if (!matchedTextStartsWith && textStartsWith != null) {
+    if (!matchedTextStartsWith && hasTextStartsWith()) {
         bySelector = By.copy(bySelector).textStartsWith(textStartsWith)
     }
 
-    if (!matchedTextContains && textContains != null) {
+    if (!matchedTextContains && hasTextContains()) {
         bySelector = By.copy(bySelector).textContains(textContains)
     }
 
-    if (!matchedClassName && className != null) {
+    if (!matchedClassName && hasClassName()) {
         bySelector = By.copy(bySelector).clazz(className)
     }
 
-    if (!matchedContentDescription && contentDescription != null) {
+    if (!matchedContentDescription && hasContentDescription()) {
         bySelector = By.copy(bySelector).desc(contentDescription)
     }
 
-    if (!matchedContentDescriptionStartsWith && contentDescriptionStartsWith != null) {
+    if (!matchedContentDescriptionStartsWith && hasContentDescriptionStartsWith()) {
         bySelector = By.copy(bySelector).descStartsWith(contentDescriptionStartsWith)
     }
 
-    if (!matchedContentDescriptionContains && contentDescriptionContains != null) {
+    if (!matchedContentDescriptionContains && hasContentDescriptionContains()) {
         bySelector = By.copy(bySelector).descContains(contentDescriptionContains)
     }
 
-    if (!matchedResourceId && resourceId != null) {
+    if (!matchedResourceId && hasResourceId()) {
         bySelector = By.copy(bySelector).res(resourceId)
     }
 
-    if (instance != null) {
+    if (hasInstance()) {
         throw IllegalArgumentException("instance() argument is not supported for BySelector")
     }
 
-    if (!matchedEnabled && enabled != null) {
+    if (!matchedEnabled && hasEnabled()) {
         bySelector = bySelector.enabled(enabled)
     }
 
-    if (!matchedFocused && focused != null) {
+    if (!matchedFocused && hasFocused()) {
         bySelector = bySelector.focused(focused)
     }
 
-    if (!matchedPkg && pkg != null) {
+    if (!matchedPkg && hasPkg()) {
         bySelector = bySelector.pkg(pkg)
     }
 
@@ -268,7 +268,11 @@ class PatrolServer {
         "getNotifications" bind GET to {
             val notifications = PatrolAutomator.instance.getNotifications()
             val query = Contracts.NotificationsQueryResponse.newBuilder().addAllNotifications(notifications).build()
-            Response(OK).body(JsonFormat.printer().print(query))
+            Logger.i("Notifications: ")
+            query.notificationsList.forEach { Logger.i(it.toString()) }
+            val body = JsonFormat.printer().print(query)
+            Logger.i("body: $body")
+            Response(OK).body(body)
         },
         "tapOnNotificationByIndex" bind POST to {
             val builder = Contracts.TapOnNotificationByIndexCommand.newBuilder()

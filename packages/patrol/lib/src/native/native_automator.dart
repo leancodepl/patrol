@@ -100,11 +100,11 @@ class NativeAutomator {
     return response;
   }
 
-  Future<http.Response> _wrapPost(
-    String action, [
-    Map<String, dynamic> body = const <String, dynamic>{},
-  ]) async {
-    if (body.isNotEmpty) {
+  Future<http.Response> _wrapPost({
+    required String action,
+    Map<String, dynamic>? body = const <String, dynamic>{},
+  }) async {
+    if (body?.isNotEmpty ?? false) {
       _logger('action $action executing with $body');
     } else {
       _logger('action $action executing');
@@ -155,7 +155,7 @@ class NativeAutomator {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
   ///    which is used on Android.
-  Future<void> pressBack() => _wrapPost('pressBack');
+  Future<void> pressBack() => _wrapPost(action: 'pressBack');
 
   /// Presses the home button.
   ///
@@ -165,15 +165,15 @@ class NativeAutomator {
   ///
   /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/home>,
   ///   which is used on iOS
-  Future<void> pressHome() => _wrapPost('pressHome');
+  Future<void> pressHome() => _wrapPost(action: 'pressHome');
 
   /// Opens the app specified by [id].
   ///
   /// On Android [id] is the package name. On iOS [id] is the bundle name.
   Future<void> openApp({required String id}) {
     return _wrapPost(
-      'openApp',
-      OpenAppCommand(appId: id).toProto3Json() as Map<String, dynamic>,
+      action: 'openApp',
+      body: OpenAppCommand(appId: id).toProto3Json() as Map<String, dynamic>?,
     );
   }
 
@@ -182,24 +182,25 @@ class NativeAutomator {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>,
   ///    which is used on Android
-  Future<void> pressRecentApps() => _wrapPost('pressRecentApps');
+  Future<void> pressRecentApps() => _wrapPost(action: 'pressRecentApps');
 
   /// Double presses the recent apps button.
-  Future<void> pressDoubleRecentApps() => _wrapPost('pressDoubleRecentApps');
+  Future<void> pressDoubleRecentApps() =>
+      _wrapPost(action: 'pressDoubleRecentApps');
 
   /// Opens the notification shade.
   ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
-  Future<void> openNotifications() => _wrapPost('openNotifications');
+  Future<void> openNotifications() => _wrapPost(action: 'openNotifications');
 
   /// Opens the quick settings shade.
   ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#openquicksettings>,
   ///    which is used on Android
-  Future<void> openQuickSettings() => _wrapPost('openQuickSettings');
+  Future<void> openQuickSettings() => _wrapPost(action: 'openQuickSettings');
 
   /// Returns the first, topmost visible notification.
   ///
@@ -214,11 +215,10 @@ class NativeAutomator {
   /// Notification shade will be opened automatically.
   Future<List<Notification>> getNotifications() async {
     final response = await _wrapGet('getNotifications');
+    final queryResponse = NotificationsQueryResponse.create()
+      ..mergeFromProto3Json(jsonDecode(response.body));
 
-    final notifications = json.decode(response.body) as List<dynamic>;
-    return notifications
-        .map((dynamic e) => Notification.fromJson(e.toString()))
-        .toList();
+    return queryResponse.notifications;
   }
 
   /// Taps on the [index]-th visible notification.
@@ -226,9 +226,9 @@ class NativeAutomator {
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapPost(
-      'tapOnNotificationByIndex',
-      TapOnNotificationByIndexCommand(index: index).toProto3Json()
-          as Map<String, dynamic>,
+      action: 'tapOnNotificationByIndex',
+      body: TapOnNotificationByIndexCommand(index: index).toProto3Json()
+          as Map<String, dynamic>?,
     );
   }
 
@@ -237,37 +237,38 @@ class NativeAutomator {
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
     await _wrapPost(
-      'tapOnNotificationBySelector',
-      TapOnNotificationBySelectorCommand(selector: selector).toProto3Json()
-          as Map<String, dynamic>,
+      action: 'tapOnNotificationBySelector',
+      body: TapOnNotificationBySelectorCommand(selector: selector)
+          .toProto3Json() as Map<String, dynamic>?,
     );
   }
 
   /// Enables dark mode.
-  Future<void> enableDarkMode() => _wrapPost('enableDarkMode');
+  Future<void> enableDarkMode() => _wrapPost(action: 'enableDarkMode');
 
   /// Disables dark mode.
-  Future<void> disableDarkMode() => _wrapPost('disableDarkMode');
+  Future<void> disableDarkMode() => _wrapPost(action: 'disableDarkMode');
 
   /// Enables WiFi.
-  Future<void> enableWifi() => _wrapPost('enableWifi');
+  Future<void> enableWifi() => _wrapPost(action: 'enableWifi');
 
   /// Disables WiFi.
-  Future<void> disableWifi() => _wrapPost('disableWifi');
+  Future<void> disableWifi() => _wrapPost(action: 'disableWifi');
 
   /// Enables celluar (aka mobile data connection).
-  Future<void> enableCelluar() => _wrapPost('enableCelluar');
+  Future<void> enableCelluar() => _wrapPost(action: 'enableCelluar');
 
   /// Disables celluar (aka mobile data connection).
-  Future<void> disableCelluar() => _wrapPost('disableCelluar');
+  Future<void> disableCelluar() => _wrapPost(action: 'disableCelluar');
 
   /// Taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
   Future<void> tap(Selector selector, {String? appId}) {
     return _wrapPost(
-      'tap',
-      TapCommand(selector: selector).toProto3Json() as Map<String, dynamic>,
+      action: 'tap',
+      body: TapCommand(selector: selector).toProto3Json()
+          as Map<String, dynamic>?,
     );
   }
 
@@ -276,9 +277,9 @@ class NativeAutomator {
   /// If the native widget is not found, an exception is thrown.
   Future<void> doubleTap(Selector selector, {String? appId}) {
     return _wrapPost(
-      'doubleTap',
-      DoubleTapCommand(selector: selector, appId: appId).toProto3Json()
-          as Map<String, dynamic>,
+      action: 'doubleTap',
+      body: DoubleTapCommand(selector: selector, appId: appId).toProto3Json()
+          as Map<String, dynamic>?,
     );
   }
 
@@ -291,12 +292,12 @@ class NativeAutomator {
     String? appId,
   }) {
     return _wrapPost(
-      'enterTextBySelector',
-      EnterTextBySelectorCommand(
+      action: 'enterTextBySelector',
+      body: EnterTextBySelectorCommand(
         appId: appId,
         data: text,
         selector: selector,
-      ).toProto3Json() as Map<String, dynamic>,
+      ).toProto3Json() as Map<String, dynamic>?,
     );
   }
 
@@ -307,27 +308,23 @@ class NativeAutomator {
     String? appId,
   }) {
     return _wrapPost(
-      'enterTextByIndex',
-      EnterTextByIndexCommand(
+      action: 'enterTextByIndex',
+      body: EnterTextByIndexCommand(
         appId: appId,
         data: text,
         index: index,
-      ).toProto3Json() as Map<String, dynamic>,
+      ).toProto3Json() as Map<String, dynamic>?,
     );
   }
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
-    final response = await _wrapPost(
-      'getNativeWidgets',
-      selector.toProto3Json() as Map<String, dynamic>,
-    );
+    final response = await _wrapGet('getNativeWidgets');
+    final queryResponse = NativeWidgetsQueryResponse.create()
+      ..mergeFromProto3Json(jsonDecode(response.body));
 
-    final nativeWidgets = json.decode(response.body) as List<dynamic>;
-    return nativeWidgets
-        .map((dynamic e) => NativeWidget.fromJson(e.toString()))
-        .toList();
+    return queryResponse.nativeWidgets;
   }
 
   /// Grants the permission that the currently visible native permission request
@@ -335,13 +332,11 @@ class NativeAutomator {
   ///
   /// Throws an exception if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
-    // Wait for the dialog to appear await
-    // Future<void>.delayed(Duration(milliseconds: 500));
     await _wrapPost(
-      'handlePermission',
-      HandlePermissionCommand(
+      action: 'handlePermission',
+      body: HandlePermissionCommand(
         code: HandlePermissionCommand_Code.WHILE_USING,
-      ).toProto3Json() as Map<String, dynamic>,
+      ).toProto3Json() as Map<String, dynamic>?,
     );
   }
 
@@ -354,10 +349,10 @@ class NativeAutomator {
   /// Otherwise it will crash.
   Future<void> grantPermissionOnlyThisTime() {
     return _wrapPost(
-      'handlePermission',
-      HandlePermissionCommand(
+      action: 'handlePermission',
+      body: HandlePermissionCommand(
         code: HandlePermissionCommand_Code.ONLY_THIS_TIME,
-      ).toProto3Json() as Map<String, dynamic>,
+      ).toProto3Json() as Map<String, dynamic>?,
     );
   }
 
@@ -367,10 +362,10 @@ class NativeAutomator {
   /// Throws an exception if no permission request dialog is present.
   Future<void> denyPermission() {
     return _wrapPost(
-      'handlePermission',
-      HandlePermissionCommand(
+      action: 'handlePermission',
+      body: HandlePermissionCommand(
         code: HandlePermissionCommand_Code.DENIED,
-      ).toProto3Json() as Map<String, dynamic>,
+      ).toProto3Json() as Map<String, dynamic>?,
     );
   }
 
@@ -378,11 +373,13 @@ class NativeAutomator {
   /// visible native permission request dialog.
   ///
   /// Throws an exception if no permission request dialog is present.
-  Future<void> selectFineLocation() => _wrapPost('selectFineLocation');
+  Future<void> selectFineLocation() => _wrapPost(action: 'selectFineLocation');
 
   /// Select the "coarse location" (aka "approximate") setting on the currently
   /// visible native permission request dialog.
   ///
   /// Throws an exception if no permission request dialog is present.
-  Future<void> selectCoarseLocation() => _wrapPost('selectCoarseLocation');
+  Future<void> selectCoarseLocation() {
+    return _wrapPost(action: 'selectCoarseLocation');
+  }
 }
