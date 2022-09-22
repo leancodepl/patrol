@@ -12,6 +12,8 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
+import pl.leancode.automatorserver.contracts.Contracts
+import pl.leancode.automatorserver.contracts.notification
 import kotlin.math.roundToInt
 
 @Serializable
@@ -238,23 +240,22 @@ class PatrolAutomator {
         val notifications = mutableListOf<Contracts.Notification>()
         for (notificationContainer in notificationContainers) {
             try {
-                val notification = Contracts.Notification.newBuilder()
+                val notification = notification {
+                    val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+                    if (appName != null) {
+                        this.appName = appName
+                    }
 
-                val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
-                if (appName != null) {
-                    notification.appName = appName
+                    val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                        ?: throw PatrolException("Could not find title text")
+                    this.title = title
+
+                    val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+                        ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                        ?: throw PatrolException("Could not find content text")
+                    this.content = content
                 }
-
-                val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                    ?: throw PatrolException("Could not find title text")
-                notification.title = title
-
-                val content = notificationContainer.findObject(By.res("android:id/text"))?.text
-                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                    ?: throw PatrolException("Could not find content text")
-
-                notification.content = content
-                notifications.add(notification.build())
+                notifications.add(notification)
             } catch (e: PatrolException) {
                 Logger.e("Failed to find UI component of a notification:", e)
             }

@@ -1,7 +1,7 @@
 syntax = "proto3";
 package patrol;
 
-option java_package = "pl.leancode.automatorserver";
+option java_package = "pl.leancode.automatorserver.contracts";
 
 message OpenAppCommand { string appId = 1; }
 

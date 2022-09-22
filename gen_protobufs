@@ -6,10 +6,11 @@ SRC_DIR="."
 
 dart_out="./packages/patrol/lib/src/native/contracts"
 java_out="./AutomatorServer/android/app/src/androidTest/java"
+kotlin_out="./AutomatorServer/android/app/src/androidTest/java"
 swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
 protoc --dart_out="$dart_out" "$SRC_DIR/contracts.proto"
 
-protoc --java_out="$java_out" "$SRC_DIR/contracts.proto"
+protoc --java_out="$java_out" --kotlin_out="$kotlin_out" "$SRC_DIR/contracts.proto"
 
 protoc --swift_out="$swift_out" "$SRC_DIR/contracts.proto"

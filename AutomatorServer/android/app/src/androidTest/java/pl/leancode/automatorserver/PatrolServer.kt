@@ -27,6 +27,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
+import pl.leancode.automatorserver.contracts.Contracts
 
 
 private fun Contracts.Selector.isEmpty(): Boolean {
