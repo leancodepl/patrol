@@ -268,7 +268,6 @@ class PatrolServer {
         "getNotifications" bind GET to {
             val notifications = PatrolAutomator.instance.getNotifications()
             val query = Contracts.NotificationsQueryResponse.newBuilder().addAllNotifications(notifications).build()
-            query.notificationsList.forEach { Logger.i(it.toString()) }
             val body = JsonFormat.printer().print(query)
             Response(OK).body(body)
         },
@@ -416,7 +415,9 @@ val printer = Filter { next ->
         val startTime = System.currentTimeMillis()
         val response = next(request)
         val latency = System.currentTimeMillis() - startTime
-        Logger.i("body of ${request.uri}: \n- - -\n${request.body}\n- - -")
+        if (response.bodyString().isNotEmpty()) {
+            Logger.i("body of ${request.uri}: \n- - -\n\t${response.bodyString()}\n- - -")
+        }
         Logger.i("$requestName took $latency ms")
         response
     }

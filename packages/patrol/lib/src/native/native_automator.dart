@@ -110,7 +110,6 @@ class NativeAutomator {
       _logger('action $action executing');
     }
 
-    print('encoded body: ${jsonEncode(body)}');
     final response = await _client.post(
       Uri.parse('$_baseUri/$action'),
       body: jsonEncode(body),
@@ -127,8 +126,13 @@ class NativeAutomator {
   }
 
   void _handleErrorResponse(String action, http.Response response) {
-    final responseBody = jsonDecode(response.body) as Map<String, dynamic>?;
-    final message = responseBody?['message'] as String? ?? 'no message';
+    var message = 'no message';
+    try {
+      final responseBody = jsonDecode(response.body) as Map<String, dynamic>?;
+      message = responseBody?['message'] as String? ?? 'no message';
+    } catch (_) {
+      // it's okay to do nothing
+    }
 
     final log = 'action $action failed with code ${response.statusCode} '
         '($message)';
