@@ -83,7 +83,7 @@ message NativeWidgetsQuery { Selector selector = 1; }
 
 // Represents a notification visible in the notification shade.
 message Notification {
-  string appName = 1;
+  optional string appName = 1;
   string title = 2;
   string content = 3;
 }

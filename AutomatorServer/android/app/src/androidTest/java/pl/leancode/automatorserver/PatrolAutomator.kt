@@ -233,23 +233,30 @@ class PatrolAutomator {
         openNotifications()
 
         val notificationContainers = uiDevice.findObjects(By.res("android:id/status_bar_latest_event_content"))
+        Logger.d("Found ${notificationContainers.size} notifications")
 
         val notifications = mutableListOf<Contracts.Notification>()
-        Logger.d("Found ${notificationContainers.size} notifications")
         for (notificationContainer in notificationContainers) {
             try {
+                val notification = Contracts.Notification.newBuilder()
+
                 val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+                if (appName != null) {
+                    notification.appName = appName
+                }
+
                 val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                    ?: throw NullPointerException("Could not find title text")
+                    ?: throw PatrolException("Could not find title text")
+                notification.title = title
+
                 val content = notificationContainer.findObject(By.res("android:id/text"))?.text
                     ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                    ?: throw NullPointerException("Could not find content text")
+                    ?: throw PatrolException("Could not find content text")
 
-                notifications.add(
-                    Contracts.Notification.newBuilder().setAppName(appName).setTitle(title).setContent(content).build()
-                )
-            } catch (e: NullPointerException) {
-                Logger.e("Failed to find UI component of a notification", e)
+                notification.content = content
+                notifications.add(notification.build())
+            } catch (e: PatrolException) {
+                Logger.e("Failed to find UI component of a notification:", e)
             }
         }
 

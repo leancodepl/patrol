@@ -186,14 +186,17 @@ final $typed_data.Uint8List nativeWidgetsQueryDescriptor = $convert.base64Decode
 const Notification$json = const {
   '1': 'Notification',
   '2': const [
-    const {'1': 'appName', '3': 1, '4': 1, '5': 9, '10': 'appName'},
+    const {'1': 'appName', '3': 1, '4': 1, '5': 9, '9': 0, '10': 'appName', '17': true},
     const {'1': 'title', '3': 2, '4': 1, '5': 9, '10': 'title'},
     const {'1': 'content', '3': 3, '4': 1, '5': 9, '10': 'content'},
+  ],
+  '8': const [
+    const {'1': '_appName'},
   ],
 };
 
 /// Descriptor for `Notification`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List notificationDescriptor = $convert.base64Decode('CgxOb3RpZmljYXRpb24SGAoHYXBwTmFtZRgBIAEoCVIHYXBwTmFtZRIUCgV0aXRsZRgCIAEoCVIFdGl0bGUSGAoHY29udGVudBgDIAEoCVIHY29udGVudA==');
+final $typed_data.Uint8List notificationDescriptor = $convert.base64Decode('CgxOb3RpZmljYXRpb24SHQoHYXBwTmFtZRgBIAEoCUgAUgdhcHBOYW1liAEBEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIYCgdjb250ZW50GAMgASgJUgdjb250ZW50QgoKCF9hcHBOYW1l');
 @$core.Deprecated('Use notificationsQueryResponseDescriptor instead')
 const NotificationsQueryResponse$json = const {
   '1': 'NotificationsQueryResponse',

@@ -11109,12 +11109,17 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string appName = 1;</code>
+     * <code>optional string appName = 1;</code>
+     * @return Whether the appName field is set.
+     */
+    boolean hasAppName();
+    /**
+     * <code>optional string appName = 1;</code>
      * @return The appName.
      */
     java.lang.String getAppName();
     /**
-     * <code>string appName = 1;</code>
+     * <code>optional string appName = 1;</code>
      * @return The bytes for appName.
      */
     com.google.protobuf.ByteString
@@ -11186,6 +11191,7 @@ public final class Contracts {
       if (extensionRegistry == null) {
         throw new java.lang.NullPointerException();
       }
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -11198,7 +11204,7 @@ public final class Contracts {
               break;
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000001;
               appName_ = s;
               break;
             }
@@ -11248,10 +11254,19 @@ public final class Contracts {
               pl.leancode.automatorserver.Contracts.Notification.class, pl.leancode.automatorserver.Contracts.Notification.Builder.class);
     }
 
+    private int bitField0_;
     public static final int APPNAME_FIELD_NUMBER = 1;
     private volatile java.lang.Object appName_;
     /**
-     * <code>string appName = 1;</code>
+     * <code>optional string appName = 1;</code>
+     * @return Whether the appName field is set.
+     */
+    @java.lang.Override
+    public boolean hasAppName() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional string appName = 1;</code>
      * @return The appName.
      */
     @java.lang.Override
@@ -11268,7 +11283,7 @@ public final class Contracts {
       }
     }
     /**
-     * <code>string appName = 1;</code>
+     * <code>optional string appName = 1;</code>
      * @return The bytes for appName.
      */
     @java.lang.Override
@@ -11376,7 +11391,7 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appName_)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appName_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(title_)) {
@@ -11394,7 +11409,7 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appName_)) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appName_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(title_)) {
@@ -11418,8 +11433,11 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.Contracts.Notification other = (pl.leancode.automatorserver.Contracts.Notification) obj;
 
-      if (!getAppName()
-          .equals(other.getAppName())) return false;
+      if (hasAppName() != other.hasAppName()) return false;
+      if (hasAppName()) {
+        if (!getAppName()
+            .equals(other.getAppName())) return false;
+      }
       if (!getTitle()
           .equals(other.getTitle())) return false;
       if (!getContent()
@@ -11435,8 +11453,10 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPNAME_FIELD_NUMBER;
-      hash = (53 * hash) + getAppName().hashCode();
+      if (hasAppName()) {
+        hash = (37 * hash) + APPNAME_FIELD_NUMBER;
+        hash = (53 * hash) + getAppName().hashCode();
+      }
       hash = (37 * hash) + TITLE_FIELD_NUMBER;
       hash = (53 * hash) + getTitle().hashCode();
       hash = (37 * hash) + CONTENT_FIELD_NUMBER;
@@ -11579,7 +11599,7 @@ public final class Contracts {
       public Builder clear() {
         super.clear();
         appName_ = "";
-
+        bitField0_ = (bitField0_ & ~0x00000001);
         title_ = "";
 
         content_ = "";
@@ -11610,9 +11630,15 @@ public final class Contracts {
       @java.lang.Override
       public pl.leancode.automatorserver.Contracts.Notification buildPartial() {
         pl.leancode.automatorserver.Contracts.Notification result = new pl.leancode.automatorserver.Contracts.Notification(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          to_bitField0_ |= 0x00000001;
+        }
         result.appName_ = appName_;
         result.title_ = title_;
         result.content_ = content_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -11661,7 +11687,8 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.Contracts.Notification other) {
         if (other == pl.leancode.automatorserver.Contracts.Notification.getDefaultInstance()) return this;
-        if (!other.getAppName().isEmpty()) {
+        if (other.hasAppName()) {
+          bitField0_ |= 0x00000001;
           appName_ = other.appName_;
           onChanged();
         }
@@ -11701,10 +11728,18 @@ public final class Contracts {
         }
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object appName_ = "";
       /**
-       * <code>string appName = 1;</code>
+       * <code>optional string appName = 1;</code>
+       * @return Whether the appName field is set.
+       */
+      public boolean hasAppName() {
+        return ((bitField0_ & 0x00000001) != 0);
+      }
+      /**
+       * <code>optional string appName = 1;</code>
        * @return The appName.
        */
       public java.lang.String getAppName() {
@@ -11720,7 +11755,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string appName = 1;</code>
+       * <code>optional string appName = 1;</code>
        * @return The bytes for appName.
        */
       public com.google.protobuf.ByteString
@@ -11737,7 +11772,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>string appName = 1;</code>
+       * <code>optional string appName = 1;</code>
        * @param value The appName to set.
        * @return This builder for chaining.
        */
@@ -11746,23 +11781,23 @@ public final class Contracts {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000001;
         appName_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string appName = 1;</code>
+       * <code>optional string appName = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearAppName() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         appName_ = getDefaultInstance().getAppName();
         onChanged();
         return this;
       }
       /**
-       * <code>string appName = 1;</code>
+       * <code>optional string appName = 1;</code>
        * @param value The bytes for appName to set.
        * @return This builder for chaining.
        */
@@ -11772,7 +11807,7 @@ public final class Contracts {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
-        
+        bitField0_ |= 0x00000001;
         appName_ = value;
         onChanged();
         return this;
@@ -13694,13 +13729,14 @@ public final class Contracts {
       "eName\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(\t\022" +
       "&\n\010children\030\t \003(\0132\024.patrol.NativeWidget\"" +
       "8\n\022NativeWidgetsQuery\022\"\n\010selector\030\001 \001(\0132" +
-      "\020.patrol.Selector\"?\n\014Notification\022\017\n\007app" +
-      "Name\030\001 \001(\t\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001" +
-      "(\t\"I\n\032NotificationsQueryResponse\022+\n\rnoti" +
-      "fications\030\001 \003(\0132\024.patrol.Notification\"I\n" +
-      "\032NativeWidgetsQueryResponse\022+\n\rnativeWid" +
-      "gets\030\001 \003(\0132\024.patrol.NativeWidgetB\035\n\033pl.l" +
-      "eancode.automatorserverb\006proto3"
+      "\020.patrol.Selector\"P\n\014Notification\022\024\n\007app" +
+      "Name\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007conten" +
+      "t\030\003 \001(\tB\n\n\010_appName\"I\n\032NotificationsQuer" +
+      "yResponse\022+\n\rnotifications\030\001 \003(\0132\024.patro" +
+      "l.Notification\"I\n\032NativeWidgetsQueryResp" +
+      "onse\022+\n\rnativeWidgets\030\001 \003(\0132\024.patrol.Nat" +
+      "iveWidgetB\035\n\033pl.leancode.automatorserver" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -13783,7 +13819,7 @@ public final class Contracts {
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,
-        new java.lang.String[] { "AppName", "Title", "Content", });
+        new java.lang.String[] { "AppName", "Title", "Content", "AppName", });
     internal_static_patrol_NotificationsQueryResponse_descriptor =
       getDescriptor().getMessageTypes().get(13);
     internal_static_patrol_NotificationsQueryResponse_fieldAccessorTable = new
