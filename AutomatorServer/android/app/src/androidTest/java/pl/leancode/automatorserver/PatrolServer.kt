@@ -5,9 +5,9 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import com.google.protobuf.util.JsonFormat
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.http4k.core.ContentType
@@ -26,244 +26,190 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
+import pl.leancode.automatorserver.Contracts.Notification
+import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.io.OutputStream
 
-@Serializable
-data class OpenAppCommand(var appId: String)
 
-@Serializable
-data class TapCommand(
-    val appId: String,
-    val selector: Selector,
-)
-
-@Serializable
-data class DoubleTapCommand(
-    val appId: String,
-    val selector: Selector,
-)
-
-@Serializable
-data class EnterTextBySelectorCommand(
-    val appId: String,
-    val data: String,
-    val selector: Selector,
-)
-
-@Serializable
-data class EnterTextByIndexCommand(
-    val appId: String,
-    val data: String,
-    val index: Int,
-)
-
-@Serializable
-data class PermissionCommand(val code: String)
-
-@Serializable
-data class SwipeCommand(
-    val startX: Float,
-    val startY: Float,
-    val endX: Float,
-    val endY: Float,
-    val steps: Int
-)
-
-@Serializable
-data class TapOnNotificationByIndexCommand(val index: Int)
-
-@Serializable
-data class Selector(
-    val text: String? = null,
-    val textStartsWith: String? = null,
-    val textContains: String? = null,
-    val className: String? = null,
-    val contentDescription: String? = null,
-    val contentDescriptionStartsWith: String? = null,
-    val contentDescriptionContains: String? = null,
-    val resourceId: String? = null,
-    val instance: Int? = null,
-    val enabled: Boolean? = null,
-    val focused: Boolean? = null,
-    val pkg: String? = null
-) {
-    private fun isEmpty(): Boolean {
-        return (
+private fun Contracts.Selector.isEmpty(): Boolean {
+    return (
             text == null &&
-                textStartsWith == null &&
-                textContains == null &&
-                className == null &&
-                contentDescription == null &&
-                contentDescriptionStartsWith == null &&
-                contentDescriptionContains == null &&
-                resourceId == null &&
-                instance == null &&
-                enabled == null &&
-                focused == null &&
-                pkg == null
+                    textStartsWith == null &&
+                    textContains == null &&
+                    className == null &&
+                    contentDescription == null &&
+                    contentDescriptionStartsWith == null &&
+                    contentDescriptionContains == null &&
+                    resourceId == null &&
+                    instance == null &&
+                    enabled == null &&
+                    focused == null &&
+                    pkg == null
             )
-    }
-
-    fun toUiSelector(): UiSelector {
-        var selector = UiSelector()
-
-        if (text != null) {
-            selector = selector.text(text)
-        }
-
-        if (textStartsWith != null) {
-            selector = selector.textStartsWith(textStartsWith)
-        }
-
-        if (textContains != null) {
-            selector = selector.textContains(textContains)
-        }
-
-        if (className != null) {
-            selector = selector.className(className)
-        }
-
-        if (contentDescription != null) {
-            selector = selector.description(contentDescription)
-        }
-
-        if (contentDescriptionStartsWith != null) {
-            selector = selector.descriptionStartsWith(contentDescriptionStartsWith)
-        }
-
-        if (contentDescriptionContains != null) {
-            selector = selector.descriptionContains(contentDescriptionContains)
-        }
-
-        if (resourceId != null) {
-            selector = selector.resourceId(resourceId)
-        }
-
-        if (instance != null) {
-            selector = selector.instance(instance)
-        }
-
-        if (enabled != null) {
-            selector = selector.enabled(enabled)
-        }
-
-        if (focused != null) {
-            selector = selector.focused(focused)
-        }
-
-        if (pkg != null) {
-            selector = selector.packageName(pkg)
-        }
-
-        return selector
-    }
-
-    fun toBySelector(): BySelector {
-        if (isEmpty()) {
-            throw PatrolException("SelectorQuery is empty")
-        }
-
-        var matchedText = false
-        var matchedTextStartsWith = false
-        var matchedTextContains = false
-        var matchedClassName = false
-        var matchedContentDescription = false
-        var matchedContentDescriptionStartsWith = false
-        var matchedContentDescriptionContains = false
-        var matchedResourceId = false
-        var matchedEnabled = false
-        var matchedFocused = false
-        var matchedPkg = false
-
-        var bySelector = if (text != null) {
-            matchedText = true
-            By.text(text)
-        } else if (textStartsWith != null) {
-            matchedTextStartsWith = true
-            By.textStartsWith(textStartsWith)
-        } else if (textContains != null) {
-            matchedTextContains = true
-            By.textContains(textContains)
-        } else if (className != null) {
-            matchedClassName = true
-            By.clazz(className)
-        } else if (contentDescription != null) {
-            matchedContentDescription = true
-            By.desc(contentDescription)
-        } else if (contentDescriptionStartsWith != null) {
-            matchedContentDescriptionStartsWith = true
-            By.descStartsWith(contentDescriptionStartsWith)
-        } else if (contentDescriptionContains != null) {
-            matchedContentDescriptionContains = true
-            By.descContains(contentDescriptionContains)
-        } else if (resourceId != null) {
-            matchedResourceId = true
-            By.res(resourceId)
-        } else if (instance != null) {
-            throw IllegalArgumentException("instance() argument is not supported for BySelector")
-        } else if (enabled != null) {
-            matchedEnabled = true
-            By.enabled(enabled)
-        } else if (focused != null) {
-            matchedFocused = true
-            By.focused(focused)
-        } else if (pkg != null) {
-            matchedPkg = true
-            By.pkg(pkg)
-        } else {
-            throw IllegalArgumentException("SelectorQuery is empty")
-        }
-
-        if (!matchedText && text != null) {
-            bySelector = By.copy(bySelector).text(text)
-        }
-
-        if (!matchedTextStartsWith && textStartsWith != null) {
-            bySelector = By.copy(bySelector).textStartsWith(textStartsWith)
-        }
-
-        if (!matchedTextContains && textContains != null) {
-            bySelector = By.copy(bySelector).textContains(textContains)
-        }
-
-        if (!matchedClassName && className != null) {
-            bySelector = By.copy(bySelector).clazz(className)
-        }
-
-        if (!matchedContentDescription && contentDescription != null) {
-            bySelector = By.copy(bySelector).desc(contentDescription)
-        }
-
-        if (!matchedContentDescriptionStartsWith && contentDescriptionStartsWith != null) {
-            bySelector = By.copy(bySelector).descStartsWith(contentDescriptionStartsWith)
-        }
-
-        if (!matchedContentDescriptionContains && contentDescriptionContains != null) {
-            bySelector = By.copy(bySelector).descContains(contentDescriptionContains)
-        }
-
-        if (!matchedResourceId && resourceId != null) {
-            bySelector = By.copy(bySelector).res(resourceId)
-        }
-
-        if (instance != null) {
-            throw IllegalArgumentException("instance() argument is not supported for BySelector")
-        }
-
-        if (!matchedEnabled && enabled != null) {
-            bySelector = bySelector.enabled(enabled)
-        }
-
-        if (!matchedFocused && focused != null) {
-            bySelector = bySelector.focused(focused)
-        }
-
-        if (!matchedPkg && pkg != null) {
-            bySelector = bySelector.pkg(pkg)
-        }
-
-        return bySelector
-    }
 }
+
+fun Contracts.Selector.toUiSelector(): UiSelector {
+    var selector = UiSelector()
+
+    if (text != null) {
+        selector = selector.text(text)
+    }
+
+    if (textStartsWith != null) {
+        selector = selector.textStartsWith(textStartsWith)
+    }
+
+    if (textContains != null) {
+        selector = selector.textContains(textContains)
+    }
+
+    if (className != null) {
+        selector = selector.className(className)
+    }
+
+    if (contentDescription != null) {
+        selector = selector.description(contentDescription)
+    }
+
+    if (contentDescriptionStartsWith != null) {
+        selector = selector.descriptionStartsWith(contentDescriptionStartsWith)
+    }
+
+    if (contentDescriptionContains != null) {
+        selector = selector.descriptionContains(contentDescriptionContains)
+    }
+
+    if (resourceId != null) {
+        selector = selector.resourceId(resourceId)
+    }
+
+    if (instance != null) {
+        selector = selector.instance(instance)
+    }
+
+    if (enabled != null) {
+        selector = selector.enabled(enabled)
+    }
+
+    if (focused != null) {
+        selector = selector.focused(focused)
+    }
+
+    if (pkg != null) {
+        selector = selector.packageName(pkg)
+    }
+
+    return selector
+}
+
+fun Contracts.Selector.toBySelector(): BySelector {
+    if (isEmpty()) {
+        throw PatrolException("SelectorQuery is empty")
+    }
+
+    var matchedText = false
+    var matchedTextStartsWith = false
+    var matchedTextContains = false
+    var matchedClassName = false
+    var matchedContentDescription = false
+    var matchedContentDescriptionStartsWith = false
+    var matchedContentDescriptionContains = false
+    var matchedResourceId = false
+    var matchedEnabled = false
+    var matchedFocused = false
+    var matchedPkg = false
+
+    var bySelector = if (text != null) {
+        matchedText = true
+        By.text(text)
+    } else if (textStartsWith != null) {
+        matchedTextStartsWith = true
+        By.textStartsWith(textStartsWith)
+    } else if (textContains != null) {
+        matchedTextContains = true
+        By.textContains(textContains)
+    } else if (className != null) {
+        matchedClassName = true
+        By.clazz(className)
+    } else if (contentDescription != null) {
+        matchedContentDescription = true
+        By.desc(contentDescription)
+    } else if (contentDescriptionStartsWith != null) {
+        matchedContentDescriptionStartsWith = true
+        By.descStartsWith(contentDescriptionStartsWith)
+    } else if (contentDescriptionContains != null) {
+        matchedContentDescriptionContains = true
+        By.descContains(contentDescriptionContains)
+    } else if (resourceId != null) {
+        matchedResourceId = true
+        By.res(resourceId)
+    } else if (instance != null) {
+        throw IllegalArgumentException("instance() argument is not supported for BySelector")
+    } else if (enabled != null) {
+        matchedEnabled = true
+        By.enabled(enabled)
+    } else if (focused != null) {
+        matchedFocused = true
+        By.focused(focused)
+    } else if (pkg != null) {
+        matchedPkg = true
+        By.pkg(pkg)
+    } else {
+        throw IllegalArgumentException("SelectorQuery is empty")
+    }
+
+    if (!matchedText && text != null) {
+        bySelector = By.copy(bySelector).text(text)
+    }
+
+    if (!matchedTextStartsWith && textStartsWith != null) {
+        bySelector = By.copy(bySelector).textStartsWith(textStartsWith)
+    }
+
+    if (!matchedTextContains && textContains != null) {
+        bySelector = By.copy(bySelector).textContains(textContains)
+    }
+
+    if (!matchedClassName && className != null) {
+        bySelector = By.copy(bySelector).clazz(className)
+    }
+
+    if (!matchedContentDescription && contentDescription != null) {
+        bySelector = By.copy(bySelector).desc(contentDescription)
+    }
+
+    if (!matchedContentDescriptionStartsWith && contentDescriptionStartsWith != null) {
+        bySelector = By.copy(bySelector).descStartsWith(contentDescriptionStartsWith)
+    }
+
+    if (!matchedContentDescriptionContains && contentDescriptionContains != null) {
+        bySelector = By.copy(bySelector).descContains(contentDescriptionContains)
+    }
+
+    if (!matchedResourceId && resourceId != null) {
+        bySelector = By.copy(bySelector).res(resourceId)
+    }
+
+    if (instance != null) {
+        throw IllegalArgumentException("instance() argument is not supported for BySelector")
+    }
+
+    if (!matchedEnabled && enabled != null) {
+        bySelector = bySelector.enabled(enabled)
+    }
+
+    if (!matchedFocused && focused != null) {
+        bySelector = bySelector.focused(focused)
+    }
+
+    if (!matchedPkg && pkg != null) {
+        bySelector = bySelector.pkg(pkg)
+    }
+
+    return bySelector
+}
+
 
 val json = Json { ignoreUnknownKeys = true }
 
@@ -295,8 +241,8 @@ class PatrolServer {
             Response(OK)
         },
         "openApp" bind POST to {
-            val body = json.decodeFromString<OpenAppCommand>(it.bodyString())
-            PatrolAutomator.instance.openApp(body.appId)
+            val command = Contracts.OpenAppCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.openApp(command.appId)
             Response(OK)
         },
         "pressBack" bind POST to {
@@ -321,46 +267,47 @@ class PatrolServer {
         },
         "getNotifications" bind GET to {
             val notifications = PatrolAutomator.instance.getNotifications()
-            Response(OK).body(json.encodeToString(notifications))
+            val query = Contracts.NotificationsQueryResponse.newBuilder().addAllNotifications(notifications).build()
+            Response(OK).body(JsonFormat.printer().print(query))
         },
         "tapOnNotificationByIndex" bind POST to {
-            val body = json.decodeFromString<TapOnNotificationByIndexCommand>(it.bodyString())
-            PatrolAutomator.instance.tapOnNotification(body.index)
+            val command = Contracts.TapOnNotificationByIndexCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.tapOnNotification(command.index)
             Response(OK)
         },
         "tapOnNotificationBySelector" bind POST to {
-            val body = json.decodeFromString<Selector>(it.bodyString())
-            PatrolAutomator.instance.tapOnNotification(body)
+            val command = Contracts.TapOnNotificationBySelectorCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.tapOnNotification(command.selector)
             Response(OK)
         },
         "tap" bind POST to {
-            val body = json.decodeFromString<TapCommand>(it.bodyString())
-            PatrolAutomator.instance.tap(body.selector)
+            val command = Contracts.TapCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.tap(command.selector.toUiSelector())
             Response(OK)
         },
         "doubleTap" bind POST to {
-            val body = json.decodeFromString<DoubleTapCommand>(it.bodyString())
-            PatrolAutomator.instance.doubleTap(body.selector)
+            val command = Contracts.DoubleTapCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.doubleTap(command.selector.toUiSelector())
             Response(OK)
         },
         "enterTextByIndex" bind POST to {
-            val body = json.decodeFromString<EnterTextByIndexCommand>(it.bodyString())
-            PatrolAutomator.instance.enterText(body.data, body.index)
+            val command = Contracts.EnterTextByIndexCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.enterText(command.data, command.index)
             Response(OK)
         },
         "enterTextBySelector" bind POST to {
-            val body = json.decodeFromString<EnterTextBySelectorCommand>(it.bodyString())
-            PatrolAutomator.instance.enterText(body.data, body.selector)
+            val command = Contracts.EnterTextBySelectorCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.enterText(command.data, command.selector)
             Response(OK)
         },
         "swipe" bind POST to {
-            val body = json.decodeFromString<SwipeCommand>(it.bodyString())
-            PatrolAutomator.instance.swipe(body)
+            val command = Contracts.SwipeCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.swipe(command)
             Response(OK)
         },
         "getNativeWidgets" bind POST to {
-            val body = json.decodeFromString<Selector>(it.bodyString())
-            val textFields = PatrolAutomator.instance.getNativeWidgets(body)
+            val command = Contracts.NativeWidgetsQuery.parseFrom(it.body.stream)
+            val textFields = PatrolAutomator.instance.getNativeWidgets(command.selector.toBySelector())
             Response(OK).body(json.encodeToString(textFields))
         },
         "enableDarkMode" bind POST to {
@@ -396,8 +343,8 @@ class PatrolServer {
             Response(OK)
         },
         "handlePermission" bind POST to {
-            val body = json.decodeFromString<PermissionCommand>(it.bodyString())
-            PatrolAutomator.instance.handlePermission(body.code)
+            val command = Contracts.HandlePermissionCommand.parseFrom(it.body.stream)
+            PatrolAutomator.instance.handlePermission(command.code)
             Response(OK)
         },
         "selectFineLocation" bind POST to {

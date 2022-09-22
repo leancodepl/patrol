@@ -58,22 +58,22 @@ const EnterTextByIndexCommand$json = const {
   '2': const [
     const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
     const {'1': 'data', '3': 2, '4': 1, '5': 9, '10': 'data'},
-    const {'1': 'index', '3': 3, '4': 1, '5': 5, '10': 'index'},
+    const {'1': 'index', '3': 3, '4': 1, '5': 13, '10': 'index'},
   ],
 };
 
 /// Descriptor for `EnterTextByIndexCommand`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List enterTextByIndexCommandDescriptor = $convert.base64Decode('ChdFbnRlclRleHRCeUluZGV4Q29tbWFuZBIUCgVhcHBJZBgBIAEoCVIFYXBwSWQSEgoEZGF0YRgCIAEoCVIEZGF0YRIUCgVpbmRleBgDIAEoBVIFaW5kZXg=');
+final $typed_data.Uint8List enterTextByIndexCommandDescriptor = $convert.base64Decode('ChdFbnRlclRleHRCeUluZGV4Q29tbWFuZBIUCgVhcHBJZBgBIAEoCVIFYXBwSWQSEgoEZGF0YRgCIAEoCVIEZGF0YRIUCgVpbmRleBgDIAEoDVIFaW5kZXg=');
 @$core.Deprecated('Use tapOnNotificationByIndexCommandDescriptor instead')
 const TapOnNotificationByIndexCommand$json = const {
   '1': 'TapOnNotificationByIndexCommand',
   '2': const [
-    const {'1': 'index', '3': 1, '4': 1, '5': 5, '10': 'index'},
+    const {'1': 'index', '3': 1, '4': 1, '5': 13, '10': 'index'},
   ],
 };
 
 /// Descriptor for `TapOnNotificationByIndexCommand`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List tapOnNotificationByIndexCommandDescriptor = $convert.base64Decode('Ch9UYXBPbk5vdGlmaWNhdGlvbkJ5SW5kZXhDb21tYW5kEhQKBWluZGV4GAEgASgFUgVpbmRleA==');
+final $typed_data.Uint8List tapOnNotificationByIndexCommandDescriptor = $convert.base64Decode('Ch9UYXBPbk5vdGlmaWNhdGlvbkJ5SW5kZXhDb21tYW5kEhQKBWluZGV4GAEgASgNUgVpbmRleA==');
 @$core.Deprecated('Use tapOnNotificationBySelectorCommandDescriptor instead')
 const TapOnNotificationBySelectorCommand$json = const {
   '1': 'TapOnNotificationBySelectorCommand',
@@ -92,12 +92,12 @@ const SwipeCommand$json = const {
     const {'1': 'startY', '3': 2, '4': 1, '5': 2, '10': 'startY'},
     const {'1': 'endX', '3': 3, '4': 1, '5': 2, '10': 'endX'},
     const {'1': 'endY', '3': 4, '4': 1, '5': 2, '10': 'endY'},
-    const {'1': 'steps', '3': 5, '4': 1, '5': 5, '10': 'steps'},
+    const {'1': 'steps', '3': 5, '4': 1, '5': 13, '10': 'steps'},
   ],
 };
 
 /// Descriptor for `SwipeCommand`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List swipeCommandDescriptor = $convert.base64Decode('CgxTd2lwZUNvbW1hbmQSFgoGc3RhcnRYGAEgASgCUgZzdGFydFgSFgoGc3RhcnRZGAIgASgCUgZzdGFydFkSEgoEZW5kWBgDIAEoAlIEZW5kWBISCgRlbmRZGAQgASgCUgRlbmRZEhQKBXN0ZXBzGAUgASgFUgVzdGVwcw==');
+final $typed_data.Uint8List swipeCommandDescriptor = $convert.base64Decode('CgxTd2lwZUNvbW1hbmQSFgoGc3RhcnRYGAEgASgCUgZzdGFydFgSFgoGc3RhcnRZGAIgASgCUgZzdGFydFkSEgoEZW5kWBgDIAEoAlIEZW5kWBISCgRlbmRZGAQgASgCUgRlbmRZEhQKBXN0ZXBzGAUgASgNUgVzdGVwcw==');
 @$core.Deprecated('Use handlePermissionCommandDescriptor instead')
 const HandlePermissionCommand$json = const {
   '1': 'HandlePermissionCommand',
@@ -131,7 +131,7 @@ const Selector$json = const {
     const {'1': 'contentDescriptionStartsWith', '3': 6, '4': 1, '5': 9, '10': 'contentDescriptionStartsWith'},
     const {'1': 'contentDescriptionContains', '3': 7, '4': 1, '5': 9, '10': 'contentDescriptionContains'},
     const {'1': 'resourceId', '3': 8, '4': 1, '5': 9, '10': 'resourceId'},
-    const {'1': 'instance', '3': 9, '4': 1, '5': 5, '10': 'instance'},
+    const {'1': 'instance', '3': 9, '4': 1, '5': 13, '10': 'instance'},
     const {'1': 'enabled', '3': 10, '4': 1, '5': 8, '10': 'enabled'},
     const {'1': 'focused', '3': 11, '4': 1, '5': 8, '10': 'focused'},
     const {'1': 'pkg', '3': 12, '4': 1, '5': 9, '10': 'pkg'},
@@ -139,4 +139,64 @@ const Selector$json = const {
 };
 
 /// Descriptor for `Selector`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List selectorDescriptor = $convert.base64Decode('CghTZWxlY3RvchISCgR0ZXh0GAEgASgJUgR0ZXh0EiYKDnRleHRTdGFydHNXaXRoGAIgASgJUg50ZXh0U3RhcnRzV2l0aBIiCgx0ZXh0Q29udGFpbnMYAyABKAlSDHRleHRDb250YWlucxIcCgljbGFzc05hbWUYBCABKAlSCWNsYXNzTmFtZRIuChJjb250ZW50RGVzY3JpcHRpb24YBSABKAlSEmNvbnRlbnREZXNjcmlwdGlvbhJCChxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoGAYgASgJUhxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoEj4KGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5zGAcgASgJUhpjb250ZW50RGVzY3JpcHRpb25Db250YWlucxIeCgpyZXNvdXJjZUlkGAggASgJUgpyZXNvdXJjZUlkEhoKCGluc3RhbmNlGAkgASgFUghpbnN0YW5jZRIYCgdlbmFibGVkGAogASgIUgdlbmFibGVkEhgKB2ZvY3VzZWQYCyABKAhSB2ZvY3VzZWQSEAoDcGtnGAwgASgJUgNwa2c=');
+final $typed_data.Uint8List selectorDescriptor = $convert.base64Decode('CghTZWxlY3RvchISCgR0ZXh0GAEgASgJUgR0ZXh0EiYKDnRleHRTdGFydHNXaXRoGAIgASgJUg50ZXh0U3RhcnRzV2l0aBIiCgx0ZXh0Q29udGFpbnMYAyABKAlSDHRleHRDb250YWlucxIcCgljbGFzc05hbWUYBCABKAlSCWNsYXNzTmFtZRIuChJjb250ZW50RGVzY3JpcHRpb24YBSABKAlSEmNvbnRlbnREZXNjcmlwdGlvbhJCChxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoGAYgASgJUhxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoEj4KGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5zGAcgASgJUhpjb250ZW50RGVzY3JpcHRpb25Db250YWlucxIeCgpyZXNvdXJjZUlkGAggASgJUgpyZXNvdXJjZUlkEhoKCGluc3RhbmNlGAkgASgNUghpbnN0YW5jZRIYCgdlbmFibGVkGAogASgIUgdlbmFibGVkEhgKB2ZvY3VzZWQYCyABKAhSB2ZvY3VzZWQSEAoDcGtnGAwgASgJUgNwa2c=');
+@$core.Deprecated('Use nativeWidgetDescriptor instead')
+const NativeWidget$json = const {
+  '1': 'NativeWidget',
+  '2': const [
+    const {'1': 'className', '3': 1, '4': 1, '5': 9, '10': 'className'},
+    const {'1': 'text', '3': 2, '4': 1, '5': 9, '10': 'text'},
+    const {'1': 'contentDescription', '3': 3, '4': 1, '5': 9, '10': 'contentDescription'},
+    const {'1': 'focused', '3': 4, '4': 1, '5': 8, '10': 'focused'},
+    const {'1': 'enabled', '3': 5, '4': 1, '5': 8, '10': 'enabled'},
+    const {'1': 'childCount', '3': 6, '4': 1, '5': 5, '10': 'childCount'},
+    const {'1': 'resourceName', '3': 7, '4': 1, '5': 9, '10': 'resourceName'},
+    const {'1': 'applicationPackage', '3': 8, '4': 1, '5': 9, '10': 'applicationPackage'},
+    const {'1': 'children', '3': 9, '4': 3, '5': 11, '6': '.patrol.NativeWidget', '10': 'children'},
+  ],
+};
+
+/// Descriptor for `NativeWidget`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List nativeWidgetDescriptor = $convert.base64Decode('CgxOYXRpdmVXaWRnZXQSHAoJY2xhc3NOYW1lGAEgASgJUgljbGFzc05hbWUSEgoEdGV4dBgCIAEoCVIEdGV4dBIuChJjb250ZW50RGVzY3JpcHRpb24YAyABKAlSEmNvbnRlbnREZXNjcmlwdGlvbhIYCgdmb2N1c2VkGAQgASgIUgdmb2N1c2VkEhgKB2VuYWJsZWQYBSABKAhSB2VuYWJsZWQSHgoKY2hpbGRDb3VudBgGIAEoBVIKY2hpbGRDb3VudBIiCgxyZXNvdXJjZU5hbWUYByABKAlSDHJlc291cmNlTmFtZRIuChJhcHBsaWNhdGlvblBhY2thZ2UYCCABKAlSEmFwcGxpY2F0aW9uUGFja2FnZRIwCghjaGlsZHJlbhgJIAMoCzIULnBhdHJvbC5OYXRpdmVXaWRnZXRSCGNoaWxkcmVu');
+@$core.Deprecated('Use nativeWidgetsQueryDescriptor instead')
+const NativeWidgetsQuery$json = const {
+  '1': 'NativeWidgetsQuery',
+  '2': const [
+    const {'1': 'selector', '3': 1, '4': 1, '5': 11, '6': '.patrol.Selector', '10': 'selector'},
+  ],
+};
+
+/// Descriptor for `NativeWidgetsQuery`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List nativeWidgetsQueryDescriptor = $convert.base64Decode('ChJOYXRpdmVXaWRnZXRzUXVlcnkSLAoIc2VsZWN0b3IYASABKAsyEC5wYXRyb2wuU2VsZWN0b3JSCHNlbGVjdG9y');
+@$core.Deprecated('Use notificationDescriptor instead')
+const Notification$json = const {
+  '1': 'Notification',
+  '2': const [
+    const {'1': 'appName', '3': 1, '4': 1, '5': 9, '10': 'appName'},
+    const {'1': 'title', '3': 2, '4': 1, '5': 9, '10': 'title'},
+    const {'1': 'content', '3': 3, '4': 1, '5': 9, '10': 'content'},
+  ],
+};
+
+/// Descriptor for `Notification`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List notificationDescriptor = $convert.base64Decode('CgxOb3RpZmljYXRpb24SGAoHYXBwTmFtZRgBIAEoCVIHYXBwTmFtZRIUCgV0aXRsZRgCIAEoCVIFdGl0bGUSGAoHY29udGVudBgDIAEoCVIHY29udGVudA==');
+@$core.Deprecated('Use notificationsQueryResponseDescriptor instead')
+const NotificationsQueryResponse$json = const {
+  '1': 'NotificationsQueryResponse',
+  '2': const [
+    const {'1': 'notifications', '3': 1, '4': 3, '5': 11, '6': '.patrol.Notification', '10': 'notifications'},
+  ],
+};
+
+/// Descriptor for `NotificationsQueryResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List notificationsQueryResponseDescriptor = $convert.base64Decode('ChpOb3RpZmljYXRpb25zUXVlcnlSZXNwb25zZRI6Cg1ub3RpZmljYXRpb25zGAEgAygLMhQucGF0cm9sLk5vdGlmaWNhdGlvblINbm90aWZpY2F0aW9ucw==');
+@$core.Deprecated('Use nativeWidgetsQueryResponseDescriptor instead')
+const NativeWidgetsQueryResponse$json = const {
+  '1': 'NativeWidgetsQueryResponse',
+  '2': const [
+    const {'1': 'nativeWidgets', '3': 1, '4': 3, '5': 11, '6': '.patrol.NativeWidget', '10': 'nativeWidgets'},
+  ],
+};
+
+/// Descriptor for `NativeWidgetsQueryResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List nativeWidgetsQueryResponseDescriptor = $convert.base64Decode('ChpOYXRpdmVXaWRnZXRzUXVlcnlSZXNwb25zZRI6Cg1uYXRpdmVXaWRnZXRzGAEgAygLMhQucGF0cm9sLk5hdGl2ZVdpZGdldFINbmF0aXZlV2lkZ2V0cw==');

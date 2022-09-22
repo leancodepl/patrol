@@ -267,7 +267,7 @@ class EnterTextByIndexCommand extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'EnterTextByIndexCommand', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'appId', protoName: 'appId')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'data')
-    ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index', $pb.PbFieldType.O3)
+    ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -331,7 +331,7 @@ class EnterTextByIndexCommand extends $pb.GeneratedMessage {
   @$pb.TagNumber(3)
   $core.int get index => $_getIZ(2);
   @$pb.TagNumber(3)
-  set index($core.int v) { $_setSignedInt32(2, v); }
+  set index($core.int v) { $_setUnsignedInt32(2, v); }
   @$pb.TagNumber(3)
   $core.bool hasIndex() => $_has(2);
   @$pb.TagNumber(3)
@@ -340,7 +340,7 @@ class EnterTextByIndexCommand extends $pb.GeneratedMessage {
 
 class TapOnNotificationByIndexCommand extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'TapOnNotificationByIndexCommand', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
-    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index', $pb.PbFieldType.O3)
+    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'index', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -378,7 +378,7 @@ class TapOnNotificationByIndexCommand extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   $core.int get index => $_getIZ(0);
   @$pb.TagNumber(1)
-  set index($core.int v) { $_setSignedInt32(0, v); }
+  set index($core.int v) { $_setUnsignedInt32(0, v); }
   @$pb.TagNumber(1)
   $core.bool hasIndex() => $_has(0);
   @$pb.TagNumber(1)
@@ -440,7 +440,7 @@ class SwipeCommand extends $pb.GeneratedMessage {
     ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'startY', $pb.PbFieldType.OF, protoName: 'startY')
     ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endX', $pb.PbFieldType.OF, protoName: 'endX')
     ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endY', $pb.PbFieldType.OF, protoName: 'endY')
-    ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'steps', $pb.PbFieldType.O3)
+    ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'steps', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
@@ -530,7 +530,7 @@ class SwipeCommand extends $pb.GeneratedMessage {
   @$pb.TagNumber(5)
   $core.int get steps => $_getIZ(4);
   @$pb.TagNumber(5)
-  set steps($core.int v) { $_setSignedInt32(4, v); }
+  set steps($core.int v) { $_setUnsignedInt32(4, v); }
   @$pb.TagNumber(5)
   $core.bool hasSteps() => $_has(4);
   @$pb.TagNumber(5)
@@ -594,7 +594,7 @@ class Selector extends $pb.GeneratedMessage {
     ..aOS(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contentDescriptionStartsWith', protoName: 'contentDescriptionStartsWith')
     ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contentDescriptionContains', protoName: 'contentDescriptionContains')
     ..aOS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resourceId', protoName: 'resourceId')
-    ..a<$core.int>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'instance', $pb.PbFieldType.O3)
+    ..a<$core.int>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'instance', $pb.PbFieldType.OU3)
     ..aOB(10, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'enabled')
     ..aOB(11, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'focused')
     ..aOS(12, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'pkg')
@@ -751,7 +751,7 @@ class Selector extends $pb.GeneratedMessage {
   @$pb.TagNumber(9)
   $core.int get instance => $_getIZ(8);
   @$pb.TagNumber(9)
-  set instance($core.int v) { $_setSignedInt32(8, v); }
+  set instance($core.int v) { $_setUnsignedInt32(8, v); }
   @$pb.TagNumber(9)
   $core.bool hasInstance() => $_has(8);
   @$pb.TagNumber(9)
@@ -783,5 +783,364 @@ class Selector extends $pb.GeneratedMessage {
   $core.bool hasPkg() => $_has(11);
   @$pb.TagNumber(12)
   void clearPkg() => clearField(12);
+}
+
+class NativeWidget extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'NativeWidget', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'className', protoName: 'className')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'text')
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'contentDescription', protoName: 'contentDescription')
+    ..aOB(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'focused')
+    ..aOB(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'enabled')
+    ..a<$core.int>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'childCount', $pb.PbFieldType.O3, protoName: 'childCount')
+    ..aOS(7, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'resourceName', protoName: 'resourceName')
+    ..aOS(8, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'applicationPackage', protoName: 'applicationPackage')
+    ..pc<NativeWidget>(9, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'children', $pb.PbFieldType.PM, subBuilder: NativeWidget.create)
+    ..hasRequiredFields = false
+  ;
+
+  NativeWidget._() : super();
+  factory NativeWidget({
+    $core.String? className,
+    $core.String? text,
+    $core.String? contentDescription,
+    $core.bool? focused,
+    $core.bool? enabled,
+    $core.int? childCount,
+    $core.String? resourceName,
+    $core.String? applicationPackage,
+    $core.Iterable<NativeWidget>? children,
+  }) {
+    final _result = create();
+    if (className != null) {
+      _result.className = className;
+    }
+    if (text != null) {
+      _result.text = text;
+    }
+    if (contentDescription != null) {
+      _result.contentDescription = contentDescription;
+    }
+    if (focused != null) {
+      _result.focused = focused;
+    }
+    if (enabled != null) {
+      _result.enabled = enabled;
+    }
+    if (childCount != null) {
+      _result.childCount = childCount;
+    }
+    if (resourceName != null) {
+      _result.resourceName = resourceName;
+    }
+    if (applicationPackage != null) {
+      _result.applicationPackage = applicationPackage;
+    }
+    if (children != null) {
+      _result.children.addAll(children);
+    }
+    return _result;
+  }
+  factory NativeWidget.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NativeWidget.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NativeWidget clone() => NativeWidget()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NativeWidget copyWith(void Function(NativeWidget) updates) => super.copyWith((message) => updates(message as NativeWidget)) as NativeWidget; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static NativeWidget create() => NativeWidget._();
+  NativeWidget createEmptyInstance() => create();
+  static $pb.PbList<NativeWidget> createRepeated() => $pb.PbList<NativeWidget>();
+  @$core.pragma('dart2js:noInline')
+  static NativeWidget getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NativeWidget>(create);
+  static NativeWidget? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get className => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set className($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasClassName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearClassName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get text => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set text($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasText() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearText() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get contentDescription => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set contentDescription($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasContentDescription() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearContentDescription() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.bool get focused => $_getBF(3);
+  @$pb.TagNumber(4)
+  set focused($core.bool v) { $_setBool(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasFocused() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearFocused() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.bool get enabled => $_getBF(4);
+  @$pb.TagNumber(5)
+  set enabled($core.bool v) { $_setBool(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasEnabled() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearEnabled() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.int get childCount => $_getIZ(5);
+  @$pb.TagNumber(6)
+  set childCount($core.int v) { $_setSignedInt32(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasChildCount() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearChildCount() => clearField(6);
+
+  @$pb.TagNumber(7)
+  $core.String get resourceName => $_getSZ(6);
+  @$pb.TagNumber(7)
+  set resourceName($core.String v) { $_setString(6, v); }
+  @$pb.TagNumber(7)
+  $core.bool hasResourceName() => $_has(6);
+  @$pb.TagNumber(7)
+  void clearResourceName() => clearField(7);
+
+  @$pb.TagNumber(8)
+  $core.String get applicationPackage => $_getSZ(7);
+  @$pb.TagNumber(8)
+  set applicationPackage($core.String v) { $_setString(7, v); }
+  @$pb.TagNumber(8)
+  $core.bool hasApplicationPackage() => $_has(7);
+  @$pb.TagNumber(8)
+  void clearApplicationPackage() => clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.List<NativeWidget> get children => $_getList(8);
+}
+
+class NativeWidgetsQuery extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'NativeWidgetsQuery', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..aOM<Selector>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'selector', subBuilder: Selector.create)
+    ..hasRequiredFields = false
+  ;
+
+  NativeWidgetsQuery._() : super();
+  factory NativeWidgetsQuery({
+    Selector? selector,
+  }) {
+    final _result = create();
+    if (selector != null) {
+      _result.selector = selector;
+    }
+    return _result;
+  }
+  factory NativeWidgetsQuery.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NativeWidgetsQuery.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NativeWidgetsQuery clone() => NativeWidgetsQuery()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NativeWidgetsQuery copyWith(void Function(NativeWidgetsQuery) updates) => super.copyWith((message) => updates(message as NativeWidgetsQuery)) as NativeWidgetsQuery; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static NativeWidgetsQuery create() => NativeWidgetsQuery._();
+  NativeWidgetsQuery createEmptyInstance() => create();
+  static $pb.PbList<NativeWidgetsQuery> createRepeated() => $pb.PbList<NativeWidgetsQuery>();
+  @$core.pragma('dart2js:noInline')
+  static NativeWidgetsQuery getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NativeWidgetsQuery>(create);
+  static NativeWidgetsQuery? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  Selector get selector => $_getN(0);
+  @$pb.TagNumber(1)
+  set selector(Selector v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasSelector() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSelector() => clearField(1);
+  @$pb.TagNumber(1)
+  Selector ensureSelector() => $_ensure(0);
+}
+
+class Notification extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Notification', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'appName', protoName: 'appName')
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'title')
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'content')
+    ..hasRequiredFields = false
+  ;
+
+  Notification._() : super();
+  factory Notification({
+    $core.String? appName,
+    $core.String? title,
+    $core.String? content,
+  }) {
+    final _result = create();
+    if (appName != null) {
+      _result.appName = appName;
+    }
+    if (title != null) {
+      _result.title = title;
+    }
+    if (content != null) {
+      _result.content = content;
+    }
+    return _result;
+  }
+  factory Notification.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Notification.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  Notification clone() => Notification()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  Notification copyWith(void Function(Notification) updates) => super.copyWith((message) => updates(message as Notification)) as Notification; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static Notification create() => Notification._();
+  Notification createEmptyInstance() => create();
+  static $pb.PbList<Notification> createRepeated() => $pb.PbList<Notification>();
+  @$core.pragma('dart2js:noInline')
+  static Notification getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Notification>(create);
+  static Notification? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appName => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appName($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasAppName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get title => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set title($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasTitle() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTitle() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get content => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set content($core.String v) { $_setString(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasContent() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearContent() => clearField(3);
+}
+
+class NotificationsQueryResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'NotificationsQueryResponse', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..pc<Notification>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'notifications', $pb.PbFieldType.PM, subBuilder: Notification.create)
+    ..hasRequiredFields = false
+  ;
+
+  NotificationsQueryResponse._() : super();
+  factory NotificationsQueryResponse({
+    $core.Iterable<Notification>? notifications,
+  }) {
+    final _result = create();
+    if (notifications != null) {
+      _result.notifications.addAll(notifications);
+    }
+    return _result;
+  }
+  factory NotificationsQueryResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NotificationsQueryResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NotificationsQueryResponse clone() => NotificationsQueryResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NotificationsQueryResponse copyWith(void Function(NotificationsQueryResponse) updates) => super.copyWith((message) => updates(message as NotificationsQueryResponse)) as NotificationsQueryResponse; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static NotificationsQueryResponse create() => NotificationsQueryResponse._();
+  NotificationsQueryResponse createEmptyInstance() => create();
+  static $pb.PbList<NotificationsQueryResponse> createRepeated() => $pb.PbList<NotificationsQueryResponse>();
+  @$core.pragma('dart2js:noInline')
+  static NotificationsQueryResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NotificationsQueryResponse>(create);
+  static NotificationsQueryResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<Notification> get notifications => $_getList(0);
+}
+
+class NativeWidgetsQueryResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'NativeWidgetsQueryResponse', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..pc<NativeWidget>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'nativeWidgets', $pb.PbFieldType.PM, protoName: 'nativeWidgets', subBuilder: NativeWidget.create)
+    ..hasRequiredFields = false
+  ;
+
+  NativeWidgetsQueryResponse._() : super();
+  factory NativeWidgetsQueryResponse({
+    $core.Iterable<NativeWidget>? nativeWidgets,
+  }) {
+    final _result = create();
+    if (nativeWidgets != null) {
+      _result.nativeWidgets.addAll(nativeWidgets);
+    }
+    return _result;
+  }
+  factory NativeWidgetsQueryResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory NativeWidgetsQueryResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  NativeWidgetsQueryResponse clone() => NativeWidgetsQueryResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  NativeWidgetsQueryResponse copyWith(void Function(NativeWidgetsQueryResponse) updates) => super.copyWith((message) => updates(message as NativeWidgetsQueryResponse)) as NativeWidgetsQueryResponse; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static NativeWidgetsQueryResponse create() => NativeWidgetsQueryResponse._();
+  NativeWidgetsQueryResponse createEmptyInstance() => create();
+  static $pb.PbList<NativeWidgetsQueryResponse> createRepeated() => $pb.PbList<NativeWidgetsQueryResponse>();
+  @$core.pragma('dart2js:noInline')
+  static NativeWidgetsQueryResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<NativeWidgetsQueryResponse>(create);
+  static NativeWidgetsQueryResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.List<NativeWidget> get nativeWidgets => $_getList(0);
 }
 

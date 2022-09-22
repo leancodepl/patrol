@@ -1,6 +1,8 @@
 syntax = "proto3";
 package patrol;
 
+option java_package = "pl.leancode.automatorserver";
+
 message OpenAppCommand { string appId = 1; }
 
 message TapCommand {
@@ -22,12 +24,10 @@ message EnterTextBySelectorCommand {
 message EnterTextByIndexCommand {
   string appId = 1;
   string data = 2;
-  int32 index = 3; // TODO: should be uint32?
+  uint32 index = 3;
 }
 
-message TapOnNotificationByIndexCommand {
-  int32 index = 1; // TODO: should be uint32?
-}
+message TapOnNotificationByIndexCommand { uint32 index = 1; }
 
 message TapOnNotificationBySelectorCommand { Selector selector = 1; }
 
@@ -36,7 +36,7 @@ message SwipeCommand {
   float startY = 2;
   float endX = 3;
   float endY = 4;
-  int32 steps = 5; // TODO: should be uint32?
+  uint32 steps = 5;
 }
 
 message HandlePermissionCommand {
@@ -58,8 +58,32 @@ message Selector {
   string contentDescriptionStartsWith = 6;
   string contentDescriptionContains = 7;
   string resourceId = 8;
-  int32 instance = 9; // TODO: should be uint32?
+  uint32 instance = 9;
   bool enabled = 10;
   bool focused = 11;
   string pkg = 12;
 }
+
+message NativeWidget {
+  string className = 1;
+  string text = 2;
+  string contentDescription = 3;
+  bool focused = 4;
+  bool enabled = 5;
+  int32 childCount = 6;
+  string resourceName = 7;
+  string applicationPackage = 8;
+  repeated NativeWidget children = 9;
+}
+
+message NativeWidgetsQuery { Selector selector = 1; }
+
+message Notification {
+  string appName = 1;
+  string title = 2;
+  string content = 3;
+}
+
+message NotificationsQueryResponse { repeated Notification notifications = 1; }
+
+message NativeWidgetsQueryResponse { repeated NativeWidget nativeWidgets = 1; }

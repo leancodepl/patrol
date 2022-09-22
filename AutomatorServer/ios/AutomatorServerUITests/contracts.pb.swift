@@ -112,8 +112,7 @@ struct Patrol_EnterTextByIndexCommand {
 
   var data: String = String()
 
-  /// TODO: should be uint32?
-  var index: Int32 = 0
+  var index: UInt32 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -125,8 +124,7 @@ struct Patrol_TapOnNotificationByIndexCommand {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// TODO: should be uint32?
-  var index: Int32 = 0
+  var index: UInt32 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -167,8 +165,7 @@ struct Patrol_SwipeCommand {
 
   var endY: Float = 0
 
-  /// TODO: should be uint32?
-  var steps: Int32 = 0
+  var steps: UInt32 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -252,14 +249,102 @@ struct Patrol_Selector {
 
   var resourceID: String = String()
 
-  /// TODO: should be uint32?
-  var instance: Int32 = 0
+  var instance: UInt32 = 0
 
   var enabled: Bool = false
 
   var focused: Bool = false
 
   var pkg: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct Patrol_NativeWidget {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var className: String = String()
+
+  var text: String = String()
+
+  var contentDescription: String = String()
+
+  var focused: Bool = false
+
+  var enabled: Bool = false
+
+  var childCount: Int32 = 0
+
+  var resourceName: String = String()
+
+  var applicationPackage: String = String()
+
+  var children: [Patrol_NativeWidget] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct Patrol_NativeWidgetsQuery {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var selector: Patrol_Selector {
+    get {return _selector ?? Patrol_Selector()}
+    set {_selector = newValue}
+  }
+  /// Returns true if `selector` has been explicitly set.
+  var hasSelector: Bool {return self._selector != nil}
+  /// Clears the value of `selector`. Subsequent reads from it will return its default value.
+  mutating func clearSelector() {self._selector = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _selector: Patrol_Selector? = nil
+}
+
+struct Patrol_Notification {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var appName: String = String()
+
+  var title: String = String()
+
+  var content: String = String()
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct Patrol_NotificationsQueryResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var notifications: [Patrol_Notification] = []
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+}
+
+struct Patrol_NativeWidgetsQueryResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var nativeWidgets: [Patrol_NativeWidget] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -278,6 +363,11 @@ extension Patrol_SwipeCommand: @unchecked Sendable {}
 extension Patrol_HandlePermissionCommand: @unchecked Sendable {}
 extension Patrol_HandlePermissionCommand.Code: @unchecked Sendable {}
 extension Patrol_Selector: @unchecked Sendable {}
+extension Patrol_NativeWidget: @unchecked Sendable {}
+extension Patrol_NativeWidgetsQuery: @unchecked Sendable {}
+extension Patrol_Notification: @unchecked Sendable {}
+extension Patrol_NotificationsQueryResponse: @unchecked Sendable {}
+extension Patrol_NativeWidgetsQueryResponse: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -464,7 +554,7 @@ extension Patrol_EnterTextByIndexCommand: SwiftProtobuf.Message, SwiftProtobuf._
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.data) }()
-      case 3: try { try decoder.decodeSingularInt32Field(value: &self.index) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
       default: break
       }
     }
@@ -478,7 +568,7 @@ extension Patrol_EnterTextByIndexCommand: SwiftProtobuf.Message, SwiftProtobuf._
       try visitor.visitSingularStringField(value: self.data, fieldNumber: 2)
     }
     if self.index != 0 {
-      try visitor.visitSingularInt32Field(value: self.index, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -504,7 +594,7 @@ extension Patrol_TapOnNotificationByIndexCommand: SwiftProtobuf.Message, SwiftPr
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularInt32Field(value: &self.index) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
       default: break
       }
     }
@@ -512,7 +602,7 @@ extension Patrol_TapOnNotificationByIndexCommand: SwiftProtobuf.Message, SwiftPr
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.index != 0 {
-      try visitor.visitSingularInt32Field(value: self.index, fieldNumber: 1)
+      try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -580,7 +670,7 @@ extension Patrol_SwipeCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 2: try { try decoder.decodeSingularFloatField(value: &self.startY) }()
       case 3: try { try decoder.decodeSingularFloatField(value: &self.endX) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self.endY) }()
-      case 5: try { try decoder.decodeSingularInt32Field(value: &self.steps) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.steps) }()
       default: break
       }
     }
@@ -600,7 +690,7 @@ extension Patrol_SwipeCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       try visitor.visitSingularFloatField(value: self.endY, fieldNumber: 4)
     }
     if self.steps != 0 {
-      try visitor.visitSingularInt32Field(value: self.steps, fieldNumber: 5)
+      try visitor.visitSingularUInt32Field(value: self.steps, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -687,7 +777,7 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
       case 6: try { try decoder.decodeSingularStringField(value: &self.contentDescriptionStartsWith) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.contentDescriptionContains) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.resourceID) }()
-      case 9: try { try decoder.decodeSingularInt32Field(value: &self.instance) }()
+      case 9: try { try decoder.decodeSingularUInt32Field(value: &self.instance) }()
       case 10: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
       case 11: try { try decoder.decodeSingularBoolField(value: &self.focused) }()
       case 12: try { try decoder.decodeSingularStringField(value: &self.pkg) }()
@@ -722,7 +812,7 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
       try visitor.visitSingularStringField(value: self.resourceID, fieldNumber: 8)
     }
     if self.instance != 0 {
-      try visitor.visitSingularInt32Field(value: self.instance, fieldNumber: 9)
+      try visitor.visitSingularUInt32Field(value: self.instance, fieldNumber: 9)
     }
     if self.enabled != false {
       try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 10)
@@ -749,6 +839,230 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     if lhs.enabled != rhs.enabled {return false}
     if lhs.focused != rhs.focused {return false}
     if lhs.pkg != rhs.pkg {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".NativeWidget"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "className"),
+    2: .same(proto: "text"),
+    3: .same(proto: "contentDescription"),
+    4: .same(proto: "focused"),
+    5: .same(proto: "enabled"),
+    6: .same(proto: "childCount"),
+    7: .same(proto: "resourceName"),
+    8: .same(proto: "applicationPackage"),
+    9: .same(proto: "children"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.className) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.text) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.contentDescription) }()
+      case 4: try { try decoder.decodeSingularBoolField(value: &self.focused) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
+      case 6: try { try decoder.decodeSingularInt32Field(value: &self.childCount) }()
+      case 7: try { try decoder.decodeSingularStringField(value: &self.resourceName) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self.applicationPackage) }()
+      case 9: try { try decoder.decodeRepeatedMessageField(value: &self.children) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.className.isEmpty {
+      try visitor.visitSingularStringField(value: self.className, fieldNumber: 1)
+    }
+    if !self.text.isEmpty {
+      try visitor.visitSingularStringField(value: self.text, fieldNumber: 2)
+    }
+    if !self.contentDescription.isEmpty {
+      try visitor.visitSingularStringField(value: self.contentDescription, fieldNumber: 3)
+    }
+    if self.focused != false {
+      try visitor.visitSingularBoolField(value: self.focused, fieldNumber: 4)
+    }
+    if self.enabled != false {
+      try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 5)
+    }
+    if self.childCount != 0 {
+      try visitor.visitSingularInt32Field(value: self.childCount, fieldNumber: 6)
+    }
+    if !self.resourceName.isEmpty {
+      try visitor.visitSingularStringField(value: self.resourceName, fieldNumber: 7)
+    }
+    if !self.applicationPackage.isEmpty {
+      try visitor.visitSingularStringField(value: self.applicationPackage, fieldNumber: 8)
+    }
+    if !self.children.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.children, fieldNumber: 9)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Patrol_NativeWidget, rhs: Patrol_NativeWidget) -> Bool {
+    if lhs.className != rhs.className {return false}
+    if lhs.text != rhs.text {return false}
+    if lhs.contentDescription != rhs.contentDescription {return false}
+    if lhs.focused != rhs.focused {return false}
+    if lhs.enabled != rhs.enabled {return false}
+    if lhs.childCount != rhs.childCount {return false}
+    if lhs.resourceName != rhs.resourceName {return false}
+    if lhs.applicationPackage != rhs.applicationPackage {return false}
+    if lhs.children != rhs.children {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_NativeWidgetsQuery: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".NativeWidgetsQuery"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "selector"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._selector {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Patrol_NativeWidgetsQuery, rhs: Patrol_NativeWidgetsQuery) -> Bool {
+    if lhs._selector != rhs._selector {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".Notification"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "appName"),
+    2: .same(proto: "title"),
+    3: .same(proto: "content"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.appName) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.title) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.content) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.appName.isEmpty {
+      try visitor.visitSingularStringField(value: self.appName, fieldNumber: 1)
+    }
+    if !self.title.isEmpty {
+      try visitor.visitSingularStringField(value: self.title, fieldNumber: 2)
+    }
+    if !self.content.isEmpty {
+      try visitor.visitSingularStringField(value: self.content, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Patrol_Notification, rhs: Patrol_Notification) -> Bool {
+    if lhs.appName != rhs.appName {return false}
+    if lhs.title != rhs.title {return false}
+    if lhs.content != rhs.content {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_NotificationsQueryResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".NotificationsQueryResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "notifications"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.notifications) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.notifications.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.notifications, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Patrol_NotificationsQueryResponse, rhs: Patrol_NotificationsQueryResponse) -> Bool {
+    if lhs.notifications != rhs.notifications {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_NativeWidgetsQueryResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".NativeWidgetsQueryResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "nativeWidgets"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.nativeWidgets) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.nativeWidgets.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.nativeWidgets, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: Patrol_NativeWidgetsQueryResponse, rhs: Patrol_NativeWidgetsQueryResponse) -> Bool {
+    if lhs.nativeWidgets != rhs.nativeWidgets {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

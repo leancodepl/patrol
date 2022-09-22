@@ -6,19 +6,13 @@ import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
-
-@Serializable
-data class Notification(
-    val appName: String?,
-    val title: String,
-    val content: String
-)
 
 @Serializable
 data class NativeWidget(
@@ -132,19 +126,15 @@ class PatrolAutomator {
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
-    fun getNativeWidgets(query: Selector): List<NativeWidget> {
+    fun getNativeWidgets(selector: BySelector): List<NativeWidget> {
         Logger.d("getNativeWidgets()")
 
-        val selector = query.toBySelector()
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { NativeWidget.fromUiObject2(it) }
     }
 
-    fun tap(query: Selector) {
-        Logger.d("tap()")
-
-        val selector = query.toUiSelector()
-        Logger.d("Selector: $selector")
+    fun tap(selector: UiSelector) {
+        Logger.d("tap() with selector $selector")
 
         val uiObject = uiDevice.findObject(selector)
 
@@ -153,11 +143,8 @@ class PatrolAutomator {
         delay()
     }
 
-    fun doubleTap(query: Selector) {
-        Logger.d("doubleTap()")
-
-        val selector = query.toUiSelector()
-        Logger.d("Selector: $selector")
+    fun doubleTap(selector: UiSelector) {
+        Logger.d("doubleTap() with selector $selector")
 
         val uiObject = uiDevice.findObject(selector)
 
@@ -185,7 +172,7 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(text: String, query: Selector) {
+    fun enterText(text: String, query: Contracts.Selector) {
         Logger.d("enterText(text: $text, query: $query")
 
         val selector = query.toUiSelector()
@@ -198,7 +185,7 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun swipe(swipe: SwipeCommand) {
+    fun swipe(swipe: Contracts.SwipeCommand) {
         Logger.d("swipe()")
 
         if (swipe.startX !in 0f..1f) {
@@ -240,14 +227,14 @@ class PatrolAutomator {
         delay()
     }
 
-    fun getNotifications(): List<Notification> {
+    fun getNotifications(): List<Contracts.Notification> {
         Logger.d("getNotifications()")
 
         openNotifications()
 
         val notificationContainers = uiDevice.findObjects(By.res("android:id/status_bar_latest_event_content"))
 
-        val notifications = mutableListOf<Notification>()
+        val notifications = mutableListOf<Contracts.Notification>()
         Logger.d("Found ${notificationContainers.size} notifications")
         for (notificationContainer in notificationContainers) {
             try {
@@ -258,7 +245,9 @@ class PatrolAutomator {
                     ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
                     ?: throw NullPointerException("Could not find content text")
 
-                notifications.add(Notification(appName = appName, title = title, content = content))
+                notifications.add(
+                    Contracts.Notification.newBuilder().setAppName(appName).setTitle(title).setContent(content).build()
+                )
             } catch (e: NullPointerException) {
                 Logger.e("Failed to find UI component of a notification", e)
             }
@@ -272,14 +261,15 @@ class PatrolAutomator {
 
         openNotifications()
 
-        val query = Selector(resourceId = "android:id/status_bar_latest_event_content", instance = index)
+        val query = Contracts.Selector.newBuilder().setResourceId("android:id/status_bar_latest_event_content")
+            .setInstance(index).build()
         val obj = uiDevice.findObject(query.toUiSelector())
         obj.click()
 
         delay()
     }
 
-    fun tapOnNotification(selector: Selector) {
+    fun tapOnNotification(selector: Contracts.Selector) {
         Logger.d("tapOnNotification()")
 
         openNotifications()
@@ -290,11 +280,11 @@ class PatrolAutomator {
         delay()
     }
 
-    fun handlePermission(code: String) {
+    fun handlePermission(code: Contracts.HandlePermissionCommand.Code) {
         val sdk = Build.VERSION.SDK_INT
 
         val resourceId: String = when (code) {
-            "WHILE_USING" -> {
+            Contracts.HandlePermissionCommand.Code.WHILE_USING -> {
                 when {
                     sdk <= Build.VERSION_CODES.P -> {
                         "com.android.packageinstaller:id/permission_allow_button"
@@ -308,7 +298,7 @@ class PatrolAutomator {
                 }
             }
 
-            "ONLY_THIS_TIME" -> {
+            Contracts.HandlePermissionCommand.Code.ONLY_THIS_TIME -> {
                 when {
                     sdk <= Build.VERSION_CODES.P -> {
                         "com.android.packageinstaller:id/permission_allow_button"
@@ -322,7 +312,7 @@ class PatrolAutomator {
                 }
             }
 
-            "DENIED" -> {
+            Contracts.HandlePermissionCommand.Code.DENIED -> {
                 when {
                     sdk <= Build.VERSION_CODES.P -> {
                         "com.android.packageinstaller:id/permission_deny_button"
@@ -339,15 +329,15 @@ class PatrolAutomator {
             else -> throw PatrolException("Unknown code $code")
         }
 
-        tap(Selector(resourceId = resourceId))
+        tap(UiSelector().resourceId(resourceId))
     }
 
     fun selectFineLocation() {
-        tap(Selector(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
+        tap(UiSelector().resourceId("com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
     }
 
     fun selectCoarseLocation() {
-        tap(Selector(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
+        tap(UiSelector().resourceId("com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
     }
 
     companion object {
