@@ -352,12 +352,12 @@ class PatrolServer {
             PatrolAutomator.instance.disableWifi()
             Response(OK)
         },
-        "enableCelluar" bind POST to {
-            PatrolAutomator.instance.enableCelluar()
+        "enableCellular" bind POST to {
+            PatrolAutomator.instance.enableCellular()
             Response(OK)
         },
-        "disableCelluar" bind POST to {
-            PatrolAutomator.instance.disableCelluar()
+        "disableCellular" bind POST to {
+            PatrolAutomator.instance.disableCellular()
             Response(OK)
         },
         "enableBluetooth" bind POST to {

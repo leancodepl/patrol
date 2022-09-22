@@ -120,9 +120,9 @@ class PatrolAutomator {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun disableCelluar() = executeShellCommand("svc data disable")
+    fun disableCellular() = executeShellCommand("svc data disable")
 
-    fun enableCelluar() = executeShellCommand("svc data enable")
+    fun enableCellular() = executeShellCommand("svc data enable")
 
     fun enableBluetooth() = executeShellCommand("svc bluetooth enable")
 
