@@ -262,6 +262,9 @@ struct Patrol_Selector {
   init() {}
 }
 
+/// Represents a native UI control.
+///
+/// On Android, this is `android.view.View`.
 struct Patrol_NativeWidget {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -311,6 +314,7 @@ struct Patrol_NativeWidgetsQuery {
   fileprivate var _selector: Patrol_Selector? = nil
 }
 
+/// Represents a notification visible in the notification shade.
 struct Patrol_Notification {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for

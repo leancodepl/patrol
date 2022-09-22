@@ -64,6 +64,9 @@ message Selector {
   string pkg = 12;
 }
 
+// Represents a native UI control.
+//
+// On Android, this is `android.view.View`.
 message NativeWidget {
   string className = 1;
   string text = 2;
@@ -78,6 +81,7 @@ message NativeWidget {
 
 message NativeWidgetsQuery { Selector selector = 1; }
 
+// Represents a notification visible in the notification shade.
 message Notification {
   string appName = 1;
   string title = 2;

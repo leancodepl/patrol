@@ -4,7 +4,6 @@ import 'dart:io' as io;
 import 'package:http/http.dart' as http;
 import 'package:patrol/src/extensions.dart';
 import 'package:patrol/src/native/binding.dart';
-import 'package:patrol/src/native/models/models.dart';
 
 import 'contracts/contracts.dart';
 
@@ -215,7 +214,7 @@ class NativeAutomator {
 
     final notifications = json.decode(response.body) as List<dynamic>;
     return notifications
-        .map((dynamic e) => Notification.fromJson(e as Map<String, dynamic>))
+        .map((dynamic e) => Notification.fromJson(e.toString()))
         .toList();
   }
 
@@ -321,7 +320,7 @@ class NativeAutomator {
 
     final nativeWidgets = json.decode(response.body) as List<dynamic>;
     return nativeWidgets
-        .map((dynamic e) => NativeWidget.fromJson(e as Map<String, dynamic>))
+        .map((dynamic e) => NativeWidget.fromJson(e.toString()))
         .toList();
   }
 

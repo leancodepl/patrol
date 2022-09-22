@@ -8467,6 +8467,11 @@ public final class Contracts {
         int index);
   }
   /**
+   * <pre>
+   * Represents a native UI control.
+   * On Android, this is `android.view.View`.
+   * </pre>
+   *
    * Protobuf type {@code patrol.NativeWidget}
    */
   public static final class NativeWidget extends
@@ -9115,6 +9120,11 @@ public final class Contracts {
       return builder;
     }
     /**
+     * <pre>
+     * Represents a native UI control.
+     * On Android, this is `android.view.View`.
+     * </pre>
+     *
      * Protobuf type {@code patrol.NativeWidget}
      */
     public static final class Builder extends
@@ -10781,6 +10791,10 @@ public final class Contracts {
         getContentBytes();
   }
   /**
+   * <pre>
+   * Represents a notification visible in the notification shade.
+   * </pre>
+   *
    * Protobuf type {@code patrol.Notification}
    */
   public static final class Notification extends
@@ -11169,6 +11183,10 @@ public final class Contracts {
       return builder;
     }
     /**
+     * <pre>
+     * Represents a notification visible in the notification shade.
+     * </pre>
+     *
      * Protobuf type {@code patrol.Notification}
      */
     public static final class Builder extends

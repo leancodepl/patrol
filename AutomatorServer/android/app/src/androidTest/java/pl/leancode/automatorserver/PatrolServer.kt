@@ -5,6 +5,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -241,7 +242,10 @@ class PatrolServer {
             Response(OK)
         },
         "openApp" bind POST to {
-            val command = Contracts.OpenAppCommand.parseFrom(it.body.stream)
+            val builder = Contracts.OpenAppCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.openApp(command.appId)
             Response(OK)
         },
@@ -271,42 +275,66 @@ class PatrolServer {
             Response(OK).body(JsonFormat.printer().print(query))
         },
         "tapOnNotificationByIndex" bind POST to {
-            val command = Contracts.TapOnNotificationByIndexCommand.parseFrom(it.body.stream)
+            val builder = Contracts.TapOnNotificationByIndexCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.tapOnNotification(command.index)
             Response(OK)
         },
         "tapOnNotificationBySelector" bind POST to {
-            val command = Contracts.TapOnNotificationBySelectorCommand.parseFrom(it.body.stream)
+            val builder = Contracts.TapOnNotificationBySelectorCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.tapOnNotification(command.selector)
             Response(OK)
         },
         "tap" bind POST to {
-            val command = Contracts.TapCommand.parseFrom(it.body.stream)
+            val builder = Contracts.TapCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.tap(command.selector.toUiSelector())
             Response(OK)
         },
         "doubleTap" bind POST to {
-            val command = Contracts.DoubleTapCommand.parseFrom(it.body.stream)
+            val builder = Contracts.DoubleTapCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.doubleTap(command.selector.toUiSelector())
             Response(OK)
         },
         "enterTextByIndex" bind POST to {
-            val command = Contracts.EnterTextByIndexCommand.parseFrom(it.body.stream)
+            val builder = Contracts.EnterTextByIndexCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.enterText(command.data, command.index)
             Response(OK)
         },
         "enterTextBySelector" bind POST to {
-            val command = Contracts.EnterTextBySelectorCommand.parseFrom(it.body.stream)
+            val builder = Contracts.EnterTextBySelectorCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.enterText(command.data, command.selector)
             Response(OK)
         },
         "swipe" bind POST to {
-            val command = Contracts.SwipeCommand.parseFrom(it.body.stream)
+            val builder = Contracts.SwipeCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.swipe(command)
             Response(OK)
         },
         "getNativeWidgets" bind POST to {
-            val command = Contracts.NativeWidgetsQuery.parseFrom(it.body.stream)
+            val builder = Contracts.NativeWidgetsQuery.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             val textFields = PatrolAutomator.instance.getNativeWidgets(command.selector.toBySelector())
             Response(OK).body(json.encodeToString(textFields))
         },
@@ -343,7 +371,10 @@ class PatrolServer {
             Response(OK)
         },
         "handlePermission" bind POST to {
-            val command = Contracts.HandlePermissionCommand.parseFrom(it.body.stream)
+            val builder = Contracts.HandlePermissionCommand.newBuilder()
+            JsonFormat.parser().merge(it.bodyString(), builder)
+            val command = builder.build()
+
             PatrolAutomator.instance.handlePermission(command.code)
             Response(OK)
         },
