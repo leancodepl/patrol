@@ -60,6 +60,7 @@ class PatrolAutomation {
           self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
         }
         
+        self.springboard.activate()
         self.preferences.terminate()
       } else {
         // TODO
@@ -85,7 +86,7 @@ class PatrolAutomation {
         if value == "1" {
           self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
         }
-        
+        self.springboard.activate()
         self.preferences.terminate()
       } else {
         // TODO
