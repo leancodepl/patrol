@@ -79,7 +79,15 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   }
   
   func enterText(request: Patrol_EnterTextRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_EnterTextResponse {
-    automation.enterText(request.data, by: request.selector.text, inApp: request.appID)
+    switch request.findBy {
+    case .index(let index):
+      automation.enterText(request.data, by: Int(index), inApp: request.appID)
+    case .selector(let selector):
+      automation.enterText(request.data, by: selector.text, inApp: request.appID)
+    default:
+      throw PatrolError.generic("enterText(): neither index nor selector present")
+    }
+    
     return Patrol_EnterTextResponse()
   }
   
