@@ -13,4 +13,8 @@ protoc --dart_out="grpc:$dart_out" -I="$SRC_DIR" "$SRC_DIR/contracts.proto"
 
 protoc --java_out="$java_out" --kotlin_out="$kotlin_out" "$SRC_DIR/contracts.proto"
 
-protoc --swift_out="$swift_out" "$SRC_DIR/contracts.proto"
+protoc \
+	--swift_out="$swift_out" \
+	--grpc-swift_out="$swift_out" \
+	--swift_opt=Visibility=Public \
+	"$SRC_DIR/contracts.proto"

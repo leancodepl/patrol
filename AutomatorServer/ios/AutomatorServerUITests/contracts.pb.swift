@@ -20,179 +20,475 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-struct Patrol_OpenAppCommand {
+public struct Patrol_PressHomeRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var appID: String = String()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
+  public init() {}
 }
 
-struct Patrol_TapCommand {
+public struct Patrol_PressHomeResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var appID: String = String()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  var selector: Patrol_Selector {
+  public init() {}
+}
+
+public struct Patrol_PressBackRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_PressBackResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_PressRecentAppsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_PressRecentAppsResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_DoublePressRecentAppsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_DoublePressRecentAppsResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_OpenAppRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var appID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_OpenAppResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_OpenNotificationsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_OpenNotificationsResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_TapOnNotificationRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var findBy: Patrol_TapOnNotificationRequest.OneOf_FindBy? = nil
+
+  public var index: UInt32 {
+    get {
+      if case .index(let v)? = findBy {return v}
+      return 0
+    }
+    set {findBy = .index(newValue)}
+  }
+
+  public var selector: Patrol_Selector {
+    get {
+      if case .selector(let v)? = findBy {return v}
+      return Patrol_Selector()
+    }
+    set {findBy = .selector(newValue)}
+  }
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum OneOf_FindBy: Equatable {
+    case index(UInt32)
+    case selector(Patrol_Selector)
+
+  #if !swift(>=4.1)
+    public static func ==(lhs: Patrol_TapOnNotificationRequest.OneOf_FindBy, rhs: Patrol_TapOnNotificationRequest.OneOf_FindBy) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch (lhs, rhs) {
+      case (.index, .index): return {
+        guard case .index(let l) = lhs, case .index(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.selector, .selector): return {
+        guard case .selector(let l) = lhs, case .selector(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      default: return false
+      }
+    }
+  #endif
+  }
+
+  public init() {}
+}
+
+public struct Patrol_TapOnNotificationResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_OpenQuickSettingsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_OpenQuickSettingsResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_DarkModeRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_DarkModeResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_WiFiRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_WiFiResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_CellularRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_CellularResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_GetNativeWidgetsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var selector: Patrol_Selector {
     get {return _selector ?? Patrol_Selector()}
     set {_selector = newValue}
   }
   /// Returns true if `selector` has been explicitly set.
-  var hasSelector: Bool {return self._selector != nil}
+  public var hasSelector: Bool {return self._selector != nil}
   /// Clears the value of `selector`. Subsequent reads from it will return its default value.
-  mutating func clearSelector() {self._selector = nil}
+  public mutating func clearSelector() {self._selector = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _selector: Patrol_Selector? = nil
 }
 
-struct Patrol_DoubleTapCommand {
+public struct Patrol_GetNativeWidgetsResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var appID: String = String()
+  public var nativeWidgets: [Patrol_NativeWidget] = []
 
-  var selector: Patrol_Selector {
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_GetNotificationsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_GetNotificationsResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var notifications: [Patrol_Notification] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_TapRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var selector: Patrol_Selector {
     get {return _selector ?? Patrol_Selector()}
     set {_selector = newValue}
   }
   /// Returns true if `selector` has been explicitly set.
-  var hasSelector: Bool {return self._selector != nil}
+  public var hasSelector: Bool {return self._selector != nil}
   /// Clears the value of `selector`. Subsequent reads from it will return its default value.
-  mutating func clearSelector() {self._selector = nil}
+  public mutating func clearSelector() {self._selector = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var appID: String = String()
 
-  init() {}
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 
   fileprivate var _selector: Patrol_Selector? = nil
 }
 
-struct Patrol_EnterTextBySelectorCommand {
+public struct Patrol_TapResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var appID: String = String()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  var data: String = String()
+  public init() {}
+}
 
-  var selector: Patrol_Selector {
-    get {return _selector ?? Patrol_Selector()}
-    set {_selector = newValue}
+public struct Patrol_EnterTextRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var data: String = String()
+
+  public var appID: String = String()
+
+  public var findBy: Patrol_EnterTextRequest.OneOf_FindBy? = nil
+
+  public var index: UInt32 {
+    get {
+      if case .index(let v)? = findBy {return v}
+      return 0
+    }
+    set {findBy = .index(newValue)}
   }
-  /// Returns true if `selector` has been explicitly set.
-  var hasSelector: Bool {return self._selector != nil}
-  /// Clears the value of `selector`. Subsequent reads from it will return its default value.
-  mutating func clearSelector() {self._selector = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _selector: Patrol_Selector? = nil
-}
-
-struct Patrol_EnterTextByIndexCommand {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var appID: String = String()
-
-  var data: String = String()
-
-  var index: UInt32 = 0
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-}
-
-struct Patrol_TapOnNotificationByIndexCommand {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var index: UInt32 = 0
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-}
-
-struct Patrol_TapOnNotificationBySelectorCommand {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var selector: Patrol_Selector {
-    get {return _selector ?? Patrol_Selector()}
-    set {_selector = newValue}
+  public var selector: Patrol_Selector {
+    get {
+      if case .selector(let v)? = findBy {return v}
+      return Patrol_Selector()
+    }
+    set {findBy = .selector(newValue)}
   }
-  /// Returns true if `selector` has been explicitly set.
-  var hasSelector: Bool {return self._selector != nil}
-  /// Clears the value of `selector`. Subsequent reads from it will return its default value.
-  mutating func clearSelector() {self._selector = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public enum OneOf_FindBy: Equatable {
+    case index(UInt32)
+    case selector(Patrol_Selector)
 
-  fileprivate var _selector: Patrol_Selector? = nil
+  #if !swift(>=4.1)
+    public static func ==(lhs: Patrol_EnterTextRequest.OneOf_FindBy, rhs: Patrol_EnterTextRequest.OneOf_FindBy) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch (lhs, rhs) {
+      case (.index, .index): return {
+        guard case .index(let l) = lhs, case .index(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.selector, .selector): return {
+        guard case .selector(let l) = lhs, case .selector(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      default: return false
+      }
+    }
+  #endif
+  }
+
+  public init() {}
 }
 
-struct Patrol_SwipeCommand {
+public struct Patrol_EnterTextResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var startX: Float = 0
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  var startY: Float = 0
-
-  var endX: Float = 0
-
-  var endY: Float = 0
-
-  var steps: UInt32 = 0
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
+  public init() {}
 }
 
-struct Patrol_HandlePermissionCommand {
+public struct Patrol_SwipeRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var code: Patrol_HandlePermissionCommand.Code = .whileUsing
+  public var startX: UInt32 = 0
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var startY: UInt32 = 0
 
-  enum Code: SwiftProtobuf.Enum {
-    typealias RawValue = Int
+  public var endX: UInt32 = 0
+
+  public var endY: UInt32 = 0
+
+  public var steps: UInt32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_SwipeResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_HandlePermissionRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var code: Patrol_HandlePermissionRequest.Code = .whileUsing
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum Code: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
     case whileUsing // = 0
     case onlyThisTime // = 1
     case denied // = 2
     case UNRECOGNIZED(Int)
 
-    init() {
+    public init() {
       self = .whileUsing
     }
 
-    init?(rawValue: Int) {
+    public init?(rawValue: Int) {
       switch rawValue {
       case 0: self = .whileUsing
       case 1: self = .onlyThisTime
@@ -201,7 +497,7 @@ struct Patrol_HandlePermissionCommand {
       }
     }
 
-    var rawValue: Int {
+    public var rawValue: Int {
       switch self {
       case .whileUsing: return 0
       case .onlyThisTime: return 1
@@ -212,14 +508,14 @@ struct Patrol_HandlePermissionCommand {
 
   }
 
-  init() {}
+  public init() {}
 }
 
 #if swift(>=4.2)
 
-extension Patrol_HandlePermissionCommand.Code: CaseIterable {
+extension Patrol_HandlePermissionRequest.Code: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  static var allCases: [Patrol_HandlePermissionCommand.Code] = [
+  public static var allCases: [Patrol_HandlePermissionRequest.Code] = [
     .whileUsing,
     .onlyThisTime,
     .denied,
@@ -228,122 +524,194 @@ extension Patrol_HandlePermissionCommand.Code: CaseIterable {
 
 #endif  // swift(>=4.2)
 
-struct Patrol_Selector {
+public struct Patrol_HandlePermissionResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var text: String {
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_SetLocationAccuracyRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var locationAccuracy: Patrol_SetLocationAccuracyRequest.LocationAccuracy = .coarse
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum LocationAccuracy: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case coarse // = 0
+    case fine // = 1
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .coarse
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .coarse
+      case 1: self = .fine
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .coarse: return 0
+      case .fine: return 1
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
+
+  public init() {}
+}
+
+#if swift(>=4.2)
+
+extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static var allCases: [Patrol_SetLocationAccuracyRequest.LocationAccuracy] = [
+    .coarse,
+    .fine,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
+public struct Patrol_SetLocationAccuracyResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_Selector {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var text: String {
     get {return _text ?? String()}
     set {_text = newValue}
   }
   /// Returns true if `text` has been explicitly set.
-  var hasText: Bool {return self._text != nil}
+  public var hasText: Bool {return self._text != nil}
   /// Clears the value of `text`. Subsequent reads from it will return its default value.
-  mutating func clearText() {self._text = nil}
+  public mutating func clearText() {self._text = nil}
 
-  var textStartsWith: String {
+  public var textStartsWith: String {
     get {return _textStartsWith ?? String()}
     set {_textStartsWith = newValue}
   }
   /// Returns true if `textStartsWith` has been explicitly set.
-  var hasTextStartsWith: Bool {return self._textStartsWith != nil}
+  public var hasTextStartsWith: Bool {return self._textStartsWith != nil}
   /// Clears the value of `textStartsWith`. Subsequent reads from it will return its default value.
-  mutating func clearTextStartsWith() {self._textStartsWith = nil}
+  public mutating func clearTextStartsWith() {self._textStartsWith = nil}
 
-  var textContains: String {
+  public var textContains: String {
     get {return _textContains ?? String()}
     set {_textContains = newValue}
   }
   /// Returns true if `textContains` has been explicitly set.
-  var hasTextContains: Bool {return self._textContains != nil}
+  public var hasTextContains: Bool {return self._textContains != nil}
   /// Clears the value of `textContains`. Subsequent reads from it will return its default value.
-  mutating func clearTextContains() {self._textContains = nil}
+  public mutating func clearTextContains() {self._textContains = nil}
 
-  var className: String {
+  public var className: String {
     get {return _className ?? String()}
     set {_className = newValue}
   }
   /// Returns true if `className` has been explicitly set.
-  var hasClassName: Bool {return self._className != nil}
+  public var hasClassName: Bool {return self._className != nil}
   /// Clears the value of `className`. Subsequent reads from it will return its default value.
-  mutating func clearClassName() {self._className = nil}
+  public mutating func clearClassName() {self._className = nil}
 
-  var contentDescription: String {
+  public var contentDescription: String {
     get {return _contentDescription ?? String()}
     set {_contentDescription = newValue}
   }
   /// Returns true if `contentDescription` has been explicitly set.
-  var hasContentDescription: Bool {return self._contentDescription != nil}
+  public var hasContentDescription: Bool {return self._contentDescription != nil}
   /// Clears the value of `contentDescription`. Subsequent reads from it will return its default value.
-  mutating func clearContentDescription() {self._contentDescription = nil}
+  public mutating func clearContentDescription() {self._contentDescription = nil}
 
-  var contentDescriptionStartsWith: String {
+  public var contentDescriptionStartsWith: String {
     get {return _contentDescriptionStartsWith ?? String()}
     set {_contentDescriptionStartsWith = newValue}
   }
   /// Returns true if `contentDescriptionStartsWith` has been explicitly set.
-  var hasContentDescriptionStartsWith: Bool {return self._contentDescriptionStartsWith != nil}
+  public var hasContentDescriptionStartsWith: Bool {return self._contentDescriptionStartsWith != nil}
   /// Clears the value of `contentDescriptionStartsWith`. Subsequent reads from it will return its default value.
-  mutating func clearContentDescriptionStartsWith() {self._contentDescriptionStartsWith = nil}
+  public mutating func clearContentDescriptionStartsWith() {self._contentDescriptionStartsWith = nil}
 
-  var contentDescriptionContains: String {
+  public var contentDescriptionContains: String {
     get {return _contentDescriptionContains ?? String()}
     set {_contentDescriptionContains = newValue}
   }
   /// Returns true if `contentDescriptionContains` has been explicitly set.
-  var hasContentDescriptionContains: Bool {return self._contentDescriptionContains != nil}
+  public var hasContentDescriptionContains: Bool {return self._contentDescriptionContains != nil}
   /// Clears the value of `contentDescriptionContains`. Subsequent reads from it will return its default value.
-  mutating func clearContentDescriptionContains() {self._contentDescriptionContains = nil}
+  public mutating func clearContentDescriptionContains() {self._contentDescriptionContains = nil}
 
-  var resourceID: String {
+  public var resourceID: String {
     get {return _resourceID ?? String()}
     set {_resourceID = newValue}
   }
   /// Returns true if `resourceID` has been explicitly set.
-  var hasResourceID: Bool {return self._resourceID != nil}
+  public var hasResourceID: Bool {return self._resourceID != nil}
   /// Clears the value of `resourceID`. Subsequent reads from it will return its default value.
-  mutating func clearResourceID() {self._resourceID = nil}
+  public mutating func clearResourceID() {self._resourceID = nil}
 
-  var instance: UInt32 {
+  public var instance: UInt32 {
     get {return _instance ?? 0}
     set {_instance = newValue}
   }
   /// Returns true if `instance` has been explicitly set.
-  var hasInstance: Bool {return self._instance != nil}
+  public var hasInstance: Bool {return self._instance != nil}
   /// Clears the value of `instance`. Subsequent reads from it will return its default value.
-  mutating func clearInstance() {self._instance = nil}
+  public mutating func clearInstance() {self._instance = nil}
 
-  var enabled: Bool {
+  public var enabled: Bool {
     get {return _enabled ?? false}
     set {_enabled = newValue}
   }
   /// Returns true if `enabled` has been explicitly set.
-  var hasEnabled: Bool {return self._enabled != nil}
+  public var hasEnabled: Bool {return self._enabled != nil}
   /// Clears the value of `enabled`. Subsequent reads from it will return its default value.
-  mutating func clearEnabled() {self._enabled = nil}
+  public mutating func clearEnabled() {self._enabled = nil}
 
-  var focused: Bool {
+  public var focused: Bool {
     get {return _focused ?? false}
     set {_focused = newValue}
   }
   /// Returns true if `focused` has been explicitly set.
-  var hasFocused: Bool {return self._focused != nil}
+  public var hasFocused: Bool {return self._focused != nil}
   /// Clears the value of `focused`. Subsequent reads from it will return its default value.
-  mutating func clearFocused() {self._focused = nil}
+  public mutating func clearFocused() {self._focused = nil}
 
-  var pkg: String {
+  public var pkg: String {
     get {return _pkg ?? String()}
     set {_pkg = newValue}
   }
   /// Returns true if `pkg` has been explicitly set.
-  var hasPkg: Bool {return self._pkg != nil}
+  public var hasPkg: Bool {return self._pkg != nil}
   /// Clears the value of `pkg`. Subsequent reads from it will return its default value.
-  mutating func clearPkg() {self._pkg = nil}
+  public mutating func clearPkg() {self._pkg = nil}
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _text: String? = nil
   fileprivate var _textStartsWith: String? = nil
@@ -362,135 +730,269 @@ struct Patrol_Selector {
 /// Represents a native UI control.
 ///
 /// On Android, this is `android.view.View`.
-struct Patrol_NativeWidget {
+public struct Patrol_NativeWidget {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var className: String = String()
+  public var className: String = String()
 
-  var text: String = String()
+  public var text: String = String()
 
-  var contentDescription: String = String()
+  public var contentDescription: String = String()
 
-  var focused: Bool = false
+  public var focused: Bool = false
 
-  var enabled: Bool = false
+  public var enabled: Bool = false
 
-  var childCount: Int32 = 0
+  public var childCount: Int32 = 0
 
-  var resourceName: String = String()
+  public var resourceName: String = String()
 
-  var applicationPackage: String = String()
+  public var applicationPackage: String = String()
 
-  var children: [Patrol_NativeWidget] = []
+  public var children: [Patrol_NativeWidget] = []
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
-}
-
-struct Patrol_NativeWidgetsQuery {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var selector: Patrol_Selector {
-    get {return _selector ?? Patrol_Selector()}
-    set {_selector = newValue}
-  }
-  /// Returns true if `selector` has been explicitly set.
-  var hasSelector: Bool {return self._selector != nil}
-  /// Clears the value of `selector`. Subsequent reads from it will return its default value.
-  mutating func clearSelector() {self._selector = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _selector: Patrol_Selector? = nil
+  public init() {}
 }
 
 /// Represents a notification visible in the notification shade.
-struct Patrol_Notification {
+public struct Patrol_Notification {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var appName: String {
+  public var appName: String {
     get {return _appName ?? String()}
     set {_appName = newValue}
   }
   /// Returns true if `appName` has been explicitly set.
-  var hasAppName: Bool {return self._appName != nil}
+  public var hasAppName: Bool {return self._appName != nil}
   /// Clears the value of `appName`. Subsequent reads from it will return its default value.
-  mutating func clearAppName() {self._appName = nil}
+  public mutating func clearAppName() {self._appName = nil}
 
-  var title: String = String()
+  public var title: String = String()
 
-  var content: String = String()
+  public var content: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 
   fileprivate var _appName: String? = nil
 }
 
-struct Patrol_NotificationsQueryResponse {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var notifications: [Patrol_Notification] = []
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-}
-
-struct Patrol_NativeWidgetsQueryResponse {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  var nativeWidgets: [Patrol_NativeWidget] = []
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-}
-
 #if swift(>=5.5) && canImport(_Concurrency)
-extension Patrol_OpenAppCommand: @unchecked Sendable {}
-extension Patrol_TapCommand: @unchecked Sendable {}
-extension Patrol_DoubleTapCommand: @unchecked Sendable {}
-extension Patrol_EnterTextBySelectorCommand: @unchecked Sendable {}
-extension Patrol_EnterTextByIndexCommand: @unchecked Sendable {}
-extension Patrol_TapOnNotificationByIndexCommand: @unchecked Sendable {}
-extension Patrol_TapOnNotificationBySelectorCommand: @unchecked Sendable {}
-extension Patrol_SwipeCommand: @unchecked Sendable {}
-extension Patrol_HandlePermissionCommand: @unchecked Sendable {}
-extension Patrol_HandlePermissionCommand.Code: @unchecked Sendable {}
+extension Patrol_PressHomeRequest: @unchecked Sendable {}
+extension Patrol_PressHomeResponse: @unchecked Sendable {}
+extension Patrol_PressBackRequest: @unchecked Sendable {}
+extension Patrol_PressBackResponse: @unchecked Sendable {}
+extension Patrol_PressRecentAppsRequest: @unchecked Sendable {}
+extension Patrol_PressRecentAppsResponse: @unchecked Sendable {}
+extension Patrol_DoublePressRecentAppsRequest: @unchecked Sendable {}
+extension Patrol_DoublePressRecentAppsResponse: @unchecked Sendable {}
+extension Patrol_OpenAppRequest: @unchecked Sendable {}
+extension Patrol_OpenAppResponse: @unchecked Sendable {}
+extension Patrol_OpenNotificationsRequest: @unchecked Sendable {}
+extension Patrol_OpenNotificationsResponse: @unchecked Sendable {}
+extension Patrol_TapOnNotificationRequest: @unchecked Sendable {}
+extension Patrol_TapOnNotificationRequest.OneOf_FindBy: @unchecked Sendable {}
+extension Patrol_TapOnNotificationResponse: @unchecked Sendable {}
+extension Patrol_OpenQuickSettingsRequest: @unchecked Sendable {}
+extension Patrol_OpenQuickSettingsResponse: @unchecked Sendable {}
+extension Patrol_DarkModeRequest: @unchecked Sendable {}
+extension Patrol_DarkModeResponse: @unchecked Sendable {}
+extension Patrol_WiFiRequest: @unchecked Sendable {}
+extension Patrol_WiFiResponse: @unchecked Sendable {}
+extension Patrol_CellularRequest: @unchecked Sendable {}
+extension Patrol_CellularResponse: @unchecked Sendable {}
+extension Patrol_GetNativeWidgetsRequest: @unchecked Sendable {}
+extension Patrol_GetNativeWidgetsResponse: @unchecked Sendable {}
+extension Patrol_GetNotificationsRequest: @unchecked Sendable {}
+extension Patrol_GetNotificationsResponse: @unchecked Sendable {}
+extension Patrol_TapRequest: @unchecked Sendable {}
+extension Patrol_TapResponse: @unchecked Sendable {}
+extension Patrol_EnterTextRequest: @unchecked Sendable {}
+extension Patrol_EnterTextRequest.OneOf_FindBy: @unchecked Sendable {}
+extension Patrol_EnterTextResponse: @unchecked Sendable {}
+extension Patrol_SwipeRequest: @unchecked Sendable {}
+extension Patrol_SwipeResponse: @unchecked Sendable {}
+extension Patrol_HandlePermissionRequest: @unchecked Sendable {}
+extension Patrol_HandlePermissionRequest.Code: @unchecked Sendable {}
+extension Patrol_HandlePermissionResponse: @unchecked Sendable {}
+extension Patrol_SetLocationAccuracyRequest: @unchecked Sendable {}
+extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: @unchecked Sendable {}
+extension Patrol_SetLocationAccuracyResponse: @unchecked Sendable {}
 extension Patrol_Selector: @unchecked Sendable {}
 extension Patrol_NativeWidget: @unchecked Sendable {}
-extension Patrol_NativeWidgetsQuery: @unchecked Sendable {}
 extension Patrol_Notification: @unchecked Sendable {}
-extension Patrol_NotificationsQueryResponse: @unchecked Sendable {}
-extension Patrol_NativeWidgetsQueryResponse: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "patrol"
 
-extension Patrol_OpenAppCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".OpenAppCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+extension Patrol_PressHomeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PressHomeRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PressHomeRequest, rhs: Patrol_PressHomeRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_PressHomeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PressHomeResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PressHomeResponse, rhs: Patrol_PressHomeResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_PressBackRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PressBackRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PressBackRequest, rhs: Patrol_PressBackRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_PressBackResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PressBackResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PressBackResponse, rhs: Patrol_PressBackResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_PressRecentAppsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PressRecentAppsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PressRecentAppsRequest, rhs: Patrol_PressRecentAppsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_PressRecentAppsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PressRecentAppsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PressRecentAppsResponse, rhs: Patrol_PressRecentAppsResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_DoublePressRecentAppsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DoublePressRecentAppsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_DoublePressRecentAppsRequest, rhs: Patrol_DoublePressRecentAppsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_DoublePressRecentAppsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DoublePressRecentAppsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_DoublePressRecentAppsResponse, rhs: Patrol_DoublePressRecentAppsResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_OpenAppRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".OpenAppRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "appId"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -502,235 +1004,320 @@ extension Patrol_OpenAppCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.appID.isEmpty {
       try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_OpenAppCommand, rhs: Patrol_OpenAppCommand) -> Bool {
+  public static func ==(lhs: Patrol_OpenAppRequest, rhs: Patrol_OpenAppRequest) -> Bool {
     if lhs.appID != rhs.appID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_TapCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TapCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-    2: .same(proto: "selector"),
-  ]
+extension Patrol_OpenAppResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".OpenAppResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
-      default: break
-      }
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    try { if let v = self._selector {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    } }()
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_TapCommand, rhs: Patrol_TapCommand) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs._selector != rhs._selector {return false}
+  public static func ==(lhs: Patrol_OpenAppResponse, rhs: Patrol_OpenAppResponse) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_DoubleTapCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".DoubleTapCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-    2: .same(proto: "selector"),
-  ]
+extension Patrol_OpenNotificationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".OpenNotificationsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      case 2: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
-      default: break
-      }
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    try { if let v = self._selector {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    } }()
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_DoubleTapCommand, rhs: Patrol_DoubleTapCommand) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs._selector != rhs._selector {return false}
+  public static func ==(lhs: Patrol_OpenNotificationsRequest, rhs: Patrol_OpenNotificationsRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_EnterTextBySelectorCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".EnterTextBySelectorCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-    2: .same(proto: "data"),
-    3: .same(proto: "selector"),
-  ]
+extension Patrol_OpenNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".OpenNotificationsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.data) }()
-      case 3: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
-      default: break
-      }
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    if !self.data.isEmpty {
-      try visitor.visitSingularStringField(value: self.data, fieldNumber: 2)
-    }
-    try { if let v = self._selector {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    } }()
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_EnterTextBySelectorCommand, rhs: Patrol_EnterTextBySelectorCommand) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs.data != rhs.data {return false}
-    if lhs._selector != rhs._selector {return false}
+  public static func ==(lhs: Patrol_OpenNotificationsResponse, rhs: Patrol_OpenNotificationsResponse) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_EnterTextByIndexCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".EnterTextByIndexCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-    2: .same(proto: "data"),
-    3: .same(proto: "index"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.data) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    if !self.data.isEmpty {
-      try visitor.visitSingularStringField(value: self.data, fieldNumber: 2)
-    }
-    if self.index != 0 {
-      try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 3)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: Patrol_EnterTextByIndexCommand, rhs: Patrol_EnterTextByIndexCommand) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs.data != rhs.data {return false}
-    if lhs.index != rhs.index {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Patrol_TapOnNotificationByIndexCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TapOnNotificationByIndexCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+extension Patrol_TapOnNotificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TapOnNotificationRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "index"),
+    2: .same(proto: "selector"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.index) }()
+      case 1: try {
+        var v: UInt32?
+        try decoder.decodeSingularUInt32Field(value: &v)
+        if let v = v {
+          if self.findBy != nil {try decoder.handleConflictingOneOf()}
+          self.findBy = .index(v)
+        }
+      }()
+      case 2: try {
+        var v: Patrol_Selector?
+        var hadOneofValue = false
+        if let current = self.findBy {
+          hadOneofValue = true
+          if case .selector(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.findBy = .selector(v)
+        }
+      }()
       default: break
       }
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.index != 0 {
-      try visitor.visitSingularUInt32Field(value: self.index, fieldNumber: 1)
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.findBy {
+    case .index?: try {
+      guard case .index(let v)? = self.findBy else { preconditionFailure() }
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
+    }()
+    case .selector?: try {
+      guard case .selector(let v)? = self.findBy else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    }()
+    case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_TapOnNotificationByIndexCommand, rhs: Patrol_TapOnNotificationByIndexCommand) -> Bool {
-    if lhs.index != rhs.index {return false}
+  public static func ==(lhs: Patrol_TapOnNotificationRequest, rhs: Patrol_TapOnNotificationRequest) -> Bool {
+    if lhs.findBy != rhs.findBy {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_TapOnNotificationBySelectorCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".TapOnNotificationBySelectorCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+extension Patrol_TapOnNotificationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TapOnNotificationResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_TapOnNotificationResponse, rhs: Patrol_TapOnNotificationResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_OpenQuickSettingsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".OpenQuickSettingsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_OpenQuickSettingsRequest, rhs: Patrol_OpenQuickSettingsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_OpenQuickSettingsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".OpenQuickSettingsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_OpenQuickSettingsResponse, rhs: Patrol_OpenQuickSettingsResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_DarkModeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DarkModeRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_DarkModeRequest, rhs: Patrol_DarkModeRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_DarkModeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DarkModeResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_DarkModeResponse, rhs: Patrol_DarkModeResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_WiFiRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WiFiRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_WiFiRequest, rhs: Patrol_WiFiRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_WiFiResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WiFiResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_WiFiResponse, rhs: Patrol_WiFiResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_CellularRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CellularRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_CellularRequest, rhs: Patrol_CellularRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_CellularResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".CellularResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_CellularResponse, rhs: Patrol_CellularResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_GetNativeWidgetsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetNativeWidgetsRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "selector"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -742,7 +1329,7 @@ extension Patrol_TapOnNotificationBySelectorCommand: SwiftProtobuf.Message, Swif
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -753,16 +1340,256 @@ extension Patrol_TapOnNotificationBySelectorCommand: SwiftProtobuf.Message, Swif
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_TapOnNotificationBySelectorCommand, rhs: Patrol_TapOnNotificationBySelectorCommand) -> Bool {
+  public static func ==(lhs: Patrol_GetNativeWidgetsRequest, rhs: Patrol_GetNativeWidgetsRequest) -> Bool {
     if lhs._selector != rhs._selector {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_SwipeCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SwipeCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+extension Patrol_GetNativeWidgetsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetNativeWidgetsResponse"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "nativeWidgets"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.nativeWidgets) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.nativeWidgets.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.nativeWidgets, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_GetNativeWidgetsResponse, rhs: Patrol_GetNativeWidgetsResponse) -> Bool {
+    if lhs.nativeWidgets != rhs.nativeWidgets {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_GetNotificationsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetNotificationsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_GetNotificationsRequest, rhs: Patrol_GetNotificationsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_GetNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetNotificationsResponse"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "notifications"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.notifications) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.notifications.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.notifications, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_GetNotificationsResponse, rhs: Patrol_GetNotificationsResponse) -> Bool {
+    if lhs.notifications != rhs.notifications {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_TapRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TapRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "Selector"),
+    2: .same(proto: "appId"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.appID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._selector {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_TapRequest, rhs: Patrol_TapRequest) -> Bool {
+    if lhs._selector != rhs._selector {return false}
+    if lhs.appID != rhs.appID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_TapResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TapResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_TapResponse, rhs: Patrol_TapResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".EnterTextRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "data"),
+    2: .same(proto: "appId"),
+    3: .same(proto: "index"),
+    4: .same(proto: "selector"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.data) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.appID) }()
+      case 3: try {
+        var v: UInt32?
+        try decoder.decodeSingularUInt32Field(value: &v)
+        if let v = v {
+          if self.findBy != nil {try decoder.handleConflictingOneOf()}
+          self.findBy = .index(v)
+        }
+      }()
+      case 4: try {
+        var v: Patrol_Selector?
+        var hadOneofValue = false
+        if let current = self.findBy {
+          hadOneofValue = true
+          if case .selector(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.findBy = .selector(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.data.isEmpty {
+      try visitor.visitSingularStringField(value: self.data, fieldNumber: 1)
+    }
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 2)
+    }
+    switch self.findBy {
+    case .index?: try {
+      guard case .index(let v)? = self.findBy else { preconditionFailure() }
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }()
+    case .selector?: try {
+      guard case .selector(let v)? = self.findBy else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_EnterTextRequest, rhs: Patrol_EnterTextRequest) -> Bool {
+    if lhs.data != rhs.data {return false}
+    if lhs.appID != rhs.appID {return false}
+    if lhs.findBy != rhs.findBy {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_EnterTextResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".EnterTextResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_EnterTextResponse, rhs: Patrol_EnterTextResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SwipeRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "startX"),
     2: .same(proto: "startY"),
     3: .same(proto: "endX"),
@@ -770,34 +1597,34 @@ extension Patrol_SwipeCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     5: .same(proto: "steps"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularFloatField(value: &self.startX) }()
-      case 2: try { try decoder.decodeSingularFloatField(value: &self.startY) }()
-      case 3: try { try decoder.decodeSingularFloatField(value: &self.endX) }()
-      case 4: try { try decoder.decodeSingularFloatField(value: &self.endY) }()
+      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.startX) }()
+      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.startY) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.endX) }()
+      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.endY) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.steps) }()
       default: break
       }
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.startX != 0 {
-      try visitor.visitSingularFloatField(value: self.startX, fieldNumber: 1)
+      try visitor.visitSingularUInt32Field(value: self.startX, fieldNumber: 1)
     }
     if self.startY != 0 {
-      try visitor.visitSingularFloatField(value: self.startY, fieldNumber: 2)
+      try visitor.visitSingularUInt32Field(value: self.startY, fieldNumber: 2)
     }
     if self.endX != 0 {
-      try visitor.visitSingularFloatField(value: self.endX, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: self.endX, fieldNumber: 3)
     }
     if self.endY != 0 {
-      try visitor.visitSingularFloatField(value: self.endY, fieldNumber: 4)
+      try visitor.visitSingularUInt32Field(value: self.endY, fieldNumber: 4)
     }
     if self.steps != 0 {
       try visitor.visitSingularUInt32Field(value: self.steps, fieldNumber: 5)
@@ -805,7 +1632,7 @@ extension Patrol_SwipeCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_SwipeCommand, rhs: Patrol_SwipeCommand) -> Bool {
+  public static func ==(lhs: Patrol_SwipeRequest, rhs: Patrol_SwipeRequest) -> Bool {
     if lhs.startX != rhs.startX {return false}
     if lhs.startY != rhs.startY {return false}
     if lhs.endX != rhs.endX {return false}
@@ -816,13 +1643,32 @@ extension Patrol_SwipeCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension Patrol_HandlePermissionCommand: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".HandlePermissionCommand"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+extension Patrol_SwipeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SwipeResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_SwipeResponse, rhs: Patrol_SwipeResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_HandlePermissionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".HandlePermissionRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "code"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -834,31 +1680,108 @@ extension Patrol_HandlePermissionCommand: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.code != .whileUsing {
       try visitor.visitSingularEnumField(value: self.code, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_HandlePermissionCommand, rhs: Patrol_HandlePermissionCommand) -> Bool {
+  public static func ==(lhs: Patrol_HandlePermissionRequest, rhs: Patrol_HandlePermissionRequest) -> Bool {
     if lhs.code != rhs.code {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_HandlePermissionCommand.Code: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+extension Patrol_HandlePermissionRequest.Code: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "WHILE_USING"),
     1: .same(proto: "ONLY_THIS_TIME"),
     2: .same(proto: "DENIED"),
   ]
 }
 
+extension Patrol_HandlePermissionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".HandlePermissionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_HandlePermissionResponse, rhs: Patrol_HandlePermissionResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_SetLocationAccuracyRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SetLocationAccuracyRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "locationAccuracy"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.locationAccuracy) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.locationAccuracy != .coarse {
+      try visitor.visitSingularEnumField(value: self.locationAccuracy, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_SetLocationAccuracyRequest, rhs: Patrol_SetLocationAccuracyRequest) -> Bool {
+    if lhs.locationAccuracy != rhs.locationAccuracy {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "COARSE"),
+    1: .same(proto: "FINE"),
+  ]
+}
+
+extension Patrol_SetLocationAccuracyResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SetLocationAccuracyResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let _ = try decoder.nextFieldNumber() {
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_SetLocationAccuracyResponse, rhs: Patrol_SetLocationAccuracyResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Selector"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  public static let protoMessageName: String = _protobuf_package + ".Selector"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "text"),
     2: .same(proto: "textStartsWith"),
     3: .same(proto: "textContains"),
@@ -873,7 +1796,7 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     12: .same(proto: "pkg"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -896,7 +1819,7 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -940,7 +1863,7 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_Selector, rhs: Patrol_Selector) -> Bool {
+  public static func ==(lhs: Patrol_Selector, rhs: Patrol_Selector) -> Bool {
     if lhs._text != rhs._text {return false}
     if lhs._textStartsWith != rhs._textStartsWith {return false}
     if lhs._textContains != rhs._textContains {return false}
@@ -959,8 +1882,8 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
 }
 
 extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".NativeWidget"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  public static let protoMessageName: String = _protobuf_package + ".NativeWidget"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "className"),
     2: .same(proto: "text"),
     3: .same(proto: "contentDescription"),
@@ -972,7 +1895,7 @@ extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     9: .same(proto: "children"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -992,7 +1915,7 @@ extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.className.isEmpty {
       try visitor.visitSingularStringField(value: self.className, fieldNumber: 1)
     }
@@ -1023,7 +1946,7 @@ extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_NativeWidget, rhs: Patrol_NativeWidget) -> Bool {
+  public static func ==(lhs: Patrol_NativeWidget, rhs: Patrol_NativeWidget) -> Bool {
     if lhs.className != rhs.className {return false}
     if lhs.text != rhs.text {return false}
     if lhs.contentDescription != rhs.contentDescription {return false}
@@ -1038,51 +1961,15 @@ extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
   }
 }
 
-extension Patrol_NativeWidgetsQuery: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".NativeWidgetsQuery"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "selector"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._selector {
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    } }()
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: Patrol_NativeWidgetsQuery, rhs: Patrol_NativeWidgetsQuery) -> Bool {
-    if lhs._selector != rhs._selector {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
 extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".Notification"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  public static let protoMessageName: String = _protobuf_package + ".Notification"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "appName"),
     2: .same(proto: "title"),
     3: .same(proto: "content"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       // The use of inline closures is to circumvent an issue where the compiler
       // allocates stack space for every case branch when no optimizations are
@@ -1096,7 +1983,7 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
@@ -1113,74 +2000,10 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: Patrol_Notification, rhs: Patrol_Notification) -> Bool {
+  public static func ==(lhs: Patrol_Notification, rhs: Patrol_Notification) -> Bool {
     if lhs._appName != rhs._appName {return false}
     if lhs.title != rhs.title {return false}
     if lhs.content != rhs.content {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Patrol_NotificationsQueryResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".NotificationsQueryResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "notifications"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.notifications) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.notifications.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.notifications, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: Patrol_NotificationsQueryResponse, rhs: Patrol_NotificationsQueryResponse) -> Bool {
-    if lhs.notifications != rhs.notifications {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Patrol_NativeWidgetsQueryResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".NativeWidgetsQueryResponse"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "nativeWidgets"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.nativeWidgets) }()
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.nativeWidgets.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.nativeWidgets, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: Patrol_NativeWidgetsQueryResponse, rhs: Patrol_NativeWidgetsQueryResponse) -> Bool {
-    if lhs.nativeWidgets != rhs.nativeWidgets {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

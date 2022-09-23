@@ -14,8 +14,3368 @@ public final class Contracts {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
-  public interface OpenAppCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.OpenAppCommand)
+  public interface PressHomeRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PressHomeRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.PressHomeRequest}
+   */
+  public static final class PressHomeRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PressHomeRequest)
+      PressHomeRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PressHomeRequest.newBuilder() to construct.
+    private PressHomeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PressHomeRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PressHomeRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PressHomeRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.class, pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest other = (pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PressHomeRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PressHomeRequest)
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.class, pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest result = new pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PressHomeRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PressHomeRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PressHomeRequest>
+        PARSER = new com.google.protobuf.AbstractParser<PressHomeRequest>() {
+      @java.lang.Override
+      public PressHomeRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PressHomeRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PressHomeRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PressHomeRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PressHomeRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PressHomeResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PressHomeResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.PressHomeResponse}
+   */
+  public static final class PressHomeResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PressHomeResponse)
+      PressHomeResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PressHomeResponse.newBuilder() to construct.
+    private PressHomeResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PressHomeResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PressHomeResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PressHomeResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.class, pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse other = (pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PressHomeResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PressHomeResponse)
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.class, pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressHomeResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse result = new pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PressHomeResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PressHomeResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PressHomeResponse>
+        PARSER = new com.google.protobuf.AbstractParser<PressHomeResponse>() {
+      @java.lang.Override
+      public PressHomeResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PressHomeResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PressHomeResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PressHomeResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PressHomeResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PressBackRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PressBackRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.PressBackRequest}
+   */
+  public static final class PressBackRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PressBackRequest)
+      PressBackRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PressBackRequest.newBuilder() to construct.
+    private PressBackRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PressBackRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PressBackRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PressBackRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.class, pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PressBackRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PressBackRequest other = (pl.leancode.automatorserver.contracts.Contracts.PressBackRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PressBackRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PressBackRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PressBackRequest)
+        pl.leancode.automatorserver.contracts.Contracts.PressBackRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.class, pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressBackRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressBackRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.PressBackRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressBackRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PressBackRequest result = new pl.leancode.automatorserver.contracts.Contracts.PressBackRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PressBackRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PressBackRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PressBackRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PressBackRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.PressBackRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.PressBackRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PressBackRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PressBackRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PressBackRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PressBackRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PressBackRequest>
+        PARSER = new com.google.protobuf.AbstractParser<PressBackRequest>() {
+      @java.lang.Override
+      public PressBackRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PressBackRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PressBackRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PressBackRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PressBackRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PressBackResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PressBackResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.PressBackResponse}
+   */
+  public static final class PressBackResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PressBackResponse)
+      PressBackResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PressBackResponse.newBuilder() to construct.
+    private PressBackResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PressBackResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PressBackResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PressBackResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.class, pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PressBackResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PressBackResponse other = (pl.leancode.automatorserver.contracts.Contracts.PressBackResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PressBackResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PressBackResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PressBackResponse)
+        pl.leancode.automatorserver.contracts.Contracts.PressBackResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.class, pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressBackResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressBackResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressBackResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.PressBackResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressBackResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PressBackResponse result = new pl.leancode.automatorserver.contracts.Contracts.PressBackResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PressBackResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PressBackResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PressBackResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PressBackResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.PressBackResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.PressBackResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PressBackResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PressBackResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PressBackResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PressBackResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressBackResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PressBackResponse>
+        PARSER = new com.google.protobuf.AbstractParser<PressBackResponse>() {
+      @java.lang.Override
+      public PressBackResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PressBackResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PressBackResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PressBackResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PressBackResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PressRecentAppsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PressRecentAppsRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.PressRecentAppsRequest}
+   */
+  public static final class PressRecentAppsRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PressRecentAppsRequest)
+      PressRecentAppsRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PressRecentAppsRequest.newBuilder() to construct.
+    private PressRecentAppsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PressRecentAppsRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PressRecentAppsRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PressRecentAppsRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.class, pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest other = (pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PressRecentAppsRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PressRecentAppsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.class, pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest result = new pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PressRecentAppsRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PressRecentAppsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PressRecentAppsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<PressRecentAppsRequest>() {
+      @java.lang.Override
+      public PressRecentAppsRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PressRecentAppsRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PressRecentAppsRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PressRecentAppsRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface PressRecentAppsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PressRecentAppsResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.PressRecentAppsResponse}
+   */
+  public static final class PressRecentAppsResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PressRecentAppsResponse)
+      PressRecentAppsResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PressRecentAppsResponse.newBuilder() to construct.
+    private PressRecentAppsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PressRecentAppsResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PressRecentAppsResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PressRecentAppsResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.class, pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse other = (pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PressRecentAppsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PressRecentAppsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.class, pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PressRecentAppsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse result = new pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PressRecentAppsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PressRecentAppsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PressRecentAppsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<PressRecentAppsResponse>() {
+      @java.lang.Override
+      public PressRecentAppsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PressRecentAppsResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<PressRecentAppsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PressRecentAppsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PressRecentAppsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DoublePressRecentAppsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DoublePressRecentAppsRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.DoublePressRecentAppsRequest}
+   */
+  public static final class DoublePressRecentAppsRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.DoublePressRecentAppsRequest)
+      DoublePressRecentAppsRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DoublePressRecentAppsRequest.newBuilder() to construct.
+    private DoublePressRecentAppsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DoublePressRecentAppsRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DoublePressRecentAppsRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DoublePressRecentAppsRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.class, pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest other = (pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.DoublePressRecentAppsRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DoublePressRecentAppsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.class, pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest result = new pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.DoublePressRecentAppsRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.DoublePressRecentAppsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DoublePressRecentAppsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<DoublePressRecentAppsRequest>() {
+      @java.lang.Override
+      public DoublePressRecentAppsRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DoublePressRecentAppsRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<DoublePressRecentAppsRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DoublePressRecentAppsRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DoublePressRecentAppsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DoublePressRecentAppsResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.DoublePressRecentAppsResponse}
+   */
+  public static final class DoublePressRecentAppsResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.DoublePressRecentAppsResponse)
+      DoublePressRecentAppsResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DoublePressRecentAppsResponse.newBuilder() to construct.
+    private DoublePressRecentAppsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DoublePressRecentAppsResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DoublePressRecentAppsResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DoublePressRecentAppsResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.class, pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse other = (pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.DoublePressRecentAppsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DoublePressRecentAppsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.class, pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoublePressRecentAppsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse result = new pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.DoublePressRecentAppsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.DoublePressRecentAppsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DoublePressRecentAppsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<DoublePressRecentAppsResponse>() {
+      @java.lang.Override
+      public DoublePressRecentAppsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DoublePressRecentAppsResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<DoublePressRecentAppsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DoublePressRecentAppsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.DoublePressRecentAppsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OpenAppRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.OpenAppRequest)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -31,18 +3391,18 @@ public final class Contracts {
         getAppIdBytes();
   }
   /**
-   * Protobuf type {@code patrol.OpenAppCommand}
+   * Protobuf type {@code patrol.OpenAppRequest}
    */
-  public static final class OpenAppCommand extends
+  public static final class OpenAppRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.OpenAppCommand)
-      OpenAppCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.OpenAppRequest)
+      OpenAppRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use OpenAppCommand.newBuilder() to construct.
-    private OpenAppCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use OpenAppRequest.newBuilder() to construct.
+    private OpenAppRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private OpenAppCommand() {
+    private OpenAppRequest() {
       appId_ = "";
     }
 
@@ -50,7 +3410,7 @@ public final class Contracts {
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new OpenAppCommand();
+      return new OpenAppRequest();
     }
 
     @java.lang.Override
@@ -58,7 +3418,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private OpenAppCommand(
+    private OpenAppRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -105,15 +3465,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.class, pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.class, pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.Builder.class);
     }
 
     public static final int APPID_FIELD_NUMBER = 1;
@@ -193,10 +3553,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand other = (pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest other = (pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest) obj;
 
       if (!getAppId()
           .equals(other.getAppId())) return false;
@@ -218,69 +3578,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -293,7 +3653,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -309,26 +3669,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.OpenAppCommand}
+     * Protobuf type {@code patrol.OpenAppRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.OpenAppCommand)
-        pl.leancode.automatorserver.contracts.Contracts.OpenAppCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.OpenAppRequest)
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.class, pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.class, pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -354,17 +3714,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -372,8 +3732,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand result = new pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand(this);
+      public pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest result = new pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest(this);
         result.appId_ = appId_;
         onBuilt();
         return result;
@@ -413,16 +3773,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.getDefaultInstance()) return this;
         if (!other.getAppId().isEmpty()) {
           appId_ = other.appId_;
           onChanged();
@@ -442,11 +3802,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -544,98 +3904,70 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.OpenAppCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.OpenAppRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.OpenAppCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.OpenAppRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<OpenAppCommand>
-        PARSER = new com.google.protobuf.AbstractParser<OpenAppCommand>() {
+    private static final com.google.protobuf.Parser<OpenAppRequest>
+        PARSER = new com.google.protobuf.AbstractParser<OpenAppRequest>() {
       @java.lang.Override
-      public OpenAppCommand parsePartialFrom(
+      public OpenAppRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new OpenAppCommand(input, extensionRegistry);
+        return new OpenAppRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<OpenAppCommand> parser() {
+    public static com.google.protobuf.Parser<OpenAppRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<OpenAppCommand> getParserForType() {
+    public com.google.protobuf.Parser<OpenAppRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.OpenAppCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface TapCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.TapCommand)
+  public interface OpenAppResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.OpenAppResponse)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return Whether the selector field is set.
-     */
-    boolean hasSelector();
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return The selector.
-     */
-    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
   }
   /**
-   * Protobuf type {@code patrol.TapCommand}
+   * Protobuf type {@code patrol.OpenAppResponse}
    */
-  public static final class TapCommand extends
+  public static final class OpenAppResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.TapCommand)
-      TapCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.OpenAppResponse)
+      OpenAppResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use TapCommand.newBuilder() to construct.
-    private TapCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use OpenAppResponse.newBuilder() to construct.
+    private OpenAppResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private TapCommand() {
-      appId_ = "";
+    private OpenAppResponse() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new TapCommand();
+      return new OpenAppResponse();
     }
 
     @java.lang.Override
@@ -643,7 +3975,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private TapCommand(
+    private OpenAppResponse(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -661,25 +3993,6 @@ public final class Contracts {
             case 0:
               done = true;
               break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            case 18: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (selector_ != null) {
-                subBuilder = selector_.toBuilder();
-              }
-              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(selector_);
-                selector_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -703,79 +4016,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.TapCommand.class, pl.leancode.automatorserver.contracts.Contracts.TapCommand.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SELECTOR_FIELD_NUMBER = 2;
-    private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return Whether the selector field is set.
-     */
-    @java.lang.Override
-    public boolean hasSelector() {
-      return selector_ != null;
-    }
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return The selector.
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-      return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-    }
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-      return getSelector();
+              pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.class, pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.Builder.class);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -792,12 +4041,6 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      if (selector_ != null) {
-        output.writeMessage(2, getSelector());
-      }
       unknownFields.writeTo(output);
     }
 
@@ -807,13 +4050,6 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      if (selector_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getSelector());
-      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -824,18 +4060,11 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.TapCommand other = (pl.leancode.automatorserver.contracts.Contracts.TapCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse other = (pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse) obj;
 
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (hasSelector() != other.hasSelector()) return false;
-      if (hasSelector()) {
-        if (!getSelector()
-            .equals(other.getSelector())) return false;
-      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -847,80 +4076,74 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      if (hasSelector()) {
-        hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
-        hash = (53 * hash) + getSelector().hashCode();
-      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -933,7 +4156,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -949,26 +4172,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.TapCommand}
+     * Protobuf type {@code patrol.OpenAppResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.TapCommand)
-        pl.leancode.automatorserver.contracts.Contracts.TapCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.OpenAppResponse)
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppResponse_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.TapCommand.class, pl.leancode.automatorserver.contracts.Contracts.TapCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.class, pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -986,31 +4209,23 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        appId_ = "";
-
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppResponse_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.TapCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.TapCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1018,14 +4233,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.TapCommand result = new pl.leancode.automatorserver.contracts.Contracts.TapCommand(this);
-        result.appId_ = appId_;
-        if (selectorBuilder_ == null) {
-          result.selector_ = selector_;
-        } else {
-          result.selector_ = selectorBuilder_.build();
-        }
+      public pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse result = new pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse(this);
         onBuilt();
         return result;
       }
@@ -1064,23 +4273,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.TapCommand.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        if (other.hasSelector()) {
-          mergeSelector(other.getSelector());
-        }
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse.getDefaultInstance()) return this;
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -1096,11 +4298,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.TapCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1108,201 +4310,6 @@ public final class Contracts {
           }
         }
         return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       * @return Whether the selector field is set.
-       */
-      public boolean hasSelector() {
-        return selectorBuilder_ != null || selector_ != null;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       * @return The selector.
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-        if (selectorBuilder_ == null) {
-          return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        } else {
-          return selectorBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          selector_ = value;
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder setSelector(
-          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
-        if (selectorBuilder_ == null) {
-          selector_ = builderForValue.build();
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (selector_ != null) {
-            selector_ =
-              pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder(selector_).mergeFrom(value).buildPartial();
-          } else {
-            selector_ = value;
-          }
-          onChanged();
-        } else {
-          selectorBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder clearSelector() {
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-          onChanged();
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
-        
-        onChanged();
-        return getSelectorFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-        if (selectorBuilder_ != null) {
-          return selectorBuilder_.getMessageOrBuilder();
-        } else {
-          return selector_ == null ?
-              pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
-          getSelectorFieldBuilder() {
-        if (selectorBuilder_ == null) {
-          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
-                  getSelector(),
-                  getParentForChildren(),
-                  isClean());
-          selector_ = null;
-        }
-        return selectorBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -1317,98 +4324,70 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.TapCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.OpenAppResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.TapCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.TapCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.OpenAppResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.TapCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TapCommand>
-        PARSER = new com.google.protobuf.AbstractParser<TapCommand>() {
+    private static final com.google.protobuf.Parser<OpenAppResponse>
+        PARSER = new com.google.protobuf.AbstractParser<OpenAppResponse>() {
       @java.lang.Override
-      public TapCommand parsePartialFrom(
+      public OpenAppResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TapCommand(input, extensionRegistry);
+        return new OpenAppResponse(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<TapCommand> parser() {
+    public static com.google.protobuf.Parser<OpenAppResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<TapCommand> getParserForType() {
+    public com.google.protobuf.Parser<OpenAppResponse> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.TapCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.OpenAppResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface DoubleTapCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.DoubleTapCommand)
+  public interface OpenNotificationsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.OpenNotificationsRequest)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return Whether the selector field is set.
-     */
-    boolean hasSelector();
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return The selector.
-     */
-    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
   }
   /**
-   * Protobuf type {@code patrol.DoubleTapCommand}
+   * Protobuf type {@code patrol.OpenNotificationsRequest}
    */
-  public static final class DoubleTapCommand extends
+  public static final class OpenNotificationsRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.DoubleTapCommand)
-      DoubleTapCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.OpenNotificationsRequest)
+      OpenNotificationsRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use DoubleTapCommand.newBuilder() to construct.
-    private DoubleTapCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use OpenNotificationsRequest.newBuilder() to construct.
+    private OpenNotificationsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private DoubleTapCommand() {
-      appId_ = "";
+    private OpenNotificationsRequest() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new DoubleTapCommand();
+      return new OpenNotificationsRequest();
     }
 
     @java.lang.Override
@@ -1416,7 +4395,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private DoubleTapCommand(
+    private OpenNotificationsRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1434,25 +4413,6 @@ public final class Contracts {
             case 0:
               done = true;
               break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            case 18: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (selector_ != null) {
-                subBuilder = selector_.toBuilder();
-              }
-              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(selector_);
-                selector_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -1476,79 +4436,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoubleTapCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoubleTapCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.class, pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SELECTOR_FIELD_NUMBER = 2;
-    private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return Whether the selector field is set.
-     */
-    @java.lang.Override
-    public boolean hasSelector() {
-      return selector_ != null;
-    }
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     * @return The selector.
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-      return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-    }
-    /**
-     * <code>.patrol.Selector selector = 2;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-      return getSelector();
+              pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.class, pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.Builder.class);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -1565,12 +4461,6 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      if (selector_ != null) {
-        output.writeMessage(2, getSelector());
-      }
       unknownFields.writeTo(output);
     }
 
@@ -1580,13 +4470,6 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      if (selector_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, getSelector());
-      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -1597,18 +4480,11 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand other = (pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest other = (pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest) obj;
 
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (hasSelector() != other.hasSelector()) return false;
-      if (hasSelector()) {
-        if (!getSelector()
-            .equals(other.getSelector())) return false;
-      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1620,80 +4496,74 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      if (hasSelector()) {
-        hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
-        hash = (53 * hash) + getSelector().hashCode();
-      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1706,7 +4576,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1722,26 +4592,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.DoubleTapCommand}
+     * Protobuf type {@code patrol.OpenNotificationsRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.DoubleTapCommand)
-        pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.OpenNotificationsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoubleTapCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoubleTapCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.class, pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.class, pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1759,31 +4629,23 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        appId_ = "";
-
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DoubleTapCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1791,14 +4653,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand result = new pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand(this);
-        result.appId_ = appId_;
-        if (selectorBuilder_ == null) {
-          result.selector_ = selector_;
-        } else {
-          result.selector_ = selectorBuilder_.build();
-        }
+      public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest result = new pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest(this);
         onBuilt();
         return result;
       }
@@ -1837,23 +4693,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        if (other.hasSelector()) {
-          mergeSelector(other.getSelector());
-        }
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest.getDefaultInstance()) return this;
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -1869,11 +4718,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1881,201 +4730,6 @@ public final class Contracts {
           }
         }
         return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       * @return Whether the selector field is set.
-       */
-      public boolean hasSelector() {
-        return selectorBuilder_ != null || selector_ != null;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       * @return The selector.
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-        if (selectorBuilder_ == null) {
-          return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        } else {
-          return selectorBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          selector_ = value;
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder setSelector(
-          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
-        if (selectorBuilder_ == null) {
-          selector_ = builderForValue.build();
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (selector_ != null) {
-            selector_ =
-              pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder(selector_).mergeFrom(value).buildPartial();
-          } else {
-            selector_ = value;
-          }
-          onChanged();
-        } else {
-          selectorBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public Builder clearSelector() {
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-          onChanged();
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
-        
-        onChanged();
-        return getSelectorFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-        if (selectorBuilder_ != null) {
-          return selectorBuilder_.getMessageOrBuilder();
-        } else {
-          return selector_ == null ?
-              pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 2;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
-          getSelectorFieldBuilder() {
-        if (selectorBuilder_ == null) {
-          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
-                  getSelector(),
-                  getParentForChildren(),
-                  isClean());
-          selector_ = null;
-        }
-        return selectorBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -2090,111 +4744,70 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.DoubleTapCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.OpenNotificationsRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.DoubleTapCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.OpenNotificationsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<DoubleTapCommand>
-        PARSER = new com.google.protobuf.AbstractParser<DoubleTapCommand>() {
+    private static final com.google.protobuf.Parser<OpenNotificationsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<OpenNotificationsRequest>() {
       @java.lang.Override
-      public DoubleTapCommand parsePartialFrom(
+      public OpenNotificationsRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new DoubleTapCommand(input, extensionRegistry);
+        return new OpenNotificationsRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<DoubleTapCommand> parser() {
+    public static com.google.protobuf.Parser<OpenNotificationsRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<DoubleTapCommand> getParserForType() {
+    public com.google.protobuf.Parser<OpenNotificationsRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.DoubleTapCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface EnterTextBySelectorCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.EnterTextBySelectorCommand)
+  public interface OpenNotificationsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.OpenNotificationsResponse)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-
-    /**
-     * <code>string data = 2;</code>
-     * @return The data.
-     */
-    java.lang.String getData();
-    /**
-     * <code>string data = 2;</code>
-     * @return The bytes for data.
-     */
-    com.google.protobuf.ByteString
-        getDataBytes();
-
-    /**
-     * <code>.patrol.Selector selector = 3;</code>
-     * @return Whether the selector field is set.
-     */
-    boolean hasSelector();
-    /**
-     * <code>.patrol.Selector selector = 3;</code>
-     * @return The selector.
-     */
-    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
-    /**
-     * <code>.patrol.Selector selector = 3;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
   }
   /**
-   * Protobuf type {@code patrol.EnterTextBySelectorCommand}
+   * Protobuf type {@code patrol.OpenNotificationsResponse}
    */
-  public static final class EnterTextBySelectorCommand extends
+  public static final class OpenNotificationsResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.EnterTextBySelectorCommand)
-      EnterTextBySelectorCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.OpenNotificationsResponse)
+      OpenNotificationsResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use EnterTextBySelectorCommand.newBuilder() to construct.
-    private EnterTextBySelectorCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use OpenNotificationsResponse.newBuilder() to construct.
+    private OpenNotificationsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private EnterTextBySelectorCommand() {
-      appId_ = "";
-      data_ = "";
+    private OpenNotificationsResponse() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new EnterTextBySelectorCommand();
+      return new OpenNotificationsResponse();
     }
 
     @java.lang.Override
@@ -2202,7 +4815,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private EnterTextBySelectorCommand(
+    private OpenNotificationsResponse(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2220,31 +4833,6 @@ public final class Contracts {
             case 0:
               done = true;
               break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              data_ = s;
-              break;
-            }
-            case 26: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (selector_ != null) {
-                subBuilder = selector_.toBuilder();
-              }
-              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(selector_);
-                selector_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -2268,117 +4856,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextBySelectorCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextBySelectorCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int DATA_FIELD_NUMBER = 2;
-    private volatile java.lang.Object data_;
-    /**
-     * <code>string data = 2;</code>
-     * @return The data.
-     */
-    @java.lang.Override
-    public java.lang.String getData() {
-      java.lang.Object ref = data_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        data_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string data = 2;</code>
-     * @return The bytes for data.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getDataBytes() {
-      java.lang.Object ref = data_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        data_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int SELECTOR_FIELD_NUMBER = 3;
-    private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-    /**
-     * <code>.patrol.Selector selector = 3;</code>
-     * @return Whether the selector field is set.
-     */
-    @java.lang.Override
-    public boolean hasSelector() {
-      return selector_ != null;
-    }
-    /**
-     * <code>.patrol.Selector selector = 3;</code>
-     * @return The selector.
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-      return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-    }
-    /**
-     * <code>.patrol.Selector selector = 3;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-      return getSelector();
+              pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.class, pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.Builder.class);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2395,15 +4881,6 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(data_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, data_);
-      }
-      if (selector_ != null) {
-        output.writeMessage(3, getSelector());
-      }
       unknownFields.writeTo(output);
     }
 
@@ -2413,16 +4890,6 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(data_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, data_);
-      }
-      if (selector_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, getSelector());
-      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -2433,20 +4900,11 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand other = (pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse other = (pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse) obj;
 
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (!getData()
-          .equals(other.getData())) return false;
-      if (hasSelector() != other.hasSelector()) return false;
-      if (hasSelector()) {
-        if (!getSelector()
-            .equals(other.getSelector())) return false;
-      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -2458,82 +4916,74 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      hash = (37 * hash) + DATA_FIELD_NUMBER;
-      hash = (53 * hash) + getData().hashCode();
-      if (hasSelector()) {
-        hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
-        hash = (53 * hash) + getSelector().hashCode();
-      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2546,7 +4996,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -2562,26 +5012,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.EnterTextBySelectorCommand}
+     * Protobuf type {@code patrol.OpenNotificationsResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.EnterTextBySelectorCommand)
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.OpenNotificationsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextBySelectorCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsResponse_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextBySelectorCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.class, pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2599,33 +5049,23 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        appId_ = "";
-
-        data_ = "";
-
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextBySelectorCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenNotificationsResponse_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -2633,15 +5073,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand result = new pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand(this);
-        result.appId_ = appId_;
-        result.data_ = data_;
-        if (selectorBuilder_ == null) {
-          result.selector_ = selector_;
-        } else {
-          result.selector_ = selectorBuilder_.build();
-        }
+      public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse result = new pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse(this);
         onBuilt();
         return result;
       }
@@ -2680,27 +5113,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        if (!other.getData().isEmpty()) {
-          data_ = other.data_;
-          onChanged();
-        }
-        if (other.hasSelector()) {
-          mergeSelector(other.getSelector());
-        }
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse.getDefaultInstance()) return this;
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -2716,1078 +5138,17 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
             mergeFrom(parsedMessage);
           }
         }
-        return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object data_ = "";
-      /**
-       * <code>string data = 2;</code>
-       * @return The data.
-       */
-      public java.lang.String getData() {
-        java.lang.Object ref = data_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          data_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @return The bytes for data.
-       */
-      public com.google.protobuf.ByteString
-          getDataBytes() {
-        java.lang.Object ref = data_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          data_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @param value The data to set.
-       * @return This builder for chaining.
-       */
-      public Builder setData(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        data_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearData() {
-        
-        data_ = getDefaultInstance().getData();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @param value The bytes for data to set.
-       * @return This builder for chaining.
-       */
-      public Builder setDataBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        data_ = value;
-        onChanged();
-        return this;
-      }
-
-      private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       * @return Whether the selector field is set.
-       */
-      public boolean hasSelector() {
-        return selectorBuilder_ != null || selector_ != null;
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       * @return The selector.
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-        if (selectorBuilder_ == null) {
-          return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        } else {
-          return selectorBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          selector_ = value;
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      public Builder setSelector(
-          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
-        if (selectorBuilder_ == null) {
-          selector_ = builderForValue.build();
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (selector_ != null) {
-            selector_ =
-              pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder(selector_).mergeFrom(value).buildPartial();
-          } else {
-            selector_ = value;
-          }
-          onChanged();
-        } else {
-          selectorBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      public Builder clearSelector() {
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-          onChanged();
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
-        
-        onChanged();
-        return getSelectorFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-        if (selectorBuilder_ != null) {
-          return selectorBuilder_.getMessageOrBuilder();
-        } else {
-          return selector_ == null ?
-              pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 3;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
-          getSelectorFieldBuilder() {
-        if (selectorBuilder_ == null) {
-          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
-                  getSelector(),
-                  getParentForChildren(),
-                  isClean());
-          selector_ = null;
-        }
-        return selectorBuilder_;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.EnterTextBySelectorCommand)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.EnterTextBySelectorCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<EnterTextBySelectorCommand>
-        PARSER = new com.google.protobuf.AbstractParser<EnterTextBySelectorCommand>() {
-      @java.lang.Override
-      public EnterTextBySelectorCommand parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EnterTextBySelectorCommand(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<EnterTextBySelectorCommand> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<EnterTextBySelectorCommand> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.EnterTextBySelectorCommand getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface EnterTextByIndexCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.EnterTextByIndexCommand)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-
-    /**
-     * <code>string data = 2;</code>
-     * @return The data.
-     */
-    java.lang.String getData();
-    /**
-     * <code>string data = 2;</code>
-     * @return The bytes for data.
-     */
-    com.google.protobuf.ByteString
-        getDataBytes();
-
-    /**
-     * <code>uint32 index = 3;</code>
-     * @return The index.
-     */
-    int getIndex();
-  }
-  /**
-   * Protobuf type {@code patrol.EnterTextByIndexCommand}
-   */
-  public static final class EnterTextByIndexCommand extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.EnterTextByIndexCommand)
-      EnterTextByIndexCommandOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use EnterTextByIndexCommand.newBuilder() to construct.
-    private EnterTextByIndexCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private EnterTextByIndexCommand() {
-      appId_ = "";
-      data_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new EnterTextByIndexCommand();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private EnterTextByIndexCommand(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              data_ = s;
-              break;
-            }
-            case 24: {
-
-              index_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextByIndexCommand_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextByIndexCommand_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int DATA_FIELD_NUMBER = 2;
-    private volatile java.lang.Object data_;
-    /**
-     * <code>string data = 2;</code>
-     * @return The data.
-     */
-    @java.lang.Override
-    public java.lang.String getData() {
-      java.lang.Object ref = data_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        data_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string data = 2;</code>
-     * @return The bytes for data.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getDataBytes() {
-      java.lang.Object ref = data_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        data_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int INDEX_FIELD_NUMBER = 3;
-    private int index_;
-    /**
-     * <code>uint32 index = 3;</code>
-     * @return The index.
-     */
-    @java.lang.Override
-    public int getIndex() {
-      return index_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(data_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, data_);
-      }
-      if (index_ != 0) {
-        output.writeUInt32(3, index_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(data_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, data_);
-      }
-      if (index_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(3, index_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand other = (pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand) obj;
-
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (!getData()
-          .equals(other.getData())) return false;
-      if (getIndex()
-          != other.getIndex()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      hash = (37 * hash) + DATA_FIELD_NUMBER;
-      hash = (53 * hash) + getData().hashCode();
-      hash = (37 * hash) + INDEX_FIELD_NUMBER;
-      hash = (53 * hash) + getIndex();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.EnterTextByIndexCommand}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.EnterTextByIndexCommand)
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommandOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextByIndexCommand_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextByIndexCommand_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        appId_ = "";
-
-        data_ = "";
-
-        index_ = 0;
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextByIndexCommand_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand result = new pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand(this);
-        result.appId_ = appId_;
-        result.data_ = data_;
-        result.index_ = index_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        if (!other.getData().isEmpty()) {
-          data_ = other.data_;
-          onChanged();
-        }
-        if (other.getIndex() != 0) {
-          setIndex(other.getIndex());
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object data_ = "";
-      /**
-       * <code>string data = 2;</code>
-       * @return The data.
-       */
-      public java.lang.String getData() {
-        java.lang.Object ref = data_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          data_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @return The bytes for data.
-       */
-      public com.google.protobuf.ByteString
-          getDataBytes() {
-        java.lang.Object ref = data_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          data_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @param value The data to set.
-       * @return This builder for chaining.
-       */
-      public Builder setData(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        data_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearData() {
-        
-        data_ = getDefaultInstance().getData();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string data = 2;</code>
-       * @param value The bytes for data to set.
-       * @return This builder for chaining.
-       */
-      public Builder setDataBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        data_ = value;
-        onChanged();
-        return this;
-      }
-
-      private int index_ ;
-      /**
-       * <code>uint32 index = 3;</code>
-       * @return The index.
-       */
-      @java.lang.Override
-      public int getIndex() {
-        return index_;
-      }
-      /**
-       * <code>uint32 index = 3;</code>
-       * @param value The index to set.
-       * @return This builder for chaining.
-       */
-      public Builder setIndex(int value) {
-        
-        index_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>uint32 index = 3;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearIndex() {
-        
-        index_ = 0;
-        onChanged();
         return this;
       }
       @java.lang.Override
@@ -3803,76 +5164,98 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.EnterTextByIndexCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.OpenNotificationsResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.EnterTextByIndexCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.OpenNotificationsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<EnterTextByIndexCommand>
-        PARSER = new com.google.protobuf.AbstractParser<EnterTextByIndexCommand>() {
+    private static final com.google.protobuf.Parser<OpenNotificationsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<OpenNotificationsResponse>() {
       @java.lang.Override
-      public EnterTextByIndexCommand parsePartialFrom(
+      public OpenNotificationsResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EnterTextByIndexCommand(input, extensionRegistry);
+        return new OpenNotificationsResponse(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<EnterTextByIndexCommand> parser() {
+    public static com.google.protobuf.Parser<OpenNotificationsResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<EnterTextByIndexCommand> getParserForType() {
+    public com.google.protobuf.Parser<OpenNotificationsResponse> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.EnterTextByIndexCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.OpenNotificationsResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface TapOnNotificationByIndexCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.TapOnNotificationByIndexCommand)
+  public interface TapOnNotificationRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.TapOnNotificationRequest)
       com.google.protobuf.MessageOrBuilder {
 
+    /**
+     * <code>uint32 index = 1;</code>
+     * @return Whether the index field is set.
+     */
+    boolean hasIndex();
     /**
      * <code>uint32 index = 1;</code>
      * @return The index.
      */
     int getIndex();
+
+    /**
+     * <code>.patrol.Selector selector = 2;</code>
+     * @return Whether the selector field is set.
+     */
+    boolean hasSelector();
+    /**
+     * <code>.patrol.Selector selector = 2;</code>
+     * @return The selector.
+     */
+    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
+    /**
+     * <code>.patrol.Selector selector = 2;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
+
+    public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.FindByCase getFindByCase();
   }
   /**
-   * Protobuf type {@code patrol.TapOnNotificationByIndexCommand}
+   * Protobuf type {@code patrol.TapOnNotificationRequest}
    */
-  public static final class TapOnNotificationByIndexCommand extends
+  public static final class TapOnNotificationRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.TapOnNotificationByIndexCommand)
-      TapOnNotificationByIndexCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.TapOnNotificationRequest)
+      TapOnNotificationRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use TapOnNotificationByIndexCommand.newBuilder() to construct.
-    private TapOnNotificationByIndexCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use TapOnNotificationRequest.newBuilder() to construct.
+    private TapOnNotificationRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private TapOnNotificationByIndexCommand() {
+    private TapOnNotificationRequest() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new TapOnNotificationByIndexCommand();
+      return new TapOnNotificationRequest();
     }
 
     @java.lang.Override
@@ -3880,7 +5263,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private TapOnNotificationByIndexCommand(
+    private TapOnNotificationRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -3899,8 +5282,22 @@ public final class Contracts {
               done = true;
               break;
             case 8: {
-
-              index_ = input.readUInt32();
+              findBy_ = input.readUInt32();
+              findByCase_ = 1;
+              break;
+            }
+            case 18: {
+              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
+              if (findByCase_ == 2) {
+                subBuilder = ((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_).toBuilder();
+              }
+              findBy_ =
+                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
+                findBy_ = subBuilder.buildPartial();
+              }
+              findByCase_ = 2;
               break;
             }
             default: {
@@ -3926,26 +5323,108 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationByIndexCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationByIndexCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.Builder.class);
+    }
+
+    private int findByCase_ = 0;
+    private java.lang.Object findBy_;
+    public enum FindByCase
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+      INDEX(1),
+      SELECTOR(2),
+      FINDBY_NOT_SET(0);
+      private final int value;
+      private FindByCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static FindByCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static FindByCase forNumber(int value) {
+        switch (value) {
+          case 1: return INDEX;
+          case 2: return SELECTOR;
+          case 0: return FINDBY_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public FindByCase
+    getFindByCase() {
+      return FindByCase.forNumber(
+          findByCase_);
     }
 
     public static final int INDEX_FIELD_NUMBER = 1;
-    private int index_;
+    /**
+     * <code>uint32 index = 1;</code>
+     * @return Whether the index field is set.
+     */
+    @java.lang.Override
+    public boolean hasIndex() {
+      return findByCase_ == 1;
+    }
     /**
      * <code>uint32 index = 1;</code>
      * @return The index.
      */
     @java.lang.Override
     public int getIndex() {
-      return index_;
+      if (findByCase_ == 1) {
+        return (java.lang.Integer) findBy_;
+      }
+      return 0;
+    }
+
+    public static final int SELECTOR_FIELD_NUMBER = 2;
+    /**
+     * <code>.patrol.Selector selector = 2;</code>
+     * @return Whether the selector field is set.
+     */
+    @java.lang.Override
+    public boolean hasSelector() {
+      return findByCase_ == 2;
+    }
+    /**
+     * <code>.patrol.Selector selector = 2;</code>
+     * @return The selector.
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
+      if (findByCase_ == 2) {
+         return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+    }
+    /**
+     * <code>.patrol.Selector selector = 2;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
+      if (findByCase_ == 2) {
+         return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3962,8 +5441,12 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (index_ != 0) {
-        output.writeUInt32(1, index_);
+      if (findByCase_ == 1) {
+        output.writeUInt32(
+            1, (int)((java.lang.Integer) findBy_));
+      }
+      if (findByCase_ == 2) {
+        output.writeMessage(2, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
       unknownFields.writeTo(output);
     }
@@ -3974,9 +5457,14 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (index_ != 0) {
+      if (findByCase_ == 1) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, index_);
+          .computeUInt32Size(
+              1, (int)((java.lang.Integer) findBy_));
+      }
+      if (findByCase_ == 2) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3988,13 +5476,24 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand other = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest other = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest) obj;
 
-      if (getIndex()
-          != other.getIndex()) return false;
+      if (!getFindByCase().equals(other.getFindByCase())) return false;
+      switch (findByCase_) {
+        case 1:
+          if (getIndex()
+              != other.getIndex()) return false;
+          break;
+        case 2:
+          if (!getSelector()
+              .equals(other.getSelector())) return false;
+          break;
+        case 0:
+        default:
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -4006,76 +5505,86 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + INDEX_FIELD_NUMBER;
-      hash = (53 * hash) + getIndex();
+      switch (findByCase_) {
+        case 1:
+          hash = (37 * hash) + INDEX_FIELD_NUMBER;
+          hash = (53 * hash) + getIndex();
+          break;
+        case 2:
+          hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
+          hash = (53 * hash) + getSelector().hashCode();
+          break;
+        case 0:
+        default:
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -4088,7 +5597,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -4104,26 +5613,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.TapOnNotificationByIndexCommand}
+     * Protobuf type {@code patrol.TapOnNotificationRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.TapOnNotificationByIndexCommand)
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.TapOnNotificationRequest)
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationByIndexCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationByIndexCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4141,25 +5650,25 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        index_ = 0;
-
+        findByCase_ = 0;
+        findBy_ = null;
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationByIndexCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -4167,9 +5676,19 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand result = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand(this);
-        result.index_ = index_;
+      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest result = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest(this);
+        if (findByCase_ == 1) {
+          result.findBy_ = findBy_;
+        }
+        if (findByCase_ == 2) {
+          if (selectorBuilder_ == null) {
+            result.findBy_ = findBy_;
+          } else {
+            result.findBy_ = selectorBuilder_.build();
+          }
+        }
+        result.findByCase_ = findByCase_;
         onBuilt();
         return result;
       }
@@ -4208,18 +5727,28 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand.getDefaultInstance()) return this;
-        if (other.getIndex() != 0) {
-          setIndex(other.getIndex());
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.getDefaultInstance()) return this;
+        switch (other.getFindByCase()) {
+          case INDEX: {
+            setIndex(other.getIndex());
+            break;
+          }
+          case SELECTOR: {
+            mergeSelector(other.getSelector());
+            break;
+          }
+          case FINDBY_NOT_SET: {
+            break;
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -4236,11 +5765,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -4249,15 +5778,38 @@ public final class Contracts {
         }
         return this;
       }
+      private int findByCase_ = 0;
+      private java.lang.Object findBy_;
+      public FindByCase
+          getFindByCase() {
+        return FindByCase.forNumber(
+            findByCase_);
+      }
 
-      private int index_ ;
+      public Builder clearFindBy() {
+        findByCase_ = 0;
+        findBy_ = null;
+        onChanged();
+        return this;
+      }
+
+
+      /**
+       * <code>uint32 index = 1;</code>
+       * @return Whether the index field is set.
+       */
+      public boolean hasIndex() {
+        return findByCase_ == 1;
+      }
       /**
        * <code>uint32 index = 1;</code>
        * @return The index.
        */
-      @java.lang.Override
       public int getIndex() {
-        return index_;
+        if (findByCase_ == 1) {
+          return (java.lang.Integer) findBy_;
+        }
+        return 0;
       }
       /**
        * <code>uint32 index = 1;</code>
@@ -4265,8 +5817,8 @@ public final class Contracts {
        * @return This builder for chaining.
        */
       public Builder setIndex(int value) {
-        
-        index_ = value;
+        findByCase_ = 1;
+        findBy_ = value;
         onChanged();
         return this;
       }
@@ -4275,9 +5827,573 @@ public final class Contracts {
        * @return This builder for chaining.
        */
       public Builder clearIndex() {
-        
-        index_ = 0;
+        if (findByCase_ == 1) {
+          findByCase_ = 0;
+          findBy_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       * @return Whether the selector field is set.
+       */
+      @java.lang.Override
+      public boolean hasSelector() {
+        return findByCase_ == 2;
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       * @return The selector.
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
+        if (selectorBuilder_ == null) {
+          if (findByCase_ == 2) {
+            return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+        } else {
+          if (findByCase_ == 2) {
+            return selectorBuilder_.getMessage();
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
+        if (selectorBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          findBy_ = value;
+          onChanged();
+        } else {
+          selectorBuilder_.setMessage(value);
+        }
+        findByCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      public Builder setSelector(
+          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
+        if (selectorBuilder_ == null) {
+          findBy_ = builderForValue.build();
+          onChanged();
+        } else {
+          selectorBuilder_.setMessage(builderForValue.build());
+        }
+        findByCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
+        if (selectorBuilder_ == null) {
+          if (findByCase_ == 2 &&
+              findBy_ != pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance()) {
+            findBy_ = pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            findBy_ = value;
+          }
+          onChanged();
+        } else {
+          if (findByCase_ == 2) {
+            selectorBuilder_.mergeFrom(value);
+          } else {
+            selectorBuilder_.setMessage(value);
+          }
+        }
+        findByCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      public Builder clearSelector() {
+        if (selectorBuilder_ == null) {
+          if (findByCase_ == 2) {
+            findByCase_ = 0;
+            findBy_ = null;
+            onChanged();
+          }
+        } else {
+          if (findByCase_ == 2) {
+            findByCase_ = 0;
+            findBy_ = null;
+          }
+          selectorBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
+        return getSelectorFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
+        if ((findByCase_ == 2) && (selectorBuilder_ != null)) {
+          return selectorBuilder_.getMessageOrBuilder();
+        } else {
+          if (findByCase_ == 2) {
+            return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.Selector selector = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
+          getSelectorFieldBuilder() {
+        if (selectorBuilder_ == null) {
+          if (!(findByCase_ == 2)) {
+            findBy_ = pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+          }
+          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
+                  (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_,
+                  getParentForChildren(),
+                  isClean());
+          findBy_ = null;
+        }
+        findByCase_ = 2;
+        onChanged();;
+        return selectorBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.TapOnNotificationRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.TapOnNotificationRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TapOnNotificationRequest>
+        PARSER = new com.google.protobuf.AbstractParser<TapOnNotificationRequest>() {
+      @java.lang.Override
+      public TapOnNotificationRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TapOnNotificationRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TapOnNotificationRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TapOnNotificationRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TapOnNotificationResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.TapOnNotificationResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.TapOnNotificationResponse}
+   */
+  public static final class TapOnNotificationResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.TapOnNotificationResponse)
+      TapOnNotificationResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TapOnNotificationResponse.newBuilder() to construct.
+    private TapOnNotificationResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TapOnNotificationResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new TapOnNotificationResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TapOnNotificationResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse other = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.TapOnNotificationResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.TapOnNotificationResponse)
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse result = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
         onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
         return this;
       }
       @java.lang.Override
@@ -4293,48 +6409,3408 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.TapOnNotificationByIndexCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.TapOnNotificationResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.TapOnNotificationByIndexCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.TapOnNotificationResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TapOnNotificationByIndexCommand>
-        PARSER = new com.google.protobuf.AbstractParser<TapOnNotificationByIndexCommand>() {
+    private static final com.google.protobuf.Parser<TapOnNotificationResponse>
+        PARSER = new com.google.protobuf.AbstractParser<TapOnNotificationResponse>() {
       @java.lang.Override
-      public TapOnNotificationByIndexCommand parsePartialFrom(
+      public TapOnNotificationResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TapOnNotificationByIndexCommand(input, extensionRegistry);
+        return new TapOnNotificationResponse(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<TapOnNotificationByIndexCommand> parser() {
+    public static com.google.protobuf.Parser<TapOnNotificationResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<TapOnNotificationByIndexCommand> getParserForType() {
+    public com.google.protobuf.Parser<TapOnNotificationResponse> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationByIndexCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface TapOnNotificationBySelectorCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.TapOnNotificationBySelectorCommand)
+  public interface OpenQuickSettingsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.OpenQuickSettingsRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.OpenQuickSettingsRequest}
+   */
+  public static final class OpenQuickSettingsRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.OpenQuickSettingsRequest)
+      OpenQuickSettingsRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OpenQuickSettingsRequest.newBuilder() to construct.
+    private OpenQuickSettingsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OpenQuickSettingsRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new OpenQuickSettingsRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OpenQuickSettingsRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.class, pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest other = (pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.OpenQuickSettingsRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.OpenQuickSettingsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.class, pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest result = new pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.OpenQuickSettingsRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.OpenQuickSettingsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OpenQuickSettingsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<OpenQuickSettingsRequest>() {
+      @java.lang.Override
+      public OpenQuickSettingsRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OpenQuickSettingsRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OpenQuickSettingsRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OpenQuickSettingsRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface OpenQuickSettingsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.OpenQuickSettingsResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.OpenQuickSettingsResponse}
+   */
+  public static final class OpenQuickSettingsResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.OpenQuickSettingsResponse)
+      OpenQuickSettingsResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use OpenQuickSettingsResponse.newBuilder() to construct.
+    private OpenQuickSettingsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private OpenQuickSettingsResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new OpenQuickSettingsResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OpenQuickSettingsResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.class, pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse other = (pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.OpenQuickSettingsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.OpenQuickSettingsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.class, pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse result = new pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.OpenQuickSettingsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.OpenQuickSettingsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<OpenQuickSettingsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<OpenQuickSettingsResponse>() {
+      @java.lang.Override
+      public OpenQuickSettingsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OpenQuickSettingsResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<OpenQuickSettingsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OpenQuickSettingsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DarkModeRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DarkModeRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.DarkModeRequest}
+   */
+  public static final class DarkModeRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.DarkModeRequest)
+      DarkModeRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DarkModeRequest.newBuilder() to construct.
+    private DarkModeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DarkModeRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DarkModeRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DarkModeRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest other = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.DarkModeRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DarkModeRequest)
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest result = new pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.DarkModeRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.DarkModeRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DarkModeRequest>
+        PARSER = new com.google.protobuf.AbstractParser<DarkModeRequest>() {
+      @java.lang.Override
+      public DarkModeRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DarkModeRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<DarkModeRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DarkModeRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DarkModeResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DarkModeResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.DarkModeResponse}
+   */
+  public static final class DarkModeResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.DarkModeResponse)
+      DarkModeResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DarkModeResponse.newBuilder() to construct.
+    private DarkModeResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DarkModeResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DarkModeResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DarkModeResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse other = (pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.DarkModeResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DarkModeResponse)
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse result = new pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.DarkModeResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.DarkModeResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DarkModeResponse>
+        PARSER = new com.google.protobuf.AbstractParser<DarkModeResponse>() {
+      @java.lang.Override
+      public DarkModeResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DarkModeResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<DarkModeResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DarkModeResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.DarkModeResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WiFiRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.WiFiRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.WiFiRequest}
+   */
+  public static final class WiFiRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.WiFiRequest)
+      WiFiRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WiFiRequest.newBuilder() to construct.
+    private WiFiRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WiFiRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new WiFiRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WiFiRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.class, pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.WiFiRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.WiFiRequest other = (pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.WiFiRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.WiFiRequest)
+        pl.leancode.automatorserver.contracts.Contracts.WiFiRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.class, pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest result = new pl.leancode.automatorserver.contracts.Contracts.WiFiRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.WiFiRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.WiFiRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.WiFiRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.WiFiRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.WiFiRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WiFiRequest>
+        PARSER = new com.google.protobuf.AbstractParser<WiFiRequest>() {
+      @java.lang.Override
+      public WiFiRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WiFiRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WiFiRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WiFiRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface WiFiResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.WiFiResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.WiFiResponse}
+   */
+  public static final class WiFiResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.WiFiResponse)
+      WiFiResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use WiFiResponse.newBuilder() to construct.
+    private WiFiResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private WiFiResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new WiFiResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private WiFiResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.class, pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.WiFiResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.WiFiResponse other = (pl.leancode.automatorserver.contracts.Contracts.WiFiResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.WiFiResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.WiFiResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.WiFiResponse)
+        pl.leancode.automatorserver.contracts.Contracts.WiFiResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.class, pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.WiFiResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.WiFiResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.WiFiResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.WiFiResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.WiFiResponse result = new pl.leancode.automatorserver.contracts.Contracts.WiFiResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.WiFiResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.WiFiResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.WiFiResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.WiFiResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.WiFiResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.WiFiResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.WiFiResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.WiFiResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.WiFiResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.WiFiResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.WiFiResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<WiFiResponse>
+        PARSER = new com.google.protobuf.AbstractParser<WiFiResponse>() {
+      @java.lang.Override
+      public WiFiResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new WiFiResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<WiFiResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<WiFiResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.WiFiResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface CellularRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.CellularRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.CellularRequest}
+   */
+  public static final class CellularRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.CellularRequest)
+      CellularRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use CellularRequest.newBuilder() to construct.
+    private CellularRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private CellularRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CellularRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private CellularRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.CellularRequest other = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.CellularRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.CellularRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.CellularRequest)
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.CellularRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.CellularRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.CellularRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.CellularRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.CellularRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.CellularRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CellularRequest>
+        PARSER = new com.google.protobuf.AbstractParser<CellularRequest>() {
+      @java.lang.Override
+      public CellularRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new CellularRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<CellularRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CellularRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface CellularResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.CellularResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.CellularResponse}
+   */
+  public static final class CellularResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.CellularResponse)
+      CellularResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use CellularResponse.newBuilder() to construct.
+    private CellularResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private CellularResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CellularResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private CellularResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.CellularResponse.class, pl.leancode.automatorserver.contracts.Contracts.CellularResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.CellularResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.CellularResponse other = (pl.leancode.automatorserver.contracts.Contracts.CellularResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.CellularResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.CellularResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.CellularResponse)
+        pl.leancode.automatorserver.contracts.Contracts.CellularResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.CellularResponse.class, pl.leancode.automatorserver.contracts.Contracts.CellularResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.CellularResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.CellularResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.CellularResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.CellularResponse result = new pl.leancode.automatorserver.contracts.Contracts.CellularResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.CellularResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.CellularResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.CellularResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.CellularResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.CellularResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.CellularResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.CellularResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.CellularResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.CellularResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.CellularResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CellularResponse>
+        PARSER = new com.google.protobuf.AbstractParser<CellularResponse>() {
+      @java.lang.Override
+      public CellularResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new CellularResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<CellularResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CellularResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.CellularResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface GetNativeWidgetsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.GetNativeWidgetsRequest)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -4353,25 +9829,25 @@ public final class Contracts {
     pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
   }
   /**
-   * Protobuf type {@code patrol.TapOnNotificationBySelectorCommand}
+   * Protobuf type {@code patrol.GetNativeWidgetsRequest}
    */
-  public static final class TapOnNotificationBySelectorCommand extends
+  public static final class GetNativeWidgetsRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.TapOnNotificationBySelectorCommand)
-      TapOnNotificationBySelectorCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.GetNativeWidgetsRequest)
+      GetNativeWidgetsRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use TapOnNotificationBySelectorCommand.newBuilder() to construct.
-    private TapOnNotificationBySelectorCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use GetNativeWidgetsRequest.newBuilder() to construct.
+    private GetNativeWidgetsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private TapOnNotificationBySelectorCommand() {
+    private GetNativeWidgetsRequest() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new TapOnNotificationBySelectorCommand();
+      return new GetNativeWidgetsRequest();
     }
 
     @java.lang.Override
@@ -4379,7 +9855,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private TapOnNotificationBySelectorCommand(
+    private GetNativeWidgetsRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4433,15 +9909,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationBySelectorCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationBySelectorCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.Builder.class);
     }
 
     public static final int SELECTOR_FIELD_NUMBER = 1;
@@ -4510,10 +9986,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand other = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) obj;
 
       if (hasSelector() != other.hasSelector()) return false;
       if (hasSelector()) {
@@ -4540,69 +10016,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -4615,7 +10091,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -4631,26 +10107,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.TapOnNotificationBySelectorCommand}
+     * Protobuf type {@code patrol.GetNativeWidgetsRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.TapOnNotificationBySelectorCommand)
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.GetNativeWidgetsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationBySelectorCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationBySelectorCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.class, pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -4680,17 +10156,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapOnNotificationBySelectorCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -4698,8 +10174,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand result = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand(this);
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest(this);
         if (selectorBuilder_ == null) {
           result.selector_ = selector_;
         } else {
@@ -4743,16 +10219,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance()) return this;
         if (other.hasSelector()) {
           mergeSelector(other.getSelector());
         }
@@ -4771,11 +10247,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -4916,100 +10392,95 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.TapOnNotificationBySelectorCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.GetNativeWidgetsRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.TapOnNotificationBySelectorCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.GetNativeWidgetsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<TapOnNotificationBySelectorCommand>
-        PARSER = new com.google.protobuf.AbstractParser<TapOnNotificationBySelectorCommand>() {
+    private static final com.google.protobuf.Parser<GetNativeWidgetsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<GetNativeWidgetsRequest>() {
       @java.lang.Override
-      public TapOnNotificationBySelectorCommand parsePartialFrom(
+      public GetNativeWidgetsRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TapOnNotificationBySelectorCommand(input, extensionRegistry);
+        return new GetNativeWidgetsRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<TapOnNotificationBySelectorCommand> parser() {
+    public static com.google.protobuf.Parser<GetNativeWidgetsRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<TapOnNotificationBySelectorCommand> getParserForType() {
+    public com.google.protobuf.Parser<GetNativeWidgetsRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationBySelectorCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface SwipeCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.SwipeCommand)
+  public interface GetNativeWidgetsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.GetNativeWidgetsResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>float startX = 1;</code>
-     * @return The startX.
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
      */
-    float getStartX();
-
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> 
+        getNativeWidgetsList();
     /**
-     * <code>float startY = 2;</code>
-     * @return The startY.
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
      */
-    float getStartY();
-
+    pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index);
     /**
-     * <code>float endX = 3;</code>
-     * @return The endX.
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
      */
-    float getEndX();
-
+    int getNativeWidgetsCount();
     /**
-     * <code>float endY = 4;</code>
-     * @return The endY.
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
      */
-    float getEndY();
-
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+        getNativeWidgetsOrBuilderList();
     /**
-     * <code>uint32 steps = 5;</code>
-     * @return The steps.
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
      */
-    int getSteps();
+    pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
+        int index);
   }
   /**
-   * Protobuf type {@code patrol.SwipeCommand}
+   * Protobuf type {@code patrol.GetNativeWidgetsResponse}
    */
-  public static final class SwipeCommand extends
+  public static final class GetNativeWidgetsResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.SwipeCommand)
-      SwipeCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.GetNativeWidgetsResponse)
+      GetNativeWidgetsResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use SwipeCommand.newBuilder() to construct.
-    private SwipeCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use GetNativeWidgetsResponse.newBuilder() to construct.
+    private GetNativeWidgetsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private SwipeCommand() {
+    private GetNativeWidgetsResponse() {
+      nativeWidgets_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new SwipeCommand();
+      return new GetNativeWidgetsResponse();
     }
 
     @java.lang.Override
@@ -5017,7 +10488,777 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private SwipeCommand(
+    private GetNativeWidgetsResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                nativeWidgets_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              nativeWidgets_.add(
+                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeWidget.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          nativeWidgets_ = java.util.Collections.unmodifiableList(nativeWidgets_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.Builder.class);
+    }
+
+    public static final int NATIVEWIDGETS_FIELD_NUMBER = 1;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> nativeWidgets_;
+    /**
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getNativeWidgetsList() {
+      return nativeWidgets_;
+    }
+    /**
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+        getNativeWidgetsOrBuilderList() {
+      return nativeWidgets_;
+    }
+    /**
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     */
+    @java.lang.Override
+    public int getNativeWidgetsCount() {
+      return nativeWidgets_.size();
+    }
+    /**
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index) {
+      return nativeWidgets_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
+        int index) {
+      return nativeWidgets_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < nativeWidgets_.size(); i++) {
+        output.writeMessage(1, nativeWidgets_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < nativeWidgets_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, nativeWidgets_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse) obj;
+
+      if (!getNativeWidgetsList()
+          .equals(other.getNativeWidgetsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getNativeWidgetsCount() > 0) {
+        hash = (37 * hash) + NATIVEWIDGETS_FIELD_NUMBER;
+        hash = (53 * hash) + getNativeWidgetsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.GetNativeWidgetsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.GetNativeWidgetsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getNativeWidgetsFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (nativeWidgetsBuilder_ == null) {
+          nativeWidgets_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          nativeWidgetsBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (nativeWidgetsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            nativeWidgets_ = java.util.Collections.unmodifiableList(nativeWidgets_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.nativeWidgets_ = nativeWidgets_;
+        } else {
+          result.nativeWidgets_ = nativeWidgetsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance()) return this;
+        if (nativeWidgetsBuilder_ == null) {
+          if (!other.nativeWidgets_.isEmpty()) {
+            if (nativeWidgets_.isEmpty()) {
+              nativeWidgets_ = other.nativeWidgets_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureNativeWidgetsIsMutable();
+              nativeWidgets_.addAll(other.nativeWidgets_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.nativeWidgets_.isEmpty()) {
+            if (nativeWidgetsBuilder_.isEmpty()) {
+              nativeWidgetsBuilder_.dispose();
+              nativeWidgetsBuilder_ = null;
+              nativeWidgets_ = other.nativeWidgets_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              nativeWidgetsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getNativeWidgetsFieldBuilder() : null;
+            } else {
+              nativeWidgetsBuilder_.addAllMessages(other.nativeWidgets_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> nativeWidgets_ =
+        java.util.Collections.emptyList();
+      private void ensureNativeWidgetsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          nativeWidgets_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>(nativeWidgets_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> nativeWidgetsBuilder_;
+
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getNativeWidgetsList() {
+        if (nativeWidgetsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(nativeWidgets_);
+        } else {
+          return nativeWidgetsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public int getNativeWidgetsCount() {
+        if (nativeWidgetsBuilder_ == null) {
+          return nativeWidgets_.size();
+        } else {
+          return nativeWidgetsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index) {
+        if (nativeWidgetsBuilder_ == null) {
+          return nativeWidgets_.get(index);
+        } else {
+          return nativeWidgetsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder setNativeWidgets(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
+        if (nativeWidgetsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.set(index, value);
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder setNativeWidgets(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
+        if (nativeWidgetsBuilder_ == null) {
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder addNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
+        if (nativeWidgetsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.add(value);
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder addNativeWidgets(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
+        if (nativeWidgetsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.add(index, value);
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder addNativeWidgets(
+          pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
+        if (nativeWidgetsBuilder_ == null) {
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.add(builderForValue.build());
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder addNativeWidgets(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
+        if (nativeWidgetsBuilder_ == null) {
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder addAllNativeWidgets(
+          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidget> values) {
+        if (nativeWidgetsBuilder_ == null) {
+          ensureNativeWidgetsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, nativeWidgets_);
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder clearNativeWidgets() {
+        if (nativeWidgetsBuilder_ == null) {
+          nativeWidgets_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public Builder removeNativeWidgets(int index) {
+        if (nativeWidgetsBuilder_ == null) {
+          ensureNativeWidgetsIsMutable();
+          nativeWidgets_.remove(index);
+          onChanged();
+        } else {
+          nativeWidgetsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder getNativeWidgetsBuilder(
+          int index) {
+        return getNativeWidgetsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
+          int index) {
+        if (nativeWidgetsBuilder_ == null) {
+          return nativeWidgets_.get(index);  } else {
+          return nativeWidgetsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+           getNativeWidgetsOrBuilderList() {
+        if (nativeWidgetsBuilder_ != null) {
+          return nativeWidgetsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(nativeWidgets_);
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addNativeWidgetsBuilder() {
+        return getNativeWidgetsFieldBuilder().addBuilder(
+            pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addNativeWidgetsBuilder(
+          int index) {
+        return getNativeWidgetsFieldBuilder().addBuilder(
+            index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       */
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder> 
+           getNativeWidgetsBuilderList() {
+        return getNativeWidgetsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+          getNativeWidgetsFieldBuilder() {
+        if (nativeWidgetsBuilder_ == null) {
+          nativeWidgetsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder>(
+                  nativeWidgets_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          nativeWidgets_ = null;
+        }
+        return nativeWidgetsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.GetNativeWidgetsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.GetNativeWidgetsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GetNativeWidgetsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<GetNativeWidgetsResponse>() {
+      @java.lang.Override
+      public GetNativeWidgetsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new GetNativeWidgetsResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<GetNativeWidgetsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GetNativeWidgetsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface GetNotificationsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.GetNotificationsRequest)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.GetNotificationsRequest}
+   */
+  public static final class GetNotificationsRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.GetNotificationsRequest)
+      GetNotificationsRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use GetNotificationsRequest.newBuilder() to construct.
+    private GetNotificationsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private GetNotificationsRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new GetNotificationsRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private GetNotificationsRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5035,24 +11276,4007 @@ public final class Contracts {
             case 0:
               done = true;
               break;
-            case 13: {
-
-              startX_ = input.readFloat();
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
-            case 21: {
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsRequest_descriptor;
+    }
 
-              startY_ = input.readFloat();
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest other = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.GetNotificationsRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.GetNotificationsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest result = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.GetNotificationsRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.GetNotificationsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GetNotificationsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<GetNotificationsRequest>() {
+      @java.lang.Override
+      public GetNotificationsRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new GetNotificationsRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<GetNotificationsRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GetNotificationsRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface GetNotificationsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.GetNotificationsResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> 
+        getNotificationsList();
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index);
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    int getNotificationsCount();
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+        getNotificationsOrBuilderList();
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code patrol.GetNotificationsResponse}
+   */
+  public static final class GetNotificationsResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.GetNotificationsResponse)
+      GetNotificationsResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use GetNotificationsResponse.newBuilder() to construct.
+    private GetNotificationsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private GetNotificationsResponse() {
+      notifications_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new GetNotificationsResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private GetNotificationsResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              notifications_.add(
+                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Notification.parser(), extensionRegistry));
               break;
             }
-            case 29: {
-
-              endX_ = input.readFloat();
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
               break;
             }
-            case 37: {
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          notifications_ = java.util.Collections.unmodifiableList(notifications_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsResponse_descriptor;
+    }
 
-              endY_ = input.readFloat();
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.Builder.class);
+    }
+
+    public static final int NOTIFICATIONS_FIELD_NUMBER = 1;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_;
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
+      return notifications_;
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+        getNotificationsOrBuilderList() {
+      return notifications_;
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public int getNotificationsCount() {
+      return notifications_.size();
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
+      return notifications_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+        int index) {
+      return notifications_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < notifications_.size(); i++) {
+        output.writeMessage(1, notifications_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < notifications_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, notifications_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse) obj;
+
+      if (!getNotificationsList()
+          .equals(other.getNotificationsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getNotificationsCount() > 0) {
+        hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getNotificationsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.GetNotificationsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.GetNotificationsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getNotificationsFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (notificationsBuilder_ == null) {
+          notifications_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          notificationsBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (notificationsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            notifications_ = java.util.Collections.unmodifiableList(notifications_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.notifications_ = notifications_;
+        } else {
+          result.notifications_ = notificationsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.getDefaultInstance()) return this;
+        if (notificationsBuilder_ == null) {
+          if (!other.notifications_.isEmpty()) {
+            if (notifications_.isEmpty()) {
+              notifications_ = other.notifications_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureNotificationsIsMutable();
+              notifications_.addAll(other.notifications_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.notifications_.isEmpty()) {
+            if (notificationsBuilder_.isEmpty()) {
+              notificationsBuilder_.dispose();
+              notificationsBuilder_ = null;
+              notifications_ = other.notifications_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              notificationsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getNotificationsFieldBuilder() : null;
+            } else {
+              notificationsBuilder_.addAllMessages(other.notifications_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_ =
+        java.util.Collections.emptyList();
+      private void ensureNotificationsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>(notifications_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> notificationsBuilder_;
+
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
+        if (notificationsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(notifications_);
+        } else {
+          return notificationsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public int getNotificationsCount() {
+        if (notificationsBuilder_ == null) {
+          return notifications_.size();
+        } else {
+          return notificationsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
+        if (notificationsBuilder_ == null) {
+          return notifications_.get(index);
+        } else {
+          return notificationsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder setNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
+        if (notificationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotificationsIsMutable();
+          notifications_.set(index, value);
+          onChanged();
+        } else {
+          notificationsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder setNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          notificationsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder addNotifications(pl.leancode.automatorserver.contracts.Contracts.Notification value) {
+        if (notificationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotificationsIsMutable();
+          notifications_.add(value);
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder addNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
+        if (notificationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotificationsIsMutable();
+          notifications_.add(index, value);
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder addNotifications(
+          pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.add(builderForValue.build());
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder addNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder addAllNotifications(
+          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.Notification> values) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, notifications_);
+          onChanged();
+        } else {
+          notificationsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder clearNotifications() {
+        if (notificationsBuilder_ == null) {
+          notifications_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          notificationsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public Builder removeNotifications(int index) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.remove(index);
+          onChanged();
+        } else {
+          notificationsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder getNotificationsBuilder(
+          int index) {
+        return getNotificationsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+          int index) {
+        if (notificationsBuilder_ == null) {
+          return notifications_.get(index);  } else {
+          return notificationsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+           getNotificationsOrBuilderList() {
+        if (notificationsBuilder_ != null) {
+          return notificationsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(notifications_);
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder() {
+        return getNotificationsFieldBuilder().addBuilder(
+            pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder(
+          int index) {
+        return getNotificationsFieldBuilder().addBuilder(
+            index, pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 1;</code>
+       */
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification.Builder> 
+           getNotificationsBuilderList() {
+        return getNotificationsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+          getNotificationsFieldBuilder() {
+        if (notificationsBuilder_ == null) {
+          notificationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder>(
+                  notifications_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          notifications_ = null;
+        }
+        return notificationsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.GetNotificationsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.GetNotificationsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GetNotificationsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<GetNotificationsResponse>() {
+      @java.lang.Override
+      public GetNotificationsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new GetNotificationsResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<GetNotificationsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GetNotificationsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TapRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.TapRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.patrol.Selector Selector = 1;</code>
+     * @return Whether the selector field is set.
+     */
+    boolean hasSelector();
+    /**
+     * <code>.patrol.Selector Selector = 1;</code>
+     * @return The selector.
+     */
+    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
+    /**
+     * <code>.patrol.Selector Selector = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
+
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.TapRequest}
+   */
+  public static final class TapRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.TapRequest)
+      TapRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TapRequest.newBuilder() to construct.
+    private TapRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TapRequest() {
+      appId_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new TapRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TapRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
+              if (selector_ != null) {
+                subBuilder = selector_.toBuilder();
+              }
+              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(selector_);
+                selector_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              appId_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.TapRequest.class, pl.leancode.automatorserver.contracts.Contracts.TapRequest.Builder.class);
+    }
+
+    public static final int SELECTOR_FIELD_NUMBER = 1;
+    private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
+    /**
+     * <code>.patrol.Selector Selector = 1;</code>
+     * @return Whether the selector field is set.
+     */
+    @java.lang.Override
+    public boolean hasSelector() {
+      return selector_ != null;
+    }
+    /**
+     * <code>.patrol.Selector Selector = 1;</code>
+     * @return The selector.
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
+      return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
+    }
+    /**
+     * <code>.patrol.Selector Selector = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
+      return getSelector();
+    }
+
+    public static final int APPID_FIELD_NUMBER = 2;
+    private volatile java.lang.Object appId_;
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        appId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        appId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (selector_ != null) {
+        output.writeMessage(1, getSelector());
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, appId_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (selector_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getSelector());
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, appId_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.TapRequest other = (pl.leancode.automatorserver.contracts.Contracts.TapRequest) obj;
+
+      if (hasSelector() != other.hasSelector()) return false;
+      if (hasSelector()) {
+        if (!getSelector()
+            .equals(other.getSelector())) return false;
+      }
+      if (!getAppId()
+          .equals(other.getAppId())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasSelector()) {
+        hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
+        hash = (53 * hash) + getSelector().hashCode();
+      }
+      hash = (37 * hash) + APPID_FIELD_NUMBER;
+      hash = (53 * hash) + getAppId().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.TapRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.TapRequest)
+        pl.leancode.automatorserver.contracts.Contracts.TapRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.TapRequest.class, pl.leancode.automatorserver.contracts.Contracts.TapRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (selectorBuilder_ == null) {
+          selector_ = null;
+        } else {
+          selector_ = null;
+          selectorBuilder_ = null;
+        }
+        appId_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.TapRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.TapRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.TapRequest result = new pl.leancode.automatorserver.contracts.Contracts.TapRequest(this);
+        if (selectorBuilder_ == null) {
+          result.selector_ = selector_;
+        } else {
+          result.selector_ = selectorBuilder_.build();
+        }
+        result.appId_ = appId_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.TapRequest.getDefaultInstance()) return this;
+        if (other.hasSelector()) {
+          mergeSelector(other.getSelector());
+        }
+        if (!other.getAppId().isEmpty()) {
+          appId_ = other.appId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.TapRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       * @return Whether the selector field is set.
+       */
+      public boolean hasSelector() {
+        return selectorBuilder_ != null || selector_ != null;
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       * @return The selector.
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
+        if (selectorBuilder_ == null) {
+          return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
+        } else {
+          return selectorBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
+        if (selectorBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          selector_ = value;
+          onChanged();
+        } else {
+          selectorBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      public Builder setSelector(
+          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
+        if (selectorBuilder_ == null) {
+          selector_ = builderForValue.build();
+          onChanged();
+        } else {
+          selectorBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
+        if (selectorBuilder_ == null) {
+          if (selector_ != null) {
+            selector_ =
+              pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder(selector_).mergeFrom(value).buildPartial();
+          } else {
+            selector_ = value;
+          }
+          onChanged();
+        } else {
+          selectorBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      public Builder clearSelector() {
+        if (selectorBuilder_ == null) {
+          selector_ = null;
+          onChanged();
+        } else {
+          selector_ = null;
+          selectorBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
+        
+        onChanged();
+        return getSelectorFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
+        if (selectorBuilder_ != null) {
+          return selectorBuilder_.getMessageOrBuilder();
+        } else {
+          return selector_ == null ?
+              pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
+        }
+      }
+      /**
+       * <code>.patrol.Selector Selector = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
+          getSelectorFieldBuilder() {
+        if (selectorBuilder_ == null) {
+          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
+                  getSelector(),
+                  getParentForChildren(),
+                  isClean());
+          selector_ = null;
+        }
+        return selectorBuilder_;
+      }
+
+      private java.lang.Object appId_ = "";
+      /**
+       * <code>string appId = 2;</code>
+       * @return The appId.
+       */
+      public java.lang.String getAppId() {
+        java.lang.Object ref = appId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          appId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return The bytes for appId.
+       */
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        java.lang.Object ref = appId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          appId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        
+        appId_ = getDefaultInstance().getAppId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.TapRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.TapRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.TapRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TapRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TapRequest>
+        PARSER = new com.google.protobuf.AbstractParser<TapRequest>() {
+      @java.lang.Override
+      public TapRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TapRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TapRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TapRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.TapRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TapResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.TapResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.TapResponse}
+   */
+  public static final class TapResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.TapResponse)
+      TapResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TapResponse.newBuilder() to construct.
+    private TapResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TapResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new TapResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TapResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.TapResponse.class, pl.leancode.automatorserver.contracts.Contracts.TapResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TapResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.TapResponse other = (pl.leancode.automatorserver.contracts.Contracts.TapResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TapResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.TapResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.TapResponse)
+        pl.leancode.automatorserver.contracts.Contracts.TapResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.TapResponse.class, pl.leancode.automatorserver.contracts.Contracts.TapResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.TapResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TapResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.TapResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.TapResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TapResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.TapResponse result = new pl.leancode.automatorserver.contracts.Contracts.TapResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TapResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TapResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TapResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.TapResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.TapResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.TapResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.TapResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.TapResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TapResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TapResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TapResponse>
+        PARSER = new com.google.protobuf.AbstractParser<TapResponse>() {
+      @java.lang.Override
+      public TapResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TapResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TapResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TapResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.TapResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface EnterTextRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.EnterTextRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string data = 1;</code>
+     * @return The data.
+     */
+    java.lang.String getData();
+    /**
+     * <code>string data = 1;</code>
+     * @return The bytes for data.
+     */
+    com.google.protobuf.ByteString
+        getDataBytes();
+
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
+
+    /**
+     * <code>uint32 index = 3;</code>
+     * @return Whether the index field is set.
+     */
+    boolean hasIndex();
+    /**
+     * <code>uint32 index = 3;</code>
+     * @return The index.
+     */
+    int getIndex();
+
+    /**
+     * <code>.patrol.Selector selector = 4;</code>
+     * @return Whether the selector field is set.
+     */
+    boolean hasSelector();
+    /**
+     * <code>.patrol.Selector selector = 4;</code>
+     * @return The selector.
+     */
+    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
+    /**
+     * <code>.patrol.Selector selector = 4;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
+
+    public pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase getFindByCase();
+  }
+  /**
+   * Protobuf type {@code patrol.EnterTextRequest}
+   */
+  public static final class EnterTextRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.EnterTextRequest)
+      EnterTextRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use EnterTextRequest.newBuilder() to construct.
+    private EnterTextRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private EnterTextRequest() {
+      data_ = "";
+      appId_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new EnterTextRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private EnterTextRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              data_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              appId_ = s;
+              break;
+            }
+            case 24: {
+              findBy_ = input.readUInt32();
+              findByCase_ = 3;
+              break;
+            }
+            case 34: {
+              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
+              if (findByCase_ == 4) {
+                subBuilder = ((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_).toBuilder();
+              }
+              findBy_ =
+                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
+                findBy_ = subBuilder.buildPartial();
+              }
+              findByCase_ = 4;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.Builder.class);
+    }
+
+    private int findByCase_ = 0;
+    private java.lang.Object findBy_;
+    public enum FindByCase
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+      INDEX(3),
+      SELECTOR(4),
+      FINDBY_NOT_SET(0);
+      private final int value;
+      private FindByCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static FindByCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static FindByCase forNumber(int value) {
+        switch (value) {
+          case 3: return INDEX;
+          case 4: return SELECTOR;
+          case 0: return FINDBY_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public FindByCase
+    getFindByCase() {
+      return FindByCase.forNumber(
+          findByCase_);
+    }
+
+    public static final int DATA_FIELD_NUMBER = 1;
+    private volatile java.lang.Object data_;
+    /**
+     * <code>string data = 1;</code>
+     * @return The data.
+     */
+    @java.lang.Override
+    public java.lang.String getData() {
+      java.lang.Object ref = data_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        data_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string data = 1;</code>
+     * @return The bytes for data.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getDataBytes() {
+      java.lang.Object ref = data_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        data_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int APPID_FIELD_NUMBER = 2;
+    private volatile java.lang.Object appId_;
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        appId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        appId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int INDEX_FIELD_NUMBER = 3;
+    /**
+     * <code>uint32 index = 3;</code>
+     * @return Whether the index field is set.
+     */
+    @java.lang.Override
+    public boolean hasIndex() {
+      return findByCase_ == 3;
+    }
+    /**
+     * <code>uint32 index = 3;</code>
+     * @return The index.
+     */
+    @java.lang.Override
+    public int getIndex() {
+      if (findByCase_ == 3) {
+        return (java.lang.Integer) findBy_;
+      }
+      return 0;
+    }
+
+    public static final int SELECTOR_FIELD_NUMBER = 4;
+    /**
+     * <code>.patrol.Selector selector = 4;</code>
+     * @return Whether the selector field is set.
+     */
+    @java.lang.Override
+    public boolean hasSelector() {
+      return findByCase_ == 4;
+    }
+    /**
+     * <code>.patrol.Selector selector = 4;</code>
+     * @return The selector.
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
+      if (findByCase_ == 4) {
+         return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+    }
+    /**
+     * <code>.patrol.Selector selector = 4;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
+      if (findByCase_ == 4) {
+         return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(data_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, data_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, appId_);
+      }
+      if (findByCase_ == 3) {
+        output.writeUInt32(
+            3, (int)((java.lang.Integer) findBy_));
+      }
+      if (findByCase_ == 4) {
+        output.writeMessage(4, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(data_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, data_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, appId_);
+      }
+      if (findByCase_ == 3) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(
+              3, (int)((java.lang.Integer) findBy_));
+      }
+      if (findByCase_ == 4) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest other = (pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest) obj;
+
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!getAppId()
+          .equals(other.getAppId())) return false;
+      if (!getFindByCase().equals(other.getFindByCase())) return false;
+      switch (findByCase_) {
+        case 3:
+          if (getIndex()
+              != other.getIndex()) return false;
+          break;
+        case 4:
+          if (!getSelector()
+              .equals(other.getSelector())) return false;
+          break;
+        case 0:
+        default:
+      }
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + DATA_FIELD_NUMBER;
+      hash = (53 * hash) + getData().hashCode();
+      hash = (37 * hash) + APPID_FIELD_NUMBER;
+      hash = (53 * hash) + getAppId().hashCode();
+      switch (findByCase_) {
+        case 3:
+          hash = (37 * hash) + INDEX_FIELD_NUMBER;
+          hash = (53 * hash) + getIndex();
+          break;
+        case 4:
+          hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
+          hash = (53 * hash) + getSelector().hashCode();
+          break;
+        case 0:
+        default:
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.EnterTextRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.EnterTextRequest)
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        data_ = "";
+
+        appId_ = "";
+
+        findByCase_ = 0;
+        findBy_ = null;
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest result = new pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest(this);
+        result.data_ = data_;
+        result.appId_ = appId_;
+        if (findByCase_ == 3) {
+          result.findBy_ = findBy_;
+        }
+        if (findByCase_ == 4) {
+          if (selectorBuilder_ == null) {
+            result.findBy_ = findBy_;
+          } else {
+            result.findBy_ = selectorBuilder_.build();
+          }
+        }
+        result.findByCase_ = findByCase_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.getDefaultInstance()) return this;
+        if (!other.getData().isEmpty()) {
+          data_ = other.data_;
+          onChanged();
+        }
+        if (!other.getAppId().isEmpty()) {
+          appId_ = other.appId_;
+          onChanged();
+        }
+        switch (other.getFindByCase()) {
+          case INDEX: {
+            setIndex(other.getIndex());
+            break;
+          }
+          case SELECTOR: {
+            mergeSelector(other.getSelector());
+            break;
+          }
+          case FINDBY_NOT_SET: {
+            break;
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int findByCase_ = 0;
+      private java.lang.Object findBy_;
+      public FindByCase
+          getFindByCase() {
+        return FindByCase.forNumber(
+            findByCase_);
+      }
+
+      public Builder clearFindBy() {
+        findByCase_ = 0;
+        findBy_ = null;
+        onChanged();
+        return this;
+      }
+
+
+      private java.lang.Object data_ = "";
+      /**
+       * <code>string data = 1;</code>
+       * @return The data.
+       */
+      public java.lang.String getData() {
+        java.lang.Object ref = data_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          data_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string data = 1;</code>
+       * @return The bytes for data.
+       */
+      public com.google.protobuf.ByteString
+          getDataBytes() {
+        java.lang.Object ref = data_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          data_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string data = 1;</code>
+       * @param value The data to set.
+       * @return This builder for chaining.
+       */
+      public Builder setData(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        data_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string data = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearData() {
+        
+        data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string data = 1;</code>
+       * @param value The bytes for data to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDataBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        data_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object appId_ = "";
+      /**
+       * <code>string appId = 2;</code>
+       * @return The appId.
+       */
+      public java.lang.String getAppId() {
+        java.lang.Object ref = appId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          appId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return The bytes for appId.
+       */
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        java.lang.Object ref = appId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          appId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        
+        appId_ = getDefaultInstance().getAppId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>uint32 index = 3;</code>
+       * @return Whether the index field is set.
+       */
+      public boolean hasIndex() {
+        return findByCase_ == 3;
+      }
+      /**
+       * <code>uint32 index = 3;</code>
+       * @return The index.
+       */
+      public int getIndex() {
+        if (findByCase_ == 3) {
+          return (java.lang.Integer) findBy_;
+        }
+        return 0;
+      }
+      /**
+       * <code>uint32 index = 3;</code>
+       * @param value The index to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIndex(int value) {
+        findByCase_ = 3;
+        findBy_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 index = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIndex() {
+        if (findByCase_ == 3) {
+          findByCase_ = 0;
+          findBy_ = null;
+          onChanged();
+        }
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       * @return Whether the selector field is set.
+       */
+      @java.lang.Override
+      public boolean hasSelector() {
+        return findByCase_ == 4;
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       * @return The selector.
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
+        if (selectorBuilder_ == null) {
+          if (findByCase_ == 4) {
+            return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+        } else {
+          if (findByCase_ == 4) {
+            return selectorBuilder_.getMessage();
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
+        if (selectorBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          findBy_ = value;
+          onChanged();
+        } else {
+          selectorBuilder_.setMessage(value);
+        }
+        findByCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      public Builder setSelector(
+          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
+        if (selectorBuilder_ == null) {
+          findBy_ = builderForValue.build();
+          onChanged();
+        } else {
+          selectorBuilder_.setMessage(builderForValue.build());
+        }
+        findByCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
+        if (selectorBuilder_ == null) {
+          if (findByCase_ == 4 &&
+              findBy_ != pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance()) {
+            findBy_ = pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            findBy_ = value;
+          }
+          onChanged();
+        } else {
+          if (findByCase_ == 4) {
+            selectorBuilder_.mergeFrom(value);
+          } else {
+            selectorBuilder_.setMessage(value);
+          }
+        }
+        findByCase_ = 4;
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      public Builder clearSelector() {
+        if (selectorBuilder_ == null) {
+          if (findByCase_ == 4) {
+            findByCase_ = 0;
+            findBy_ = null;
+            onChanged();
+          }
+        } else {
+          if (findByCase_ == 4) {
+            findByCase_ = 0;
+            findBy_ = null;
+          }
+          selectorBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
+        return getSelectorFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
+        if ((findByCase_ == 4) && (selectorBuilder_ != null)) {
+          return selectorBuilder_.getMessageOrBuilder();
+        } else {
+          if (findByCase_ == 4) {
+            return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.Selector selector = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
+          getSelectorFieldBuilder() {
+        if (selectorBuilder_ == null) {
+          if (!(findByCase_ == 4)) {
+            findBy_ = pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
+          }
+          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
+                  (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_,
+                  getParentForChildren(),
+                  isClean());
+          findBy_ = null;
+        }
+        findByCase_ = 4;
+        onChanged();;
+        return selectorBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.EnterTextRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.EnterTextRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<EnterTextRequest>
+        PARSER = new com.google.protobuf.AbstractParser<EnterTextRequest>() {
+      @java.lang.Override
+      public EnterTextRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new EnterTextRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<EnterTextRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<EnterTextRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface EnterTextResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.EnterTextResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.EnterTextResponse}
+   */
+  public static final class EnterTextResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.EnterTextResponse)
+      EnterTextResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use EnterTextResponse.newBuilder() to construct.
+    private EnterTextResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private EnterTextResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new EnterTextResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private EnterTextResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse other = (pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.EnterTextResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.EnterTextResponse)
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.class, pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_EnterTextResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse result = new pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.EnterTextResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.EnterTextResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<EnterTextResponse>
+        PARSER = new com.google.protobuf.AbstractParser<EnterTextResponse>() {
+      @java.lang.Override
+      public EnterTextResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new EnterTextResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<EnterTextResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<EnterTextResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.EnterTextResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SwipeRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.SwipeRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>uint32 startX = 1;</code>
+     * @return The startX.
+     */
+    int getStartX();
+
+    /**
+     * <code>uint32 startY = 2;</code>
+     * @return The startY.
+     */
+    int getStartY();
+
+    /**
+     * <code>uint32 endX = 3;</code>
+     * @return The endX.
+     */
+    int getEndX();
+
+    /**
+     * <code>uint32 endY = 4;</code>
+     * @return The endY.
+     */
+    int getEndY();
+
+    /**
+     * <code>uint32 steps = 5;</code>
+     * @return The steps.
+     */
+    int getSteps();
+  }
+  /**
+   * Protobuf type {@code patrol.SwipeRequest}
+   */
+  public static final class SwipeRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.SwipeRequest)
+      SwipeRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SwipeRequest.newBuilder() to construct.
+    private SwipeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SwipeRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new SwipeRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SwipeRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+
+              startX_ = input.readUInt32();
+              break;
+            }
+            case 16: {
+
+              startY_ = input.readUInt32();
+              break;
+            }
+            case 24: {
+
+              endX_ = input.readUInt32();
+              break;
+            }
+            case 32: {
+
+              endY_ = input.readUInt32();
               break;
             }
             case 40: {
@@ -5083,58 +15307,58 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.class, pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.class, pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.Builder.class);
     }
 
     public static final int STARTX_FIELD_NUMBER = 1;
-    private float startX_;
+    private int startX_;
     /**
-     * <code>float startX = 1;</code>
+     * <code>uint32 startX = 1;</code>
      * @return The startX.
      */
     @java.lang.Override
-    public float getStartX() {
+    public int getStartX() {
       return startX_;
     }
 
     public static final int STARTY_FIELD_NUMBER = 2;
-    private float startY_;
+    private int startY_;
     /**
-     * <code>float startY = 2;</code>
+     * <code>uint32 startY = 2;</code>
      * @return The startY.
      */
     @java.lang.Override
-    public float getStartY() {
+    public int getStartY() {
       return startY_;
     }
 
     public static final int ENDX_FIELD_NUMBER = 3;
-    private float endX_;
+    private int endX_;
     /**
-     * <code>float endX = 3;</code>
+     * <code>uint32 endX = 3;</code>
      * @return The endX.
      */
     @java.lang.Override
-    public float getEndX() {
+    public int getEndX() {
       return endX_;
     }
 
     public static final int ENDY_FIELD_NUMBER = 4;
-    private float endY_;
+    private int endY_;
     /**
-     * <code>float endY = 4;</code>
+     * <code>uint32 endY = 4;</code>
      * @return The endY.
      */
     @java.lang.Override
-    public float getEndY() {
+    public int getEndY() {
       return endY_;
     }
 
@@ -5163,17 +15387,17 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (java.lang.Float.floatToRawIntBits(startX_) != 0) {
-        output.writeFloat(1, startX_);
+      if (startX_ != 0) {
+        output.writeUInt32(1, startX_);
       }
-      if (java.lang.Float.floatToRawIntBits(startY_) != 0) {
-        output.writeFloat(2, startY_);
+      if (startY_ != 0) {
+        output.writeUInt32(2, startY_);
       }
-      if (java.lang.Float.floatToRawIntBits(endX_) != 0) {
-        output.writeFloat(3, endX_);
+      if (endX_ != 0) {
+        output.writeUInt32(3, endX_);
       }
-      if (java.lang.Float.floatToRawIntBits(endY_) != 0) {
-        output.writeFloat(4, endY_);
+      if (endY_ != 0) {
+        output.writeUInt32(4, endY_);
       }
       if (steps_ != 0) {
         output.writeUInt32(5, steps_);
@@ -5187,21 +15411,21 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (java.lang.Float.floatToRawIntBits(startX_) != 0) {
+      if (startX_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(1, startX_);
+          .computeUInt32Size(1, startX_);
       }
-      if (java.lang.Float.floatToRawIntBits(startY_) != 0) {
+      if (startY_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(2, startY_);
+          .computeUInt32Size(2, startY_);
       }
-      if (java.lang.Float.floatToRawIntBits(endX_) != 0) {
+      if (endX_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(3, endX_);
+          .computeUInt32Size(3, endX_);
       }
-      if (java.lang.Float.floatToRawIntBits(endY_) != 0) {
+      if (endY_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeFloatSize(4, endY_);
+          .computeUInt32Size(4, endY_);
       }
       if (steps_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -5217,23 +15441,19 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.SwipeCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.SwipeRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.SwipeCommand other = (pl.leancode.automatorserver.contracts.Contracts.SwipeCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.SwipeRequest other = (pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) obj;
 
-      if (java.lang.Float.floatToIntBits(getStartX())
-          != java.lang.Float.floatToIntBits(
-              other.getStartX())) return false;
-      if (java.lang.Float.floatToIntBits(getStartY())
-          != java.lang.Float.floatToIntBits(
-              other.getStartY())) return false;
-      if (java.lang.Float.floatToIntBits(getEndX())
-          != java.lang.Float.floatToIntBits(
-              other.getEndX())) return false;
-      if (java.lang.Float.floatToIntBits(getEndY())
-          != java.lang.Float.floatToIntBits(
-              other.getEndY())) return false;
+      if (getStartX()
+          != other.getStartX()) return false;
+      if (getStartY()
+          != other.getStartY()) return false;
+      if (getEndX()
+          != other.getEndX()) return false;
+      if (getEndY()
+          != other.getEndY()) return false;
       if (getSteps()
           != other.getSteps()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -5248,17 +15468,13 @@ public final class Contracts {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + STARTX_FIELD_NUMBER;
-      hash = (53 * hash) + java.lang.Float.floatToIntBits(
-          getStartX());
+      hash = (53 * hash) + getStartX();
       hash = (37 * hash) + STARTY_FIELD_NUMBER;
-      hash = (53 * hash) + java.lang.Float.floatToIntBits(
-          getStartY());
+      hash = (53 * hash) + getStartY();
       hash = (37 * hash) + ENDX_FIELD_NUMBER;
-      hash = (53 * hash) + java.lang.Float.floatToIntBits(
-          getEndX());
+      hash = (53 * hash) + getEndX();
       hash = (37 * hash) + ENDY_FIELD_NUMBER;
-      hash = (53 * hash) + java.lang.Float.floatToIntBits(
-          getEndY());
+      hash = (53 * hash) + getEndY();
       hash = (37 * hash) + STEPS_FIELD_NUMBER;
       hash = (53 * hash) + getSteps();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -5266,69 +15482,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5341,7 +15557,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.SwipeCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -5357,26 +15573,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.SwipeCommand}
+     * Protobuf type {@code patrol.SwipeRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.SwipeCommand)
-        pl.leancode.automatorserver.contracts.Contracts.SwipeCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.SwipeRequest)
+        pl.leancode.automatorserver.contracts.Contracts.SwipeRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.class, pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.class, pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5394,13 +15610,13 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        startX_ = 0F;
+        startX_ = 0;
 
-        startY_ = 0F;
+        startY_ = 0;
 
-        endX_ = 0F;
+        endX_ = 0;
 
-        endY_ = 0F;
+        endY_ = 0;
 
         steps_ = 0;
 
@@ -5410,17 +15626,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.SwipeCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.SwipeRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.SwipeCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.SwipeCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.SwipeRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.SwipeRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -5428,8 +15644,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.SwipeCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.SwipeCommand result = new pl.leancode.automatorserver.contracts.Contracts.SwipeCommand(this);
+      public pl.leancode.automatorserver.contracts.Contracts.SwipeRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.SwipeRequest result = new pl.leancode.automatorserver.contracts.Contracts.SwipeRequest(this);
         result.startX_ = startX_;
         result.startY_ = startY_;
         result.endX_ = endX_;
@@ -5473,26 +15689,26 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.SwipeCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.SwipeCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.SwipeRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SwipeCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.SwipeCommand.getDefaultInstance()) return this;
-        if (other.getStartX() != 0F) {
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.getDefaultInstance()) return this;
+        if (other.getStartX() != 0) {
           setStartX(other.getStartX());
         }
-        if (other.getStartY() != 0F) {
+        if (other.getStartY() != 0) {
           setStartY(other.getStartY());
         }
-        if (other.getEndX() != 0F) {
+        if (other.getEndX() != 0) {
           setEndX(other.getEndX());
         }
-        if (other.getEndY() != 0F) {
+        if (other.getEndY() != 0) {
           setEndY(other.getEndY());
         }
         if (other.getSteps() != 0) {
@@ -5513,11 +15729,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.SwipeCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SwipeCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -5527,126 +15743,126 @@ public final class Contracts {
         return this;
       }
 
-      private float startX_ ;
+      private int startX_ ;
       /**
-       * <code>float startX = 1;</code>
+       * <code>uint32 startX = 1;</code>
        * @return The startX.
        */
       @java.lang.Override
-      public float getStartX() {
+      public int getStartX() {
         return startX_;
       }
       /**
-       * <code>float startX = 1;</code>
+       * <code>uint32 startX = 1;</code>
        * @param value The startX to set.
        * @return This builder for chaining.
        */
-      public Builder setStartX(float value) {
+      public Builder setStartX(int value) {
         
         startX_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>float startX = 1;</code>
+       * <code>uint32 startX = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearStartX() {
         
-        startX_ = 0F;
+        startX_ = 0;
         onChanged();
         return this;
       }
 
-      private float startY_ ;
+      private int startY_ ;
       /**
-       * <code>float startY = 2;</code>
+       * <code>uint32 startY = 2;</code>
        * @return The startY.
        */
       @java.lang.Override
-      public float getStartY() {
+      public int getStartY() {
         return startY_;
       }
       /**
-       * <code>float startY = 2;</code>
+       * <code>uint32 startY = 2;</code>
        * @param value The startY to set.
        * @return This builder for chaining.
        */
-      public Builder setStartY(float value) {
+      public Builder setStartY(int value) {
         
         startY_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>float startY = 2;</code>
+       * <code>uint32 startY = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearStartY() {
         
-        startY_ = 0F;
+        startY_ = 0;
         onChanged();
         return this;
       }
 
-      private float endX_ ;
+      private int endX_ ;
       /**
-       * <code>float endX = 3;</code>
+       * <code>uint32 endX = 3;</code>
        * @return The endX.
        */
       @java.lang.Override
-      public float getEndX() {
+      public int getEndX() {
         return endX_;
       }
       /**
-       * <code>float endX = 3;</code>
+       * <code>uint32 endX = 3;</code>
        * @param value The endX to set.
        * @return This builder for chaining.
        */
-      public Builder setEndX(float value) {
+      public Builder setEndX(int value) {
         
         endX_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>float endX = 3;</code>
+       * <code>uint32 endX = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearEndX() {
         
-        endX_ = 0F;
+        endX_ = 0;
         onChanged();
         return this;
       }
 
-      private float endY_ ;
+      private int endY_ ;
       /**
-       * <code>float endY = 4;</code>
+       * <code>uint32 endY = 4;</code>
        * @return The endY.
        */
       @java.lang.Override
-      public float getEndY() {
+      public int getEndY() {
         return endY_;
       }
       /**
-       * <code>float endY = 4;</code>
+       * <code>uint32 endY = 4;</code>
        * @param value The endY to set.
        * @return This builder for chaining.
        */
-      public Builder setEndY(float value) {
+      public Builder setEndY(int value) {
         
         endY_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>float endY = 4;</code>
+       * <code>uint32 endY = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearEndY() {
         
-        endY_ = 0F;
+        endY_ = 0;
         onChanged();
         return this;
       }
@@ -5694,82 +15910,70 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.SwipeCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.SwipeRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.SwipeCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.SwipeCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.SwipeRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.SwipeRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.SwipeCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.SwipeRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.SwipeCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<SwipeCommand>
-        PARSER = new com.google.protobuf.AbstractParser<SwipeCommand>() {
+    private static final com.google.protobuf.Parser<SwipeRequest>
+        PARSER = new com.google.protobuf.AbstractParser<SwipeRequest>() {
       @java.lang.Override
-      public SwipeCommand parsePartialFrom(
+      public SwipeRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SwipeCommand(input, extensionRegistry);
+        return new SwipeRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<SwipeCommand> parser() {
+    public static com.google.protobuf.Parser<SwipeRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<SwipeCommand> getParserForType() {
+    public com.google.protobuf.Parser<SwipeRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.SwipeCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.SwipeRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface HandlePermissionCommandOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.HandlePermissionCommand)
+  public interface SwipeResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.SwipeResponse)
       com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
-     * @return The enum numeric value on the wire for code.
-     */
-    int getCodeValue();
-    /**
-     * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
-     * @return The code.
-     */
-    pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code getCode();
   }
   /**
-   * Protobuf type {@code patrol.HandlePermissionCommand}
+   * Protobuf type {@code patrol.SwipeResponse}
    */
-  public static final class HandlePermissionCommand extends
+  public static final class SwipeResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.HandlePermissionCommand)
-      HandlePermissionCommandOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.SwipeResponse)
+      SwipeResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use HandlePermissionCommand.newBuilder() to construct.
-    private HandlePermissionCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use SwipeResponse.newBuilder() to construct.
+    private SwipeResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private HandlePermissionCommand() {
-      code_ = 0;
+    private SwipeResponse() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new HandlePermissionCommand();
+      return new SwipeResponse();
     }
 
     @java.lang.Override
@@ -5777,7 +15981,439 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private HandlePermissionCommand(
+    private SwipeResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.class, pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.SwipeResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.SwipeResponse other = (pl.leancode.automatorserver.contracts.Contracts.SwipeResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.SwipeResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.SwipeResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.SwipeResponse)
+        pl.leancode.automatorserver.contracts.Contracts.SwipeResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.class, pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SwipeResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SwipeResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SwipeResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.SwipeResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SwipeResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.SwipeResponse result = new pl.leancode.automatorserver.contracts.Contracts.SwipeResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.SwipeResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.SwipeResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SwipeResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.SwipeResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.SwipeResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SwipeResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.SwipeResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.SwipeResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.SwipeResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.SwipeResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SwipeResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SwipeResponse>
+        PARSER = new com.google.protobuf.AbstractParser<SwipeResponse>() {
+      @java.lang.Override
+      public SwipeResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SwipeResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SwipeResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SwipeResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SwipeResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface HandlePermissionRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.HandlePermissionRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
+     * @return The enum numeric value on the wire for code.
+     */
+    int getCodeValue();
+    /**
+     * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
+     * @return The code.
+     */
+    pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code getCode();
+  }
+  /**
+   * Protobuf type {@code patrol.HandlePermissionRequest}
+   */
+  public static final class HandlePermissionRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.HandlePermissionRequest)
+      HandlePermissionRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use HandlePermissionRequest.newBuilder() to construct.
+    private HandlePermissionRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private HandlePermissionRequest() {
+      code_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new HandlePermissionRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private HandlePermissionRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5824,19 +16460,19 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionCommand_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionCommand_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.class, pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.class, pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Builder.class);
     }
 
     /**
-     * Protobuf enum {@code patrol.HandlePermissionCommand.Code}
+     * Protobuf enum {@code patrol.HandlePermissionRequest.Code}
      */
     public enum Code
         implements com.google.protobuf.ProtocolMessageEnum {
@@ -5926,7 +16562,7 @@ public final class Contracts {
       }
       public static final com.google.protobuf.Descriptors.EnumDescriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.getDescriptor().getEnumTypes().get(0);
+        return pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.getDescriptor().getEnumTypes().get(0);
       }
 
       private static final Code[] VALUES = values();
@@ -5949,26 +16585,26 @@ public final class Contracts {
         this.value = value;
       }
 
-      // @@protoc_insertion_point(enum_scope:patrol.HandlePermissionCommand.Code)
+      // @@protoc_insertion_point(enum_scope:patrol.HandlePermissionRequest.Code)
     }
 
     public static final int CODE_FIELD_NUMBER = 1;
     private int code_;
     /**
-     * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+     * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
      * @return The enum numeric value on the wire for code.
      */
     @java.lang.Override public int getCodeValue() {
       return code_;
     }
     /**
-     * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+     * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
      * @return The code.
      */
-    @java.lang.Override public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code getCode() {
+    @java.lang.Override public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code getCode() {
       @SuppressWarnings("deprecation")
-      pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code result = pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code.valueOf(code_);
-      return result == null ? pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code.UNRECOGNIZED : result;
+      pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code result = pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.valueOf(code_);
+      return result == null ? pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -5985,7 +16621,7 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (code_ != pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code.WHILE_USING.getNumber()) {
+      if (code_ != pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING.getNumber()) {
         output.writeEnum(1, code_);
       }
       unknownFields.writeTo(output);
@@ -5997,7 +16633,7 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (code_ != pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code.WHILE_USING.getNumber()) {
+      if (code_ != pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, code_);
       }
@@ -6011,10 +16647,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand other = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand) obj;
+      pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest other = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest) obj;
 
       if (code_ != other.code_) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -6035,69 +16671,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -6110,7 +16746,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -6126,26 +16762,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.HandlePermissionCommand}
+     * Protobuf type {@code patrol.HandlePermissionRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.HandlePermissionCommand)
-        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommandOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.HandlePermissionRequest)
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionCommand_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.class, pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.class, pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6171,17 +16807,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionCommand_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand build() {
-        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -6189,8 +16825,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand result = new pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand(this);
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest result = new pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest(this);
         result.code_ = code_;
         onBuilt();
         return result;
@@ -6230,16 +16866,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.getDefaultInstance()) return this;
         if (other.code_ != 0) {
           setCodeValue(other.getCodeValue());
         }
@@ -6258,11 +16894,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -6274,14 +16910,14 @@ public final class Contracts {
 
       private int code_ = 0;
       /**
-       * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+       * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
        * @return The enum numeric value on the wire for code.
        */
       @java.lang.Override public int getCodeValue() {
         return code_;
       }
       /**
-       * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+       * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
        * @param value The enum numeric value on the wire for code to set.
        * @return This builder for chaining.
        */
@@ -6292,21 +16928,21 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+       * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
        * @return The code.
        */
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code getCode() {
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code getCode() {
         @SuppressWarnings("deprecation")
-        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code result = pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code.valueOf(code_);
-        return result == null ? pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code.UNRECOGNIZED : result;
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code result = pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.valueOf(code_);
+        return result == null ? pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.UNRECOGNIZED : result;
       }
       /**
-       * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+       * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
        * @param value The code to set.
        * @return This builder for chaining.
        */
-      public Builder setCode(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand.Code value) {
+      public Builder setCode(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code value) {
         if (value == null) {
           throw new NullPointerException();
         }
@@ -6316,7 +16952,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.HandlePermissionCommand.Code code = 1;</code>
+       * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearCode() {
@@ -6338,41 +16974,1516 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.HandlePermissionCommand)
+      // @@protoc_insertion_point(builder_scope:patrol.HandlePermissionRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.HandlePermissionCommand)
-    private static final pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.HandlePermissionRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<HandlePermissionCommand>
-        PARSER = new com.google.protobuf.AbstractParser<HandlePermissionCommand>() {
+    private static final com.google.protobuf.Parser<HandlePermissionRequest>
+        PARSER = new com.google.protobuf.AbstractParser<HandlePermissionRequest>() {
       @java.lang.Override
-      public HandlePermissionCommand parsePartialFrom(
+      public HandlePermissionRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new HandlePermissionCommand(input, extensionRegistry);
+        return new HandlePermissionRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<HandlePermissionCommand> parser() {
+    public static com.google.protobuf.Parser<HandlePermissionRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<HandlePermissionCommand> getParserForType() {
+    public com.google.protobuf.Parser<HandlePermissionRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionCommand getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface HandlePermissionResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.HandlePermissionResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.HandlePermissionResponse}
+   */
+  public static final class HandlePermissionResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.HandlePermissionResponse)
+      HandlePermissionResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use HandlePermissionResponse.newBuilder() to construct.
+    private HandlePermissionResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private HandlePermissionResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new HandlePermissionResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private HandlePermissionResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.class, pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse other = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.HandlePermissionResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.HandlePermissionResponse)
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.class, pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_HandlePermissionResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse result = new pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.HandlePermissionResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.HandlePermissionResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<HandlePermissionResponse>
+        PARSER = new com.google.protobuf.AbstractParser<HandlePermissionResponse>() {
+      @java.lang.Override
+      public HandlePermissionResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new HandlePermissionResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<HandlePermissionResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<HandlePermissionResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.HandlePermissionResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SetLocationAccuracyRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.SetLocationAccuracyRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+     * @return The enum numeric value on the wire for locationAccuracy.
+     */
+    int getLocationAccuracyValue();
+    /**
+     * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+     * @return The locationAccuracy.
+     */
+    pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy getLocationAccuracy();
+  }
+  /**
+   * Protobuf type {@code patrol.SetLocationAccuracyRequest}
+   */
+  public static final class SetLocationAccuracyRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.SetLocationAccuracyRequest)
+      SetLocationAccuracyRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SetLocationAccuracyRequest.newBuilder() to construct.
+    private SetLocationAccuracyRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SetLocationAccuracyRequest() {
+      locationAccuracy_ = 0;
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new SetLocationAccuracyRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SetLocationAccuracyRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 8: {
+              int rawValue = input.readEnum();
+
+              locationAccuracy_ = rawValue;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.class, pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.Builder.class);
+    }
+
+    /**
+     * Protobuf enum {@code patrol.SetLocationAccuracyRequest.LocationAccuracy}
+     */
+    public enum LocationAccuracy
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>COARSE = 0;</code>
+       */
+      COARSE(0),
+      /**
+       * <code>FINE = 1;</code>
+       */
+      FINE(1),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <code>COARSE = 0;</code>
+       */
+      public static final int COARSE_VALUE = 0;
+      /**
+       * <code>FINE = 1;</code>
+       */
+      public static final int FINE_VALUE = 1;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static LocationAccuracy valueOf(int value) {
+        return forNumber(value);
+      }
+
+      /**
+       * @param value The numeric wire value of the corresponding enum entry.
+       * @return The enum associated with the given numeric wire value.
+       */
+      public static LocationAccuracy forNumber(int value) {
+        switch (value) {
+          case 0: return COARSE;
+          case 1: return FINE;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<LocationAccuracy>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          LocationAccuracy> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<LocationAccuracy>() {
+              public LocationAccuracy findValueByNumber(int number) {
+                return LocationAccuracy.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalStateException(
+              "Can't get the descriptor of an unrecognized enum value.");
+        }
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final LocationAccuracy[] VALUES = values();
+
+      public static LocationAccuracy valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private LocationAccuracy(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:patrol.SetLocationAccuracyRequest.LocationAccuracy)
+    }
+
+    public static final int LOCATIONACCURACY_FIELD_NUMBER = 1;
+    private int locationAccuracy_;
+    /**
+     * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+     * @return The enum numeric value on the wire for locationAccuracy.
+     */
+    @java.lang.Override public int getLocationAccuracyValue() {
+      return locationAccuracy_;
+    }
+    /**
+     * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+     * @return The locationAccuracy.
+     */
+    @java.lang.Override public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy getLocationAccuracy() {
+      @SuppressWarnings("deprecation")
+      pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy result = pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.valueOf(locationAccuracy_);
+      return result == null ? pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.UNRECOGNIZED : result;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (locationAccuracy_ != pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE.getNumber()) {
+        output.writeEnum(1, locationAccuracy_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (locationAccuracy_ != pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, locationAccuracy_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest other = (pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest) obj;
+
+      if (locationAccuracy_ != other.locationAccuracy_) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + LOCATIONACCURACY_FIELD_NUMBER;
+      hash = (53 * hash) + locationAccuracy_;
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.SetLocationAccuracyRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.SetLocationAccuracyRequest)
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.class, pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        locationAccuracy_ = 0;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest result = new pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest(this);
+        result.locationAccuracy_ = locationAccuracy_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.getDefaultInstance()) return this;
+        if (other.locationAccuracy_ != 0) {
+          setLocationAccuracyValue(other.getLocationAccuracyValue());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private int locationAccuracy_ = 0;
+      /**
+       * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+       * @return The enum numeric value on the wire for locationAccuracy.
+       */
+      @java.lang.Override public int getLocationAccuracyValue() {
+        return locationAccuracy_;
+      }
+      /**
+       * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+       * @param value The enum numeric value on the wire for locationAccuracy to set.
+       * @return This builder for chaining.
+       */
+      public Builder setLocationAccuracyValue(int value) {
+        
+        locationAccuracy_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+       * @return The locationAccuracy.
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy getLocationAccuracy() {
+        @SuppressWarnings("deprecation")
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy result = pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.valueOf(locationAccuracy_);
+        return result == null ? pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+       * @param value The locationAccuracy to set.
+       * @return This builder for chaining.
+       */
+      public Builder setLocationAccuracy(pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        locationAccuracy_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearLocationAccuracy() {
+        
+        locationAccuracy_ = 0;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.SetLocationAccuracyRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.SetLocationAccuracyRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SetLocationAccuracyRequest>
+        PARSER = new com.google.protobuf.AbstractParser<SetLocationAccuracyRequest>() {
+      @java.lang.Override
+      public SetLocationAccuracyRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SetLocationAccuracyRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SetLocationAccuracyRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SetLocationAccuracyRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SetLocationAccuracyResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.SetLocationAccuracyResponse)
+      com.google.protobuf.MessageOrBuilder {
+  }
+  /**
+   * Protobuf type {@code patrol.SetLocationAccuracyResponse}
+   */
+  public static final class SetLocationAccuracyResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.SetLocationAccuracyResponse)
+      SetLocationAccuracyResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SetLocationAccuracyResponse.newBuilder() to construct.
+    private SetLocationAccuracyResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SetLocationAccuracyResponse() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new SetLocationAccuracyResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SetLocationAccuracyResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.class, pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.Builder.class);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse other = (pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse) obj;
+
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.SetLocationAccuracyResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.SetLocationAccuracyResponse)
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.class, pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SetLocationAccuracyResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse result = new pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse(this);
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse.getDefaultInstance()) return this;
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.SetLocationAccuracyResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.SetLocationAccuracyResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SetLocationAccuracyResponse>
+        PARSER = new com.google.protobuf.AbstractParser<SetLocationAccuracyResponse>() {
+      @java.lang.Override
+      public SetLocationAccuracyResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SetLocationAccuracyResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SetLocationAccuracyResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SetLocationAccuracyResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -10481,629 +22592,6 @@ public final class Contracts {
 
   }
 
-  public interface NativeWidgetsQueryOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.NativeWidgetsQuery)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>.patrol.Selector selector = 1;</code>
-     * @return Whether the selector field is set.
-     */
-    boolean hasSelector();
-    /**
-     * <code>.patrol.Selector selector = 1;</code>
-     * @return The selector.
-     */
-    pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
-    /**
-     * <code>.patrol.Selector selector = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
-  }
-  /**
-   * Protobuf type {@code patrol.NativeWidgetsQuery}
-   */
-  public static final class NativeWidgetsQuery extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.NativeWidgetsQuery)
-      NativeWidgetsQueryOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use NativeWidgetsQuery.newBuilder() to construct.
-    private NativeWidgetsQuery(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private NativeWidgetsQuery() {
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new NativeWidgetsQuery();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private NativeWidgetsQuery(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (selector_ != null) {
-                subBuilder = selector_.toBuilder();
-              }
-              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(selector_);
-                selector_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQuery_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQuery_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.class, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.Builder.class);
-    }
-
-    public static final int SELECTOR_FIELD_NUMBER = 1;
-    private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-    /**
-     * <code>.patrol.Selector selector = 1;</code>
-     * @return Whether the selector field is set.
-     */
-    @java.lang.Override
-    public boolean hasSelector() {
-      return selector_ != null;
-    }
-    /**
-     * <code>.patrol.Selector selector = 1;</code>
-     * @return The selector.
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-      return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-    }
-    /**
-     * <code>.patrol.Selector selector = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-      return getSelector();
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (selector_ != null) {
-        output.writeMessage(1, getSelector());
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (selector_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, getSelector());
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery other = (pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery) obj;
-
-      if (hasSelector() != other.hasSelector()) return false;
-      if (hasSelector()) {
-        if (!getSelector()
-            .equals(other.getSelector())) return false;
-      }
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasSelector()) {
-        hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
-        hash = (53 * hash) + getSelector().hashCode();
-      }
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.NativeWidgetsQuery}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.NativeWidgetsQuery)
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQuery_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQuery_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.class, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQuery_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery build() {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery result = new pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery(this);
-        if (selectorBuilder_ == null) {
-          result.selector_ = selector_;
-        } else {
-          result.selector_ = selectorBuilder_.build();
-        }
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery.getDefaultInstance()) return this;
-        if (other.hasSelector()) {
-          mergeSelector(other.getSelector());
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       * @return Whether the selector field is set.
-       */
-      public boolean hasSelector() {
-        return selectorBuilder_ != null || selector_ != null;
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       * @return The selector.
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-        if (selectorBuilder_ == null) {
-          return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        } else {
-          return selectorBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          selector_ = value;
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      public Builder setSelector(
-          pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
-        if (selectorBuilder_ == null) {
-          selector_ = builderForValue.build();
-          onChanged();
-        } else {
-          selectorBuilder_.setMessage(builderForValue.build());
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
-        if (selectorBuilder_ == null) {
-          if (selector_ != null) {
-            selector_ =
-              pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder(selector_).mergeFrom(value).buildPartial();
-          } else {
-            selector_ = value;
-          }
-          onChanged();
-        } else {
-          selectorBuilder_.mergeFrom(value);
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      public Builder clearSelector() {
-        if (selectorBuilder_ == null) {
-          selector_ = null;
-          onChanged();
-        } else {
-          selector_ = null;
-          selectorBuilder_ = null;
-        }
-
-        return this;
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
-        
-        onChanged();
-        return getSelectorFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-        if (selectorBuilder_ != null) {
-          return selectorBuilder_.getMessageOrBuilder();
-        } else {
-          return selector_ == null ?
-              pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
-        }
-      }
-      /**
-       * <code>.patrol.Selector selector = 1;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
-          getSelectorFieldBuilder() {
-        if (selectorBuilder_ == null) {
-          selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder>(
-                  getSelector(),
-                  getParentForChildren(),
-                  isClean());
-          selector_ = null;
-        }
-        return selectorBuilder_;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.NativeWidgetsQuery)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.NativeWidgetsQuery)
-    private static final pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<NativeWidgetsQuery>
-        PARSER = new com.google.protobuf.AbstractParser<NativeWidgetsQuery>() {
-      @java.lang.Override
-      public NativeWidgetsQuery parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NativeWidgetsQuery(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<NativeWidgetsQuery> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<NativeWidgetsQuery> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQuery getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface NotificationOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.Notification)
       com.google.protobuf.MessageOrBuilder {
@@ -12017,1641 +23505,186 @@ public final class Contracts {
 
   }
 
-  public interface NotificationsQueryResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.NotificationsQueryResponse)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> 
-        getNotificationsList();
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index);
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    int getNotificationsCount();
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-        getNotificationsOrBuilderList();
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-        int index);
-  }
-  /**
-   * Protobuf type {@code patrol.NotificationsQueryResponse}
-   */
-  public static final class NotificationsQueryResponse extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.NotificationsQueryResponse)
-      NotificationsQueryResponseOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use NotificationsQueryResponse.newBuilder() to construct.
-    private NotificationsQueryResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private NotificationsQueryResponse() {
-      notifications_ = java.util.Collections.emptyList();
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new NotificationsQueryResponse();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private NotificationsQueryResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              notifications_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Notification.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          notifications_ = java.util.Collections.unmodifiableList(notifications_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NotificationsQueryResponse_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NotificationsQueryResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.class, pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.Builder.class);
-    }
-
-    public static final int NOTIFICATIONS_FIELD_NUMBER = 1;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_;
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
-      return notifications_;
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-        getNotificationsOrBuilderList() {
-      return notifications_;
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public int getNotificationsCount() {
-      return notifications_.size();
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
-      return notifications_.get(index);
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-        int index) {
-      return notifications_.get(index);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      for (int i = 0; i < notifications_.size(); i++) {
-        output.writeMessage(1, notifications_.get(i));
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      for (int i = 0; i < notifications_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, notifications_.get(i));
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse other = (pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse) obj;
-
-      if (!getNotificationsList()
-          .equals(other.getNotificationsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNotificationsCount() > 0) {
-        hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
-        hash = (53 * hash) + getNotificationsList().hashCode();
-      }
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.NotificationsQueryResponse}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.NotificationsQueryResponse)
-        pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponseOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NotificationsQueryResponse_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NotificationsQueryResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.class, pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getNotificationsFieldBuilder();
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        if (notificationsBuilder_ == null) {
-          notifications_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          notificationsBuilder_.clear();
-        }
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NotificationsQueryResponse_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse build() {
-        pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse result = new pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (notificationsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            notifications_ = java.util.Collections.unmodifiableList(notifications_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.notifications_ = notifications_;
-        } else {
-          result.notifications_ = notificationsBuilder_.build();
-        }
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse.getDefaultInstance()) return this;
-        if (notificationsBuilder_ == null) {
-          if (!other.notifications_.isEmpty()) {
-            if (notifications_.isEmpty()) {
-              notifications_ = other.notifications_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureNotificationsIsMutable();
-              notifications_.addAll(other.notifications_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.notifications_.isEmpty()) {
-            if (notificationsBuilder_.isEmpty()) {
-              notificationsBuilder_.dispose();
-              notificationsBuilder_ = null;
-              notifications_ = other.notifications_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              notificationsBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getNotificationsFieldBuilder() : null;
-            } else {
-              notificationsBuilder_.addAllMessages(other.notifications_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_ =
-        java.util.Collections.emptyList();
-      private void ensureNotificationsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>(notifications_);
-          bitField0_ |= 0x00000001;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> notificationsBuilder_;
-
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
-        if (notificationsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(notifications_);
-        } else {
-          return notificationsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public int getNotificationsCount() {
-        if (notificationsBuilder_ == null) {
-          return notifications_.size();
-        } else {
-          return notificationsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
-        if (notificationsBuilder_ == null) {
-          return notifications_.get(index);
-        } else {
-          return notificationsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder setNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
-        if (notificationsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNotificationsIsMutable();
-          notifications_.set(index, value);
-          onChanged();
-        } else {
-          notificationsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder setNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          notificationsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(pl.leancode.automatorserver.contracts.Contracts.Notification value) {
-        if (notificationsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNotificationsIsMutable();
-          notifications_.add(value);
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
-        if (notificationsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNotificationsIsMutable();
-          notifications_.add(index, value);
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(
-          pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.add(builderForValue.build());
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addAllNotifications(
-          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.Notification> values) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, notifications_);
-          onChanged();
-        } else {
-          notificationsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder clearNotifications() {
-        if (notificationsBuilder_ == null) {
-          notifications_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-        } else {
-          notificationsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder removeNotifications(int index) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.remove(index);
-          onChanged();
-        } else {
-          notificationsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder getNotificationsBuilder(
-          int index) {
-        return getNotificationsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-          int index) {
-        if (notificationsBuilder_ == null) {
-          return notifications_.get(index);  } else {
-          return notificationsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-           getNotificationsOrBuilderList() {
-        if (notificationsBuilder_ != null) {
-          return notificationsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(notifications_);
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder() {
-        return getNotificationsFieldBuilder().addBuilder(
-            pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder(
-          int index) {
-        return getNotificationsFieldBuilder().addBuilder(
-            index, pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification.Builder> 
-           getNotificationsBuilderList() {
-        return getNotificationsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-          getNotificationsFieldBuilder() {
-        if (notificationsBuilder_ == null) {
-          notificationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder>(
-                  notifications_,
-                  ((bitField0_ & 0x00000001) != 0),
-                  getParentForChildren(),
-                  isClean());
-          notifications_ = null;
-        }
-        return notificationsBuilder_;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.NotificationsQueryResponse)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.NotificationsQueryResponse)
-    private static final pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<NotificationsQueryResponse>
-        PARSER = new com.google.protobuf.AbstractParser<NotificationsQueryResponse>() {
-      @java.lang.Override
-      public NotificationsQueryResponse parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NotificationsQueryResponse(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<NotificationsQueryResponse> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<NotificationsQueryResponse> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NotificationsQueryResponse getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface NativeWidgetsQueryResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.NativeWidgetsQueryResponse)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> 
-        getNativeWidgetsList();
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index);
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    int getNativeWidgetsCount();
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-        getNativeWidgetsOrBuilderList();
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
-        int index);
-  }
-  /**
-   * Protobuf type {@code patrol.NativeWidgetsQueryResponse}
-   */
-  public static final class NativeWidgetsQueryResponse extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.NativeWidgetsQueryResponse)
-      NativeWidgetsQueryResponseOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use NativeWidgetsQueryResponse.newBuilder() to construct.
-    private NativeWidgetsQueryResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private NativeWidgetsQueryResponse() {
-      nativeWidgets_ = java.util.Collections.emptyList();
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new NativeWidgetsQueryResponse();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private NativeWidgetsQueryResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                nativeWidgets_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              nativeWidgets_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeWidget.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          nativeWidgets_ = java.util.Collections.unmodifiableList(nativeWidgets_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQueryResponse_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQueryResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.class, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.Builder.class);
-    }
-
-    public static final int NATIVEWIDGETS_FIELD_NUMBER = 1;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> nativeWidgets_;
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getNativeWidgetsList() {
-      return nativeWidgets_;
-    }
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-        getNativeWidgetsOrBuilderList() {
-      return nativeWidgets_;
-    }
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    @java.lang.Override
-    public int getNativeWidgetsCount() {
-      return nativeWidgets_.size();
-    }
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index) {
-      return nativeWidgets_.get(index);
-    }
-    /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
-        int index) {
-      return nativeWidgets_.get(index);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      for (int i = 0; i < nativeWidgets_.size(); i++) {
-        output.writeMessage(1, nativeWidgets_.get(i));
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      for (int i = 0; i < nativeWidgets_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, nativeWidgets_.get(i));
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse other = (pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse) obj;
-
-      if (!getNativeWidgetsList()
-          .equals(other.getNativeWidgetsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNativeWidgetsCount() > 0) {
-        hash = (37 * hash) + NATIVEWIDGETS_FIELD_NUMBER;
-        hash = (53 * hash) + getNativeWidgetsList().hashCode();
-      }
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.NativeWidgetsQueryResponse}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.NativeWidgetsQueryResponse)
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponseOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQueryResponse_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQueryResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.class, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getNativeWidgetsFieldBuilder();
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        if (nativeWidgetsBuilder_ == null) {
-          nativeWidgets_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          nativeWidgetsBuilder_.clear();
-        }
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidgetsQueryResponse_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse build() {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse result = new pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (nativeWidgetsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            nativeWidgets_ = java.util.Collections.unmodifiableList(nativeWidgets_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.nativeWidgets_ = nativeWidgets_;
-        } else {
-          result.nativeWidgets_ = nativeWidgetsBuilder_.build();
-        }
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse.getDefaultInstance()) return this;
-        if (nativeWidgetsBuilder_ == null) {
-          if (!other.nativeWidgets_.isEmpty()) {
-            if (nativeWidgets_.isEmpty()) {
-              nativeWidgets_ = other.nativeWidgets_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureNativeWidgetsIsMutable();
-              nativeWidgets_.addAll(other.nativeWidgets_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.nativeWidgets_.isEmpty()) {
-            if (nativeWidgetsBuilder_.isEmpty()) {
-              nativeWidgetsBuilder_.dispose();
-              nativeWidgetsBuilder_ = null;
-              nativeWidgets_ = other.nativeWidgets_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              nativeWidgetsBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getNativeWidgetsFieldBuilder() : null;
-            } else {
-              nativeWidgetsBuilder_.addAllMessages(other.nativeWidgets_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> nativeWidgets_ =
-        java.util.Collections.emptyList();
-      private void ensureNativeWidgetsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          nativeWidgets_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>(nativeWidgets_);
-          bitField0_ |= 0x00000001;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> nativeWidgetsBuilder_;
-
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getNativeWidgetsList() {
-        if (nativeWidgetsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(nativeWidgets_);
-        } else {
-          return nativeWidgetsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public int getNativeWidgetsCount() {
-        if (nativeWidgetsBuilder_ == null) {
-          return nativeWidgets_.size();
-        } else {
-          return nativeWidgetsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index) {
-        if (nativeWidgetsBuilder_ == null) {
-          return nativeWidgets_.get(index);
-        } else {
-          return nativeWidgetsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder setNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
-        if (nativeWidgetsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.set(index, value);
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder setNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder addNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
-        if (nativeWidgetsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(value);
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder addNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
-        if (nativeWidgetsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(index, value);
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder addNativeWidgets(
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(builderForValue.build());
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder addNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder addAllNativeWidgets(
-          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidget> values) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, nativeWidgets_);
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder clearNativeWidgets() {
-        if (nativeWidgetsBuilder_ == null) {
-          nativeWidgets_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public Builder removeNativeWidgets(int index) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.remove(index);
-          onChanged();
-        } else {
-          nativeWidgetsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder getNativeWidgetsBuilder(
-          int index) {
-        return getNativeWidgetsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
-          int index) {
-        if (nativeWidgetsBuilder_ == null) {
-          return nativeWidgets_.get(index);  } else {
-          return nativeWidgetsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-           getNativeWidgetsOrBuilderList() {
-        if (nativeWidgetsBuilder_ != null) {
-          return nativeWidgetsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(nativeWidgets_);
-        }
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addNativeWidgetsBuilder() {
-        return getNativeWidgetsFieldBuilder().addBuilder(
-            pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addNativeWidgetsBuilder(
-          int index) {
-        return getNativeWidgetsFieldBuilder().addBuilder(
-            index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
-       */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder> 
-           getNativeWidgetsBuilderList() {
-        return getNativeWidgetsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-          getNativeWidgetsFieldBuilder() {
-        if (nativeWidgetsBuilder_ == null) {
-          nativeWidgetsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder>(
-                  nativeWidgets_,
-                  ((bitField0_ & 0x00000001) != 0),
-                  getParentForChildren(),
-                  isClean());
-          nativeWidgets_ = null;
-        }
-        return nativeWidgetsBuilder_;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.NativeWidgetsQueryResponse)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.NativeWidgetsQueryResponse)
-    private static final pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<NativeWidgetsQueryResponse>
-        PARSER = new com.google.protobuf.AbstractParser<NativeWidgetsQueryResponse>() {
-      @java.lang.Override
-      public NativeWidgetsQueryResponse parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NativeWidgetsQueryResponse(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<NativeWidgetsQueryResponse> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<NativeWidgetsQueryResponse> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetsQueryResponse getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_OpenAppCommand_descriptor;
+    internal_static_patrol_PressHomeRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_OpenAppCommand_fieldAccessorTable;
+      internal_static_patrol_PressHomeRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_TapCommand_descriptor;
+    internal_static_patrol_PressHomeResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_TapCommand_fieldAccessorTable;
+      internal_static_patrol_PressHomeResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_DoubleTapCommand_descriptor;
+    internal_static_patrol_PressBackRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_DoubleTapCommand_fieldAccessorTable;
+      internal_static_patrol_PressBackRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_EnterTextBySelectorCommand_descriptor;
+    internal_static_patrol_PressBackResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_EnterTextBySelectorCommand_fieldAccessorTable;
+      internal_static_patrol_PressBackResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_EnterTextByIndexCommand_descriptor;
+    internal_static_patrol_PressRecentAppsRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_EnterTextByIndexCommand_fieldAccessorTable;
+      internal_static_patrol_PressRecentAppsRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_TapOnNotificationByIndexCommand_descriptor;
+    internal_static_patrol_PressRecentAppsResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_TapOnNotificationByIndexCommand_fieldAccessorTable;
+      internal_static_patrol_PressRecentAppsResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_TapOnNotificationBySelectorCommand_descriptor;
+    internal_static_patrol_DoublePressRecentAppsRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_TapOnNotificationBySelectorCommand_fieldAccessorTable;
+      internal_static_patrol_DoublePressRecentAppsRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_SwipeCommand_descriptor;
+    internal_static_patrol_DoublePressRecentAppsResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_SwipeCommand_fieldAccessorTable;
+      internal_static_patrol_DoublePressRecentAppsResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_HandlePermissionCommand_descriptor;
+    internal_static_patrol_OpenAppRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_HandlePermissionCommand_fieldAccessorTable;
+      internal_static_patrol_OpenAppRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_OpenAppResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_OpenAppResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_OpenNotificationsRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_OpenNotificationsRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_OpenNotificationsResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_OpenNotificationsResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_TapOnNotificationRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_TapOnNotificationRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_TapOnNotificationResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_TapOnNotificationResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_OpenQuickSettingsRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_OpenQuickSettingsResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_OpenQuickSettingsResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_DarkModeRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_DarkModeRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_DarkModeResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_DarkModeResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_WiFiRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_WiFiRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_WiFiResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_WiFiResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_CellularRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_CellularRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_CellularResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_CellularResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_GetNativeWidgetsRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_GetNotificationsRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_GetNotificationsRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_GetNotificationsResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_GetNotificationsResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_TapRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_TapRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_TapResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_TapResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_EnterTextRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_EnterTextRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_EnterTextResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_EnterTextResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_SwipeRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_SwipeRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_SwipeResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_SwipeResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_HandlePermissionRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_HandlePermissionRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_HandlePermissionResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_HandlePermissionResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_SetLocationAccuracyRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_SetLocationAccuracyResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_SetLocationAccuracyResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_Selector_descriptor;
   private static final 
@@ -13663,25 +23696,10 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_NativeWidget_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_NativeWidgetsQuery_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_NativeWidgetsQuery_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_Notification_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_Notification_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_NotificationsQueryResponse_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_NotificationsQueryResponse_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_NativeWidgetsQueryResponse_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_NativeWidgetsQueryResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -13691,147 +23709,348 @@ public final class Contracts {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\017contracts.proto\022\006patrol\"\037\n\016OpenAppComm" +
-      "and\022\r\n\005appId\030\001 \001(\t\"?\n\nTapCommand\022\r\n\005appI" +
-      "d\030\001 \001(\t\022\"\n\010selector\030\002 \001(\0132\020.patrol.Selec" +
-      "tor\"E\n\020DoubleTapCommand\022\r\n\005appId\030\001 \001(\t\022\"" +
-      "\n\010selector\030\002 \001(\0132\020.patrol.Selector\"]\n\032En" +
-      "terTextBySelectorCommand\022\r\n\005appId\030\001 \001(\t\022" +
-      "\014\n\004data\030\002 \001(\t\022\"\n\010selector\030\003 \001(\0132\020.patrol" +
-      ".Selector\"E\n\027EnterTextByIndexCommand\022\r\n\005" +
-      "appId\030\001 \001(\t\022\014\n\004data\030\002 \001(\t\022\r\n\005index\030\003 \001(\r" +
-      "\"0\n\037TapOnNotificationByIndexCommand\022\r\n\005i" +
-      "ndex\030\001 \001(\r\"H\n\"TapOnNotificationBySelecto" +
-      "rCommand\022\"\n\010selector\030\001 \001(\0132\020.patrol.Sele" +
-      "ctor\"Y\n\014SwipeCommand\022\016\n\006startX\030\001 \001(\002\022\016\n\006" +
-      "startY\030\002 \001(\002\022\014\n\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002" +
-      "\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027HandlePermissionComm" +
-      "and\0222\n\004code\030\001 \001(\0162$.patrol.HandlePermiss" +
-      "ionCommand.Code\"7\n\004Code\022\017\n\013WHILE_USING\020\000" +
-      "\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"\236\004\n\010Sel" +
-      "ector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsWi" +
-      "th\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001\001" +
-      "\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDescr" +
-      "iption\030\005 \001(\tH\004\210\001\001\022)\n\034contentDescriptionS" +
-      "tartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescripti" +
-      "onContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001(" +
-      "\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabled" +
-      "\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg" +
-      "\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textStartsWithB" +
-      "\017\n\r_textContainsB\014\n\n_classNameB\025\n\023_conte" +
-      "ntDescriptionB\037\n\035_contentDescriptionStar" +
-      "tsWithB\035\n\033_contentDescriptionContainsB\r\n" +
-      "\013_resourceIdB\013\n\t_instanceB\n\n\010_enabledB\n\n" +
-      "\010_focusedB\006\n\004_pkg\"\333\001\n\014NativeWidget\022\021\n\tcl" +
-      "assName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022contentDe" +
-      "scription\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enab" +
-      "led\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resourc" +
-      "eName\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(\t\022" +
-      "&\n\010children\030\t \003(\0132\024.patrol.NativeWidget\"" +
-      "8\n\022NativeWidgetsQuery\022\"\n\010selector\030\001 \001(\0132" +
-      "\020.patrol.Selector\"P\n\014Notification\022\024\n\007app" +
-      "Name\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007conten" +
-      "t\030\003 \001(\tB\n\n\010_appName\"I\n\032NotificationsQuer" +
-      "yResponse\022+\n\rnotifications\030\001 \003(\0132\024.patro" +
-      "l.Notification\"I\n\032NativeWidgetsQueryResp" +
-      "onse\022+\n\rnativeWidgets\030\001 \003(\0132\024.patrol.Nat" +
-      "iveWidgetB\'\n%pl.leancode.automatorserver" +
-      ".contractsb\006proto3"
+      "\n\017contracts.proto\022\006patrol\"\022\n\020PressHomeRe" +
+      "quest\"\023\n\021PressHomeResponse\"\022\n\020PressBackR" +
+      "equest\"\023\n\021PressBackResponse\"\030\n\026PressRece" +
+      "ntAppsRequest\"\031\n\027PressRecentAppsResponse" +
+      "\"\036\n\034DoublePressRecentAppsRequest\"\037\n\035Doub" +
+      "lePressRecentAppsResponse\"\037\n\016OpenAppRequ" +
+      "est\022\r\n\005appId\030\001 \001(\t\"\021\n\017OpenAppResponse\"\032\n" +
+      "\030OpenNotificationsRequest\"\033\n\031OpenNotific" +
+      "ationsResponse\"[\n\030TapOnNotificationReque" +
+      "st\022\017\n\005index\030\001 \001(\rH\000\022$\n\010selector\030\002 \001(\0132\020." +
+      "patrol.SelectorH\000B\010\n\006findBy\"\033\n\031TapOnNoti" +
+      "ficationResponse\"\032\n\030OpenQuickSettingsReq" +
+      "uest\"\033\n\031OpenQuickSettingsResponse\"\021\n\017Dar" +
+      "kModeRequest\"\022\n\020DarkModeResponse\"\r\n\013WiFi" +
+      "Request\"\016\n\014WiFiResponse\"\021\n\017CellularReque" +
+      "st\"\022\n\020CellularResponse\"=\n\027GetNativeWidge" +
+      "tsRequest\022\"\n\010selector\030\001 \001(\0132\020.patrol.Sel" +
+      "ector\"G\n\030GetNativeWidgetsResponse\022+\n\rnat" +
+      "iveWidgets\030\001 \003(\0132\024.patrol.NativeWidget\"\031" +
+      "\n\027GetNotificationsRequest\"G\n\030GetNotifica" +
+      "tionsResponse\022+\n\rnotifications\030\001 \003(\0132\024.p" +
+      "atrol.Notification\"?\n\nTapRequest\022\"\n\010Sele" +
+      "ctor\030\001 \001(\0132\020.patrol.Selector\022\r\n\005appId\030\002 " +
+      "\001(\t\"\r\n\013TapResponse\"p\n\020EnterTextRequest\022\014" +
+      "\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005index\030\003 \001" +
+      "(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol.Selector" +
+      "H\000B\010\n\006findBy\"\023\n\021EnterTextResponse\"Y\n\014Swi" +
+      "peRequest\022\016\n\006startX\030\001 \001(\r\022\016\n\006startY\030\002 \001(" +
+      "\r\022\014\n\004endX\030\003 \001(\r\022\014\n\004endY\030\004 \001(\r\022\r\n\005steps\030\005" +
+      " \001(\r\"\017\n\rSwipeResponse\"\206\001\n\027HandlePermissi" +
+      "onRequest\0222\n\004code\030\001 \001(\0162$.patrol.HandleP" +
+      "ermissionRequest.Code\"7\n\004Code\022\017\n\013WHILE_U" +
+      "SING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"\032" +
+      "\n\030HandlePermissionResponse\"\225\001\n\032SetLocati" +
+      "onAccuracyRequest\022M\n\020locationAccuracy\030\001 " +
+      "\001(\01623.patrol.SetLocationAccuracyRequest." +
+      "LocationAccuracy\"(\n\020LocationAccuracy\022\n\n\006" +
+      "COARSE\020\000\022\010\n\004FINE\020\001\"\035\n\033SetLocationAccurac" +
+      "yResponse\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001" +
+      "\001\022\033\n\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textCo" +
+      "ntains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001" +
+      "\001\022\037\n\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034co" +
+      "ntentDescriptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n" +
+      "\032contentDescriptionContains\030\007 \001(\tH\006\210\001\001\022\027" +
+      "\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(" +
+      "\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030" +
+      "\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n" +
+      "\017_textStartsWithB\017\n\r_textContainsB\014\n\n_cl" +
+      "assNameB\025\n\023_contentDescriptionB\037\n\035_conte" +
+      "ntDescriptionStartsWithB\035\n\033_contentDescr" +
+      "iptionContainsB\r\n\013_resourceIdB\013\n\t_instan" +
+      "ceB\n\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\333\001\n\014N" +
+      "ativeWidget\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002" +
+      " \001(\t\022\032\n\022contentDescription\030\003 \001(\t\022\017\n\007focu" +
+      "sed\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount" +
+      "\030\006 \001(\005\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applicat" +
+      "ionPackage\030\010 \001(\t\022&\n\010children\030\t \003(\0132\024.pat" +
+      "rol.NativeWidget\"P\n\014Notification\022\024\n\007appN" +
+      "ame\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content" +
+      "\030\003 \001(\tB\n\n\010_appName2\227\r\n\017NativeAutomator\022B" +
+      "\n\tpressHome\022\030.patrol.PressHomeRequest\032\031." +
+      "patrol.PressHomeResponse\"\000\022B\n\tpressBack\022" +
+      "\030.patrol.PressBackRequest\032\031.patrol.Press" +
+      "BackResponse\"\000\022T\n\017pressRecentApps\022\036.patr" +
+      "ol.PressRecentAppsRequest\032\037.patrol.Press" +
+      "RecentAppsResponse\"\000\022f\n\025doublePressRecen" +
+      "tApps\022$.patrol.DoublePressRecentAppsRequ" +
+      "est\032%.patrol.DoublePressRecentAppsRespon" +
+      "se\"\000\022<\n\007openApp\022\026.patrol.OpenAppRequest\032" +
+      "\027.patrol.OpenAppResponse\"\000\022Z\n\021openNotifi" +
+      "cations\022 .patrol.OpenNotificationsReques" +
+      "t\032!.patrol.OpenNotificationsResponse\"\000\022Z" +
+      "\n\021OpenQuickSettings\022 .patrol.OpenQuickSe" +
+      "ttingsRequest\032!.patrol.OpenQuickSettings" +
+      "Response\"\000\022E\n\016enableDarkMode\022\027.patrol.Da" +
+      "rkModeRequest\032\030.patrol.DarkModeResponse\"" +
+      "\000\022F\n\017disableDarkMode\022\027.patrol.DarkModeRe" +
+      "quest\032\030.patrol.DarkModeResponse\"\000\0229\n\nena" +
+      "bleWiFi\022\023.patrol.WiFiRequest\032\024.patrol.Wi" +
+      "FiResponse\"\000\022:\n\013disableWiFi\022\023.patrol.WiF" +
+      "iRequest\032\024.patrol.WiFiResponse\"\000\022E\n\016enab" +
+      "leCellular\022\027.patrol.CellularRequest\032\030.pa" +
+      "trol.CellularResponse\"\000\022F\n\017disableCellul" +
+      "ar\022\027.patrol.CellularRequest\032\030.patrol.Cel" +
+      "lularResponse\"\000\022W\n\020getNativeWidgets\022\037.pa" +
+      "trol.GetNativeWidgetsRequest\032 .patrol.Ge" +
+      "tNativeWidgetsResponse\"\000\022W\n\020getNotificat" +
+      "ions\022\037.patrol.GetNotificationsRequest\032 ." +
+      "patrol.GetNotificationsResponse\"\000\0220\n\003tap" +
+      "\022\022.patrol.TapRequest\032\023.patrol.TapRespons" +
+      "e\"\000\0226\n\tdoubleTap\022\022.patrol.TapRequest\032\023.p" +
+      "atrol.TapResponse\"\000\022B\n\tenterText\022\030.patro" +
+      "l.EnterTextRequest\032\031.patrol.EnterTextRes" +
+      "ponse\"\000\0226\n\005swipe\022\024.patrol.SwipeRequest\032\025" +
+      ".patrol.SwipeResponse\"\000\022]\n\026handlePermiss" +
+      "ionDialog\022\037.patrol.HandlePermissionReque" +
+      "st\032 .patrol.HandlePermissionResponse\"\000\022`" +
+      "\n\023setLocationAccuracy\022\".patrol.SetLocati" +
+      "onAccuracyRequest\032#.patrol.SetLocationAc" +
+      "curacyResponse\"\000\022Z\n\021tapOnNotification\022 ." +
+      "patrol.TapOnNotificationRequest\032!.patrol" +
+      ".TapOnNotificationResponse\"\000B\'\n%pl.leanc" +
+      "ode.automatorserver.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_patrol_OpenAppCommand_descriptor =
+    internal_static_patrol_PressHomeRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_patrol_OpenAppCommand_fieldAccessorTable = new
+    internal_static_patrol_PressHomeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_OpenAppCommand_descriptor,
-        new java.lang.String[] { "AppId", });
-    internal_static_patrol_TapCommand_descriptor =
+        internal_static_patrol_PressHomeRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_PressHomeResponse_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_patrol_TapCommand_fieldAccessorTable = new
+    internal_static_patrol_PressHomeResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_TapCommand_descriptor,
-        new java.lang.String[] { "AppId", "Selector", });
-    internal_static_patrol_DoubleTapCommand_descriptor =
+        internal_static_patrol_PressHomeResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_PressBackRequest_descriptor =
       getDescriptor().getMessageTypes().get(2);
-    internal_static_patrol_DoubleTapCommand_fieldAccessorTable = new
+    internal_static_patrol_PressBackRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_DoubleTapCommand_descriptor,
-        new java.lang.String[] { "AppId", "Selector", });
-    internal_static_patrol_EnterTextBySelectorCommand_descriptor =
+        internal_static_patrol_PressBackRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_PressBackResponse_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_patrol_EnterTextBySelectorCommand_fieldAccessorTable = new
+    internal_static_patrol_PressBackResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_EnterTextBySelectorCommand_descriptor,
-        new java.lang.String[] { "AppId", "Data", "Selector", });
-    internal_static_patrol_EnterTextByIndexCommand_descriptor =
+        internal_static_patrol_PressBackResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_PressRecentAppsRequest_descriptor =
       getDescriptor().getMessageTypes().get(4);
-    internal_static_patrol_EnterTextByIndexCommand_fieldAccessorTable = new
+    internal_static_patrol_PressRecentAppsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_EnterTextByIndexCommand_descriptor,
-        new java.lang.String[] { "AppId", "Data", "Index", });
-    internal_static_patrol_TapOnNotificationByIndexCommand_descriptor =
+        internal_static_patrol_PressRecentAppsRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_PressRecentAppsResponse_descriptor =
       getDescriptor().getMessageTypes().get(5);
-    internal_static_patrol_TapOnNotificationByIndexCommand_fieldAccessorTable = new
+    internal_static_patrol_PressRecentAppsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_TapOnNotificationByIndexCommand_descriptor,
-        new java.lang.String[] { "Index", });
-    internal_static_patrol_TapOnNotificationBySelectorCommand_descriptor =
+        internal_static_patrol_PressRecentAppsResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_DoublePressRecentAppsRequest_descriptor =
       getDescriptor().getMessageTypes().get(6);
-    internal_static_patrol_TapOnNotificationBySelectorCommand_fieldAccessorTable = new
+    internal_static_patrol_DoublePressRecentAppsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_TapOnNotificationBySelectorCommand_descriptor,
-        new java.lang.String[] { "Selector", });
-    internal_static_patrol_SwipeCommand_descriptor =
+        internal_static_patrol_DoublePressRecentAppsRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_DoublePressRecentAppsResponse_descriptor =
       getDescriptor().getMessageTypes().get(7);
-    internal_static_patrol_SwipeCommand_fieldAccessorTable = new
+    internal_static_patrol_DoublePressRecentAppsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_SwipeCommand_descriptor,
-        new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
-    internal_static_patrol_HandlePermissionCommand_descriptor =
+        internal_static_patrol_DoublePressRecentAppsResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_OpenAppRequest_descriptor =
       getDescriptor().getMessageTypes().get(8);
-    internal_static_patrol_HandlePermissionCommand_fieldAccessorTable = new
+    internal_static_patrol_OpenAppRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_HandlePermissionCommand_descriptor,
-        new java.lang.String[] { "Code", });
-    internal_static_patrol_Selector_descriptor =
+        internal_static_patrol_OpenAppRequest_descriptor,
+        new java.lang.String[] { "AppId", });
+    internal_static_patrol_OpenAppResponse_descriptor =
       getDescriptor().getMessageTypes().get(9);
+    internal_static_patrol_OpenAppResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_OpenAppResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_OpenNotificationsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(10);
+    internal_static_patrol_OpenNotificationsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_OpenNotificationsRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_OpenNotificationsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_patrol_OpenNotificationsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_OpenNotificationsResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_TapOnNotificationRequest_descriptor =
+      getDescriptor().getMessageTypes().get(12);
+    internal_static_patrol_TapOnNotificationRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_TapOnNotificationRequest_descriptor,
+        new java.lang.String[] { "Index", "Selector", "FindBy", });
+    internal_static_patrol_TapOnNotificationResponse_descriptor =
+      getDescriptor().getMessageTypes().get(13);
+    internal_static_patrol_TapOnNotificationResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_TapOnNotificationResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_OpenQuickSettingsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(14);
+    internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_OpenQuickSettingsRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_OpenQuickSettingsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(15);
+    internal_static_patrol_OpenQuickSettingsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_OpenQuickSettingsResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_DarkModeRequest_descriptor =
+      getDescriptor().getMessageTypes().get(16);
+    internal_static_patrol_DarkModeRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_DarkModeRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_DarkModeResponse_descriptor =
+      getDescriptor().getMessageTypes().get(17);
+    internal_static_patrol_DarkModeResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_DarkModeResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_WiFiRequest_descriptor =
+      getDescriptor().getMessageTypes().get(18);
+    internal_static_patrol_WiFiRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_WiFiRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_WiFiResponse_descriptor =
+      getDescriptor().getMessageTypes().get(19);
+    internal_static_patrol_WiFiResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_WiFiResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_CellularRequest_descriptor =
+      getDescriptor().getMessageTypes().get(20);
+    internal_static_patrol_CellularRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_CellularRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_CellularResponse_descriptor =
+      getDescriptor().getMessageTypes().get(21);
+    internal_static_patrol_CellularResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_CellularResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_GetNativeWidgetsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(22);
+    internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_GetNativeWidgetsRequest_descriptor,
+        new java.lang.String[] { "Selector", });
+    internal_static_patrol_GetNativeWidgetsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(23);
+    internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_GetNativeWidgetsResponse_descriptor,
+        new java.lang.String[] { "NativeWidgets", });
+    internal_static_patrol_GetNotificationsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(24);
+    internal_static_patrol_GetNotificationsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_GetNotificationsRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_GetNotificationsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(25);
+    internal_static_patrol_GetNotificationsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_GetNotificationsResponse_descriptor,
+        new java.lang.String[] { "Notifications", });
+    internal_static_patrol_TapRequest_descriptor =
+      getDescriptor().getMessageTypes().get(26);
+    internal_static_patrol_TapRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_TapRequest_descriptor,
+        new java.lang.String[] { "Selector", "AppId", });
+    internal_static_patrol_TapResponse_descriptor =
+      getDescriptor().getMessageTypes().get(27);
+    internal_static_patrol_TapResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_TapResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_EnterTextRequest_descriptor =
+      getDescriptor().getMessageTypes().get(28);
+    internal_static_patrol_EnterTextRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_EnterTextRequest_descriptor,
+        new java.lang.String[] { "Data", "AppId", "Index", "Selector", "FindBy", });
+    internal_static_patrol_EnterTextResponse_descriptor =
+      getDescriptor().getMessageTypes().get(29);
+    internal_static_patrol_EnterTextResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_EnterTextResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_SwipeRequest_descriptor =
+      getDescriptor().getMessageTypes().get(30);
+    internal_static_patrol_SwipeRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_SwipeRequest_descriptor,
+        new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
+    internal_static_patrol_SwipeResponse_descriptor =
+      getDescriptor().getMessageTypes().get(31);
+    internal_static_patrol_SwipeResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_SwipeResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_HandlePermissionRequest_descriptor =
+      getDescriptor().getMessageTypes().get(32);
+    internal_static_patrol_HandlePermissionRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_HandlePermissionRequest_descriptor,
+        new java.lang.String[] { "Code", });
+    internal_static_patrol_HandlePermissionResponse_descriptor =
+      getDescriptor().getMessageTypes().get(33);
+    internal_static_patrol_HandlePermissionResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_HandlePermissionResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_SetLocationAccuracyRequest_descriptor =
+      getDescriptor().getMessageTypes().get(34);
+    internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_SetLocationAccuracyRequest_descriptor,
+        new java.lang.String[] { "LocationAccuracy", });
+    internal_static_patrol_SetLocationAccuracyResponse_descriptor =
+      getDescriptor().getMessageTypes().get(35);
+    internal_static_patrol_SetLocationAccuracyResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_SetLocationAccuracyResponse_descriptor,
+        new java.lang.String[] { });
+    internal_static_patrol_Selector_descriptor =
+      getDescriptor().getMessageTypes().get(36);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeWidget_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(37);
     internal_static_patrol_NativeWidget_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeWidget_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
-    internal_static_patrol_NativeWidgetsQuery_descriptor =
-      getDescriptor().getMessageTypes().get(11);
-    internal_static_patrol_NativeWidgetsQuery_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_NativeWidgetsQuery_descriptor,
-        new java.lang.String[] { "Selector", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(38);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,
         new java.lang.String[] { "AppName", "Title", "Content", "AppName", });
-    internal_static_patrol_NotificationsQueryResponse_descriptor =
-      getDescriptor().getMessageTypes().get(13);
-    internal_static_patrol_NotificationsQueryResponse_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_NotificationsQueryResponse_descriptor,
-        new java.lang.String[] { "Notifications", });
-    internal_static_patrol_NativeWidgetsQueryResponse_descriptor =
-      getDescriptor().getMessageTypes().get(14);
-    internal_static_patrol_NativeWidgetsQueryResponse_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_NativeWidgetsQueryResponse_descriptor,
-        new java.lang.String[] { "NativeWidgets", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

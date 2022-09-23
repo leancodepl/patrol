@@ -1,4 +1,4 @@
-import Telegraph
+import GRPC
 
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
@@ -24,7 +24,7 @@ class PatrolServer {
 
   init() throws {
     self.port = passedPort ?? 8081
-    self.server = Server()
+    self.server = NativeAutomato
   }
 
   func setUpRoutes() {
