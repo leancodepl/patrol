@@ -27,25 +27,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
+    nativeAutomation: true,
     'counter state is the same after going to Home and going back',
     ($) async {
-      await tester.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(const MyApp());
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 
-      await patrol.pressHome();
-      await patrol.pressDoubleRecentApps();
+      await $.native.pressHome();
+      await $.native.pressDoubleRecentApps();
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '2');
 
-      await patrol.openNotifications();
-      await patrol.pressBack();
+      await $.native.openNotifications();
+      await $.native.pressBack();
     },
   );
 }

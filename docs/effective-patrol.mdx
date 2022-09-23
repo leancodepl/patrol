@@ -144,10 +144,9 @@ import 'package:awesome_app/main.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'signs up for the newsletter and receives a reward',
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
@@ -156,7 +155,6 @@ void main() {
 
       // lots of lines
     },
-    appName: 'AwesomeApp',
   );
 }
 ```
@@ -164,10 +162,9 @@ void main() {
 ```dart
 // BAD
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'test',
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
@@ -176,7 +173,6 @@ void main() {
 
       // lots of lines
     },
-    appName: 'AwesomeApp',
   );
 }
 ```
