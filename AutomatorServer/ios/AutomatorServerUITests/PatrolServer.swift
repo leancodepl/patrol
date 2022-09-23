@@ -34,7 +34,9 @@ struct Selector: Codable {
   var text: String
 }
 
-struct EnableDar
+struct DarkModeCommand: Codable {
+  var appId: String
+}
 
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
@@ -113,13 +115,23 @@ class PatrolServer {
     }
     
     server.route(.POST, "enableDarkMode") { request in
-      self.automation.enableDarkMode()
-      return HTTPResponse(.ok)
+      do {
+        let command = try self.decoder.decode(DarkModeCommand.self, from: request.body)
+        self.automation.enableDarkMode(command.appId)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
     }
     
     server.route(.POST, "disableDarkMode") { request in
-      self.automation.disableDarkMode()
-      return HTTPResponse(.ok)
+      do {
+        let command = try self.decoder.decode(DarkModeCommand.self, from: request.body)
+        self.automation.disableDarkMode(command.appId)
+        return HTTPResponse(.ok)
+      } catch let err {
+        return HTTPResponse(.badRequest, headers: [:], error: err)
+      }
     }
 
     server.route(.POST, "enterTextBySelector") { request in

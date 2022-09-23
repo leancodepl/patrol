@@ -71,7 +71,7 @@ class PatrolAutomation {
     }
   }
   
-  func disableDarkMode() {
+  func disableDarkMode(_ bundleIdentifier: String) {
     runAction("disabling dark mode") {
       #if targetEnvironment(simulator)
         let isSimulator = true
