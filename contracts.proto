@@ -4,12 +4,41 @@ package patrol;
 option java_package = "pl.leancode.automatorserver.contracts";
 
 service NativeAutomator {
+  // general
+
   rpc pressHome(PressHomeRequest) returns (PressHomeResponse) {}
   rpc pressBack(PressBackRequest) returns (PressBackResponse) {}
   rpc pressRecentApps(PressRecentAppsRequest)
       returns (PressRecentAppsResponse) {}
   rpc openApp(OpenAppRequest) returns (OpenAppResponse) {}
-  rpc openNotifications(OpenNotificationsRequest) returns (OpenNotifications)
+  rpc openNotifications(OpenNotificationsRequest)
+      returns (OpenNotificationsResponse) {}
+  rpc OpenQuickSettings(OpenQuickSettingsRequest)
+      returns (OpenQuickSettingsResponse) {}
+
+  // services
+
+  rpc enableDarkMode(DarkModeRequest) returns (DarkModeResponse) {}
+  rpc disableDarkMoed(DarkModeRequest) returns (DarkModeResponse) {}
+  rpc enableWiFi(WiFiRequest) returns (WiFiResponse) {}
+  rpc disableWiFi(WiFiRequest) returns (WiFiResponse) {}
+  rpc enableCellular(CellularRequest) returns (CellularResponse) {}
+  rpc disableCellular(CellularRequest) returns (CellularResponse) {}
+
+  // UI interaction
+
+  rpc getNativeWidgets(GetNativeWidgetsRequest)
+      returns (GetNativeWidgetsResponse) {}
+  rpc getNotifications(GetNotificationsRequest)
+      returns (GetNotificationsResponse) {}
+  rpc tap(TapRequest) returns (TapResponse) {}
+  rpc doubleTap(TapRequest) returns (TapResponse) {}
+  rpc enterText(EnterTextRequest) returns (EnterTextResponse) {}
+  rpc swipe(SwipeRequest) returns (SwipeResponse) {}
+  rpc handlePermissionDialog(HandlePermissionCommand)
+      returns (HandlePermissionResponse) {}
+  rpc tapOnNotification(TapOnNotificationRequest)
+      returns (TapOnNotificationResponse) {}
 }
 
 message PressHomeRequest {}
@@ -21,8 +50,77 @@ message PressBackResponse {}
 message PressRecentAppsRequest {}
 message PressRecentAppsResponse {}
 
-message OpenAppRequest {}
+message OpenAppRequest { string appId = 1; }
 message OpenAppResponse {}
+
+message OpenNotificationsRequest {}
+message OpenNotificationsResponse {}
+
+message TapOnNotificationRequest {
+  oneof findBy {
+    uint32 index = 1;
+    Selector selector = 2;
+  }
+}
+message TapOnNotificationResponse {}
+
+message OpenQuickSettingsRequest {}
+message OpenQuickSettingsResponse {}
+
+message DarkModeRequest {}
+message DarkModeResponse {}
+
+message WiFiRequest {}
+message WiFiResponse {}
+
+message CellularRequest {}
+message CellularResponse {}
+
+message GetNativeWidgetsRequest { Selector selector = 1; }
+message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
+
+message GetNotificationsRequest {}
+message GetNotificationsResponse { repeated Notification notifications = 1; }
+
+message TapRequest { Selector Selector = 1; }
+message TapResponse {}
+
+message EnterTextRequest {
+  oneof findBy {
+    uint32 index = 1;
+    Selector selector = 2;
+  }
+}
+message EnterTextResponse {}
+
+message SwipeRequest {
+  uint32 startX = 1;
+  uint32 startY = 2;
+  uint32 endX = 3;
+  uint32 endY = 4;
+  uint32 steps = 5;
+}
+message SwipeResponse {}
+
+message HandlePermissionRequest {
+  Code code = 1;
+  optional LocationAccuracy locationAccuracy = 2;
+
+  enum Code {
+    WHILE_USING = 0;
+    ONLY_THIS_TIME = 1;
+    DENIED = 2;
+  }
+
+  enum LocationAccuracy {
+    COARSE = 0;
+    FINE = 1;
+  }
+}
+
+message HandlePermissionResponse {}
+
+// OLD
 
 message OpenAppCommand { string appId = 1; }
 
