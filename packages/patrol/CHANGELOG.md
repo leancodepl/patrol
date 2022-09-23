@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.5
 
 - Implement enabling and disabling dark mode on iOS (#345)
 
