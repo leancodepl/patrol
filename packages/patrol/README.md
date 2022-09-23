@@ -31,7 +31,7 @@ void main() {
     nativeAutomation: true,
     'counter state is the same after going to Home and going back',
     ($) async {
-      await tester.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(const MyApp());
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');

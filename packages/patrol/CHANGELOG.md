@@ -1,3 +1,9 @@
+## 0.6.4+1
+
+- Fix spelling of "cellular" (was "celluar") (#336)
+- Fix a typo in docs (#337)
+- Fix README and docs mentioning the removed `Patrol` class (#349)
+
 ## 0.6.4
 
 - A bunch of post-release fixes (#330)
