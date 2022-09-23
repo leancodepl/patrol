@@ -33,9 +33,9 @@ class NativeAutomator {
   /// (on the target device).
   NativeAutomator.forTest({
     this.timeout = const Duration(seconds: 10),
-    this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
     _LoggerCallback logger = _defaultPrintLogger,
+    String? packageName,
+    String? bundleId,
   })  : _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
@@ -45,7 +45,16 @@ class NativeAutomator {
           'PATROL_PORT',
           defaultValue: '8081',
         ) {
-    _logger('creating NativeAutomator, host: $host, port: $port');
+    this.packageName =
+        packageName ?? const String.fromEnvironment('PATROL_APP_PACKAGE_NAME');
+
+    this.bundleId =
+        bundleId ?? const String.fromEnvironment('PATROL_APP_BUNDLE_ID');
+
+    _logger(
+      'creating NativeAutomator, host: $host, port: $port, '
+      'packageName: $packageName, bundleId: $bundleId',
+    );
 
     final channel = ClientChannel(
       host,
@@ -72,10 +81,10 @@ class NativeAutomator {
   final Duration timeout;
 
   /// Unique identifier of the app under test on Android.
-  final String packageName;
+  late final String packageName;
 
   /// Unique identifier of the app under test on iOS.
-  final String bundleId;
+  late final String bundleId;
 
   late final NativeAutomatorClient _client;
 
@@ -226,13 +235,15 @@ class NativeAutomator {
   }
 
   /// Enables dark mode.
-  Future<void> enableDarkMode() async {
-    await _client.enableDarkMode(DarkModeRequest());
+  Future<void> enableDarkMode({String? appId}) async {
+    await _client
+        .enableDarkMode(DarkModeRequest(appId: appId ?? resolvedAppId));
   }
 
   /// Disables dark mode.
-  Future<void> disableDarkMode() async {
-    await _client.disableDarkMode(DarkModeRequest());
+  Future<void> disableDarkMode({String? appId}) async {
+    await _client
+        .disableDarkMode(DarkModeRequest(appId: appId ?? resolvedAppId));
   }
 
   /// Enables WiFi.

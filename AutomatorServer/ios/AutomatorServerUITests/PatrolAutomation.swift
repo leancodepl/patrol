@@ -51,11 +51,11 @@ class PatrolAutomation {
   
   func enableDarkMode(_ bundleIdentifier: String) {
     runAction("enabling dark mode") {
-#if targetEnvironment(simulator)
-      let isSimulator = true
-#else
-      let isSimulator = false
-#endif
+      #if targetEnvironment(simulator)
+        let isSimulator = true
+      #else
+        let isSimulator = false
+      #endif
       
       self.springboard.activate()
       self.preferences.terminate() // reset to a known state
@@ -81,11 +81,11 @@ class PatrolAutomation {
   
   func disableDarkMode(_ bundleIdentifier: String) {
     runAction("disabling dark mode") {
-#if targetEnvironment(simulator)
-      let isSimulator = true
-#else
-      let isSimulator = false
-#endif
+      #if targetEnvironment(simulator)
+        let isSimulator = true
+      #else
+        let isSimulator = false
+      #endif
       
       self.springboard.activate()
       self.preferences.terminate() // reset to a known state
