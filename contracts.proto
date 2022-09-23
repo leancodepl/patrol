@@ -3,6 +3,27 @@ package patrol;
 
 option java_package = "pl.leancode.automatorserver.contracts";
 
+service NativeAutomator {
+  rpc pressHome(PressHomeRequest) returns (PressHomeResponse) {}
+  rpc pressBack(PressBackRequest) returns (PressBackResponse) {}
+  rpc pressRecentApps(PressRecentAppsRequest)
+      returns (PressRecentAppsResponse) {}
+  rpc openApp(OpenAppRequest) returns (OpenAppResponse) {}
+  rpc openNotifications(OpenNotificationsRequest) returns (OpenNotifications)
+}
+
+message PressHomeRequest {}
+message PressHomeResponse {}
+
+message PressBackRequest {}
+message PressBackResponse {}
+
+message PressRecentAppsRequest {}
+message PressRecentAppsResponse {}
+
+message OpenAppRequest {}
+message OpenAppResponse {}
+
 message OpenAppCommand { string appId = 1; }
 
 message TapCommand {
