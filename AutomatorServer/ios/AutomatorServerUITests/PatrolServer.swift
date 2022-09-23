@@ -26,7 +26,7 @@ class PatrolServer {
     return Int(portStr)
   }()
 
-  init() throws {
+  init() {
     self.port = passedPort ?? 8081
   }
 
@@ -37,15 +37,9 @@ class PatrolServer {
     
     let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(host: "localhost", port: port).get()
     
-    print("server started on port \(server.channel.localAddress!.port!)")
+    logServerStarted()
 
-    // Wait on the server's `onClose` future to stop the program from exiting.
     try await server.onClose.get()
-  }
-
-  func stop() {
-    Logger.shared.i("Stopping server...")
-    dispatchGroup.leave()
     Logger.shared.i("Server stopped")
   }
 
