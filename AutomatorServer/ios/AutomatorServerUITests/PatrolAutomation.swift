@@ -41,7 +41,7 @@ class PatrolAutomation {
     }
   }
   
-  func enableDarkMode() {
+  func enableDarkMode(_ bundleIdentifier: String) {
     runAction("enabling dark mode") {
       #if targetEnvironment(simulator)
         let isSimulator = true
@@ -49,22 +49,25 @@ class PatrolAutomation {
         let isSimulator = false
       #endif
       
+      self.springboard.activate()
+      self.preferences.terminate() // reset to a known state
+      self.preferences.activate()
+      
       if (isSimulator) {
-        self.springboard.activate()
-        self.preferences.terminate() // reset to a known state
-        self.preferences.activate()
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
         let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
         if value == "0" {
           self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
         }
-        
-        self.springboard.activate()
-        self.preferences.terminate()
       } else {
-        // TODO
+        self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
+        self.preferences.descendants(matching: .any)["Dark"].firstMatch.tap()
       }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
     }
   }
   
@@ -76,21 +79,24 @@ class PatrolAutomation {
         let isSimulator = false
       #endif
       
+      self.springboard.activate()
+      self.preferences.terminate() // reset to a known state
+      self.preferences.activate()
       if (isSimulator) {
-        self.springboard.activate()
-        self.preferences.terminate() // reset to a known state
-        self.preferences.activate()
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
         let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
         if value == "1" {
           self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
         }
-        self.springboard.activate()
-        self.preferences.terminate()
       } else {
-        // TODO
+        self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
+        self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
       }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
     }
   }
  

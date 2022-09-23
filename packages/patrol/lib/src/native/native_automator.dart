@@ -244,10 +244,20 @@ class NativeAutomator {
   }
 
   /// Enables dark mode.
-  Future<void> enableDarkMode() => _wrapPost('enableDarkMode');
+  Future<void> enableDarkMode({String? appId}) {
+    return _wrapPost(
+      'enableDarkMode',
+      <String, dynamic>{'appId': appId ?? resolvedAppId},
+    );
+  }
 
   /// Disables dark mode.
-  Future<void> disableDarkMode() => _wrapPost('disableDarkMode');
+  Future<void> disableDarkMode({String? appId}) {
+    return _wrapPost(
+      'disableDarkMode',
+      <String, dynamic>{'appId': appId ?? resolvedAppId},
+    );
+  }
 
   /// Enables WiFi.
   Future<void> enableWifi() => _wrapPost('enableWifi');

@@ -34,6 +34,8 @@ struct Selector: Codable {
   var text: String
 }
 
+struct EnableDar
+
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
 
