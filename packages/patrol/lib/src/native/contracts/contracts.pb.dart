@@ -546,11 +546,20 @@ class OpenQuickSettingsResponse extends $pb.GeneratedMessage {
 
 class DarkModeRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'DarkModeRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'appId', protoName: 'appId')
     ..hasRequiredFields = false
   ;
 
   DarkModeRequest._() : super();
-  factory DarkModeRequest() => create();
+  factory DarkModeRequest({
+    $core.String? appId,
+  }) {
+    final _result = create();
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    return _result;
+  }
   factory DarkModeRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory DarkModeRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -571,6 +580,15 @@ class DarkModeRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static DarkModeRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<DarkModeRequest>(create);
   static DarkModeRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appId($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasAppId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppId() => clearField(1);
 }
 
 class DarkModeResponse extends $pb.GeneratedMessage {
@@ -604,11 +622,20 @@ class DarkModeResponse extends $pb.GeneratedMessage {
 
 class WiFiRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'WiFiRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'appId', protoName: 'appId')
     ..hasRequiredFields = false
   ;
 
   WiFiRequest._() : super();
-  factory WiFiRequest() => create();
+  factory WiFiRequest({
+    $core.String? appId,
+  }) {
+    final _result = create();
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    return _result;
+  }
   factory WiFiRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory WiFiRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -629,6 +656,15 @@ class WiFiRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static WiFiRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<WiFiRequest>(create);
   static WiFiRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appId($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasAppId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppId() => clearField(1);
 }
 
 class WiFiResponse extends $pb.GeneratedMessage {
@@ -662,11 +698,20 @@ class WiFiResponse extends $pb.GeneratedMessage {
 
 class CellularRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'CellularRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'appId', protoName: 'appId')
     ..hasRequiredFields = false
   ;
 
   CellularRequest._() : super();
-  factory CellularRequest() => create();
+  factory CellularRequest({
+    $core.String? appId,
+  }) {
+    final _result = create();
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    return _result;
+  }
   factory CellularRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory CellularRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
   @$core.Deprecated(
@@ -687,6 +732,15 @@ class CellularRequest extends $pb.GeneratedMessage {
   @$core.pragma('dart2js:noInline')
   static CellularRequest getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<CellularRequest>(create);
   static CellularRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appId($core.String v) { $_setString(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasAppId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppId() => clearField(1);
 }
 
 class CellularResponse extends $pb.GeneratedMessage {

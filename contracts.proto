@@ -74,13 +74,13 @@ message TapOnNotificationResponse {}
 message OpenQuickSettingsRequest {}
 message OpenQuickSettingsResponse {}
 
-message DarkModeRequest {}
+message DarkModeRequest { string appId = 1; }
 message DarkModeResponse {}
 
-message WiFiRequest {}
+message WiFiRequest { string appId = 1; }
 message WiFiResponse {}
 
-message CellularRequest {}
+message CellularRequest { string appId = 1; }
 message CellularResponse {}
 
 message GetNativeWidgetsRequest { Selector selector = 1; }

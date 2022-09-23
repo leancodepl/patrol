@@ -133,10 +133,13 @@ final $typed_data.Uint8List openQuickSettingsResponseDescriptor = $convert.base6
 @$core.Deprecated('Use darkModeRequestDescriptor instead')
 const DarkModeRequest$json = const {
   '1': 'DarkModeRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+  ],
 };
 
 /// Descriptor for `DarkModeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List darkModeRequestDescriptor = $convert.base64Decode('Cg9EYXJrTW9kZVJlcXVlc3Q=');
+final $typed_data.Uint8List darkModeRequestDescriptor = $convert.base64Decode('Cg9EYXJrTW9kZVJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElk');
 @$core.Deprecated('Use darkModeResponseDescriptor instead')
 const DarkModeResponse$json = const {
   '1': 'DarkModeResponse',
@@ -147,10 +150,13 @@ final $typed_data.Uint8List darkModeResponseDescriptor = $convert.base64Decode('
 @$core.Deprecated('Use wiFiRequestDescriptor instead')
 const WiFiRequest$json = const {
   '1': 'WiFiRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+  ],
 };
 
 /// Descriptor for `WiFiRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List wiFiRequestDescriptor = $convert.base64Decode('CgtXaUZpUmVxdWVzdA==');
+final $typed_data.Uint8List wiFiRequestDescriptor = $convert.base64Decode('CgtXaUZpUmVxdWVzdBIUCgVhcHBJZBgBIAEoCVIFYXBwSWQ=');
 @$core.Deprecated('Use wiFiResponseDescriptor instead')
 const WiFiResponse$json = const {
   '1': 'WiFiResponse',
@@ -161,10 +167,13 @@ final $typed_data.Uint8List wiFiResponseDescriptor = $convert.base64Decode('CgxX
 @$core.Deprecated('Use cellularRequestDescriptor instead')
 const CellularRequest$json = const {
   '1': 'CellularRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+  ],
 };
 
 /// Descriptor for `CellularRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List cellularRequestDescriptor = $convert.base64Decode('Cg9DZWxsdWxhclJlcXVlc3Q=');
+final $typed_data.Uint8List cellularRequestDescriptor = $convert.base64Decode('Cg9DZWxsdWxhclJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElk');
 @$core.Deprecated('Use cellularResponseDescriptor instead')
 const CellularResponse$json = const {
   '1': 'CellularResponse',

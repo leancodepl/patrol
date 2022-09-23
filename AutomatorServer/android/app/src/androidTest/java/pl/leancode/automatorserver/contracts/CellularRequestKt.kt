@@ -21,6 +21,23 @@ object CellularRequestKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.CellularRequest = _builder.build()
+
+    /**
+     * <code>string appId = 1;</code>
+     */
+    var appId: kotlin.String
+      @JvmName("getAppId")
+      get() = _builder.getAppId()
+      @JvmName("setAppId")
+      set(value) {
+        _builder.setAppId(value)
+      }
+    /**
+     * <code>string appId = 1;</code>
+     */
+    fun clearAppId() {
+      _builder.clearAppId()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

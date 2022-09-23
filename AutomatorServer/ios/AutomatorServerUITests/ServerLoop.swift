@@ -5,6 +5,6 @@ class ServerLoop: XCTestCase {
     Logger.shared.i("Starting server loop...")
 
     let patrolServer = try PatrolServer()
-    try patrolServer.start()
+    try await patrolServer.start()
   }
 }

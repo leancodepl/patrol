@@ -1,11 +1,11 @@
 import GRPC
+import NIOCore
+import NIOPosix
 
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
 
   private let port: Int
-
-  private let server: Server
 
   private let automation = PatrolAutomation()
 
@@ -24,124 +24,23 @@ class PatrolServer {
 
   init() throws {
     self.port = passedPort ?? 8081
-    self.server = NativeAutomato
   }
 
-  func setUpRoutes() {
+  func start() async throws {
+    let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     
-  
-    server.route(.GET, "") { request in
-      HTTPResponse(content: "Hello from AutomatorServer on iOS!")
-    }
-
-    server.route(.GET, "isRunning") { request in
-      HTTPResponse(.ok, headers: [:], content: "All is good.")
-    }
-
-    server.route(.POST, "stop") { request in
-      self.stop()
-      return HTTPResponse(.ok)
-    }
-
-    server.route(.POST, "pressHome") { request in
-      self.automation.pressHome()
-      return HTTPResponse(.ok)
-    }
+    let provider = NativeAutomatorServer()
     
-    server.route(.POST, "pressRecentApps") { request in
-      self.automation.openAppSwitcher()
-      return HTTPResponse(.ok)
-    }
+    let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(host: "localhost", port: port).get()
+    
+    print("server started on port \(server.channel.localAddress!.port!)")
 
-    server.route(.POST, "openApp") { request in
-      do {
-        let command = try Patrol_OpenAppCommand(jsonUTF8Data: request.body)
-        self.automation.openApp(command.appID)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "tap") { request in
-      do {
-        let command = try Patrol_TapCommand(jsonUTF8Data: request.body)
-        self.automation.tap(on: command.selector.text, inApp: command.appID)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "doubleTap") { request in
-      do {
-        let command = try Patrol_DoubleTapCommand(jsonUTF8Data: request.body)
-        self.automation.doubleTap(on: command.selector.text, inApp: command.appID)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "enterTextBySelector") { request in
-      do {
-        let command = try Patrol_EnterTextBySelectorCommand(jsonUTF8Data: request.body)
-        self.automation.enterText(command.data, by: command.selector.text, inApp: command.appID)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "enterTextByIndex") { request in
-      do {
-        let command = try Patrol_EnterTextByIndexCommand(jsonUTF8Data: request.body)
-        self.automation.enterText(command.data, by: Int(command.index), inApp: command.appID)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "handlePermission") { request in
-      do {
-        let command = try Patrol_HandlePermissionCommand(jsonUTF8Data: request.body)
-        self.automation.handlePermission(code: command.code)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "selectFineLocation") { request in
-      self.automation.selectFineLocation()
-      return HTTPResponse(.ok)
-    }
-
-    server.route(.POST, "selectCoarseLocation") { request in
-      self.automation.selectCoarseLocation()
-      return HTTPResponse(.ok)
-    }
-  }
-
-  func start() throws {
-    Logger.shared.i("Starting server...")
-    do {
-      try server.start(port: 8081)
-      setUpRoutes()
-      dispatchGroup.enter()
-      logServerStarted()
-    } catch let err {
-      Logger.shared.e("Failed to start server: \(err)")
-      throw err
-    }
-
-    dispatchGroup.wait()
+    // Wait on the server's `onClose` future to stop the program from exiting.
+    try await server.onClose.get()
   }
 
   func stop() {
     Logger.shared.i("Stopping server...")
-    server.stop()
     dispatchGroup.leave()
     Logger.shared.i("Server stopped")
   }

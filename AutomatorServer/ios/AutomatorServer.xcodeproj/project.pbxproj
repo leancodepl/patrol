@@ -11,6 +11,8 @@
 		9816533D28DDF4AF00C2BB4C /* protoc-gen-grpc-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533C28DDF4AF00C2BB4C /* protoc-gen-grpc-swift */; };
 		9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533E28DDF4BA00C2BB4C /* GRPC */; };
 		9816534128DDF59F00C2BB4C /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534028DDF59F00C2BB4C /* contracts.grpc.swift */; };
+		9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */; };
+		9816534528DE373000C2BB4C /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 9816534428DE373000C2BB4C /* Telegraph */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
 		98615FE228C89C11003EAF35 /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 98615FE128C89C11003EAF35 /* Telegraph */; };
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
@@ -40,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		9816534028DDF59F00C2BB4C /* contracts.grpc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contracts.grpc.swift; sourceTree = "<group>"; };
+		9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAutomatorServer.swift; sourceTree = "<group>"; };
 		983049F92899206400C87527 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		98619AB628A1248F00C17F49 /* XCUIDevice+WiFiAddr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+WiFiAddr.h"; sourceTree = "<group>"; };
 		98619AB728A124CF00C17F49 /* AutomatorServerUITests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AutomatorServerUITests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -65,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9816534528DE373000C2BB4C /* Telegraph in Frameworks */,
 				9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */,
 				98DB0A5928DB67B000A042FA /* SwiftProtobuf in Frameworks */,
 			);
@@ -103,6 +107,7 @@
 				98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */,
 				98619AB728A124CF00C17F49 /* AutomatorServerUITests-Bridging-Header.h */,
 				988FE74B28A5138800EA2141 /* Errors.swift */,
+				9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */,
 			);
 			path = AutomatorServerUITests;
 			sourceTree = "<group>";
@@ -160,6 +165,7 @@
 			packageProductDependencies = (
 				98DB0A5828DB67B000A042FA /* SwiftProtobuf */,
 				9816533E28DDF4BA00C2BB4C /* GRPC */,
+				9816534428DE373000C2BB4C /* Telegraph */,
 			);
 			productName = AutomatorServerUITests;
 			productReference = 98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */;
@@ -260,6 +266,7 @@
 				98B3654728903353008B5B8B /* PatrolServer.swift in Sources */,
 				9816534128DDF59F00C2BB4C /* contracts.grpc.swift in Sources */,
 				98B365452890333D008B5B8B /* ServerLoop.swift in Sources */,
+				9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */,
 				983049FA2899206400C87527 /* Logger.swift in Sources */,
 				988FE74C28A5138800EA2141 /* Errors.swift in Sources */,
 				98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */,
@@ -602,6 +609,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */;
 			productName = GRPC;
+		};
+		9816534428DE373000C2BB4C /* Telegraph */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */;
+			productName = Telegraph;
 		};
 		98615FE128C89C11003EAF35 /* Telegraph */ = {
 			isa = XCSwiftPackageProductDependency;
