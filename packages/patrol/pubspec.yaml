@@ -17,6 +17,7 @@ dependencies:
   flutter_test:
     sdk: flutter
   freezed_annotation: ^2.1.0
+  grpc: ^3.0.2
   http: ^0.13.5
   integration_test:
     sdk: flutter
