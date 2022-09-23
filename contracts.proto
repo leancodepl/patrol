@@ -15,7 +15,7 @@ service NativeAutomator {
   rpc openApp(OpenAppRequest) returns (OpenAppResponse) {}
   rpc openNotifications(OpenNotificationsRequest)
       returns (OpenNotificationsResponse) {}
-  rpc OpenQuickSettings(OpenQuickSettingsRequest)
+  rpc openQuickSettings(OpenQuickSettingsRequest)
       returns (OpenQuickSettingsResponse) {}
 
   // services

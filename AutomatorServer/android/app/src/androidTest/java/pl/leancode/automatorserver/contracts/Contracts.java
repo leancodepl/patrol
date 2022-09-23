@@ -24232,7 +24232,7 @@ public final class Contracts {
       "uest\032\027.patrol.OpenAppResponse\"\000\022Z\n\021openN" +
       "otifications\022 .patrol.OpenNotificationsR" +
       "equest\032!.patrol.OpenNotificationsRespons" +
-      "e\"\000\022Z\n\021OpenQuickSettings\022 .patrol.OpenQu" +
+      "e\"\000\022Z\n\021openQuickSettings\022 .patrol.OpenQu" +
       "ickSettingsRequest\032!.patrol.OpenQuickSet" +
       "tingsResponse\"\000\022E\n\016enableDarkMode\022\027.patr" +
       "ol.DarkModeRequest\032\030.patrol.DarkModeResp" +

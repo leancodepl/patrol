@@ -257,10 +257,10 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// Unary call to OpenQuickSettings
+  /// Unary call to openQuickSettings
   ///
   /// - Parameters:
-  ///   - request: Request to send to OpenQuickSettings.
+  ///   - request: Request to send to openQuickSettings.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func openQuickSettings(
@@ -271,7 +271,7 @@ extension Patrol_NativeAutomatorClientProtocol {
       path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeOpenQuickSettingsInterceptors() ?? []
+      interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
     )
   }
 
@@ -813,7 +813,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeOpenQuickSettingsInterceptors() ?? []
+      interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
     )
   }
 
@@ -1080,7 +1080,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeOpenQuickSettingsInterceptors() ?? []
+      interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
     )
   }
 
@@ -1305,7 +1305,7 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   func makeopenNotificationsInterceptors() -> [ClientInterceptor<Patrol_OpenNotificationsRequest, Patrol_OpenNotificationsResponse>]
 
   /// - Returns: Interceptors to use when invoking 'openQuickSettings'.
-  func makeOpenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_OpenQuickSettingsResponse>]
+  func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_OpenQuickSettingsResponse>]
 
   /// - Returns: Interceptors to use when invoking 'enableDarkMode'.
   func makeenableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_DarkModeResponse>]
@@ -1421,8 +1421,8 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     )
 
     internal static let openQuickSettings = GRPCMethodDescriptor(
-      name: "OpenQuickSettings",
-      path: "/patrol.NativeAutomator/OpenQuickSettings",
+      name: "openQuickSettings",
+      path: "/patrol.NativeAutomator/openQuickSettings",
       type: GRPCCallType.unary
     )
 
@@ -1635,12 +1635,12 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.openNotifications(request:context:)
       )
 
-    case "OpenQuickSettings":
+    case "openQuickSettings":
       return UnaryServerHandler(
         context: context,
         requestDeserializer: ProtobufDeserializer<Patrol_OpenQuickSettingsRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_OpenQuickSettingsResponse>(),
-        interceptors: self.interceptors?.makeOpenQuickSettingsInterceptors() ?? [],
+        interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? [],
         userFunction: self.openQuickSettings(request:context:)
       )
 
@@ -1979,12 +1979,12 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.openNotifications(request:context:)
       )
 
-    case "OpenQuickSettings":
+    case "openQuickSettings":
       return GRPCAsyncServerHandler(
         context: context,
         requestDeserializer: ProtobufDeserializer<Patrol_OpenQuickSettingsRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_OpenQuickSettingsResponse>(),
-        interceptors: self.interceptors?.makeOpenQuickSettingsInterceptors() ?? [],
+        interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? [],
         wrapping: self.openQuickSettings(request:context:)
       )
 
@@ -2159,7 +2159,7 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'openQuickSettings'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeOpenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_OpenQuickSettingsResponse>]
+  func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_OpenQuickSettingsResponse>]
 
   /// - Returns: Interceptors to use when handling 'enableDarkMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2290,8 +2290,8 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     )
 
     internal static let openQuickSettings = GRPCMethodDescriptor(
-      name: "OpenQuickSettings",
-      path: "/patrol.NativeAutomator/OpenQuickSettings",
+      name: "openQuickSettings",
+      path: "/patrol.NativeAutomator/openQuickSettings",
       type: GRPCCallType.unary
     )
 

@@ -52,7 +52,7 @@ class NativeAutomatorClient extends $grpc.Client {
           $0.OpenNotificationsResponse.fromBuffer(value));
   static final _$openQuickSettings = $grpc.ClientMethod<
           $0.OpenQuickSettingsRequest, $0.OpenQuickSettingsResponse>(
-      '/patrol.NativeAutomator/OpenQuickSettings',
+      '/patrol.NativeAutomator/openQuickSettings',
       ($0.OpenQuickSettingsRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) =>
           $0.OpenQuickSettingsResponse.fromBuffer(value));
@@ -326,7 +326,7 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($0.OpenNotificationsResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.OpenQuickSettingsRequest,
             $0.OpenQuickSettingsResponse>(
-        'OpenQuickSettings',
+        'openQuickSettings',
         openQuickSettings_Pre,
         false,
         false,
