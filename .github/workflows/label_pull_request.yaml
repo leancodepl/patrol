@@ -1,10 +1,10 @@
-name: Assign labels to Pull Request
+name: assign labels to pull request
 
 on:
   pull_request:
 
 jobs:
-  build:
+  main:
     runs-on: ubuntu-latest
 
     steps:

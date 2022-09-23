@@ -17,6 +17,12 @@ class PatrolAutomation {
   private lazy var springboard: XCUIApplication = {
     return XCUIApplication(bundleIdentifier: "com.apple.springboard")
   }()
+  
+  private lazy var preferences: XCUIApplication = {
+    return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
+  }()
+  
+  
 
   var ipAddress: String? {
     return device.wiFiIPAddress()
@@ -34,7 +40,66 @@ class PatrolAutomation {
       app.activate()
     }
   }
-
+  
+  func enableDarkMode(_ bundleIdentifier: String) {
+    runAction("enabling dark mode") {
+      #if targetEnvironment(simulator)
+        let isSimulator = true
+      #else
+        let isSimulator = false
+      #endif
+      
+      self.springboard.activate()
+      self.preferences.terminate() // reset to a known state
+      self.preferences.activate()
+      
+      if (isSimulator) {
+        self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+        
+        let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
+        if value == "0" {
+          self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+        }
+      } else {
+        self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
+        self.preferences.descendants(matching: .any)["Dark"].firstMatch.tap()
+      }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
+  
+  func disableDarkMode(_ bundleIdentifier: String) {
+    runAction("disabling dark mode") {
+      #if targetEnvironment(simulator)
+        let isSimulator = true
+      #else
+        let isSimulator = false
+      #endif
+      
+      self.springboard.activate()
+      self.preferences.terminate() // reset to a known state
+      self.preferences.activate()
+      if (isSimulator) {
+        self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+        
+        let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
+        if value == "1" {
+          self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+        }
+      } else {
+        self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
+        self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
+      }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
+ 
   func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
@@ -66,7 +131,6 @@ class PatrolAutomation {
       } else {
         Logger.shared.e("textField at index \(index) doesn't exist")
       }
-
     }
   }
 
