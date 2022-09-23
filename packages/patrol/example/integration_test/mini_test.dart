@@ -37,14 +37,14 @@ Future<void> main() async {
 
       await _wait();
 
-      await $.native.openApp(id: mapsId);
+      await $.native.openApp(appId: mapsId);
       $.log("Opened mail app! Now I'm gonna go to home");
 
       await _wait();
 
       await $.native.pressHome();
 
-      await $.native.openApp(id: myAppId);
+      await $.native.openApp(appId: myAppId);
       $.log('Opening the app under test again...');
 
       expect($(#counterText).text, '2');

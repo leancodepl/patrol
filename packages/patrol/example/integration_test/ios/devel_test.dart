@@ -18,7 +18,7 @@ Future<void> main() async {
       await $.native.pressHome();
       await $.native.pressRecentApps();
 
-      await $.native.openApp(id: 'pl.leancode.patrol.Example');
+      await $.native.openApp(appId: 'pl.leancode.patrol.Example');
 
       await _wait();
 

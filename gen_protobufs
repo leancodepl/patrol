@@ -9,7 +9,7 @@ java_out="./AutomatorServer/android/app/src/androidTest/java"
 kotlin_out="./AutomatorServer/android/app/src/androidTest/java"
 swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
-protoc --dart_out="$dart_out" "$SRC_DIR/contracts.proto"
+protoc --dart_out="grpc:$dart_out" -I="$SRC_DIR" "$SRC_DIR/contracts.proto"
 
 protoc --java_out="$java_out" --kotlin_out="$kotlin_out" "$SRC_DIR/contracts.proto"
 

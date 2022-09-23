@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
+import 'package:grpc/grpc.dart';
 import 'package:http/http.dart' as http;
-import 'package:patrol/src/extensions.dart';
 import 'package:patrol/src/native/binding.dart';
-
-import 'contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
 typedef _LoggerCallback = void Function(String);
 
@@ -34,9 +33,9 @@ class NativeAutomator {
   /// (on the target device).
   NativeAutomator.forTest({
     this.timeout = const Duration(seconds: 10),
-    _LoggerCallback logger = _defaultPrintLogger,
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
+    _LoggerCallback logger = _defaultPrintLogger,
   })  : _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
@@ -47,6 +46,16 @@ class NativeAutomator {
           defaultValue: '8081',
         ) {
     _logger('creating NativeAutomator, host: $host, port: $port');
+
+    final channel = ClientChannel(
+      host,
+      port: int.parse(port),
+      options: const ChannelOptions(
+        credentials: ChannelCredentials.insecure(),
+      ),
+    );
+
+    _client = NativeAutomatorClient(channel);
 
     PatrolBinding.ensureInitialized();
   }
@@ -68,9 +77,7 @@ class NativeAutomator {
   /// Unique identifier of the app under test on iOS.
   final String bundleId;
 
-  final _client = http.Client();
-
-  String get _baseUri => 'http://$host:$port';
+  late final NativeAutomatorClient _client;
 
   /// Returns the platform-dependent unique identifier of the app under test.
   String get resolvedAppId {
@@ -83,24 +90,7 @@ class NativeAutomator {
     throw StateError('unsupported platform');
   }
 
-  Future<http.Response> _wrapGet(String action) async {
-    _logger('action $action executing');
-
-    final response = await _client.get(
-      Uri.parse('$_baseUri/$action'),
-      headers: {'Content-Type': 'application/json'},
-    ).timeout(timeout);
-
-    if (!response.successful) {
-      _handleErrorResponse(action, response);
-    } else {
-      _logger('action $action succeeded');
-    }
-
-    return response;
-  }
-
-  Future<http.Response> _wrapPost({
+/*   Future<http.Response> _wrapPost({
     required String action,
     Map<String, dynamic>? body = const <String, dynamic>{},
   }) async {
@@ -123,7 +113,7 @@ class NativeAutomator {
     }
 
     return response;
-  }
+  } */
 
   void _handleErrorResponse(String action, http.Response response) {
     var message = 'no message';
@@ -141,25 +131,12 @@ class NativeAutomator {
     throw PatrolActionException(message);
   }
 
-  /// Returns whether the Patrol automation server is running on the target
-  /// device.
-  Future<bool> isRunning() async {
-    try {
-      final res = await _client.get(Uri.parse('$_baseUri/isRunning'));
-      _logger('status code: ${res.statusCode}, response body: ${res.body}');
-      return res.successful;
-    } catch (err, st) {
-      _logger('failed to call isRunning()\n$err\n$st');
-      return false;
-    }
-  }
-
   /// Presses the back button.
   ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
   ///    which is used on Android.
-  Future<void> pressBack() => _wrapPost(action: 'pressBack');
+  Future<void> pressBack() => _client.pressBack(PressBackRequest());
 
   /// Presses the home button.
   ///
@@ -169,16 +146,13 @@ class NativeAutomator {
   ///
   /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/home>,
   ///   which is used on iOS
-  Future<void> pressHome() => _wrapPost(action: 'pressHome');
+  Future<void> pressHome() => _client.pressHome(PressHomeRequest());
 
-  /// Opens the app specified by [id].
+  /// Opens the app specified by [appId].
   ///
-  /// On Android [id] is the package name. On iOS [id] is the bundle name.
-  Future<void> openApp({required String id}) {
-    return _wrapPost(
-      action: 'openApp',
-      body: OpenAppCommand(appId: id).toProto3Json() as Map<String, dynamic>?,
-    );
+  /// On Android [appId] is the package name. On iOS [appId] is the bundle name.
+  Future<void> openApp({required String appId}) async {
+    await _client.openApp(OpenAppRequest(appId: appId));
   }
 
   /// Presses the recent apps button.
@@ -186,104 +160,114 @@ class NativeAutomator {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>,
   ///    which is used on Android
-  Future<void> pressRecentApps() => _wrapPost(action: 'pressRecentApps');
+  Future<void> pressRecentApps() async {
+    await _client.pressRecentApps(PressRecentAppsRequest());
+  }
 
   /// Double presses the recent apps button.
-  Future<void> pressDoubleRecentApps() =>
-      _wrapPost(action: 'pressDoubleRecentApps');
+  Future<void> pressDoubleRecentApps() async {
+    await _client.doublePressRecentApps(DoublePressRecentAppsRequest());
+  }
 
   /// Opens the notification shade.
   ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
-  Future<void> openNotifications() => _wrapPost(action: 'openNotifications');
+  Future<void> openNotifications() async {
+    await _client.openNotifications(OpenNotificationsRequest());
+  }
 
   /// Opens the quick settings shade.
   ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#openquicksettings>,
   ///    which is used on Android
-  Future<void> openQuickSettings() => _wrapPost(action: 'openQuickSettings');
+  Future<void> openQuickSettings() async {
+    await _client.openQuickSettings(OpenQuickSettingsRequest());
+  }
 
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade will be opened automatically.
   Future<Notification> getFirstNotification() async {
-    final notifications = await getNotifications();
-    return notifications[0];
+    final response = await _client.getNotifications(
+      GetNotificationsRequest(),
+    );
+
+    return response.notifications.first;
   }
 
   /// Returns notifications that are visible in the notification shade.
   ///
   /// Notification shade will be opened automatically.
   Future<List<Notification>> getNotifications() async {
-    final response = await _wrapGet('getNotifications');
-    final queryResponse = NotificationsQueryResponse.create()
-      ..mergeFromProto3Json(jsonDecode(response.body));
+    final response = await _client.getNotifications(
+      GetNotificationsRequest(),
+    );
 
-    return queryResponse.notifications;
+    return response.notifications;
   }
 
   /// Taps on the [index]-th visible notification.
   ///
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationByIndex(int index) async {
-    await _wrapPost(
-      action: 'tapOnNotificationByIndex',
-      body: TapOnNotificationByIndexCommand(index: index).toProto3Json()
-          as Map<String, dynamic>?,
-    );
+    await _client.tapOnNotification(TapOnNotificationRequest(index: index));
   }
 
   /// Taps on the visible notification using [selector].
   ///
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
-    await _wrapPost(
-      action: 'tapOnNotificationBySelector',
-      body: TapOnNotificationBySelectorCommand(selector: selector)
-          .toProto3Json() as Map<String, dynamic>?,
+    await _client.tapOnNotification(
+      TapOnNotificationRequest(selector: selector),
     );
   }
 
   /// Enables dark mode.
-  Future<void> enableDarkMode() => _wrapPost(action: 'enableDarkMode');
+  Future<void> enableDarkMode() async {
+    await _client.enableDarkMode(DarkModeRequest());
+  }
 
   /// Disables dark mode.
-  Future<void> disableDarkMode() => _wrapPost(action: 'disableDarkMode');
+  Future<void> disableDarkMode() async {
+    await _client.disableDarkMode(DarkModeRequest());
+  }
 
   /// Enables WiFi.
-  Future<void> enableWifi() => _wrapPost(action: 'enableWifi');
+  Future<void> enableWifi() => _client.enableWiFi(WiFiRequest());
 
   /// Disables WiFi.
-  Future<void> disableWifi() => _wrapPost(action: 'disableWifi');
+  Future<void> disableWifi() => _client.disableWiFi(WiFiRequest());
 
   /// Enables cellular (aka mobile data connection).
-  Future<void> enableCellular() => _wrapPost(action: 'enableCellular');
+  Future<void> enableCellular() => _client.enableCellular(CellularRequest());
 
   /// Disables cellular (aka mobile data connection).
-  Future<void> disableCellular() => _wrapPost(action: 'disableCellular');
+  Future<void> disableCellular() => _client.disableCellular(CellularRequest());
 
   /// Taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId}) {
-    return _wrapPost(
-      action: 'tap',
-      body: TapCommand(selector: selector).toProto3Json()
-          as Map<String, dynamic>?,
+  Future<void> tap(Selector selector, {String? appId}) async {
+    await _client.tap(
+      TapRequest(
+        selector: selector,
+        appId: appId ?? resolvedAppId,
+      ),
     );
   }
 
   /// Double taps on the native widget specified by [selector].
   ///
   /// If the native widget is not found, an exception is thrown.
-  Future<void> doubleTap(Selector selector, {String? appId}) {
-    return _wrapPost(
-      action: 'doubleTap',
-      body: DoubleTapCommand(selector: selector, appId: appId).toProto3Json()
-          as Map<String, dynamic>?,
+  Future<void> doubleTap(Selector selector, {String? appId}) async {
+    await _client.doubleTap(
+      TapRequest(
+        selector: selector,
+        appId: appId ?? resolvedAppId,
+      ),
     );
   }
 
@@ -294,14 +278,13 @@ class NativeAutomator {
     Selector selector, {
     required String text,
     String? appId,
-  }) {
-    return _wrapPost(
-      action: 'enterTextBySelector',
-      body: EnterTextBySelectorCommand(
-        appId: appId,
+  }) async {
+    await _client.enterText(
+      EnterTextRequest(
         data: text,
         selector: selector,
-      ).toProto3Json() as Map<String, dynamic>?,
+        appId: appId ?? resolvedAppId,
+      ),
     );
   }
 
@@ -310,25 +293,24 @@ class NativeAutomator {
     String text, {
     required int index,
     String? appId,
-  }) {
-    return _wrapPost(
-      action: 'enterTextByIndex',
-      body: EnterTextByIndexCommand(
-        appId: appId,
+  }) async {
+    await _client.enterText(
+      EnterTextRequest(
         data: text,
         index: index,
-      ).toProto3Json() as Map<String, dynamic>?,
+        appId: appId ?? resolvedAppId,
+      ),
     );
   }
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
-    final response = await _wrapGet('getNativeWidgets');
-    final queryResponse = NativeWidgetsQueryResponse.create()
-      ..mergeFromProto3Json(jsonDecode(response.body));
+    final response = await _client.getNativeWidgets(
+      GetNativeWidgetsRequest(selector: selector),
+    );
 
-    return queryResponse.nativeWidgets;
+    return response.nativeWidgets;
   }
 
   /// Grants the permission that the currently visible native permission request
@@ -336,11 +318,8 @@ class NativeAutomator {
   ///
   /// Throws an exception if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
-    await _wrapPost(
-      action: 'handlePermission',
-      body: HandlePermissionCommand(
-        code: HandlePermissionCommand_Code.WHILE_USING,
-      ).toProto3Json() as Map<String, dynamic>?,
+    await _client.handlePermissionDialog(
+      HandlePermissionRequest(code: HandlePermissionRequest_Code.WHILE_USING),
     );
   }
 
@@ -351,12 +330,11 @@ class NativeAutomator {
   ///
   /// On iOS, this can only be used when granting the location permission.
   /// Otherwise it will crash.
-  Future<void> grantPermissionOnlyThisTime() {
-    return _wrapPost(
-      action: 'handlePermission',
-      body: HandlePermissionCommand(
-        code: HandlePermissionCommand_Code.ONLY_THIS_TIME,
-      ).toProto3Json() as Map<String, dynamic>?,
+  Future<void> grantPermissionOnlyThisTime() async {
+    await _client.handlePermissionDialog(
+      HandlePermissionRequest(
+        code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
+      ),
     );
   }
 
@@ -364,12 +342,21 @@ class NativeAutomator {
   /// dialog is asking for.
   ///
   /// Throws an exception if no permission request dialog is present.
-  Future<void> denyPermission() {
-    return _wrapPost(
-      action: 'handlePermission',
-      body: HandlePermissionCommand(
-        code: HandlePermissionCommand_Code.DENIED,
-      ).toProto3Json() as Map<String, dynamic>?,
+  Future<void> denyPermission() async {
+    await _client.handlePermissionDialog(
+      HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
+    );
+  }
+
+  /// Select the "coarse location" (aka "approximate") setting on the currently
+  /// visible native permission request dialog.
+  ///
+  /// Throws an exception if no permission request dialog is present.
+  Future<void> selectCoarseLocation() async {
+    await _client.setLocationAccuracy(
+      SetLocationAccuracyRequest(
+        locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.COARSE,
+      ),
     );
   }
 
@@ -377,13 +364,11 @@ class NativeAutomator {
   /// visible native permission request dialog.
   ///
   /// Throws an exception if no permission request dialog is present.
-  Future<void> selectFineLocation() => _wrapPost(action: 'selectFineLocation');
-
-  /// Select the "coarse location" (aka "approximate") setting on the currently
-  /// visible native permission request dialog.
-  ///
-  /// Throws an exception if no permission request dialog is present.
-  Future<void> selectCoarseLocation() {
-    return _wrapPost(action: 'selectCoarseLocation');
+  Future<void> selectFineLocation() async {
+    await _client.setLocationAccuracy(
+      SetLocationAccuracyRequest(
+        locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
+      ),
+    );
   }
 }

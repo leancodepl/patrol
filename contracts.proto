@@ -10,6 +10,8 @@ service NativeAutomator {
   rpc pressBack(PressBackRequest) returns (PressBackResponse) {}
   rpc pressRecentApps(PressRecentAppsRequest)
       returns (PressRecentAppsResponse) {}
+  rpc doublePressRecentApps(DoublePressRecentAppsRequest)
+      returns (DoublePressRecentAppsResponse) {}
   rpc openApp(OpenAppRequest) returns (OpenAppResponse) {}
   rpc openNotifications(OpenNotificationsRequest)
       returns (OpenNotificationsResponse) {}
@@ -19,7 +21,7 @@ service NativeAutomator {
   // services
 
   rpc enableDarkMode(DarkModeRequest) returns (DarkModeResponse) {}
-  rpc disableDarkMoed(DarkModeRequest) returns (DarkModeResponse) {}
+  rpc disableDarkMode(DarkModeRequest) returns (DarkModeResponse) {}
   rpc enableWiFi(WiFiRequest) returns (WiFiResponse) {}
   rpc disableWiFi(WiFiRequest) returns (WiFiResponse) {}
   rpc enableCellular(CellularRequest) returns (CellularResponse) {}
@@ -37,6 +39,8 @@ service NativeAutomator {
   rpc swipe(SwipeRequest) returns (SwipeResponse) {}
   rpc handlePermissionDialog(HandlePermissionRequest)
       returns (HandlePermissionResponse) {}
+  rpc setLocationAccuracy(SetLocationAccuracyRequest)
+      returns (SetLocationAccuracyResponse) {}
   rpc tapOnNotification(TapOnNotificationRequest)
       returns (TapOnNotificationResponse) {}
 }
@@ -49,6 +53,9 @@ message PressBackResponse {}
 
 message PressRecentAppsRequest {}
 message PressRecentAppsResponse {}
+
+message DoublePressRecentAppsRequest {}
+message DoublePressRecentAppsResponse {}
 
 message OpenAppRequest { string appId = 1; }
 message OpenAppResponse {}
@@ -82,13 +89,19 @@ message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
 message GetNotificationsRequest {}
 message GetNotificationsResponse { repeated Notification notifications = 1; }
 
-message TapRequest { Selector Selector = 1; }
+message TapRequest {
+  Selector Selector = 1;
+  string appId = 2;
+}
 message TapResponse {}
 
 message EnterTextRequest {
+  string data = 1;
+  string appId = 2;
+
   oneof findBy {
-    uint32 index = 1;
-    Selector selector = 2;
+    uint32 index = 3;
+    Selector selector = 4;
   }
 }
 message EnterTextResponse {}
@@ -104,20 +117,24 @@ message SwipeResponse {}
 
 message HandlePermissionRequest {
   Code code = 1;
-  optional LocationAccuracy locationAccuracy = 2;
 
   enum Code {
     WHILE_USING = 0;
     ONLY_THIS_TIME = 1;
     DENIED = 2;
   }
+}
+message HandlePermissionResponse {}
+
+message SetLocationAccuracyRequest {
+  LocationAccuracy locationAccuracy = 1;
 
   enum LocationAccuracy {
     COARSE = 0;
     FINE = 1;
   }
 }
-message HandlePermissionResponse {}
+message SetLocationAccuracyResponse {}
 
 message Selector {
   optional string text = 1;
