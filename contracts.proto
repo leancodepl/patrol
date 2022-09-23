@@ -35,7 +35,7 @@ service NativeAutomator {
   rpc doubleTap(TapRequest) returns (TapResponse) {}
   rpc enterText(EnterTextRequest) returns (EnterTextResponse) {}
   rpc swipe(SwipeRequest) returns (SwipeResponse) {}
-  rpc handlePermissionDialog(HandlePermissionCommand)
+  rpc handlePermissionDialog(HandlePermissionRequest)
       returns (HandlePermissionResponse) {}
   rpc tapOnNotification(TapOnNotificationRequest)
       returns (TapOnNotificationResponse) {}
@@ -117,56 +117,7 @@ message HandlePermissionRequest {
     FINE = 1;
   }
 }
-
 message HandlePermissionResponse {}
-
-// OLD
-
-message OpenAppCommand { string appId = 1; }
-
-message TapCommand {
-  string appId = 1;
-  Selector selector = 2;
-}
-
-message DoubleTapCommand {
-  string appId = 1;
-  Selector selector = 2;
-}
-
-message EnterTextBySelectorCommand {
-  string appId = 1;
-  string data = 2;
-  Selector selector = 3;
-}
-
-message EnterTextByIndexCommand {
-  string appId = 1;
-  string data = 2;
-  uint32 index = 3;
-}
-
-message TapOnNotificationByIndexCommand { uint32 index = 1; }
-
-message TapOnNotificationBySelectorCommand { Selector selector = 1; }
-
-message SwipeCommand {
-  float startX = 1;
-  float startY = 2;
-  float endX = 3;
-  float endY = 4;
-  uint32 steps = 5;
-}
-
-message HandlePermissionCommand {
-  Code code = 1;
-
-  enum Code {
-    WHILE_USING = 0;
-    ONLY_THIS_TIME = 1;
-    DENIED = 2;
-  }
-}
 
 message Selector {
   optional string text = 1;
@@ -198,15 +149,9 @@ message NativeWidget {
   repeated NativeWidget children = 9;
 }
 
-message NativeWidgetsQuery { Selector selector = 1; }
-
 // Represents a notification visible in the notification shade.
 message Notification {
   optional string appName = 1;
   string title = 2;
   string content = 3;
 }
-
-message NotificationsQueryResponse { repeated Notification notifications = 1; }
-
-message NativeWidgetsQueryResponse { repeated NativeWidget nativeWidgets = 1; }
