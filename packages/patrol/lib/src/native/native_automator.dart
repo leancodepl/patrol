@@ -34,8 +34,8 @@ class NativeAutomator {
   NativeAutomator.forTest({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
-    this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
+    String? packageName,
+    String? bundleId,
   })  : _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
@@ -45,7 +45,16 @@ class NativeAutomator {
           'PATROL_PORT',
           defaultValue: '8081',
         ) {
-    _logger('creating NativeAutomator, host: $host, port: $port');
+    this.packageName =
+        packageName ?? const String.fromEnvironment('PATROL_APP_PACKAGE_NAME');
+
+    this.bundleId =
+        bundleId ?? const String.fromEnvironment('PATROL_APP_BUNDLE_ID');
+
+    _logger(
+      'creating NativeAutomator, host: $host, port: $port, '
+      'packageName: $packageName, bundleId: $bundleId',
+    );
 
     PatrolBinding.ensureInitialized();
   }
@@ -62,10 +71,10 @@ class NativeAutomator {
   final Duration timeout;
 
   /// Unique identifier of the app under test on Android.
-  final String packageName;
+  late final String packageName;
 
   /// Unique identifier of the app under test on iOS.
-  final String bundleId;
+  late final String bundleId;
 
   final _client = http.Client();
 
