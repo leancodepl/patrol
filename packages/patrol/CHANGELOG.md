@@ -1,3 +1,7 @@
+## Unreleased
+
+- Implement enabling and disabling dark mode on iOS (#345)
+
 ## 0.6.4+1
 
 - Fix spelling of "cellular" (was "celluar") (#336)
