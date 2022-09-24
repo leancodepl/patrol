@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 
 SRC_DIR="."
 
@@ -11,10 +11,12 @@ swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
 protoc --dart_out="grpc:$dart_out" -I="$SRC_DIR" "$SRC_DIR/contracts.proto"
 
-protoc --java_out="$java_out" --kotlin_out="$kotlin_out" "$SRC_DIR/contracts.proto"
+protoc --java_out="$java_out" \
+	--kotlin_out="$kotlin_out" \
+  `#--grpc-kotlin_out="$kotlin_out"` \
+	"$SRC_DIR/contracts.proto"
 
-protoc \
-	--swift_out="$swift_out" \
+protoc --swift_out="$swift_out" \
 	--grpc-swift_out="$swift_out" \
 	--swift_opt=Visibility=Public \
 	"$SRC_DIR/contracts.proto"
