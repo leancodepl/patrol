@@ -247,10 +247,14 @@ class NativeAutomator {
   }
 
   /// Enables WiFi.
-  Future<void> enableWifi() => _client.enableWiFi(WiFiRequest());
+  Future<void> enableWifi({String? appId}) async {
+    await _client.enableWiFi(WiFiRequest(appId: appId ?? resolvedAppId));
+  }
 
   /// Disables WiFi.
-  Future<void> disableWifi() => _client.disableWiFi(WiFiRequest());
+  Future<void> disableWifi({String? appId}) async {
+    await _client.disableWiFi(WiFiRequest(appId: appId ?? resolvedAppId));
+  }
 
   /// Enables cellular (aka mobile data connection).
   Future<void> enableCellular() => _client.enableCellular(CellularRequest());

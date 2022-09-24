@@ -22,8 +22,6 @@ class PatrolAutomation {
     return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
   }()
   
-  
-  
   var ipAddress: String? {
     return device.wiFiIPAddress()
   }
@@ -100,6 +98,40 @@ class PatrolAutomation {
       } else {
         self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
         self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
+      }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
+  
+  func enableWiFi(_ bundleIdentifier: String) {
+    runAction("enabling wifi") {
+      self.springboard.activate()
+      self.preferences.terminate()
+      self.preferences.activate()  // reset to a known state
+      self.preferences.descendants(matching: .any)["Wi-Fi"].firstMatch.tap()
+      let value = self.preferences.switches.firstMatch.value! as! String
+      if value == "0" {
+        self.preferences.switches.firstMatch.tap()
+      }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
+  
+  func disableWiFi(_ bundleIdentifier: String) {
+    runAction("enabling wifi") {
+      self.springboard.activate()
+      self.preferences.terminate()
+      self.preferences.activate()  // reset to a known state
+      self.preferences.descendants(matching: .any)["Wi-Fi"].firstMatch.tap()
+      let value = self.preferences.switches.firstMatch.value! as! String
+      if value == "1" {
+        self.preferences.switches.firstMatch.tap()
       }
       
       self.springboard.activate()

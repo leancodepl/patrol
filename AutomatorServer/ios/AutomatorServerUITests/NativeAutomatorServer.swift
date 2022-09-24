@@ -45,11 +45,13 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   }
   
   func enableWiFi(request: Patrol_WiFiRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_WiFiResponse {
-    throw PatrolError.generic("enableWiFi() is not supported on iOS")
+    automation.enableWiFi(request.appID)
+    return Patrol_WiFiResponse()
   }
   
   func disableWiFi(request: Patrol_WiFiRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_WiFiResponse {
-    throw PatrolError.generic("disableWiFi() is not supported on iOS")
+    automation.disableWiFi(request.appID)
+    return Patrol_WiFiResponse()
   }
   
   func enableCellular(request: Patrol_CellularRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_CellularResponse {

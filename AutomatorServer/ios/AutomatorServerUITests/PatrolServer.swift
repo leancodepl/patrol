@@ -35,7 +35,7 @@ class PatrolServer {
     
     let provider = NativeAutomatorServer()
     
-    let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(host: "localhost", port: port).get()
+    let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(host: "0.0.0.0", port: port).get()
     
     logServerStarted()
 
