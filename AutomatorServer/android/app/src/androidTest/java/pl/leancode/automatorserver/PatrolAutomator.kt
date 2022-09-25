@@ -16,23 +16,6 @@ import pl.leancode.automatorserver.contracts.nativeWidget
 import pl.leancode.automatorserver.contracts.notification
 import kotlin.math.roundToInt
 
-/*@Serializable
-data class NativeWidget(
-    val className: String?,
-    val text: String?,
-    val contentDescription: String?,
-    val focused: Boolean?,
-    val enabled: Boolean?,
-    val childCount: Int?,
-    val resourceName: String?,
-    val applicationPackage: String?,
-    val children: List<NativeWidget>?
-) {
-    companion object {
-
-    }
-}*/
-
 private fun fromUiObject2(obj: UiObject2): Contracts.NativeWidget {
     return nativeWidget {
         className = obj.className
@@ -47,7 +30,8 @@ private fun fromUiObject2(obj: UiObject2): Contracts.NativeWidget {
     }
 }
 
-class PatrolAutomator {
+class PatrolAutomator private constructor() {
+
     fun configure() {
         val configurator = Configurator.getInstance()
         configurator.waitForSelectorTimeout = 5000
@@ -284,66 +268,63 @@ class PatrolAutomator {
         delay()
     }
 
-    fun tapOnNotification(selector: Contracts.Selector) {
+    fun tapOnNotification(selector: UiSelector) {
         Logger.d("tapOnNotification()")
 
         openNotifications()
 
-        val obj = uiDevice.findObject(selector.toUiSelector())
+        val obj = uiDevice.findObject(selector)
         obj.click()
 
         delay()
     }
 
-    fun handlePermission(code: Contracts.HandlePermissionCommand.Code) {
+    fun allowPermissionWhileUsingApp() {
         val sdk = Build.VERSION.SDK_INT
-
-        val resourceId: String = when (code) {
-            Contracts.HandlePermissionCommand.Code.WHILE_USING -> {
-                when {
-                    sdk <= Build.VERSION_CODES.P -> {
-                        "com.android.packageinstaller:id/permission_allow_button"
-                    }
-
-                    sdk == Build.VERSION_CODES.Q -> {
-                        "com.android.permissioncontroller:id/permission_allow_button"
-                    }
-
-                    else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
-                }
+        val resourceId = when {
+            sdk <= Build.VERSION_CODES.P -> {
+                "com.android.packageinstaller:id/permission_allow_button"
             }
 
-            Contracts.HandlePermissionCommand.Code.ONLY_THIS_TIME -> {
-                when {
-                    sdk <= Build.VERSION_CODES.P -> {
-                        "com.android.packageinstaller:id/permission_allow_button"
-                    }
-
-                    sdk == Build.VERSION_CODES.Q -> {
-                        "com.android.permissioncontroller:id/permission_allow_button"
-                    }
-
-                    else -> "com.android.permissioncontroller:id/permission_allow_one_time_button"
-                }
+            sdk == Build.VERSION_CODES.Q -> {
+                "com.android.permissioncontroller:id/permission_allow_button"
             }
 
-            Contracts.HandlePermissionCommand.Code.DENIED -> {
-                when {
-                    sdk <= Build.VERSION_CODES.P -> {
-                        "com.android.packageinstaller:id/permission_deny_button"
-                    }
-
-                    sdk == Build.VERSION_CODES.Q -> {
-                        "com.android.permissioncontroller:id/permission_deny_button"
-                    }
-
-                    else -> "com.android.permissioncontroller:id/permission_deny_button"
-                }
-            }
-
-            else -> throw PatrolException("Unknown code $code")
+            else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
         }
 
+        tap(UiSelector().resourceId(resourceId))
+    }
+
+    fun allowPermissionOnce() {
+        val sdk = Build.VERSION.SDK_INT
+        val resourceId = when {
+            sdk <= Build.VERSION_CODES.P -> {
+                "com.android.packageinstaller:id/permission_allow_button"
+            }
+
+            sdk == Build.VERSION_CODES.Q -> {
+                "com.android.permissioncontroller:id/permission_allow_button"
+            }
+
+            else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+        }
+        tap(UiSelector().resourceId(resourceId))
+    }
+
+    fun denyPermission() {
+        val sdk = Build.VERSION.SDK_INT
+        val resourceId = when {
+            sdk <= Build.VERSION_CODES.P -> {
+                "com.android.packageinstaller:id/permission_deny_button"
+            }
+
+            sdk == Build.VERSION_CODES.Q -> {
+                "com.android.permissioncontroller:id/permission_deny_button"
+            }
+
+            else -> "com.android.permissioncontroller:id/permission_deny_button"
+        }
         tap(UiSelector().resourceId(resourceId))
     }
 

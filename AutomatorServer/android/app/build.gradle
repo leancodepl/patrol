@@ -55,16 +55,14 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.5.1"
     implementation "com.google.android.material:material:1.6.1"
 
-    androidTestImplementation platform('org.http4k:http4k-bom:4.30.3.0')
-    androidTestImplementation "org.http4k:http4k-core"
-    androidTestImplementation "org.http4k:http4k-server-netty"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
     androidTestImplementation 'com.google.protobuf:protobuf-kotlin:3.21.6'
     androidTestImplementation "com.google.protobuf:protobuf-java-util:3.21.6"
+    androidTestImplementation "io.grpc:grpc-netty-shaded:1.49.1"
     androidTestImplementation "io.grpc:grpc-protobuf:1.49.1"
     androidTestImplementation "io.grpc:grpc-stub:1.49.1"
+    androidTestImplementation "io.grpc:grpc-kotlin-stub:1.3.0"
     androidTestImplementation 'javax.annotation:javax.annotation-api:1.3.2'
-
 
 
     androidTestImplementation "androidx.test.ext:junit:1.1.3"

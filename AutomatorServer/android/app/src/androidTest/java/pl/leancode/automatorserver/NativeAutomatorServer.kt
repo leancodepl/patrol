@@ -1,13 +1,13 @@
 package pl.leancode.automatorserver
 
 import pl.leancode.automatorserver.contracts.Contracts
-import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.FINDBY_NOT_SET
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
 import pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.DENIED
 import pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.ONLY_THIS_TIME
-import pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.UNRECOGNIZED
 import pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING
+import pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE
+import pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.FINE
 import pl.leancode.automatorserver.contracts.NativeAutomatorGrpcKt
 import pl.leancode.automatorserver.contracts.cellularResponse
 import pl.leancode.automatorserver.contracts.darkModeResponse
@@ -22,12 +22,14 @@ import pl.leancode.automatorserver.contracts.openQuickSettingsResponse
 import pl.leancode.automatorserver.contracts.pressBackResponse
 import pl.leancode.automatorserver.contracts.pressHomeResponse
 import pl.leancode.automatorserver.contracts.pressRecentAppsResponse
+import pl.leancode.automatorserver.contracts.setLocationAccuracyResponse
 import pl.leancode.automatorserver.contracts.swipeResponse
+import pl.leancode.automatorserver.contracts.tapOnNotificationResponse
 import pl.leancode.automatorserver.contracts.tapResponse
 import pl.leancode.automatorserver.contracts.wiFiResponse
 
 class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-    val automation = PatrolAutomator()
+    private val automation = PatrolAutomator.instance
 
     override suspend fun pressHome(request: Contracts.PressHomeRequest): Contracts.PressHomeResponse {
         automation.pressHome()
@@ -118,7 +120,7 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         when (request.findByCase) {
             INDEX -> automation.enterText(text = request.data, index = request.index)
             SELECTOR -> automation.enterText(text = request.data, selector = request.selector.toUiSelector())
-            else -> throw PatrolException("enterText(): neither index nor selector present")
+            else -> throw PatrolException("enterText(): neither index nor selector are set")
         }
 
         return enterTextResponse { }
@@ -137,12 +139,29 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
 
     override suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest): Contracts.HandlePermissionResponse {
         when (request.code) {
-            WHILE_USING -> automation.ha
-            ONLY_THIS_TIME -> TODO()
-            DENIED -> TODO()
-            else ->
+            WHILE_USING -> automation.allowPermissionWhileUsingApp()
+            ONLY_THIS_TIME -> automation.allowPermissionOnce()
+            DENIED -> automation.denyPermission()
+            else -> throw PatrolException("handlePermissionDialog(): bad permission code")
         }
-
         return handlePermissionResponse {}
+    }
+
+    override suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest): Contracts.SetLocationAccuracyResponse {
+        when (request.locationAccuracy) {
+            COARSE -> automation.selectCoarseLocation()
+            FINE -> automation.selectFineLocation()
+            else -> throw PatrolException("setLocationAccuracy(): bad location accuracy")
+        }
+        return setLocationAccuracyResponse { }
+    }
+
+    override suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest): Contracts.TapOnNotificationResponse {
+        when (request.findByCase) {
+            Contracts.TapOnNotificationRequest.FindByCase.INDEX -> automation.tapOnNotification(request.index)
+            Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(request.selector.toUiSelector())
+            else -> throw PatrolException("tapOnNotification(): neither index nor selector are set")
+        }
+        return tapOnNotificationResponse { }
     }
 }

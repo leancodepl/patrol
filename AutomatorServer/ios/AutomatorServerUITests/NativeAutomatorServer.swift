@@ -87,7 +87,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     case .selector(let selector):
       automation.enterText(request.data, by: selector.text, inApp: request.appID)
     default:
-      throw PatrolError.generic("enterText(): neither index nor selector present")
+      throw PatrolError.generic("enterText(): neither index nor selector are set")
     }
     
     return Patrol_EnterTextResponse()
@@ -106,7 +106,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     case .denied:
       automation.denyPermission()
     case .UNRECOGNIZED:
-      throw PatrolError.generic("unrecognized permission code")
+      throw PatrolError.generic("handlePermissionDialog(): bad permission code")
     }
 
     return Patrol_HandlePermissionResponse()
