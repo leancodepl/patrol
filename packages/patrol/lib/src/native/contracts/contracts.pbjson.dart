@@ -263,16 +263,16 @@ final $typed_data.Uint8List enterTextResponseDescriptor = $convert.base64Decode(
 const SwipeRequest$json = const {
   '1': 'SwipeRequest',
   '2': const [
-    const {'1': 'startX', '3': 1, '4': 1, '5': 13, '10': 'startX'},
-    const {'1': 'startY', '3': 2, '4': 1, '5': 13, '10': 'startY'},
-    const {'1': 'endX', '3': 3, '4': 1, '5': 13, '10': 'endX'},
-    const {'1': 'endY', '3': 4, '4': 1, '5': 13, '10': 'endY'},
+    const {'1': 'startX', '3': 1, '4': 1, '5': 2, '10': 'startX'},
+    const {'1': 'startY', '3': 2, '4': 1, '5': 2, '10': 'startY'},
+    const {'1': 'endX', '3': 3, '4': 1, '5': 2, '10': 'endX'},
+    const {'1': 'endY', '3': 4, '4': 1, '5': 2, '10': 'endY'},
     const {'1': 'steps', '3': 5, '4': 1, '5': 13, '10': 'steps'},
   ],
 };
 
 /// Descriptor for `SwipeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List swipeRequestDescriptor = $convert.base64Decode('CgxTd2lwZVJlcXVlc3QSFgoGc3RhcnRYGAEgASgNUgZzdGFydFgSFgoGc3RhcnRZGAIgASgNUgZzdGFydFkSEgoEZW5kWBgDIAEoDVIEZW5kWBISCgRlbmRZGAQgASgNUgRlbmRZEhQKBXN0ZXBzGAUgASgNUgVzdGVwcw==');
+final $typed_data.Uint8List swipeRequestDescriptor = $convert.base64Decode('CgxTd2lwZVJlcXVlc3QSFgoGc3RhcnRYGAEgASgCUgZzdGFydFgSFgoGc3RhcnRZGAIgASgCUgZzdGFydFkSEgoEZW5kWBgDIAEoAlIEZW5kWBISCgRlbmRZGAQgASgCUgRlbmRZEhQKBXN0ZXBzGAUgASgNUgVzdGVwcw==');
 @$core.Deprecated('Use swipeResponseDescriptor instead')
 const SwipeResponse$json = const {
   '1': 'SwipeResponse',

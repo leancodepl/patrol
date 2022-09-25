@@ -11,12 +11,12 @@ import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
-import kotlinx.serialization.Serializable
 import pl.leancode.automatorserver.contracts.Contracts
+import pl.leancode.automatorserver.contracts.nativeWidget
 import pl.leancode.automatorserver.contracts.notification
 import kotlin.math.roundToInt
 
-@Serializable
+/*@Serializable
 data class NativeWidget(
     val className: String?,
     val text: String?,
@@ -29,19 +29,21 @@ data class NativeWidget(
     val children: List<NativeWidget>?
 ) {
     companion object {
-        fun fromUiObject2(obj: UiObject2): NativeWidget {
-            return NativeWidget(
-                className = obj.className,
-                text = obj.text,
-                contentDescription = obj.contentDescription,
-                focused = obj.isFocused,
-                enabled = obj.isEnabled,
-                childCount = obj.childCount,
-                resourceName = obj.resourceName,
-                applicationPackage = obj.applicationPackage,
-                children = obj.children?.map { fromUiObject2(it) }
-            )
-        }
+
+    }
+}*/
+
+private fun fromUiObject2(obj: UiObject2): Contracts.NativeWidget {
+    return nativeWidget {
+        className = obj.className
+        text = obj.text
+        contentDescription = obj.contentDescription
+        focused = obj.isFocused
+        enabled = obj.isEnabled
+        childCount = obj.childCount
+        resourceName = obj.resourceName
+        applicationPackage = obj.applicationPackage
+        children.addAll(obj.children?.map { fromUiObject2(it) } ?: listOf())
     }
 }
 
@@ -128,11 +130,11 @@ class PatrolAutomator {
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
-    fun getNativeWidgets(selector: BySelector): List<NativeWidget> {
+    fun getNativeWidgets(selector: BySelector): List<Contracts.NativeWidget> {
         Logger.d("getNativeWidgets()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { NativeWidget.fromUiObject2(it) }
+        return uiObjects2.map { fromUiObject2(it) }
     }
 
     fun tap(selector: UiSelector) {
@@ -174,11 +176,8 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(text: String, query: Contracts.Selector) {
-        Logger.d("enterText(text: $text, query: $query")
-
-        val selector = query.toUiSelector()
-        Logger.d("entering text \"$text\" to $selector")
+    fun enterText(text: String, selector: UiSelector) {
+        Logger.d("enterText(text: $text, selector: $selector)")
 
         val uiObject = uiDevice.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.click()
@@ -187,23 +186,31 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun swipe(swipe: Contracts.SwipeCommand) {
+    fun swipe(startX: Float, startY: Float, endX: Float, endY: Float, steps: Int) {
         Logger.d("swipe()")
 
-        if (swipe.startX !in 0f..1f) {
+        if (startX !in 0f..1f) {
             throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")
         }
 
-        if (swipe.startY !in 0f..1f) {
+        if (startY !in 0f..1f) {
             throw IllegalArgumentException("startY represents a percentage and must be between 0 and 1")
         }
 
-        val startX = (uiDevice.displayWidth * swipe.startX).roundToInt()
-        val startY = (uiDevice.displayHeight * swipe.startY).roundToInt()
-        val endX = (uiDevice.displayWidth * swipe.endX).roundToInt()
-        val endY = (uiDevice.displayHeight * swipe.endY).roundToInt()
+        if (endX !in 0f..1f) {
+            throw IllegalArgumentException("endX represents a percentage and must be between 0 and 1")
+        }
 
-        val successful = uiDevice.swipe(startX, startY, endX, endY, swipe.steps)
+        if (endY !in 0f..1f) {
+            throw IllegalArgumentException("endY represents a percentage and must be between 0 and 1")
+        }
+
+        val sX = (uiDevice.displayWidth * startX).roundToInt()
+        val sY = (uiDevice.displayHeight * startY).roundToInt()
+        val eX = (uiDevice.displayWidth * endX).roundToInt()
+        val eY = (uiDevice.displayHeight * endY).roundToInt()
+
+        val successful = uiDevice.swipe(sX, sY, eX, eY, steps)
         if (!successful) {
             throw IllegalArgumentException("Swipe failed")
         }

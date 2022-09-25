@@ -23,9 +23,9 @@ object SwipeRequestKt {
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.SwipeRequest = _builder.build()
 
     /**
-     * <code>uint32 startX = 1;</code>
+     * <code>float startX = 1;</code>
      */
-    var startX: kotlin.Int
+    var startX: kotlin.Float
       @JvmName("getStartX")
       get() = _builder.getStartX()
       @JvmName("setStartX")
@@ -33,16 +33,16 @@ object SwipeRequestKt {
         _builder.setStartX(value)
       }
     /**
-     * <code>uint32 startX = 1;</code>
+     * <code>float startX = 1;</code>
      */
     fun clearStartX() {
       _builder.clearStartX()
     }
 
     /**
-     * <code>uint32 startY = 2;</code>
+     * <code>float startY = 2;</code>
      */
-    var startY: kotlin.Int
+    var startY: kotlin.Float
       @JvmName("getStartY")
       get() = _builder.getStartY()
       @JvmName("setStartY")
@@ -50,16 +50,16 @@ object SwipeRequestKt {
         _builder.setStartY(value)
       }
     /**
-     * <code>uint32 startY = 2;</code>
+     * <code>float startY = 2;</code>
      */
     fun clearStartY() {
       _builder.clearStartY()
     }
 
     /**
-     * <code>uint32 endX = 3;</code>
+     * <code>float endX = 3;</code>
      */
-    var endX: kotlin.Int
+    var endX: kotlin.Float
       @JvmName("getEndX")
       get() = _builder.getEndX()
       @JvmName("setEndX")
@@ -67,16 +67,16 @@ object SwipeRequestKt {
         _builder.setEndX(value)
       }
     /**
-     * <code>uint32 endX = 3;</code>
+     * <code>float endX = 3;</code>
      */
     fun clearEndX() {
       _builder.clearEndX()
     }
 
     /**
-     * <code>uint32 endY = 4;</code>
+     * <code>float endY = 4;</code>
      */
-    var endY: kotlin.Int
+    var endY: kotlin.Float
       @JvmName("getEndY")
       get() = _builder.getEndY()
       @JvmName("setEndY")
@@ -84,7 +84,7 @@ object SwipeRequestKt {
         _builder.setEndY(value)
       }
     /**
-     * <code>uint32 endY = 4;</code>
+     * <code>float endY = 4;</code>
      */
     fun clearEndY() {
       _builder.clearEndY()

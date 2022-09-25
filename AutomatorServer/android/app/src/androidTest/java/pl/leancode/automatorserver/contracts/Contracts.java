@@ -15635,28 +15635,28 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>uint32 startX = 1;</code>
+     * <code>float startX = 1;</code>
      * @return The startX.
      */
-    int getStartX();
+    float getStartX();
 
     /**
-     * <code>uint32 startY = 2;</code>
+     * <code>float startY = 2;</code>
      * @return The startY.
      */
-    int getStartY();
+    float getStartY();
 
     /**
-     * <code>uint32 endX = 3;</code>
+     * <code>float endX = 3;</code>
      * @return The endX.
      */
-    int getEndX();
+    float getEndX();
 
     /**
-     * <code>uint32 endY = 4;</code>
+     * <code>float endY = 4;</code>
      * @return The endY.
      */
-    int getEndY();
+    float getEndY();
 
     /**
      * <code>uint32 steps = 5;</code>
@@ -15709,24 +15709,24 @@ public final class Contracts {
             case 0:
               done = true;
               break;
-            case 8: {
+            case 13: {
 
-              startX_ = input.readUInt32();
+              startX_ = input.readFloat();
               break;
             }
-            case 16: {
+            case 21: {
 
-              startY_ = input.readUInt32();
+              startY_ = input.readFloat();
               break;
             }
-            case 24: {
+            case 29: {
 
-              endX_ = input.readUInt32();
+              endX_ = input.readFloat();
               break;
             }
-            case 32: {
+            case 37: {
 
-              endY_ = input.readUInt32();
+              endY_ = input.readFloat();
               break;
             }
             case 40: {
@@ -15769,46 +15769,46 @@ public final class Contracts {
     }
 
     public static final int STARTX_FIELD_NUMBER = 1;
-    private int startX_;
+    private float startX_;
     /**
-     * <code>uint32 startX = 1;</code>
+     * <code>float startX = 1;</code>
      * @return The startX.
      */
     @java.lang.Override
-    public int getStartX() {
+    public float getStartX() {
       return startX_;
     }
 
     public static final int STARTY_FIELD_NUMBER = 2;
-    private int startY_;
+    private float startY_;
     /**
-     * <code>uint32 startY = 2;</code>
+     * <code>float startY = 2;</code>
      * @return The startY.
      */
     @java.lang.Override
-    public int getStartY() {
+    public float getStartY() {
       return startY_;
     }
 
     public static final int ENDX_FIELD_NUMBER = 3;
-    private int endX_;
+    private float endX_;
     /**
-     * <code>uint32 endX = 3;</code>
+     * <code>float endX = 3;</code>
      * @return The endX.
      */
     @java.lang.Override
-    public int getEndX() {
+    public float getEndX() {
       return endX_;
     }
 
     public static final int ENDY_FIELD_NUMBER = 4;
-    private int endY_;
+    private float endY_;
     /**
-     * <code>uint32 endY = 4;</code>
+     * <code>float endY = 4;</code>
      * @return The endY.
      */
     @java.lang.Override
-    public int getEndY() {
+    public float getEndY() {
       return endY_;
     }
 
@@ -15837,17 +15837,17 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (startX_ != 0) {
-        output.writeUInt32(1, startX_);
+      if (java.lang.Float.floatToRawIntBits(startX_) != 0) {
+        output.writeFloat(1, startX_);
       }
-      if (startY_ != 0) {
-        output.writeUInt32(2, startY_);
+      if (java.lang.Float.floatToRawIntBits(startY_) != 0) {
+        output.writeFloat(2, startY_);
       }
-      if (endX_ != 0) {
-        output.writeUInt32(3, endX_);
+      if (java.lang.Float.floatToRawIntBits(endX_) != 0) {
+        output.writeFloat(3, endX_);
       }
-      if (endY_ != 0) {
-        output.writeUInt32(4, endY_);
+      if (java.lang.Float.floatToRawIntBits(endY_) != 0) {
+        output.writeFloat(4, endY_);
       }
       if (steps_ != 0) {
         output.writeUInt32(5, steps_);
@@ -15861,21 +15861,21 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (startX_ != 0) {
+      if (java.lang.Float.floatToRawIntBits(startX_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, startX_);
+          .computeFloatSize(1, startX_);
       }
-      if (startY_ != 0) {
+      if (java.lang.Float.floatToRawIntBits(startY_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(2, startY_);
+          .computeFloatSize(2, startY_);
       }
-      if (endX_ != 0) {
+      if (java.lang.Float.floatToRawIntBits(endX_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(3, endX_);
+          .computeFloatSize(3, endX_);
       }
-      if (endY_ != 0) {
+      if (java.lang.Float.floatToRawIntBits(endY_) != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(4, endY_);
+          .computeFloatSize(4, endY_);
       }
       if (steps_ != 0) {
         size += com.google.protobuf.CodedOutputStream
@@ -15896,14 +15896,18 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.SwipeRequest other = (pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) obj;
 
-      if (getStartX()
-          != other.getStartX()) return false;
-      if (getStartY()
-          != other.getStartY()) return false;
-      if (getEndX()
-          != other.getEndX()) return false;
-      if (getEndY()
-          != other.getEndY()) return false;
+      if (java.lang.Float.floatToIntBits(getStartX())
+          != java.lang.Float.floatToIntBits(
+              other.getStartX())) return false;
+      if (java.lang.Float.floatToIntBits(getStartY())
+          != java.lang.Float.floatToIntBits(
+              other.getStartY())) return false;
+      if (java.lang.Float.floatToIntBits(getEndX())
+          != java.lang.Float.floatToIntBits(
+              other.getEndX())) return false;
+      if (java.lang.Float.floatToIntBits(getEndY())
+          != java.lang.Float.floatToIntBits(
+              other.getEndY())) return false;
       if (getSteps()
           != other.getSteps()) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
@@ -15918,13 +15922,17 @@ public final class Contracts {
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + STARTX_FIELD_NUMBER;
-      hash = (53 * hash) + getStartX();
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getStartX());
       hash = (37 * hash) + STARTY_FIELD_NUMBER;
-      hash = (53 * hash) + getStartY();
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getStartY());
       hash = (37 * hash) + ENDX_FIELD_NUMBER;
-      hash = (53 * hash) + getEndX();
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getEndX());
       hash = (37 * hash) + ENDY_FIELD_NUMBER;
-      hash = (53 * hash) + getEndY();
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getEndY());
       hash = (37 * hash) + STEPS_FIELD_NUMBER;
       hash = (53 * hash) + getSteps();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -16060,13 +16068,13 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        startX_ = 0;
+        startX_ = 0F;
 
-        startY_ = 0;
+        startY_ = 0F;
 
-        endX_ = 0;
+        endX_ = 0F;
 
-        endY_ = 0;
+        endY_ = 0F;
 
         steps_ = 0;
 
@@ -16149,16 +16157,16 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.getDefaultInstance()) return this;
-        if (other.getStartX() != 0) {
+        if (other.getStartX() != 0F) {
           setStartX(other.getStartX());
         }
-        if (other.getStartY() != 0) {
+        if (other.getStartY() != 0F) {
           setStartY(other.getStartY());
         }
-        if (other.getEndX() != 0) {
+        if (other.getEndX() != 0F) {
           setEndX(other.getEndX());
         }
-        if (other.getEndY() != 0) {
+        if (other.getEndY() != 0F) {
           setEndY(other.getEndY());
         }
         if (other.getSteps() != 0) {
@@ -16193,126 +16201,126 @@ public final class Contracts {
         return this;
       }
 
-      private int startX_ ;
+      private float startX_ ;
       /**
-       * <code>uint32 startX = 1;</code>
+       * <code>float startX = 1;</code>
        * @return The startX.
        */
       @java.lang.Override
-      public int getStartX() {
+      public float getStartX() {
         return startX_;
       }
       /**
-       * <code>uint32 startX = 1;</code>
+       * <code>float startX = 1;</code>
        * @param value The startX to set.
        * @return This builder for chaining.
        */
-      public Builder setStartX(int value) {
+      public Builder setStartX(float value) {
         
         startX_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 startX = 1;</code>
+       * <code>float startX = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearStartX() {
         
-        startX_ = 0;
+        startX_ = 0F;
         onChanged();
         return this;
       }
 
-      private int startY_ ;
+      private float startY_ ;
       /**
-       * <code>uint32 startY = 2;</code>
+       * <code>float startY = 2;</code>
        * @return The startY.
        */
       @java.lang.Override
-      public int getStartY() {
+      public float getStartY() {
         return startY_;
       }
       /**
-       * <code>uint32 startY = 2;</code>
+       * <code>float startY = 2;</code>
        * @param value The startY to set.
        * @return This builder for chaining.
        */
-      public Builder setStartY(int value) {
+      public Builder setStartY(float value) {
         
         startY_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 startY = 2;</code>
+       * <code>float startY = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearStartY() {
         
-        startY_ = 0;
+        startY_ = 0F;
         onChanged();
         return this;
       }
 
-      private int endX_ ;
+      private float endX_ ;
       /**
-       * <code>uint32 endX = 3;</code>
+       * <code>float endX = 3;</code>
        * @return The endX.
        */
       @java.lang.Override
-      public int getEndX() {
+      public float getEndX() {
         return endX_;
       }
       /**
-       * <code>uint32 endX = 3;</code>
+       * <code>float endX = 3;</code>
        * @param value The endX to set.
        * @return This builder for chaining.
        */
-      public Builder setEndX(int value) {
+      public Builder setEndX(float value) {
         
         endX_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 endX = 3;</code>
+       * <code>float endX = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearEndX() {
         
-        endX_ = 0;
+        endX_ = 0F;
         onChanged();
         return this;
       }
 
-      private int endY_ ;
+      private float endY_ ;
       /**
-       * <code>uint32 endY = 4;</code>
+       * <code>float endY = 4;</code>
        * @return The endY.
        */
       @java.lang.Override
-      public int getEndY() {
+      public float getEndY() {
         return endY_;
       }
       /**
-       * <code>uint32 endY = 4;</code>
+       * <code>float endY = 4;</code>
        * @param value The endY to set.
        * @return This builder for chaining.
        */
-      public Builder setEndY(int value) {
+      public Builder setEndY(float value) {
         
         endY_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 endY = 4;</code>
+       * <code>float endY = 4;</code>
        * @return This builder for chaining.
        */
       public Builder clearEndY() {
         
-        endY_ = 0;
+        endY_ = 0F;
         onChanged();
         return this;
       }
@@ -24187,8 +24195,8 @@ public final class Contracts {
       "est\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005inde" +
       "x\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol.Sel" +
       "ectorH\000B\010\n\006findBy\"\023\n\021EnterTextResponse\"Y" +
-      "\n\014SwipeRequest\022\016\n\006startX\030\001 \001(\r\022\016\n\006startY" +
-      "\030\002 \001(\r\022\014\n\004endX\030\003 \001(\r\022\014\n\004endY\030\004 \001(\r\022\r\n\005st" +
+      "\n\014SwipeRequest\022\016\n\006startX\030\001 \001(\002\022\016\n\006startY" +
+      "\030\002 \001(\002\022\014\n\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005st" +
       "eps\030\005 \001(\r\"\017\n\rSwipeResponse\"\206\001\n\027HandlePer" +
       "missionRequest\0222\n\004code\030\001 \001(\0162$.patrol.Ha" +
       "ndlePermissionRequest.Code\"7\n\004Code\022\017\n\013WH" +

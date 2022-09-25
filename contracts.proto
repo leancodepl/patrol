@@ -107,10 +107,10 @@ message EnterTextRequest {
 message EnterTextResponse {}
 
 message SwipeRequest {
-  uint32 startX = 1;
-  uint32 startY = 2;
-  uint32 endX = 3;
-  uint32 endY = 4;
+  float startX = 1;
+  float startY = 2;
+  float endX = 3;
+  float endY = 4;
   uint32 steps = 5;
 }
 message SwipeResponse {}

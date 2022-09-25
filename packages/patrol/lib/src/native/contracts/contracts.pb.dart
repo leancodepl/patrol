@@ -1161,20 +1161,20 @@ class EnterTextResponse extends $pb.GeneratedMessage {
 
 class SwipeRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'SwipeRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
-    ..a<$core.int>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'startX', $pb.PbFieldType.OU3, protoName: 'startX')
-    ..a<$core.int>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'startY', $pb.PbFieldType.OU3, protoName: 'startY')
-    ..a<$core.int>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endX', $pb.PbFieldType.OU3, protoName: 'endX')
-    ..a<$core.int>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endY', $pb.PbFieldType.OU3, protoName: 'endY')
+    ..a<$core.double>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'startX', $pb.PbFieldType.OF, protoName: 'startX')
+    ..a<$core.double>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'startY', $pb.PbFieldType.OF, protoName: 'startY')
+    ..a<$core.double>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endX', $pb.PbFieldType.OF, protoName: 'endX')
+    ..a<$core.double>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'endY', $pb.PbFieldType.OF, protoName: 'endY')
     ..a<$core.int>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'steps', $pb.PbFieldType.OU3)
     ..hasRequiredFields = false
   ;
 
   SwipeRequest._() : super();
   factory SwipeRequest({
-    $core.int? startX,
-    $core.int? startY,
-    $core.int? endX,
-    $core.int? endY,
+    $core.double? startX,
+    $core.double? startY,
+    $core.double? endX,
+    $core.double? endY,
     $core.int? steps,
   }) {
     final _result = create();
@@ -1217,36 +1217,36 @@ class SwipeRequest extends $pb.GeneratedMessage {
   static SwipeRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.int get startX => $_getIZ(0);
+  $core.double get startX => $_getN(0);
   @$pb.TagNumber(1)
-  set startX($core.int v) { $_setUnsignedInt32(0, v); }
+  set startX($core.double v) { $_setFloat(0, v); }
   @$pb.TagNumber(1)
   $core.bool hasStartX() => $_has(0);
   @$pb.TagNumber(1)
   void clearStartX() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.int get startY => $_getIZ(1);
+  $core.double get startY => $_getN(1);
   @$pb.TagNumber(2)
-  set startY($core.int v) { $_setUnsignedInt32(1, v); }
+  set startY($core.double v) { $_setFloat(1, v); }
   @$pb.TagNumber(2)
   $core.bool hasStartY() => $_has(1);
   @$pb.TagNumber(2)
   void clearStartY() => clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get endX => $_getIZ(2);
+  $core.double get endX => $_getN(2);
   @$pb.TagNumber(3)
-  set endX($core.int v) { $_setUnsignedInt32(2, v); }
+  set endX($core.double v) { $_setFloat(2, v); }
   @$pb.TagNumber(3)
   $core.bool hasEndX() => $_has(2);
   @$pb.TagNumber(3)
   void clearEndX() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.int get endY => $_getIZ(3);
+  $core.double get endY => $_getN(3);
   @$pb.TagNumber(4)
-  set endY($core.int v) { $_setUnsignedInt32(3, v); }
+  set endY($core.double v) { $_setFloat(3, v); }
   @$pb.TagNumber(4)
   $core.bool hasEndY() => $_has(3);
   @$pb.TagNumber(4)

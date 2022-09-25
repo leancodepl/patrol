@@ -449,13 +449,13 @@ public struct Patrol_SwipeRequest {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var startX: UInt32 = 0
+  public var startX: Float = 0
 
-  public var startY: UInt32 = 0
+  public var startY: Float = 0
 
-  public var endX: UInt32 = 0
+  public var endX: Float = 0
 
-  public var endY: UInt32 = 0
+  public var endY: Float = 0
 
   public var steps: UInt32 = 0
 
@@ -1648,10 +1648,10 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt32Field(value: &self.startX) }()
-      case 2: try { try decoder.decodeSingularUInt32Field(value: &self.startY) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self.endX) }()
-      case 4: try { try decoder.decodeSingularUInt32Field(value: &self.endY) }()
+      case 1: try { try decoder.decodeSingularFloatField(value: &self.startX) }()
+      case 2: try { try decoder.decodeSingularFloatField(value: &self.startY) }()
+      case 3: try { try decoder.decodeSingularFloatField(value: &self.endX) }()
+      case 4: try { try decoder.decodeSingularFloatField(value: &self.endY) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.steps) }()
       default: break
       }
@@ -1660,16 +1660,16 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if self.startX != 0 {
-      try visitor.visitSingularUInt32Field(value: self.startX, fieldNumber: 1)
+      try visitor.visitSingularFloatField(value: self.startX, fieldNumber: 1)
     }
     if self.startY != 0 {
-      try visitor.visitSingularUInt32Field(value: self.startY, fieldNumber: 2)
+      try visitor.visitSingularFloatField(value: self.startY, fieldNumber: 2)
     }
     if self.endX != 0 {
-      try visitor.visitSingularUInt32Field(value: self.endX, fieldNumber: 3)
+      try visitor.visitSingularFloatField(value: self.endX, fieldNumber: 3)
     }
     if self.endY != 0 {
-      try visitor.visitSingularUInt32Field(value: self.endY, fieldNumber: 4)
+      try visitor.visitSingularFloatField(value: self.endY, fieldNumber: 4)
     }
     if self.steps != 0 {
       try visitor.visitSingularUInt32Field(value: self.steps, fieldNumber: 5)

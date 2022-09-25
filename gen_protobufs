@@ -11,16 +11,16 @@ swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
 protoc --dart_out="grpc:$dart_out" -I="$SRC_DIR" "$SRC_DIR/contracts.proto"
 
-# java_plugin_path="$HOME/Downloads/protoc-gen-grpc-java"
-# kotlin_plugin_path="$HOME/Downloads/protoc-gen-grpc-kotlin"
+java_plugin_path="$HOME/Downloads/protoc-gen-grpc-java"
+kotlin_plugin_path="$HOME/Downloads/protoc-gen-grpc-kotlin.sh"
 
 protoc \
 	--java_out="$java_out" \
 	--kotlin_out="$kotlin_out" \
 	--grpc-java_out="$java_out" \
-    `#--grpc-kotlin_out="$kotlin_out"` \
-	`#--plugin=protoc-gen-grpc-java` \
-	`#--plugin=protoc-gen-grpc-kotlin` \
+    --grpckt_out="$kotlin_out" \
+	--plugin=protoc-gen-grpc-java="$java_plugin_path" \
+	--plugin=protoc-gen-grpckt="$kotlin_plugin_path" \
 	"$SRC_DIR/contracts.proto"
 
 protoc \
