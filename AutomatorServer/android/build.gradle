@@ -32,9 +32,9 @@ task clean(type: Delete) {
 }
 
 task install(type: Copy) {
-    def artifactPath = System.getenv('PATROL_CACHE')
+    def artifactPath = System.getenv("PATROL_CACHE")
     if (artifactPath == null) {
-        artifactPath = Paths.get(System.properties['user.home'], ".cache", "patrol")
+        artifactPath = Paths.get(System.properties["user.home"], ".cache", "patrol")
     }
 
     from("app/build/outputs/apk/debug") {

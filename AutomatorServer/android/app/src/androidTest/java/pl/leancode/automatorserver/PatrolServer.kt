@@ -2,7 +2,7 @@ package pl.leancode.automatorserver
 
 import androidx.test.platform.app.InstrumentationRegistry
 import io.grpc.Server
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
+import io.grpc.netty.NettyServerBuilder
 
 
 class PatrolServer {
