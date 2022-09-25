@@ -99,25 +99,17 @@ class NativeAutomator {
     throw StateError('unsupported platform');
   }
 
-/*   Future<http.Response> _wrapPost({
-    required String action,
-    Map<String, dynamic>? body = const <String, dynamic>{},
-  }) async {
-    if (body?.isNotEmpty ?? false) {
-      _logger('action $action executing with $body');
-    } else {
-      _logger('action $action executing');
+/*   Future<http.Response> _wrapPost({ required String action, Map<String,
+    dynamic>? body = const <String, dynamic>{}, }) async { if (body?.isNotEmpty
+    ?? false) { _logger('action $action executing with $body'); } else {
+    _logger('action $action executing');
     }
 
-    final response = await _client.post(
-      Uri.parse('$_baseUri/$action'),
-      body: jsonEncode(body),
-      headers: {'Content-Type': 'application/json'},
-    ).timeout(timeout);
+    final response = await _client.post( Uri.parse('$_baseUri/$action'), body:
+      jsonEncode(body), headers: {'Content-Type': 'application/json'},
+      ).timeout(timeout);
 
-    if (!response.successful) {
-      _handleErrorResponse(action, response);
-    } else {
+    if (!response.successful) { _handleErrorResponse(action, response); } else {
       _logger('action $action succeeded');
     }
 
@@ -157,11 +149,12 @@ class NativeAutomator {
   ///   which is used on iOS
   Future<void> pressHome() => _client.pressHome(PressHomeRequest());
 
-  /// Opens the app specified by [appId].
+  /// Opens the app specified by [appId]. If [appId] is null, then the app under
+  /// test is started (using [resolvedAppId]).
   ///
   /// On Android [appId] is the package name. On iOS [appId] is the bundle name.
-  Future<void> openApp({required String appId}) async {
-    await _client.openApp(OpenAppRequest(appId: appId));
+  Future<void> openApp({String? appId}) async {
+    await _client.openApp(OpenAppRequest(appId: appId ?? resolvedAppId));
   }
 
   /// Presses the recent apps button.
