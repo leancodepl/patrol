@@ -6,6 +6,7 @@ import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
 import pl.leancode.automatorserver.contracts.Contracts
 
 
@@ -194,7 +195,7 @@ class PatrolServer {
 
     init {
         port = arguments.getString(envPortKey)?.toInt() ?: 8081
-        server = ServerBuilder.forPort(port).addService(NativeAutomatorServer()).build()
+        server = NettyServerBuilder.forPort(port).addService(NativeAutomatorServer()).build()
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()
