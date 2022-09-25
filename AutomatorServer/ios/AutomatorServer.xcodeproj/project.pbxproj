@@ -7,14 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9816533B28DDF4AF00C2BB4C /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533A28DDF4AF00C2BB4C /* GRPC */; };
-		9816533D28DDF4AF00C2BB4C /* protoc-gen-grpc-swift in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533C28DDF4AF00C2BB4C /* protoc-gen-grpc-swift */; };
 		9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533E28DDF4BA00C2BB4C /* GRPC */; };
 		9816534128DDF59F00C2BB4C /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534028DDF59F00C2BB4C /* contracts.grpc.swift */; };
 		9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */; };
-		9816534528DE373000C2BB4C /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 9816534428DE373000C2BB4C /* Telegraph */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
-		98615FE228C89C11003EAF35 /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 98615FE128C89C11003EAF35 /* Telegraph */; };
 		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
@@ -68,7 +64,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9816534528DE373000C2BB4C /* Telegraph in Frameworks */,
 				9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */,
 				98DB0A5928DB67B000A042FA /* SwiftProtobuf in Frameworks */,
 			);
@@ -78,9 +73,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9816533B28DDF4AF00C2BB4C /* GRPC in Frameworks */,
-				98615FE228C89C11003EAF35 /* Telegraph in Frameworks */,
-				9816533D28DDF4AF00C2BB4C /* protoc-gen-grpc-swift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,7 +157,6 @@
 			packageProductDependencies = (
 				98DB0A5828DB67B000A042FA /* SwiftProtobuf */,
 				9816533E28DDF4BA00C2BB4C /* GRPC */,
-				9816534428DE373000C2BB4C /* Telegraph */,
 			);
 			productName = AutomatorServerUITests;
 			productReference = 98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */;
@@ -185,9 +176,6 @@
 			);
 			name = AutomatorServer;
 			packageProductDependencies = (
-				98615FE128C89C11003EAF35 /* Telegraph */,
-				9816533A28DDF4AF00C2BB4C /* GRPC */,
-				9816533C28DDF4AF00C2BB4C /* protoc-gen-grpc-swift */,
 			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
@@ -223,7 +211,6 @@
 			);
 			mainGroup = 98E9E574288FFC0900B62271;
 			packageReferences = (
-				98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */,
 				98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */,
 			);
@@ -576,14 +563,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Building42/Telegraph";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
-		};
 		98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-protobuf.git";
@@ -595,30 +574,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		9816533A28DDF4AF00C2BB4C /* GRPC */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */;
-			productName = GRPC;
-		};
-		9816533C28DDF4AF00C2BB4C /* protoc-gen-grpc-swift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */;
-			productName = "protoc-gen-grpc-swift";
-		};
 		9816533E28DDF4BA00C2BB4C /* GRPC */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */;
 			productName = GRPC;
-		};
-		9816534428DE373000C2BB4C /* Telegraph */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */;
-			productName = Telegraph;
-		};
-		98615FE128C89C11003EAF35 /* Telegraph */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 98615FE028C89C11003EAF35 /* XCRemoteSwiftPackageReference "Telegraph" */;
-			productName = Telegraph;
 		};
 		98DB0A5828DB67B000A042FA /* SwiftProtobuf */ = {
 			isa = XCSwiftPackageProductDependency;
