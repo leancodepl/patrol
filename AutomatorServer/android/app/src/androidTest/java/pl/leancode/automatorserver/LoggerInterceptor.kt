@@ -10,10 +10,6 @@ import io.grpc.Status
 
 class LoggerInterceptor : ServerInterceptor {
 
-    /**
-     * When closing a gRPC call, extract any error status information to top-level fields. Also
-     * log the cause of errors.
-     */
     private class ExceptionTranslatingServerCall<ReqT, RespT>(
         delegate: ServerCall<ReqT, RespT>
     ) : ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(delegate) {
