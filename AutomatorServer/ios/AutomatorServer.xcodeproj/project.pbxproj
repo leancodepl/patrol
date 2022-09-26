@@ -79,13 +79,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		982B5ED828C7949600CD4A88 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		98B3653A28903325008B5B8B /* AutomatorServerUITests */ = {
 			isa = PBXGroup;
 			children = (
@@ -110,7 +103,6 @@
 				98E9E57F288FFC0900B62271 /* AutomatorServer */,
 				98B3653A28903325008B5B8B /* AutomatorServerUITests */,
 				98E9E57E288FFC0900B62271 /* Products */,
-				982B5ED828C7949600CD4A88 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
