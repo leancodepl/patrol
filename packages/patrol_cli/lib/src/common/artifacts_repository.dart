@@ -175,9 +175,11 @@ class _Paths {
   ///
   /// [artifact] must be in the form of `$artifact-$version.$extension`, for
   /// example: `server-1.0.0.apk` or `ios-4.2.0.zip`.
-  Uri getUriForArtifact(String artifact) {
+  Uri getUriForArtifact(
+    String artifact,
+  ) {
     return Uri.parse(
-      'https://lncdmaestrostorage.blob.core.windows.net/artifacts/$artifact',
+      'https://github.com/leancodepl/patrol/releases/download/patrol_cli-v$version/$artifact',
     );
   }
 
