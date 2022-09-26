@@ -119,7 +119,9 @@ class NativeAutomator {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
   ///    which is used on Android.
-  Future<void> pressBack() => _client.pressBack(Empty());
+  Future<void> pressBack() async {
+    await _wrapRequest('pressBack', () => _client.pressBack(Empty()));
+  }
 
   /// Presses the home button.
   ///
@@ -129,14 +131,19 @@ class NativeAutomator {
   ///
   /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/home>,
   ///   which is used on iOS
-  Future<void> pressHome() => _client.pressHome(Empty());
+  Future<void> pressHome() async {
+    await _wrapRequest('pressHome', () => _client.pressHome(Empty()));
+  }
 
   /// Opens the app specified by [appId]. If [appId] is null, then the app under
   /// test is started (using [resolvedAppId]).
   ///
   /// On Android [appId] is the package name. On iOS [appId] is the bundle name.
   Future<void> openApp({String? appId}) async {
-    await _client.openApp(OpenAppRequest(appId: appId ?? resolvedAppId));
+    await _wrapRequest(
+      'openApp',
+      () => _client.openApp(OpenAppRequest(appId: appId ?? resolvedAppId)),
+    );
   }
 
   /// Presses the recent apps button.
@@ -145,12 +152,18 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>,
   ///    which is used on Android
   Future<void> pressRecentApps() async {
-    await _client.pressRecentApps(Empty());
+    await _wrapRequest(
+      'pressRecentApps',
+      () => _client.pressRecentApps(Empty()),
+    );
   }
 
   /// Double presses the recent apps button.
   Future<void> pressDoubleRecentApps() async {
-    await _client.doublePressRecentApps(Empty());
+    await _wrapRequest(
+      'pressDoubleRecentApps',
+      () => _client.doublePressRecentApps(Empty()),
+    );
   }
 
   /// Opens the notification shade.
@@ -159,7 +172,10 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
   Future<void> openNotifications() async {
-    await _client.openNotifications(Empty());
+    await _wrapRequest(
+      'openNotifications',
+      () => _client.openNotifications(Empty()),
+    );
   }
 
   /// Opens the quick settings shade.
@@ -168,15 +184,21 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#openquicksettings>,
   ///    which is used on Android
   Future<void> openQuickSettings() async {
-    await _client.openQuickSettings(OpenQuickSettingsRequest());
+    await _wrapRequest(
+      'openQuickSettings',
+      () => _client.openQuickSettings(OpenQuickSettingsRequest()),
+    );
   }
 
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade will be opened automatically.
   Future<Notification> getFirstNotification() async {
-    final response = await _client.getNotifications(
-      GetNotificationsRequest(),
+    final response = await _wrapRequest(
+      'getFirstNotification',
+      () => _client.getNotifications(
+        GetNotificationsRequest(),
+      ),
     );
 
     return response.notifications.first;
@@ -186,8 +208,11 @@ class NativeAutomator {
   ///
   /// Notification shade will be opened automatically.
   Future<List<Notification>> getNotifications() async {
-    final response = await _client.getNotifications(
-      GetNotificationsRequest(),
+    final response = await _wrapRequest(
+      'getNotifications',
+      () => _client.getNotifications(
+        GetNotificationsRequest(),
+      ),
     );
 
     return response.notifications;
@@ -197,47 +222,75 @@ class NativeAutomator {
   ///
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationByIndex(int index) async {
-    await _client.tapOnNotification(TapOnNotificationRequest(index: index));
+    await _wrapRequest(
+      'tapOnNotificationByIndex',
+      () => _client.tapOnNotification(TapOnNotificationRequest(index: index)),
+    );
   }
 
   /// Taps on the visible notification using [selector].
   ///
   /// Notification shade will be opened automatically.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
-    await _client.tapOnNotification(
-      TapOnNotificationRequest(selector: selector),
+    await _wrapRequest(
+      'tapOnNotificationBySelector',
+      () => _client.tapOnNotification(
+        TapOnNotificationRequest(selector: selector),
+      ),
     );
   }
 
   /// Enables dark mode.
   Future<void> enableDarkMode({String? appId}) async {
-    await _client.enableDarkMode(
-      DarkModeRequest(appId: appId ?? resolvedAppId),
+    await _wrapRequest(
+      'enableDarkMode',
+      () => _client.enableDarkMode(
+        DarkModeRequest(appId: appId ?? resolvedAppId),
+      ),
     );
   }
 
   /// Disables dark mode.
   Future<void> disableDarkMode({String? appId}) async {
-    await _client.disableDarkMode(
-      DarkModeRequest(appId: appId ?? resolvedAppId),
+    await _wrapRequest(
+      'disableDarkMode',
+      () => _client.disableDarkMode(
+        DarkModeRequest(appId: appId ?? resolvedAppId),
+      ),
     );
   }
 
-  /// Enables WiFi.
+  /// Enables Wi-Fi.
   Future<void> enableWifi({String? appId}) async {
-    await _client.enableWiFi(WiFiRequest(appId: appId ?? resolvedAppId));
+    await _wrapRequest(
+      'enableWifi',
+      () => _client.enableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+    );
   }
 
-  /// Disables WiFi.
+  /// Disables Wi-Fi.
   Future<void> disableWifi({String? appId}) async {
-    await _client.disableWiFi(WiFiRequest(appId: appId ?? resolvedAppId));
+    await _wrapRequest(
+      'disableWifi',
+      () => _client.disableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+    );
   }
 
   /// Enables cellular (aka mobile data connection).
-  Future<void> enableCellular() => _client.enableCellular(CellularRequest());
+  Future<void> enableCellular() async {
+    await _wrapRequest(
+      'enableCellular',
+      () => _client.enableCellular(CellularRequest()),
+    );
+  }
 
   /// Disables cellular (aka mobile data connection).
-  Future<void> disableCellular() => _client.disableCellular(CellularRequest());
+  Future<void> disableCellular() {
+    return _wrapRequest(
+      'disableCellular',
+      () => _client.disableCellular(CellularRequest()),
+    );
+  }
 
   /// Taps on the native widget specified by [selector].
   ///
@@ -257,10 +310,13 @@ class NativeAutomator {
   ///
   /// If the native widget is not found, an exception is thrown.
   Future<void> doubleTap(Selector selector, {String? appId}) async {
-    await _client.doubleTap(
-      TapRequest(
-        selector: selector,
-        appId: appId ?? resolvedAppId,
+    await _wrapRequest(
+      'doubleTap',
+      () => _client.doubleTap(
+        TapRequest(
+          selector: selector,
+          appId: appId ?? resolvedAppId,
+        ),
       ),
     );
   }
@@ -273,11 +329,14 @@ class NativeAutomator {
     required String text,
     String? appId,
   }) async {
-    await _client.enterText(
-      EnterTextRequest(
-        data: text,
-        selector: selector,
-        appId: appId ?? resolvedAppId,
+    await _wrapRequest(
+      'enterText',
+      () => _client.enterText(
+        EnterTextRequest(
+          data: text,
+          selector: selector,
+          appId: appId ?? resolvedAppId,
+        ),
       ),
     );
   }
@@ -288,11 +347,14 @@ class NativeAutomator {
     required int index,
     String? appId,
   }) async {
-    await _client.enterText(
-      EnterTextRequest(
-        data: text,
-        index: index,
-        appId: appId ?? resolvedAppId,
+    await _wrapRequest(
+      'enterTextByIndex',
+      () => _client.enterText(
+        EnterTextRequest(
+          data: text,
+          index: index,
+          appId: appId ?? resolvedAppId,
+        ),
       ),
     );
   }
@@ -300,8 +362,11 @@ class NativeAutomator {
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
-    final response = await _client.getNativeWidgets(
-      GetNativeWidgetsRequest(selector: selector),
+    final response = await _wrapRequest(
+      'getNativeWidgets',
+      () => _client.getNativeWidgets(
+        GetNativeWidgetsRequest(selector: selector),
+      ),
     );
 
     return response.nativeWidgets;
@@ -312,8 +377,11 @@ class NativeAutomator {
   ///
   /// Throws an exception if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
-    await _client.handlePermissionDialog(
-      HandlePermissionRequest(code: HandlePermissionRequest_Code.WHILE_USING),
+    await _wrapRequest(
+      'grantPermissionWhenInUse',
+      () => _client.handlePermissionDialog(
+        HandlePermissionRequest(code: HandlePermissionRequest_Code.WHILE_USING),
+      ),
     );
   }
 
@@ -325,9 +393,12 @@ class NativeAutomator {
   /// On iOS, this can only be used when granting the location permission.
   /// Otherwise it will crash.
   Future<void> grantPermissionOnlyThisTime() async {
-    await _client.handlePermissionDialog(
-      HandlePermissionRequest(
-        code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
+    await _wrapRequest(
+      'grantPermissionOnlyThisTime',
+      () => _client.handlePermissionDialog(
+        HandlePermissionRequest(
+          code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
+        ),
       ),
     );
   }
@@ -337,8 +408,11 @@ class NativeAutomator {
   ///
   /// Throws an exception if no permission request dialog is present.
   Future<void> denyPermission() async {
-    await _client.handlePermissionDialog(
-      HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
+    await _wrapRequest(
+      'denyPermission',
+      () => _client.handlePermissionDialog(
+        HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
+      ),
     );
   }
 
@@ -347,9 +421,12 @@ class NativeAutomator {
   ///
   /// Throws an exception if no permission request dialog is present.
   Future<void> selectCoarseLocation() async {
-    await _client.setLocationAccuracy(
-      SetLocationAccuracyRequest(
-        locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.COARSE,
+    await _wrapRequest(
+      'selectCoarseLocation',
+      () => _client.setLocationAccuracy(
+        SetLocationAccuracyRequest(
+          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.COARSE,
+        ),
       ),
     );
   }
@@ -359,9 +436,12 @@ class NativeAutomator {
   ///
   /// Throws an exception if no permission request dialog is present.
   Future<void> selectFineLocation() async {
-    await _client.setLocationAccuracy(
-      SetLocationAccuracyRequest(
-        locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
+    await _wrapRequest(
+      'selectFineLocation',
+      () => _client.setLocationAccuracy(
+        SetLocationAccuracyRequest(
+          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
+        ),
       ),
     );
   }
