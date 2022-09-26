@@ -1,86 +1,142 @@
 import GRPC
 
+typealias Empty = Patrol_Empty
+
 final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   private let automation = PatrolAutomation()
   
-  func pressHome(request: Patrol_PressHomeRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_PressHomeResponse {
+  func pressHome(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.pressHome()
-    return Patrol_PressHomeResponse()
+    return Empty()
   }
   
-  func pressBack(request: Patrol_PressBackRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_PressBackResponse {
+  func pressBack(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("pressBack() is not supported on iOS")
   }
   
-  func pressRecentApps(request: Patrol_PressRecentAppsRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_PressRecentAppsResponse {
+  func pressRecentApps(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.openAppSwitcher()
-    return Patrol_PressRecentAppsResponse()
+    return Empty()
   }
   
-  func doublePressRecentApps(request: Patrol_DoublePressRecentAppsRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_DoublePressRecentAppsResponse {
+  func doublePressRecentApps(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("doublePressRecentApps() is not supported on iOS")
   }
   
-  func openApp(request: Patrol_OpenAppRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_OpenAppResponse {
+  func openApp(
+    request: Patrol_OpenAppRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.openApp(request.appID)
-    return Patrol_OpenAppResponse()
+    return Empty()
   }
   
-  func openNotifications(request: Patrol_OpenNotificationsRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_OpenNotificationsResponse {
+  func openNotifications(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("openNotifications() is not supported on iOS")
   }
   
-  func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_OpenQuickSettingsResponse {
+  func openQuickSettings(
+    request: Patrol_OpenQuickSettingsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("openQuickSettings() is not supported on iOS")
   }
   
-  func enableDarkMode(request: Patrol_DarkModeRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_DarkModeResponse {
+  func enableDarkMode(
+    request: Patrol_DarkModeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.enableDarkMode(request.appID)
-    return Patrol_DarkModeResponse()
+    return Empty()
   }
   
-  func disableDarkMode(request: Patrol_DarkModeRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_DarkModeResponse {
+  func disableDarkMode(
+    request: Patrol_DarkModeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.disableDarkMode(request.appID)
-    return Patrol_DarkModeResponse()
+    return Empty()
   }
   
-  func enableWiFi(request: Patrol_WiFiRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_WiFiResponse {
+  func enableWiFi(
+    request: Patrol_WiFiRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.enableWiFi(request.appID)
-    return Patrol_WiFiResponse()
+    return Empty()
   }
   
-  func disableWiFi(request: Patrol_WiFiRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_WiFiResponse {
+  func disableWiFi(
+    request: Patrol_WiFiRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.disableWiFi(request.appID)
-    return Patrol_WiFiResponse()
+    return Empty()
   }
   
-  func enableCellular(request: Patrol_CellularRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_CellularResponse {
+  func enableCellular(
+    request: Patrol_CellularRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("enableCellular() is not supported on iOS")
   }
   
-  func disableCellular(request: Patrol_CellularRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_CellularResponse {
+  func disableCellular(
+    request: Patrol_CellularRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("disableCellular() is not supported on iOS")
   }
   
-  func getNativeWidgets(request: Patrol_GetNativeWidgetsRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_GetNativeWidgetsResponse {
+  func getNativeWidgets(
+    request: Patrol_GetNativeWidgetsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_GetNativeWidgetsResponse {
     throw PatrolError.generic("getNativeWidgets() is not supported on iOS")
   }
   
-  func getNotifications(request: Patrol_GetNotificationsRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_GetNotificationsResponse {
+  func getNotifications(
+    request: Patrol_GetNotificationsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_GetNotificationsResponse {
     throw PatrolError.generic("getNotifications() is not supported on iOS")
   }
   
-  func tap(request: Patrol_TapRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_TapResponse {
+  func tap(
+    request: Patrol_TapRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.tap(on: request.selector.text, inApp: request.appID)
-    return Patrol_TapResponse()
+    return Empty()
   }
   
-  func doubleTap(request: Patrol_TapRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_TapResponse {
+  func doubleTap(
+    request: Patrol_TapRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     automation.doubleTap(on: request.selector.text, inApp: request.appID)
-    return Patrol_TapResponse()
+    return Empty()
   }
   
-  func enterText(request: Patrol_EnterTextRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_EnterTextResponse {
+  func enterText(
+    request: Patrol_EnterTextRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     switch request.findBy {
     case .index(let index):
       automation.enterText(request.data, by: Int(index), inApp: request.appID)
@@ -90,14 +146,20 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.generic("enterText(): neither index nor selector are set")
     }
     
-    return Patrol_EnterTextResponse()
+    return Empty()
   }
   
-  func swipe(request: Patrol_SwipeRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_SwipeResponse {
+  func swipe(
+    request: Patrol_SwipeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("swipe() is not supported on iOS")
   }
   
-  func handlePermissionDialog(request: Patrol_HandlePermissionRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_HandlePermissionResponse {
+  func handlePermissionDialog(
+    request: Patrol_HandlePermissionRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     switch request.code {
     case .whileUsing:
       automation.allowPermissionWhileUsingApp()
@@ -109,10 +171,13 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.generic("handlePermissionDialog(): bad permission code")
     }
 
-    return Patrol_HandlePermissionResponse()
+    return Empty()
   }
   
-  func setLocationAccuracy(request: Patrol_SetLocationAccuracyRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_SetLocationAccuracyResponse {
+  func setLocationAccuracy(
+    request: Patrol_SetLocationAccuracyRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     switch request.locationAccuracy {
     case .coarse:
       automation.selectCoarseLocation()
@@ -122,10 +187,13 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.generic("unrecognized location accuracy")
     }
     
-    return Patrol_SetLocationAccuracyResponse()
+    return Empty()
   }
   
-  func tapOnNotification(request: Patrol_TapOnNotificationRequest, context: GRPC.GRPCAsyncServerCallContext) async throws -> Patrol_TapOnNotificationResponse {
+  func tapOnNotification(
+    request: Patrol_TapOnNotificationRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
     throw PatrolError.generic("tapOnNotification() is not supported on iOS")
   }
 }

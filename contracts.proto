@@ -6,62 +6,37 @@ option java_package = "pl.leancode.automatorserver.contracts";
 service NativeAutomator {
   // general
 
-  rpc pressHome(PressHomeRequest) returns (PressHomeResponse) {}
-  rpc pressBack(PressBackRequest) returns (PressBackResponse) {}
-  rpc pressRecentApps(PressRecentAppsRequest)
-      returns (PressRecentAppsResponse) {}
-  rpc doublePressRecentApps(DoublePressRecentAppsRequest)
-      returns (DoublePressRecentAppsResponse) {}
-  rpc openApp(OpenAppRequest) returns (OpenAppResponse) {}
-  rpc openNotifications(OpenNotificationsRequest)
-      returns (OpenNotificationsResponse) {}
-  rpc openQuickSettings(OpenQuickSettingsRequest)
-      returns (OpenQuickSettingsResponse) {}
+  rpc pressHome(Empty) returns (Empty) {}
+  rpc pressBack(Empty) returns (Empty) {}
+  rpc pressRecentApps(Empty) returns (Empty) {}
+  rpc doublePressRecentApps(Empty) returns (Empty) {}
+  rpc openApp(OpenAppRequest) returns (Empty) {}
+  rpc openNotifications(Empty) returns (Empty) {}
+  rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // services
 
-  rpc enableDarkMode(DarkModeRequest) returns (DarkModeResponse) {}
-  rpc disableDarkMode(DarkModeRequest) returns (DarkModeResponse) {}
-  rpc enableWiFi(WiFiRequest) returns (WiFiResponse) {}
-  rpc disableWiFi(WiFiRequest) returns (WiFiResponse) {}
-  rpc enableCellular(CellularRequest) returns (CellularResponse) {}
-  rpc disableCellular(CellularRequest) returns (CellularResponse) {}
+  rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc enableWiFi(WiFiRequest) returns (Empty) {}
+  rpc disableWiFi(WiFiRequest) returns (Empty) {}
+  rpc enableCellular(CellularRequest) returns (Empty) {}
+  rpc disableCellular(CellularRequest) returns (Empty) {}
 
   // UI interaction
 
-  rpc getNativeWidgets(GetNativeWidgetsRequest)
-      returns (GetNativeWidgetsResponse) {}
-  rpc getNotifications(GetNotificationsRequest)
-      returns (GetNotificationsResponse) {}
-  rpc tap(TapRequest) returns (TapResponse) {}
-  rpc doubleTap(TapRequest) returns (TapResponse) {}
-  rpc enterText(EnterTextRequest) returns (EnterTextResponse) {}
-  rpc swipe(SwipeRequest) returns (SwipeResponse) {}
-  rpc handlePermissionDialog(HandlePermissionRequest)
-      returns (HandlePermissionResponse) {}
-  rpc setLocationAccuracy(SetLocationAccuracyRequest)
-      returns (SetLocationAccuracyResponse) {}
-  rpc tapOnNotification(TapOnNotificationRequest)
-      returns (TapOnNotificationResponse) {}
+  rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
+  rpc getNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
+  rpc tap(TapRequest) returns (Empty) {}
+  rpc doubleTap(TapRequest) returns (Empty) {}
+  rpc enterText(EnterTextRequest) returns (Empty) {}
+  rpc swipe(SwipeRequest) returns (Empty) {}
+  rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
+  rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
+  rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
 }
 
-message PressHomeRequest {}
-message PressHomeResponse {}
-
-message PressBackRequest {}
-message PressBackResponse {}
-
-message PressRecentAppsRequest {}
-message PressRecentAppsResponse {}
-
-message DoublePressRecentAppsRequest {}
-message DoublePressRecentAppsResponse {}
-
 message OpenAppRequest { string appId = 1; }
-message OpenAppResponse {}
-
-message OpenNotificationsRequest {}
-message OpenNotificationsResponse {}
 
 message TapOnNotificationRequest {
   oneof findBy {
@@ -69,19 +44,21 @@ message TapOnNotificationRequest {
     Selector selector = 2;
   }
 }
-message TapOnNotificationResponse {}
+
+// We're defining our own Empty instead of using google.protobuf.Empty because
+// the Dart plugin can't easily generate it. 
+// 
+// See:
+//  * https://github.com/google/protobuf.dart/issues/170
+message Empty {}
 
 message OpenQuickSettingsRequest {}
-message OpenQuickSettingsResponse {}
 
 message DarkModeRequest { string appId = 1; }
-message DarkModeResponse {}
 
 message WiFiRequest { string appId = 1; }
-message WiFiResponse {}
 
 message CellularRequest { string appId = 1; }
-message CellularResponse {}
 
 message GetNativeWidgetsRequest { Selector selector = 1; }
 message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
@@ -93,7 +70,6 @@ message TapRequest {
   Selector Selector = 1;
   string appId = 2;
 }
-message TapResponse {}
 
 message EnterTextRequest {
   string data = 1;
@@ -104,7 +80,6 @@ message EnterTextRequest {
     Selector selector = 4;
   }
 }
-message EnterTextResponse {}
 
 message SwipeRequest {
   float startX = 1;
@@ -113,7 +88,6 @@ message SwipeRequest {
   float endY = 4;
   uint32 steps = 5;
 }
-message SwipeResponse {}
 
 message HandlePermissionRequest {
   Code code = 1;
@@ -124,7 +98,6 @@ message HandlePermissionRequest {
     DENIED = 2;
   }
 }
-message HandlePermissionResponse {}
 
 message SetLocationAccuracyRequest {
   LocationAccuracy locationAccuracy = 1;
@@ -134,7 +107,6 @@ message SetLocationAccuracyRequest {
     FINE = 1;
   }
 }
-message SetLocationAccuracyResponse {}
 
 message Selector {
   optional string text = 1;

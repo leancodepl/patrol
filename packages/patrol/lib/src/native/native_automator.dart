@@ -119,7 +119,7 @@ class NativeAutomator {
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
   ///    which is used on Android.
-  Future<void> pressBack() => _client.pressBack(PressBackRequest());
+  Future<void> pressBack() => _client.pressBack(Empty());
 
   /// Presses the home button.
   ///
@@ -129,7 +129,7 @@ class NativeAutomator {
   ///
   /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/home>,
   ///   which is used on iOS
-  Future<void> pressHome() => _client.pressHome(PressHomeRequest());
+  Future<void> pressHome() => _client.pressHome(Empty());
 
   /// Opens the app specified by [appId]. If [appId] is null, then the app under
   /// test is started (using [resolvedAppId]).
@@ -145,12 +145,12 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>,
   ///    which is used on Android
   Future<void> pressRecentApps() async {
-    await _client.pressRecentApps(PressRecentAppsRequest());
+    await _client.pressRecentApps(Empty());
   }
 
   /// Double presses the recent apps button.
   Future<void> pressDoubleRecentApps() async {
-    await _client.doublePressRecentApps(DoublePressRecentAppsRequest());
+    await _client.doublePressRecentApps(Empty());
   }
 
   /// Opens the notification shade.
@@ -159,7 +159,7 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
   Future<void> openNotifications() async {
-    await _client.openNotifications(OpenNotificationsRequest());
+    await _client.openNotifications(Empty());
   }
 
   /// Opens the quick settings shade.

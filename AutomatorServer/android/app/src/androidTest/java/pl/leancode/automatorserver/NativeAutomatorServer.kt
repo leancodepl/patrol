@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
@@ -9,91 +10,78 @@ import pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.C
 import pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE
 import pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.FINE
 import pl.leancode.automatorserver.contracts.NativeAutomatorGrpcKt
-import pl.leancode.automatorserver.contracts.cellularResponse
-import pl.leancode.automatorserver.contracts.darkModeResponse
-import pl.leancode.automatorserver.contracts.doublePressRecentAppsResponse
-import pl.leancode.automatorserver.contracts.enterTextResponse
+import pl.leancode.automatorserver.contracts.empty
 import pl.leancode.automatorserver.contracts.getNativeWidgetsResponse
 import pl.leancode.automatorserver.contracts.getNotificationsResponse
-import pl.leancode.automatorserver.contracts.handlePermissionResponse
-import pl.leancode.automatorserver.contracts.openAppResponse
-import pl.leancode.automatorserver.contracts.openNotificationsResponse
-import pl.leancode.automatorserver.contracts.openQuickSettingsResponse
-import pl.leancode.automatorserver.contracts.pressBackResponse
-import pl.leancode.automatorserver.contracts.pressHomeResponse
-import pl.leancode.automatorserver.contracts.pressRecentAppsResponse
-import pl.leancode.automatorserver.contracts.setLocationAccuracyResponse
-import pl.leancode.automatorserver.contracts.swipeResponse
-import pl.leancode.automatorserver.contracts.tapOnNotificationResponse
-import pl.leancode.automatorserver.contracts.tapResponse
-import pl.leancode.automatorserver.contracts.wiFiResponse
+
+typealias Empty = Contracts.Empty
 
 class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
     private val automation = PatrolAutomator.instance
 
-    override suspend fun pressHome(request: Contracts.PressHomeRequest): Contracts.PressHomeResponse {
+    override suspend fun pressHome(request: Empty): Empty {
         automation.pressHome()
-        return pressHomeResponse { }
+        return empty { }
     }
 
-    override suspend fun pressBack(request: Contracts.PressBackRequest): Contracts.PressBackResponse {
+    override suspend fun pressBack(request: Empty): Empty {
         automation.pressBack()
-        return pressBackResponse { }
+        return empty { }
     }
 
-    override suspend fun pressRecentApps(request: Contracts.PressRecentAppsRequest): Contracts.PressRecentAppsResponse {
+    override suspend fun pressRecentApps(request: Empty): Empty {
         automation.pressRecentApps()
-        return pressRecentAppsResponse {}
+        return empty { }
     }
 
-    override suspend fun doublePressRecentApps(request: Contracts.DoublePressRecentAppsRequest): Contracts.DoublePressRecentAppsResponse {
+    override suspend fun doublePressRecentApps(request: Empty): Empty {
         automation.pressDoubleRecentApps()
-        return doublePressRecentAppsResponse {}
+        return empty { }
     }
 
-    override suspend fun openApp(request: Contracts.OpenAppRequest): Contracts.OpenAppResponse {
+    override suspend fun openApp(request: Contracts.OpenAppRequest): Empty {
         automation.openApp(request.appId)
-        return openAppResponse { }
+        return empty { }
     }
 
-    override suspend fun openNotifications(request: Contracts.OpenNotificationsRequest): Contracts.OpenNotificationsResponse {
+    override suspend fun openNotifications(request: Empty): Empty {
         automation.openNotifications()
-        return openNotificationsResponse { }
+        return empty { }
     }
 
-    override suspend fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest): Contracts.OpenQuickSettingsResponse {
+    override suspend fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest): Empty {
         automation.openQuickSettings()
-        return openQuickSettingsResponse {}
+        return empty { }
     }
 
-    override suspend fun enableDarkMode(request: Contracts.DarkModeRequest): Contracts.DarkModeResponse {
+    override suspend fun enableDarkMode(request: Contracts.DarkModeRequest): Empty {
         automation.enableDarkMode()
-        return darkModeResponse { }
+        return empty { }
     }
 
-    override suspend fun disableDarkMode(request: Contracts.DarkModeRequest): Contracts.DarkModeResponse {
+    override suspend fun disableDarkMode(request: Contracts.DarkModeRequest): Empty {
         automation.disableDarkMode()
-        return darkModeResponse { }
+        return empty { }
     }
 
-    override suspend fun enableWiFi(request: Contracts.WiFiRequest): Contracts.WiFiResponse {
+    override suspend fun enableWiFi(request: Contracts.WiFiRequest): Empty {
         automation.enableWifi()
-        return wiFiResponse { }
+        return empty { }
     }
 
-    override suspend fun disableWiFi(request: Contracts.WiFiRequest): Contracts.WiFiResponse {
+    override suspend fun disableWiFi(request: Contracts.WiFiRequest): Empty {
         automation.disableWifi()
-        return wiFiResponse { }
+        return empty { }
     }
 
-    override suspend fun enableCellular(request: Contracts.CellularRequest): Contracts.CellularResponse {
+    override suspend fun enableCellular(request: Contracts.CellularRequest): Empty {
         automation.enableCellular()
-        return cellularResponse { }
+        return empty { }
     }
 
-    override suspend fun disableCellular(request: Contracts.CellularRequest): Contracts.CellularResponse {
+    override suspend fun disableCellular(request: Contracts.CellularRequest): Empty {
         automation.disableCellular()
-        return cellularResponse { }
+        return empty { }
     }
 
     override suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest): Contracts.GetNativeWidgetsResponse {
@@ -106,27 +94,27 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return getNotificationsResponse { notifications.addAll(notifs) }
     }
 
-    override suspend fun tap(request: Contracts.TapRequest): Contracts.TapResponse {
+    override suspend fun tap(request: Contracts.TapRequest): Empty {
         automation.tap(selector = request.selector.toUiSelector())
-        return tapResponse { }
+        return empty { }
     }
 
-    override suspend fun doubleTap(request: Contracts.TapRequest): Contracts.TapResponse {
+    override suspend fun doubleTap(request: Contracts.TapRequest): Empty {
         automation.doubleTap(selector = request.selector.toUiSelector())
-        return tapResponse {}
+        return empty { }
     }
 
-    override suspend fun enterText(request: Contracts.EnterTextRequest): Contracts.EnterTextResponse {
+    override suspend fun enterText(request: Contracts.EnterTextRequest): Empty {
         when (request.findByCase) {
             INDEX -> automation.enterText(text = request.data, index = request.index)
             SELECTOR -> automation.enterText(text = request.data, selector = request.selector.toUiSelector())
             else -> throw PatrolException("enterText(): neither index nor selector are set")
         }
 
-        return enterTextResponse { }
+        return empty { }
     }
 
-    override suspend fun swipe(request: Contracts.SwipeRequest): Contracts.SwipeResponse {
+    override suspend fun swipe(request: Contracts.SwipeRequest): Empty {
         automation.swipe(
             startX = request.startX,
             startY = request.startY,
@@ -134,34 +122,34 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
             endY = request.endY,
             steps = request.steps
         )
-        return swipeResponse { }
+        return empty { }
     }
 
-    override suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest): Contracts.HandlePermissionResponse {
+    override suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest): Empty {
         when (request.code) {
             WHILE_USING -> automation.allowPermissionWhileUsingApp()
             ONLY_THIS_TIME -> automation.allowPermissionOnce()
             DENIED -> automation.denyPermission()
             else -> throw PatrolException("handlePermissionDialog(): bad permission code")
         }
-        return handlePermissionResponse {}
+        return empty { }
     }
 
-    override suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest): Contracts.SetLocationAccuracyResponse {
+    override suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest): Empty {
         when (request.locationAccuracy) {
             COARSE -> automation.selectCoarseLocation()
             FINE -> automation.selectFineLocation()
             else -> throw PatrolException("setLocationAccuracy(): bad location accuracy")
         }
-        return setLocationAccuracyResponse { }
+        return empty { }
     }
 
-    override suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest): Contracts.TapOnNotificationResponse {
+    override suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest): Empty {
         when (request.findByCase) {
             Contracts.TapOnNotificationRequest.FindByCase.INDEX -> automation.tapOnNotification(request.index)
             Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(request.selector.toUiSelector())
             else -> throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
-        return tapOnNotificationResponse { }
+        return empty { }
     }
 }
