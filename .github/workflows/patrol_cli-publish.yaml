@@ -7,7 +7,7 @@ on:
 jobs:
   check_versions:
     name: Check if version is consistently defined
-    runs-on: ubuntu-latest
+    runs-on: macos-12
 
     steps:
       - name: Clone repository
@@ -28,6 +28,18 @@ jobs:
         with:
           # see https://github.com/actions/virtual-environments/issues/1717#issuecomment-702780142
           ref: ${{ github.ref }}
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - name: Install fastlane
+        working-directory: AutomatorServer/ios
+        run: |
+          gem install bundler
+          bundle install
 
       - name: Download mobile-tools
         uses: actions/checkout@v3
@@ -83,6 +95,13 @@ jobs:
           echo "ios zip directory: $IOS_ZIP_DIRECTORY"
           ./makearchive "$VERSION"
 
+      - name: Build iOS test runner artifact
+        working-directory: AutomatorServer/ios
+        run: |
+          bundle exec fastlane build
+          cp -r ./derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app .
+          mv AutomatorServerUITests-Runner.app AutomatorServerUITests-Runner-$VERSION.app
+
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -95,6 +114,7 @@ jobs:
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
             AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
+            AutomatorServer/ios/AutomatorServerUITests-Runner-$VERSION.app
 
   publish_cli:
     name: Publish on pub.dev
