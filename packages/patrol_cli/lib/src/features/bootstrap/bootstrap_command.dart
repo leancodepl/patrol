@@ -36,6 +36,7 @@ class BootstrapCommand extends Command<int> {
     await _createDefaultTestDriverFile();
     await _createDefaultIntegrationTestFile(templateName);
     await _createDefaultConfigFile();
+    _printTodos();
 
     return 0;
   }
@@ -167,4 +168,9 @@ Future<void> _createDefaultConfigFile() async {
   }
 
   progress.complete('Created default $relativeFilePath');
+}
+
+void _printTodos() {
+  log.info('Patrol – ready for action! 🐶');
+  log.info(message)
 }

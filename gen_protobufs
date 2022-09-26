@@ -31,7 +31,7 @@ protoc \
 	--java_out="$java_out" \
 	--kotlin_out="$kotlin_out" \
 	--grpc-java_out="$java_out" \
-    --grpckt_out="$kotlin_out" \
+	--grpckt_out="$kotlin_out" \
 	"$PROTO_PATH"
 
 protoc \
