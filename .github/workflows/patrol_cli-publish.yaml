@@ -29,6 +29,12 @@ jobs:
           # see https://github.com/actions/virtual-environments/issues/1717#issuecomment-702780142
           ref: ${{ github.ref }}
 
+      - name: Install Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: "11"
+
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
