@@ -7,6 +7,12 @@ plugins {
 
 apply plugin: "kotlinx-serialization"
 
+ktlint {
+    filter {
+        exclude("**/contracts/**")
+    }
+}
+
 
 android {
     compileSdkVersion 33

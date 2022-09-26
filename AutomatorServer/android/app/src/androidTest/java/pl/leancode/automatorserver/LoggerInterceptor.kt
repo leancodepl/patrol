@@ -48,7 +48,6 @@ class LoggerInterceptor : ServerInterceptor {
             return newStatus.withCause(cause)
         }
 
-
         override fun close(status: Status, trailers: Metadata) {
             if (status.isOk) {
                 return super.close(status, trailers)
