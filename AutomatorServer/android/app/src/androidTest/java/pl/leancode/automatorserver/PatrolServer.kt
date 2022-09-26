@@ -4,7 +4,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import io.grpc.Server
 import io.grpc.netty.NettyServerBuilder
 
-
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
     private val port: Int
@@ -12,7 +11,11 @@ class PatrolServer {
 
     init {
         port = arguments.getString(envPortKey)?.toInt() ?: 8081
-        server = NettyServerBuilder.forPort(port).addService(NativeAutomatorServer()).build()
+        server = NettyServerBuilder
+            .forPort(port)
+            .intercept(LoggerInterceptor())
+            .addService(NativeAutomatorServer())
+            .build()
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()

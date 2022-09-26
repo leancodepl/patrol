@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:grpc/grpc.dart';
-import 'package:http/http.dart' as http;
 import 'package:patrol/src/native/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
@@ -99,37 +97,21 @@ class NativeAutomator {
     throw StateError('unsupported platform');
   }
 
-/*   Future<http.Response> _wrapPost({ required String action, Map<String,
-    dynamic>? body = const <String, dynamic>{}, }) async { if (body?.isNotEmpty
-    ?? false) { _logger('action $action executing with $body'); } else {
-    _logger('action $action executing');
-    }
-
-    final response = await _client.post( Uri.parse('$_baseUri/$action'), body:
-      jsonEncode(body), headers: {'Content-Type': 'application/json'},
-      ).timeout(timeout);
-
-    if (!response.successful) { _handleErrorResponse(action, response); } else {
-      _logger('action $action succeeded');
-    }
-
-    return response;
-  } */
-
-  void _handleErrorResponse(String action, http.Response response) {
-    var message = 'no message';
+  Future<T> _wrapRequest<T>(String name, Future<T> Function() request) async {
+    _logger('$name() started');
     try {
-      final responseBody = jsonDecode(response.body) as Map<String, dynamic>?;
-      message = responseBody?['message'] as String? ?? 'no message';
-    } catch (_) {
-      // it's okay to do nothing
+      final result = await request();
+      _logger('$name() succeeded');
+      return result;
+    } on GrpcError catch (err) {
+      _logger('$name() failed');
+      final log = '$name() failed with code ${err.codeName} (${err.message})';
+
+      throw PatrolActionException(log);
+    } catch (err) {
+      _logger('$name() failed');
+      rethrow;
     }
-
-    final log = 'action $action failed with code ${response.statusCode} '
-        '($message)';
-    _logger(log);
-
-    throw PatrolActionException(message);
   }
 
   /// Presses the back button.
@@ -229,14 +211,16 @@ class NativeAutomator {
 
   /// Enables dark mode.
   Future<void> enableDarkMode({String? appId}) async {
-    await _client
-        .enableDarkMode(DarkModeRequest(appId: appId ?? resolvedAppId));
+    await _client.enableDarkMode(
+      DarkModeRequest(appId: appId ?? resolvedAppId),
+    );
   }
 
   /// Disables dark mode.
   Future<void> disableDarkMode({String? appId}) async {
-    await _client
-        .disableDarkMode(DarkModeRequest(appId: appId ?? resolvedAppId));
+    await _client.disableDarkMode(
+      DarkModeRequest(appId: appId ?? resolvedAppId),
+    );
   }
 
   /// Enables WiFi.
@@ -259,12 +243,14 @@ class NativeAutomator {
   ///
   /// If the native widget is not found, an exception is thrown.
   Future<void> tap(Selector selector, {String? appId}) async {
-    await _client.tap(
-      TapRequest(
-        selector: selector,
-        appId: appId ?? resolvedAppId,
-      ),
-    );
+    await _wrapRequest('tap', () async {
+      await _client.tap(
+        TapRequest(
+          selector: selector,
+          appId: appId ?? resolvedAppId,
+        ),
+      );
+    });
   }
 
   /// Double taps on the native widget specified by [selector].

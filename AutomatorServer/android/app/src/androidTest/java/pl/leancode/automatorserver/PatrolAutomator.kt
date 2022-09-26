@@ -122,7 +122,7 @@ class PatrolAutomator private constructor() {
     }
 
     fun tap(selector: UiSelector) {
-        Logger.d("tap() with selector $selector")
+        Logger.d("tap() selector $selector")
 
         val uiObject = uiDevice.findObject(selector)
 
@@ -132,7 +132,7 @@ class PatrolAutomator private constructor() {
     }
 
     fun doubleTap(selector: UiSelector) {
-        Logger.d("doubleTap() with selector $selector")
+        Logger.d("doubleTap() selector $selector")
 
         val uiObject = uiDevice.findObject(selector)
 
