@@ -80,6 +80,7 @@ jobs:
           echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
           echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
           echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
+          echo "IOS_SERVER_FILE="AutomatorServerUITests-Runner-$VERSION.app" >> $GITHUB_ENV
 
       - name: Build server APK
         working-directory: AutomatorServer/android
@@ -106,7 +107,9 @@ jobs:
         run: |
           bundle exec fastlane build
           cp -r ./derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app .
-          mv AutomatorServerUITests-Runner.app AutomatorServerUITests-Runner-$VERSION.app
+          mv AutomatorServerUITests-Runner.app $IOS_SERVER_FILE
+          pwd
+          ls -lah
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -120,7 +123,7 @@ jobs:
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
             AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
-            AutomatorServer/ios/AutomatorServerUITests-Runner-${{ env.VERSION }}.app
+            AutomatorServer/ios/${{ env.IOS_SERVER_FILE }}
 
   publish_cli:
     name: Publish on pub.dev
