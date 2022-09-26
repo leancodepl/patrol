@@ -1,3 +1,7 @@
+## 0.6.6
+
+- Release updated `AutomatorServer`s (#338)
+
 ## 0.6.5
 
 - Fix `--targets` argument to `patrol drive` (#330)

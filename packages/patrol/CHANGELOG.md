@@ -1,3 +1,10 @@
+## 0.6.6
+
+- Make `openApp()` open the app under test when no `appId` is passed (#338)
+- Implement `enableWifi()`, `disableWifi()`, and `openRecentApps()` on iOS
+  (#338)
+- Completely rewrite communication with native automation servers (#338)
+
 ## 0.6.5
 
 - Implement enabling and disabling dark mode on iOS (#345)
