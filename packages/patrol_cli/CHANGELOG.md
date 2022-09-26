@@ -1,3 +1,7 @@
+## 0.6.6+2
+
+- Build iOS test runner artifact in GitHub Actions (#362)
+
 ## 0.6.6+1
 
 - Download artifacts from GitHub Releases insted of LeanCode's Azure Storage
