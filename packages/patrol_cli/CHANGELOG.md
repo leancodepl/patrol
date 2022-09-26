@@ -1,3 +1,8 @@
+## 0.6.6+1
+
+- Download artifacts from GitHub Releases insted of LeanCode's Azure Storage
+  (#363)
+
 ## 0.6.6
 
 - Release updated `AutomatorServer`s (#338)
