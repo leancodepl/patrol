@@ -124,7 +124,7 @@ class PatrolAutomation {
   }
   
   func disableWiFi(_ bundleIdentifier: String) {
-    runAction("enabling wifi") {
+    runAction("disabling wifi") {
       self.springboard.activate()
       self.preferences.terminate()
       self.preferences.activate()  // reset to a known state
