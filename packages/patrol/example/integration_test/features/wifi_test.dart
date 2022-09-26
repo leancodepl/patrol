@@ -11,7 +11,7 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
-      await $.native.enableWifi();
+      await $.native.disableWifi();
       await $.native.enableWifi();
       await $.native.disableWifi();
       await $.native.enableWifi();
