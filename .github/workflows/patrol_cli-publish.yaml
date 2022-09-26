@@ -7,14 +7,11 @@ on:
 jobs:
   check_versions:
     name: Check if version is consistently defined
-    runs-on: macos-12
+    runs-on: ubuntu-latest
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: Install newest bash
-        run: brew install bash
 
       - name: Check if versions are defined consistently
         working-directory: packages/patrol_cli
@@ -22,7 +19,7 @@ jobs:
 
   upload_artifacts:
     name: Build artifacts and create release
-    runs-on: ubuntu-latest
+    runs-on: macos-12
     needs: check_versions
 
     steps:
