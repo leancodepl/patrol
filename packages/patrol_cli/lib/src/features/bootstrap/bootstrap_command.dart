@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/bootstrap/file_contents.dart';
 import 'package:patrol_cli/src/features/bootstrap/pubspec.dart' as pubspec;
@@ -99,31 +98,22 @@ Future<void> _addIntegrationTestToPubspec() async {
 }
 
 Future<void> _createDefaultTestDriverFile() async {
-  final relativeFilePath = path.join(driverDirName, driverFileName);
-
-  final progress = log.progress('Creating default $relativeFilePath');
+  final progress = log.progress('Creating default $driverFilePath');
 
   try {
-    final dir = Directory(driverDirName);
-    if (!dir.existsSync()) {
-      await dir.create();
-    }
-
-    final file = File(relativeFilePath);
+    final file = File(driverFilePath)..createSync(recursive: true);
     await file.writeAsString(driverFileContent);
   } catch (err, st) {
-    progress.fail('Failed to create default $relativeFilePath');
+    progress.fail('Failed to create default $driverFilePath');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default $relativeFilePath');
+  progress.complete('Created default $driverFilePath');
 }
 
 Future<void> _createDefaultIntegrationTestFile(String templateName) async {
-  final relativeFilePath = path.join(testDirName, testFileName);
-
-  final progress = log.progress('Creating default $relativeFilePath');
+  final progress = log.progress('Creating default $testFilePath');
 
   final projectName = pubspec.getName();
 
@@ -133,44 +123,34 @@ Future<void> _createDefaultIntegrationTestFile(String templateName) async {
   );
 
   try {
-    final dir = Directory(testDirName);
-    if (!dir.existsSync()) {
-      await dir.create();
-    }
-
-    final file = File(relativeFilePath);
+    final file = File(testFilePath)..createSync(recursive: true);
     await file.writeAsString(template.generateCode());
   } catch (err, st) {
-    progress.fail('Failed to create default $relativeFilePath');
+    progress.fail('Failed to create default $testFilePath');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default $relativeFilePath');
+  progress.complete('Created default $testFilePath');
 }
 
 Future<void> _createDefaultConfigFile() async {
-  final relativeFilePath = path.join(testDirName, configFileName);
-  final progress = log.progress('Creating default $relativeFilePath');
+  final progress = log.progress('Creating default $configFilePath');
 
   try {
-    final dir = Directory(testDirName);
-    if (!dir.existsSync()) {
-      await dir.create();
-    }
-
-    final file = File(relativeFilePath);
+    final file = File(configFilePath)..createSync(recursive: true);
     await file.writeAsString(configFileContent);
   } catch (err, st) {
-    progress.fail('Failed to create default $relativeFilePath');
+    progress.fail('Failed to create default $configFilePath');
     log.severe(null, err, st);
     return;
   }
 
-  progress.complete('Created default $relativeFilePath');
+  progress.complete('Created default $configFilePath');
 }
 
 void _printTodos() {
-  log.info('Patrol – ready for action! 🐶');
-  log.info(message)
+  log
+    ..info('🐶 Patrol – ready for action!')
+    ..info('Please update $configFilePath with values specific to your app.');
 }
