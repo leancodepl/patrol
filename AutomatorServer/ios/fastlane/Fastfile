@@ -10,7 +10,5 @@ platform :ios do
       build_for_testing: true,
       sdk: "iphonesimulator"
     )
-
-    derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app
   end
 end

@@ -1,0 +1,42 @@
+name: build ios artifacts
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  main:
+    name: Build iOS artifacts
+    runs-on: macos-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - name: Install fastlane
+        run: |
+          gem install bundler
+          cd AutomatorServer/ios && bundle install
+
+      - name: build artifacts for iOS
+        run: |
+          cd AutomatorServer/ios
+          bundle exec fastlane build
+          cp ./derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app .
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: TEST_IOS_ARTIFACTS
+          body: Bucket for ios artifacts
+          prerelease: true
+          fail_on_unmatched_files: true
+          # see https://github.com/softprops/action-gh-release/issues/158
+          files: |
+            AutomatorServer/ios/AutomatorServerUITests-Runner.app
