@@ -12,3 +12,4 @@ const driverFileName = 'integration_test.dart';
 
 const testDirName = 'integration_test';
 const testFileName = 'app_test.dart';
+const configFileName = 'config.dart';

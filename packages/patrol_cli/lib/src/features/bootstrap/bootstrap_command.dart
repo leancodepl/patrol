@@ -35,6 +35,7 @@ class BootstrapCommand extends Command<int> {
     await _addIntegrationTestToPubspec();
     await _createDefaultTestDriverFile();
     await _createDefaultIntegrationTestFile(templateName);
+    await _createDefaultConfigFile();
 
     return 0;
   }
@@ -138,6 +139,27 @@ Future<void> _createDefaultIntegrationTestFile(String templateName) async {
 
     final file = File(relativeFilePath);
     await file.writeAsString(template.generateCode());
+  } catch (err, st) {
+    progress.fail('Failed to create default $relativeFilePath');
+    log.severe(null, err, st);
+    return;
+  }
+
+  progress.complete('Created default $relativeFilePath');
+}
+
+Future<void> _createDefaultConfigFile() async {
+  final relativeFilePath = path.join(testDirName, configFileName);
+  final progress = log.progress('Creating default $relativeFilePath');
+
+  try {
+    final dir = Directory(testDirName);
+    if (!dir.existsSync()) {
+      await dir.create();
+    }
+
+    final file = File(relativeFilePath);
+    await file.writeAsString(configFileContent);
   } catch (err, st) {
     progress.fail('Failed to create default $relativeFilePath');
     log.severe(null, err, st);
