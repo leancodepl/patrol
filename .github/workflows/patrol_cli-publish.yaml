@@ -120,7 +120,7 @@ jobs:
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
             AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
-            AutomatorServer/ios/AutomatorServerUITests-Runner-$VERSION.app
+            AutomatorServer/ios/AutomatorServerUITests-Runner-${{ env.VERSION }}.app
 
   publish_cli:
     name: Publish on pub.dev
