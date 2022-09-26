@@ -1,0 +1,146 @@
+syntax = "proto3";
+package patrol;
+
+option java_package = "pl.leancode.automatorserver.contracts";
+
+service NativeAutomator {
+  // general
+
+  rpc pressHome(Empty) returns (Empty) {}
+  rpc pressBack(Empty) returns (Empty) {}
+  rpc pressRecentApps(Empty) returns (Empty) {}
+  rpc doublePressRecentApps(Empty) returns (Empty) {}
+  rpc openApp(OpenAppRequest) returns (Empty) {}
+  rpc openNotifications(Empty) returns (Empty) {}
+  rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
+
+  // services
+
+  rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc enableWiFi(WiFiRequest) returns (Empty) {}
+  rpc disableWiFi(WiFiRequest) returns (Empty) {}
+  rpc enableCellular(CellularRequest) returns (Empty) {}
+  rpc disableCellular(CellularRequest) returns (Empty) {}
+
+  // UI interaction
+
+  rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
+  rpc getNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
+  rpc tap(TapRequest) returns (Empty) {}
+  rpc doubleTap(TapRequest) returns (Empty) {}
+  rpc enterText(EnterTextRequest) returns (Empty) {}
+  rpc swipe(SwipeRequest) returns (Empty) {}
+  rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
+  rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
+  rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
+}
+
+message OpenAppRequest { string appId = 1; }
+
+message TapOnNotificationRequest {
+  oneof findBy {
+    uint32 index = 1;
+    Selector selector = 2;
+  }
+}
+
+// We're defining our own Empty instead of using google.protobuf.Empty because
+// the Dart plugin can't easily generate it. 
+// 
+// See:
+//  * https://github.com/google/protobuf.dart/issues/170
+message Empty {}
+
+message OpenQuickSettingsRequest {}
+
+message DarkModeRequest { string appId = 1; }
+
+message WiFiRequest { string appId = 1; }
+
+message CellularRequest { string appId = 1; }
+
+message GetNativeWidgetsRequest { Selector selector = 1; }
+message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
+
+message GetNotificationsRequest {}
+message GetNotificationsResponse { repeated Notification notifications = 1; }
+
+message TapRequest {
+  Selector Selector = 1;
+  string appId = 2;
+}
+
+message EnterTextRequest {
+  string data = 1;
+  string appId = 2;
+
+  oneof findBy {
+    uint32 index = 3;
+    Selector selector = 4;
+  }
+}
+
+message SwipeRequest {
+  float startX = 1;
+  float startY = 2;
+  float endX = 3;
+  float endY = 4;
+  uint32 steps = 5;
+}
+
+message HandlePermissionRequest {
+  Code code = 1;
+
+  enum Code {
+    WHILE_USING = 0;
+    ONLY_THIS_TIME = 1;
+    DENIED = 2;
+  }
+}
+
+message SetLocationAccuracyRequest {
+  LocationAccuracy locationAccuracy = 1;
+
+  enum LocationAccuracy {
+    COARSE = 0;
+    FINE = 1;
+  }
+}
+
+message Selector {
+  optional string text = 1;
+  optional string textStartsWith = 2;
+  optional string textContains = 3;
+  optional string className = 4;
+  optional string contentDescription = 5;
+  optional string contentDescriptionStartsWith = 6;
+  optional string contentDescriptionContains = 7;
+  optional string resourceId = 8;
+  optional uint32 instance = 9;
+  optional bool enabled = 10;
+  optional bool focused = 11;
+  optional string pkg = 12;
+}
+
+// Represents a native UI control.
+//
+// On Android, this is `android.view.View`.
+message NativeWidget {
+  string className = 1;
+  string text = 2;
+  string contentDescription = 3;
+  bool focused = 4;
+  bool enabled = 5;
+  int32 childCount = 6;
+  string resourceName = 7;
+  string applicationPackage = 8;
+  repeated NativeWidget children = 9;
+}
+
+// Represents a notification visible in the notification shade.
+message Notification {
+  optional string appName = 1;
+  string title = 2;
+  string content = 3;
+}

@@ -2,7 +2,7 @@ import java.nio.file.Paths
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = "1.7.0"
+    ext.kotlin_version = "1.7.10"
 
     repositories {
         google()
@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath "com.android.tools.build:gradle:7.2.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
 
@@ -26,14 +26,15 @@ allprojects {
     }
 }
 
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
 task install(type: Copy) {
-    def artifactPath = System.getenv('PATROL_CACHE')
+    def artifactPath = System.getenv("PATROL_CACHE")
     if (artifactPath == null) {
-        artifactPath = Paths.get(System.properties['user.home'], ".cache", "patrol")
+        artifactPath = Paths.get(System.properties["user.home"], ".cache", "patrol")
     }
 
     from("app/build/outputs/apk/debug") {

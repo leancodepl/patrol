@@ -6,50 +6,32 @@ import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
-import kotlinx.serialization.Serializable
+import pl.leancode.automatorserver.contracts.Contracts
+import pl.leancode.automatorserver.contracts.nativeWidget
+import pl.leancode.automatorserver.contracts.notification
 import kotlin.math.roundToInt
 
-@Serializable
-data class Notification(
-    val appName: String?,
-    val title: String,
-    val content: String
-)
-
-@Serializable
-data class NativeWidget(
-    val className: String?,
-    val text: String?,
-    val contentDescription: String?,
-    val focused: Boolean?,
-    val enabled: Boolean?,
-    val childCount: Int?,
-    val resourceName: String?,
-    val applicationPackage: String?,
-    val children: List<NativeWidget>?
-) {
-    companion object {
-        fun fromUiObject2(obj: UiObject2): NativeWidget {
-            return NativeWidget(
-                className = obj.className,
-                text = obj.text,
-                contentDescription = obj.contentDescription,
-                focused = obj.isFocused,
-                enabled = obj.isEnabled,
-                childCount = obj.childCount,
-                resourceName = obj.resourceName,
-                applicationPackage = obj.applicationPackage,
-                children = obj.children?.map { fromUiObject2(it) }
-            )
-        }
+private fun fromUiObject2(obj: UiObject2): Contracts.NativeWidget {
+    return nativeWidget {
+        className = obj.className
+        text = obj.text
+        contentDescription = obj.contentDescription
+        focused = obj.isFocused
+        enabled = obj.isEnabled
+        childCount = obj.childCount
+        resourceName = obj.resourceName
+        applicationPackage = obj.applicationPackage
+        children.addAll(obj.children?.map { fromUiObject2(it) } ?: listOf())
     }
 }
 
-class PatrolAutomator {
+class PatrolAutomator private constructor() {
+
     fun configure() {
         val configurator = Configurator.getInstance()
         configurator.waitForSelectorTimeout = 5000
@@ -132,19 +114,15 @@ class PatrolAutomator {
 
     fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
 
-    fun getNativeWidgets(query: Selector): List<NativeWidget> {
+    fun getNativeWidgets(selector: BySelector): List<Contracts.NativeWidget> {
         Logger.d("getNativeWidgets()")
 
-        val selector = query.toBySelector()
         val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { NativeWidget.fromUiObject2(it) }
+        return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun tap(query: Selector) {
-        Logger.d("tap()")
-
-        val selector = query.toUiSelector()
-        Logger.d("Selector: $selector")
+    fun tap(selector: UiSelector) {
+        Logger.d("tap() selector $selector")
 
         val uiObject = uiDevice.findObject(selector)
 
@@ -153,11 +131,8 @@ class PatrolAutomator {
         delay()
     }
 
-    fun doubleTap(query: Selector) {
-        Logger.d("doubleTap()")
-
-        val selector = query.toUiSelector()
-        Logger.d("Selector: $selector")
+    fun doubleTap(selector: UiSelector) {
+        Logger.d("doubleTap() selector $selector")
 
         val uiObject = uiDevice.findObject(selector)
 
@@ -185,11 +160,8 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(text: String, query: Selector) {
-        Logger.d("enterText(text: $text, query: $query")
-
-        val selector = query.toUiSelector()
-        Logger.d("entering text \"$text\" to $selector")
+    fun enterText(text: String, selector: UiSelector) {
+        Logger.d("enterText(text: $text, selector: $selector)")
 
         val uiObject = uiDevice.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.click()
@@ -198,23 +170,31 @@ class PatrolAutomator {
         pressBack() // Hide keyboard.
     }
 
-    fun swipe(swipe: SwipeCommand) {
+    fun swipe(startX: Float, startY: Float, endX: Float, endY: Float, steps: Int) {
         Logger.d("swipe()")
 
-        if (swipe.startX !in 0f..1f) {
+        if (startX !in 0f..1f) {
             throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")
         }
 
-        if (swipe.startY !in 0f..1f) {
+        if (startY !in 0f..1f) {
             throw IllegalArgumentException("startY represents a percentage and must be between 0 and 1")
         }
 
-        val startX = (uiDevice.displayWidth * swipe.startX).roundToInt()
-        val startY = (uiDevice.displayHeight * swipe.startY).roundToInt()
-        val endX = (uiDevice.displayWidth * swipe.endX).roundToInt()
-        val endY = (uiDevice.displayHeight * swipe.endY).roundToInt()
+        if (endX !in 0f..1f) {
+            throw IllegalArgumentException("endX represents a percentage and must be between 0 and 1")
+        }
 
-        val successful = uiDevice.swipe(startX, startY, endX, endY, swipe.steps)
+        if (endY !in 0f..1f) {
+            throw IllegalArgumentException("endY represents a percentage and must be between 0 and 1")
+        }
+
+        val sX = (uiDevice.displayWidth * startX).roundToInt()
+        val sY = (uiDevice.displayHeight * startY).roundToInt()
+        val eX = (uiDevice.displayWidth * endX).roundToInt()
+        val eY = (uiDevice.displayHeight * endY).roundToInt()
+
+        val successful = uiDevice.swipe(sX, sY, eX, eY, steps)
         if (!successful) {
             throw IllegalArgumentException("Swipe failed")
         }
@@ -240,27 +220,35 @@ class PatrolAutomator {
         delay()
     }
 
-    fun getNotifications(): List<Notification> {
+    fun getNotifications(): List<Contracts.Notification> {
         Logger.d("getNotifications()")
 
         openNotifications()
 
         val notificationContainers = uiDevice.findObjects(By.res("android:id/status_bar_latest_event_content"))
-
-        val notifications = mutableListOf<Notification>()
         Logger.d("Found ${notificationContainers.size} notifications")
+
+        val notifications = mutableListOf<Contracts.Notification>()
         for (notificationContainer in notificationContainers) {
             try {
-                val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
-                val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                    ?: throw NullPointerException("Could not find title text")
-                val content = notificationContainer.findObject(By.res("android:id/text"))?.text
-                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                    ?: throw NullPointerException("Could not find content text")
+                val notification = notification {
+                    val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+                    if (appName != null) {
+                        this.appName = appName
+                    }
 
-                notifications.add(Notification(appName = appName, title = title, content = content))
-            } catch (e: NullPointerException) {
-                Logger.e("Failed to find UI component of a notification", e)
+                    val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                        ?: throw PatrolException("Could not find title text")
+                    this.title = title
+
+                    val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+                        ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                        ?: throw PatrolException("Could not find content text")
+                    this.content = content
+                }
+                notifications.add(notification)
+            } catch (e: PatrolException) {
+                Logger.e("Failed to find UI component of a notification:", e)
             }
         }
 
@@ -272,82 +260,80 @@ class PatrolAutomator {
 
         openNotifications()
 
-        val query = Selector(resourceId = "android:id/status_bar_latest_event_content", instance = index)
+        val query = Contracts.Selector.newBuilder().setResourceId("android:id/status_bar_latest_event_content")
+            .setInstance(index).build()
         val obj = uiDevice.findObject(query.toUiSelector())
         obj.click()
 
         delay()
     }
 
-    fun tapOnNotification(selector: Selector) {
+    fun tapOnNotification(selector: UiSelector) {
         Logger.d("tapOnNotification()")
 
         openNotifications()
 
-        val obj = uiDevice.findObject(selector.toUiSelector())
+        val obj = uiDevice.findObject(selector)
         obj.click()
 
         delay()
     }
 
-    fun handlePermission(code: String) {
+    fun allowPermissionWhileUsingApp() {
         val sdk = Build.VERSION.SDK_INT
-
-        val resourceId: String = when (code) {
-            "WHILE_USING" -> {
-                when {
-                    sdk <= Build.VERSION_CODES.P -> {
-                        "com.android.packageinstaller:id/permission_allow_button"
-                    }
-
-                    sdk == Build.VERSION_CODES.Q -> {
-                        "com.android.permissioncontroller:id/permission_allow_button"
-                    }
-
-                    else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
-                }
+        val resourceId = when {
+            sdk <= Build.VERSION_CODES.P -> {
+                "com.android.packageinstaller:id/permission_allow_button"
             }
 
-            "ONLY_THIS_TIME" -> {
-                when {
-                    sdk <= Build.VERSION_CODES.P -> {
-                        "com.android.packageinstaller:id/permission_allow_button"
-                    }
-
-                    sdk == Build.VERSION_CODES.Q -> {
-                        "com.android.permissioncontroller:id/permission_allow_button"
-                    }
-
-                    else -> "com.android.permissioncontroller:id/permission_allow_one_time_button"
-                }
+            sdk == Build.VERSION_CODES.Q -> {
+                "com.android.permissioncontroller:id/permission_allow_button"
             }
 
-            "DENIED" -> {
-                when {
-                    sdk <= Build.VERSION_CODES.P -> {
-                        "com.android.packageinstaller:id/permission_deny_button"
-                    }
-
-                    sdk == Build.VERSION_CODES.Q -> {
-                        "com.android.permissioncontroller:id/permission_deny_button"
-                    }
-
-                    else -> "com.android.permissioncontroller:id/permission_deny_button"
-                }
-            }
-
-            else -> throw PatrolException("Unknown code $code")
+            else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
         }
 
-        tap(Selector(resourceId = resourceId))
+        tap(UiSelector().resourceId(resourceId))
+    }
+
+    fun allowPermissionOnce() {
+        val sdk = Build.VERSION.SDK_INT
+        val resourceId = when {
+            sdk <= Build.VERSION_CODES.P -> {
+                "com.android.packageinstaller:id/permission_allow_button"
+            }
+
+            sdk == Build.VERSION_CODES.Q -> {
+                "com.android.permissioncontroller:id/permission_allow_button"
+            }
+
+            else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+        }
+        tap(UiSelector().resourceId(resourceId))
+    }
+
+    fun denyPermission() {
+        val sdk = Build.VERSION.SDK_INT
+        val resourceId = when {
+            sdk <= Build.VERSION_CODES.P -> {
+                "com.android.packageinstaller:id/permission_deny_button"
+            }
+
+            sdk == Build.VERSION_CODES.Q -> {
+                "com.android.permissioncontroller:id/permission_deny_button"
+            }
+
+            else -> "com.android.permissioncontroller:id/permission_deny_button"
+        }
+        tap(UiSelector().resourceId(resourceId))
     }
 
     fun selectFineLocation() {
-        tap(Selector(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
+        tap(UiSelector().resourceId("com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
     }
 
     fun selectCoarseLocation() {
-        tap(Selector(resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
+        tap(UiSelector().resourceId("com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
     }
 
     companion object {
