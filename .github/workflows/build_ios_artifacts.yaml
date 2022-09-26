@@ -28,7 +28,7 @@ jobs:
         run: |
           cd AutomatorServer/ios
           bundle exec fastlane build
-          cp ./derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app .
+          cp -r ./derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app .
 
       - name: Create release
         uses: softprops/action-gh-release@v1
