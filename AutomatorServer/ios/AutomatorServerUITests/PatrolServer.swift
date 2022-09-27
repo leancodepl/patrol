@@ -1,5 +1,6 @@
 import GRPC
 import NIOCore
+import Foundation
 import NIOPosix
 
 struct DarkModeCommand: Codable {
@@ -37,17 +38,9 @@ class PatrolServer {
     
     let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(host: "0.0.0.0", port: port).get()
     
-    logServerStarted()
+    Logger.shared.i("Server started on http://localhost:\(port)")
 
     try await server.onClose.get()
     Logger.shared.i("Server stopped")
-  }
-
-  func logServerStarted() {
-    if let ip = automation.ipAddress {
-      Logger.shared.i("Server started on http://\(ip):\(port) (http://localhost:\(port))")
-    } else {
-      Logger.shared.i("Server started on http://localhost:\(port)")
-    }
   }
 }
