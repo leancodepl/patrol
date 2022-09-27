@@ -80,7 +80,7 @@ jobs:
           echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
           echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
           echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
-          echo "IOS_SERVER_FILE="AutomatorServerUITests-Runner-$VERSION.app" >> $GITHUB_ENV
+          echo "IOS_SERVER_FILE=AutomatorServerUITests-Runner-$VERSION.app" >> $GITHUB_ENV
 
       - name: Build server APK
         working-directory: AutomatorServer/android
