@@ -22,6 +22,15 @@ class PatrolAutomation {
     return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
   }()
   
+  func toggleWiFi() {
+      let coord1 = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
+      let coord2 = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+      coord1.press(forDuration: 0.1, thenDragTo: coord2)
+
+      let wifiButton = springboard.switches["wifi-button"]
+      wifiButton.tap()
+  }
+  
   func pressHome() {
     runAction("pressing home button") {
       self.device.press(XCUIDevice.Button.home)

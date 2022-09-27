@@ -77,7 +77,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_WiFiRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    automation.enableWiFi(request.appID)
+    automation.toggleWiFi()
     return Empty()
   }
   
@@ -85,7 +85,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_WiFiRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    automation.disableWiFi(request.appID)
+    automation.toggleWiFi()
     return Empty()
   }
   
