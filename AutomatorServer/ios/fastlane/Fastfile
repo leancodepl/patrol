@@ -10,5 +10,13 @@ platform :ios do
       build_for_testing: true,
       sdk: "iphonesimulator"
     )
+
+    run_tests(
+      project: "AutomatorServer.xcodeproj",
+      scheme: "AutomatorServer",
+      derived_data_path: "./derived_data",
+      build_for_testing: true,
+      sdk: "iphoneos"
+    )
   end
 end
