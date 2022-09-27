@@ -11,7 +11,6 @@
 		9816534128DDF59F00C2BB4C /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534028DDF59F00C2BB4C /* contracts.grpc.swift */; };
 		9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
-		98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
 		98B3654728903353008B5B8B /* PatrolServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* PatrolServer.swift */; };
@@ -40,9 +39,6 @@
 		9816534028DDF59F00C2BB4C /* contracts.grpc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contracts.grpc.swift; sourceTree = "<group>"; };
 		9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAutomatorServer.swift; sourceTree = "<group>"; };
 		983049F92899206400C87527 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		98619AB628A1248F00C17F49 /* XCUIDevice+WiFiAddr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+WiFiAddr.h"; sourceTree = "<group>"; };
-		98619AB728A124CF00C17F49 /* AutomatorServerUITests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AutomatorServerUITests-Bridging-Header.h"; sourceTree = "<group>"; };
-		98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "XCUIDevice+WiFiAddr.m"; sourceTree = "<group>"; };
 		988FE74B28A5138800EA2141 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AutomatorServerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		98B365442890333D008B5B8B /* ServerLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerLoop.swift; sourceTree = "<group>"; };
@@ -88,9 +84,6 @@
 				98B3654628903353008B5B8B /* PatrolServer.swift */,
 				98B3654828903360008B5B8B /* PatrolAutomation.swift */,
 				983049F92899206400C87527 /* Logger.swift */,
-				98619AB628A1248F00C17F49 /* XCUIDevice+WiFiAddr.h */,
-				98619AB828A124D000C17F49 /* XCUIDevice+WiFiAddr.m */,
-				98619AB728A124CF00C17F49 /* AutomatorServerUITests-Bridging-Header.h */,
 				988FE74B28A5138800EA2141 /* Errors.swift */,
 				9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */,
 			);
@@ -248,7 +241,6 @@
 				9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */,
 				983049FA2899206400C87527 /* Logger.swift in Sources */,
 				988FE74C28A5138800EA2141 /* Errors.swift in Sources */,
-				98619AB928A124D000C17F49 /* XCUIDevice+WiFiAddr.m in Sources */,
 				98DB0A5728DB677300A042FA /* contracts.pb.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -310,7 +302,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.AutomatorServerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "AutomatorServerUITests/AutomatorServerUITests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -335,7 +326,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.AutomatorServerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "AutomatorServerUITests/AutomatorServerUITests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = AutomatorServer;

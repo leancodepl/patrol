@@ -22,10 +22,6 @@ class PatrolAutomation {
     return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
   }()
   
-  var ipAddress: String? {
-    return device.wiFiIPAddress()
-  }
-
   func pressHome() {
     runAction("pressing home button") {
       self.device.press(XCUIDevice.Button.home)
