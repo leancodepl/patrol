@@ -1,3 +1,7 @@
+## 0.6.7+1
+
+- Fix package score on pub.dev (#375)
+
 ## 0.6.7
 
 - Implement enabling and disabling cellular on iOS (#371)
