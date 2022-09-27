@@ -72,15 +72,17 @@ jobs:
           server_file="server-$version.apk"
           instrumentation_file="instrumentation-$version.apk"
           ios_zip_directory="ios-$version.zip"
+          ios_server_file="AutomatorServerUITests-Runner-$version.app"
           echo "server file: $server_file"
           echo "instrumentation file: $instrumentation_file"
           echo "ios zip directory: $ios_zip_directory"
+          echo "ios server file: $ios_server_file"
           # exporting
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
           echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
           echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
-          echo "IOS_SERVER_FILE=AutomatorServerUITests-Runner-$VERSION.app" >> $GITHUB_ENV
+          echo "IOS_SERVER_FILE=$ios_server_file" >> $GITHUB_ENV
 
       - name: Build server APK
         working-directory: AutomatorServer/android
