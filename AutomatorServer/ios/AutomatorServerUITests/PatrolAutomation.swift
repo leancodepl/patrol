@@ -6,10 +6,6 @@ struct NativeWidget: Codable {
 }
 
 class PatrolAutomation {
-//  private lazy var app: XCUIApplication = {
-//    return XCUIApplication()
-//  }()
-
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
   }()
@@ -26,15 +22,12 @@ class PatrolAutomation {
     // FIXME: implement for iPhones without notch
     
     runAction("toggling wifi") {
-      // the dummy app under test has to be running
-      //self.app.launch()
-      //self.springboard.activate()
-      
       // expand control center
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
       start.press(forDuration: 0.1, thenDragTo: end)
       
+      // perform the action
       let wifiButton = self.springboard.switches["wifi-button"]
       wifiButton.tap()
       
