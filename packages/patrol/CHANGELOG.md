@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.7
 
 - Implement enabling and disabling cellular on iOS (#371)
 
