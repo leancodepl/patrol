@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/globals.dart' as globals;
@@ -153,7 +154,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     final commandName = results.command?.name;
 
     if (_wantsVersionCheck(commandName)) {
-      await _checkIfUsingLatestVersion(commandName);
+      await _checkForUpdates(commandName);
     }
 
     if (_wantsArtifacts(commandName)) {
@@ -171,7 +172,9 @@ class PatrolCommandRunner extends CommandRunner<int> {
     return true;
   }
 
-  Future<void> _checkIfUsingLatestVersion(String? commandName) async {
+  /// Checks if the current version (set by the build runner on the version.dart
+  /// file) is the most recent one. If not, show a prompt to the user.
+  Future<void> _checkForUpdates(String? commandName) async {
     if (commandName == 'update' || commandName == 'doctor') {
       return;
     }
@@ -179,18 +182,20 @@ class PatrolCommandRunner extends CommandRunner<int> {
     final pubUpdater = PubUpdater();
 
     final latestVersion = await pubUpdater.getLatestVersion(patrolCliPackage);
-    final isLatestVersion = await pubUpdater.isUpToDate(
-      packageName: patrolCliPackage,
-      currentVersion: version,
-    );
+    final isUpToDate = version == latestVersion;
 
-    if (!isLatestVersion && !_topLevelFlags.debug) {
-      log
-        ..info(
-          'Newer version of $patrolCliPackage is available ($latestVersion)',
-        )
-        ..info('Run `patrol update` to update');
+    if (isUpToDate) {
+      return;
     }
+
+    log
+      ..info('')
+      ..info(
+        '''
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+Run ${lightCyan.wrap('patrol update')} to update''',
+      )
+      ..info('');
   }
 
   bool _wantsArtifacts(String? commandName) {
