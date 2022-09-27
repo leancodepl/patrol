@@ -110,8 +110,8 @@ jobs:
           bundle exec fastlane build
           cp -r ./derived_data/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app .
           mv AutomatorServerUITests-Runner.app $IOS_SERVER_FILE
-          pwd
-          ls -lah
+          cd $IOS_SERVER_FILE
+          zip -r "../ios-server-$VERSION.zip" .
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -125,7 +125,7 @@ jobs:
             AutomatorServer/android/${{ env.SERVER_FILE }}
             AutomatorServer/android/${{ env.INSTRUMENTATION_FILE }}
             AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
-            AutomatorServer/ios/${{ env.IOS_SERVER_FILE }}
+            AutomatorServer/ios/ios-server-${{ env.VERSION }}.zip
 
   publish_cli:
     name: Publish on pub.dev
