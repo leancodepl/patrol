@@ -6,9 +6,9 @@ struct NativeWidget: Codable {
 }
 
 class PatrolAutomation {
-  private lazy var app: XCUIApplication = {
-    return XCUIApplication()
-  }()
+//  private lazy var app: XCUIApplication = {
+//    return XCUIApplication()
+//  }()
 
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
@@ -23,12 +23,25 @@ class PatrolAutomation {
   }()
   
   func toggleWiFi() {
-      let coord1 = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
-      let coord2 = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-      coord1.press(forDuration: 0.1, thenDragTo: coord2)
-
-      let wifiButton = springboard.switches["wifi-button"]
+    // FIXME: implement for iPhones without notch
+    
+    runAction("toggling wifi") {
+      // the dummy app under test has to be running
+      //self.app.launch()
+      //self.springboard.activate()
+      
+      // expand control center
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
+      start.press(forDuration: 0.1, thenDragTo: end)
+      
+      let wifiButton = self.springboard.switches["wifi-button"]
       wifiButton.tap()
+      
+      // hide control center
+      let empty = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.1))
+      empty.tap()
+    }
   }
   
   func pressHome() {
