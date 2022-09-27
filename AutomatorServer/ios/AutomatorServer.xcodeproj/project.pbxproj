@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533E28DDF4BA00C2BB4C /* GRPC */; };
 		9816534128DDF59F00C2BB4C /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534028DDF59F00C2BB4C /* contracts.grpc.swift */; };
 		9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
@@ -17,6 +16,8 @@
 		98B3654928903360008B5B8B /* PatrolAutomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654828903360008B5B8B /* PatrolAutomation.swift */; };
 		98DB0A5728DB677300A042FA /* contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DB0A5628DB677300A042FA /* contracts.pb.swift */; };
 		98DB0A5928DB67B000A042FA /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 98DB0A5828DB67B000A042FA /* SwiftProtobuf */; };
+		98E67BC628E30E7D0076A9A4 /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 98E67BC528E30E7D0076A9A4 /* GRPC */; };
+		98E67BC928E30E870076A9A4 /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 98E67BC828E30E870076A9A4 /* GRPC */; };
 		98E9E581288FFC0900B62271 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E9E580288FFC0900B62271 /* AppDelegate.swift */; };
 		98E9E583288FFC0900B62271 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E9E582288FFC0900B62271 /* SceneDelegate.swift */; };
 		98E9E585288FFC0900B62271 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E9E584288FFC0900B62271 /* ViewController.swift */; };
@@ -60,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */,
+				98E67BC928E30E870076A9A4 /* GRPC in Frameworks */,
 				98DB0A5928DB67B000A042FA /* SwiftProtobuf in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98E67BC628E30E7D0076A9A4 /* GRPC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,12 +92,20 @@
 			path = AutomatorServerUITests;
 			sourceTree = "<group>";
 		};
+		98E67BC728E30E870076A9A4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		98E9E574288FFC0900B62271 = {
 			isa = PBXGroup;
 			children = (
 				98E9E57F288FFC0900B62271 /* AutomatorServer */,
 				98B3653A28903325008B5B8B /* AutomatorServerUITests */,
 				98E9E57E288FFC0900B62271 /* Products */,
+				98E67BC728E30E870076A9A4 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -141,7 +151,7 @@
 			name = AutomatorServerUITests;
 			packageProductDependencies = (
 				98DB0A5828DB67B000A042FA /* SwiftProtobuf */,
-				9816533E28DDF4BA00C2BB4C /* GRPC */,
+				98E67BC828E30E870076A9A4 /* GRPC */,
 			);
 			productName = AutomatorServerUITests;
 			productReference = 98B3653928903325008B5B8B /* AutomatorServerUITests.xctest */;
@@ -161,6 +171,7 @@
 			);
 			name = AutomatorServer;
 			packageProductDependencies = (
+				98E67BC528E30E7D0076A9A4 /* GRPC */,
 			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
@@ -197,7 +208,7 @@
 			mainGroup = 98E9E574288FFC0900B62271;
 			packageReferences = (
 				98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */,
-				9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */,
+				98E67BC428E30E7D0076A9A4 /* XCRemoteSwiftPackageReference "grpc-swift" */,
 			);
 			productRefGroup = 98E9E57E288FFC0900B62271 /* Products */;
 			projectDirPath = "";
@@ -288,6 +299,12 @@
 		98B3654228903325008B5B8B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					x86_64,
+					arm64,
+				);
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -299,6 +316,7 @@
 					"@loader_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.AutomatorServerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -306,12 +324,19 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = AutomatorServer;
+				VALID_ARCHS = "arm64 x86_64";
 			};
 			name = Debug;
 		};
 		98B3654328903325008B5B8B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					x86_64,
+					arm64,
+				);
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -329,6 +354,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = AutomatorServer;
+				VALID_ARCHS = "arm64 x86_64";
 			};
 			name = Release;
 		};
@@ -537,14 +563,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/grpc/grpc-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-protobuf.git";
@@ -553,18 +571,31 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		98E67BC428E30E7D0076A9A4 /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/grpc/grpc-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		9816533E28DDF4BA00C2BB4C /* GRPC */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */;
-			productName = GRPC;
-		};
 		98DB0A5828DB67B000A042FA /* SwiftProtobuf */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */;
 			productName = SwiftProtobuf;
+		};
+		98E67BC528E30E7D0076A9A4 /* GRPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98E67BC428E30E7D0076A9A4 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = GRPC;
+		};
+		98E67BC828E30E870076A9A4 /* GRPC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 98E67BC428E30E7D0076A9A4 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = GRPC;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
