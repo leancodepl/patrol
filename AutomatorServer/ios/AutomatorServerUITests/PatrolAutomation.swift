@@ -221,8 +221,7 @@ class PatrolAutomation {
   ) {
     runAction(log) {
       self.springboard.activate()
-      self.preferences.terminate()
-      self.preferences.activate()  // reset to a known state
+      self.preferences.launch()  // reset to a known state
       
       block()
       
