@@ -25,7 +25,14 @@ java_out="./AutomatorServer/android/app/src/androidTest/java"
 kotlin_out="./AutomatorServer/android/app/src/androidTest/java"
 swift_out="./AutomatorServer/ios/AutomatorServerUITests"
 
-protoc --dart_out="grpc:$dart_out" -I="$SRC_DIR" "$PROTO_PATH"
+mkdir -p "$dart_out"
+protoc \
+	--dart_out="grpc:$dart_out" \
+	-I="$SRC_DIR" \
+	"$PROTO_PATH"
+
+# Remove the server, which causes problems with pub.dev score and is not needed.
+# rm "$dart_out/contracts.pbserver.dart"
 
 protoc \
 	--java_out="$java_out" \
