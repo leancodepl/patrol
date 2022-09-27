@@ -1,3 +1,8 @@
+## 0.6.8
+
+- Improve update prompt (#377)
+- Remove remaining Objective-C code from iOS `AutomatorServer` (#374)
+
 ## 0.6.7
 
 - Implement enabling and disabling cellular on iOS (#371)
