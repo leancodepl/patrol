@@ -100,8 +100,8 @@ class IOSDriver {
       'xcodebuild',
       [
         'test',
-        '-workspace',
-        'AutomatorServer.xcworkspace',
+        '-project',
+        'AutomatorServer.xcodeproj',
         '-scheme',
         'AutomatorServer',
         '-sdk',
