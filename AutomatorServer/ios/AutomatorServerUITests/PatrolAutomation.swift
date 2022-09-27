@@ -139,6 +139,48 @@ class PatrolAutomation {
       XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
     }
   }
+  
+  func enableCellular(_ bundleIdentifier: String) throws {
+    #if targetEnvironment(simulator)
+      throw PatrolError.generic("cellular is not supported on simulator")
+    #endif
+    
+    runAction("enabling cellular") {
+      self.springboard.activate()
+      self.preferences.terminate()
+      self.preferences.activate()  // reset to a known state
+      self.preferences.descendants(matching: .any)["Cellular"].firstMatch.tap()
+      let value = self.preferences.switches.firstMatch.value! as! String
+      if value == "0" {
+        self.preferences.switches.firstMatch.tap()
+      }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
+  
+  func disableCellular(_ bundleIdentifier: String) throws {
+    #if targetEnvironment(simulator)
+      throw PatrolError.generic("cellular is not supported on simulator")
+    #endif
+    
+    runAction("disabling cellular") {
+      self.springboard.activate()
+      self.preferences.terminate()
+      self.preferences.activate()  // reset to a known state
+      self.preferences.descendants(matching: .any)["Cellular"].firstMatch.tap()
+      let value = self.preferences.switches.firstMatch.value! as! String
+      if value == "1" {
+        self.preferences.switches.firstMatch.tap()
+      }
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
 
   func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {
