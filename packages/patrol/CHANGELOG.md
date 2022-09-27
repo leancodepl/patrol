@@ -1,3 +1,7 @@
+## Unreleased
+
+- Implement enabling and disabling cellular on iOS (#371)
+
 ## 0.6.6
 
 - Make `openApp()` open the app under test when no `appId` is passed (#338)

@@ -1,3 +1,9 @@
+## Unreleased
+
+- Implement enabling and disabling cellular on iOS (#371)
+- Fix crash with trying to use non-existent `AutomatorServer.xcworkspace` when
+  running tests on iOS (#371)
+
 ## 0.6.6+2
 
 - Build iOS test runner artifact in GitHub Actions (#362)
