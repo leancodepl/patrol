@@ -48,95 +48,82 @@ class PatrolAutomation {
   }
 
   func enableDarkMode(_ bundleIdentifier: String) {
-    runAction("enabling dark mode") {
+    runSettingsAction("enabling dark mode", bundleIdentifier) {
       #if targetEnvironment(simulator)
-        let isSimulator = true
-      #else
-        let isSimulator = false
-      #endif
-      
-      self.springboard.activate()
-      self.preferences.terminate() // reset to a known state
-      self.preferences.activate()
-      
-      if (isSimulator) {
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
         let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
         if value == "0" {
           self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
         }
-      } else {
+      #else
         self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
         self.preferences.descendants(matching: .any)["Dark"].firstMatch.tap()
-      }
-      
-      self.springboard.activate()
-      self.preferences.terminate()
-      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+      #endif
     }
   }
 
   func disableDarkMode(_ bundleIdentifier: String) {
-    runAction("disabling dark mode") {
+    runSettingsAction("disabling dark mode", bundleIdentifier) {
       #if targetEnvironment(simulator)
-        let isSimulator = true
-      #else
-        let isSimulator = false
-      #endif
-
-      self.springboard.activate()
-      self.preferences.terminate() // reset to a known state
-      self.preferences.activate()
-      if (isSimulator) {
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
         let value = self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value! as! String
         if value == "1" {
           self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
         }
-      } else {
+      #else
         self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
         self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
-      }
-      
-      self.springboard.activate()
-      self.preferences.terminate()
-      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+      #endif
     }
   }
 
   func enableWiFi(_ bundleIdentifier: String) {
-    runAction("enabling wifi") {
-      self.springboard.activate()
-      self.preferences.terminate()
-      self.preferences.activate()  // reset to a known state
+    runSettingsAction("enabling wifi", bundleIdentifier) {
       self.preferences.descendants(matching: .any)["Wi-Fi"].firstMatch.tap()
       let value = self.preferences.switches.firstMatch.value! as! String
       if value == "0" {
         self.preferences.switches.firstMatch.tap()
       }
-      
-      self.springboard.activate()
-      self.preferences.terminate()
-      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
     }
   }
 
   func disableWiFi(_ bundleIdentifier: String) {
-    runAction("disabling wifi") {
-      self.springboard.activate()
-      self.preferences.terminate()
-      self.preferences.activate()  // reset to a known state
+    runSettingsAction("disabling wifi", bundleIdentifier) {
       self.preferences.descendants(matching: .any)["Wi-Fi"].firstMatch.tap()
       let value = self.preferences.switches.firstMatch.value! as! String
       if value == "1" {
         self.preferences.switches.firstMatch.tap()
       }
-      
-      self.springboard.activate()
-      self.preferences.terminate()
-      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+    }
+  }
+  
+  func enableCellular(_ bundleIdentifier: String) throws {
+    #if targetEnvironment(simulator)
+      throw PatrolError.generic("cellular is not supported on simulator")
+    #endif
+    
+    runSettingsAction("enabling cellular", bundleIdentifier) {
+      self.preferences.descendants(matching: .any)["Cellular"].firstMatch.tap()
+      let value = self.preferences.switches.firstMatch.value! as! String
+      if value == "0" {
+        self.preferences.switches.firstMatch.tap()
+      }
+    }
+  }
+  
+  func disableCellular(_ bundleIdentifier: String) throws {
+    #if targetEnvironment(simulator)
+      throw PatrolError.generic("cellular is not supported on simulator")
+    #endif
+    
+    runSettingsAction("disabling cellular", bundleIdentifier) {
+      self.preferences.descendants(matching: .any)["Cellular"].firstMatch.tap()
+      let value = self.preferences.switches.firstMatch.value! as! String
+      if value == "1" {
+        self.preferences.switches.firstMatch.tap()
+      }
     }
   }
 
@@ -224,6 +211,23 @@ class PatrolAutomation {
       if alerts.buttons["Precise: On"].exists {
         alerts.buttons["Precise: On"].tap()
       }
+    }
+  }
+  
+  private func runSettingsAction(
+    _ log: String,
+    _ bundleIdentifier: String,
+    block: @escaping () -> Void
+  ) {
+    runAction(log) {
+      self.springboard.activate()
+      self.preferences.launch()  // reset to a known state
+      
+      block()
+      
+      self.springboard.activate()
+      self.preferences.terminate()
+      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
     }
   }
 

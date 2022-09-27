@@ -93,14 +93,16 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_CellularRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    throw PatrolError.generic("enableCellular() is not supported on iOS")
+    try automation.enableCellular(request.appID)
+    return Empty()
   }
   
   func disableCellular(
     request: Patrol_CellularRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    throw PatrolError.generic("disableCellular() is not supported on iOS")
+    try automation.disableCellular(request.appID)
+    return Empty()
   }
   
   func getNativeWidgets(

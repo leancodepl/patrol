@@ -277,18 +277,22 @@ class NativeAutomator {
   }
 
   /// Enables cellular (aka mobile data connection).
-  Future<void> enableCellular() async {
+  Future<void> enableCellular({String? appId}) async {
     await _wrapRequest(
       'enableCellular',
-      () => _client.enableCellular(CellularRequest()),
+      () => _client.enableCellular(
+        CellularRequest(appId: appId ?? resolvedAppId),
+      ),
     );
   }
 
   /// Disables cellular (aka mobile data connection).
-  Future<void> disableCellular() {
+  Future<void> disableCellular({String? appId}) {
     return _wrapRequest(
       'disableCellular',
-      () => _client.disableCellular(CellularRequest()),
+      () => _client.disableCellular(
+        CellularRequest(appId: appId ?? resolvedAppId),
+      ),
     );
   }
 
