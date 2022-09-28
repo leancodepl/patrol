@@ -1,4 +1,5 @@
 import 'package:example/main.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 import 'config.dart';
@@ -15,6 +16,8 @@ void main() {
 
       await $('Open notifications screen').tap();
 
+      await $.native.grantPermissionWhenInUse();
+
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
@@ -22,6 +25,7 @@ void main() {
       $.log('Found ${notifications.length} notifications');
       notifications.forEach($.log);
 
+      expect(notifications.length, isNonZero);
       await $.native.tapOnNotificationByIndex(notifications.length - 1);
       await $.native.tapOnNotificationBySelector(
         Selector(textContains: 'Special offer'),

@@ -160,14 +160,16 @@ class PatrolAutomation {
   func allowPermissionWhileUsingApp() {
     runAction("allowing while using app") {
       let systemAlerts = self.springboard.alerts
-      let okButton = systemAlerts.buttons["OK"]
-      if okButton.exists {
-        okButton.tap()
-      }
+      let labels = ["OK", "Allow", "Allow While Using App"]
       
-      let allowWhileUsingButton = systemAlerts.buttons["Allow While Using App"]
-      if allowWhileUsingButton.exists {
-        allowWhileUsingButton.tap()
+      for label in labels {
+        Logger.shared.i("Checking if button \"\(label)\" exists")
+        let button = systemAlerts.buttons[label]
+        if button.exists {
+          Logger.shared.i("Found button \"\(label)\"")
+          button.tap()
+          break
+        }
       }
     }
   }
@@ -175,9 +177,16 @@ class PatrolAutomation {
   func allowPermissionOnce() {
     runAction("allowing once") {
       let systemAlerts = self.springboard.alerts
-      let allowOnceButton = systemAlerts.buttons["Allow Once"]
-      if allowOnceButton.exists {
-        allowOnceButton.tap()
+      let labels = ["OK", "Allow", "Allow Once"]
+      
+      for label in labels {
+        Logger.shared.i("Checking if button \"\(label)\" exists")
+        let button = systemAlerts.buttons[label]
+        if button.exists {
+          Logger.shared.i("Found button \"\(label)\"")
+          button.tap()
+          break
+        }
       }
     }
   }

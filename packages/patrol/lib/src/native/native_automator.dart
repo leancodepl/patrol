@@ -379,7 +379,7 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Does nothing if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
     await _wrapRequest(
       'grantPermissionWhenInUse',
@@ -392,10 +392,10 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Does nothing if no permission request dialog is present.
   ///
-  /// On iOS, this can only be used when granting the location permission.
-  /// Otherwise it will crash.
+  /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
+  /// location permission.
   Future<void> grantPermissionOnlyThisTime() async {
     await _wrapRequest(
       'grantPermissionOnlyThisTime',

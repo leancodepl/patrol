@@ -95,6 +95,8 @@ class IOSDriver {
     required String deviceId,
     required bool simulator,
   }) async {
+    log.fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
+
     // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
       'xcodebuild',
