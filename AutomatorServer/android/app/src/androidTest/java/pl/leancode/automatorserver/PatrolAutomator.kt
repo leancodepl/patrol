@@ -63,6 +63,14 @@ class PatrolAutomator private constructor() {
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
+    private fun tapIfExists(byResourceId: String) {
+        Logger.i("Checking if View with resourceId \"$byResourceId\" exists")
+        if (uiDevice.findObjects(By.res(byResourceId)).isNotEmpty()) {
+            Logger.i("Found View with resourceId \"$byResourceId\"")
+            uiDevice.findObject(UiSelector().resourceId(byResourceId)).click()
+        }
+    }
+
     fun openApp(packageName: String) {
         val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)
             ?: throw Exception("intent for launching $packageName is null")
@@ -280,60 +288,53 @@ class PatrolAutomator private constructor() {
     }
 
     fun allowPermissionWhileUsingApp() {
-        val sdk = Build.VERSION.SDK_INT
-        val resourceId = when {
-            sdk <= Build.VERSION_CODES.P -> {
-                "com.android.packageinstaller:id/permission_allow_button"
-            }
+        val identifiers = listOf(
+            "com.android.packageinstaller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
+        )
 
-            sdk == Build.VERSION_CODES.Q -> {
-                "com.android.permissioncontroller:id/permission_allow_button"
-            }
-
-            else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+        for (identifier in identifiers) {
+            tapIfExists(identifier)
         }
-
-        tap(UiSelector().resourceId(resourceId))
     }
 
+
     fun allowPermissionOnce() {
-        val sdk = Build.VERSION.SDK_INT
-        val resourceId = when {
-            sdk <= Build.VERSION_CODES.P -> {
-                "com.android.packageinstaller:id/permission_allow_button"
-            }
+        val identifiers = listOf(
+            "com.android.packageinstaller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_one_time_button",
+        )
 
-            sdk == Build.VERSION_CODES.Q -> {
-                "com.android.permissioncontroller:id/permission_allow_button"
-            }
-
-            else -> "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+        for (identifier in identifiers) {
+            tapIfExists(identifier)
         }
-        tap(UiSelector().resourceId(resourceId))
     }
 
     fun denyPermission() {
-        val sdk = Build.VERSION.SDK_INT
-        val resourceId = when {
-            sdk <= Build.VERSION_CODES.P -> {
-                "com.android.packageinstaller:id/permission_deny_button"
-            }
+        val identifiers = listOf(
+            "com.android.packageinstaller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_button",
+        )
 
-            sdk == Build.VERSION_CODES.Q -> {
-                "com.android.permissioncontroller:id/permission_deny_button"
-            }
-
-            else -> "com.android.permissioncontroller:id/permission_deny_button"
+        for (identifier in identifiers) {
+            tapIfExists(identifier)
         }
-        tap(UiSelector().resourceId(resourceId))
     }
 
     fun selectFineLocation() {
-        tap(UiSelector().resourceId("com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"))
+        val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
+        if (uiDevice.findObjects(By.res(resourceId)).isNotEmpty()) {
+            uiDevice.findObject(UiSelector().resourceId(resourceId)).click()
+        }
     }
 
     fun selectCoarseLocation() {
-        tap(UiSelector().resourceId("com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"))
+        val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
+        if (uiDevice.findObjects(By.res(resourceId)).isNotEmpty()) {
+            uiDevice.findObject(UiSelector().resourceId(resourceId)).click()
+        }
     }
 
     companion object {
