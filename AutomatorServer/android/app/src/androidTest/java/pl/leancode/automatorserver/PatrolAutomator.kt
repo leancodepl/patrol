@@ -236,7 +236,6 @@ class PatrolAutomator private constructor() {
         val identifiers = listOf(
             "android:id/status_bar_latest_event_content", // notification not bundled
             "com.android.systemui:id/expandableNotificationRow", // notifications bundled
-            // "android:id/notification_main_column",
         )
 
         for (identifier in identifiers) {
