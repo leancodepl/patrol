@@ -260,19 +260,23 @@ class NativeAutomator {
     );
   }
 
-  /// Enables Wi-Fi.
-  Future<void> enableWifi({String? appId}) async {
+  /// Enables airplane mode.
+  Future<void> enableAirplaneMode({String? appId}) async {
     await _wrapRequest(
-      'enableWifi',
-      () => _client.enableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+      'enableAirplaneMode',
+      () => _client.enableAirplaneMode(
+        AirplaneModeRequest(appId: appId ?? resolvedAppId),
+      ),
     );
   }
 
-  /// Disables Wi-Fi.
-  Future<void> disableWifi({String? appId}) async {
+  /// Enables airplane mode.
+  Future<void> disableAirplaneMode({String? appId}) async {
     await _wrapRequest(
-      'disableWifi',
-      () => _client.disableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+      'disableAirplaneMode',
+      () => _client.disableAirplaneMode(
+        AirplaneModeRequest(appId: appId ?? resolvedAppId),
+      ),
     );
   }
 
@@ -292,6 +296,42 @@ class NativeAutomator {
       'disableCellular',
       () => _client.disableCellular(
         CellularRequest(appId: appId ?? resolvedAppId),
+      ),
+    );
+  }
+
+  /// Enables Wi-Fi.
+  Future<void> enableWifi({String? appId}) async {
+    await _wrapRequest(
+      'enableWifi',
+      () => _client.enableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+    );
+  }
+
+  /// Disables Wi-Fi.
+  Future<void> disableWifi({String? appId}) async {
+    await _wrapRequest(
+      'disableWifi',
+      () => _client.disableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+    );
+  }
+
+  /// Enables bluetooth.
+  Future<void> enableBluetooth({String? appId}) async {
+    await _wrapRequest(
+      'enableBluetooth',
+      () => _client.enableBluetooth(
+        BluetoothRequest(appId: appId ?? resolvedAppId),
+      ),
+    );
+  }
+
+  /// Disables bluetooth.
+  Future<void> disableBluetooth({String? appId}) async {
+    await _wrapRequest(
+      'disableBluetooth',
+      () => _client.disableBluetooth(
+        BluetoothRequest(appId: appId ?? resolvedAppId),
       ),
     );
   }

@@ -273,11 +273,11 @@ class OpenQuickSettingsRequest extends $pb.GeneratedMessage {
   static OpenQuickSettingsRequest? _defaultInstance;
 }
 
-class DarkModeRequest extends $pb.GeneratedMessage {
+class AirplaneModeRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
-          : 'DarkModeRequest',
+          : 'AirplaneModeRequest',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
@@ -291,8 +291,8 @@ class DarkModeRequest extends $pb.GeneratedMessage {
         protoName: 'appId')
     ..hasRequiredFields = false;
 
-  DarkModeRequest._() : super();
-  factory DarkModeRequest({
+  AirplaneModeRequest._() : super();
+  factory AirplaneModeRequest({
     $core.String? appId,
   }) {
     final _result = create();
@@ -301,32 +301,100 @@ class DarkModeRequest extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory DarkModeRequest.fromBuffer($core.List<$core.int> i,
+  factory AirplaneModeRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
-  factory DarkModeRequest.fromJson($core.String i,
+  factory AirplaneModeRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
-  DarkModeRequest clone() => DarkModeRequest()..mergeFromMessage(this);
+  AirplaneModeRequest clone() => AirplaneModeRequest()..mergeFromMessage(this);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  DarkModeRequest copyWith(void Function(DarkModeRequest) updates) =>
-      super.copyWith((message) => updates(message as DarkModeRequest))
-          as DarkModeRequest; // ignore: deprecated_member_use
+  AirplaneModeRequest copyWith(void Function(AirplaneModeRequest) updates) =>
+      super.copyWith((message) => updates(message as AirplaneModeRequest))
+          as AirplaneModeRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static DarkModeRequest create() => DarkModeRequest._();
-  DarkModeRequest createEmptyInstance() => create();
-  static $pb.PbList<DarkModeRequest> createRepeated() =>
-      $pb.PbList<DarkModeRequest>();
+  static AirplaneModeRequest create() => AirplaneModeRequest._();
+  AirplaneModeRequest createEmptyInstance() => create();
+  static $pb.PbList<AirplaneModeRequest> createRepeated() =>
+      $pb.PbList<AirplaneModeRequest>();
   @$core.pragma('dart2js:noInline')
-  static DarkModeRequest getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<DarkModeRequest>(create);
-  static DarkModeRequest? _defaultInstance;
+  static AirplaneModeRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<AirplaneModeRequest>(create);
+  static AirplaneModeRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appId($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasAppId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppId() => clearField(1);
+}
+
+class CellularRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'CellularRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'appId',
+        protoName: 'appId')
+    ..hasRequiredFields = false;
+
+  CellularRequest._() : super();
+  factory CellularRequest({
+    $core.String? appId,
+  }) {
+    final _result = create();
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    return _result;
+  }
+  factory CellularRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory CellularRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  CellularRequest clone() => CellularRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  CellularRequest copyWith(void Function(CellularRequest) updates) =>
+      super.copyWith((message) => updates(message as CellularRequest))
+          as CellularRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static CellularRequest create() => CellularRequest._();
+  CellularRequest createEmptyInstance() => create();
+  static $pb.PbList<CellularRequest> createRepeated() =>
+      $pb.PbList<CellularRequest>();
+  @$core.pragma('dart2js:noInline')
+  static CellularRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<CellularRequest>(create);
+  static CellularRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get appId => $_getSZ(0);
@@ -408,11 +476,11 @@ class WiFiRequest extends $pb.GeneratedMessage {
   void clearAppId() => clearField(1);
 }
 
-class CellularRequest extends $pb.GeneratedMessage {
+class BluetoothRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
-          : 'CellularRequest',
+          : 'BluetoothRequest',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
@@ -426,8 +494,8 @@ class CellularRequest extends $pb.GeneratedMessage {
         protoName: 'appId')
     ..hasRequiredFields = false;
 
-  CellularRequest._() : super();
-  factory CellularRequest({
+  BluetoothRequest._() : super();
+  factory BluetoothRequest({
     $core.String? appId,
   }) {
     final _result = create();
@@ -436,32 +504,100 @@ class CellularRequest extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory CellularRequest.fromBuffer($core.List<$core.int> i,
+  factory BluetoothRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
-  factory CellularRequest.fromJson($core.String i,
+  factory BluetoothRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
-  CellularRequest clone() => CellularRequest()..mergeFromMessage(this);
+  BluetoothRequest clone() => BluetoothRequest()..mergeFromMessage(this);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  CellularRequest copyWith(void Function(CellularRequest) updates) =>
-      super.copyWith((message) => updates(message as CellularRequest))
-          as CellularRequest; // ignore: deprecated_member_use
+  BluetoothRequest copyWith(void Function(BluetoothRequest) updates) =>
+      super.copyWith((message) => updates(message as BluetoothRequest))
+          as BluetoothRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static CellularRequest create() => CellularRequest._();
-  CellularRequest createEmptyInstance() => create();
-  static $pb.PbList<CellularRequest> createRepeated() =>
-      $pb.PbList<CellularRequest>();
+  static BluetoothRequest create() => BluetoothRequest._();
+  BluetoothRequest createEmptyInstance() => create();
+  static $pb.PbList<BluetoothRequest> createRepeated() =>
+      $pb.PbList<BluetoothRequest>();
   @$core.pragma('dart2js:noInline')
-  static CellularRequest getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<CellularRequest>(create);
-  static CellularRequest? _defaultInstance;
+  static BluetoothRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<BluetoothRequest>(create);
+  static BluetoothRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appId($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasAppId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppId() => clearField(1);
+}
+
+class DarkModeRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'DarkModeRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'appId',
+        protoName: 'appId')
+    ..hasRequiredFields = false;
+
+  DarkModeRequest._() : super();
+  factory DarkModeRequest({
+    $core.String? appId,
+  }) {
+    final _result = create();
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    return _result;
+  }
+  factory DarkModeRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory DarkModeRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  DarkModeRequest clone() => DarkModeRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  DarkModeRequest copyWith(void Function(DarkModeRequest) updates) =>
+      super.copyWith((message) => updates(message as DarkModeRequest))
+          as DarkModeRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static DarkModeRequest create() => DarkModeRequest._();
+  DarkModeRequest createEmptyInstance() => create();
+  static $pb.PbList<DarkModeRequest> createRepeated() =>
+      $pb.PbList<DarkModeRequest>();
+  @$core.pragma('dart2js:noInline')
+  static DarkModeRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DarkModeRequest>(create);
+  static DarkModeRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get appId => $_getSZ(0);

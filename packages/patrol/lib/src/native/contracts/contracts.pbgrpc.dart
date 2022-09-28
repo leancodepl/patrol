@@ -43,15 +43,15 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/openQuickSettings',
           ($0.OpenQuickSettingsRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$enableDarkMode =
-      $grpc.ClientMethod<$0.DarkModeRequest, $0.Empty>(
-          '/patrol.NativeAutomator/enableDarkMode',
-          ($0.DarkModeRequest value) => value.writeToBuffer(),
+  static final _$enableAirplaneMode =
+      $grpc.ClientMethod<$0.AirplaneModeRequest, $0.Empty>(
+          '/patrol.NativeAutomator/enableAirplaneMode',
+          ($0.AirplaneModeRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$disableDarkMode =
-      $grpc.ClientMethod<$0.DarkModeRequest, $0.Empty>(
-          '/patrol.NativeAutomator/disableDarkMode',
-          ($0.DarkModeRequest value) => value.writeToBuffer(),
+  static final _$disableAirplaneMode =
+      $grpc.ClientMethod<$0.AirplaneModeRequest, $0.Empty>(
+          '/patrol.NativeAutomator/disableAirplaneMode',
+          ($0.AirplaneModeRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$enableWiFi = $grpc.ClientMethod<$0.WiFiRequest, $0.Empty>(
       '/patrol.NativeAutomator/enableWiFi',
@@ -70,6 +70,26 @@ class NativeAutomatorClient extends $grpc.Client {
       $grpc.ClientMethod<$0.CellularRequest, $0.Empty>(
           '/patrol.NativeAutomator/disableCellular',
           ($0.CellularRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$enableBluetooth =
+      $grpc.ClientMethod<$0.BluetoothRequest, $0.Empty>(
+          '/patrol.NativeAutomator/enableBluetooth',
+          ($0.BluetoothRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$disableBluetooth =
+      $grpc.ClientMethod<$0.BluetoothRequest, $0.Empty>(
+          '/patrol.NativeAutomator/disableBluetooth',
+          ($0.BluetoothRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$enableDarkMode =
+      $grpc.ClientMethod<$0.DarkModeRequest, $0.Empty>(
+          '/patrol.NativeAutomator/enableDarkMode',
+          ($0.DarkModeRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$disableDarkMode =
+      $grpc.ClientMethod<$0.DarkModeRequest, $0.Empty>(
+          '/patrol.NativeAutomator/disableDarkMode',
+          ($0.DarkModeRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$getNativeWidgets = $grpc.ClientMethod<
           $0.GetNativeWidgetsRequest, $0.GetNativeWidgetsResponse>(
@@ -156,14 +176,16 @@ class NativeAutomatorClient extends $grpc.Client {
     return $createUnaryCall(_$openQuickSettings, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.Empty> enableDarkMode($0.DarkModeRequest request,
+  $grpc.ResponseFuture<$0.Empty> enableAirplaneMode(
+      $0.AirplaneModeRequest request,
       {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$enableDarkMode, request, options: options);
+    return $createUnaryCall(_$enableAirplaneMode, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.Empty> disableDarkMode($0.DarkModeRequest request,
+  $grpc.ResponseFuture<$0.Empty> disableAirplaneMode(
+      $0.AirplaneModeRequest request,
       {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$disableDarkMode, request, options: options);
+    return $createUnaryCall(_$disableAirplaneMode, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> enableWiFi($0.WiFiRequest request,
@@ -184,6 +206,26 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> disableCellular($0.CellularRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$disableCellular, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> enableBluetooth($0.BluetoothRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$enableBluetooth, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> disableBluetooth($0.BluetoothRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$disableBluetooth, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> enableDarkMode($0.DarkModeRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$enableDarkMode, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> disableDarkMode($0.DarkModeRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$disableDarkMode, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.GetNativeWidgetsResponse> getNativeWidgets(
@@ -292,19 +334,21 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.OpenQuickSettingsRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.DarkModeRequest, $0.Empty>(
-        'enableDarkMode',
-        enableDarkMode_Pre,
+    $addMethod($grpc.ServiceMethod<$0.AirplaneModeRequest, $0.Empty>(
+        'enableAirplaneMode',
+        enableAirplaneMode_Pre,
         false,
         false,
-        ($core.List<$core.int> value) => $0.DarkModeRequest.fromBuffer(value),
+        ($core.List<$core.int> value) =>
+            $0.AirplaneModeRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.DarkModeRequest, $0.Empty>(
-        'disableDarkMode',
-        disableDarkMode_Pre,
+    $addMethod($grpc.ServiceMethod<$0.AirplaneModeRequest, $0.Empty>(
+        'disableAirplaneMode',
+        disableAirplaneMode_Pre,
         false,
         false,
-        ($core.List<$core.int> value) => $0.DarkModeRequest.fromBuffer(value),
+        ($core.List<$core.int> value) =>
+            $0.AirplaneModeRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.WiFiRequest, $0.Empty>(
         'enableWiFi',
@@ -333,6 +377,34 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         false,
         ($core.List<$core.int> value) => $0.CellularRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.BluetoothRequest, $0.Empty>(
+        'enableBluetooth',
+        enableBluetooth_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.BluetoothRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.BluetoothRequest, $0.Empty>(
+        'disableBluetooth',
+        disableBluetooth_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.BluetoothRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.DarkModeRequest, $0.Empty>(
+        'enableDarkMode',
+        enableDarkMode_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.DarkModeRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.DarkModeRequest, $0.Empty>(
+        'disableDarkMode',
+        disableDarkMode_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.DarkModeRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.GetNativeWidgetsRequest,
             $0.GetNativeWidgetsResponse>(
@@ -441,14 +513,14 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return openQuickSettings(call, await request);
   }
 
-  $async.Future<$0.Empty> enableDarkMode_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.DarkModeRequest> request) async {
-    return enableDarkMode(call, await request);
+  $async.Future<$0.Empty> enableAirplaneMode_Pre($grpc.ServiceCall call,
+      $async.Future<$0.AirplaneModeRequest> request) async {
+    return enableAirplaneMode(call, await request);
   }
 
-  $async.Future<$0.Empty> disableDarkMode_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.DarkModeRequest> request) async {
-    return disableDarkMode(call, await request);
+  $async.Future<$0.Empty> disableAirplaneMode_Pre($grpc.ServiceCall call,
+      $async.Future<$0.AirplaneModeRequest> request) async {
+    return disableAirplaneMode(call, await request);
   }
 
   $async.Future<$0.Empty> enableWiFi_Pre(
@@ -469,6 +541,26 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> disableCellular_Pre(
       $grpc.ServiceCall call, $async.Future<$0.CellularRequest> request) async {
     return disableCellular(call, await request);
+  }
+
+  $async.Future<$0.Empty> enableBluetooth_Pre($grpc.ServiceCall call,
+      $async.Future<$0.BluetoothRequest> request) async {
+    return enableBluetooth(call, await request);
+  }
+
+  $async.Future<$0.Empty> disableBluetooth_Pre($grpc.ServiceCall call,
+      $async.Future<$0.BluetoothRequest> request) async {
+    return disableBluetooth(call, await request);
+  }
+
+  $async.Future<$0.Empty> enableDarkMode_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.DarkModeRequest> request) async {
+    return enableDarkMode(call, await request);
+  }
+
+  $async.Future<$0.Empty> disableDarkMode_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.DarkModeRequest> request) async {
+    return disableDarkMode(call, await request);
   }
 
   $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets_Pre(
@@ -530,10 +622,10 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> openQuickSettings(
       $grpc.ServiceCall call, $0.OpenQuickSettingsRequest request);
-  $async.Future<$0.Empty> enableDarkMode(
-      $grpc.ServiceCall call, $0.DarkModeRequest request);
-  $async.Future<$0.Empty> disableDarkMode(
-      $grpc.ServiceCall call, $0.DarkModeRequest request);
+  $async.Future<$0.Empty> enableAirplaneMode(
+      $grpc.ServiceCall call, $0.AirplaneModeRequest request);
+  $async.Future<$0.Empty> disableAirplaneMode(
+      $grpc.ServiceCall call, $0.AirplaneModeRequest request);
   $async.Future<$0.Empty> enableWiFi(
       $grpc.ServiceCall call, $0.WiFiRequest request);
   $async.Future<$0.Empty> disableWiFi(
@@ -542,6 +634,14 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.CellularRequest request);
   $async.Future<$0.Empty> disableCellular(
       $grpc.ServiceCall call, $0.CellularRequest request);
+  $async.Future<$0.Empty> enableBluetooth(
+      $grpc.ServiceCall call, $0.BluetoothRequest request);
+  $async.Future<$0.Empty> disableBluetooth(
+      $grpc.ServiceCall call, $0.BluetoothRequest request);
+  $async.Future<$0.Empty> enableDarkMode(
+      $grpc.ServiceCall call, $0.DarkModeRequest request);
+  $async.Future<$0.Empty> disableDarkMode(
+      $grpc.ServiceCall call, $0.DarkModeRequest request);
   $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets(
       $grpc.ServiceCall call, $0.GetNativeWidgetsRequest request);
   $async.Future<$0.GetNotificationsResponse> getNotifications(

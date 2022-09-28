@@ -60,28 +60,18 @@ const OpenQuickSettingsRequest$json = const {
 /// Descriptor for `OpenQuickSettingsRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List openQuickSettingsRequestDescriptor =
     $convert.base64Decode('ChhPcGVuUXVpY2tTZXR0aW5nc1JlcXVlc3Q=');
-@$core.Deprecated('Use darkModeRequestDescriptor instead')
-const DarkModeRequest$json = const {
-  '1': 'DarkModeRequest',
+@$core.Deprecated('Use airplaneModeRequestDescriptor instead')
+const AirplaneModeRequest$json = const {
+  '1': 'AirplaneModeRequest',
   '2': const [
     const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
   ],
 };
 
-/// Descriptor for `DarkModeRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List darkModeRequestDescriptor = $convert
-    .base64Decode('Cg9EYXJrTW9kZVJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElk');
-@$core.Deprecated('Use wiFiRequestDescriptor instead')
-const WiFiRequest$json = const {
-  '1': 'WiFiRequest',
-  '2': const [
-    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
-  ],
-};
-
-/// Descriptor for `WiFiRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List wiFiRequestDescriptor =
-    $convert.base64Decode('CgtXaUZpUmVxdWVzdBIUCgVhcHBJZBgBIAEoCVIFYXBwSWQ=');
+/// Descriptor for `AirplaneModeRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List airplaneModeRequestDescriptor =
+    $convert.base64Decode(
+        'ChNBaXJwbGFuZU1vZGVSZXF1ZXN0EhQKBWFwcElkGAEgASgJUgVhcHBJZA==');
 @$core.Deprecated('Use cellularRequestDescriptor instead')
 const CellularRequest$json = const {
   '1': 'CellularRequest',
@@ -93,6 +83,39 @@ const CellularRequest$json = const {
 /// Descriptor for `CellularRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List cellularRequestDescriptor = $convert
     .base64Decode('Cg9DZWxsdWxhclJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElk');
+@$core.Deprecated('Use wiFiRequestDescriptor instead')
+const WiFiRequest$json = const {
+  '1': 'WiFiRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+  ],
+};
+
+/// Descriptor for `WiFiRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List wiFiRequestDescriptor =
+    $convert.base64Decode('CgtXaUZpUmVxdWVzdBIUCgVhcHBJZBgBIAEoCVIFYXBwSWQ=');
+@$core.Deprecated('Use bluetoothRequestDescriptor instead')
+const BluetoothRequest$json = const {
+  '1': 'BluetoothRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+  ],
+};
+
+/// Descriptor for `BluetoothRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List bluetoothRequestDescriptor = $convert
+    .base64Decode('ChBCbHVldG9vdGhSZXF1ZXN0EhQKBWFwcElkGAEgASgJUgVhcHBJZA==');
+@$core.Deprecated('Use darkModeRequestDescriptor instead')
+const DarkModeRequest$json = const {
+  '1': 'DarkModeRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+  ],
+};
+
+/// Descriptor for `DarkModeRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List darkModeRequestDescriptor = $convert
+    .base64Decode('Cg9EYXJrTW9kZVJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElk');
 @$core.Deprecated('Use getNativeWidgetsRequestDescriptor instead')
 const GetNativeWidgetsRequest$json = const {
   '1': 'GetNativeWidgetsRequest',
