@@ -17,8 +17,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
 
-    unawaited(
-      _notificationsPlugin.initialize(
+    unawaited(() async {
+      await _notificationsPlugin.initialize(
         const InitializationSettings(
           android: AndroidInitializationSettings('@mipmap/ic_launcher'),
           iOS: DarwinInitializationSettings(),
@@ -28,8 +28,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
           );
         },
-      ),
-    );
+      );
+
+      await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.requestPermission();
+    }());
   }
 
   Future<void> _showNotification({
