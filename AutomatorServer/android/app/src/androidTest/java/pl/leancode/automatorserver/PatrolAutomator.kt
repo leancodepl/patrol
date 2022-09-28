@@ -1,7 +1,6 @@
 package pl.leancode.automatorserver
 
 import android.app.UiAutomation
-import android.os.Build
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -317,7 +316,6 @@ class PatrolAutomator private constructor() {
             tapIfExists(identifier)
         }
     }
-
 
     fun allowPermissionOnce() {
         val identifiers = listOf(
