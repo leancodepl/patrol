@@ -1,3 +1,7 @@
+## 0.6.8
+
+- Fix handling permission prompts now working in some edge cases (#383)
+
 ## 0.6.7+1
 
 - Fix package score on pub.dev (#375)

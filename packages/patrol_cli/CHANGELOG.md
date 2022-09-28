@@ -1,3 +1,7 @@
+## 0.6.9
+
+- Fix handling permission prompts now working in some edge cases (#383)
+
 ## 0.6.8
 
 - Improve update prompt (#377)
