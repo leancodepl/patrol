@@ -54,7 +54,8 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_OpenQuickSettingsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    throw PatrolError.generic("openQuickSettings() is not supported on iOS")
+    automation.openControlCenter()
+    return Empty()
   }
   
   func enableDarkMode(

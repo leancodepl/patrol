@@ -38,6 +38,16 @@ class PatrolAutomation {
       swipeStart.press(forDuration: 0.1, thenDragTo: swipeEnd)
     }
   }
+  
+  func openControlCenter() {
+    // FIXME: implement for iPhones without notch
+    
+    runAction("opening control center") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
 
   func enableDarkMode(_ bundleIdentifier: String) {
     runSettingsAction("enabling dark mode", bundleIdentifier) {
@@ -247,13 +257,8 @@ class PatrolAutomation {
       throw PatrolError.generic("Control Center is not available on Simulator")
     #endif
     
-    // FIXME: implement for iPhones without notch
-    
     runAction(log) {
-      // open control center
-      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
-      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
-      start.press(forDuration: 0.1, thenDragTo: end)
+      self.openControlCenter()
       
       // perform the action
       block()
