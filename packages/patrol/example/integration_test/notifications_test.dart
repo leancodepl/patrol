@@ -15,6 +15,8 @@ void main() {
 
       await $('Open notifications screen').tap();
 
+      await $.native.grantPermissionWhenInUse();
+
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
