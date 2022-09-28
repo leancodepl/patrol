@@ -15,13 +15,16 @@ service NativeAutomator {
   rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // services
-
-  rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
-  rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc enableAirplaneMode(AirplaneModeRequest) returns (Empty) {}
+  rpc disableAirplaneMode(AirplaneModeRequest) returns (Empty) {}
   rpc enableWiFi(WiFiRequest) returns (Empty) {}
   rpc disableWiFi(WiFiRequest) returns (Empty) {}
   rpc enableCellular(CellularRequest) returns (Empty) {}
   rpc disableCellular(CellularRequest) returns (Empty) {}
+  rpc enableBluetooth(BluetoothRequest) returns (Empty) {}
+  rpc disableBluetooth(BluetoothRequest) returns (Empty) {}
+  rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
 
   // UI interaction
 
@@ -54,11 +57,11 @@ message Empty {}
 
 message OpenQuickSettingsRequest {}
 
-message DarkModeRequest { string appId = 1; }
-
-message WiFiRequest { string appId = 1; }
-
+message AirplaneModeRequest { string appId = 1; }
 message CellularRequest { string appId = 1; }
+message WiFiRequest { string appId = 1; }
+message BluetoothRequest { string appId = 1; }
+message DarkModeRequest { string appId = 1; }
 
 message GetNativeWidgetsRequest { Selector selector = 1; }
 message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
