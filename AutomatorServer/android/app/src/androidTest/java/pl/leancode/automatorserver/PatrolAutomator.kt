@@ -64,9 +64,9 @@ class PatrolAutomator private constructor() {
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
     private fun tapIfExists(byResourceId: String) {
-        Logger.i("Checking if View with resourceId \"$byResourceId\" exists")
+        Logger.i("Checking if view with resourceId \"$byResourceId\" exists")
         if (uiDevice.findObjects(By.res(byResourceId)).isNotEmpty()) {
-            Logger.i("Found View with resourceId \"$byResourceId\"")
+            Logger.i("Found view with resourceId \"$byResourceId\"")
             uiDevice.findObject(UiSelector().resourceId(byResourceId)).click()
         }
     }
@@ -233,7 +233,24 @@ class PatrolAutomator private constructor() {
 
         openNotifications()
 
-        val notificationContainers = uiDevice.findObjects(By.res("android:id/status_bar_latest_event_content"))
+        val notificationContainers = mutableListOf<UiObject2>()
+        val identifiers = listOf(
+            "android:id/status_bar_latest_event_content", // notification not bundled
+            "com.android.systemui:id/expandableNotificationRow", // notifications bundled
+            // "android:id/notification_main_column",
+        )
+
+        for (identifier in identifiers) {
+            val objects = uiDevice.findObjects(By.res(identifier))
+            if (identifier == "com.android.systemui:id/expandableNotificationRow") {
+                // the first element is invalid
+                objects.removeFirstOrNull()
+            }
+
+            Logger.i("Found ${objects.size} notification containers with resourceId \"$identifier\"")
+            notificationContainers.addAll(objects)
+        }
+
         Logger.d("Found ${notificationContainers.size} notifications")
 
         val notifications = mutableListOf<Contracts.Notification>()
@@ -246,11 +263,13 @@ class PatrolAutomator private constructor() {
                     }
 
                     val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                        ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
                         ?: throw PatrolException("Could not find title text")
                     this.title = title
 
                     val content = notificationContainer.findObject(By.res("android:id/text"))?.text
                         ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                        ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
                         ?: throw PatrolException("Could not find content text")
                     this.content = content
                 }
