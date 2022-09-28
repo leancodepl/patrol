@@ -2265,8 +2265,8 @@ public final class Contracts {
 
   }
 
-  public interface DarkModeRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.DarkModeRequest)
+  public interface AirplaneModeRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.AirplaneModeRequest)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -2282,18 +2282,18 @@ public final class Contracts {
         getAppIdBytes();
   }
   /**
-   * Protobuf type {@code patrol.DarkModeRequest}
+   * Protobuf type {@code patrol.AirplaneModeRequest}
    */
-  public static final class DarkModeRequest extends
+  public static final class AirplaneModeRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.DarkModeRequest)
-      DarkModeRequestOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.AirplaneModeRequest)
+      AirplaneModeRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use DarkModeRequest.newBuilder() to construct.
-    private DarkModeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use AirplaneModeRequest.newBuilder() to construct.
+    private AirplaneModeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private DarkModeRequest() {
+    private AirplaneModeRequest() {
       appId_ = "";
     }
 
@@ -2301,7 +2301,7 @@ public final class Contracts {
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new DarkModeRequest();
+      return new AirplaneModeRequest();
     }
 
     @java.lang.Override
@@ -2309,7 +2309,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private DarkModeRequest(
+    private AirplaneModeRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -2356,15 +2356,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.Builder.class);
     }
 
     public static final int APPID_FIELD_NUMBER = 1;
@@ -2444,10 +2444,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest other = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) obj;
+      pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest other = (pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) obj;
 
       if (!getAppId()
           .equals(other.getAppId())) return false;
@@ -2469,69 +2469,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2544,7 +2544,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -2560,26 +2560,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.DarkModeRequest}
+     * Protobuf type {@code patrol.AirplaneModeRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.DarkModeRequest)
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequestOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.AirplaneModeRequest)
+        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2605,17 +2605,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -2623,8 +2623,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest result = new pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest(this);
+      public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest result = new pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest(this);
         result.appId_ = appId_;
         onBuilt();
         return result;
@@ -2664,16 +2664,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance()) return this;
         if (!other.getAppId().isEmpty()) {
           appId_ = other.appId_;
           onChanged();
@@ -2693,11 +2693,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -2795,41 +2795,611 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.DarkModeRequest)
+      // @@protoc_insertion_point(builder_scope:patrol.AirplaneModeRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.DarkModeRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.AirplaneModeRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<DarkModeRequest>
-        PARSER = new com.google.protobuf.AbstractParser<DarkModeRequest>() {
+    private static final com.google.protobuf.Parser<AirplaneModeRequest>
+        PARSER = new com.google.protobuf.AbstractParser<AirplaneModeRequest>() {
       @java.lang.Override
-      public DarkModeRequest parsePartialFrom(
+      public AirplaneModeRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new DarkModeRequest(input, extensionRegistry);
+        return new AirplaneModeRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<DarkModeRequest> parser() {
+    public static com.google.protobuf.Parser<AirplaneModeRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<DarkModeRequest> getParserForType() {
+    public com.google.protobuf.Parser<AirplaneModeRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface CellularRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.CellularRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string appId = 1;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 1;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.CellularRequest}
+   */
+  public static final class CellularRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.CellularRequest)
+      CellularRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use CellularRequest.newBuilder() to construct.
+    private CellularRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private CellularRequest() {
+      appId_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new CellularRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private CellularRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              appId_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
+    }
+
+    public static final int APPID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object appId_;
+    /**
+     * <code>string appId = 1;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        appId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string appId = 1;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        appId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.CellularRequest other = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) obj;
+
+      if (!getAppId()
+          .equals(other.getAppId())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + APPID_FIELD_NUMBER;
+      hash = (53 * hash) + getAppId().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.CellularRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.CellularRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.CellularRequest)
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.CellularRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        appId_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest(this);
+        result.appId_ = appId_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.CellularRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.CellularRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance()) return this;
+        if (!other.getAppId().isEmpty()) {
+          appId_ = other.appId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.CellularRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object appId_ = "";
+      /**
+       * <code>string appId = 1;</code>
+       * @return The appId.
+       */
+      public java.lang.String getAppId() {
+        java.lang.Object ref = appId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          appId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @return The bytes for appId.
+       */
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        java.lang.Object ref = appId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          appId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        
+        appId_ = getDefaultInstance().getAppId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.CellularRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.CellularRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.CellularRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<CellularRequest>
+        PARSER = new com.google.protobuf.AbstractParser<CellularRequest>() {
+      @java.lang.Override
+      public CellularRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new CellularRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<CellularRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<CellularRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -3405,8 +3975,8 @@ public final class Contracts {
 
   }
 
-  public interface CellularRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.CellularRequest)
+  public interface BluetoothRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.BluetoothRequest)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -3422,18 +3992,18 @@ public final class Contracts {
         getAppIdBytes();
   }
   /**
-   * Protobuf type {@code patrol.CellularRequest}
+   * Protobuf type {@code patrol.BluetoothRequest}
    */
-  public static final class CellularRequest extends
+  public static final class BluetoothRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.CellularRequest)
-      CellularRequestOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.BluetoothRequest)
+      BluetoothRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use CellularRequest.newBuilder() to construct.
-    private CellularRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use BluetoothRequest.newBuilder() to construct.
+    private BluetoothRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private CellularRequest() {
+    private BluetoothRequest() {
       appId_ = "";
     }
 
@@ -3441,7 +4011,7 @@ public final class Contracts {
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new CellularRequest();
+      return new BluetoothRequest();
     }
 
     @java.lang.Override
@@ -3449,7 +4019,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private CellularRequest(
+    private BluetoothRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -3496,15 +4066,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class, pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.Builder.class);
     }
 
     public static final int APPID_FIELD_NUMBER = 1;
@@ -3584,10 +4154,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.CellularRequest other = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) obj;
+      pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest other = (pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) obj;
 
       if (!getAppId()
           .equals(other.getAppId())) return false;
@@ -3609,69 +4179,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -3684,7 +4254,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.CellularRequest prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -3700,26 +4270,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.CellularRequest}
+     * Protobuf type {@code patrol.BluetoothRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.CellularRequest)
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequestOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.BluetoothRequest)
+        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class, pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.CellularRequest.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -3745,17 +4315,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -3763,8 +4333,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest(this);
+      public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest result = new pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest(this);
         result.appId_ = appId_;
         onBuilt();
         return result;
@@ -3804,16 +4374,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.CellularRequest)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.CellularRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance()) return this;
         if (!other.getAppId().isEmpty()) {
           appId_ = other.appId_;
           onChanged();
@@ -3833,11 +4403,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -3935,41 +4505,611 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.CellularRequest)
+      // @@protoc_insertion_point(builder_scope:patrol.BluetoothRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.CellularRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.CellularRequest DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.BluetoothRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<CellularRequest>
-        PARSER = new com.google.protobuf.AbstractParser<CellularRequest>() {
+    private static final com.google.protobuf.Parser<BluetoothRequest>
+        PARSER = new com.google.protobuf.AbstractParser<BluetoothRequest>() {
       @java.lang.Override
-      public CellularRequest parsePartialFrom(
+      public BluetoothRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CellularRequest(input, extensionRegistry);
+        return new BluetoothRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<CellularRequest> parser() {
+    public static com.google.protobuf.Parser<BluetoothRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<CellularRequest> getParserForType() {
+    public com.google.protobuf.Parser<BluetoothRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DarkModeRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DarkModeRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string appId = 1;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 1;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.DarkModeRequest}
+   */
+  public static final class DarkModeRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.DarkModeRequest)
+      DarkModeRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DarkModeRequest.newBuilder() to construct.
+    private DarkModeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DarkModeRequest() {
+      appId_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DarkModeRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DarkModeRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              appId_ = s;
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.Builder.class);
+    }
+
+    public static final int APPID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object appId_;
+    /**
+     * <code>string appId = 1;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        appId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string appId = 1;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        appId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest other = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) obj;
+
+      if (!getAppId()
+          .equals(other.getAppId())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + APPID_FIELD_NUMBER;
+      hash = (53 * hash) + getAppId().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.DarkModeRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DarkModeRequest)
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        appId_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DarkModeRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest result = new pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest(this);
+        result.appId_ = appId_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()) return this;
+        if (!other.getAppId().isEmpty()) {
+          appId_ = other.appId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object appId_ = "";
+      /**
+       * <code>string appId = 1;</code>
+       * @return The appId.
+       */
+      public java.lang.String getAppId() {
+        java.lang.Object ref = appId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          appId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @return The bytes for appId.
+       */
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        java.lang.Object ref = appId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          appId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        
+        appId_ = getDefaultInstance().getAppId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.DarkModeRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.DarkModeRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DarkModeRequest>
+        PARSER = new com.google.protobuf.AbstractParser<DarkModeRequest>() {
+      @java.lang.Override
+      public DarkModeRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DarkModeRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<DarkModeRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DarkModeRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -15600,20 +16740,30 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_DarkModeRequest_descriptor;
+    internal_static_patrol_AirplaneModeRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_DarkModeRequest_fieldAccessorTable;
+      internal_static_patrol_AirplaneModeRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_CellularRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_CellularRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_WiFiRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_WiFiRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_CellularRequest_descriptor;
+    internal_static_patrol_BluetoothRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_CellularRequest_fieldAccessorTable;
+      internal_static_patrol_BluetoothRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_DarkModeRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_DarkModeRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_GetNativeWidgetsRequest_descriptor;
   private static final 
@@ -15687,86 +16837,94 @@ public final class Contracts {
       "est\022\r\n\005appId\030\001 \001(\t\"[\n\030TapOnNotificationR" +
       "equest\022\017\n\005index\030\001 \001(\rH\000\022$\n\010selector\030\002 \001(" +
       "\0132\020.patrol.SelectorH\000B\010\n\006findBy\"\007\n\005Empty" +
-      "\"\032\n\030OpenQuickSettingsRequest\" \n\017DarkMode" +
-      "Request\022\r\n\005appId\030\001 \001(\t\"\034\n\013WiFiRequest\022\r\n" +
-      "\005appId\030\001 \001(\t\" \n\017CellularRequest\022\r\n\005appId" +
-      "\030\001 \001(\t\"=\n\027GetNativeWidgetsRequest\022\"\n\010sel" +
-      "ector\030\001 \001(\0132\020.patrol.Selector\"G\n\030GetNati" +
-      "veWidgetsResponse\022+\n\rnativeWidgets\030\001 \003(\013" +
-      "2\024.patrol.NativeWidget\"\031\n\027GetNotificatio" +
-      "nsRequest\"G\n\030GetNotificationsResponse\022+\n" +
-      "\rnotifications\030\001 \003(\0132\024.patrol.Notificati" +
-      "on\"?\n\nTapRequest\022\"\n\010Selector\030\001 \001(\0132\020.pat" +
-      "rol.Selector\022\r\n\005appId\030\002 \001(\t\"p\n\020EnterText" +
-      "Request\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005" +
-      "index\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol" +
-      ".SelectorH\000B\010\n\006findBy\"Y\n\014SwipeRequest\022\016\n" +
-      "\006startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n\004endX\030\003 " +
-      "\001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027Han" +
-      "dlePermissionRequest\0222\n\004code\030\001 \001(\0162$.pat" +
-      "rol.HandlePermissionRequest.Code\"7\n\004Code" +
-      "\022\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n" +
-      "\006DENIED\020\002\"\225\001\n\032SetLocationAccuracyRequest" +
-      "\022M\n\020locationAccuracy\030\001 \001(\01623.patrol.SetL" +
-      "ocationAccuracyRequest.LocationAccuracy\"" +
-      "(\n\020LocationAccuracy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020" +
-      "\001\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016tex" +
-      "tStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003" +
-      " \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022con" +
-      "tentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034contentDes" +
-      "criptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032content" +
-      "DescriptionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresour" +
-      "ceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024" +
-      "\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210" +
-      "\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textSt" +
-      "artsWithB\017\n\r_textContainsB\014\n\n_classNameB" +
-      "\025\n\023_contentDescriptionB\037\n\035_contentDescri" +
-      "ptionStartsWithB\035\n\033_contentDescriptionCo" +
-      "ntainsB\r\n\013_resourceIdB\013\n\t_instanceB\n\n\010_e" +
-      "nabledB\n\n\010_focusedB\006\n\004_pkg\"\333\001\n\014NativeWid" +
-      "get\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022" +
-      "contentDescription\030\003 \001(\t\022\017\n\007focused\030\004 \001(" +
-      "\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024" +
-      "\n\014resourceName\030\007 \001(\t\022\032\n\022applicationPacka" +
-      "ge\030\010 \001(\t\022&\n\010children\030\t \003(\0132\024.patrol.Nati" +
-      "veWidget\"P\n\014Notification\022\024\n\007appName\030\001 \001(" +
-      "\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\tB\n" +
-      "\n\010_appName2\273\n\n\017NativeAutomator\022+\n\tpressH" +
-      "ome\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022+\n\tp" +
-      "ressBack\022\r.patrol.Empty\032\r.patrol.Empty\"\000" +
-      "\0221\n\017pressRecentApps\022\r.patrol.Empty\032\r.pat" +
-      "rol.Empty\"\000\0227\n\025doublePressRecentApps\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\0222\n\007openApp\022" +
-      "\026.patrol.OpenAppRequest\032\r.patrol.Empty\"\000" +
-      "\0223\n\021openNotifications\022\r.patrol.Empty\032\r.p" +
-      "atrol.Empty\"\000\022F\n\021openQuickSettings\022 .pat" +
-      "rol.OpenQuickSettingsRequest\032\r.patrol.Em" +
-      "pty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMod" +
-      "eRequest\032\r.patrol.Empty\"\000\022;\n\017disableDark" +
-      "Mode\022\027.patrol.DarkModeRequest\032\r.patrol.E" +
-      "mpty\"\000\0222\n\nenableWiFi\022\023.patrol.WiFiReques" +
-      "t\032\r.patrol.Empty\"\000\0223\n\013disableWiFi\022\023.patr" +
-      "ol.WiFiRequest\032\r.patrol.Empty\"\000\022:\n\016enabl" +
-      "eCellular\022\027.patrol.CellularRequest\032\r.pat" +
-      "rol.Empty\"\000\022;\n\017disableCellular\022\027.patrol." +
-      "CellularRequest\032\r.patrol.Empty\"\000\022W\n\020getN" +
-      "ativeWidgets\022\037.patrol.GetNativeWidgetsRe" +
-      "quest\032 .patrol.GetNativeWidgetsResponse\"" +
-      "\000\022W\n\020getNotifications\022\037.patrol.GetNotifi" +
-      "cationsRequest\032 .patrol.GetNotifications" +
-      "Response\"\000\022*\n\003tap\022\022.patrol.TapRequest\032\r." +
-      "patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.Tap" +
-      "Request\032\r.patrol.Empty\"\000\0226\n\tenterText\022\030." +
-      "patrol.EnterTextRequest\032\r.patrol.Empty\"\000" +
-      "\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r.patrol" +
-      ".Empty\"\000\022J\n\026handlePermissionDialog\022\037.pat" +
-      "rol.HandlePermissionRequest\032\r.patrol.Emp" +
-      "ty\"\000\022J\n\023setLocationAccuracy\022\".patrol.Set" +
-      "LocationAccuracyRequest\032\r.patrol.Empty\"\000" +
-      "\022F\n\021tapOnNotification\022 .patrol.TapOnNoti" +
-      "ficationRequest\032\r.patrol.Empty\"\000B\'\n%pl.l" +
-      "eancode.automatorserver.contractsb\006proto" +
-      "3"
+      "\"\032\n\030OpenQuickSettingsRequest\"$\n\023Airplane" +
+      "ModeRequest\022\r\n\005appId\030\001 \001(\t\" \n\017CellularRe" +
+      "quest\022\r\n\005appId\030\001 \001(\t\"\034\n\013WiFiRequest\022\r\n\005a" +
+      "ppId\030\001 \001(\t\"!\n\020BluetoothRequest\022\r\n\005appId\030" +
+      "\001 \001(\t\" \n\017DarkModeRequest\022\r\n\005appId\030\001 \001(\t\"" +
+      "=\n\027GetNativeWidgetsRequest\022\"\n\010selector\030\001" +
+      " \001(\0132\020.patrol.Selector\"G\n\030GetNativeWidge" +
+      "tsResponse\022+\n\rnativeWidgets\030\001 \003(\0132\024.patr" +
+      "ol.NativeWidget\"\031\n\027GetNotificationsReque" +
+      "st\"G\n\030GetNotificationsResponse\022+\n\rnotifi" +
+      "cations\030\001 \003(\0132\024.patrol.Notification\"?\n\nT" +
+      "apRequest\022\"\n\010Selector\030\001 \001(\0132\020.patrol.Sel" +
+      "ector\022\r\n\005appId\030\002 \001(\t\"p\n\020EnterTextRequest" +
+      "\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005index\030\003" +
+      " \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol.Select" +
+      "orH\000B\010\n\006findBy\"Y\n\014SwipeRequest\022\016\n\006startX" +
+      "\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n\004endX\030\003 \001(\002\022\014\n\004" +
+      "endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027HandlePerm" +
+      "issionRequest\0222\n\004code\030\001 \001(\0162$.patrol.Han" +
+      "dlePermissionRequest.Code\"7\n\004Code\022\017\n\013WHI" +
+      "LE_USING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED" +
+      "\020\002\"\225\001\n\032SetLocationAccuracyRequest\022M\n\020loc" +
+      "ationAccuracy\030\001 \001(\01623.patrol.SetLocation" +
+      "AccuracyRequest.LocationAccuracy\"(\n\020Loca" +
+      "tionAccuracy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020\001\"\236\004\n\010S" +
+      "elector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStarts" +
+      "With\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210" +
+      "\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDes" +
+      "cription\030\005 \001(\tH\004\210\001\001\022)\n\034contentDescriptio" +
+      "nStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescrip" +
+      "tionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 " +
+      "\001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabl" +
+      "ed\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003p" +
+      "kg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textStartsWit" +
+      "hB\017\n\r_textContainsB\014\n\n_classNameB\025\n\023_con" +
+      "tentDescriptionB\037\n\035_contentDescriptionSt" +
+      "artsWithB\035\n\033_contentDescriptionContainsB" +
+      "\r\n\013_resourceIdB\013\n\t_instanceB\n\n\010_enabledB" +
+      "\n\n\010_focusedB\006\n\004_pkg\"\333\001\n\014NativeWidget\022\021\n\t" +
+      "className\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022content" +
+      "Description\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007en" +
+      "abled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resou" +
+      "rceName\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(" +
+      "\t\022&\n\010children\030\t \003(\0132\024.patrol.NativeWidge" +
+      "t\"P\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
+      "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\tB\n\n\010_appN" +
+      "ame2\301\014\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
+      "atrol.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBac" +
+      "k\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pre" +
+      "ssRecentApps\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\0227\n\025doublePressRecentApps\022\r.patrol.E" +
+      "mpty\032\r.patrol.Empty\"\000\0222\n\007openApp\022\026.patro" +
+      "l.OpenAppRequest\032\r.patrol.Empty\"\000\0223\n\021ope" +
+      "nNotifications\022\r.patrol.Empty\032\r.patrol.E" +
+      "mpty\"\000\022F\n\021openQuickSettings\022 .patrol.Ope" +
+      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022B" +
+      "\n\022enableAirplaneMode\022\033.patrol.AirplaneMo" +
+      "deRequest\032\r.patrol.Empty\"\000\022C\n\023disableAir" +
+      "planeMode\022\033.patrol.AirplaneModeRequest\032\r" +
+      ".patrol.Empty\"\000\0222\n\nenableWiFi\022\023.patrol.W" +
+      "iFiRequest\032\r.patrol.Empty\"\000\0223\n\013disableWi" +
+      "Fi\022\023.patrol.WiFiRequest\032\r.patrol.Empty\"\000" +
+      "\022:\n\016enableCellular\022\027.patrol.CellularRequ" +
+      "est\032\r.patrol.Empty\"\000\022;\n\017disableCellular\022" +
+      "\027.patrol.CellularRequest\032\r.patrol.Empty\"" +
+      "\000\022<\n\017enableBluetooth\022\030.patrol.BluetoothR" +
+      "equest\032\r.patrol.Empty\"\000\022=\n\020disableBlueto" +
+      "oth\022\030.patrol.BluetoothRequest\032\r.patrol.E" +
+      "mpty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMo" +
+      "deRequest\032\r.patrol.Empty\"\000\022;\n\017disableDar" +
+      "kMode\022\027.patrol.DarkModeRequest\032\r.patrol." +
+      "Empty\"\000\022W\n\020getNativeWidgets\022\037.patrol.Get" +
+      "NativeWidgetsRequest\032 .patrol.GetNativeW" +
+      "idgetsResponse\"\000\022W\n\020getNotifications\022\037.p" +
+      "atrol.GetNotificationsRequest\032 .patrol.G" +
+      "etNotificationsResponse\"\000\022*\n\003tap\022\022.patro" +
+      "l.TapRequest\032\r.patrol.Empty\"\000\0220\n\tdoubleT" +
+      "ap\022\022.patrol.TapRequest\032\r.patrol.Empty\"\000\022" +
+      "6\n\tenterText\022\030.patrol.EnterTextRequest\032\r" +
+      ".patrol.Empty\"\000\022.\n\005swipe\022\024.patrol.SwipeR" +
+      "equest\032\r.patrol.Empty\"\000\022J\n\026handlePermiss" +
+      "ionDialog\022\037.patrol.HandlePermissionReque" +
+      "st\032\r.patrol.Empty\"\000\022J\n\023setLocationAccura" +
+      "cy\022\".patrol.SetLocationAccuracyRequest\032\r" +
+      ".patrol.Empty\"\000\022F\n\021tapOnNotification\022 .p" +
+      "atrol.TapOnNotificationRequest\032\r.patrol." +
+      "Empty\"\000B\'\n%pl.leancode.automatorserver.c" +
+      "ontractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -15796,92 +16954,104 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_OpenQuickSettingsRequest_descriptor,
         new java.lang.String[] { });
-    internal_static_patrol_DarkModeRequest_descriptor =
+    internal_static_patrol_AirplaneModeRequest_descriptor =
       getDescriptor().getMessageTypes().get(4);
-    internal_static_patrol_DarkModeRequest_fieldAccessorTable = new
+    internal_static_patrol_AirplaneModeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_DarkModeRequest_descriptor,
-        new java.lang.String[] { "AppId", });
-    internal_static_patrol_WiFiRequest_descriptor =
-      getDescriptor().getMessageTypes().get(5);
-    internal_static_patrol_WiFiRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_WiFiRequest_descriptor,
+        internal_static_patrol_AirplaneModeRequest_descriptor,
         new java.lang.String[] { "AppId", });
     internal_static_patrol_CellularRequest_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_patrol_CellularRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_CellularRequest_descriptor,
         new java.lang.String[] { "AppId", });
-    internal_static_patrol_GetNativeWidgetsRequest_descriptor =
+    internal_static_patrol_WiFiRequest_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_patrol_WiFiRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_WiFiRequest_descriptor,
+        new java.lang.String[] { "AppId", });
+    internal_static_patrol_BluetoothRequest_descriptor =
       getDescriptor().getMessageTypes().get(7);
+    internal_static_patrol_BluetoothRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_BluetoothRequest_descriptor,
+        new java.lang.String[] { "AppId", });
+    internal_static_patrol_DarkModeRequest_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_patrol_DarkModeRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_DarkModeRequest_descriptor,
+        new java.lang.String[] { "AppId", });
+    internal_static_patrol_GetNativeWidgetsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(9);
     internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNativeWidgetsRequest_descriptor,
         new java.lang.String[] { "Selector", });
     internal_static_patrol_GetNativeWidgetsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNativeWidgetsResponse_descriptor,
         new java.lang.String[] { "NativeWidgets", });
     internal_static_patrol_GetNotificationsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_patrol_GetNotificationsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsRequest_descriptor,
         new java.lang.String[] { });
     internal_static_patrol_GetNotificationsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_patrol_GetNotificationsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsResponse_descriptor,
         new java.lang.String[] { "Notifications", });
     internal_static_patrol_TapRequest_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_patrol_TapRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_TapRequest_descriptor,
         new java.lang.String[] { "Selector", "AppId", });
     internal_static_patrol_EnterTextRequest_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_patrol_EnterTextRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_EnterTextRequest_descriptor,
         new java.lang.String[] { "Data", "AppId", "Index", "Selector", "FindBy", });
     internal_static_patrol_SwipeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_patrol_SwipeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SwipeRequest_descriptor,
         new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
     internal_static_patrol_HandlePermissionRequest_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_patrol_HandlePermissionRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_HandlePermissionRequest_descriptor,
         new java.lang.String[] { "Code", });
     internal_static_patrol_SetLocationAccuracyRequest_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SetLocationAccuracyRequest_descriptor,
         new java.lang.String[] { "LocationAccuracy", });
     internal_static_patrol_Selector_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeWidget_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_patrol_NativeWidget_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeWidget_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,

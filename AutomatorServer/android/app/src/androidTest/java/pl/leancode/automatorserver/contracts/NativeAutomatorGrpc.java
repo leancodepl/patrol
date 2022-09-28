@@ -235,66 +235,66 @@ public final class NativeAutomatorGrpc {
     return getOpenQuickSettingsMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableDarkModeMethod;
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "enableDarkMode",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class,
+      fullMethodName = SERVICE_NAME + '/' + "enableAirplaneMode",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableDarkModeMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableDarkModeMethod;
-    if ((getEnableDarkModeMethod = NativeAutomatorGrpc.getEnableDarkModeMethod) == null) {
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
+    if ((getEnableAirplaneModeMethod = NativeAutomatorGrpc.getEnableAirplaneModeMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
-        if ((getEnableDarkModeMethod = NativeAutomatorGrpc.getEnableDarkModeMethod) == null) {
-          NativeAutomatorGrpc.getEnableDarkModeMethod = getEnableDarkModeMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+        if ((getEnableAirplaneModeMethod = NativeAutomatorGrpc.getEnableAirplaneModeMethod) == null) {
+          NativeAutomatorGrpc.getEnableAirplaneModeMethod = getEnableAirplaneModeMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableDarkMode"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableAirplaneMode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableDarkMode"))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableAirplaneMode"))
               .build();
         }
       }
     }
-    return getEnableDarkModeMethod;
+    return getEnableAirplaneModeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableDarkModeMethod;
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "disableDarkMode",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class,
+      fullMethodName = SERVICE_NAME + '/' + "disableAirplaneMode",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableDarkModeMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableDarkModeMethod;
-    if ((getDisableDarkModeMethod = NativeAutomatorGrpc.getDisableDarkModeMethod) == null) {
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod;
+    if ((getDisableAirplaneModeMethod = NativeAutomatorGrpc.getDisableAirplaneModeMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
-        if ((getDisableDarkModeMethod = NativeAutomatorGrpc.getDisableDarkModeMethod) == null) {
-          NativeAutomatorGrpc.getDisableDarkModeMethod = getDisableDarkModeMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+        if ((getDisableAirplaneModeMethod = NativeAutomatorGrpc.getDisableAirplaneModeMethod) == null) {
+          NativeAutomatorGrpc.getDisableAirplaneModeMethod = getDisableAirplaneModeMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableDarkMode"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableAirplaneMode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableDarkMode"))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableAirplaneMode"))
               .build();
         }
       }
     }
-    return getDisableDarkModeMethod;
+    return getDisableAirplaneModeMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
@@ -419,6 +419,130 @@ public final class NativeAutomatorGrpc {
       }
     }
     return getDisableCellularMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "enableBluetooth",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod;
+    if ((getEnableBluetoothMethod = NativeAutomatorGrpc.getEnableBluetoothMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getEnableBluetoothMethod = NativeAutomatorGrpc.getEnableBluetoothMethod) == null) {
+          NativeAutomatorGrpc.getEnableBluetoothMethod = getEnableBluetoothMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableBluetooth"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableBluetooth"))
+              .build();
+        }
+      }
+    }
+    return getEnableBluetoothMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "disableBluetooth",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod;
+    if ((getDisableBluetoothMethod = NativeAutomatorGrpc.getDisableBluetoothMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getDisableBluetoothMethod = NativeAutomatorGrpc.getDisableBluetoothMethod) == null) {
+          NativeAutomatorGrpc.getDisableBluetoothMethod = getDisableBluetoothMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableBluetooth"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableBluetooth"))
+              .build();
+        }
+      }
+    }
+    return getDisableBluetoothMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableDarkModeMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "enableDarkMode",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableDarkModeMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableDarkModeMethod;
+    if ((getEnableDarkModeMethod = NativeAutomatorGrpc.getEnableDarkModeMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getEnableDarkModeMethod = NativeAutomatorGrpc.getEnableDarkModeMethod) == null) {
+          NativeAutomatorGrpc.getEnableDarkModeMethod = getEnableDarkModeMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableDarkMode"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableDarkMode"))
+              .build();
+        }
+      }
+    }
+    return getEnableDarkModeMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableDarkModeMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "disableDarkMode",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableDarkModeMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableDarkModeMethod;
+    if ((getDisableDarkModeMethod = NativeAutomatorGrpc.getDisableDarkModeMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getDisableDarkModeMethod = NativeAutomatorGrpc.getDisableDarkModeMethod) == null) {
+          NativeAutomatorGrpc.getDisableDarkModeMethod = getDisableDarkModeMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableDarkMode"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableDarkMode"))
+              .build();
+        }
+      }
+    }
+    return getDisableDarkModeMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
@@ -801,17 +925,20 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * services
+     * </pre>
      */
-    public void enableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+    public void enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableDarkModeMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableAirplaneModeMethod(), responseObserver);
     }
 
     /**
      */
-    public void disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+    public void disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableDarkModeMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableAirplaneModeMethod(), responseObserver);
     }
 
     /**
@@ -840,6 +967,34 @@ public final class NativeAutomatorGrpc {
     public void disableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableCellularMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableBluetoothMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableBluetoothMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void enableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableDarkModeMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableDarkModeMethod(), responseObserver);
     }
 
     /**
@@ -957,19 +1112,19 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_OPEN_QUICK_SETTINGS)))
           .addMethod(
-            getEnableDarkModeMethod(),
+            getEnableAirplaneModeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
-                  this, METHODID_ENABLE_DARK_MODE)))
+                  this, METHODID_ENABLE_AIRPLANE_MODE)))
           .addMethod(
-            getDisableDarkModeMethod(),
+            getDisableAirplaneModeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
-                  this, METHODID_DISABLE_DARK_MODE)))
+                  this, METHODID_DISABLE_AIRPLANE_MODE)))
           .addMethod(
             getEnableWiFiMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -998,6 +1153,34 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_DISABLE_CELLULAR)))
+          .addMethod(
+            getEnableBluetoothMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_ENABLE_BLUETOOTH)))
+          .addMethod(
+            getDisableBluetoothMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_DISABLE_BLUETOOTH)))
+          .addMethod(
+            getEnableDarkModeMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_ENABLE_DARK_MODE)))
+          .addMethod(
+            getDisableDarkModeMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_DISABLE_DARK_MODE)))
           .addMethod(
             getGetNativeWidgetsMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1139,19 +1322,22 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * services
+     * </pre>
      */
-    public void enableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+    public void enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getEnableDarkModeMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getEnableAirplaneModeMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
      */
-    public void disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+    public void disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getDisableDarkModeMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getDisableAirplaneModeMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1184,6 +1370,38 @@ public final class NativeAutomatorGrpc {
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDisableCellularMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getEnableBluetoothMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getDisableBluetoothMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void enableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getEnableDarkModeMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getDisableDarkModeMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1326,17 +1544,20 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * services
+     * </pre>
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty enableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getEnableDarkModeMethod(), getCallOptions(), request);
+          getChannel(), getEnableAirplaneModeMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getDisableDarkModeMethod(), getCallOptions(), request);
+          getChannel(), getDisableAirplaneModeMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1365,6 +1586,34 @@ public final class NativeAutomatorGrpc {
     public pl.leancode.automatorserver.contracts.Contracts.Empty disableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDisableCellularMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getEnableBluetoothMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDisableBluetoothMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getEnableDarkModeMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDisableDarkModeMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1505,19 +1754,22 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * services
+     * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableDarkMode(
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableAirplaneMode(
+        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getEnableDarkModeMethod(), getCallOptions()), request);
+          getChannel().newCall(getEnableAirplaneModeMethod(), getCallOptions()), request);
     }
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableDarkMode(
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableAirplaneMode(
+        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getDisableDarkModeMethod(), getCallOptions()), request);
+          getChannel().newCall(getDisableAirplaneModeMethod(), getCallOptions()), request);
     }
 
     /**
@@ -1550,6 +1802,38 @@ public final class NativeAutomatorGrpc {
         pl.leancode.automatorserver.contracts.Contracts.CellularRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDisableCellularMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableBluetooth(
+        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getEnableBluetoothMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableBluetooth(
+        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getDisableBluetoothMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableDarkMode(
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getEnableDarkModeMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableDarkMode(
+        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getDisableDarkModeMethod(), getCallOptions()), request);
     }
 
     /**
@@ -1632,21 +1916,25 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_OPEN_APP = 4;
   private static final int METHODID_OPEN_NOTIFICATIONS = 5;
   private static final int METHODID_OPEN_QUICK_SETTINGS = 6;
-  private static final int METHODID_ENABLE_DARK_MODE = 7;
-  private static final int METHODID_DISABLE_DARK_MODE = 8;
+  private static final int METHODID_ENABLE_AIRPLANE_MODE = 7;
+  private static final int METHODID_DISABLE_AIRPLANE_MODE = 8;
   private static final int METHODID_ENABLE_WI_FI = 9;
   private static final int METHODID_DISABLE_WI_FI = 10;
   private static final int METHODID_ENABLE_CELLULAR = 11;
   private static final int METHODID_DISABLE_CELLULAR = 12;
-  private static final int METHODID_GET_NATIVE_WIDGETS = 13;
-  private static final int METHODID_GET_NOTIFICATIONS = 14;
-  private static final int METHODID_TAP = 15;
-  private static final int METHODID_DOUBLE_TAP = 16;
-  private static final int METHODID_ENTER_TEXT = 17;
-  private static final int METHODID_SWIPE = 18;
-  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 19;
-  private static final int METHODID_SET_LOCATION_ACCURACY = 20;
-  private static final int METHODID_TAP_ON_NOTIFICATION = 21;
+  private static final int METHODID_ENABLE_BLUETOOTH = 13;
+  private static final int METHODID_DISABLE_BLUETOOTH = 14;
+  private static final int METHODID_ENABLE_DARK_MODE = 15;
+  private static final int METHODID_DISABLE_DARK_MODE = 16;
+  private static final int METHODID_GET_NATIVE_WIDGETS = 17;
+  private static final int METHODID_GET_NOTIFICATIONS = 18;
+  private static final int METHODID_TAP = 19;
+  private static final int METHODID_DOUBLE_TAP = 20;
+  private static final int METHODID_ENTER_TEXT = 21;
+  private static final int METHODID_SWIPE = 22;
+  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 23;
+  private static final int METHODID_SET_LOCATION_ACCURACY = 24;
+  private static final int METHODID_TAP_ON_NOTIFICATION = 25;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1693,12 +1981,12 @@ public final class NativeAutomatorGrpc {
           serviceImpl.openQuickSettings((pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
-        case METHODID_ENABLE_DARK_MODE:
-          serviceImpl.enableDarkMode((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) request,
+        case METHODID_ENABLE_AIRPLANE_MODE:
+          serviceImpl.enableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
-        case METHODID_DISABLE_DARK_MODE:
-          serviceImpl.disableDarkMode((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) request,
+        case METHODID_DISABLE_AIRPLANE_MODE:
+          serviceImpl.disableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_WI_FI:
@@ -1715,6 +2003,22 @@ public final class NativeAutomatorGrpc {
           break;
         case METHODID_DISABLE_CELLULAR:
           serviceImpl.disableCellular((pl.leancode.automatorserver.contracts.Contracts.CellularRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_ENABLE_BLUETOOTH:
+          serviceImpl.enableBluetooth((pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_DISABLE_BLUETOOTH:
+          serviceImpl.disableBluetooth((pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_ENABLE_DARK_MODE:
+          serviceImpl.enableDarkMode((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_DISABLE_DARK_MODE:
+          serviceImpl.disableDarkMode((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_GET_NATIVE_WIDGETS:
@@ -1821,12 +2125,16 @@ public final class NativeAutomatorGrpc {
               .addMethod(getOpenAppMethod())
               .addMethod(getOpenNotificationsMethod())
               .addMethod(getOpenQuickSettingsMethod())
-              .addMethod(getEnableDarkModeMethod())
-              .addMethod(getDisableDarkModeMethod())
+              .addMethod(getEnableAirplaneModeMethod())
+              .addMethod(getDisableAirplaneModeMethod())
               .addMethod(getEnableWiFiMethod())
               .addMethod(getDisableWiFiMethod())
               .addMethod(getEnableCellularMethod())
               .addMethod(getDisableCellularMethod())
+              .addMethod(getEnableBluetoothMethod())
+              .addMethod(getDisableBluetoothMethod())
+              .addMethod(getEnableDarkModeMethod())
+              .addMethod(getDisableDarkModeMethod())
               .addMethod(getGetNativeWidgetsMethod())
               .addMethod(getGetNotificationsMethod())
               .addMethod(getTapMethod())

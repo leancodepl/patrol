@@ -63,6 +63,26 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
+    override suspend fun enableAirplaneMode(request: Contracts.AirplaneModeRequest): Empty {
+        automation.enableAirplaneMode()
+        return empty {}
+    }
+
+    override suspend fun disableAirplaneMode(request: Contracts.AirplaneModeRequest): Contracts.Empty {
+        automation.disableAirplaneMode()
+        return empty {}
+    }
+
+    override suspend fun enableCellular(request: Contracts.CellularRequest): Empty {
+        automation.enableCellular()
+        return empty { }
+    }
+
+    override suspend fun disableCellular(request: Contracts.CellularRequest): Empty {
+        automation.disableCellular()
+        return empty { }
+    }
+
     override suspend fun enableWiFi(request: Contracts.WiFiRequest): Empty {
         automation.enableWifi()
         return empty { }
@@ -73,13 +93,13 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
-    override suspend fun enableCellular(request: Contracts.CellularRequest): Empty {
-        automation.enableCellular()
+    override suspend fun enableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty {
+        automation.enableBluetooth()
         return empty { }
     }
 
-    override suspend fun disableCellular(request: Contracts.CellularRequest): Empty {
-        automation.disableCellular()
+    override suspend fun disableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty {
+        automation.disableBluetooth()
         return empty { }
     }
 
