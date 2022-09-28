@@ -73,19 +73,19 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return Empty()
   }
   
-  func enableWiFi(
-    request: Patrol_WiFiRequest,
+  func enableAirplaneMode(
+    request: Patrol_AirplaneModeRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Empty {
-    automation.toggleWiFi()
+  ) async throws -> Patrol_Empty {
+    try automation.enableAirplaneMode(request.appID)
     return Empty()
   }
   
-  func disableWiFi(
-    request: Patrol_WiFiRequest,
+  func disableAirplaneMode(
+    request: Patrol_AirplaneModeRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Empty {
-    automation.toggleWiFi()
+  ) async throws -> Patrol_Empty {
+    try automation.disableAirplaneMode(request.appID)
     return Empty()
   }
   
@@ -102,6 +102,38 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
     try automation.disableCellular(request.appID)
+    return Empty()
+  }
+  
+  func enableWiFi(
+    request: Patrol_WiFiRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    try automation.enableWiFi(request.appID)
+    return Empty()
+  }
+  
+  func disableWiFi(
+    request: Patrol_WiFiRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    try automation.disableWiFi(request.appID)
+    return Empty()
+  }
+  
+  func enableBluetooth(
+    request: Patrol_BluetoothRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty {
+    try automation.enableBluetooth(request.appID)
+    return Empty()
+  }
+  
+  func disableBluetooth(
+    request: Patrol_BluetoothRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty {
+    try automation.disableBluetooth(request.appID)
     return Empty()
   }
   
