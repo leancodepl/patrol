@@ -17,14 +17,30 @@ import kotlin.math.roundToInt
 
 private fun fromUiObject2(obj: UiObject2): Contracts.NativeWidget {
     return nativeWidget {
-        className = obj.className
-        text = obj.text
-        contentDescription = obj.contentDescription
+        if (obj.className != null) {
+            className = obj.className
+        }
+
+        if (obj.text != null) {
+            text = obj.text
+        }
+
+        if (obj.contentDescription != null) {
+            contentDescription = obj.contentDescription
+        }
+
         focused = obj.isFocused
         enabled = obj.isEnabled
         childCount = obj.childCount
-        resourceName = obj.resourceName
-        applicationPackage = obj.applicationPackage
+
+        if (obj.resourceName != null) {
+            resourceName = obj.resourceName
+        }
+
+        if (obj.applicationPackage != null) {
+            applicationPackage = obj.applicationPackage
+        }
+
         children.addAll(obj.children?.map { fromUiObject2(it) } ?: listOf())
     }
 }
