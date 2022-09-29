@@ -64,13 +64,15 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenQuickSettingsMethod()
 
-  public val enableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
+  public val enableAirplaneModeMethod:
+      MethodDescriptor<Contracts.AirplaneModeRequest, Contracts.Empty>
     @JvmStatic
-    get() = NativeAutomatorGrpc.getEnableDarkModeMethod()
+    get() = NativeAutomatorGrpc.getEnableAirplaneModeMethod()
 
-  public val disableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
+  public val disableAirplaneModeMethod:
+      MethodDescriptor<Contracts.AirplaneModeRequest, Contracts.Empty>
     @JvmStatic
-    get() = NativeAutomatorGrpc.getDisableDarkModeMethod()
+    get() = NativeAutomatorGrpc.getDisableAirplaneModeMethod()
 
   public val enableWiFiMethod: MethodDescriptor<Contracts.WiFiRequest, Contracts.Empty>
     @JvmStatic
@@ -87,6 +89,22 @@ public object NativeAutomatorGrpcKt {
   public val disableCellularMethod: MethodDescriptor<Contracts.CellularRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableCellularMethod()
+
+  public val enableBluetoothMethod: MethodDescriptor<Contracts.BluetoothRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getEnableBluetoothMethod()
+
+  public val disableBluetoothMethod: MethodDescriptor<Contracts.BluetoothRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getDisableBluetoothMethod()
+
+  public val enableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getEnableDarkModeMethod()
+
+  public val disableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getDisableDarkModeMethod()
 
   public val getNativeWidgetsMethod:
       MethodDescriptor<Contracts.GetNativeWidgetsRequest, Contracts.GetNativeWidgetsResponse>
@@ -299,10 +317,10 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun enableDarkMode(request: Contracts.DarkModeRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun enableAirplaneMode(request: Contracts.AirplaneModeRequest, headers: Metadata
+        = Metadata()): Contracts.Empty = unaryRpc(
       channel,
-      NativeAutomatorGrpc.getEnableDarkModeMethod(),
+      NativeAutomatorGrpc.getEnableAirplaneModeMethod(),
       request,
       callOptions,
       headers
@@ -320,10 +338,10 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun disableDarkMode(request: Contracts.DarkModeRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun disableAirplaneMode(request: Contracts.AirplaneModeRequest, headers: Metadata
+        = Metadata()): Contracts.Empty = unaryRpc(
       channel,
-      NativeAutomatorGrpc.getDisableDarkModeMethod(),
+      NativeAutomatorGrpc.getDisableAirplaneModeMethod(),
       request,
       callOptions,
       headers
@@ -408,6 +426,90 @@ public object NativeAutomatorGrpcKt {
         Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableCellularMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun enableBluetooth(request: Contracts.BluetoothRequest, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getEnableBluetoothMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun disableBluetooth(request: Contracts.BluetoothRequest, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getDisableBluetoothMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun enableDarkMode(request: Contracts.DarkModeRequest, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getEnableDarkModeMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun disableDarkMode(request: Contracts.DarkModeRequest, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getDisableDarkModeMethod(),
       request,
       callOptions,
       headers
@@ -709,7 +811,7 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openQuickSettings is unimplemented"))
 
     /**
-     * Returns the response to an RPC for patrol.NativeAutomator.enableDarkMode.
+     * Returns the response to an RPC for patrol.NativeAutomator.enableAirplaneMode.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
      * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
@@ -719,12 +821,12 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableDarkMode(request: Contracts.DarkModeRequest): Contracts.Empty =
-        throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableDarkMode is unimplemented"))
+    public open suspend fun enableAirplaneMode(request: Contracts.AirplaneModeRequest):
+        Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableAirplaneMode is unimplemented"))
 
     /**
-     * Returns the response to an RPC for patrol.NativeAutomator.disableDarkMode.
+     * Returns the response to an RPC for patrol.NativeAutomator.disableAirplaneMode.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
      * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
@@ -734,9 +836,9 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableDarkMode(request: Contracts.DarkModeRequest): Contracts.Empty =
-        throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableDarkMode is unimplemented"))
+    public open suspend fun disableAirplaneMode(request: Contracts.AirplaneModeRequest):
+        Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableAirplaneMode is unimplemented"))
 
     /**
      * Returns the response to an RPC for patrol.NativeAutomator.enableWiFi.
@@ -795,6 +897,66 @@ public object NativeAutomatorGrpcKt {
     public open suspend fun disableCellular(request: Contracts.CellularRequest): Contracts.Empty =
         throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableCellular is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.enableBluetooth.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun enableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty =
+        throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableBluetooth is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.disableBluetooth.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun disableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty =
+        throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableBluetooth is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.enableDarkMode.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun enableDarkMode(request: Contracts.DarkModeRequest): Contracts.Empty =
+        throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableDarkMode is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.disableDarkMode.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun disableDarkMode(request: Contracts.DarkModeRequest): Contracts.Empty =
+        throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableDarkMode is unimplemented"))
 
     /**
      * Returns the response to an RPC for patrol.NativeAutomator.getNativeWidgets.
@@ -966,13 +1128,13 @@ public object NativeAutomatorGrpcKt {
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
-      descriptor = NativeAutomatorGrpc.getEnableDarkModeMethod(),
-      implementation = ::enableDarkMode
+      descriptor = NativeAutomatorGrpc.getEnableAirplaneModeMethod(),
+      implementation = ::enableAirplaneMode
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
-      descriptor = NativeAutomatorGrpc.getDisableDarkModeMethod(),
-      implementation = ::disableDarkMode
+      descriptor = NativeAutomatorGrpc.getDisableAirplaneModeMethod(),
+      implementation = ::disableAirplaneMode
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
@@ -993,6 +1155,26 @@ public object NativeAutomatorGrpcKt {
       context = this.context,
       descriptor = NativeAutomatorGrpc.getDisableCellularMethod(),
       implementation = ::disableCellular
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getEnableBluetoothMethod(),
+      implementation = ::enableBluetooth
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getDisableBluetoothMethod(),
+      implementation = ::disableBluetooth
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getEnableDarkModeMethod(),
+      implementation = ::enableDarkMode
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getDisableDarkModeMethod(),
+      implementation = ::disableDarkMode
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,

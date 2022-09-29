@@ -109,17 +109,21 @@ class PatrolAutomator private constructor() {
 
     fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
-    fun disableWifi() = executeShellCommand("svc wifi disable")
+    fun enableAirplaneMode(): Unit = TODO()
 
-    fun enableWifi() = executeShellCommand("svc wifi enable")
+    fun disableAirplaneMode(): Unit = TODO()
 
     fun disableCellular() = executeShellCommand("svc data disable")
 
     fun enableCellular() = executeShellCommand("svc data enable")
 
-    fun enableBluetooth() = executeShellCommand("svc bluetooth enable")
+    fun disableWifi() = executeShellCommand("svc wifi disable")
 
-    fun disableBluetooth() = executeShellCommand("svc bluetooth disable")
+    fun enableWifi() = executeShellCommand("svc wifi enable")
+
+    fun enableBluetooth(): Unit = TODO()
+
+    fun disableBluetooth(): Unit = TODO()
 
     fun getNativeWidgets(selector: BySelector): List<Contracts.NativeWidget> {
         Logger.d("getNativeWidgets()")

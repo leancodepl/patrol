@@ -68,15 +68,15 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
 
-  func enableDarkMode(
-    _ request: Patrol_DarkModeRequest,
+  func enableAirplaneMode(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
 
-  func disableDarkMode(
-    _ request: Patrol_DarkModeRequest,
+  func disableAirplaneMode(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
 
   func enableWiFi(
     _ request: Patrol_WiFiRequest,
@@ -97,6 +97,26 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     _ request: Patrol_CellularRequest,
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_CellularRequest, Patrol_Empty>
+
+  func enableBluetooth(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+
+  func disableBluetooth(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+
+  func enableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+
+  func disableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
 
   func getNativeWidgets(
     _ request: Patrol_GetNativeWidgetsRequest,
@@ -275,39 +295,39 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// Unary call to enableDarkMode
+  /// services
   ///
   /// - Parameters:
-  ///   - request: Request to send to enableDarkMode.
+  ///   - request: Request to send to enableAirplaneMode.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func enableDarkMode(
-    _ request: Patrol_DarkModeRequest,
+  internal func enableAirplaneMode(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
     return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+      interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
     )
   }
 
-  /// Unary call to disableDarkMode
+  /// Unary call to disableAirplaneMode
   ///
   /// - Parameters:
-  ///   - request: Request to send to disableDarkMode.
+  ///   - request: Request to send to disableAirplaneMode.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func disableDarkMode(
-    _ request: Patrol_DarkModeRequest,
+  internal func disableAirplaneMode(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
     return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
+      interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
     )
   }
 
@@ -380,6 +400,78 @@ extension Patrol_NativeAutomatorClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to enableBluetooth
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to enableBluetooth.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func enableBluetooth(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to disableBluetooth
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to disableBluetooth.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func disableBluetooth(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to enableDarkMode
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to enableDarkMode.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func enableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to disableDarkMode
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to disableDarkMode.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func disableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
     )
   }
 
@@ -647,15 +739,15 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
 
-  func makeEnableDarkModeCall(
-    _ request: Patrol_DarkModeRequest,
+  func makeEnableAirplaneModeCall(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
 
-  func makeDisableDarkModeCall(
-    _ request: Patrol_DarkModeRequest,
+  func makeDisableAirplaneModeCall(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
 
   func makeEnableWiFiCall(
     _ request: Patrol_WiFiRequest,
@@ -676,6 +768,26 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     _ request: Patrol_CellularRequest,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_CellularRequest, Patrol_Empty>
+
+  func makeEnableBluetoothCall(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+
+  func makeDisableBluetoothCall(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+
+  func makeEnableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+
+  func makeDisableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
 
   func makeGetNativeWidgetsCall(
     _ request: Patrol_GetNativeWidgetsRequest,
@@ -817,27 +929,27 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func makeEnableDarkModeCall(
-    _ request: Patrol_DarkModeRequest,
+  internal func makeEnableAirplaneModeCall(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+      interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
     )
   }
 
-  internal func makeDisableDarkModeCall(
-    _ request: Patrol_DarkModeRequest,
+  internal func makeDisableAirplaneModeCall(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
+      interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
     )
   }
 
@@ -886,6 +998,54 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableBluetoothCall(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableBluetoothCall(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
     )
   }
 
@@ -1084,27 +1244,27 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func enableDarkMode(
-    _ request: Patrol_DarkModeRequest,
+  internal func enableAirplaneMode(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+      interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
     )
   }
 
-  internal func disableDarkMode(
-    _ request: Patrol_DarkModeRequest,
+  internal func disableAirplaneMode(
+    _ request: Patrol_AirplaneModeRequest,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
+      interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
     )
   }
 
@@ -1153,6 +1313,54 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
+    )
+  }
+
+  internal func enableBluetooth(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func disableBluetooth(
+    _ request: Patrol_BluetoothRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func enableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+    )
+  }
+
+  internal func disableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
     )
   }
 
@@ -1307,11 +1515,11 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'openQuickSettings'.
   func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when invoking 'enableDarkMode'.
-  func makeenableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
+  /// - Returns: Interceptors to use when invoking 'enableAirplaneMode'.
+  func makeenableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when invoking 'disableDarkMode'.
-  func makedisableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
+  /// - Returns: Interceptors to use when invoking 'disableAirplaneMode'.
+  func makedisableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableWiFi'.
   func makeenableWiFiInterceptors() -> [ClientInterceptor<Patrol_WiFiRequest, Patrol_Empty>]
@@ -1324,6 +1532,18 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
 
   /// - Returns: Interceptors to use when invoking 'disableCellular'.
   func makedisableCellularInterceptors() -> [ClientInterceptor<Patrol_CellularRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'enableBluetooth'.
+  func makeenableBluetoothInterceptors() -> [ClientInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'disableBluetooth'.
+  func makedisableBluetoothInterceptors() -> [ClientInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'enableDarkMode'.
+  func makeenableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'disableDarkMode'.
+  func makedisableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'getNativeWidgets'.
   func makegetNativeWidgetsInterceptors() -> [ClientInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
@@ -1365,12 +1585,16 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.openApp,
       Patrol_NativeAutomatorClientMetadata.Methods.openNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings,
-      Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode,
-      Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode,
+      Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode,
+      Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode,
       Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi,
       Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi,
       Patrol_NativeAutomatorClientMetadata.Methods.enableCellular,
       Patrol_NativeAutomatorClientMetadata.Methods.disableCellular,
+      Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth,
+      Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth,
+      Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode,
+      Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode,
       Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets,
       Patrol_NativeAutomatorClientMetadata.Methods.getNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.tap,
@@ -1426,15 +1650,15 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let enableDarkMode = GRPCMethodDescriptor(
-      name: "enableDarkMode",
-      path: "/patrol.NativeAutomator/enableDarkMode",
+    internal static let enableAirplaneMode = GRPCMethodDescriptor(
+      name: "enableAirplaneMode",
+      path: "/patrol.NativeAutomator/enableAirplaneMode",
       type: GRPCCallType.unary
     )
 
-    internal static let disableDarkMode = GRPCMethodDescriptor(
-      name: "disableDarkMode",
-      path: "/patrol.NativeAutomator/disableDarkMode",
+    internal static let disableAirplaneMode = GRPCMethodDescriptor(
+      name: "disableAirplaneMode",
+      path: "/patrol.NativeAutomator/disableAirplaneMode",
       type: GRPCCallType.unary
     )
 
@@ -1459,6 +1683,30 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     internal static let disableCellular = GRPCMethodDescriptor(
       name: "disableCellular",
       path: "/patrol.NativeAutomator/disableCellular",
+      type: GRPCCallType.unary
+    )
+
+    internal static let enableBluetooth = GRPCMethodDescriptor(
+      name: "enableBluetooth",
+      path: "/patrol.NativeAutomator/enableBluetooth",
+      type: GRPCCallType.unary
+    )
+
+    internal static let disableBluetooth = GRPCMethodDescriptor(
+      name: "disableBluetooth",
+      path: "/patrol.NativeAutomator/disableBluetooth",
+      type: GRPCCallType.unary
+    )
+
+    internal static let enableDarkMode = GRPCMethodDescriptor(
+      name: "enableDarkMode",
+      path: "/patrol.NativeAutomator/enableDarkMode",
+      type: GRPCCallType.unary
+    )
+
+    internal static let disableDarkMode = GRPCMethodDescriptor(
+      name: "disableDarkMode",
+      path: "/patrol.NativeAutomator/disableDarkMode",
       type: GRPCCallType.unary
     )
 
@@ -1538,9 +1786,10 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
 
   func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  /// services
+  func enableAirplaneMode(request: Patrol_AirplaneModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func disableAirplaneMode(request: Patrol_AirplaneModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func enableWiFi(request: Patrol_WiFiRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
@@ -1549,6 +1798,14 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   func enableCellular(request: Patrol_CellularRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func disableCellular(request: Patrol_CellularRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func enableBluetooth(request: Patrol_BluetoothRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func disableBluetooth(request: Patrol_BluetoothRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func enableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func disableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func getNativeWidgets(request: Patrol_GetNativeWidgetsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNativeWidgetsResponse>
 
@@ -1644,22 +1901,22 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.openQuickSettings(request:context:)
       )
 
-    case "enableDarkMode":
+    case "enableAirplaneMode":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? [],
-        userFunction: self.enableDarkMode(request:context:)
+        interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? [],
+        userFunction: self.enableAirplaneMode(request:context:)
       )
 
-    case "disableDarkMode":
+    case "disableAirplaneMode":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? [],
-        userFunction: self.disableDarkMode(request:context:)
+        interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? [],
+        userFunction: self.disableAirplaneMode(request:context:)
       )
 
     case "enableWiFi":
@@ -1696,6 +1953,42 @@ extension Patrol_NativeAutomatorProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableCellularInterceptors() ?? [],
         userFunction: self.disableCellular(request:context:)
+      )
+
+    case "enableBluetooth":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? [],
+        userFunction: self.enableBluetooth(request:context:)
+      )
+
+    case "disableBluetooth":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? [],
+        userFunction: self.disableBluetooth(request:context:)
+      )
+
+    case "enableDarkMode":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? [],
+        userFunction: self.enableDarkMode(request:context:)
+      )
+
+    case "disableDarkMode":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? [],
+        userFunction: self.disableDarkMode(request:context:)
       )
 
     case "getNativeWidgets":
@@ -1830,13 +2123,14 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
-  @Sendable func enableDarkMode(
-    request: Patrol_DarkModeRequest,
+  /// services
+  @Sendable func enableAirplaneMode(
+    request: Patrol_AirplaneModeRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
-  @Sendable func disableDarkMode(
-    request: Patrol_DarkModeRequest,
+  @Sendable func disableAirplaneMode(
+    request: Patrol_AirplaneModeRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
@@ -1857,6 +2151,26 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
 
   @Sendable func disableCellular(
     request: Patrol_CellularRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func enableBluetooth(
+    request: Patrol_BluetoothRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func disableBluetooth(
+    request: Patrol_BluetoothRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func enableDarkMode(
+    request: Patrol_DarkModeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func disableDarkMode(
+    request: Patrol_DarkModeRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
@@ -1988,22 +2302,22 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.openQuickSettings(request:context:)
       )
 
-    case "enableDarkMode":
+    case "enableAirplaneMode":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? [],
-        wrapping: self.enableDarkMode(request:context:)
+        interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? [],
+        wrapping: self.enableAirplaneMode(request:context:)
       )
 
-    case "disableDarkMode":
+    case "disableAirplaneMode":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? [],
-        wrapping: self.disableDarkMode(request:context:)
+        interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? [],
+        wrapping: self.disableAirplaneMode(request:context:)
       )
 
     case "enableWiFi":
@@ -2040,6 +2354,42 @@ extension Patrol_NativeAutomatorAsyncProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableCellularInterceptors() ?? [],
         wrapping: self.disableCellular(request:context:)
+      )
+
+    case "enableBluetooth":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? [],
+        wrapping: self.enableBluetooth(request:context:)
+      )
+
+    case "disableBluetooth":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? [],
+        wrapping: self.disableBluetooth(request:context:)
+      )
+
+    case "enableDarkMode":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? [],
+        wrapping: self.enableDarkMode(request:context:)
+      )
+
+    case "disableDarkMode":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? [],
+        wrapping: self.disableDarkMode(request:context:)
       )
 
     case "getNativeWidgets":
@@ -2161,13 +2511,13 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when handling 'enableDarkMode'.
+  /// - Returns: Interceptors to use when handling 'enableAirplaneMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeenableDarkModeInterceptors() -> [ServerInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
+  func makeenableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when handling 'disableDarkMode'.
+  /// - Returns: Interceptors to use when handling 'disableAirplaneMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makedisableDarkModeInterceptors() -> [ServerInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
+  func makedisableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'enableWiFi'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2184,6 +2534,22 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   /// - Returns: Interceptors to use when handling 'disableCellular'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makedisableCellularInterceptors() -> [ServerInterceptor<Patrol_CellularRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'enableBluetooth'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makeenableBluetoothInterceptors() -> [ServerInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'disableBluetooth'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makedisableBluetoothInterceptors() -> [ServerInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'enableDarkMode'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makeenableDarkModeInterceptors() -> [ServerInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'disableDarkMode'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makedisableDarkModeInterceptors() -> [ServerInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'getNativeWidgets'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2234,12 +2600,16 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.openApp,
       Patrol_NativeAutomatorServerMetadata.Methods.openNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.openQuickSettings,
-      Patrol_NativeAutomatorServerMetadata.Methods.enableDarkMode,
-      Patrol_NativeAutomatorServerMetadata.Methods.disableDarkMode,
+      Patrol_NativeAutomatorServerMetadata.Methods.enableAirplaneMode,
+      Patrol_NativeAutomatorServerMetadata.Methods.disableAirplaneMode,
       Patrol_NativeAutomatorServerMetadata.Methods.enableWiFi,
       Patrol_NativeAutomatorServerMetadata.Methods.disableWiFi,
       Patrol_NativeAutomatorServerMetadata.Methods.enableCellular,
       Patrol_NativeAutomatorServerMetadata.Methods.disableCellular,
+      Patrol_NativeAutomatorServerMetadata.Methods.enableBluetooth,
+      Patrol_NativeAutomatorServerMetadata.Methods.disableBluetooth,
+      Patrol_NativeAutomatorServerMetadata.Methods.enableDarkMode,
+      Patrol_NativeAutomatorServerMetadata.Methods.disableDarkMode,
       Patrol_NativeAutomatorServerMetadata.Methods.getNativeWidgets,
       Patrol_NativeAutomatorServerMetadata.Methods.getNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.tap,
@@ -2295,15 +2665,15 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let enableDarkMode = GRPCMethodDescriptor(
-      name: "enableDarkMode",
-      path: "/patrol.NativeAutomator/enableDarkMode",
+    internal static let enableAirplaneMode = GRPCMethodDescriptor(
+      name: "enableAirplaneMode",
+      path: "/patrol.NativeAutomator/enableAirplaneMode",
       type: GRPCCallType.unary
     )
 
-    internal static let disableDarkMode = GRPCMethodDescriptor(
-      name: "disableDarkMode",
-      path: "/patrol.NativeAutomator/disableDarkMode",
+    internal static let disableAirplaneMode = GRPCMethodDescriptor(
+      name: "disableAirplaneMode",
+      path: "/patrol.NativeAutomator/disableAirplaneMode",
       type: GRPCCallType.unary
     )
 
@@ -2328,6 +2698,30 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let disableCellular = GRPCMethodDescriptor(
       name: "disableCellular",
       path: "/patrol.NativeAutomator/disableCellular",
+      type: GRPCCallType.unary
+    )
+
+    internal static let enableBluetooth = GRPCMethodDescriptor(
+      name: "enableBluetooth",
+      path: "/patrol.NativeAutomator/enableBluetooth",
+      type: GRPCCallType.unary
+    )
+
+    internal static let disableBluetooth = GRPCMethodDescriptor(
+      name: "disableBluetooth",
+      path: "/patrol.NativeAutomator/disableBluetooth",
+      type: GRPCCallType.unary
+    )
+
+    internal static let enableDarkMode = GRPCMethodDescriptor(
+      name: "enableDarkMode",
+      path: "/patrol.NativeAutomator/enableDarkMode",
+      type: GRPCCallType.unary
+    )
+
+    internal static let disableDarkMode = GRPCMethodDescriptor(
+      name: "disableDarkMode",
+      path: "/patrol.NativeAutomator/disableDarkMode",
       type: GRPCCallType.unary
     )
 

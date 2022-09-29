@@ -6,10 +6,6 @@ struct NativeWidget: Codable {
 }
 
 class PatrolAutomation {
-  private lazy var app: XCUIApplication = {
-    return XCUIApplication()
-  }()
-
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
   }()
@@ -40,6 +36,16 @@ class PatrolAutomation {
       let swipeStart = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
       let swipeEnd = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
       swipeStart.press(forDuration: 0.1, thenDragTo: swipeEnd)
+    }
+  }
+  
+  func openControlCenter() {
+    // FIXME: implement for iPhones without notch
+    
+    runAction("opening control center") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
+      start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
 
@@ -74,51 +80,78 @@ class PatrolAutomation {
       #endif
     }
   }
-
-  func enableWiFi(_ bundleIdentifier: String) {
-    runSettingsAction("enabling wifi", bundleIdentifier) {
-      self.preferences.descendants(matching: .any)["Wi-Fi"].firstMatch.tap()
-      let value = self.preferences.switches.firstMatch.value! as! String
-      if value == "0" {
-        self.preferences.switches.firstMatch.tap()
-      }
-    }
-  }
-
-  func disableWiFi(_ bundleIdentifier: String) {
-    runSettingsAction("disabling wifi", bundleIdentifier) {
-      self.preferences.descendants(matching: .any)["Wi-Fi"].firstMatch.tap()
-      let value = self.preferences.switches.firstMatch.value! as! String
-      if value == "1" {
-        self.preferences.switches.firstMatch.tap()
+  
+  // MARK: Services
+  
+  func enableAirplaneMode(_ bundleIdentifier: String) throws {
+    try runControlCenterAction("enabling airplane mode") {
+      let toggle = self.springboard.switches["airplane-mode-button"]
+      if toggle.value! as! String == "0" {
+        toggle.tap()
       }
     }
   }
   
+  func disableAirplaneMode(_ bundleIdentifier: String) throws {
+    try runControlCenterAction("disabling airplane mode") {
+      let toggle = self.springboard.switches["airplane-mode-button"]
+      if toggle.value! as! String == "1" {
+        toggle.tap()
+      }
+    }
+  }
+  
+  
   func enableCellular(_ bundleIdentifier: String) throws {
-    #if targetEnvironment(simulator)
-      throw PatrolError.generic("cellular is not supported on simulator")
-    #endif
-    
-    runSettingsAction("enabling cellular", bundleIdentifier) {
-      self.preferences.descendants(matching: .any)["Cellular"].firstMatch.tap()
-      let value = self.preferences.switches.firstMatch.value! as! String
-      if value == "0" {
-        self.preferences.switches.firstMatch.tap()
+    try runControlCenterAction("enabling cellular") {
+      let toggle = self.springboard.switches["cellular-data-button"]
+      if toggle.value! as! String == "0" {
+        toggle.tap()
       }
     }
   }
   
   func disableCellular(_ bundleIdentifier: String) throws {
-    #if targetEnvironment(simulator)
-      throw PatrolError.generic("cellular is not supported on simulator")
-    #endif
-    
-    runSettingsAction("disabling cellular", bundleIdentifier) {
-      self.preferences.descendants(matching: .any)["Cellular"].firstMatch.tap()
-      let value = self.preferences.switches.firstMatch.value! as! String
-      if value == "1" {
-        self.preferences.switches.firstMatch.tap()
+    try runControlCenterAction("disabling cellular") {
+      let toggle = self.springboard.switches["cellular-data-button"]
+      if toggle.value! as! String == "1" {
+        toggle.tap()
+      }
+    }
+  }
+
+  func enableWiFi(_ bundleIdentifier: String) throws {
+    try runControlCenterAction("enabling wifi") {
+      let toggle = self.springboard.switches["wifi-button"]
+      if toggle.value! as! String == "0" {
+        toggle.tap()
+      }
+    }
+  }
+
+  func disableWiFi(_ bundleIdentifier: String) throws {
+    try runControlCenterAction("disabling wifi") {
+      let toggle = self.springboard.switches["wifi-button"]
+      if toggle.value! as! String == "1" {
+        toggle.tap()
+      }
+    }
+  }
+  
+  func enableBluetooth(_ bundleIdentifier: String) throws {
+    try runControlCenterAction("enabling bluetooth") {
+      let toggle = self.springboard.switches["bluetooth-button"]
+      if toggle.value! as! String == "0" {
+        toggle.tap()
+      }
+    }
+  }
+  
+  func disableBluetooth(_ bundleIdentifier: String) throws {
+    try runControlCenterAction("disabling bluetooth") {
+      let toggle = self.springboard.switches["bluetooth-button"]
+      if toggle.value! as! String == "1" {
+        toggle.tap()
       }
     }
   }
@@ -216,6 +249,34 @@ class PatrolAutomation {
       if alerts.buttons["Precise: On"].exists {
         alerts.buttons["Precise: On"].tap()
       }
+    }
+  }
+  
+  private func runControlCenterAction(_ log: String,block: @escaping () -> Void) throws {
+    #if targetEnvironment(simulator)
+      throw PatrolError.generic("Control Center is not available on Simulator")
+    #endif
+    
+    runAction(log) {
+      self.openControlCenter()
+      
+      // perform the action
+      block()
+      
+      // hide control center
+      let empty = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.1))
+      empty.tap()
+    }
+  }
+  
+  func getNativeWidgets() throws {
+    // TODO: Remove later
+    for i in 0...10 {
+      let toggle = self.springboard.switches.element(boundBy: i)
+      let label = toggle.label as String
+      let accLabel = toggle.accessibilityLabel as String?
+      let ident = toggle.identifier
+      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
     }
   }
   
