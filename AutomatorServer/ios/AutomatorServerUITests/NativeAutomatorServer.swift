@@ -47,7 +47,16 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    throw PatrolError.generic("openNotifications() is not supported on iOS")
+    automation.openNotifications()
+    return Empty()
+  }
+  
+  func closeNotifications(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    automation.closeNotifications()
+    return Empty()
   }
   
   func openQuickSettings(
@@ -77,7 +86,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   func enableAirplaneMode(
     request: Patrol_AirplaneModeRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty {
+  ) async throws -> Empty {
     try automation.enableAirplaneMode(request.appID)
     return Empty()
   }
@@ -85,7 +94,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   func disableAirplaneMode(
     request: Patrol_AirplaneModeRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty {
+  ) async throws -> Empty {
     try automation.disableAirplaneMode(request.appID)
     return Empty()
   }
@@ -125,7 +134,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   func enableBluetooth(
     request: Patrol_BluetoothRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty {
+  ) async throws -> Empty {
     try automation.enableBluetooth(request.appID)
     return Empty()
   }
@@ -133,7 +142,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   func disableBluetooth(
     request: Patrol_BluetoothRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty {
+  ) async throws -> Empty {
     try automation.disableBluetooth(request.appID)
     return Empty()
   }

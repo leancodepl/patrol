@@ -30,12 +30,28 @@ class PatrolAutomation {
       app.activate()
     }
   }
+  
+  func openNotifications() {
+    runAction("opening notifications") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
+  
+  func closeNotifications() {
+    runAction("closing notifications") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
 
   func openAppSwitcher() {
     runAction("opening app switcher") {
-      let swipeStart = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
-      let swipeEnd = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
-      swipeStart.press(forDuration: 0.1, thenDragTo: swipeEnd)
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
+      start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
   
