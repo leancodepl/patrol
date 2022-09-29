@@ -12,6 +12,7 @@ service NativeAutomator {
   rpc doublePressRecentApps(Empty) returns (Empty) {}
   rpc openApp(OpenAppRequest) returns (Empty) {}
   rpc openNotifications(Empty) returns (Empty) {}
+  rpc closeNotifications(Empty) returns (Empty) {}
   rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // services

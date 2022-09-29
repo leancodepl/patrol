@@ -38,6 +38,10 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/openNotifications',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$closeNotifications = $grpc.ClientMethod<$0.Empty, $0.Empty>(
+      '/patrol.NativeAutomator/closeNotifications',
+      ($0.Empty value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$openQuickSettings =
       $grpc.ClientMethod<$0.OpenQuickSettingsRequest, $0.Empty>(
           '/patrol.NativeAutomator/openQuickSettings',
@@ -168,6 +172,11 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> openNotifications($0.Empty request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$openNotifications, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> closeNotifications($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$closeNotifications, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> openQuickSettings(
@@ -322,6 +331,13 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'openNotifications',
         openNotifications_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
+        'closeNotifications',
+        closeNotifications_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
@@ -508,6 +524,11 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return openNotifications(call, await request);
   }
 
+  $async.Future<$0.Empty> closeNotifications_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return closeNotifications(call, await request);
+  }
+
   $async.Future<$0.Empty> openQuickSettings_Pre($grpc.ServiceCall call,
       $async.Future<$0.OpenQuickSettingsRequest> request) async {
     return openQuickSettings(call, await request);
@@ -619,6 +640,8 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> openApp(
       $grpc.ServiceCall call, $0.OpenAppRequest request);
   $async.Future<$0.Empty> openNotifications(
+      $grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$0.Empty> closeNotifications(
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> openQuickSettings(
       $grpc.ServiceCall call, $0.OpenQuickSettingsRequest request);

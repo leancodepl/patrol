@@ -63,6 +63,11 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
+  func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
+
   func openQuickSettings(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions?
@@ -274,6 +279,24 @@ extension Patrol_NativeAutomatorClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to closeNotifications
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to closeNotifications.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
     )
   }
 
@@ -734,6 +757,11 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
+  func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+
   func makeOpenQuickSettingsCall(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions?
@@ -914,6 +942,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
     )
   }
 
@@ -1232,6 +1272,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
+  internal func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
   internal func openQuickSettings(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions? = nil
@@ -1512,6 +1564,9 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'openNotifications'.
   func makeopenNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when invoking 'closeNotifications'.
+  func makecloseNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when invoking 'openQuickSettings'.
   func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
@@ -1584,6 +1639,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps,
       Patrol_NativeAutomatorClientMetadata.Methods.openApp,
       Patrol_NativeAutomatorClientMetadata.Methods.openNotifications,
+      Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings,
       Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode,
       Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode,
@@ -1641,6 +1697,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     internal static let openNotifications = GRPCMethodDescriptor(
       name: "openNotifications",
       path: "/patrol.NativeAutomator/openNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeNotifications = GRPCMethodDescriptor(
+      name: "closeNotifications",
+      path: "/patrol.NativeAutomator/closeNotifications",
       type: GRPCCallType.unary
     )
 
@@ -1784,6 +1846,8 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
 
   func openNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
+  func closeNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
   func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// services
@@ -1890,6 +1954,15 @@ extension Patrol_NativeAutomatorProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
         userFunction: self.openNotifications(request:context:)
+      )
+
+    case "closeNotifications":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
+        userFunction: self.closeNotifications(request:context:)
       )
 
     case "openQuickSettings":
@@ -2118,6 +2191,11 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
+  @Sendable func closeNotifications(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
   @Sendable func openQuickSettings(
     request: Patrol_OpenQuickSettingsRequest,
     context: GRPCAsyncServerCallContext
@@ -2291,6 +2369,15 @@ extension Patrol_NativeAutomatorAsyncProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
         wrapping: self.openNotifications(request:context:)
+      )
+
+    case "closeNotifications":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
+        wrapping: self.closeNotifications(request:context:)
       )
 
     case "openQuickSettings":
@@ -2507,6 +2594,10 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeopenNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when handling 'closeNotifications'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makecloseNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when handling 'openQuickSettings'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
@@ -2599,6 +2690,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.doublePressRecentApps,
       Patrol_NativeAutomatorServerMetadata.Methods.openApp,
       Patrol_NativeAutomatorServerMetadata.Methods.openNotifications,
+      Patrol_NativeAutomatorServerMetadata.Methods.closeNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.openQuickSettings,
       Patrol_NativeAutomatorServerMetadata.Methods.enableAirplaneMode,
       Patrol_NativeAutomatorServerMetadata.Methods.disableAirplaneMode,
@@ -2656,6 +2748,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let openNotifications = GRPCMethodDescriptor(
       name: "openNotifications",
       path: "/patrol.NativeAutomator/openNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeNotifications = GRPCMethodDescriptor(
+      name: "closeNotifications",
+      path: "/patrol.NativeAutomator/closeNotifications",
       type: GRPCCallType.unary
     )
 

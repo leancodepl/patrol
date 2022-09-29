@@ -16883,7 +16883,7 @@ public final class Contracts {
       "\t\022&\n\010children\030\t \003(\0132\024.patrol.NativeWidge" +
       "t\"P\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
       "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\tB\n\n\010_appN" +
-      "ame2\301\014\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
+      "ame2\367\014\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
       "atrol.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBac" +
       "k\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pre" +
       "ssRecentApps\022\r.patrol.Empty\032\r.patrol.Emp" +
@@ -16891,40 +16891,41 @@ public final class Contracts {
       "mpty\032\r.patrol.Empty\"\000\0222\n\007openApp\022\026.patro" +
       "l.OpenAppRequest\032\r.patrol.Empty\"\000\0223\n\021ope" +
       "nNotifications\022\r.patrol.Empty\032\r.patrol.E" +
-      "mpty\"\000\022F\n\021openQuickSettings\022 .patrol.Ope" +
-      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022B" +
-      "\n\022enableAirplaneMode\022\033.patrol.AirplaneMo" +
-      "deRequest\032\r.patrol.Empty\"\000\022C\n\023disableAir" +
-      "planeMode\022\033.patrol.AirplaneModeRequest\032\r" +
-      ".patrol.Empty\"\000\0222\n\nenableWiFi\022\023.patrol.W" +
-      "iFiRequest\032\r.patrol.Empty\"\000\0223\n\013disableWi" +
-      "Fi\022\023.patrol.WiFiRequest\032\r.patrol.Empty\"\000" +
-      "\022:\n\016enableCellular\022\027.patrol.CellularRequ" +
-      "est\032\r.patrol.Empty\"\000\022;\n\017disableCellular\022" +
-      "\027.patrol.CellularRequest\032\r.patrol.Empty\"" +
-      "\000\022<\n\017enableBluetooth\022\030.patrol.BluetoothR" +
-      "equest\032\r.patrol.Empty\"\000\022=\n\020disableBlueto" +
-      "oth\022\030.patrol.BluetoothRequest\032\r.patrol.E" +
-      "mpty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMo" +
-      "deRequest\032\r.patrol.Empty\"\000\022;\n\017disableDar" +
-      "kMode\022\027.patrol.DarkModeRequest\032\r.patrol." +
-      "Empty\"\000\022W\n\020getNativeWidgets\022\037.patrol.Get" +
-      "NativeWidgetsRequest\032 .patrol.GetNativeW" +
-      "idgetsResponse\"\000\022W\n\020getNotifications\022\037.p" +
-      "atrol.GetNotificationsRequest\032 .patrol.G" +
-      "etNotificationsResponse\"\000\022*\n\003tap\022\022.patro" +
-      "l.TapRequest\032\r.patrol.Empty\"\000\0220\n\tdoubleT" +
-      "ap\022\022.patrol.TapRequest\032\r.patrol.Empty\"\000\022" +
-      "6\n\tenterText\022\030.patrol.EnterTextRequest\032\r" +
-      ".patrol.Empty\"\000\022.\n\005swipe\022\024.patrol.SwipeR" +
-      "equest\032\r.patrol.Empty\"\000\022J\n\026handlePermiss" +
-      "ionDialog\022\037.patrol.HandlePermissionReque" +
-      "st\032\r.patrol.Empty\"\000\022J\n\023setLocationAccura" +
-      "cy\022\".patrol.SetLocationAccuracyRequest\032\r" +
-      ".patrol.Empty\"\000\022F\n\021tapOnNotification\022 .p" +
-      "atrol.TapOnNotificationRequest\032\r.patrol." +
-      "Empty\"\000B\'\n%pl.leancode.automatorserver.c" +
-      "ontractsb\006proto3"
+      "mpty\"\000\0224\n\022closeNotifications\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\022F\n\021openQuickSetting" +
+      "s\022 .patrol.OpenQuickSettingsRequest\032\r.pa" +
+      "trol.Empty\"\000\022B\n\022enableAirplaneMode\022\033.pat" +
+      "rol.AirplaneModeRequest\032\r.patrol.Empty\"\000" +
+      "\022C\n\023disableAirplaneMode\022\033.patrol.Airplan" +
+      "eModeRequest\032\r.patrol.Empty\"\000\0222\n\nenableW" +
+      "iFi\022\023.patrol.WiFiRequest\032\r.patrol.Empty\"" +
+      "\000\0223\n\013disableWiFi\022\023.patrol.WiFiRequest\032\r." +
+      "patrol.Empty\"\000\022:\n\016enableCellular\022\027.patro" +
+      "l.CellularRequest\032\r.patrol.Empty\"\000\022;\n\017di" +
+      "sableCellular\022\027.patrol.CellularRequest\032\r" +
+      ".patrol.Empty\"\000\022<\n\017enableBluetooth\022\030.pat" +
+      "rol.BluetoothRequest\032\r.patrol.Empty\"\000\022=\n" +
+      "\020disableBluetooth\022\030.patrol.BluetoothRequ" +
+      "est\032\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027" +
+      ".patrol.DarkModeRequest\032\r.patrol.Empty\"\000" +
+      "\022;\n\017disableDarkMode\022\027.patrol.DarkModeReq" +
+      "uest\032\r.patrol.Empty\"\000\022W\n\020getNativeWidget" +
+      "s\022\037.patrol.GetNativeWidgetsRequest\032 .pat" +
+      "rol.GetNativeWidgetsResponse\"\000\022W\n\020getNot" +
+      "ifications\022\037.patrol.GetNotificationsRequ" +
+      "est\032 .patrol.GetNotificationsResponse\"\000\022" +
+      "*\n\003tap\022\022.patrol.TapRequest\032\r.patrol.Empt" +
+      "y\"\000\0220\n\tdoubleTap\022\022.patrol.TapRequest\032\r.p" +
+      "atrol.Empty\"\000\0226\n\tenterText\022\030.patrol.Ente" +
+      "rTextRequest\032\r.patrol.Empty\"\000\022.\n\005swipe\022\024" +
+      ".patrol.SwipeRequest\032\r.patrol.Empty\"\000\022J\n" +
+      "\026handlePermissionDialog\022\037.patrol.HandleP" +
+      "ermissionRequest\032\r.patrol.Empty\"\000\022J\n\023set" +
+      "LocationAccuracy\022\".patrol.SetLocationAcc" +
+      "uracyRequest\032\r.patrol.Empty\"\000\022F\n\021tapOnNo" +
+      "tification\022 .patrol.TapOnNotificationReq" +
+      "uest\032\r.patrol.Empty\"\000B\'\n%pl.leancode.aut" +
+      "omatorserver.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

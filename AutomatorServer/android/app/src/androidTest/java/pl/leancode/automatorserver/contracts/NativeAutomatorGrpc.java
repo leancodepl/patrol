@@ -204,6 +204,37 @@ public final class NativeAutomatorGrpc {
     return getOpenNotificationsMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getCloseNotificationsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "closeNotifications",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getCloseNotificationsMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getCloseNotificationsMethod;
+    if ((getCloseNotificationsMethod = NativeAutomatorGrpc.getCloseNotificationsMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getCloseNotificationsMethod = NativeAutomatorGrpc.getCloseNotificationsMethod) == null) {
+          NativeAutomatorGrpc.getCloseNotificationsMethod = getCloseNotificationsMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "closeNotifications"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("closeNotifications"))
+              .build();
+        }
+      }
+    }
+    return getCloseNotificationsMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getOpenQuickSettingsMethod;
 
@@ -919,6 +950,13 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public void closeNotifications(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getCloseNotificationsMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void openQuickSettings(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getOpenQuickSettingsMethod(), responseObserver);
@@ -1104,6 +1142,13 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_OPEN_NOTIFICATIONS)))
+          .addMethod(
+            getCloseNotificationsMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_CLOSE_NOTIFICATIONS)))
           .addMethod(
             getOpenQuickSettingsMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1311,6 +1356,14 @@ public final class NativeAutomatorGrpc {
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getOpenNotificationsMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void closeNotifications(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getCloseNotificationsMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1538,6 +1591,13 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty closeNotifications(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getCloseNotificationsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
     public pl.leancode.automatorserver.contracts.Contracts.Empty openQuickSettings(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getOpenQuickSettingsMethod(), getCallOptions(), request);
@@ -1747,6 +1807,14 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> closeNotifications(
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getCloseNotificationsMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> openQuickSettings(
         pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -1915,26 +1983,27 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_DOUBLE_PRESS_RECENT_APPS = 3;
   private static final int METHODID_OPEN_APP = 4;
   private static final int METHODID_OPEN_NOTIFICATIONS = 5;
-  private static final int METHODID_OPEN_QUICK_SETTINGS = 6;
-  private static final int METHODID_ENABLE_AIRPLANE_MODE = 7;
-  private static final int METHODID_DISABLE_AIRPLANE_MODE = 8;
-  private static final int METHODID_ENABLE_WI_FI = 9;
-  private static final int METHODID_DISABLE_WI_FI = 10;
-  private static final int METHODID_ENABLE_CELLULAR = 11;
-  private static final int METHODID_DISABLE_CELLULAR = 12;
-  private static final int METHODID_ENABLE_BLUETOOTH = 13;
-  private static final int METHODID_DISABLE_BLUETOOTH = 14;
-  private static final int METHODID_ENABLE_DARK_MODE = 15;
-  private static final int METHODID_DISABLE_DARK_MODE = 16;
-  private static final int METHODID_GET_NATIVE_WIDGETS = 17;
-  private static final int METHODID_GET_NOTIFICATIONS = 18;
-  private static final int METHODID_TAP = 19;
-  private static final int METHODID_DOUBLE_TAP = 20;
-  private static final int METHODID_ENTER_TEXT = 21;
-  private static final int METHODID_SWIPE = 22;
-  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 23;
-  private static final int METHODID_SET_LOCATION_ACCURACY = 24;
-  private static final int METHODID_TAP_ON_NOTIFICATION = 25;
+  private static final int METHODID_CLOSE_NOTIFICATIONS = 6;
+  private static final int METHODID_OPEN_QUICK_SETTINGS = 7;
+  private static final int METHODID_ENABLE_AIRPLANE_MODE = 8;
+  private static final int METHODID_DISABLE_AIRPLANE_MODE = 9;
+  private static final int METHODID_ENABLE_WI_FI = 10;
+  private static final int METHODID_DISABLE_WI_FI = 11;
+  private static final int METHODID_ENABLE_CELLULAR = 12;
+  private static final int METHODID_DISABLE_CELLULAR = 13;
+  private static final int METHODID_ENABLE_BLUETOOTH = 14;
+  private static final int METHODID_DISABLE_BLUETOOTH = 15;
+  private static final int METHODID_ENABLE_DARK_MODE = 16;
+  private static final int METHODID_DISABLE_DARK_MODE = 17;
+  private static final int METHODID_GET_NATIVE_WIDGETS = 18;
+  private static final int METHODID_GET_NOTIFICATIONS = 19;
+  private static final int METHODID_TAP = 20;
+  private static final int METHODID_DOUBLE_TAP = 21;
+  private static final int METHODID_ENTER_TEXT = 22;
+  private static final int METHODID_SWIPE = 23;
+  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 24;
+  private static final int METHODID_SET_LOCATION_ACCURACY = 25;
+  private static final int METHODID_TAP_ON_NOTIFICATION = 26;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -1975,6 +2044,10 @@ public final class NativeAutomatorGrpc {
           break;
         case METHODID_OPEN_NOTIFICATIONS:
           serviceImpl.openNotifications((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_CLOSE_NOTIFICATIONS:
+          serviceImpl.closeNotifications((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_OPEN_QUICK_SETTINGS:
@@ -2124,6 +2197,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getDoublePressRecentAppsMethod())
               .addMethod(getOpenAppMethod())
               .addMethod(getOpenNotificationsMethod())
+              .addMethod(getCloseNotificationsMethod())
               .addMethod(getOpenQuickSettingsMethod())
               .addMethod(getEnableAirplaneModeMethod())
               .addMethod(getDisableAirplaneModeMethod())
