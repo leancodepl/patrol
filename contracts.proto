@@ -38,6 +38,8 @@ service NativeAutomator {
   rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
   rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
   rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
+
+  rpc debug(Empty) returns (Empty) {}
 }
 
 message OpenAppRequest { string appId = 1; }

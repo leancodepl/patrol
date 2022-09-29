@@ -855,6 +855,37 @@ public final class NativeAutomatorGrpc {
     return getTapOnNotificationMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDebugMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "debug",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDebugMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getDebugMethod;
+    if ((getDebugMethod = NativeAutomatorGrpc.getDebugMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getDebugMethod = NativeAutomatorGrpc.getDebugMethod) == null) {
+          NativeAutomatorGrpc.getDebugMethod = getDebugMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debug"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("debug"))
+              .build();
+        }
+      }
+    }
+    return getDebugMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -1098,6 +1129,13 @@ public final class NativeAutomatorGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getTapOnNotificationMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void debug(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDebugMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -1289,6 +1327,13 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_TAP_ON_NOTIFICATION)))
+          .addMethod(
+            getDebugMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_DEBUG)))
           .build();
     }
   }
@@ -1528,6 +1573,14 @@ public final class NativeAutomatorGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getTapOnNotificationMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void debug(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getDebugMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -1737,6 +1790,13 @@ public final class NativeAutomatorGrpc {
     public pl.leancode.automatorserver.contracts.Contracts.Empty tapOnNotification(pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getTapOnNotificationMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty debug(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDebugMethod(), getCallOptions(), request);
     }
   }
 
@@ -1975,6 +2035,14 @@ public final class NativeAutomatorGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getTapOnNotificationMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> debug(
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getDebugMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_PRESS_HOME = 0;
@@ -2004,6 +2072,7 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_HANDLE_PERMISSION_DIALOG = 24;
   private static final int METHODID_SET_LOCATION_ACCURACY = 25;
   private static final int METHODID_TAP_ON_NOTIFICATION = 26;
+  private static final int METHODID_DEBUG = 27;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2130,6 +2199,10 @@ public final class NativeAutomatorGrpc {
           serviceImpl.tapOnNotification((pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
+        case METHODID_DEBUG:
+          serviceImpl.debug((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -2218,6 +2291,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getHandlePermissionDialogMethod())
               .addMethod(getSetLocationAccuracyMethod())
               .addMethod(getTapOnNotificationMethod())
+              .addMethod(getDebugMethod())
               .build();
         }
       }

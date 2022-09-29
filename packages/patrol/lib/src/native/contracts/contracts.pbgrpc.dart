@@ -138,6 +138,10 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/tapOnNotification',
           ($0.TapOnNotificationRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$debug = $grpc.ClientMethod<$0.Empty, $0.Empty>(
+      '/patrol.NativeAutomator/debug',
+      ($0.Empty value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
 
   NativeAutomatorClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -286,6 +290,11 @@ class NativeAutomatorClient extends $grpc.Client {
       $0.TapOnNotificationRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$tapOnNotification, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> debug($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$debug, request, options: options);
   }
 }
 
@@ -492,6 +501,13 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.TapOnNotificationRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
+        'debug',
+        debug_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.Empty> pressHome_Pre(
@@ -631,6 +647,11 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return tapOnNotification(call, await request);
   }
 
+  $async.Future<$0.Empty> debug_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return debug(call, await request);
+  }
+
   $async.Future<$0.Empty> pressHome($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> pressBack($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> pressRecentApps(
@@ -682,4 +703,5 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.SetLocationAccuracyRequest request);
   $async.Future<$0.Empty> tapOnNotification(
       $grpc.ServiceCall call, $0.TapOnNotificationRequest request);
+  $async.Future<$0.Empty> debug($grpc.ServiceCall call, $0.Empty request);
 }

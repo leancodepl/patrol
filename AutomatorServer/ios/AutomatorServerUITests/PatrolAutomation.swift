@@ -32,6 +32,8 @@ class PatrolAutomation {
   }
   
   func openNotifications() {
+    // TODO: Check if works on iPhones without notch
+    
     runAction("opening notifications") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
@@ -40,6 +42,8 @@ class PatrolAutomation {
   }
   
   func closeNotifications() {
+    // TODO: Check if works on iPhones without notch
+    
     runAction("closing notifications") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
@@ -48,6 +52,8 @@ class PatrolAutomation {
   }
 
   func openAppSwitcher() {
+    // TODO: Implement for iPhones without notch
+    
     runAction("opening app switcher") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
@@ -56,7 +62,7 @@ class PatrolAutomation {
   }
   
   func openControlCenter() {
-    // FIXME: implement for iPhones without notch
+    // TODO: Implement for iPhones without notch
     
     runAction("opening control center") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
@@ -285,17 +291,6 @@ class PatrolAutomation {
     }
   }
   
-  func getNativeWidgets() throws {
-    // TODO: Remove later
-    for i in 0...10 {
-      let toggle = self.springboard.switches.element(boundBy: i)
-      let label = toggle.label as String
-      let accLabel = toggle.accessibilityLabel as String?
-      let ident = toggle.identifier
-      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
-    }
-  }
-  
   private func runSettingsAction(
     _ log: String,
     _ bundleIdentifier: String,
@@ -330,5 +325,25 @@ class PatrolAutomation {
     }
 
     group.wait()
+  }
+  
+  func debug() throws {
+    // TODO: Remove later
+    for i in 0...150 {
+      let element = self.springboard.descendants(matching: .any).element(boundBy: i)
+      if !element.exists {
+        break
+      }
+      
+      let label = element.label as String
+      let accLabel = element.accessibilityLabel as String?
+      let ident = element.identifier
+      
+      if label.isEmpty && accLabel?.isEmpty ?? true && ident.isEmpty {
+        continue
+      }
+      
+      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
+    }
   }
 }

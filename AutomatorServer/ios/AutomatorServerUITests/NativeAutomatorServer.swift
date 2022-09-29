@@ -240,4 +240,12 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   ) async throws -> Empty {
     throw PatrolError.generic("tapOnNotification() is not supported on iOS")
   }
+  
+  func debug(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    try automation.debug()
+    return Empty()
+  }
 }

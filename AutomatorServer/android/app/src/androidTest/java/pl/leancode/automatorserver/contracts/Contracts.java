@@ -16883,7 +16883,7 @@ public final class Contracts {
       "\t\022&\n\010children\030\t \003(\0132\024.patrol.NativeWidge" +
       "t\"P\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
       "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\tB\n\n\010_appN" +
-      "ame2\367\014\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
+      "ame2\240\r\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
       "atrol.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBac" +
       "k\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pre" +
       "ssRecentApps\022\r.patrol.Empty\032\r.patrol.Emp" +
@@ -16924,8 +16924,9 @@ public final class Contracts {
       "LocationAccuracy\022\".patrol.SetLocationAcc" +
       "uracyRequest\032\r.patrol.Empty\"\000\022F\n\021tapOnNo" +
       "tification\022 .patrol.TapOnNotificationReq" +
-      "uest\032\r.patrol.Empty\"\000B\'\n%pl.leancode.aut" +
-      "omatorserver.contractsb\006proto3"
+      "uest\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol." +
+      "Empty\032\r.patrol.Empty\"\000B\'\n%pl.leancode.au" +
+      "tomatorserver.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
