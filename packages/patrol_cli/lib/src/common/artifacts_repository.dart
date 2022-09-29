@@ -79,11 +79,15 @@ class ArtifactsRepository {
   bool areArtifactsPresent() {
     final serverApk = _fs.file(_paths.serverArtifactPath);
     final instrumentationApk = _fs.file(_paths.instrumentationArtifactPath);
-    final iosDir = _fs.directory(_paths.iosArtifactDirPath);
 
-    return serverApk.existsSync() &&
-        instrumentationApk.existsSync() &&
-        iosDir.existsSync();
+    if (_platform.isMacOS) {
+      final iosDir = _fs.directory(_paths.iosArtifactDirPath);
+      return serverApk.existsSync() &&
+          instrumentationApk.existsSync() &&
+          iosDir.existsSync();
+    } else {
+      return serverApk.existsSync() && instrumentationApk.existsSync();
+    }
   }
 
   /// Same as [areArtifactsPresent] but looks for unversioned artifacts instead.
@@ -101,15 +105,13 @@ class ArtifactsRepository {
 
   /// Downloads artifacts for the current patrol_cli version.
   Future<void> downloadArtifacts() async {
-    final wantsIos = _platform.isMacOS;
-
     await Future.wait<void>([
       _downloadArtifact(_paths.serverArtifactFile),
       _downloadArtifact(_paths.instrumentationArtifactFile),
-      if (wantsIos) _downloadArtifact(_paths.iosArtifactZip),
+      if (_platform.isMacOS) _downloadArtifact(_paths.iosArtifactZip),
     ]);
 
-    if (!wantsIos) {
+    if (!_platform.isMacOS) {
       return;
     }
 
