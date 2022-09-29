@@ -177,6 +177,21 @@ class PatrolAutomation {
       }
     }
   }
+  
+  func getNotifications() -> [Patrol_Notification] {
+    let notifications = [Patrol_Notification]()
+    runAction("getting notifications") {
+      let cells = self.springboard.buttons.allElementsBoundByIndex
+      for cell in cells {
+        let notification = Patrol_Notification.with {
+          $0.appName = cell.label.components(separatedBy: ",")[0]
+          $0.content = cell.label.components(separatedBy: ",")[1]
+        }
+      }
+    }
+    
+    return notifications
+  }
 
   func tap(on text: String, inApp appId: String) {
     runAction("tapping on \(text)") {

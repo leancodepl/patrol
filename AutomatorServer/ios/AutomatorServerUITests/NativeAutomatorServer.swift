@@ -158,7 +158,10 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_GetNotificationsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_GetNotificationsResponse {
-    throw PatrolError.generic("getNotifications() is not supported on iOS")
+    let notifications = automation.getNotifications()
+    return Patrol_GetNotificationsResponse.with {
+      $0.notifications = notifications
+    }
   }
   
   func tap(
