@@ -150,7 +150,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     for (final dartDefine in dartDefines.entries) {
-      log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
+      log.info('Passed --dart-define: ${dartDefine.key}=${dartDefine.value}');
     }
 
     final dynamic packageName = argResults?['package-name'];
