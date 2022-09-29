@@ -1,3 +1,9 @@
+## 0.6.10
+
+- Fix artifacts being downloaded on every run on Linux and Windows (#392)
+- Fix `getNativeWidgets()` crashing on Android (#393)
+- Fix a small typo during `patrol drive` (#391)
+
 ## 0.6.9
 
 - Fix handling permission prompts now working in some edge cases (#383)
