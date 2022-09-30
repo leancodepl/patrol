@@ -10,8 +10,10 @@ class ArtifactsRepository {
     required FileSystem fs,
     required this.platform,
     http.Client? httpClient,
+    ZipDecoder? zipDecoder,
   })  : _fs = fs,
         _httpClient = httpClient ?? http.Client(),
+        _zipDecoder = zipDecoder ?? ZipDecoder(),
         debug = false {
     _paths = _Paths(artifactPath);
   }
@@ -21,6 +23,7 @@ class ArtifactsRepository {
   final FileSystem _fs;
   Platform platform;
   final http.Client _httpClient;
+  final ZipDecoder _zipDecoder;
   bool debug;
 
   late final _Paths _paths;
@@ -99,7 +102,7 @@ class ArtifactsRepository {
     }
 
     final bytes = await _fs.file(_paths.iosArtifactZipPath).readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
+    final archive = _zipDecoder.decodeBytes(bytes);
 
     for (final archiveFile in archive) {
       final filename = archiveFile.name;

@@ -1,3 +1,4 @@
+import 'package:archive/archive.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,8 @@ const _artifactPath = '/home/johndoe/.cache/patrol';
 
 class MockHttpClient extends Mock implements http.Client {}
 
+class MockZipDecoder extends Mock implements ZipDecoder {}
+
 void main() {
   setUpFakes();
 
@@ -33,12 +36,24 @@ void main() {
     late FileSystem fs;
     late Platform platform;
     late http.Client httpClient;
+    late ZipDecoder zipDecoder;
 
     late ArtifactsRepository artifactsRepository;
 
     setUp(() {
       platform = _linuxPlatform;
       httpClient = MockHttpClient();
+      when(() => httpClient.get(any())).thenAnswer(
+        (_) async => http.Response('', 200),
+      );
+
+      zipDecoder = MockZipDecoder();
+      when(() => zipDecoder.decodeBytes(any())).thenAnswer((invocation) {
+        final archiveFile = ArchiveFile.string('ios-$version', '')
+          ..isFile = false;
+
+        return Archive()..addFile(archiveFile);
+      });
 
       fs = MemoryFileSystem.test();
       final wd = fs.directory('/home/johndoe/projects/awesome_app')
@@ -49,6 +64,7 @@ void main() {
         fs: fs,
         platform: platform,
         httpClient: httpClient,
+        zipDecoder: zipDecoder,
       );
     });
 
@@ -150,7 +166,7 @@ void main() {
     });
 
     group('downloadArtifacts', () {
-      test('throws exception when status code is not 200', () async {
+      test('throws exception when status code is not 200', () {
         when(() => httpClient.get(any())).thenAnswer(
           (_) async => http.Response('', 404),
         );
@@ -163,31 +179,61 @@ void main() {
         verify(() => httpClient.get(any())).called(2);
       });
 
-      test('downloads artifacts when status code is 200', () async {
-        when(() => httpClient.get(any())).thenAnswer(
-          (_) async => http.Response('', 200),
+      test('does not download iOS artifacts when not on macOS', () async {
+        expect(
+          artifactsRepository.platform.operatingSystem,
+          isNot(equals('macos')),
         );
 
         await artifactsRepository.downloadArtifacts();
 
         expect(
+          fs.directory(join(_artifactPath, 'ios-$version')).existsSync(),
+          isFalse,
+        );
+        verify(() => httpClient.get(any())).called(2);
+      });
+
+      test('downloads Android artifacts', () async {
+        await artifactsRepository.downloadArtifacts();
+
+        expect(
           fs.file(join(_artifactPath, 'server-$version.apk')).existsSync(),
-          equals(true),
+          isTrue,
         );
 
         expect(
           fs
               .file(join(_artifactPath, 'instrumentation-$version.apk'))
               .existsSync(),
-          equals(true),
+          isTrue,
+        );
+
+        verify(() => httpClient.get(any())).called(2);
+      });
+
+      test('downloads Android and iOS artifacts when on macOS', () async {
+        artifactsRepository.platform = _macosPlatform;
+        await artifactsRepository.downloadArtifacts();
+
+        expect(
+          fs.file(join(_artifactPath, 'server-$version.apk')).existsSync(),
+          isTrue,
+        );
+
+        expect(
+          fs
+              .file(join(_artifactPath, 'instrumentation-$version.apk'))
+              .existsSync(),
+          isTrue,
         );
 
         expect(
           fs.directory(join(_artifactPath, 'ios-$version')).existsSync(),
-          equals(false),
+          isTrue,
         );
 
-        verify(() => httpClient.get(any())).called(2);
+        verify(() => httpClient.get(any())).called(3);
       });
     });
   });
