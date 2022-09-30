@@ -23,7 +23,6 @@ class IOSDriver {
     required String port,
     required Device device,
     required String? flavor,
-    required bool verbose,
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);

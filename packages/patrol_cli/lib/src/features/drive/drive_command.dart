@@ -12,7 +12,6 @@ import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
-import 'package:patrol_cli/src/top_level_flags.dart';
 
 part 'drive_command.freezed.dart';
 
@@ -34,13 +33,11 @@ class DriveCommandConfig with _$DriveCommandConfig {
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
     required DisposeScope parentDisposeScope,
-    required TopLevelFlags topLevelFlags,
     required ArtifactsRepository artifactsRepository,
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
   })  : _disposeScope = DisposeScope(),
-        _topLevelFlags = topLevelFlags,
         _artifactsRepository = artifactsRepository,
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
@@ -106,7 +103,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
-  final TopLevelFlags _topLevelFlags;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
@@ -192,8 +188,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
             port: config.port,
             device: device,
             flavor: config.flavor,
-            verbose: _topLevelFlags.verbose,
-            debug: _topLevelFlags.debug,
           );
           break;
         case TargetPlatform.iOS:
@@ -201,7 +195,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
             port: config.port,
             device: device,
             flavor: config.flavor,
-            verbose: _topLevelFlags.verbose,
           );
           break;
       }
@@ -223,7 +216,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           port: config.port,
           device: device,
           flavor: config.flavor,
-          verbose: _topLevelFlags.verbose,
           dartDefines: config.dartDefines,
         );
 

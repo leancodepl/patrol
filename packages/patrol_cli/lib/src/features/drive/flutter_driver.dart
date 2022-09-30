@@ -16,7 +16,6 @@ class FlutterDriverOptions {
     required this.device,
     required this.flavor,
     required this.dartDefines,
-    required this.verbose,
   });
 
   final String driver;
@@ -26,7 +25,6 @@ class FlutterDriverOptions {
   final Device? device;
   final String? flavor;
   final Map<String, String> dartDefines;
-  final bool verbose;
 }
 
 /// Thrown when `flutter drive` exits with non-zero exit code.

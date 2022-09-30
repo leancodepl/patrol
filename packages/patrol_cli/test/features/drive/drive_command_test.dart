@@ -7,7 +7,6 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
-import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:test/test.dart';
 
 import 'fixures/devices.dart';
@@ -35,7 +34,6 @@ void main() {
   group('parse input', () {
     setUp(() {
       final parentDisposeScope = DisposeScope();
-      final topLevelFlags = TopLevelFlags();
       final artifactsRepository = MockArtifactsRepository();
 
       fs = MemoryFileSystem.test();
@@ -56,7 +54,6 @@ void main() {
 
       driveCommand = DriveCommand(
         parentDisposeScope: parentDisposeScope,
-        topLevelFlags: topLevelFlags,
         artifactsRepository: artifactsRepository,
         deviceFinder: deviceFinder,
         testFinder: testFinder,

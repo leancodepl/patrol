@@ -3,17 +3,15 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
 import 'package:patrol_cli/src/common/constants.dart' show version;
-import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:platform/platform.dart';
 
 class ArtifactsRepository {
   ArtifactsRepository({
     required FileSystem fs,
     required Platform platform,
-    required TopLevelFlags topLevelFlags,
   })  : _fs = fs,
         _platform = platform,
-        _topLevelFlags = topLevelFlags {
+        debug = false {
     _paths = _Paths(artifactPath);
   }
 
@@ -21,7 +19,7 @@ class ArtifactsRepository {
 
   final FileSystem _fs;
   final Platform _platform;
-  final TopLevelFlags _topLevelFlags;
+  bool debug;
 
   late final _Paths _paths;
 
@@ -57,21 +55,17 @@ class ArtifactsRepository {
   }
 
   String get serverArtifactPath {
-    return _topLevelFlags.debug
-        ? _paths.debugServerArtifactPath
-        : _paths.serverArtifactPath;
+    return debug ? _paths.debugServerArtifactPath : _paths.serverArtifactPath;
   }
 
   String get instrumentationArtifactPath {
-    return _topLevelFlags.debug
+    return debug
         ? _paths.debugInstrumentationArtifactPath
         : _paths.instrumentationArtifactPath;
   }
 
   String get iosArtifactDirPath {
-    return _topLevelFlags.debug
-        ? _paths.debugIOSArtifactDirPath
-        : _paths.iosArtifactDirPath;
+    return debug ? _paths.debugIOSArtifactDirPath : _paths.iosArtifactDirPath;
   }
 
   /// Returns true if artifacts for the current patrol_cli version are present
@@ -161,16 +155,21 @@ class _Paths {
   final String _artifactPath;
 
   String get serverArtifact => 'server-$version';
+
   String get serverArtifactFile => '$serverArtifact.apk';
 
   String get instrumentationArtifact => 'instrumentation-$version';
+
   String get instrumentationArtifactFile => '$instrumentationArtifact.apk';
 
   String get iosArtifactDir => 'ios-$version';
+
   String get iosArtifactZip => 'ios-$version.zip';
 
   String get debugServerArtifactFile => 'server.apk';
+
   String get debugInstrumentationArtifactFile => 'instrumentation.apk';
+
   String get debugIOSArtifactDir => 'ios';
 
   /// Returns a URI where [artifact] can be downloaded from.

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -16,7 +17,6 @@ import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
-import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
@@ -33,31 +33,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
         .then((_) => exit(130));
   });
 
-  // ArgParser doesn't exist yet, we have to parse args manually.
-  final verbose = args.contains('--verbose') || args.contains('-v');
-
-  try {
-    exitCode = await runner.run(args) ?? 0;
-  } on ToolExit catch (err, st) {
-    if (verbose) {
-      log.severe(null, err, st);
-    } else {
-      log.severe(err);
-    }
-    exitCode = 1;
-  } on UsageException catch (err) {
-    log.severe(err.message);
-    exitCode = 1;
-  } on FormatException catch (err, st) {
-    log.severe(null, err, st);
-    exitCode = 1;
-  } on FileSystemException catch (err, st) {
-    log.severe('${err.message}: ${err.path}', err, st);
-    exitCode = 1;
-  } catch (err, st) {
-    log.severe(null, err, st);
-    exitCode = 1;
-  }
+  exitCode = await runner.run(args) ?? 0;
 
   if (interruption != null) {
     await interruption; // will never complete
@@ -70,7 +46,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
 class PatrolCommandRunner extends CommandRunner<int> {
   PatrolCommandRunner()
       : _disposeScope = DisposeScope(),
-        _topLevelFlags = TopLevelFlags(),
+        _pubUpdater = PubUpdater(),
         super(
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
@@ -78,14 +54,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
     _artifactsRepository = ArtifactsRepository(
       fs: globals.fs,
       platform: globals.platform,
-      topLevelFlags: _topLevelFlags,
     );
 
     addCommand(BootstrapCommand());
     addCommand(
       DriveCommand(
         parentDisposeScope: _disposeScope,
-        topLevelFlags: _topLevelFlags,
         artifactsRepository: _artifactsRepository,
         deviceFinder: DeviceFinder(),
         testFinder: TestFinder(
@@ -107,7 +81,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
         help: 'Print more logs.',
         negatable: false,
       )
-      ..addFlag('version', abbr: 'V', help: 'Print version.', negatable: false)
+      ..addFlag(
+        'version',
+        abbr: 'V',
+        help: 'Print version of this program.',
+        negatable: false,
+      )
       ..addFlag(
         'debug',
         help: 'Use default, non-versioned artifacts.',
@@ -117,7 +96,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   final DisposeScope _disposeScope;
   late final ArtifactsRepository _artifactsRepository;
-  final TopLevelFlags _topLevelFlags;
+  final PubUpdater _pubUpdater;
 
   Future<void> dispose() async {
     try {
@@ -129,42 +108,82 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   @override
   Future<int?> run(Iterable<String> args) async {
-    await setUpLogger(); // argParser.parse() can fail, so we setup logger early
-    final results = argParser.parse(args);
-    _topLevelFlags.verbose = results['verbose'] as bool;
-    final helpFlag = results['help'] as bool;
-    final versionFlag = results['version'] as bool;
-    _topLevelFlags.debug = results['debug'] as bool;
+    await setUpLogger();
 
-    await setUpLogger(verbose: _topLevelFlags.verbose);
+    var verbose = false;
+    var debug = false;
 
-    if (_topLevelFlags.debug) {
-      log.info('Debug mode enabled. Non-versioned artifacts will be used.');
+    int exitCode;
+    try {
+      final topLevelResults = parse(args);
+      verbose = topLevelResults['verbose'] == true;
+      debug = topLevelResults['debug'] == true;
+
+      if (verbose) {
+        log
+          ..verbose = true
+          ..info('Verbose mode enabled. More logs will be printed.');
+      }
+
+      if (debug) {
+        _artifactsRepository.debug = true;
+        log.info('Debug mode enabled. Non-versioned artifacts will be used.');
+      }
+      exitCode = await runCommand(topLevelResults) ?? ExitCode.success.code;
+    } on ToolExit catch (err, st) {
+      if (verbose) {
+        log.severe(null, err, st);
+      } else {
+        log.severe(err);
+      }
+      exitCode = 1;
+    } on FormatException catch (err, st) {
+      log.severe(null, err, st);
+      exitCode = 1;
+      return ExitCode.usage.code;
+    } on UsageException catch (err) {
+      log
+        ..severe(err.message)
+        ..info('')
+        ..info(err.usage);
+      return ExitCode.usage.code;
+    } on FileSystemException catch (err, st) {
+      log.severe('${err.message}: ${err.path}', err, st);
+      exitCode = 1;
+    } catch (err, st) {
+      log.severe(null, err, st);
+      exitCode = 1;
     }
 
-    if (versionFlag) {
-      log.info('patrol_cli v$version');
-      return 0;
-    }
-
-    if (helpFlag) {
-      return super.run(args);
-    }
-
-    final commandName = results.command?.name;
-
-    if (_wantsVersionCheck(commandName)) {
-      await _checkForUpdates(commandName);
-    }
-
-    if (_wantsArtifacts(commandName)) {
-      await _ensureArtifactsArePresent();
-    }
-
-    return super.run(args);
+    return exitCode;
   }
 
-  bool _wantsVersionCheck(String? commandName) {
+  @override
+  Future<int?> runCommand(ArgResults topLevelResults) async {
+    _debugPrintResults(topLevelResults);
+
+    final commandName = topLevelResults.command?.name;
+
+    if (_wantsArtifacts(commandName)) {
+      await _ensureArtifactsArePresent(debug: topLevelResults['debug'] == true);
+    }
+
+    if (_wantsUpdateCheck(commandName)) {
+      await _checkForUpdate(commandName);
+    }
+
+    final int? exitCode;
+    if (topLevelResults['version'] == true) {
+      log.info('patrol_cli v$version');
+      exitCode = ExitCode.success.code;
+    } else {
+      exitCode = await super.runCommand(topLevelResults);
+    }
+
+    return exitCode;
+  }
+
+  bool _wantsUpdateCheck(String? commandName) {
     if (commandName == 'update' || commandName == 'doctor') {
       return false;
     }
@@ -174,14 +193,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   /// Checks if the current version (set by the build runner on the version.dart
   /// file) is the most recent one. If not, show a prompt to the user.
-  Future<void> _checkForUpdates(String? commandName) async {
+  Future<void> _checkForUpdate(String? commandName) async {
     if (commandName == 'update' || commandName == 'doctor') {
       return;
     }
 
-    final pubUpdater = PubUpdater();
-
-    final latestVersion = await pubUpdater.getLatestVersion(patrolCliPackage);
+    final latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
     final isUpToDate = version == latestVersion;
 
     if (isUpToDate) {
@@ -210,8 +227,8 @@ Run ${lightCyan.wrap('patrol update')} to update''',
     return true;
   }
 
-  Future<void> _ensureArtifactsArePresent() async {
-    if (_topLevelFlags.debug) {
+  Future<void> _ensureArtifactsArePresent({required bool debug}) async {
+    if (debug) {
       if (_artifactsRepository.areDebugArtifactsPresent()) {
         return;
       } else {
@@ -230,5 +247,29 @@ Run ${lightCyan.wrap('patrol update')} to update''',
     }
 
     progress.complete('Downloaded artifacts');
+  }
+
+  void _debugPrintResults(ArgResults topLevelResults) {
+    log
+      ..info('Argument information:')
+      ..info('\tTop level options:');
+
+    for (final option in topLevelResults.options) {
+      if (topLevelResults.wasParsed(option)) {
+        log.info('\t- $option: ${topLevelResults[option]}');
+      }
+    }
+
+    if (topLevelResults.command != null) {
+      final commandResults = topLevelResults.command!;
+      log
+        ..info('\tCommand: ${commandResults.name}')
+        ..info('\t\tCommand options:');
+      for (final option in commandResults.options) {
+        if (commandResults.wasParsed(option)) {
+          log.info('\t\t- $option: ${commandResults[option]}');
+        }
+      }
+    }
   }
 }

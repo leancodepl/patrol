@@ -26,19 +26,14 @@ class AndroidDriver {
     required String port,
     required Device device,
     required String? flavor,
-    required bool verbose,
-    required bool debug,
   }) async {
     await _forwardPorts(port, device: device.id);
-    await _installServer(device: device.id, debug: debug);
-    await _installInstrumentation(device: device.id, debug: debug);
+    await _installServer(device: device.id);
+    await _installInstrumentation(device: device.id);
     await _runServer(device: device.id, port: port);
   }
 
-  Future<void> _installServer({
-    required String device,
-    required bool debug,
-  }) async {
+  Future<void> _installServer({required String device}) async {
     await _disposeScope.run((scope) async {
       final progress = log.progress('Installing server');
       try {
@@ -65,10 +60,7 @@ class AndroidDriver {
     });
   }
 
-  Future<void> _installInstrumentation({
-    String? device,
-    bool debug = false,
-  }) async {
+  Future<void> _installInstrumentation({String? device}) async {
     await _disposeScope.run((scope) async {
       final progress = log.progress('Installing instrumentation');
 
