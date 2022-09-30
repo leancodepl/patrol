@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show exit;
 
 import 'package:patrol_cli/src/command_runner.dart';
 

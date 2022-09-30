@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' show Process;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';

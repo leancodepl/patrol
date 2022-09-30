@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
@@ -28,7 +26,7 @@ class CleanCommand extends Command<int> {
     final progress = _logger.progress('Deleting $artifactPath');
 
     try {
-      final dir = Directory(artifactPath);
+      final dir = _artifactsRepository.artifactPathDir;
       if (!dir.existsSync()) {
         progress.complete("Nothing to clean, $artifactPath doesn't exist");
         return 1;

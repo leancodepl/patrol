@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show ProcessSignal, exit;
 
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -68,7 +68,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
-    addCommand(BootstrapCommand(logger: _logger));
+    addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     addCommand(
       DriveCommand(
         parentDisposeScope: _disposeScope,

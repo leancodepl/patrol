@@ -11,13 +11,13 @@ import 'package:test/test.dart';
 
 import '../fakes.dart';
 
-final _macosPlatform = FakePlatform(
+final _macos = FakePlatform(
   pathSeparator: '/',
   operatingSystem: 'macos',
   environment: {'HOME': join('/home', 'johndoe')},
 );
 
-final _linuxPlatform = FakePlatform(
+final _linux = FakePlatform(
   pathSeparator: '/',
   operatingSystem: 'linux',
   environment: {'HOME': join('/home', 'johndoe')},
@@ -41,7 +41,7 @@ void main() {
     late ArtifactsRepository artifactsRepository;
 
     setUp(() {
-      platform = _linuxPlatform;
+      platform = _linux;
       httpClient = MockHttpClient();
       when(() => httpClient.get(any())).thenAnswer(
         (_) async => http.Response('', 200),
@@ -139,7 +139,7 @@ void main() {
       });
 
       test('returns false when only Android artifacts exist on macOS', () {
-        artifactsRepository.platform = _macosPlatform;
+        artifactsRepository.platform = _macos;
 
         fs
             .file(join(_artifactPath, 'server-$version.apk'))
@@ -152,7 +152,7 @@ void main() {
       });
 
       test('returns true when Android and iOS artifacts exist on macOS', () {
-        artifactsRepository.platform = _macosPlatform;
+        artifactsRepository.platform = _macos;
         fs
             .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
@@ -213,7 +213,7 @@ void main() {
       });
 
       test('downloads Android and iOS artifacts when on macOS', () async {
-        artifactsRepository.platform = _macosPlatform;
+        artifactsRepository.platform = _macos;
         await artifactsRepository.downloadArtifacts();
 
         expect(

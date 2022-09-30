@@ -1,13 +1,16 @@
-import 'dart:io';
+import 'dart:io' show Process;
 
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/bootstrap/file_contents.dart';
 import 'package:patrol_cli/src/features/bootstrap/pubspec.dart' as pubspec;
 
 class BootstrapCommand extends Command<int> {
-  BootstrapCommand({required Logger logger}) : _logger = logger {
+  BootstrapCommand({required FileSystem fs, required Logger logger})
+      : _fs = fs,
+        _logger = logger {
     argParser.addOption(
       'template',
       help: 'Project type to bootstrap for',
@@ -16,6 +19,7 @@ class BootstrapCommand extends Command<int> {
     );
   }
 
+  final FileSystem _fs;
   final Logger _logger;
 
   @override
@@ -44,7 +48,7 @@ class BootstrapCommand extends Command<int> {
   }
 
   void _ensureHasPubspec() {
-    final pubspecExists = File('pubspec.yaml').existsSync();
+    final pubspecExists = _fs.file('pubspec.yaml').existsSync();
 
     if (!pubspecExists) {
       throw Exception(
@@ -103,7 +107,7 @@ class BootstrapCommand extends Command<int> {
     final progress = _logger.progress('Creating default $driverFilePath');
 
     try {
-      final file = File(driverFilePath)..createSync(recursive: true);
+      final file = _fs.file(driverFilePath)..createSync(recursive: true);
       await file.writeAsString(driverFileContent);
     } catch (err, st) {
       progress.fail('Failed to create default $driverFilePath');
@@ -125,7 +129,7 @@ class BootstrapCommand extends Command<int> {
     );
 
     try {
-      final file = File(testFilePath)..createSync(recursive: true);
+      final file = _fs.file(testFilePath)..createSync(recursive: true);
       await file.writeAsString(template.generateCode());
     } catch (err, st) {
       progress.fail('Failed to create default $testFilePath');
@@ -140,7 +144,7 @@ class BootstrapCommand extends Command<int> {
     final progress = _logger.progress('Creating default $configFilePath');
 
     try {
-      final file = File(configFilePath)..createSync(recursive: true);
+      final file = _fs.file(configFilePath)..createSync(recursive: true);
       await file.writeAsString(configFileContent);
     } catch (err, st) {
       progress.fail('Failed to create default $configFilePath');

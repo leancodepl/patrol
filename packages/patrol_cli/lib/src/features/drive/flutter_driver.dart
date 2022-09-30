@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show Process, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';

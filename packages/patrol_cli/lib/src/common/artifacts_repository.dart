@@ -40,6 +40,8 @@ class ArtifactsRepository {
     return p;
   }
 
+  Directory get artifactPathDir => _fs.directory(artifactPath);
+
   String get _defaultArtifactPath => join(_homeDirPath, '.cache', 'patrol');
 
   String get _homeDirPath {
