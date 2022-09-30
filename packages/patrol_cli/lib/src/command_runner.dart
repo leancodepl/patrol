@@ -190,8 +190,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   @override
   Future<int?> runCommand(ArgResults topLevelResults) async {
-    //_debugPrintResults(topLevelResults);
-
     final commandName = topLevelResults.command?.name;
 
     if (_wantsArtifacts(commandName)) {
@@ -278,29 +276,5 @@ Run ${lightCyan.wrap('patrol update')} to update''',
     }
 
     progress.complete('Downloaded artifacts');
-  }
-
-  void _debugPrintResults(ArgResults topLevelResults) {
-    _logger
-      ..info('Argument information:')
-      ..info('\tTop level options:');
-
-    for (final option in topLevelResults.options) {
-      if (topLevelResults.wasParsed(option)) {
-        _logger.info('\t- $option: ${topLevelResults[option]}');
-      }
-    }
-
-    if (topLevelResults.command != null) {
-      final commandResults = topLevelResults.command!;
-      _logger
-        ..info('\tCommand: ${commandResults.name}')
-        ..info('\t\tCommand options:');
-      for (final option in commandResults.options) {
-        if (commandResults.wasParsed(option)) {
-          _logger.info('\t\t- $option: ${commandResults[option]}');
-        }
-      }
-    }
   }
 }
