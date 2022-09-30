@@ -8,10 +8,9 @@ import 'package:platform/platform.dart';
 class ArtifactsRepository {
   ArtifactsRepository({
     required FileSystem fs,
-    required Platform platform,
+    required this.platform,
     http.Client? httpClient,
   })  : _fs = fs,
-        _platform = platform,
         _httpClient = httpClient ?? http.Client(),
         debug = false {
     _paths = _Paths(artifactPath);
@@ -20,14 +19,14 @@ class ArtifactsRepository {
   static const artifactPathEnv = 'PATROL_CACHE';
 
   final FileSystem _fs;
-  final Platform _platform;
+  Platform platform;
   final http.Client _httpClient;
   bool debug;
 
   late final _Paths _paths;
 
   String get artifactPath {
-    final env = _platform.environment;
+    final env = platform.environment;
     String p;
     if (env.containsKey(env)) {
       p = env[env]!;
@@ -41,12 +40,12 @@ class ArtifactsRepository {
   String get _defaultArtifactPath => join(_homeDirPath, '.cache', 'patrol');
 
   String get _homeDirPath {
-    final envVars = _platform.environment;
-    if (_platform.isMacOS) {
+    final envVars = platform.environment;
+    if (platform.isMacOS) {
       return envVars['HOME']!;
-    } else if (_platform.isLinux) {
+    } else if (platform.isLinux) {
       return envVars['HOME']!;
-    } else if (_platform.isWindows) {
+    } else if (platform.isWindows) {
       return envVars['UserProfile']!;
     } else {
       throw Exception('Cannot find home directory. Unsupported platform');
@@ -54,7 +53,7 @@ class ArtifactsRepository {
   }
 
   bool get artifactPathSetFromEnv {
-    return _platform.environment.containsKey(artifactPathEnv);
+    return platform.environment.containsKey(artifactPathEnv);
   }
 
   String get serverArtifactPath {
@@ -77,7 +76,7 @@ class ArtifactsRepository {
     final serverApk = _fs.file(serverArtifactPath);
     final instrumentationApk = _fs.file(instrumentationArtifactPath);
 
-    if (_platform.isMacOS) {
+    if (platform.isMacOS) {
       final iosDir = _fs.directory(iosArtifactDirPath);
       return serverApk.existsSync() &&
           instrumentationApk.existsSync() &&
@@ -92,10 +91,10 @@ class ArtifactsRepository {
     await Future.wait<void>([
       _downloadArtifact(_paths.serverArtifactFile),
       _downloadArtifact(_paths.instrumentationArtifactFile),
-      if (_platform.isMacOS) _downloadArtifact(_paths.iosArtifactZip),
+      if (platform.isMacOS) _downloadArtifact(_paths.iosArtifactZip),
     ]);
 
-    if (!_platform.isMacOS) {
+    if (!platform.isMacOS) {
       return;
     }
 
@@ -105,7 +104,7 @@ class ArtifactsRepository {
     for (final archiveFile in archive) {
       final filename = archiveFile.name;
       final extractPath =
-          _paths.iosArtifactDirPath + _platform.pathSeparator + filename;
+          _paths.iosArtifactDirPath + platform.pathSeparator + filename;
       if (archiveFile.isFile) {
         final data = archiveFile.content as List<int>;
         final newFile = _fs.file(extractPath);

@@ -90,7 +90,7 @@ void main() {
       });
     });
 
-    group('areArtifactsPresent on Linux', () {
+    group('areArtifactsPresent', () {
       test('returns false when artifacts are not present', () {
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
       });
@@ -121,18 +121,10 @@ void main() {
 
         expect(artifactsRepository.areArtifactsPresent(), equals(true));
       });
-    });
 
-    group('areArtifactsPresent on macOS', () {
-      setUp(() {
-        artifactsRepository = ArtifactsRepository(
-          fs: fs,
-          platform: _macosPlatform,
-          httpClient: httpClient,
-        );
-      });
+      test('returns false when only Android artifacts exist on macOS', () {
+        artifactsRepository.platform = _macosPlatform;
 
-      test('returns false when only Android artifacts exist', () {
         fs
             .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
@@ -143,7 +135,8 @@ void main() {
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
       });
 
-      test('returns true when Android and iOS artifacts exist', () {
+      test('returns true when Android and iOS artifacts exist on macOS', () {
+        artifactsRepository.platform = _macosPlatform;
         fs
             .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
