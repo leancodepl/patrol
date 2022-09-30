@@ -1,12 +1,15 @@
 import 'package:args/command_runner.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 
 class DevicesCommand extends Command<int> {
-  DevicesCommand({required DeviceFinder deviceFinder})
-      : _deviceFinder = deviceFinder;
+  DevicesCommand({required DeviceFinder deviceFinder, required Logger logger})
+      : _deviceFinder = deviceFinder,
+        _logger = logger;
 
   final DeviceFinder _deviceFinder;
+  final Logger _logger;
 
   @override
   String get name => 'devices';
@@ -19,12 +22,12 @@ class DevicesCommand extends Command<int> {
     final devices = await _deviceFinder.getAttachedDevices();
 
     if (devices.isEmpty) {
-      log.warning('No devices attached');
+      _logger.warning('No devices attached');
       return 1;
     }
 
     for (final device in devices) {
-      log.info('${device.name} (${device.id})');
+      _logger.info('${device.name} (${device.id})');
     }
 
     return 0;

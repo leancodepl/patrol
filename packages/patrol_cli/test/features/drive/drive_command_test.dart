@@ -1,6 +1,7 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -58,6 +59,7 @@ void main() {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testRunner: TestRunner(),
+        logger: Logger(''),
       );
     });
 

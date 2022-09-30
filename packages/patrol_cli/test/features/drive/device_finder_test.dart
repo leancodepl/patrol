@@ -1,3 +1,5 @@
+import 'package:logging/logging.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -5,11 +7,15 @@ import 'package:test/test.dart';
 
 import 'fixures/devices.dart';
 
+//class MockLogger extends Mock implements Logger {}
+
 void main() {
   late DeviceFinder deviceFinder;
 
   setUp(() {
-    deviceFinder = DeviceFinder();
+    final logger = Logger('');
+
+    deviceFinder = DeviceFinder(logger: logger);
   });
 
   group('findDevicesToUse', () {

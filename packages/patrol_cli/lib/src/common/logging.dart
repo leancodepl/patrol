@@ -6,8 +6,6 @@ import 'package:ansi_styles/ansi_styles.dart';
 import 'package:logging/logging.dart';
 import 'package:mason_logger/mason_logger.dart' as mason_logger;
 
-final log = Logger('');
-
 extension LoggerX on Logger {
   static final _logger = mason_logger.Logger();
 
