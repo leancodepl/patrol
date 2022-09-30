@@ -160,7 +160,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
   @override
   Future<int?> runCommand(ArgResults topLevelResults) async {
-    _debugPrintResults(topLevelResults);
+    //_debugPrintResults(topLevelResults);
 
     final commandName = topLevelResults.command?.name;
 
