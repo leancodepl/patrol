@@ -1,11 +1,11 @@
 import 'package:args/command_runner.dart';
 import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart'
-    show lightCyan, lightYellow, ExitCode;
+import 'package:mason_logger/mason_logger.dart' show lightCyan, lightYellow;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart';
+import 'package:patrol_cli/src/common/extensions/command_runner.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
@@ -66,7 +66,7 @@ void main() {
         }
       });
       final result = await commandRunner.run(['--version']);
-      expect(result, equals(ExitCode.usage.code));
+      expect(result, equals(1));
       verify(() => logger.severe(exception.message)).called(1);
       verify(() => logger.info(commandRunner.usage)).called(1);
     });
@@ -81,10 +81,44 @@ void main() {
         }
       });
       final result = await commandRunner.run(['--version']);
-      expect(result, equals(ExitCode.usage.code));
+      expect(result, equals(1));
       verify(() => logger.severe(exception.message)).called(1);
       verify(() => logger.info(exception.usage)).called(1);
     });
+
+    test('prints usage when no command is passed', () async {
+      final result = await commandRunner.run([]);
+      expect(result, equals(0));
+      verify(() => logger.info(commandRunner.usage)).called(1);
+    });
+
+    test(
+      'prints error message and usage when command option is passed',
+      () async {
+        final result = await commandRunner.run(['foo']);
+        expect(result, equals(1));
+        verify(
+          () => logger.severe('Could not find a command named "foo".'),
+        ).called(1);
+        verify(
+          () => logger.info(commandRunner.usageWithoutDescription),
+        ).called(1);
+      },
+    );
+
+    test(
+      'prints error message and usage when unknown option is passed',
+      () async {
+        final result = await commandRunner.run(['--bar']);
+        expect(result, equals(1));
+        verify(
+          () => logger.severe('Could not find an option named "bar".'),
+        ).called(1);
+        verify(
+          () => logger.info(commandRunner.usageWithoutDescription),
+        ).called(1);
+      },
+    );
 
     group('--version', () {
       test('prints current version', () async {

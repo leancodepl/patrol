@@ -4,8 +4,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart'
-    show ExitCode, lightCyan, lightYellow;
+import 'package:mason_logger/mason_logger.dart' show lightCyan, lightYellow;
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/globals.dart' as globals;
@@ -166,22 +165,18 @@ class PatrolCommandRunner extends CommandRunner<int> {
       }
       exitCode = 1;
     } on FormatException catch (err, st) {
-      // On format errors, show the commands error message, root usage and
-      // exit with an error code
       _logger
         ..severe(err.message)
         ..severe('$st')
         ..info('')
         ..info(usage);
-      exitCode = ExitCode.usage.code;
+      exitCode = 1;
     } on UsageException catch (err) {
-      // On usage errors, show the commands usage message and
-      // exit with an error code
       _logger
         ..severe(err.message)
         ..info('')
         ..info(err.usage);
-      exitCode = ExitCode.usage.code;
+      exitCode = 1;
     } on FileSystemException catch (err, st) {
       _logger.severe('${err.message}: ${err.path}', err, st);
       exitCode = 1;
@@ -218,6 +213,9 @@ class PatrolCommandRunner extends CommandRunner<int> {
     return exitCode;
   }
 
+  @override
+  void printUsage() => _logger.info('$usage');
+
   bool _wantsUpdateCheck(String? commandName) {
     if (commandName == 'update' || commandName == 'doctor') {
       return false;
@@ -227,7 +225,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
   }
 
   /// Checks if the current version (set by the build runner on the version.dart
-  /// file) is the most recent one. If not, show a prompt to the user.
+  /// file) is the most recent one. If not, shows a prompt to the user.
   Future<void> _checkForUpdate(String? commandName) async {
     if (commandName == 'update' || commandName == 'doctor') {
       return;
