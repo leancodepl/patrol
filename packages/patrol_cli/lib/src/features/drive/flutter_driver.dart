@@ -126,14 +126,14 @@ class FlutterDriver {
     exitCode = await process.exitCode;
 
     final msg = 'flutter_driver exited with code $exitCode';
-    _logger.info(msg);
-
     if (exitCode == -15) {
       // Occurs when the VM is killed. Do nothing because it was most probably
       // killed by us.
       // https://github.com/dart-lang/sdk/blob/master/pkg/dartdev/test/commands/create_integration_test.dart#L149-L152
     } else if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
+    } else {
+      _logger.info(msg);
     }
   }
 
