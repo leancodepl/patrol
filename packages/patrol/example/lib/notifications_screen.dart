@@ -47,7 +47,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     await _notificationsPlugin.show(
       id,
       title,
-      "$body\nThis notification's ID: $id",
+      '$body ID: $id',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'main',

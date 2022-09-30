@@ -30,17 +30,39 @@ class PatrolAutomation {
       app.activate()
     }
   }
+  
+  func openNotifications() {
+    // TODO: Check if works on iPhones without notch
+    
+    runAction("opening notifications") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
+  
+  func closeNotifications() {
+    // TODO: Check if works on iPhones without notch
+    
+    runAction("closing notifications") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
 
   func openAppSwitcher() {
+    // TODO: Implement for iPhones without notch
+    
     runAction("opening app switcher") {
-      let swipeStart = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
-      let swipeEnd = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
-      swipeStart.press(forDuration: 0.1, thenDragTo: swipeEnd)
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
+      start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
   
   func openControlCenter() {
-    // FIXME: implement for iPhones without notch
+    // TODO: Implement for iPhones without notch
     
     runAction("opening control center") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
@@ -154,6 +176,21 @@ class PatrolAutomation {
         toggle.tap()
       }
     }
+  }
+  
+  func getNotifications() -> [Patrol_Notification] {
+    let notifications = [Patrol_Notification]()
+    runAction("getting notifications") {
+      let cells = self.springboard.buttons.allElementsBoundByIndex
+      for cell in cells {
+        let notification = Patrol_Notification.with {
+          $0.appName = cell.label.components(separatedBy: ",")[0]
+          $0.content = cell.label.components(separatedBy: ",")[1]
+        }
+      }
+    }
+    
+    return notifications
   }
 
   func tap(on text: String, inApp appId: String) {
@@ -269,17 +306,6 @@ class PatrolAutomation {
     }
   }
   
-  func getNativeWidgets() throws {
-    // TODO: Remove later
-    for i in 0...10 {
-      let toggle = self.springboard.switches.element(boundBy: i)
-      let label = toggle.label as String
-      let accLabel = toggle.accessibilityLabel as String?
-      let ident = toggle.identifier
-      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
-    }
-  }
-  
   private func runSettingsAction(
     _ log: String,
     _ bundleIdentifier: String,
@@ -314,5 +340,25 @@ class PatrolAutomation {
     }
 
     group.wait()
+  }
+  
+  func debug() throws {
+    // TODO: Remove later
+    for i in 0...150 {
+      let element = self.springboard.descendants(matching: .any).element(boundBy: i)
+      if !element.exists {
+        break
+      }
+      
+      let label = element.label as String
+      let accLabel = element.accessibilityLabel as String?
+      let ident = element.identifier
+      
+      if label.isEmpty && accLabel?.isEmpty ?? true && ident.isEmpty {
+        continue
+      }
+      
+      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
+    }
   }
 }
