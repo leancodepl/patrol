@@ -97,7 +97,7 @@ void main() {
 
       test('returns false when only server.apk exists', () {
         fs
-            .file('/home/johndoe/.cache/patrol/server-$version.apk')
+            .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
 
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
@@ -105,7 +105,7 @@ void main() {
 
       test('returns false when only instrumentation.apk exists', () {
         fs
-            .file('/home/johndoe/.cache/patrol/instrumentation-$version.apk')
+            .file(join(_artifactPath, 'instrumentation-$version.apk'))
             .createSync(recursive: true);
 
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
@@ -113,10 +113,10 @@ void main() {
 
       test('returns true when server.apk and instrumentation.apk exist', () {
         fs
-            .file('/home/johndoe/.cache/patrol/server-$version.apk')
+            .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
         fs
-            .file('/home/johndoe/.cache/patrol/instrumentation-$version.apk')
+            .file(join(_artifactPath, 'instrumentation-$version.apk'))
             .createSync();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(true));
@@ -134,19 +134,23 @@ void main() {
 
       test('returns false when only Android artifacts exist', () {
         fs
-            .file(artifactsRepository.serverArtifactPath)
+            .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
-        fs.file(artifactsRepository.instrumentationArtifactPath).createSync();
+        fs
+            .file(join(_artifactPath, 'instrumentation-$version.apk'))
+            .createSync();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
       });
 
       test('returns true when Android and iOS artifacts exist', () {
         fs
-            .file(artifactsRepository.serverArtifactPath)
+            .file(join(_artifactPath, 'server-$version.apk'))
             .createSync(recursive: true);
-        fs.file(artifactsRepository.instrumentationArtifactPath).createSync();
-        fs.directory(artifactsRepository.iosArtifactDirPath).createSync();
+        fs
+            .file(join(_artifactPath, 'instrumentation-$version.apk'))
+            .createSync();
+        fs.directory(join(_artifactPath, 'ios-$version')).createSync();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(true));
       });
@@ -174,17 +178,19 @@ void main() {
         await artifactsRepository.downloadArtifacts();
 
         expect(
-          fs.file(artifactsRepository.serverArtifactPath).existsSync(),
+          fs.file(join(_artifactPath, 'server-$version.apk')).existsSync(),
           equals(true),
         );
 
         expect(
-          fs.file(artifactsRepository.instrumentationArtifactPath).existsSync(),
+          fs
+              .file(join(_artifactPath, 'instrumentation-$version.apk'))
+              .existsSync(),
           equals(true),
         );
 
         expect(
-          fs.directory(artifactsRepository.iosArtifactDirPath).existsSync(),
+          fs.directory(join(_artifactPath, 'ios-$version')).existsSync(),
           equals(false),
         );
 
