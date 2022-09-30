@@ -9,8 +9,10 @@ class ArtifactsRepository {
   ArtifactsRepository({
     required FileSystem fs,
     required Platform platform,
+    http.Client? httpClient,
   })  : _fs = fs,
         _platform = platform,
+        _httpClient = httpClient ?? http.Client(),
         debug = false {
     _paths = _Paths(artifactPath);
   }
@@ -19,6 +21,7 @@ class ArtifactsRepository {
 
   final FileSystem _fs;
   final Platform _platform;
+  final http.Client _httpClient;
   bool debug;
 
   late final _Paths _paths;
@@ -117,7 +120,7 @@ class ArtifactsRepository {
 
   Future<void> _downloadArtifact(String artifact) async {
     final uri = _paths.getUriForArtifact(artifact);
-    final response = await http.get(uri);
+    final response = await _httpClient.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to download $artifact from $uri');

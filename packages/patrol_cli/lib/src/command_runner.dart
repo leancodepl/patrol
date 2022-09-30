@@ -214,7 +214,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
   }
 
   @override
-  void printUsage() => _logger.info('$usage');
+  void printUsage() => _logger.info(usage);
 
   bool _wantsUpdateCheck(String? commandName) {
     if (commandName == 'update' || commandName == 'doctor') {

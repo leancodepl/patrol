@@ -1,53 +1,55 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
+import 'package:mocktail/mocktail.dart';
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart' show version;
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../fakes.dart';
+
 final _macosPlatform = FakePlatform(
   pathSeparator: '/',
   operatingSystem: 'macos',
-  environment: {
-    'HOME': path.Context(style: path.Style.posix).join('/home', 'johndoe'),
-  },
+  environment: {'HOME': join('/home', 'johndoe')},
 );
 
 final _linuxPlatform = FakePlatform(
   pathSeparator: '/',
   operatingSystem: 'linux',
-  environment: {
-    'HOME': path.Context(style: path.Style.posix).join('/home', 'johndoe'),
-  },
+  environment: {'HOME': join('/home', 'johndoe')},
 );
 
-final _windowsPlatform = FakePlatform(
-  pathSeparator: r'\',
-  operatingSystem: 'windows',
-  environment: {
-    'HOME': path.Context(style: path.Style.posix).join('/home', 'johndoe'),
-  },
-);
+const _artifactPath = '/home/johndoe/.cache/patrol';
 
-const _cachePath = '/home/johndoe/.cache/patrol';
+class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
+  setUpFakes();
+
   group('ArtifactsRepository', () {
     late FileSystem fs;
     late Platform platform;
+    late http.Client httpClient;
 
     late ArtifactsRepository artifactsRepository;
 
     setUp(() {
+      platform = _linuxPlatform;
+      httpClient = MockHttpClient();
+
       fs = MemoryFileSystem.test();
       final wd = fs.directory('/home/johndoe/projects/awesome_app')
         ..createSync(recursive: true);
       fs.currentDirectory = wd;
 
-      platform = _linuxPlatform;
-
-      artifactsRepository = ArtifactsRepository(fs: fs, platform: platform);
+      artifactsRepository = ArtifactsRepository(
+        fs: fs,
+        platform: platform,
+        httpClient: httpClient,
+      );
     });
 
     group('paths', () {
@@ -126,33 +128,68 @@ void main() {
         artifactsRepository = ArtifactsRepository(
           fs: fs,
           platform: _macosPlatform,
+          httpClient: httpClient,
         );
       });
 
       test('returns false when only Android artifacts exist', () {
         fs
-            .file('/home/johndoe/.cache/patrol/server-$version.apk')
+            .file(artifactsRepository.serverArtifactPath)
             .createSync(recursive: true);
-        fs
-            .file('/home/johndoe/.cache/patrol/instrumentation-$version.apk')
-            .createSync();
+        fs.file(artifactsRepository.instrumentationArtifactPath).createSync();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
       });
 
       test('returns true when Android and iOS artifacts exist', () {
         fs
-            .file('/home/johndoe/.cache/patrol/server-$version.apk')
+            .file(artifactsRepository.serverArtifactPath)
             .createSync(recursive: true);
-        fs
-            .file('/home/johndoe/.cache/patrol/instrumentation-$version.apk')
-            .createSync();
-        fs.directory('/home/johndoe/.cache/patrol/ios-$version').createSync();
+        fs.file(artifactsRepository.instrumentationArtifactPath).createSync();
+        fs.directory(artifactsRepository.iosArtifactDirPath).createSync();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(true));
       });
     });
-  
-  
+
+    group('downloadArtifacts', () {
+      test('throws exception when status code is not 200', () async {
+        when(() => httpClient.get(any())).thenAnswer(
+          (_) async => http.Response('', 404),
+        );
+
+        expect(
+          artifactsRepository.downloadArtifacts,
+          throwsException,
+        );
+
+        verify(() => httpClient.get(any())).called(2);
+      });
+
+      test('downloads artifacts when status code is 200', () async {
+        when(() => httpClient.get(any())).thenAnswer(
+          (_) async => http.Response('', 200),
+        );
+
+        await artifactsRepository.downloadArtifacts();
+
+        expect(
+          fs.file(artifactsRepository.serverArtifactPath).existsSync(),
+          equals(true),
+        );
+
+        expect(
+          fs.file(artifactsRepository.instrumentationArtifactPath).existsSync(),
+          equals(true),
+        );
+
+        expect(
+          fs.directory(artifactsRepository.iosArtifactDirPath).existsSync(),
+          equals(false),
+        );
+
+        verify(() => httpClient.get(any())).called(2);
+      });
     });
+  });
 }
