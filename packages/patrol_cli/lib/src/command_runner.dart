@@ -26,16 +26,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger('');
   await setUpLogger();
 
-  const fs = LocalFileSystem();
-  final runner = PatrolCommandRunner(
-    logger: logger,
-    pubUpdater: PubUpdater(),
-    artifactsRepository: ArtifactsRepository(
-      fs: fs,
-      platform: const LocalPlatform(),
-    ),
-    fs: fs,
-  );
+  final runner = PatrolCommandRunner(logger: logger);
   int exitCode;
 
   Future<Never>? interruption;
@@ -61,13 +52,17 @@ Future<int> patrolCommandRunner(List<String> args) async {
 class PatrolCommandRunner extends CommandRunner<int> {
   PatrolCommandRunner({
     required Logger logger,
-    required PubUpdater pubUpdater,
-    required ArtifactsRepository artifactsRepository,
-    required FileSystem fs,
+    PubUpdater? pubUpdater,
+    ArtifactsRepository? artifactsRepository,
+    FileSystem? fs,
   })  : _disposeScope = DisposeScope(),
-        _pubUpdater = pubUpdater,
-        _artifactsRepository = artifactsRepository,
-        _fs = fs,
+        _pubUpdater = pubUpdater ?? PubUpdater(),
+        _fs = fs ?? const LocalFileSystem(),
+        _artifactsRepository = artifactsRepository ??
+            ArtifactsRepository(
+              fs: const LocalFileSystem(),
+              platform: const LocalPlatform(),
+            ),
         _logger = logger,
         super(
           'patrol',
