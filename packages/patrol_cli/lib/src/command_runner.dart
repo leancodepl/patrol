@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:file/file.dart';
+import 'package:file/local.dart';
 import 'package:logging/logging.dart';
 import 'package:mason_logger/mason_logger.dart' show lightCyan, lightYellow;
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
-import 'package:patrol_cli/src/common/globals.dart' as globals;
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/bootstrap/bootstrap_command.dart';
 import 'package:patrol_cli/src/features/clean/clean_command.dart';
@@ -18,19 +19,22 @@ import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
+import 'package:platform/platform.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger('');
   await setUpLogger();
 
+  const fs = LocalFileSystem();
   final runner = PatrolCommandRunner(
     logger: logger,
     pubUpdater: PubUpdater(),
     artifactsRepository: ArtifactsRepository(
-      fs: globals.fs,
-      platform: globals.platform,
+      fs: fs,
+      platform: const LocalPlatform(),
     ),
+    fs: fs,
   );
   int exitCode;
 
@@ -59,10 +63,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
     required Logger logger,
     required PubUpdater pubUpdater,
     required ArtifactsRepository artifactsRepository,
+    required FileSystem fs,
   })  : _disposeScope = DisposeScope(),
-        _logger = logger,
         _pubUpdater = pubUpdater,
         _artifactsRepository = artifactsRepository,
+        _fs = fs,
+        _logger = logger,
         super(
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
@@ -74,8 +80,8 @@ class PatrolCommandRunner extends CommandRunner<int> {
         artifactsRepository: _artifactsRepository,
         deviceFinder: DeviceFinder(logger: _logger),
         testFinder: TestFinder(
-          integrationTestDir: globals.fs.directory('integration_test'),
-          fs: globals.fs,
+          integrationTestDir: _fs.directory('integration_test'),
+          fs: _fs,
         ),
         testRunner: TestRunner(),
         logger: _logger,
@@ -122,9 +128,10 @@ class PatrolCommandRunner extends CommandRunner<int> {
   }
 
   final DisposeScope _disposeScope;
-  final Logger _logger;
   final ArtifactsRepository _artifactsRepository;
   final PubUpdater _pubUpdater;
+  final FileSystem _fs;
+  final Logger _logger;
 
   Future<void> dispose() async {
     try {

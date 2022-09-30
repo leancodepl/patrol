@@ -26,7 +26,7 @@ StreamSubscription<void>? _sub;
 /// - [Level.SEVERE], printed in red
 /// - [Level.WARNING], printed in yellow
 /// - [Level.INFO], printed in white
-/// - [Level.FINE], printed in grey and only when [verbose] is true
+/// - [Level.FINE], printed in grey and only when [_verbose] is true
 Future<void> setUpLogger() async {
   Logger.root.level = Level.ALL;
 

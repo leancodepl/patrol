@@ -1,5 +1,4 @@
 import 'package:logging/logging.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';

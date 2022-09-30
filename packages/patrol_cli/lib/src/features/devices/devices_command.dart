@@ -1,6 +1,5 @@
 import 'package:args/command_runner.dart';
 import 'package:logging/logging.dart';
-import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 
 class DevicesCommand extends Command<int> {

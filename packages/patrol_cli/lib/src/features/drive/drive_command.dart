@@ -2,7 +2,6 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
