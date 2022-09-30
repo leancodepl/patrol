@@ -261,18 +261,15 @@ Run ${lightCyan.wrap('patrol update')} to update''',
   }
 
   Future<void> _ensureArtifactsArePresent({required bool debug}) async {
-    if (debug) {
-      if (_artifactsRepository.areDebugArtifactsPresent()) {
-        return;
-      } else {
-        throw Exception('Debug artifacts are not present.');
-      }
-    } else if (_artifactsRepository.areArtifactsPresent()) {
+    if (_artifactsRepository.areArtifactsPresent()) {
       return;
     }
 
-    final progress =
-        _logger.progress('Artifacts are not present, downloading...');
+    if (debug) {
+      throw ToolExit('Debug artifacts are not present.');
+    }
+
+    final progress = _logger.progress('Artifacts are not present, downloading');
     try {
       await _artifactsRepository.downloadArtifacts();
     } catch (_) {

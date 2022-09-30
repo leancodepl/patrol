@@ -71,30 +71,17 @@ class ArtifactsRepository {
   /// Returns true if artifacts for the current patrol_cli version are present
   /// in [artifactPath], false otherwise.
   bool areArtifactsPresent() {
-    final serverApk = _fs.file(_paths.serverArtifactPath);
-    final instrumentationApk = _fs.file(_paths.instrumentationArtifactPath);
+    final serverApk = _fs.file(serverArtifactPath);
+    final instrumentationApk = _fs.file(instrumentationArtifactPath);
 
     if (_platform.isMacOS) {
-      final iosDir = _fs.directory(_paths.iosArtifactDirPath);
+      final iosDir = _fs.directory(iosArtifactDirPath);
       return serverApk.existsSync() &&
           instrumentationApk.existsSync() &&
           iosDir.existsSync();
     } else {
       return serverApk.existsSync() && instrumentationApk.existsSync();
     }
-  }
-
-  /// Same as [areArtifactsPresent] but looks for unversioned artifacts instead.
-  bool areDebugArtifactsPresent() {
-    final serverApk = _fs.file(_paths.debugServerArtifactPath);
-    final instrumentationApk = _fs.file(
-      _paths.debugInstrumentationArtifactPath,
-    );
-    final iosDir = _fs.directory(_paths.debugIOSArtifactDirPath);
-
-    return serverApk.existsSync() &&
-        instrumentationApk.existsSync() &&
-        iosDir.existsSync();
   }
 
   /// Downloads artifacts for the current patrol_cli version.
