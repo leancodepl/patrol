@@ -35,6 +35,7 @@ service NativeAutomator {
   // notifications
   rpc openNotifications(Empty) returns (Empty) {}
   rpc closeNotifications(Empty) returns (Empty) {}
+  rpc closeHeadsUpNotification(Empty) returns (Empty) {}
   rpc getNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
   rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
 

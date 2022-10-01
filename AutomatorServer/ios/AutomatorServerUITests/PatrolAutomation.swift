@@ -218,6 +218,17 @@ class PatrolAutomation {
     }
   }
   
+  func closeHeadsUpNotification() async throws {
+    runAction("closing heads up notification") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.07))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+    
+    try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
+  }
+  
+  
   func getNotifications() -> [Patrol_Notification] {
     var notifications = [Patrol_Notification]()
     runAction("getting notifications") {
@@ -243,6 +254,7 @@ class PatrolAutomation {
       }
       
       cells[index].tap()
+      self.springboard.staticTexts.matching(identifier: "Open").firstMatch.tap()
     }
   }
   
@@ -253,6 +265,7 @@ class PatrolAutomation {
         if cell.label.contains(text) {
           Logger.shared.i("tapping on notification at index \(i) which contains text \(text)")
           cell.tap()
+          self.springboard.staticTexts.matching(identifier: "Open").firstMatch.tap()
           return
         }
       }

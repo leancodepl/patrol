@@ -59,6 +59,14 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return Empty()
   }
   
+  func closeHeadsUpNotification(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    try await automation.closeHeadsUpNotification()
+    return Empty()
+  }
+  
   func openQuickSettings(
     request: Patrol_OpenQuickSettingsRequest,
     context: GRPCAsyncServerCallContext

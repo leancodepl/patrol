@@ -117,6 +117,11 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/closeNotifications',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$closeHeadsUpNotification =
+      $grpc.ClientMethod<$0.Empty, $0.Empty>(
+          '/patrol.NativeAutomator/closeHeadsUpNotification',
+          ($0.Empty value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$getNotifications = $grpc.ClientMethod<
           $0.GetNotificationsRequest, $0.GetNotificationsResponse>(
       '/patrol.NativeAutomator/getNotifications',
@@ -265,6 +270,12 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> closeNotifications($0.Empty request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$closeNotifications, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> closeHeadsUpNotification($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$closeHeadsUpNotification, request,
+        options: options);
   }
 
   $grpc.ResponseFuture<$0.GetNotificationsResponse> getNotifications(
@@ -468,6 +479,13 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
+        'closeHeadsUpNotification',
+        closeHeadsUpNotification_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.GetNotificationsRequest,
             $0.GetNotificationsResponse>(
         'getNotifications',
@@ -626,6 +644,11 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return closeNotifications(call, await request);
   }
 
+  $async.Future<$0.Empty> closeHeadsUpNotification_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return closeHeadsUpNotification(call, await request);
+  }
+
   $async.Future<$0.GetNotificationsResponse> getNotifications_Pre(
       $grpc.ServiceCall call,
       $async.Future<$0.GetNotificationsRequest> request) async {
@@ -694,6 +717,8 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> openNotifications(
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> closeNotifications(
+      $grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$0.Empty> closeHeadsUpNotification(
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.GetNotificationsResponse> getNotifications(
       $grpc.ServiceCall call, $0.GetNotificationsRequest request);

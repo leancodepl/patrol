@@ -17033,7 +17033,7 @@ public final class Contracts {
       "\t\022&\n\010children\030\t \003(\0132\024.patrol.NativeWidge" +
       "t\"]\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
       "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw\030\004" +
-      " \001(\tB\n\n\010_appName2\240\r\n\017NativeAutomator\022+\n\t" +
+      " \001(\tB\n\n\010_appName2\334\r\n\017NativeAutomator\022+\n\t" +
       "pressHome\022\r.patrol.Empty\032\r.patrol.Empty\"" +
       "\000\022+\n\tpressBack\022\r.patrol.Empty\032\r.patrol.E" +
       "mpty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empty" +
@@ -17067,17 +17067,18 @@ public final class Contracts {
       "patrol.Empty\"\000\0223\n\021openNotifications\022\r.pa" +
       "trol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeNoti" +
       "fications\022\r.patrol.Empty\032\r.patrol.Empty\"" +
-      "\000\022W\n\020getNotifications\022\037.patrol.GetNotifi" +
-      "cationsRequest\032 .patrol.GetNotifications" +
-      "Response\"\000\022F\n\021tapOnNotification\022 .patrol" +
-      ".TapOnNotificationRequest\032\r.patrol.Empty" +
-      "\"\000\022J\n\026handlePermissionDialog\022\037.patrol.Ha" +
-      "ndlePermissionRequest\032\r.patrol.Empty\"\000\022J" +
-      "\n\023setLocationAccuracy\022\".patrol.SetLocati" +
-      "onAccuracyRequest\032\r.patrol.Empty\"\000\022\'\n\005de" +
-      "bug\022\r.patrol.Empty\032\r.patrol.Empty\"\000B\'\n%p" +
-      "l.leancode.automatorserver.contractsb\006pr" +
-      "oto3"
+      "\000\022:\n\030closeHeadsUpNotification\022\r.patrol.E" +
+      "mpty\032\r.patrol.Empty\"\000\022W\n\020getNotification" +
+      "s\022\037.patrol.GetNotificationsRequest\032 .pat" +
+      "rol.GetNotificationsResponse\"\000\022F\n\021tapOnN" +
+      "otification\022 .patrol.TapOnNotificationRe" +
+      "quest\032\r.patrol.Empty\"\000\022J\n\026handlePermissi" +
+      "onDialog\022\037.patrol.HandlePermissionReques" +
+      "t\032\r.patrol.Empty\"\000\022J\n\023setLocationAccurac" +
+      "y\022\".patrol.SetLocationAccuracyRequest\032\r." +
+      "patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empty\032\r" +
+      ".patrol.Empty\"\000B\'\n%pl.leancode.automator" +
+      "server.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

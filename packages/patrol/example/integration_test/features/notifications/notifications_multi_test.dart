@@ -2,27 +2,24 @@ import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
-import 'config.dart';
+import '../../config.dart';
 
 void main() {
   patrolTest(
-    'sends a notification and taps on it',
+    'send 2 notifications, verifies that they are visible and taps on them',
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
-      $.log('Yay, notification_test.dart is starting!');
-
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
-
       await $.native.grantPermissionWhenInUse();
 
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
       // wait for pop-up notification to disappear on iOS
-      await Future<void>.delayed(Duration(seconds: 10));
+      // await Future<void>.delayed(Duration(seconds: 10));
 
       await $.native.openNotifications();
       final notifications = await $.native.getNotifications();

@@ -731,6 +731,37 @@ public final class NativeAutomatorGrpc {
     return getCloseNotificationsMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getCloseHeadsUpNotificationMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "closeHeadsUpNotification",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getCloseHeadsUpNotificationMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getCloseHeadsUpNotificationMethod;
+    if ((getCloseHeadsUpNotificationMethod = NativeAutomatorGrpc.getCloseHeadsUpNotificationMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getCloseHeadsUpNotificationMethod = NativeAutomatorGrpc.getCloseHeadsUpNotificationMethod) == null) {
+          NativeAutomatorGrpc.getCloseHeadsUpNotificationMethod = getCloseHeadsUpNotificationMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "closeHeadsUpNotification"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("closeHeadsUpNotification"))
+              .build();
+        }
+      }
+    }
+    return getCloseHeadsUpNotificationMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest,
       pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse> getGetNotificationsMethod;
 
@@ -1109,6 +1140,13 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public void closeHeadsUpNotification(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getCloseHeadsUpNotificationMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void getNotifications(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetNotificationsMethod(), responseObserver);
@@ -1308,6 +1346,13 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_CLOSE_NOTIFICATIONS)))
+          .addMethod(
+            getCloseHeadsUpNotificationMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_CLOSE_HEADS_UP_NOTIFICATION)))
           .addMethod(
             getGetNotificationsMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1559,6 +1604,14 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public void closeHeadsUpNotification(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getCloseHeadsUpNotificationMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void getNotifications(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
@@ -1786,6 +1839,13 @@ public final class NativeAutomatorGrpc {
     public pl.leancode.automatorserver.contracts.Contracts.Empty closeNotifications(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getCloseNotificationsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty closeHeadsUpNotification(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getCloseHeadsUpNotificationMethod(), getCallOptions(), request);
     }
 
     /**
@@ -2039,6 +2099,14 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> closeHeadsUpNotification(
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getCloseHeadsUpNotificationMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse> getNotifications(
         pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -2104,11 +2172,12 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_DISABLE_DARK_MODE = 20;
   private static final int METHODID_OPEN_NOTIFICATIONS = 21;
   private static final int METHODID_CLOSE_NOTIFICATIONS = 22;
-  private static final int METHODID_GET_NOTIFICATIONS = 23;
-  private static final int METHODID_TAP_ON_NOTIFICATION = 24;
-  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 25;
-  private static final int METHODID_SET_LOCATION_ACCURACY = 26;
-  private static final int METHODID_DEBUG = 27;
+  private static final int METHODID_CLOSE_HEADS_UP_NOTIFICATION = 23;
+  private static final int METHODID_GET_NOTIFICATIONS = 24;
+  private static final int METHODID_TAP_ON_NOTIFICATION = 25;
+  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 26;
+  private static final int METHODID_SET_LOCATION_ACCURACY = 27;
+  private static final int METHODID_DEBUG = 28;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2219,6 +2288,10 @@ public final class NativeAutomatorGrpc {
           serviceImpl.closeNotifications((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
+        case METHODID_CLOSE_HEADS_UP_NOTIFICATION:
+          serviceImpl.closeHeadsUpNotification((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
         case METHODID_GET_NOTIFICATIONS:
           serviceImpl.getNotifications((pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse>) responseObserver);
@@ -2323,6 +2396,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getDisableDarkModeMethod())
               .addMethod(getOpenNotificationsMethod())
               .addMethod(getCloseNotificationsMethod())
+              .addMethod(getCloseHeadsUpNotificationMethod())
               .addMethod(getGetNotificationsMethod())
               .addMethod(getTapOnNotificationMethod())
               .addMethod(getHandlePermissionDialogMethod())

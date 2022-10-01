@@ -148,6 +148,11 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
+  func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
+
   func getNotifications(
     _ request: Patrol_GetNotificationsRequest,
     callOptions: CallOptions?
@@ -593,6 +598,24 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
+  /// Unary call to closeHeadsUpNotification
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to closeHeadsUpNotification.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
+    )
+  }
+
   /// Unary call to getNotifications
   ///
   /// - Parameters:
@@ -861,6 +884,11 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
   ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+
+  func makeCloseHeadsUpNotificationCall(
     _ request: Patrol_Empty,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
@@ -1174,6 +1202,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeCloseHeadsUpNotificationCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
     )
   }
 
@@ -1516,6 +1556,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
+  internal func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
+    )
+  }
+
   internal func getNotifications(
     _ request: Patrol_GetNotificationsRequest,
     callOptions: CallOptions? = nil
@@ -1667,6 +1719,9 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'closeNotifications'.
   func makecloseNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when invoking 'closeHeadsUpNotification'.
+  func makecloseHeadsUpNotificationInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when invoking 'getNotifications'.
   func makegetNotificationsInterceptors() -> [ClientInterceptor<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>]
 
@@ -1711,6 +1766,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode,
       Patrol_NativeAutomatorClientMetadata.Methods.openNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications,
+      Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification,
       Patrol_NativeAutomatorClientMetadata.Methods.getNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification,
       Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog,
@@ -1858,6 +1914,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
+    internal static let closeHeadsUpNotification = GRPCMethodDescriptor(
+      name: "closeHeadsUpNotification",
+      path: "/patrol.NativeAutomator/closeHeadsUpNotification",
+      type: GRPCCallType.unary
+    )
+
     internal static let getNotifications = GRPCMethodDescriptor(
       name: "getNotifications",
       path: "/patrol.NativeAutomator/getNotifications",
@@ -1944,6 +2006,8 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   func openNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func closeNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func closeHeadsUpNotification(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func getNotifications(request: Patrol_GetNotificationsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNotificationsResponse>
 
@@ -2176,6 +2240,15 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.closeNotifications(request:context:)
       )
 
+    case "closeHeadsUpNotification":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? [],
+        userFunction: self.closeHeadsUpNotification(request:context:)
+      )
+
     case "getNotifications":
       return UnaryServerHandler(
         context: context,
@@ -2351,6 +2424,11 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
   ) async throws -> Patrol_Empty
 
   @Sendable func closeNotifications(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func closeHeadsUpNotification(
     request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
@@ -2608,6 +2686,15 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.closeNotifications(request:context:)
       )
 
+    case "closeHeadsUpNotification":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? [],
+        wrapping: self.closeHeadsUpNotification(request:context:)
+      )
+
     case "getNotifications":
       return GRPCAsyncServerHandler(
         context: context,
@@ -2755,6 +2842,10 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makecloseNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when handling 'closeHeadsUpNotification'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makecloseHeadsUpNotificationInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when handling 'getNotifications'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makegetNotificationsInterceptors() -> [ServerInterceptor<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>]
@@ -2804,6 +2895,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.disableDarkMode,
       Patrol_NativeAutomatorServerMetadata.Methods.openNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.closeNotifications,
+      Patrol_NativeAutomatorServerMetadata.Methods.closeHeadsUpNotification,
       Patrol_NativeAutomatorServerMetadata.Methods.getNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.tapOnNotification,
       Patrol_NativeAutomatorServerMetadata.Methods.handlePermissionDialog,
@@ -2948,6 +3040,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let closeNotifications = GRPCMethodDescriptor(
       name: "closeNotifications",
       path: "/patrol.NativeAutomator/closeNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeHeadsUpNotification = GRPCMethodDescriptor(
+      name: "closeHeadsUpNotification",
+      path: "/patrol.NativeAutomator/closeHeadsUpNotification",
       type: GRPCCallType.unary
     )
 
