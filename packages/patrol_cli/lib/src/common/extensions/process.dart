@@ -7,7 +7,7 @@ extension ProcessResultX on ProcessResult {
   /// A shortcut to avoid typing `as String` every time.
   ///
   /// If [stdout] is not a String, this will crash.
-  String get stdOut => stderr as String;
+  String get stdOut => stdout as String;
 
   /// A shortcut to avoid typing `as String` every time.
   ///
