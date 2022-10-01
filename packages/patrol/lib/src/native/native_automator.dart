@@ -276,9 +276,7 @@ class NativeAutomator {
   Future<void> enableAirplaneMode({String? appId}) async {
     await _wrapRequest(
       'enableAirplaneMode',
-      () => _client.enableAirplaneMode(
-        AirplaneModeRequest(appId: appId ?? resolvedAppId),
-      ),
+      () => _client.enableAirplaneMode(Empty()),
     );
   }
 
@@ -286,9 +284,7 @@ class NativeAutomator {
   Future<void> disableAirplaneMode({String? appId}) async {
     await _wrapRequest(
       'disableAirplaneMode',
-      () => _client.disableAirplaneMode(
-        AirplaneModeRequest(appId: appId ?? resolvedAppId),
-      ),
+      () => _client.disableAirplaneMode(Empty()),
     );
   }
 
@@ -296,9 +292,7 @@ class NativeAutomator {
   Future<void> enableCellular({String? appId}) async {
     await _wrapRequest(
       'enableCellular',
-      () => _client.enableCellular(
-        CellularRequest(appId: appId ?? resolvedAppId),
-      ),
+      () => _client.enableCellular(Empty()),
     );
   }
 
@@ -306,9 +300,7 @@ class NativeAutomator {
   Future<void> disableCellular({String? appId}) {
     return _wrapRequest(
       'disableCellular',
-      () => _client.disableCellular(
-        CellularRequest(appId: appId ?? resolvedAppId),
-      ),
+      () => _client.disableCellular(Empty()),
     );
   }
 
@@ -316,7 +308,7 @@ class NativeAutomator {
   Future<void> enableWifi({String? appId}) async {
     await _wrapRequest(
       'enableWifi',
-      () => _client.enableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+      () => _client.enableWiFi(Empty()),
     );
   }
 
@@ -324,7 +316,7 @@ class NativeAutomator {
   Future<void> disableWifi({String? appId}) async {
     await _wrapRequest(
       'disableWifi',
-      () => _client.disableWiFi(WiFiRequest(appId: appId ?? resolvedAppId)),
+      () => _client.disableWiFi(Empty()),
     );
   }
 
@@ -332,9 +324,7 @@ class NativeAutomator {
   Future<void> enableBluetooth({String? appId}) async {
     await _wrapRequest(
       'enableBluetooth',
-      () => _client.enableBluetooth(
-        BluetoothRequest(appId: appId ?? resolvedAppId),
-      ),
+      () => _client.enableBluetooth(Empty()),
     );
   }
 
@@ -342,9 +332,7 @@ class NativeAutomator {
   Future<void> disableBluetooth({String? appId}) async {
     await _wrapRequest(
       'disableBluetooth',
-      () => _client.disableBluetooth(
-        BluetoothRequest(appId: appId ?? resolvedAppId),
-      ),
+      () => _client.disableBluetooth(Empty()),
     );
   }
 

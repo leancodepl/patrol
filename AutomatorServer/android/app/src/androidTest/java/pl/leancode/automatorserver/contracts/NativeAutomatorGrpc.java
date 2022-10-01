@@ -359,27 +359,27 @@ public final class NativeAutomatorGrpc {
     return getSwipeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "enableAirplaneMode",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
     if ((getEnableAirplaneModeMethod = NativeAutomatorGrpc.getEnableAirplaneModeMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getEnableAirplaneModeMethod = NativeAutomatorGrpc.getEnableAirplaneModeMethod) == null) {
           NativeAutomatorGrpc.getEnableAirplaneModeMethod = getEnableAirplaneModeMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableAirplaneMode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableAirplaneMode"))
@@ -390,27 +390,27 @@ public final class NativeAutomatorGrpc {
     return getEnableAirplaneModeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "disableAirplaneMode",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableAirplaneModeMethod;
     if ((getDisableAirplaneModeMethod = NativeAutomatorGrpc.getDisableAirplaneModeMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getDisableAirplaneModeMethod = NativeAutomatorGrpc.getDisableAirplaneModeMethod) == null) {
           NativeAutomatorGrpc.getDisableAirplaneModeMethod = getDisableAirplaneModeMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableAirplaneMode"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableAirplaneMode"))
@@ -421,27 +421,27 @@ public final class NativeAutomatorGrpc {
     return getDisableAirplaneModeMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableWiFiMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "enableWiFi",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableWiFiMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableWiFiMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableWiFiMethod;
     if ((getEnableWiFiMethod = NativeAutomatorGrpc.getEnableWiFiMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getEnableWiFiMethod = NativeAutomatorGrpc.getEnableWiFiMethod) == null) {
           NativeAutomatorGrpc.getEnableWiFiMethod = getEnableWiFiMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableWiFi"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableWiFi"))
@@ -452,27 +452,27 @@ public final class NativeAutomatorGrpc {
     return getEnableWiFiMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableWiFiMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "disableWiFi",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableWiFiMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableWiFiMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableWiFiMethod;
     if ((getDisableWiFiMethod = NativeAutomatorGrpc.getDisableWiFiMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getDisableWiFiMethod = NativeAutomatorGrpc.getDisableWiFiMethod) == null) {
           NativeAutomatorGrpc.getDisableWiFiMethod = getDisableWiFiMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.WiFiRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableWiFi"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableWiFi"))
@@ -483,27 +483,27 @@ public final class NativeAutomatorGrpc {
     return getDisableWiFiMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableCellularMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "enableCellular",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableCellularMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.CellularRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableCellularMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableCellularMethod;
     if ((getEnableCellularMethod = NativeAutomatorGrpc.getEnableCellularMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getEnableCellularMethod = NativeAutomatorGrpc.getEnableCellularMethod) == null) {
           NativeAutomatorGrpc.getEnableCellularMethod = getEnableCellularMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.CellularRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableCellular"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableCellular"))
@@ -514,27 +514,27 @@ public final class NativeAutomatorGrpc {
     return getEnableCellularMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableCellularMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "disableCellular",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableCellularMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.CellularRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableCellularMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableCellularMethod;
     if ((getDisableCellularMethod = NativeAutomatorGrpc.getDisableCellularMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getDisableCellularMethod = NativeAutomatorGrpc.getDisableCellularMethod) == null) {
           NativeAutomatorGrpc.getDisableCellularMethod = getDisableCellularMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.CellularRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableCellular"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableCellular"))
@@ -545,27 +545,27 @@ public final class NativeAutomatorGrpc {
     return getDisableCellularMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "enableBluetooth",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableBluetoothMethod;
     if ((getEnableBluetoothMethod = NativeAutomatorGrpc.getEnableBluetoothMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getEnableBluetoothMethod = NativeAutomatorGrpc.getEnableBluetoothMethod) == null) {
           NativeAutomatorGrpc.getEnableBluetoothMethod = getEnableBluetoothMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableBluetooth"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableBluetooth"))
@@ -576,27 +576,27 @@ public final class NativeAutomatorGrpc {
     return getEnableBluetoothMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "disableBluetooth",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty> getDisableBluetoothMethod;
     if ((getDisableBluetoothMethod = NativeAutomatorGrpc.getDisableBluetoothMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getDisableBluetoothMethod = NativeAutomatorGrpc.getDisableBluetoothMethod) == null) {
           NativeAutomatorGrpc.getDisableBluetoothMethod = getDisableBluetoothMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableBluetooth"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableBluetooth"))
@@ -1053,56 +1053,56 @@ public final class NativeAutomatorGrpc {
      * services
      * </pre>
      */
-    public void enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
+    public void enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableAirplaneModeMethod(), responseObserver);
     }
 
     /**
      */
-    public void disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
+    public void disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableAirplaneModeMethod(), responseObserver);
     }
 
     /**
      */
-    public void enableWiFi(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request,
+    public void enableWiFi(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableWiFiMethod(), responseObserver);
     }
 
     /**
      */
-    public void disableWiFi(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request,
+    public void disableWiFi(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableWiFiMethod(), responseObserver);
     }
 
     /**
      */
-    public void enableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request,
+    public void enableCellular(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableCellularMethod(), responseObserver);
     }
 
     /**
      */
-    public void disableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request,
+    public void disableCellular(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableCellularMethod(), responseObserver);
     }
 
     /**
      */
-    public void enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+    public void enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnableBluetoothMethod(), responseObserver);
     }
 
     /**
      */
-    public void disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+    public void disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableBluetoothMethod(), responseObserver);
     }
@@ -1266,56 +1266,56 @@ public final class NativeAutomatorGrpc {
             getEnableAirplaneModeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_ENABLE_AIRPLANE_MODE)))
           .addMethod(
             getDisableAirplaneModeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_DISABLE_AIRPLANE_MODE)))
           .addMethod(
             getEnableWiFiMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_ENABLE_WI_FI)))
           .addMethod(
             getDisableWiFiMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.WiFiRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_DISABLE_WI_FI)))
           .addMethod(
             getEnableCellularMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_ENABLE_CELLULAR)))
           .addMethod(
             getDisableCellularMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.CellularRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_DISABLE_CELLULAR)))
           .addMethod(
             getEnableBluetoothMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_ENABLE_BLUETOOTH)))
           .addMethod(
             getDisableBluetoothMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_DISABLE_BLUETOOTH)))
           .addMethod(
@@ -1505,7 +1505,7 @@ public final class NativeAutomatorGrpc {
      * services
      * </pre>
      */
-    public void enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
+    public void enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getEnableAirplaneModeMethod(), getCallOptions()), request, responseObserver);
@@ -1513,7 +1513,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request,
+    public void disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDisableAirplaneModeMethod(), getCallOptions()), request, responseObserver);
@@ -1521,7 +1521,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void enableWiFi(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request,
+    public void enableWiFi(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getEnableWiFiMethod(), getCallOptions()), request, responseObserver);
@@ -1529,7 +1529,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void disableWiFi(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request,
+    public void disableWiFi(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDisableWiFiMethod(), getCallOptions()), request, responseObserver);
@@ -1537,7 +1537,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void enableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request,
+    public void enableCellular(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getEnableCellularMethod(), getCallOptions()), request, responseObserver);
@@ -1545,7 +1545,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void disableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request,
+    public void disableCellular(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDisableCellularMethod(), getCallOptions()), request, responseObserver);
@@ -1553,7 +1553,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+    public void enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getEnableBluetoothMethod(), getCallOptions()), request, responseObserver);
@@ -1561,7 +1561,7 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request,
+    public void disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDisableBluetoothMethod(), getCallOptions()), request, responseObserver);
@@ -1756,56 +1756,56 @@ public final class NativeAutomatorGrpc {
      * services
      * </pre>
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getEnableAirplaneModeMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableAirplaneMode(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDisableAirplaneModeMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty enableWiFi(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableWiFi(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getEnableWiFiMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty disableWiFi(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableWiFi(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDisableWiFiMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty enableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableCellular(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getEnableCellularMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty disableCellular(pl.leancode.automatorserver.contracts.Contracts.CellularRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableCellular(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDisableCellularMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enableBluetooth(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getEnableBluetoothMethod(), getCallOptions(), request);
     }
 
     /**
      */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.Empty disableBluetooth(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDisableBluetoothMethod(), getCallOptions(), request);
     }
@@ -2001,7 +2001,7 @@ public final class NativeAutomatorGrpc {
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableAirplaneMode(
-        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getEnableAirplaneModeMethod(), getCallOptions()), request);
     }
@@ -2009,7 +2009,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableAirplaneMode(
-        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDisableAirplaneModeMethod(), getCallOptions()), request);
     }
@@ -2017,7 +2017,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableWiFi(
-        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getEnableWiFiMethod(), getCallOptions()), request);
     }
@@ -2025,7 +2025,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableWiFi(
-        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDisableWiFiMethod(), getCallOptions()), request);
     }
@@ -2033,7 +2033,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableCellular(
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getEnableCellularMethod(), getCallOptions()), request);
     }
@@ -2041,7 +2041,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableCellular(
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDisableCellularMethod(), getCallOptions()), request);
     }
@@ -2049,7 +2049,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enableBluetooth(
-        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getEnableBluetoothMethod(), getCallOptions()), request);
     }
@@ -2057,7 +2057,7 @@ public final class NativeAutomatorGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> disableBluetooth(
-        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest request) {
+        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDisableBluetoothMethod(), getCallOptions()), request);
     }
@@ -2241,35 +2241,35 @@ public final class NativeAutomatorGrpc {
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_AIRPLANE_MODE:
-          serviceImpl.enableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) request,
+          serviceImpl.enableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_DISABLE_AIRPLANE_MODE:
-          serviceImpl.disableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) request,
+          serviceImpl.disableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_WI_FI:
-          serviceImpl.enableWiFi((pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) request,
+          serviceImpl.enableWiFi((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_DISABLE_WI_FI:
-          serviceImpl.disableWiFi((pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) request,
+          serviceImpl.disableWiFi((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_CELLULAR:
-          serviceImpl.enableCellular((pl.leancode.automatorserver.contracts.Contracts.CellularRequest) request,
+          serviceImpl.enableCellular((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_DISABLE_CELLULAR:
-          serviceImpl.disableCellular((pl.leancode.automatorserver.contracts.Contracts.CellularRequest) request,
+          serviceImpl.disableCellular((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_BLUETOOTH:
-          serviceImpl.enableBluetooth((pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) request,
+          serviceImpl.enableBluetooth((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_DISABLE_BLUETOOTH:
-          serviceImpl.disableBluetooth((pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) request,
+          serviceImpl.disableBluetooth((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_DARK_MODE:

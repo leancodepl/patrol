@@ -81,37 +81,35 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getSwipeMethod()
 
-  public val enableAirplaneModeMethod:
-      MethodDescriptor<Contracts.AirplaneModeRequest, Contracts.Empty>
+  public val enableAirplaneModeMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableAirplaneModeMethod()
 
-  public val disableAirplaneModeMethod:
-      MethodDescriptor<Contracts.AirplaneModeRequest, Contracts.Empty>
+  public val disableAirplaneModeMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableAirplaneModeMethod()
 
-  public val enableWiFiMethod: MethodDescriptor<Contracts.WiFiRequest, Contracts.Empty>
+  public val enableWiFiMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableWiFiMethod()
 
-  public val disableWiFiMethod: MethodDescriptor<Contracts.WiFiRequest, Contracts.Empty>
+  public val disableWiFiMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableWiFiMethod()
 
-  public val enableCellularMethod: MethodDescriptor<Contracts.CellularRequest, Contracts.Empty>
+  public val enableCellularMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableCellularMethod()
 
-  public val disableCellularMethod: MethodDescriptor<Contracts.CellularRequest, Contracts.Empty>
+  public val disableCellularMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableCellularMethod()
 
-  public val enableBluetoothMethod: MethodDescriptor<Contracts.BluetoothRequest, Contracts.Empty>
+  public val enableBluetoothMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableBluetoothMethod()
 
-  public val disableBluetoothMethod: MethodDescriptor<Contracts.BluetoothRequest, Contracts.Empty>
+  public val disableBluetoothMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableBluetoothMethod()
 
@@ -413,8 +411,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun enableAirplaneMode(request: Contracts.AirplaneModeRequest, headers: Metadata
-        = Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun enableAirplaneMode(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableAirplaneModeMethod(),
       request,
@@ -434,8 +432,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun disableAirplaneMode(request: Contracts.AirplaneModeRequest, headers: Metadata
-        = Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun disableAirplaneMode(request: Contracts.Empty, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableAirplaneModeMethod(),
       request,
@@ -455,7 +453,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun enableWiFi(request: Contracts.WiFiRequest, headers: Metadata = Metadata()):
+    public suspend fun enableWiFi(request: Contracts.Empty, headers: Metadata = Metadata()):
         Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableWiFiMethod(),
@@ -476,7 +474,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun disableWiFi(request: Contracts.WiFiRequest, headers: Metadata = Metadata()):
+    public suspend fun disableWiFi(request: Contracts.Empty, headers: Metadata = Metadata()):
         Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableWiFiMethod(),
@@ -497,8 +495,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun enableCellular(request: Contracts.CellularRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun enableCellular(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableCellularMethod(),
       request,
@@ -518,8 +516,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun disableCellular(request: Contracts.CellularRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun disableCellular(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableCellularMethod(),
       request,
@@ -539,8 +537,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun enableBluetooth(request: Contracts.BluetoothRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun enableBluetooth(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableBluetoothMethod(),
       request,
@@ -560,8 +558,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun disableBluetooth(request: Contracts.BluetoothRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+    public suspend fun disableBluetooth(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableBluetoothMethod(),
       request,
@@ -953,8 +951,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableAirplaneMode(request: Contracts.AirplaneModeRequest):
-        Contracts.Empty = throw
+    public open suspend fun enableAirplaneMode(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableAirplaneMode is unimplemented"))
 
     /**
@@ -968,8 +965,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableAirplaneMode(request: Contracts.AirplaneModeRequest):
-        Contracts.Empty = throw
+    public open suspend fun disableAirplaneMode(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableAirplaneMode is unimplemented"))
 
     /**
@@ -983,7 +979,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableWiFi(request: Contracts.WiFiRequest): Contracts.Empty = throw
+    public open suspend fun enableWiFi(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableWiFi is unimplemented"))
 
     /**
@@ -997,7 +993,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableWiFi(request: Contracts.WiFiRequest): Contracts.Empty = throw
+    public open suspend fun disableWiFi(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableWiFi is unimplemented"))
 
     /**
@@ -1011,8 +1007,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableCellular(request: Contracts.CellularRequest): Contracts.Empty =
-        throw
+    public open suspend fun enableCellular(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableCellular is unimplemented"))
 
     /**
@@ -1026,8 +1021,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableCellular(request: Contracts.CellularRequest): Contracts.Empty =
-        throw
+    public open suspend fun disableCellular(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableCellular is unimplemented"))
 
     /**
@@ -1041,8 +1035,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty =
-        throw
+    public open suspend fun enableBluetooth(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableBluetooth is unimplemented"))
 
     /**
@@ -1056,8 +1049,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty =
-        throw
+    public open suspend fun disableBluetooth(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableBluetooth is unimplemented"))
 
     /**

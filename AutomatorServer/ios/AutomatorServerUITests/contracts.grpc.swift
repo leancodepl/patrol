@@ -89,44 +89,44 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
   ) -> UnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
   func enableAirplaneMode(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func disableAirplaneMode(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func enableWiFi(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_WiFiRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func disableWiFi(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_WiFiRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func enableCellular(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_CellularRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func disableCellular(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_CellularRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func enableBluetooth(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func disableBluetooth(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func enableDarkMode(
     _ request: Patrol_DarkModeRequest,
@@ -389,9 +389,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func enableAirplaneMode(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
       request: request,
@@ -407,9 +407,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func disableAirplaneMode(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
       request: request,
@@ -425,9 +425,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func enableWiFi(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_WiFiRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi.path,
       request: request,
@@ -443,9 +443,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func disableWiFi(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_WiFiRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi.path,
       request: request,
@@ -461,9 +461,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func enableCellular(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_CellularRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableCellular.path,
       request: request,
@@ -479,9 +479,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func disableCellular(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_CellularRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableCellular.path,
       request: request,
@@ -497,9 +497,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func enableBluetooth(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
       request: request,
@@ -515,9 +515,9 @@ extension Patrol_NativeAutomatorClientProtocol {
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
   internal func disableBluetooth(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
       request: request,
@@ -829,44 +829,44 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
   ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
   func makeEnableAirplaneModeCall(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeDisableAirplaneModeCall(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeEnableWiFiCall(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_WiFiRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeDisableWiFiCall(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_WiFiRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeEnableCellularCall(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_CellularRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeDisableCellularCall(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_CellularRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeEnableBluetoothCall(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeDisableBluetoothCall(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeEnableDarkModeCall(
     _ request: Patrol_DarkModeRequest,
@@ -1062,9 +1062,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeEnableAirplaneModeCall(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
       request: request,
@@ -1074,9 +1074,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeDisableAirplaneModeCall(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_AirplaneModeRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
       request: request,
@@ -1086,9 +1086,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeEnableWiFiCall(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_WiFiRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi.path,
       request: request,
@@ -1098,9 +1098,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeDisableWiFiCall(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_WiFiRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi.path,
       request: request,
@@ -1110,9 +1110,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeEnableCellularCall(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_CellularRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableCellular.path,
       request: request,
@@ -1122,9 +1122,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeDisableCellularCall(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_CellularRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableCellular.path,
       request: request,
@@ -1134,9 +1134,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeEnableBluetoothCall(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
       request: request,
@@ -1146,9 +1146,9 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func makeDisableBluetoothCall(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_BluetoothRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
       path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
       request: request,
@@ -1413,7 +1413,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func enableAirplaneMode(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1425,7 +1425,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func disableAirplaneMode(
-    _ request: Patrol_AirplaneModeRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1437,7 +1437,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func enableWiFi(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1449,7 +1449,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func disableWiFi(
-    _ request: Patrol_WiFiRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1461,7 +1461,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func enableCellular(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1473,7 +1473,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func disableCellular(
-    _ request: Patrol_CellularRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1485,7 +1485,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func enableBluetooth(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1497,7 +1497,7 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
   }
 
   internal func disableBluetooth(
-    _ request: Patrol_BluetoothRequest,
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
@@ -1684,28 +1684,28 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   func makeswipeInterceptors() -> [ClientInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableAirplaneMode'.
-  func makeenableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
+  func makeenableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'disableAirplaneMode'.
-  func makedisableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
+  func makedisableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableWiFi'.
-  func makeenableWiFiInterceptors() -> [ClientInterceptor<Patrol_WiFiRequest, Patrol_Empty>]
+  func makeenableWiFiInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'disableWiFi'.
-  func makedisableWiFiInterceptors() -> [ClientInterceptor<Patrol_WiFiRequest, Patrol_Empty>]
+  func makedisableWiFiInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableCellular'.
-  func makeenableCellularInterceptors() -> [ClientInterceptor<Patrol_CellularRequest, Patrol_Empty>]
+  func makeenableCellularInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'disableCellular'.
-  func makedisableCellularInterceptors() -> [ClientInterceptor<Patrol_CellularRequest, Patrol_Empty>]
+  func makedisableCellularInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableBluetooth'.
-  func makeenableBluetoothInterceptors() -> [ClientInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+  func makeenableBluetoothInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'disableBluetooth'.
-  func makedisableBluetoothInterceptors() -> [ClientInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+  func makedisableBluetoothInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableDarkMode'.
   func makeenableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
@@ -1982,21 +1982,21 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   func swipe(request: Patrol_SwipeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// services
-  func enableAirplaneMode(request: Patrol_AirplaneModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func enableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableAirplaneMode(request: Patrol_AirplaneModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func disableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableWiFi(request: Patrol_WiFiRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func enableWiFi(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableWiFi(request: Patrol_WiFiRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func disableWiFi(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableCellular(request: Patrol_CellularRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func enableCellular(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableCellular(request: Patrol_CellularRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func disableCellular(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableBluetooth(request: Patrol_BluetoothRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func enableBluetooth(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableBluetooth(request: Patrol_BluetoothRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func disableBluetooth(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func enableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
@@ -2135,7 +2135,7 @@ extension Patrol_NativeAutomatorProvider {
     case "enableAirplaneMode":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? [],
         userFunction: self.enableAirplaneMode(request:context:)
@@ -2144,7 +2144,7 @@ extension Patrol_NativeAutomatorProvider {
     case "disableAirplaneMode":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? [],
         userFunction: self.disableAirplaneMode(request:context:)
@@ -2153,7 +2153,7 @@ extension Patrol_NativeAutomatorProvider {
     case "enableWiFi":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_WiFiRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? [],
         userFunction: self.enableWiFi(request:context:)
@@ -2162,7 +2162,7 @@ extension Patrol_NativeAutomatorProvider {
     case "disableWiFi":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_WiFiRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? [],
         userFunction: self.disableWiFi(request:context:)
@@ -2171,7 +2171,7 @@ extension Patrol_NativeAutomatorProvider {
     case "enableCellular":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_CellularRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableCellularInterceptors() ?? [],
         userFunction: self.enableCellular(request:context:)
@@ -2180,7 +2180,7 @@ extension Patrol_NativeAutomatorProvider {
     case "disableCellular":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_CellularRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableCellularInterceptors() ?? [],
         userFunction: self.disableCellular(request:context:)
@@ -2189,7 +2189,7 @@ extension Patrol_NativeAutomatorProvider {
     case "enableBluetooth":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? [],
         userFunction: self.enableBluetooth(request:context:)
@@ -2198,7 +2198,7 @@ extension Patrol_NativeAutomatorProvider {
     case "disableBluetooth":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? [],
         userFunction: self.disableBluetooth(request:context:)
@@ -2368,42 +2368,42 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
 
   /// services
   @Sendable func enableAirplaneMode(
-    request: Patrol_AirplaneModeRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func disableAirplaneMode(
-    request: Patrol_AirplaneModeRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func enableWiFi(
-    request: Patrol_WiFiRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func disableWiFi(
-    request: Patrol_WiFiRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func enableCellular(
-    request: Patrol_CellularRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func disableCellular(
-    request: Patrol_CellularRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func enableBluetooth(
-    request: Patrol_BluetoothRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
   @Sendable func disableBluetooth(
-    request: Patrol_BluetoothRequest,
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
@@ -2581,7 +2581,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "enableAirplaneMode":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? [],
         wrapping: self.enableAirplaneMode(request:context:)
@@ -2590,7 +2590,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "disableAirplaneMode":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_AirplaneModeRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? [],
         wrapping: self.disableAirplaneMode(request:context:)
@@ -2599,7 +2599,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "enableWiFi":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_WiFiRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? [],
         wrapping: self.enableWiFi(request:context:)
@@ -2608,7 +2608,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "disableWiFi":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_WiFiRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? [],
         wrapping: self.disableWiFi(request:context:)
@@ -2617,7 +2617,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "enableCellular":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_CellularRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableCellularInterceptors() ?? [],
         wrapping: self.enableCellular(request:context:)
@@ -2626,7 +2626,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "disableCellular":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_CellularRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableCellularInterceptors() ?? [],
         wrapping: self.disableCellular(request:context:)
@@ -2635,7 +2635,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "enableBluetooth":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? [],
         wrapping: self.enableBluetooth(request:context:)
@@ -2644,7 +2644,7 @@ extension Patrol_NativeAutomatorAsyncProvider {
     case "disableBluetooth":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_BluetoothRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? [],
         wrapping: self.disableBluetooth(request:context:)
@@ -2796,35 +2796,35 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'enableAirplaneMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeenableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
+  func makeenableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'disableAirplaneMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makedisableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
+  func makedisableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'enableWiFi'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeenableWiFiInterceptors() -> [ServerInterceptor<Patrol_WiFiRequest, Patrol_Empty>]
+  func makeenableWiFiInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'disableWiFi'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makedisableWiFiInterceptors() -> [ServerInterceptor<Patrol_WiFiRequest, Patrol_Empty>]
+  func makedisableWiFiInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'enableCellular'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeenableCellularInterceptors() -> [ServerInterceptor<Patrol_CellularRequest, Patrol_Empty>]
+  func makeenableCellularInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'disableCellular'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makedisableCellularInterceptors() -> [ServerInterceptor<Patrol_CellularRequest, Patrol_Empty>]
+  func makedisableCellularInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'enableBluetooth'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeenableBluetoothInterceptors() -> [ServerInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+  func makeenableBluetoothInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'disableBluetooth'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makedisableBluetoothInterceptors() -> [ServerInterceptor<Patrol_BluetoothRequest, Patrol_Empty>]
+  func makedisableBluetoothInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'enableDarkMode'.
   ///   Defaults to calling `self.makeInterceptors()`.

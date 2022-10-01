@@ -63,42 +63,42 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
-    override suspend fun enableAirplaneMode(request: Contracts.AirplaneModeRequest): Empty {
+    override suspend fun enableAirplaneMode(request: Contracts.Empty): Empty {
         automation.enableAirplaneMode()
         return empty {}
     }
 
-    override suspend fun disableAirplaneMode(request: Contracts.AirplaneModeRequest): Contracts.Empty {
+    override suspend fun disableAirplaneMode(request: Contracts.Empty): Contracts.Empty {
         automation.disableAirplaneMode()
         return empty {}
     }
 
-    override suspend fun enableCellular(request: Contracts.CellularRequest): Empty {
+    override suspend fun enableCellular(request: Contracts.Empty): Empty {
         automation.enableCellular()
         return empty { }
     }
 
-    override suspend fun disableCellular(request: Contracts.CellularRequest): Empty {
+    override suspend fun disableCellular(request: Contracts.Empty): Empty {
         automation.disableCellular()
         return empty { }
     }
 
-    override suspend fun enableWiFi(request: Contracts.WiFiRequest): Empty {
+    override suspend fun enableWiFi(request: Contracts.Empty): Empty {
         automation.enableWifi()
         return empty { }
     }
 
-    override suspend fun disableWiFi(request: Contracts.WiFiRequest): Empty {
+    override suspend fun disableWiFi(request: Contracts.Empty): Empty {
         automation.disableWifi()
         return empty { }
     }
 
-    override suspend fun enableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty {
+    override suspend fun enableBluetooth(request: Contracts.Empty): Contracts.Empty {
         automation.enableBluetooth()
         return empty { }
     }
 
-    override suspend fun disableBluetooth(request: Contracts.BluetoothRequest): Contracts.Empty {
+    override suspend fun disableBluetooth(request: Contracts.Empty): Contracts.Empty {
         automation.disableBluetooth()
         return empty { }
     }

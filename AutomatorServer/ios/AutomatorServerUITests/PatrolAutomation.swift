@@ -123,7 +123,7 @@ class PatrolAutomation {
     }
   }
   
-  func enableAirplaneMode(_ bundleIdentifier: String) throws {
+  func enableAirplaneMode() throws {
     try runControlCenterAction("enabling airplane mode") {
       let toggle = self.springboard.switches["airplane-mode-button"]
       if toggle.value! as! String == "0" {
@@ -132,7 +132,7 @@ class PatrolAutomation {
     }
   }
   
-  func disableAirplaneMode(_ bundleIdentifier: String) throws {
+  func disableAirplaneMode() throws {
     try runControlCenterAction("disabling airplane mode") {
       let toggle = self.springboard.switches["airplane-mode-button"]
       if toggle.value! as! String == "1" {
@@ -142,7 +142,7 @@ class PatrolAutomation {
   }
   
   
-  func enableCellular(_ bundleIdentifier: String) throws {
+  func enableCellular() throws {
     try runControlCenterAction("enabling cellular") {
       let toggle = self.springboard.switches["cellular-data-button"]
       if toggle.value! as! String == "0" {
@@ -151,7 +151,7 @@ class PatrolAutomation {
     }
   }
   
-  func disableCellular(_ bundleIdentifier: String) throws {
+  func disableCellular() throws {
     try runControlCenterAction("disabling cellular") {
       let toggle = self.springboard.switches["cellular-data-button"]
       if toggle.value! as! String == "1" {
@@ -160,7 +160,7 @@ class PatrolAutomation {
     }
   }
 
-  func enableWiFi(_ bundleIdentifier: String) throws {
+  func enableWiFi() throws {
     try runControlCenterAction("enabling wifi") {
       let toggle = self.springboard.switches["wifi-button"]
       if toggle.value! as! String == "0" {
@@ -169,7 +169,7 @@ class PatrolAutomation {
     }
   }
 
-  func disableWiFi(_ bundleIdentifier: String) throws {
+  func disableWiFi() throws {
     try runControlCenterAction("disabling wifi") {
       let toggle = self.springboard.switches["wifi-button"]
       if toggle.value! as! String == "1" {
@@ -178,7 +178,7 @@ class PatrolAutomation {
     }
   }
   
-  func enableBluetooth(_ bundleIdentifier: String) throws {
+  func enableBluetooth() throws {
     try runControlCenterAction("enabling bluetooth") {
       let toggle = self.springboard.switches["bluetooth-button"]
       if toggle.value! as! String == "0" {
@@ -187,7 +187,7 @@ class PatrolAutomation {
     }
   }
   
-  func disableBluetooth(_ bundleIdentifier: String) throws {
+  func disableBluetooth() throws {
     try runControlCenterAction("disabling bluetooth") {
       let toggle = self.springboard.switches["bluetooth-button"]
       if toggle.value! as! String == "1" {
