@@ -204,6 +204,161 @@ public final class NativeAutomatorGrpc {
     return getOpenQuickSettingsMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "getNativeWidgets",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod;
+    if ((getGetNativeWidgetsMethod = NativeAutomatorGrpc.getGetNativeWidgetsMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getGetNativeWidgetsMethod = NativeAutomatorGrpc.getGetNativeWidgetsMethod) == null) {
+          NativeAutomatorGrpc.getGetNativeWidgetsMethod = getGetNativeWidgetsMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNativeWidgets"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("getNativeWidgets"))
+              .build();
+        }
+      }
+    }
+    return getGetNativeWidgetsMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getTapMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "tap",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.TapRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getTapMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getTapMethod;
+    if ((getTapMethod = NativeAutomatorGrpc.getTapMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getTapMethod = NativeAutomatorGrpc.getTapMethod) == null) {
+          NativeAutomatorGrpc.getTapMethod = getTapMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "tap"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.TapRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("tap"))
+              .build();
+        }
+      }
+    }
+    return getTapMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDoubleTapMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "doubleTap",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.TapRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getDoubleTapMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDoubleTapMethod;
+    if ((getDoubleTapMethod = NativeAutomatorGrpc.getDoubleTapMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getDoubleTapMethod = NativeAutomatorGrpc.getDoubleTapMethod) == null) {
+          NativeAutomatorGrpc.getDoubleTapMethod = getDoubleTapMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "doubleTap"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.TapRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("doubleTap"))
+              .build();
+        }
+      }
+    }
+    return getDoubleTapMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnterTextMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "enterText",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnterTextMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnterTextMethod;
+    if ((getEnterTextMethod = NativeAutomatorGrpc.getEnterTextMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getEnterTextMethod = NativeAutomatorGrpc.getEnterTextMethod) == null) {
+          NativeAutomatorGrpc.getEnterTextMethod = getEnterTextMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enterText"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enterText"))
+              .build();
+        }
+      }
+    }
+    return getEnterTextMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getSwipeMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "swipe",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getSwipeMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getSwipeMethod;
+    if ((getSwipeMethod = NativeAutomatorGrpc.getSwipeMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getSwipeMethod = NativeAutomatorGrpc.getSwipeMethod) == null) {
+          NativeAutomatorGrpc.getSwipeMethod = getSwipeMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "swipe"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("swipe"))
+              .build();
+        }
+      }
+    }
+    return getSwipeMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
 
@@ -512,161 +667,6 @@ public final class NativeAutomatorGrpc {
       }
     }
     return getDisableDarkModeMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
-      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getNativeWidgets",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class,
-      responseType = pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
-      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod;
-    if ((getGetNativeWidgetsMethod = NativeAutomatorGrpc.getGetNativeWidgetsMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getGetNativeWidgetsMethod = NativeAutomatorGrpc.getGetNativeWidgetsMethod) == null) {
-          NativeAutomatorGrpc.getGetNativeWidgetsMethod = getGetNativeWidgetsMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNativeWidgets"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("getNativeWidgets"))
-              .build();
-        }
-      }
-    }
-    return getGetNativeWidgetsMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getTapMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "tap",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.TapRequest.class,
-      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getTapMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getTapMethod;
-    if ((getTapMethod = NativeAutomatorGrpc.getTapMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getTapMethod = NativeAutomatorGrpc.getTapMethod) == null) {
-          NativeAutomatorGrpc.getTapMethod = getTapMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "tap"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.TapRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("tap"))
-              .build();
-        }
-      }
-    }
-    return getTapMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getDoubleTapMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "doubleTap",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.TapRequest.class,
-      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getDoubleTapMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getDoubleTapMethod;
-    if ((getDoubleTapMethod = NativeAutomatorGrpc.getDoubleTapMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getDoubleTapMethod = NativeAutomatorGrpc.getDoubleTapMethod) == null) {
-          NativeAutomatorGrpc.getDoubleTapMethod = getDoubleTapMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.TapRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "doubleTap"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.TapRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("doubleTap"))
-              .build();
-        }
-      }
-    }
-    return getDoubleTapMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnterTextMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "enterText",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.class,
-      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getEnterTextMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getEnterTextMethod;
-    if ((getEnterTextMethod = NativeAutomatorGrpc.getEnterTextMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getEnterTextMethod = NativeAutomatorGrpc.getEnterTextMethod) == null) {
-          NativeAutomatorGrpc.getEnterTextMethod = getEnterTextMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enterText"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enterText"))
-              .build();
-        }
-      }
-    }
-    return getEnterTextMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getSwipeMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "swipe",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.class,
-      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest,
-      pl.leancode.automatorserver.contracts.Contracts.Empty> getSwipeMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getSwipeMethod;
-    if ((getSwipeMethod = NativeAutomatorGrpc.getSwipeMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getSwipeMethod = NativeAutomatorGrpc.getSwipeMethod) == null) {
-          NativeAutomatorGrpc.getSwipeMethod = getSwipeMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.SwipeRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "swipe"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("swipe"))
-              .build();
-        }
-      }
-    }
-    return getSwipeMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
@@ -981,6 +981,44 @@ public final class NativeAutomatorGrpc {
 
     /**
      * <pre>
+     * general UI interaction
+     * </pre>
+     */
+    public void getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetNativeWidgetsMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void tap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getTapMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void doubleTap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDoubleTapMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void enterText(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnterTextMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public void swipe(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSwipeMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
      * services
      * </pre>
      */
@@ -1050,44 +1088,6 @@ public final class NativeAutomatorGrpc {
     public void disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDisableDarkModeMethod(), responseObserver);
-    }
-
-    /**
-     * <pre>
-     * general UI interaction
-     * </pre>
-     */
-    public void getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetNativeWidgetsMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void tap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getTapMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void doubleTap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDoubleTapMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void enterText(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getEnterTextMethod(), responseObserver);
-    }
-
-    /**
-     */
-    public void swipe(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSwipeMethod(), responseObserver);
     }
 
     /**
@@ -1190,6 +1190,41 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_OPEN_QUICK_SETTINGS)))
           .addMethod(
+            getGetNativeWidgetsMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>(
+                  this, METHODID_GET_NATIVE_WIDGETS)))
+          .addMethod(
+            getTapMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.TapRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_TAP)))
+          .addMethod(
+            getDoubleTapMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.TapRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_DOUBLE_TAP)))
+          .addMethod(
+            getEnterTextMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_ENTER_TEXT)))
+          .addMethod(
+            getSwipeMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.SwipeRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_SWIPE)))
+          .addMethod(
             getEnableAirplaneModeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
@@ -1259,41 +1294,6 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_DISABLE_DARK_MODE)))
-          .addMethod(
-            getGetNativeWidgetsMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
-                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>(
-                  this, METHODID_GET_NATIVE_WIDGETS)))
-          .addMethod(
-            getTapMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.TapRequest,
-                pl.leancode.automatorserver.contracts.Contracts.Empty>(
-                  this, METHODID_TAP)))
-          .addMethod(
-            getDoubleTapMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.TapRequest,
-                pl.leancode.automatorserver.contracts.Contracts.Empty>(
-                  this, METHODID_DOUBLE_TAP)))
-          .addMethod(
-            getEnterTextMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest,
-                pl.leancode.automatorserver.contracts.Contracts.Empty>(
-                  this, METHODID_ENTER_TEXT)))
-          .addMethod(
-            getSwipeMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.SwipeRequest,
-                pl.leancode.automatorserver.contracts.Contracts.Empty>(
-                  this, METHODID_SWIPE)))
           .addMethod(
             getOpenNotificationsMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1414,6 +1414,49 @@ public final class NativeAutomatorGrpc {
 
     /**
      * <pre>
+     * general UI interaction
+     * </pre>
+     */
+    public void getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getGetNativeWidgetsMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void tap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getTapMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void doubleTap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getDoubleTapMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void enterText(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getEnterTextMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void swipe(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getSwipeMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
      * services
      * </pre>
      */
@@ -1493,49 +1536,6 @@ public final class NativeAutomatorGrpc {
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDisableDarkModeMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     * <pre>
-     * general UI interaction
-     * </pre>
-     */
-    public void getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getGetNativeWidgetsMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void tap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getTapMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void doubleTap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getDoubleTapMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void enterText(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getEnterTextMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void swipe(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getSwipeMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1662,6 +1662,44 @@ public final class NativeAutomatorGrpc {
 
     /**
      * <pre>
+     * general UI interaction
+     * </pre>
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGetNativeWidgetsMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty tap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getTapMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty doubleTap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getDoubleTapMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty enterText(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getEnterTextMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty swipe(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSwipeMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
      * services
      * </pre>
      */
@@ -1731,44 +1769,6 @@ public final class NativeAutomatorGrpc {
     public pl.leancode.automatorserver.contracts.Contracts.Empty disableDarkMode(pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDisableDarkModeMethod(), getCallOptions(), request);
-    }
-
-    /**
-     * <pre>
-     * general UI interaction
-     * </pre>
-     */
-    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getGetNativeWidgetsMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty tap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getTapMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty doubleTap(pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getDoubleTapMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty enterText(pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getEnterTextMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public pl.leancode.automatorserver.contracts.Contracts.Empty swipe(pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getSwipeMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1894,6 +1894,49 @@ public final class NativeAutomatorGrpc {
 
     /**
      * <pre>
+     * general UI interaction
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getNativeWidgets(
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getGetNativeWidgetsMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> tap(
+        pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getTapMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> doubleTap(
+        pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getDoubleTapMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enterText(
+        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getEnterTextMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> swipe(
+        pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getSwipeMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
      * services
      * </pre>
      */
@@ -1977,49 +2020,6 @@ public final class NativeAutomatorGrpc {
 
     /**
      * <pre>
-     * general UI interaction
-     * </pre>
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getNativeWidgets(
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getGetNativeWidgetsMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> tap(
-        pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getTapMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> doubleTap(
-        pl.leancode.automatorserver.contracts.Contracts.TapRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getDoubleTapMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> enterText(
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getEnterTextMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> swipe(
-        pl.leancode.automatorserver.contracts.Contracts.SwipeRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getSwipeMethod(), getCallOptions()), request);
-    }
-
-    /**
-     * <pre>
      * notifications
      * </pre>
      */
@@ -2087,21 +2087,21 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_DOUBLE_PRESS_RECENT_APPS = 3;
   private static final int METHODID_OPEN_APP = 4;
   private static final int METHODID_OPEN_QUICK_SETTINGS = 5;
-  private static final int METHODID_ENABLE_AIRPLANE_MODE = 6;
-  private static final int METHODID_DISABLE_AIRPLANE_MODE = 7;
-  private static final int METHODID_ENABLE_WI_FI = 8;
-  private static final int METHODID_DISABLE_WI_FI = 9;
-  private static final int METHODID_ENABLE_CELLULAR = 10;
-  private static final int METHODID_DISABLE_CELLULAR = 11;
-  private static final int METHODID_ENABLE_BLUETOOTH = 12;
-  private static final int METHODID_DISABLE_BLUETOOTH = 13;
-  private static final int METHODID_ENABLE_DARK_MODE = 14;
-  private static final int METHODID_DISABLE_DARK_MODE = 15;
-  private static final int METHODID_GET_NATIVE_WIDGETS = 16;
-  private static final int METHODID_TAP = 17;
-  private static final int METHODID_DOUBLE_TAP = 18;
-  private static final int METHODID_ENTER_TEXT = 19;
-  private static final int METHODID_SWIPE = 20;
+  private static final int METHODID_GET_NATIVE_WIDGETS = 6;
+  private static final int METHODID_TAP = 7;
+  private static final int METHODID_DOUBLE_TAP = 8;
+  private static final int METHODID_ENTER_TEXT = 9;
+  private static final int METHODID_SWIPE = 10;
+  private static final int METHODID_ENABLE_AIRPLANE_MODE = 11;
+  private static final int METHODID_DISABLE_AIRPLANE_MODE = 12;
+  private static final int METHODID_ENABLE_WI_FI = 13;
+  private static final int METHODID_DISABLE_WI_FI = 14;
+  private static final int METHODID_ENABLE_CELLULAR = 15;
+  private static final int METHODID_DISABLE_CELLULAR = 16;
+  private static final int METHODID_ENABLE_BLUETOOTH = 17;
+  private static final int METHODID_DISABLE_BLUETOOTH = 18;
+  private static final int METHODID_ENABLE_DARK_MODE = 19;
+  private static final int METHODID_DISABLE_DARK_MODE = 20;
   private static final int METHODID_OPEN_NOTIFICATIONS = 21;
   private static final int METHODID_CLOSE_NOTIFICATIONS = 22;
   private static final int METHODID_GET_NOTIFICATIONS = 23;
@@ -2151,6 +2151,26 @@ public final class NativeAutomatorGrpc {
           serviceImpl.openQuickSettings((pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
+        case METHODID_GET_NATIVE_WIDGETS:
+          serviceImpl.getNativeWidgets((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>) responseObserver);
+          break;
+        case METHODID_TAP:
+          serviceImpl.tap((pl.leancode.automatorserver.contracts.Contracts.TapRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_DOUBLE_TAP:
+          serviceImpl.doubleTap((pl.leancode.automatorserver.contracts.Contracts.TapRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_ENTER_TEXT:
+          serviceImpl.enterText((pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_SWIPE:
+          serviceImpl.swipe((pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
         case METHODID_ENABLE_AIRPLANE_MODE:
           serviceImpl.enableAirplaneMode((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
@@ -2189,26 +2209,6 @@ public final class NativeAutomatorGrpc {
           break;
         case METHODID_DISABLE_DARK_MODE:
           serviceImpl.disableDarkMode((pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
-          break;
-        case METHODID_GET_NATIVE_WIDGETS:
-          serviceImpl.getNativeWidgets((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>) responseObserver);
-          break;
-        case METHODID_TAP:
-          serviceImpl.tap((pl.leancode.automatorserver.contracts.Contracts.TapRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
-          break;
-        case METHODID_DOUBLE_TAP:
-          serviceImpl.doubleTap((pl.leancode.automatorserver.contracts.Contracts.TapRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
-          break;
-        case METHODID_ENTER_TEXT:
-          serviceImpl.enterText((pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
-          break;
-        case METHODID_SWIPE:
-          serviceImpl.swipe((pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_OPEN_NOTIFICATIONS:
@@ -2306,6 +2306,11 @@ public final class NativeAutomatorGrpc {
               .addMethod(getDoublePressRecentAppsMethod())
               .addMethod(getOpenAppMethod())
               .addMethod(getOpenQuickSettingsMethod())
+              .addMethod(getGetNativeWidgetsMethod())
+              .addMethod(getTapMethod())
+              .addMethod(getDoubleTapMethod())
+              .addMethod(getEnterTextMethod())
+              .addMethod(getSwipeMethod())
               .addMethod(getEnableAirplaneModeMethod())
               .addMethod(getDisableAirplaneModeMethod())
               .addMethod(getEnableWiFiMethod())
@@ -2316,11 +2321,6 @@ public final class NativeAutomatorGrpc {
               .addMethod(getDisableBluetoothMethod())
               .addMethod(getEnableDarkModeMethod())
               .addMethod(getDisableDarkModeMethod())
-              .addMethod(getGetNativeWidgetsMethod())
-              .addMethod(getTapMethod())
-              .addMethod(getDoubleTapMethod())
-              .addMethod(getEnterTextMethod())
-              .addMethod(getSwipeMethod())
               .addMethod(getOpenNotificationsMethod())
               .addMethod(getCloseNotificationsMethod())
               .addMethod(getGetNotificationsMethod())

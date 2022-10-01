@@ -1070,7 +1070,7 @@ extension Patrol_GetNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf.
 extension Patrol_TapRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TapRequest"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Selector"),
+    1: .same(proto: "selector"),
     2: .same(proto: "appId"),
   ]
 

@@ -186,12 +186,12 @@ const TapRequest$json = const {
   '1': 'TapRequest',
   '2': const [
     const {
-      '1': 'Selector',
+      '1': 'selector',
       '3': 1,
       '4': 1,
       '5': 11,
       '6': '.patrol.Selector',
-      '10': 'Selector'
+      '10': 'selector'
     },
     const {'1': 'appId', '3': 2, '4': 1, '5': 9, '10': 'appId'},
   ],
@@ -199,7 +199,7 @@ const TapRequest$json = const {
 
 /// Descriptor for `TapRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List tapRequestDescriptor = $convert.base64Decode(
-    'CgpUYXBSZXF1ZXN0EiwKCFNlbGVjdG9yGAEgASgLMhAucGF0cm9sLlNlbGVjdG9yUghTZWxlY3RvchIUCgVhcHBJZBgCIAEoCVIFYXBwSWQ=');
+    'CgpUYXBSZXF1ZXN0EiwKCHNlbGVjdG9yGAEgASgLMhAucGF0cm9sLlNlbGVjdG9yUghzZWxlY3RvchIUCgVhcHBJZBgCIAEoCVIFYXBwSWQ=');
 @$core.Deprecated('Use enterTextRequestDescriptor instead')
 const EnterTextRequest$json = const {
   '1': 'EnterTextRequest',

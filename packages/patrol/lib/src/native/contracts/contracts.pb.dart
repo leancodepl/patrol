@@ -867,8 +867,7 @@ class TapRequest extends $pb.GeneratedMessage {
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'Selector',
-        protoName: 'Selector',
+            : 'selector',
         subBuilder: Selector.create)
     ..aOS(
         2,

@@ -7753,17 +7753,17 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      * @return Whether the selector field is set.
      */
     boolean hasSelector();
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      * @return The selector.
      */
     pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      */
     pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
 
@@ -7881,7 +7881,7 @@ public final class Contracts {
     public static final int SELECTOR_FIELD_NUMBER = 1;
     private pl.leancode.automatorserver.contracts.Contracts.Selector selector_;
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      * @return Whether the selector field is set.
      */
     @java.lang.Override
@@ -7889,7 +7889,7 @@ public final class Contracts {
       return selector_ != null;
     }
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      * @return The selector.
      */
     @java.lang.Override
@@ -7897,7 +7897,7 @@ public final class Contracts {
       return selector_ == null ? pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance() : selector_;
     }
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      */
     @java.lang.Override
     public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
@@ -8278,14 +8278,14 @@ public final class Contracts {
       private com.google.protobuf.SingleFieldBuilderV3<
           pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        * @return Whether the selector field is set.
        */
       public boolean hasSelector() {
         return selectorBuilder_ != null || selector_ != null;
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        * @return The selector.
        */
       public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
@@ -8296,7 +8296,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
         if (selectorBuilder_ == null) {
@@ -8312,7 +8312,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       public Builder setSelector(
           pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
@@ -8326,7 +8326,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
         if (selectorBuilder_ == null) {
@@ -8344,7 +8344,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       public Builder clearSelector() {
         if (selectorBuilder_ == null) {
@@ -8358,7 +8358,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
         
@@ -8366,7 +8366,7 @@ public final class Contracts {
         return getSelectorFieldBuilder().getBuilder();
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
         if (selectorBuilder_ != null) {
@@ -8377,7 +8377,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>.patrol.Selector Selector = 1;</code>
+       * <code>.patrol.Selector selector = 1;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
@@ -16998,7 +16998,7 @@ public final class Contracts {
       "ol.NativeWidget\"\031\n\027GetNotificationsReque" +
       "st\"G\n\030GetNotificationsResponse\022+\n\rnotifi" +
       "cations\030\001 \003(\0132\024.patrol.Notification\"?\n\nT" +
-      "apRequest\022\"\n\010Selector\030\001 \001(\0132\020.patrol.Sel" +
+      "apRequest\022\"\n\010selector\030\001 \001(\0132\020.patrol.Sel" +
       "ector\022\r\n\005appId\030\002 \001(\t\"p\n\020EnterTextRequest" +
       "\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005index\030\003" +
       " \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol.Select" +
@@ -17041,29 +17041,29 @@ public final class Contracts {
       "ps\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007op" +
       "enApp\022\026.patrol.OpenAppRequest\032\r.patrol.E" +
       "mpty\"\000\022F\n\021openQuickSettings\022 .patrol.Ope" +
-      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022B" +
-      "\n\022enableAirplaneMode\022\033.patrol.AirplaneMo" +
-      "deRequest\032\r.patrol.Empty\"\000\022C\n\023disableAir" +
-      "planeMode\022\033.patrol.AirplaneModeRequest\032\r" +
-      ".patrol.Empty\"\000\0222\n\nenableWiFi\022\023.patrol.W" +
-      "iFiRequest\032\r.patrol.Empty\"\000\0223\n\013disableWi" +
-      "Fi\022\023.patrol.WiFiRequest\032\r.patrol.Empty\"\000" +
-      "\022:\n\016enableCellular\022\027.patrol.CellularRequ" +
-      "est\032\r.patrol.Empty\"\000\022;\n\017disableCellular\022" +
-      "\027.patrol.CellularRequest\032\r.patrol.Empty\"" +
-      "\000\022<\n\017enableBluetooth\022\030.patrol.BluetoothR" +
-      "equest\032\r.patrol.Empty\"\000\022=\n\020disableBlueto" +
-      "oth\022\030.patrol.BluetoothRequest\032\r.patrol.E" +
-      "mpty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMo" +
-      "deRequest\032\r.patrol.Empty\"\000\022;\n\017disableDar" +
-      "kMode\022\027.patrol.DarkModeRequest\032\r.patrol." +
-      "Empty\"\000\022W\n\020getNativeWidgets\022\037.patrol.Get" +
-      "NativeWidgetsRequest\032 .patrol.GetNativeW" +
-      "idgetsResponse\"\000\022*\n\003tap\022\022.patrol.TapRequ" +
-      "est\032\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patr" +
-      "ol.TapRequest\032\r.patrol.Empty\"\000\0226\n\tenterT" +
-      "ext\022\030.patrol.EnterTextRequest\032\r.patrol.E" +
-      "mpty\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r." +
+      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022W" +
+      "\n\020getNativeWidgets\022\037.patrol.GetNativeWid" +
+      "getsRequest\032 .patrol.GetNativeWidgetsRes" +
+      "ponse\"\000\022*\n\003tap\022\022.patrol.TapRequest\032\r.pat" +
+      "rol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.TapReq" +
+      "uest\032\r.patrol.Empty\"\000\0226\n\tenterText\022\030.pat" +
+      "rol.EnterTextRequest\032\r.patrol.Empty\"\000\022.\n" +
+      "\005swipe\022\024.patrol.SwipeRequest\032\r.patrol.Em" +
+      "pty\"\000\022B\n\022enableAirplaneMode\022\033.patrol.Air" +
+      "planeModeRequest\032\r.patrol.Empty\"\000\022C\n\023dis" +
+      "ableAirplaneMode\022\033.patrol.AirplaneModeRe" +
+      "quest\032\r.patrol.Empty\"\000\0222\n\nenableWiFi\022\023.p" +
+      "atrol.WiFiRequest\032\r.patrol.Empty\"\000\0223\n\013di" +
+      "sableWiFi\022\023.patrol.WiFiRequest\032\r.patrol." +
+      "Empty\"\000\022:\n\016enableCellular\022\027.patrol.Cellu" +
+      "larRequest\032\r.patrol.Empty\"\000\022;\n\017disableCe" +
+      "llular\022\027.patrol.CellularRequest\032\r.patrol" +
+      ".Empty\"\000\022<\n\017enableBluetooth\022\030.patrol.Blu" +
+      "etoothRequest\032\r.patrol.Empty\"\000\022=\n\020disabl" +
+      "eBluetooth\022\030.patrol.BluetoothRequest\032\r.p" +
+      "atrol.Empty\"\000\022:\n\016enableDarkMode\022\027.patrol" +
+      ".DarkModeRequest\032\r.patrol.Empty\"\000\022;\n\017dis" +
+      "ableDarkMode\022\027.patrol.DarkModeRequest\032\r." +
       "patrol.Empty\"\000\0223\n\021openNotifications\022\r.pa" +
       "trol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeNoti" +
       "fications\022\r.patrol.Empty\032\r.patrol.Empty\"" +

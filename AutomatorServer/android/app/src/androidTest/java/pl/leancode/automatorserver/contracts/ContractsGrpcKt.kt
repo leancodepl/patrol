@@ -60,6 +60,27 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenQuickSettingsMethod()
 
+  public val getNativeWidgetsMethod:
+      MethodDescriptor<Contracts.GetNativeWidgetsRequest, Contracts.GetNativeWidgetsResponse>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getGetNativeWidgetsMethod()
+
+  public val tapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getTapMethod()
+
+  public val doubleTapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getDoubleTapMethod()
+
+  public val enterTextMethod: MethodDescriptor<Contracts.EnterTextRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getEnterTextMethod()
+
+  public val swipeMethod: MethodDescriptor<Contracts.SwipeRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getSwipeMethod()
+
   public val enableAirplaneModeMethod:
       MethodDescriptor<Contracts.AirplaneModeRequest, Contracts.Empty>
     @JvmStatic
@@ -101,27 +122,6 @@ public object NativeAutomatorGrpcKt {
   public val disableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableDarkModeMethod()
-
-  public val getNativeWidgetsMethod:
-      MethodDescriptor<Contracts.GetNativeWidgetsRequest, Contracts.GetNativeWidgetsResponse>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getGetNativeWidgetsMethod()
-
-  public val tapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getTapMethod()
-
-  public val doubleTapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getDoubleTapMethod()
-
-  public val enterTextMethod: MethodDescriptor<Contracts.EnterTextRequest, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getEnterTextMethod()
-
-  public val swipeMethod: MethodDescriptor<Contracts.SwipeRequest, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getSwipeMethod()
 
   public val openNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
@@ -287,6 +287,111 @@ public object NativeAutomatorGrpcKt {
         headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getOpenQuickSettingsMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest,
+        headers: Metadata = Metadata()): Contracts.GetNativeWidgetsResponse = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getGetNativeWidgetsMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun tap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getTapMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun doubleTap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getDoubleTapMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun enterText(request: Contracts.EnterTextRequest, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getEnterTextMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun swipe(request: Contracts.SwipeRequest, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getSwipeMethod(),
       request,
       callOptions,
       headers
@@ -497,111 +602,6 @@ public object NativeAutomatorGrpcKt {
         Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableDarkModeMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest,
-        headers: Metadata = Metadata()): Contracts.GetNativeWidgetsResponse = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getGetNativeWidgetsMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun tap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
-        Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getTapMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun doubleTap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
-        Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getDoubleTapMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun enterText(request: Contracts.EnterTextRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getEnterTextMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun swipe(request: Contracts.SwipeRequest, headers: Metadata = Metadata()):
-        Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getSwipeMethod(),
       request,
       callOptions,
       headers
@@ -847,6 +847,77 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openQuickSettings is unimplemented"))
 
     /**
+     * Returns the response to an RPC for patrol.NativeAutomator.getNativeWidgets.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest):
+        Contracts.GetNativeWidgetsResponse = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNativeWidgets is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.tap.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun tap(request: Contracts.TapRequest): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.tap is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.doubleTap.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun doubleTap(request: Contracts.TapRequest): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.doubleTap is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.enterText.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun enterText(request: Contracts.EnterTextRequest): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enterText is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.swipe.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun swipe(request: Contracts.SwipeRequest): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.swipe is unimplemented"))
+
+    /**
      * Returns the response to an RPC for patrol.NativeAutomator.enableAirplaneMode.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
@@ -995,77 +1066,6 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableDarkMode is unimplemented"))
 
     /**
-     * Returns the response to an RPC for patrol.NativeAutomator.getNativeWidgets.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest):
-        Contracts.GetNativeWidgetsResponse = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNativeWidgets is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.tap.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun tap(request: Contracts.TapRequest): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.tap is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.doubleTap.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun doubleTap(request: Contracts.TapRequest): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.doubleTap is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.enterText.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun enterText(request: Contracts.EnterTextRequest): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enterText is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.swipe.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun swipe(request: Contracts.SwipeRequest): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.swipe is unimplemented"))
-
-    /**
      * Returns the response to an RPC for patrol.NativeAutomator.openNotifications.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
@@ -1201,6 +1201,31 @@ public object NativeAutomatorGrpcKt {
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
+      descriptor = NativeAutomatorGrpc.getGetNativeWidgetsMethod(),
+      implementation = ::getNativeWidgets
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getTapMethod(),
+      implementation = ::tap
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getDoubleTapMethod(),
+      implementation = ::doubleTap
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getEnterTextMethod(),
+      implementation = ::enterText
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getSwipeMethod(),
+      implementation = ::swipe
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
       descriptor = NativeAutomatorGrpc.getEnableAirplaneModeMethod(),
       implementation = ::enableAirplaneMode
     ))
@@ -1248,31 +1273,6 @@ public object NativeAutomatorGrpcKt {
       context = this.context,
       descriptor = NativeAutomatorGrpc.getDisableDarkModeMethod(),
       implementation = ::disableDarkMode
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getGetNativeWidgetsMethod(),
-      implementation = ::getNativeWidgets
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getTapMethod(),
-      implementation = ::tap
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getDoubleTapMethod(),
-      implementation = ::doubleTap
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getEnterTextMethod(),
-      implementation = ::enterText
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getSwipeMethod(),
-      implementation = ::swipe
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,

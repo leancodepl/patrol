@@ -39,6 +39,28 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/openQuickSettings',
           ($0.OpenQuickSettingsRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$getNativeWidgets = $grpc.ClientMethod<
+          $0.GetNativeWidgetsRequest, $0.GetNativeWidgetsResponse>(
+      '/patrol.NativeAutomator/getNativeWidgets',
+      ($0.GetNativeWidgetsRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) =>
+          $0.GetNativeWidgetsResponse.fromBuffer(value));
+  static final _$tap = $grpc.ClientMethod<$0.TapRequest, $0.Empty>(
+      '/patrol.NativeAutomator/tap',
+      ($0.TapRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$doubleTap = $grpc.ClientMethod<$0.TapRequest, $0.Empty>(
+      '/patrol.NativeAutomator/doubleTap',
+      ($0.TapRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$enterText = $grpc.ClientMethod<$0.EnterTextRequest, $0.Empty>(
+      '/patrol.NativeAutomator/enterText',
+      ($0.EnterTextRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$swipe = $grpc.ClientMethod<$0.SwipeRequest, $0.Empty>(
+      '/patrol.NativeAutomator/swipe',
+      ($0.SwipeRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$enableAirplaneMode =
       $grpc.ClientMethod<$0.AirplaneModeRequest, $0.Empty>(
           '/patrol.NativeAutomator/enableAirplaneMode',
@@ -87,28 +109,6 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/disableDarkMode',
           ($0.DarkModeRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$getNativeWidgets = $grpc.ClientMethod<
-          $0.GetNativeWidgetsRequest, $0.GetNativeWidgetsResponse>(
-      '/patrol.NativeAutomator/getNativeWidgets',
-      ($0.GetNativeWidgetsRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) =>
-          $0.GetNativeWidgetsResponse.fromBuffer(value));
-  static final _$tap = $grpc.ClientMethod<$0.TapRequest, $0.Empty>(
-      '/patrol.NativeAutomator/tap',
-      ($0.TapRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$doubleTap = $grpc.ClientMethod<$0.TapRequest, $0.Empty>(
-      '/patrol.NativeAutomator/doubleTap',
-      ($0.TapRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$enterText = $grpc.ClientMethod<$0.EnterTextRequest, $0.Empty>(
-      '/patrol.NativeAutomator/enterText',
-      ($0.EnterTextRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$swipe = $grpc.ClientMethod<$0.SwipeRequest, $0.Empty>(
-      '/patrol.NativeAutomator/swipe',
-      ($0.SwipeRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$openNotifications = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/patrol.NativeAutomator/openNotifications',
       ($0.Empty value) => value.writeToBuffer(),
@@ -179,6 +179,32 @@ class NativeAutomatorClient extends $grpc.Client {
     return $createUnaryCall(_$openQuickSettings, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.GetNativeWidgetsResponse> getNativeWidgets(
+      $0.GetNativeWidgetsRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$getNativeWidgets, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> tap($0.TapRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$tap, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> doubleTap($0.TapRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$doubleTap, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> enterText($0.EnterTextRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$enterText, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> swipe($0.SwipeRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$swipe, request, options: options);
+  }
+
   $grpc.ResponseFuture<$0.Empty> enableAirplaneMode(
       $0.AirplaneModeRequest request,
       {$grpc.CallOptions? options}) {
@@ -229,32 +255,6 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> disableDarkMode($0.DarkModeRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$disableDarkMode, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.GetNativeWidgetsResponse> getNativeWidgets(
-      $0.GetNativeWidgetsRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$getNativeWidgets, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> tap($0.TapRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$tap, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> doubleTap($0.TapRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$doubleTap, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> enterText($0.EnterTextRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$enterText, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> swipe($0.SwipeRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$swipe, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> openNotifications($0.Empty request,
@@ -345,6 +345,43 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.OpenQuickSettingsRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.GetNativeWidgetsRequest,
+            $0.GetNativeWidgetsResponse>(
+        'getNativeWidgets',
+        getNativeWidgets_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.GetNativeWidgetsRequest.fromBuffer(value),
+        ($0.GetNativeWidgetsResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.TapRequest, $0.Empty>(
+        'tap',
+        tap_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.TapRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.TapRequest, $0.Empty>(
+        'doubleTap',
+        doubleTap_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.TapRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.EnterTextRequest, $0.Empty>(
+        'enterText',
+        enterText_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.EnterTextRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.SwipeRequest, $0.Empty>(
+        'swipe',
+        swipe_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.SwipeRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.AirplaneModeRequest, $0.Empty>(
         'enableAirplaneMode',
         enableAirplaneMode_Pre,
@@ -416,43 +453,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         false,
         ($core.List<$core.int> value) => $0.DarkModeRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.GetNativeWidgetsRequest,
-            $0.GetNativeWidgetsResponse>(
-        'getNativeWidgets',
-        getNativeWidgets_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.GetNativeWidgetsRequest.fromBuffer(value),
-        ($0.GetNativeWidgetsResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.TapRequest, $0.Empty>(
-        'tap',
-        tap_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.TapRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.TapRequest, $0.Empty>(
-        'doubleTap',
-        doubleTap_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.TapRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.EnterTextRequest, $0.Empty>(
-        'enterText',
-        enterText_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.EnterTextRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.SwipeRequest, $0.Empty>(
-        'swipe',
-        swipe_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.SwipeRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'openNotifications',
@@ -540,6 +540,32 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return openQuickSettings(call, await request);
   }
 
+  $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets_Pre(
+      $grpc.ServiceCall call,
+      $async.Future<$0.GetNativeWidgetsRequest> request) async {
+    return getNativeWidgets(call, await request);
+  }
+
+  $async.Future<$0.Empty> tap_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.TapRequest> request) async {
+    return tap(call, await request);
+  }
+
+  $async.Future<$0.Empty> doubleTap_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.TapRequest> request) async {
+    return doubleTap(call, await request);
+  }
+
+  $async.Future<$0.Empty> enterText_Pre($grpc.ServiceCall call,
+      $async.Future<$0.EnterTextRequest> request) async {
+    return enterText(call, await request);
+  }
+
+  $async.Future<$0.Empty> swipe_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.SwipeRequest> request) async {
+    return swipe(call, await request);
+  }
+
   $async.Future<$0.Empty> enableAirplaneMode_Pre($grpc.ServiceCall call,
       $async.Future<$0.AirplaneModeRequest> request) async {
     return enableAirplaneMode(call, await request);
@@ -590,32 +616,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return disableDarkMode(call, await request);
   }
 
-  $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets_Pre(
-      $grpc.ServiceCall call,
-      $async.Future<$0.GetNativeWidgetsRequest> request) async {
-    return getNativeWidgets(call, await request);
-  }
-
-  $async.Future<$0.Empty> tap_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.TapRequest> request) async {
-    return tap(call, await request);
-  }
-
-  $async.Future<$0.Empty> doubleTap_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.TapRequest> request) async {
-    return doubleTap(call, await request);
-  }
-
-  $async.Future<$0.Empty> enterText_Pre($grpc.ServiceCall call,
-      $async.Future<$0.EnterTextRequest> request) async {
-    return enterText(call, await request);
-  }
-
-  $async.Future<$0.Empty> swipe_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.SwipeRequest> request) async {
-    return swipe(call, await request);
-  }
-
   $async.Future<$0.Empty> openNotifications_Pre(
       $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return openNotifications(call, await request);
@@ -662,6 +662,15 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.OpenAppRequest request);
   $async.Future<$0.Empty> openQuickSettings(
       $grpc.ServiceCall call, $0.OpenQuickSettingsRequest request);
+  $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets(
+      $grpc.ServiceCall call, $0.GetNativeWidgetsRequest request);
+  $async.Future<$0.Empty> tap($grpc.ServiceCall call, $0.TapRequest request);
+  $async.Future<$0.Empty> doubleTap(
+      $grpc.ServiceCall call, $0.TapRequest request);
+  $async.Future<$0.Empty> enterText(
+      $grpc.ServiceCall call, $0.EnterTextRequest request);
+  $async.Future<$0.Empty> swipe(
+      $grpc.ServiceCall call, $0.SwipeRequest request);
   $async.Future<$0.Empty> enableAirplaneMode(
       $grpc.ServiceCall call, $0.AirplaneModeRequest request);
   $async.Future<$0.Empty> disableAirplaneMode(
@@ -682,15 +691,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.DarkModeRequest request);
   $async.Future<$0.Empty> disableDarkMode(
       $grpc.ServiceCall call, $0.DarkModeRequest request);
-  $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets(
-      $grpc.ServiceCall call, $0.GetNativeWidgetsRequest request);
-  $async.Future<$0.Empty> tap($grpc.ServiceCall call, $0.TapRequest request);
-  $async.Future<$0.Empty> doubleTap(
-      $grpc.ServiceCall call, $0.TapRequest request);
-  $async.Future<$0.Empty> enterText(
-      $grpc.ServiceCall call, $0.EnterTextRequest request);
-  $async.Future<$0.Empty> swipe(
-      $grpc.ServiceCall call, $0.SwipeRequest request);
   $async.Future<$0.Empty> openNotifications(
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> closeNotifications(

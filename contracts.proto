@@ -78,7 +78,7 @@ message GetNotificationsRequest {}
 message GetNotificationsResponse { repeated Notification notifications = 1; }
 
 message TapRequest {
-  Selector Selector = 1;
+  Selector selector = 1;
   string appId = 2;
 }
 
