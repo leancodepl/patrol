@@ -6,8 +6,6 @@ import 'package:test/test.dart';
 
 import 'fixures/devices.dart';
 
-//class MockLogger extends Mock implements Logger {}
-
 void main() {
   late DeviceFinder deviceFinder;
 
