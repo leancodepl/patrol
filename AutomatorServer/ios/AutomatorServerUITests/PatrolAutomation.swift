@@ -248,7 +248,7 @@ class PatrolAutomation {
   func tapOnNotification(by index: Int) {
     runAction("tapping on notification at index \(index)") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
-      if !cells.indices.contains(index) {
+      guard cells.indices.contains(index) else {
         Logger.shared.e("notification at index \(index) doesn't exist")
         return
       }
