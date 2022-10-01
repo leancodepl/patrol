@@ -239,6 +239,7 @@ class PatrolAutomation {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
       if !cells.indices.contains(index) {
         Logger.shared.e("notification at index \(index) doesn't exist")
+        return
       }
       
       cells[index].tap()

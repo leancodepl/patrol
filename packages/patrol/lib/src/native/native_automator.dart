@@ -231,6 +231,8 @@ class NativeAutomator {
   /// Taps on the visible notification using [selector].
   ///
   /// Notification shade will be opened automatically.
+  ///
+  /// On iOS, only [selector.textContains] is taken into account.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
     await _wrapRequest(
       'tapOnNotificationBySelector',

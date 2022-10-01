@@ -245,7 +245,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     case .index(let index):
       automation.tapOnNotification(by: Int(index))
     case .selector(let selector):
-      automation.tapOnNotification(by: selector.text)
+      automation.tapOnNotification(by: selector.textContains)
     default:
       throw PatrolError.generic("tapOnNotification(): neither index nor selector are set")
     }
