@@ -190,10 +190,6 @@ class PatrolAutomation {
         let notification = Patrol_Notification.with {
           Logger.shared.i("Found notification at index \(i) with label \(format: cell.label)")
           $0.raw = cell.label
-          
-          let components = cell.label.split(separator: ",", maxSplits: 1).map(String.init)
-          $0.appName = components[0]
-          $0.content = components[1]
         }
         notifications.append(notification)
       }
