@@ -194,28 +194,28 @@ class PatrolAutomation {
   }
 
   func tap(on text: String, inApp appId: String) {
-    runAction("tapping on \(text)") {
+    runAction("tapping on text \(text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
       app.descendants(matching: .any)[text].firstMatch.tap()
     }
   }
 
   func doubleTap(on text: String, inApp appId: String) {
-    runAction("double tapping on \"\(text)\"") {
+    runAction("double tapping on text \(format: text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
       app.descendants(matching: .any)[text].firstMatch.tap()
     }
   }
 
   func enterText(_ data: String, by text: String, inApp appId: String) {
-    runAction("entering text \"\(text)\"") {
+    runAction("entering text \(format: data) into text field with text \(text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
       app.textFields[text].firstMatch.typeText(data)
     }
   }
 
   func enterText(_ data: String, by index: Int, inApp appId: String) {
-    runAction("entering text \"\(data)\" by index \(index)") {
+    runAction("entering text \(format: data) by index \(index)") {
       let app = XCUIApplication(bundleIdentifier: appId)
       let textField = app.textFields.element(boundBy: index)
       if textField.exists {
@@ -233,10 +233,10 @@ class PatrolAutomation {
       let labels = ["OK", "Allow", "Allow While Using App"]
       
       for label in labels {
-        Logger.shared.i("Checking if button \"\(label)\" exists")
+        Logger.shared.i("Checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
-          Logger.shared.i("Found button \"\(label)\"")
+          Logger.shared.i("Found button \(format: label)")
           button.tap()
           break
         }
@@ -250,10 +250,10 @@ class PatrolAutomation {
       let labels = ["OK", "Allow", "Allow Once"]
       
       for label in labels {
-        Logger.shared.i("Checking if button \"\(label)\" exists")
+        Logger.shared.i("Checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
-          Logger.shared.i("Found button \"\(label)\"")
+          Logger.shared.i("Found button \(format: label)")
           button.tap()
           break
         }
@@ -286,6 +286,52 @@ class PatrolAutomation {
       if alerts.buttons["Precise: On"].exists {
         alerts.buttons["Precise: On"].tap()
       }
+    }
+  }
+  
+  func tapOnNotification(by index: Int) {
+    runAction("tapping on notification at index \(index)") {
+      let cells = self.springboard.buttons.allElementsBoundByIndex
+      if !cells.indices.contains(index) {
+        Logger.shared.e("notification at index \(index) doesn't exist")
+        
+      }
+      
+      cells[index].tap()
+    }
+  }
+  
+  func tapOnNotification(by text: String) {
+    runAction("tapping on notification containing text \(format: text)") {
+      let cells = self.springboard.buttons.allElementsBoundByIndex
+      for (i, cell) in cells.enumerated() {
+        if cell.label.contains(text) {
+          Logger.shared.i("Tapping on notification at index \(i) which contains text \(text)")
+          cell.tap()
+        }
+      }
+      
+      Logger.shared.e("No notification contains text \(format: text)")
+    }
+  }
+  
+  func debug() throws {
+    // TODO: Remove later
+    for i in 0...150 {
+      let element = self.springboard.descendants(matching: .any).element(boundBy: i)
+      if !element.exists {
+        break
+      }
+      
+      let label = element.label as String
+      let accLabel = element.accessibilityLabel as String?
+      let ident = element.identifier
+      
+      if label.isEmpty && accLabel?.isEmpty ?? true && ident.isEmpty {
+        continue
+      }
+      
+      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
     }
   }
   
@@ -341,24 +387,10 @@ class PatrolAutomation {
 
     group.wait()
   }
-  
-  func debug() throws {
-    // TODO: Remove later
-    for i in 0...150 {
-      let element = self.springboard.descendants(matching: .any).element(boundBy: i)
-      if !element.exists {
-        break
-      }
-      
-      let label = element.label as String
-      let accLabel = element.accessibilityLabel as String?
-      let ident = element.identifier
-      
-      if label.isEmpty && accLabel?.isEmpty ?? true && ident.isEmpty {
-        continue
-      }
-      
-      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
-    }
+}
+
+extension String.StringInterpolation {
+  mutating func appendInterpolation(format value: String) {
+      appendInterpolation("\"\(value)\"")
   }
 }

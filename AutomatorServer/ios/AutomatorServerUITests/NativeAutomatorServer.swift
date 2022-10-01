@@ -241,7 +241,12 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_TapOnNotificationRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    throw PatrolError.generic("tapOnNotification() is not supported on iOS")
+    switch request.findBy {
+    case .index(let index):
+      automation.tapOnNotification(by: index)
+    case .selector(let selector):
+      automation.tapOnNotification(by: selector.text)
+    }
   }
   
   func debug(
