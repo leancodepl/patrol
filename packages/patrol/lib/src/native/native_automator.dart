@@ -192,7 +192,7 @@ class NativeAutomator {
 
   /// Returns the first, topmost visible notification.
   ///
-  /// Notification shade will be opened automatically.
+  /// Notification shade has to be opened with [openNotifications].
   Future<Notification> getFirstNotification() async {
     final response = await _wrapRequest(
       'getFirstNotification',
@@ -206,7 +206,7 @@ class NativeAutomator {
 
   /// Returns notifications that are visible in the notification shade.
   ///
-  /// Notification shade will be opened automatically.
+  /// Notification shade has to be opened with [openNotifications].
   Future<List<Notification>> getNotifications() async {
     final response = await _wrapRequest(
       'getNotifications',
@@ -218,9 +218,19 @@ class NativeAutomator {
     return response.notifications;
   }
 
+  /// Closes the currently visible heads up notification (iOS only).
+  ///
+  /// If no heads up notification is visible, the behavior is undefined.
+  Future<void> closeHeadsUpNotification() async {
+    await _wrapRequest(
+      'closeHeadsUpNotification',
+      () => _client.closeHeadsUpNotification(Empty()),
+    );
+  }
+
   /// Taps on the [index]-th visible notification.
   ///
-  /// Notification shade will be opened automatically.
+  /// Notification shade has to be opened with [openNotifications].
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
@@ -231,6 +241,8 @@ class NativeAutomator {
   /// Taps on the visible notification using [selector].
   ///
   /// Notification shade will be opened automatically.
+  ///
+  /// On iOS, only [Selector.textContains] is taken into account.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
     await _wrapRequest(
       'tapOnNotificationBySelector',

@@ -612,6 +612,8 @@ public struct Patrol_Notification {
 
   public var content: String = String()
 
+  public var raw: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1068,7 +1070,7 @@ extension Patrol_GetNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf.
 extension Patrol_TapRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TapRequest"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "Selector"),
+    1: .same(proto: "selector"),
     2: .same(proto: "appId"),
   ]
 
@@ -1507,6 +1509,7 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     1: .same(proto: "appName"),
     2: .same(proto: "title"),
     3: .same(proto: "content"),
+    4: .same(proto: "raw"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1518,6 +1521,7 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 1: try { try decoder.decodeSingularStringField(value: &self._appName) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.title) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self.content) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self.raw) }()
       default: break
       }
     }
@@ -1537,6 +1541,9 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if !self.content.isEmpty {
       try visitor.visitSingularStringField(value: self.content, fieldNumber: 3)
     }
+    if !self.raw.isEmpty {
+      try visitor.visitSingularStringField(value: self.raw, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1544,6 +1551,7 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs._appName != rhs._appName {return false}
     if lhs.title != rhs.title {return false}
     if lhs.content != rhs.content {return false}
+    if lhs.raw != rhs.raw {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

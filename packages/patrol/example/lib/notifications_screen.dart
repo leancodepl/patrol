@@ -48,7 +48,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       id,
       title,
       '$body ID: $id',
-      const NotificationDetails(
+      NotificationDetails(
+        iOS: DarwinNotificationDetails(),
         android: AndroidNotificationDetails(
           'main',
           'Default notification channel',
