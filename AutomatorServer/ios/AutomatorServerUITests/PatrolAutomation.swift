@@ -219,12 +219,18 @@ class PatrolAutomation {
   }
   
   func closeHeadsUpNotification() async throws {
+    // If the notification was triggered just now, let's wait for it
+    try await Task.sleep(nanoseconds: UInt64(2 * Double(NSEC_PER_SEC)))
+    
     runAction("closing heads up notification") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.07))
       start.press(forDuration: 0.1, thenDragTo: end)
     }
     
+    // We can't open notification shade immediately after dismissing
+    // the heads-up notification. Let's wait some reasonable amount of
+    // time for it.
     try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
   }
   

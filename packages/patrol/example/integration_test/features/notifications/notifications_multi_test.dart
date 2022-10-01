@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -18,8 +20,9 @@ void main() {
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
-      // wait for pop-up notification to disappear on iOS
-      // await Future<void>.delayed(Duration(seconds: 10));
+      if (Platform.isIOS) {
+        await $.native.closeHeadsUpNotification();
+      }
 
       await $.native.openNotifications();
       final notifications = await $.native.getNotifications();
@@ -28,6 +31,8 @@ void main() {
 
       expect(notifications.length, isNonZero);
       await $.native.tapOnNotificationByIndex(notifications.length - 1);
+
+      await $.native.openNotifications();
       await $.native.tapOnNotificationBySelector(
         Selector(textContains: 'Special offer'),
       );
