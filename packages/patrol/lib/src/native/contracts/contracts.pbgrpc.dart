@@ -34,14 +34,6 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/openApp',
       ($0.OpenAppRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$openNotifications = $grpc.ClientMethod<$0.Empty, $0.Empty>(
-      '/patrol.NativeAutomator/openNotifications',
-      ($0.Empty value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$closeNotifications = $grpc.ClientMethod<$0.Empty, $0.Empty>(
-      '/patrol.NativeAutomator/closeNotifications',
-      ($0.Empty value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$openQuickSettings =
       $grpc.ClientMethod<$0.OpenQuickSettingsRequest, $0.Empty>(
           '/patrol.NativeAutomator/openQuickSettings',
@@ -101,12 +93,6 @@ class NativeAutomatorClient extends $grpc.Client {
       ($0.GetNativeWidgetsRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) =>
           $0.GetNativeWidgetsResponse.fromBuffer(value));
-  static final _$getNotifications = $grpc.ClientMethod<
-          $0.GetNotificationsRequest, $0.GetNotificationsResponse>(
-      '/patrol.NativeAutomator/getNotifications',
-      ($0.GetNotificationsRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) =>
-          $0.GetNotificationsResponse.fromBuffer(value));
   static final _$tap = $grpc.ClientMethod<$0.TapRequest, $0.Empty>(
       '/patrol.NativeAutomator/tap',
       ($0.TapRequest value) => value.writeToBuffer(),
@@ -123,6 +109,25 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/swipe',
       ($0.SwipeRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$openNotifications = $grpc.ClientMethod<$0.Empty, $0.Empty>(
+      '/patrol.NativeAutomator/openNotifications',
+      ($0.Empty value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$closeNotifications = $grpc.ClientMethod<$0.Empty, $0.Empty>(
+      '/patrol.NativeAutomator/closeNotifications',
+      ($0.Empty value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$getNotifications = $grpc.ClientMethod<
+          $0.GetNotificationsRequest, $0.GetNotificationsResponse>(
+      '/patrol.NativeAutomator/getNotifications',
+      ($0.GetNotificationsRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) =>
+          $0.GetNotificationsResponse.fromBuffer(value));
+  static final _$tapOnNotification =
+      $grpc.ClientMethod<$0.TapOnNotificationRequest, $0.Empty>(
+          '/patrol.NativeAutomator/tapOnNotification',
+          ($0.TapOnNotificationRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$handlePermissionDialog =
       $grpc.ClientMethod<$0.HandlePermissionRequest, $0.Empty>(
           '/patrol.NativeAutomator/handlePermissionDialog',
@@ -132,11 +137,6 @@ class NativeAutomatorClient extends $grpc.Client {
       $grpc.ClientMethod<$0.SetLocationAccuracyRequest, $0.Empty>(
           '/patrol.NativeAutomator/setLocationAccuracy',
           ($0.SetLocationAccuracyRequest value) => value.writeToBuffer(),
-          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$tapOnNotification =
-      $grpc.ClientMethod<$0.TapOnNotificationRequest, $0.Empty>(
-          '/patrol.NativeAutomator/tapOnNotification',
-          ($0.TapOnNotificationRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$debug = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/patrol.NativeAutomator/debug',
@@ -171,16 +171,6 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> openApp($0.OpenAppRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$openApp, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> openNotifications($0.Empty request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$openNotifications, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> closeNotifications($0.Empty request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$closeNotifications, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> openQuickSettings(
@@ -247,12 +237,6 @@ class NativeAutomatorClient extends $grpc.Client {
     return $createUnaryCall(_$getNativeWidgets, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.GetNotificationsResponse> getNotifications(
-      $0.GetNotificationsRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$getNotifications, request, options: options);
-  }
-
   $grpc.ResponseFuture<$0.Empty> tap($0.TapRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$tap, request, options: options);
@@ -273,6 +257,28 @@ class NativeAutomatorClient extends $grpc.Client {
     return $createUnaryCall(_$swipe, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.Empty> openNotifications($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$openNotifications, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> closeNotifications($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$closeNotifications, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.GetNotificationsResponse> getNotifications(
+      $0.GetNotificationsRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$getNotifications, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> tapOnNotification(
+      $0.TapOnNotificationRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$tapOnNotification, request, options: options);
+  }
+
   $grpc.ResponseFuture<$0.Empty> handlePermissionDialog(
       $0.HandlePermissionRequest request,
       {$grpc.CallOptions? options}) {
@@ -284,12 +290,6 @@ class NativeAutomatorClient extends $grpc.Client {
       $0.SetLocationAccuracyRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$setLocationAccuracy, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> tapOnNotification(
-      $0.TapOnNotificationRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$tapOnNotification, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> debug($0.Empty request,
@@ -336,20 +336,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         false,
         ($core.List<$core.int> value) => $0.OpenAppRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
-        'openNotifications',
-        openNotifications_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
-        'closeNotifications',
-        closeNotifications_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.OpenQuickSettingsRequest, $0.Empty>(
         'openQuickSettings',
@@ -440,15 +426,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.GetNativeWidgetsRequest.fromBuffer(value),
         ($0.GetNativeWidgetsResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.GetNotificationsRequest,
-            $0.GetNotificationsResponse>(
-        'getNotifications',
-        getNotifications_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.GetNotificationsRequest.fromBuffer(value),
-        ($0.GetNotificationsResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.TapRequest, $0.Empty>(
         'tap',
         tap_Pre,
@@ -477,6 +454,37 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.SwipeRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
+        'openNotifications',
+        openNotifications_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
+        'closeNotifications',
+        closeNotifications_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.GetNotificationsRequest,
+            $0.GetNotificationsResponse>(
+        'getNotifications',
+        getNotifications_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.GetNotificationsRequest.fromBuffer(value),
+        ($0.GetNotificationsResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.TapOnNotificationRequest, $0.Empty>(
+        'tapOnNotification',
+        tapOnNotification_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.TapOnNotificationRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.HandlePermissionRequest, $0.Empty>(
         'handlePermissionDialog',
         handlePermissionDialog_Pre,
@@ -492,14 +500,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) =>
             $0.SetLocationAccuracyRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.TapOnNotificationRequest, $0.Empty>(
-        'tapOnNotification',
-        tapOnNotification_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.TapOnNotificationRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'debug',
@@ -533,16 +533,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> openApp_Pre(
       $grpc.ServiceCall call, $async.Future<$0.OpenAppRequest> request) async {
     return openApp(call, await request);
-  }
-
-  $async.Future<$0.Empty> openNotifications_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
-    return openNotifications(call, await request);
-  }
-
-  $async.Future<$0.Empty> closeNotifications_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
-    return closeNotifications(call, await request);
   }
 
   $async.Future<$0.Empty> openQuickSettings_Pre($grpc.ServiceCall call,
@@ -606,12 +596,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return getNativeWidgets(call, await request);
   }
 
-  $async.Future<$0.GetNotificationsResponse> getNotifications_Pre(
-      $grpc.ServiceCall call,
-      $async.Future<$0.GetNotificationsRequest> request) async {
-    return getNotifications(call, await request);
-  }
-
   $async.Future<$0.Empty> tap_Pre(
       $grpc.ServiceCall call, $async.Future<$0.TapRequest> request) async {
     return tap(call, await request);
@@ -632,6 +616,27 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return swipe(call, await request);
   }
 
+  $async.Future<$0.Empty> openNotifications_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return openNotifications(call, await request);
+  }
+
+  $async.Future<$0.Empty> closeNotifications_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return closeNotifications(call, await request);
+  }
+
+  $async.Future<$0.GetNotificationsResponse> getNotifications_Pre(
+      $grpc.ServiceCall call,
+      $async.Future<$0.GetNotificationsRequest> request) async {
+    return getNotifications(call, await request);
+  }
+
+  $async.Future<$0.Empty> tapOnNotification_Pre($grpc.ServiceCall call,
+      $async.Future<$0.TapOnNotificationRequest> request) async {
+    return tapOnNotification(call, await request);
+  }
+
   $async.Future<$0.Empty> handlePermissionDialog_Pre($grpc.ServiceCall call,
       $async.Future<$0.HandlePermissionRequest> request) async {
     return handlePermissionDialog(call, await request);
@@ -640,11 +645,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> setLocationAccuracy_Pre($grpc.ServiceCall call,
       $async.Future<$0.SetLocationAccuracyRequest> request) async {
     return setLocationAccuracy(call, await request);
-  }
-
-  $async.Future<$0.Empty> tapOnNotification_Pre($grpc.ServiceCall call,
-      $async.Future<$0.TapOnNotificationRequest> request) async {
-    return tapOnNotification(call, await request);
   }
 
   $async.Future<$0.Empty> debug_Pre(
@@ -660,10 +660,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> openApp(
       $grpc.ServiceCall call, $0.OpenAppRequest request);
-  $async.Future<$0.Empty> openNotifications(
-      $grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$0.Empty> closeNotifications(
-      $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> openQuickSettings(
       $grpc.ServiceCall call, $0.OpenQuickSettingsRequest request);
   $async.Future<$0.Empty> enableAirplaneMode(
@@ -688,8 +684,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.DarkModeRequest request);
   $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets(
       $grpc.ServiceCall call, $0.GetNativeWidgetsRequest request);
-  $async.Future<$0.GetNotificationsResponse> getNotifications(
-      $grpc.ServiceCall call, $0.GetNotificationsRequest request);
   $async.Future<$0.Empty> tap($grpc.ServiceCall call, $0.TapRequest request);
   $async.Future<$0.Empty> doubleTap(
       $grpc.ServiceCall call, $0.TapRequest request);
@@ -697,11 +691,17 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.EnterTextRequest request);
   $async.Future<$0.Empty> swipe(
       $grpc.ServiceCall call, $0.SwipeRequest request);
+  $async.Future<$0.Empty> openNotifications(
+      $grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$0.Empty> closeNotifications(
+      $grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$0.GetNotificationsResponse> getNotifications(
+      $grpc.ServiceCall call, $0.GetNotificationsRequest request);
+  $async.Future<$0.Empty> tapOnNotification(
+      $grpc.ServiceCall call, $0.TapOnNotificationRequest request);
   $async.Future<$0.Empty> handlePermissionDialog(
       $grpc.ServiceCall call, $0.HandlePermissionRequest request);
   $async.Future<$0.Empty> setLocationAccuracy(
       $grpc.ServiceCall call, $0.SetLocationAccuracyRequest request);
-  $async.Future<$0.Empty> tapOnNotification(
-      $grpc.ServiceCall call, $0.TapOnNotificationRequest request);
   $async.Future<$0.Empty> debug($grpc.ServiceCall call, $0.Empty request);
 }

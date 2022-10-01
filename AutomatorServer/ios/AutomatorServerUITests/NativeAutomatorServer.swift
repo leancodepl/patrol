@@ -243,10 +243,14 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   ) async throws -> Empty {
     switch request.findBy {
     case .index(let index):
-      automation.tapOnNotification(by: index)
+      automation.tapOnNotification(by: Int(index))
     case .selector(let selector):
       automation.tapOnNotification(by: selector.text)
+    default:
+      throw PatrolError.generic("tapOnNotification(): neither index nor selector are set")
     }
+    
+    return Empty()
   }
   
   func debug(

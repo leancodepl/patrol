@@ -79,6 +79,23 @@ object NotificationKt {
     fun clearContent() {
       _builder.clearContent()
     }
+
+    /**
+     * <code>string raw = 4;</code>
+     */
+    var raw: kotlin.String
+      @JvmName("getRaw")
+      get() = _builder.getRaw()
+      @JvmName("setRaw")
+      set(value) {
+        _builder.setRaw(value)
+      }
+    /**
+     * <code>string raw = 4;</code>
+     */
+    fun clearRaw() {
+      _builder.clearRaw()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

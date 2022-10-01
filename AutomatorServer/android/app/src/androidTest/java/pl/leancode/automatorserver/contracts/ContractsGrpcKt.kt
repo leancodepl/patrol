@@ -55,14 +55,6 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenAppMethod()
 
-  public val openNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getOpenNotificationsMethod()
-
-  public val closeNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getCloseNotificationsMethod()
-
   public val openQuickSettingsMethod:
       MethodDescriptor<Contracts.OpenQuickSettingsRequest, Contracts.Empty>
     @JvmStatic
@@ -115,11 +107,6 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getGetNativeWidgetsMethod()
 
-  public val getNotificationsMethod:
-      MethodDescriptor<Contracts.GetNotificationsRequest, Contracts.GetNotificationsResponse>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getGetNotificationsMethod()
-
   public val tapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getTapMethod()
@@ -136,6 +123,24 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getSwipeMethod()
 
+  public val openNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getOpenNotificationsMethod()
+
+  public val closeNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getCloseNotificationsMethod()
+
+  public val getNotificationsMethod:
+      MethodDescriptor<Contracts.GetNotificationsRequest, Contracts.GetNotificationsResponse>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getGetNotificationsMethod()
+
+  public val tapOnNotificationMethod:
+      MethodDescriptor<Contracts.TapOnNotificationRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getTapOnNotificationMethod()
+
   public val handlePermissionDialogMethod:
       MethodDescriptor<Contracts.HandlePermissionRequest, Contracts.Empty>
     @JvmStatic
@@ -145,11 +150,6 @@ public object NativeAutomatorGrpcKt {
       MethodDescriptor<Contracts.SetLocationAccuracyRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getSetLocationAccuracyMethod()
-
-  public val tapOnNotificationMethod:
-      MethodDescriptor<Contracts.TapOnNotificationRequest, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getTapOnNotificationMethod()
 
   public val debugMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
@@ -266,48 +266,6 @@ public object NativeAutomatorGrpcKt {
         Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getOpenAppMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun openNotifications(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getOpenNotificationsMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun closeNotifications(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getCloseNotificationsMethod(),
       request,
       callOptions,
       headers
@@ -577,27 +535,6 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun getNotifications(request: Contracts.GetNotificationsRequest,
-        headers: Metadata = Metadata()): Contracts.GetNotificationsResponse = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getGetNotificationsMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
     public suspend fun tap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
         Contracts.Empty = unaryRpc(
       channel,
@@ -682,6 +619,90 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
+    public suspend fun openNotifications(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getOpenNotificationsMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun closeNotifications(request: Contracts.Empty, headers: Metadata = Metadata()):
+        Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getCloseNotificationsMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun getNotifications(request: Contracts.GetNotificationsRequest,
+        headers: Metadata = Metadata()): Contracts.GetNotificationsResponse = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getGetNotificationsMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest,
+        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getTapOnNotificationMethod(),
+      request,
+      callOptions,
+      headers
+    )
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
     public suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest,
         headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
@@ -707,27 +728,6 @@ public object NativeAutomatorGrpcKt {
         headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getSetLocationAccuracyMethod(),
-      request,
-      callOptions,
-      headers
-    )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest,
-        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getTapOnNotificationMethod(),
       request,
       callOptions,
       headers
@@ -830,34 +830,6 @@ public object NativeAutomatorGrpcKt {
      */
     public open suspend fun openApp(request: Contracts.OpenAppRequest): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openApp is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.openNotifications.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun openNotifications(request: Contracts.Empty): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openNotifications is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.closeNotifications.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun closeNotifications(request: Contracts.Empty): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.closeNotifications is unimplemented"))
 
     /**
      * Returns the response to an RPC for patrol.NativeAutomator.openQuickSettings.
@@ -1038,21 +1010,6 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNativeWidgets is unimplemented"))
 
     /**
-     * Returns the response to an RPC for patrol.NativeAutomator.getNotifications.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun getNotifications(request: Contracts.GetNotificationsRequest):
-        Contracts.GetNotificationsResponse = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNotifications is unimplemented"))
-
-    /**
      * Returns the response to an RPC for patrol.NativeAutomator.tap.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
@@ -1109,6 +1066,64 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.swipe is unimplemented"))
 
     /**
+     * Returns the response to an RPC for patrol.NativeAutomator.openNotifications.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun openNotifications(request: Contracts.Empty): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openNotifications is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.closeNotifications.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun closeNotifications(request: Contracts.Empty): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.closeNotifications is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.getNotifications.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun getNotifications(request: Contracts.GetNotificationsRequest):
+        Contracts.GetNotificationsResponse = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNotifications is unimplemented"))
+
+    /**
+     * Returns the response to an RPC for patrol.NativeAutomator.tapOnNotification.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest):
+        Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.tapOnNotification is unimplemented"))
+
+    /**
      * Returns the response to an RPC for patrol.NativeAutomator.handlePermissionDialog.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
@@ -1137,21 +1152,6 @@ public object NativeAutomatorGrpcKt {
     public open suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest):
         Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.setLocationAccuracy is unimplemented"))
-
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.tapOnNotification.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest):
-        Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.tapOnNotification is unimplemented"))
 
     /**
      * Returns the response to an RPC for patrol.NativeAutomator.debug.
@@ -1193,16 +1193,6 @@ public object NativeAutomatorGrpcKt {
       context = this.context,
       descriptor = NativeAutomatorGrpc.getOpenAppMethod(),
       implementation = ::openApp
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getOpenNotificationsMethod(),
-      implementation = ::openNotifications
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getCloseNotificationsMethod(),
-      implementation = ::closeNotifications
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
@@ -1266,11 +1256,6 @@ public object NativeAutomatorGrpcKt {
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
-      descriptor = NativeAutomatorGrpc.getGetNotificationsMethod(),
-      implementation = ::getNotifications
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
       descriptor = NativeAutomatorGrpc.getTapMethod(),
       implementation = ::tap
     ))
@@ -1291,6 +1276,26 @@ public object NativeAutomatorGrpcKt {
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
+      descriptor = NativeAutomatorGrpc.getOpenNotificationsMethod(),
+      implementation = ::openNotifications
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getCloseNotificationsMethod(),
+      implementation = ::closeNotifications
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getGetNotificationsMethod(),
+      implementation = ::getNotifications
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getTapOnNotificationMethod(),
+      implementation = ::tapOnNotification
+    ))
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
       descriptor = NativeAutomatorGrpc.getHandlePermissionDialogMethod(),
       implementation = ::handlePermissionDialog
     ))
@@ -1298,11 +1303,6 @@ public object NativeAutomatorGrpcKt {
       context = this.context,
       descriptor = NativeAutomatorGrpc.getSetLocationAccuracyMethod(),
       implementation = ::setLocationAccuracy
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getTapOnNotificationMethod(),
-      implementation = ::tapOnNotification
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,

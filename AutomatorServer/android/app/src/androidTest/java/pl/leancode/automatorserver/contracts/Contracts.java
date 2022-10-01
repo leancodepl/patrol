@@ -15850,6 +15850,18 @@ public final class Contracts {
      */
     com.google.protobuf.ByteString
         getContentBytes();
+
+    /**
+     * <code>string raw = 4;</code>
+     * @return The raw.
+     */
+    java.lang.String getRaw();
+    /**
+     * <code>string raw = 4;</code>
+     * @return The bytes for raw.
+     */
+    com.google.protobuf.ByteString
+        getRawBytes();
   }
   /**
    * <pre>
@@ -15871,6 +15883,7 @@ public final class Contracts {
       appName_ = "";
       title_ = "";
       content_ = "";
+      raw_ = "";
     }
 
     @java.lang.Override
@@ -15920,6 +15933,12 @@ public final class Contracts {
               java.lang.String s = input.readStringRequireUtf8();
 
               content_ = s;
+              break;
+            }
+            case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              raw_ = s;
               break;
             }
             default: {
@@ -16079,6 +16098,44 @@ public final class Contracts {
       }
     }
 
+    public static final int RAW_FIELD_NUMBER = 4;
+    private volatile java.lang.Object raw_;
+    /**
+     * <code>string raw = 4;</code>
+     * @return The raw.
+     */
+    @java.lang.Override
+    public java.lang.String getRaw() {
+      java.lang.Object ref = raw_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        raw_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string raw = 4;</code>
+     * @return The bytes for raw.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getRawBytes() {
+      java.lang.Object ref = raw_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        raw_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -16102,6 +16159,9 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(content_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, content_);
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(raw_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, raw_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -16119,6 +16179,9 @@ public final class Contracts {
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(content_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, content_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(raw_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, raw_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -16144,6 +16207,8 @@ public final class Contracts {
           .equals(other.getTitle())) return false;
       if (!getContent()
           .equals(other.getContent())) return false;
+      if (!getRaw()
+          .equals(other.getRaw())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -16163,6 +16228,8 @@ public final class Contracts {
       hash = (53 * hash) + getTitle().hashCode();
       hash = (37 * hash) + CONTENT_FIELD_NUMBER;
       hash = (53 * hash) + getContent().hashCode();
+      hash = (37 * hash) + RAW_FIELD_NUMBER;
+      hash = (53 * hash) + getRaw().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -16306,6 +16373,8 @@ public final class Contracts {
 
         content_ = "";
 
+        raw_ = "";
+
         return this;
       }
 
@@ -16340,6 +16409,7 @@ public final class Contracts {
         result.appName_ = appName_;
         result.title_ = title_;
         result.content_ = content_;
+        result.raw_ = raw_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -16400,6 +16470,10 @@ public final class Contracts {
         }
         if (!other.getContent().isEmpty()) {
           content_ = other.content_;
+          onChanged();
+        }
+        if (!other.getRaw().isEmpty()) {
+          raw_ = other.raw_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -16666,6 +16740,82 @@ public final class Contracts {
         onChanged();
         return this;
       }
+
+      private java.lang.Object raw_ = "";
+      /**
+       * <code>string raw = 4;</code>
+       * @return The raw.
+       */
+      public java.lang.String getRaw() {
+        java.lang.Object ref = raw_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          raw_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string raw = 4;</code>
+       * @return The bytes for raw.
+       */
+      public com.google.protobuf.ByteString
+          getRawBytes() {
+        java.lang.Object ref = raw_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          raw_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string raw = 4;</code>
+       * @param value The raw to set.
+       * @return This builder for chaining.
+       */
+      public Builder setRaw(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        raw_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string raw = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearRaw() {
+        
+        raw_ = getDefaultInstance().getRaw();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string raw = 4;</code>
+       * @param value The bytes for raw to set.
+       * @return This builder for chaining.
+       */
+      public Builder setRawBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        raw_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -16881,52 +17031,53 @@ public final class Contracts {
       "abled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resou" +
       "rceName\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(" +
       "\t\022&\n\010children\030\t \003(\0132\024.patrol.NativeWidge" +
-      "t\"P\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
-      "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\tB\n\n\010_appN" +
-      "ame2\240\r\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBac" +
-      "k\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pre" +
-      "ssRecentApps\022\r.patrol.Empty\032\r.patrol.Emp" +
-      "ty\"\000\0227\n\025doublePressRecentApps\022\r.patrol.E" +
-      "mpty\032\r.patrol.Empty\"\000\0222\n\007openApp\022\026.patro" +
-      "l.OpenAppRequest\032\r.patrol.Empty\"\000\0223\n\021ope" +
-      "nNotifications\022\r.patrol.Empty\032\r.patrol.E" +
-      "mpty\"\000\0224\n\022closeNotifications\022\r.patrol.Em" +
-      "pty\032\r.patrol.Empty\"\000\022F\n\021openQuickSetting" +
-      "s\022 .patrol.OpenQuickSettingsRequest\032\r.pa" +
-      "trol.Empty\"\000\022B\n\022enableAirplaneMode\022\033.pat" +
-      "rol.AirplaneModeRequest\032\r.patrol.Empty\"\000" +
-      "\022C\n\023disableAirplaneMode\022\033.patrol.Airplan" +
-      "eModeRequest\032\r.patrol.Empty\"\000\0222\n\nenableW" +
-      "iFi\022\023.patrol.WiFiRequest\032\r.patrol.Empty\"" +
-      "\000\0223\n\013disableWiFi\022\023.patrol.WiFiRequest\032\r." +
-      "patrol.Empty\"\000\022:\n\016enableCellular\022\027.patro" +
-      "l.CellularRequest\032\r.patrol.Empty\"\000\022;\n\017di" +
-      "sableCellular\022\027.patrol.CellularRequest\032\r" +
-      ".patrol.Empty\"\000\022<\n\017enableBluetooth\022\030.pat" +
-      "rol.BluetoothRequest\032\r.patrol.Empty\"\000\022=\n" +
-      "\020disableBluetooth\022\030.patrol.BluetoothRequ" +
-      "est\032\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027" +
-      ".patrol.DarkModeRequest\032\r.patrol.Empty\"\000" +
-      "\022;\n\017disableDarkMode\022\027.patrol.DarkModeReq" +
-      "uest\032\r.patrol.Empty\"\000\022W\n\020getNativeWidget" +
-      "s\022\037.patrol.GetNativeWidgetsRequest\032 .pat" +
-      "rol.GetNativeWidgetsResponse\"\000\022W\n\020getNot" +
-      "ifications\022\037.patrol.GetNotificationsRequ" +
-      "est\032 .patrol.GetNotificationsResponse\"\000\022" +
-      "*\n\003tap\022\022.patrol.TapRequest\032\r.patrol.Empt" +
-      "y\"\000\0220\n\tdoubleTap\022\022.patrol.TapRequest\032\r.p" +
-      "atrol.Empty\"\000\0226\n\tenterText\022\030.patrol.Ente" +
-      "rTextRequest\032\r.patrol.Empty\"\000\022.\n\005swipe\022\024" +
-      ".patrol.SwipeRequest\032\r.patrol.Empty\"\000\022J\n" +
-      "\026handlePermissionDialog\022\037.patrol.HandleP" +
-      "ermissionRequest\032\r.patrol.Empty\"\000\022J\n\023set" +
-      "LocationAccuracy\022\".patrol.SetLocationAcc" +
-      "uracyRequest\032\r.patrol.Empty\"\000\022F\n\021tapOnNo" +
-      "tification\022 .patrol.TapOnNotificationReq" +
-      "uest\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol." +
-      "Empty\032\r.patrol.Empty\"\000B\'\n%pl.leancode.au" +
-      "tomatorserver.contractsb\006proto3"
+      "t\"]\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
+      "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw\030\004" +
+      " \001(\tB\n\n\010_appName2\240\r\n\017NativeAutomator\022+\n\t" +
+      "pressHome\022\r.patrol.Empty\032\r.patrol.Empty\"" +
+      "\000\022+\n\tpressBack\022\r.patrol.Empty\032\r.patrol.E" +
+      "mpty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empty" +
+      "\032\r.patrol.Empty\"\000\0227\n\025doublePressRecentAp" +
+      "ps\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007op" +
+      "enApp\022\026.patrol.OpenAppRequest\032\r.patrol.E" +
+      "mpty\"\000\022F\n\021openQuickSettings\022 .patrol.Ope" +
+      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022B" +
+      "\n\022enableAirplaneMode\022\033.patrol.AirplaneMo" +
+      "deRequest\032\r.patrol.Empty\"\000\022C\n\023disableAir" +
+      "planeMode\022\033.patrol.AirplaneModeRequest\032\r" +
+      ".patrol.Empty\"\000\0222\n\nenableWiFi\022\023.patrol.W" +
+      "iFiRequest\032\r.patrol.Empty\"\000\0223\n\013disableWi" +
+      "Fi\022\023.patrol.WiFiRequest\032\r.patrol.Empty\"\000" +
+      "\022:\n\016enableCellular\022\027.patrol.CellularRequ" +
+      "est\032\r.patrol.Empty\"\000\022;\n\017disableCellular\022" +
+      "\027.patrol.CellularRequest\032\r.patrol.Empty\"" +
+      "\000\022<\n\017enableBluetooth\022\030.patrol.BluetoothR" +
+      "equest\032\r.patrol.Empty\"\000\022=\n\020disableBlueto" +
+      "oth\022\030.patrol.BluetoothRequest\032\r.patrol.E" +
+      "mpty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMo" +
+      "deRequest\032\r.patrol.Empty\"\000\022;\n\017disableDar" +
+      "kMode\022\027.patrol.DarkModeRequest\032\r.patrol." +
+      "Empty\"\000\022W\n\020getNativeWidgets\022\037.patrol.Get" +
+      "NativeWidgetsRequest\032 .patrol.GetNativeW" +
+      "idgetsResponse\"\000\022*\n\003tap\022\022.patrol.TapRequ" +
+      "est\032\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patr" +
+      "ol.TapRequest\032\r.patrol.Empty\"\000\0226\n\tenterT" +
+      "ext\022\030.patrol.EnterTextRequest\032\r.patrol.E" +
+      "mpty\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r." +
+      "patrol.Empty\"\000\0223\n\021openNotifications\022\r.pa" +
+      "trol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeNoti" +
+      "fications\022\r.patrol.Empty\032\r.patrol.Empty\"" +
+      "\000\022W\n\020getNotifications\022\037.patrol.GetNotifi" +
+      "cationsRequest\032 .patrol.GetNotifications" +
+      "Response\"\000\022F\n\021tapOnNotification\022 .patrol" +
+      ".TapOnNotificationRequest\032\r.patrol.Empty" +
+      "\"\000\022J\n\026handlePermissionDialog\022\037.patrol.Ha" +
+      "ndlePermissionRequest\032\r.patrol.Empty\"\000\022J" +
+      "\n\023setLocationAccuracy\022\".patrol.SetLocati" +
+      "onAccuracyRequest\032\r.patrol.Empty\"\000\022\'\n\005de" +
+      "bug\022\r.patrol.Empty\032\r.patrol.Empty\"\000B\'\n%p" +
+      "l.leancode.automatorserver.contractsb\006pr" +
+      "oto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -17057,7 +17208,7 @@ public final class Contracts {
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,
-        new java.lang.String[] { "AppName", "Title", "Content", "AppName", });
+        new java.lang.String[] { "AppName", "Title", "Content", "Raw", "AppName", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

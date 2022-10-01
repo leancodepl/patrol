@@ -11,8 +11,6 @@ service NativeAutomator {
   rpc pressRecentApps(Empty) returns (Empty) {}
   rpc doublePressRecentApps(Empty) returns (Empty) {}
   rpc openApp(OpenAppRequest) returns (Empty) {}
-  rpc openNotifications(Empty) returns (Empty) {}
-  rpc closeNotifications(Empty) returns (Empty) {}
   rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // services
@@ -27,17 +25,24 @@ service NativeAutomator {
   rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
   rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
 
-  // UI interaction
-
+  // general UI interaction
   rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
-  rpc getNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
   rpc tap(TapRequest) returns (Empty) {}
   rpc doubleTap(TapRequest) returns (Empty) {}
   rpc enterText(EnterTextRequest) returns (Empty) {}
   rpc swipe(SwipeRequest) returns (Empty) {}
+
+  // notifications
+  rpc openNotifications(Empty) returns (Empty) {}
+  rpc closeNotifications(Empty) returns (Empty) {}
+  rpc getNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
+  rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
+
+  // permissions
   rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
   rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
-  rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
+
+  // other
 
   rpc debug(Empty) returns (Empty) {}
 }
@@ -149,4 +154,5 @@ message Notification {
   optional string appName = 1;
   string title = 2;
   string content = 3;
+  string raw = 4;
 }

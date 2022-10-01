@@ -179,14 +179,23 @@ class PatrolAutomation {
   }
   
   func getNotifications() -> [Patrol_Notification] {
-    let notifications = [Patrol_Notification]()
+    var notifications = [Patrol_Notification]()
     runAction("getting notifications") {
       let cells = self.springboard.buttons.allElementsBoundByIndex
-      for cell in cells {
-        let notification = Patrol_Notification.with {
-          $0.appName = cell.label.components(separatedBy: ",")[0]
-          $0.content = cell.label.components(separatedBy: ",")[1]
+      for (i, cell) in cells.enumerated() {
+        if cell.identifier != "NotificationCell" {
+          continue
         }
+        
+        let notification = Patrol_Notification.with {
+          Logger.shared.i("Found notification at index \(i) with label \(format: cell.label)")
+          $0.raw = cell.label
+          
+          let components = cell.label.split(separator: ",", maxSplits: 1).map(String.init)
+          $0.appName = components[0]
+          $0.content = components[1]
+        }
+        notifications.append(notification)
       }
     }
     
@@ -316,22 +325,24 @@ class PatrolAutomation {
   }
   
   func debug() throws {
-    // TODO: Remove later
-    for i in 0...150 {
-      let element = self.springboard.descendants(matching: .any).element(boundBy: i)
-      if !element.exists {
-        break
+    runAction("debug()") {
+      // TODO: Remove later
+      for i in 0...150 {
+        let element = self.springboard.descendants(matching: .any).element(boundBy: i)
+        if !element.exists {
+          break
+        }
+        
+        let label = element.label as String
+        let accLabel = element.accessibilityLabel as String?
+        let ident = element.identifier
+        
+        if label.isEmpty && accLabel?.isEmpty ?? true && ident.isEmpty {
+          continue
+        }
+        
+        Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
       }
-      
-      let label = element.label as String
-      let accLabel = element.accessibilityLabel as String?
-      let ident = element.identifier
-      
-      if label.isEmpty && accLabel?.isEmpty ?? true && ident.isEmpty {
-        continue
-      }
-      
-      Logger.shared.i("index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)")
     }
   }
   

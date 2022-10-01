@@ -21,6 +21,10 @@ void main() {
       await $(RegExp('someone liked')).tap(); // appears on top
       await $(RegExp('special offer')).tap(); // also appears on top
 
+      // wait for pop-up notification to disappear on iOS
+      await Future<void>.delayed(Duration(seconds: 10));
+
+      await $.native.openNotifications();
       final notifications = await $.native.getNotifications();
       $.log('Found ${notifications.length} notifications');
       notifications.forEach($.log);

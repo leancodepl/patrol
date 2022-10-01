@@ -484,6 +484,7 @@ const Notification$json = const {
     },
     const {'1': 'title', '3': 2, '4': 1, '5': 9, '10': 'title'},
     const {'1': 'content', '3': 3, '4': 1, '5': 9, '10': 'content'},
+    const {'1': 'raw', '3': 4, '4': 1, '5': 9, '10': 'raw'},
   ],
   '8': const [
     const {'1': '_appName'},
@@ -492,4 +493,4 @@ const Notification$json = const {
 
 /// Descriptor for `Notification`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List notificationDescriptor = $convert.base64Decode(
-    'CgxOb3RpZmljYXRpb24SHQoHYXBwTmFtZRgBIAEoCUgAUgdhcHBOYW1liAEBEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIYCgdjb250ZW50GAMgASgJUgdjb250ZW50QgoKCF9hcHBOYW1l');
+    'CgxOb3RpZmljYXRpb24SHQoHYXBwTmFtZRgBIAEoCUgAUgdhcHBOYW1liAEBEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIYCgdjb250ZW50GAMgASgJUgdjb250ZW50EhAKA3JhdxgEIAEoCVIDcmF3QgoKCF9hcHBOYW1l');
