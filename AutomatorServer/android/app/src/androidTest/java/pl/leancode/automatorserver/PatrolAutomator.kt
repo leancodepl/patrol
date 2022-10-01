@@ -250,8 +250,6 @@ class PatrolAutomator private constructor() {
     fun getNotifications(): List<Contracts.Notification> {
         Logger.d("getNotifications()")
 
-        openNotifications()
-
         val notificationContainers = mutableListOf<UiObject2>()
         val identifiers = listOf(
             "android:id/status_bar_latest_event_content", // notification not bundled

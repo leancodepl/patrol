@@ -59,6 +59,14 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return Empty()
   }
   
+  func closeHeadsUpNotification(
+    request: Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    try await automation.closeHeadsUpNotification()
+    return Empty()
+  }
+  
   func openQuickSettings(
     request: Patrol_OpenQuickSettingsRequest,
     context: GRPCAsyncServerCallContext
@@ -241,7 +249,16 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_TapOnNotificationRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    throw PatrolError.generic("tapOnNotification() is not supported on iOS")
+    switch request.findBy {
+    case .index(let index):
+      automation.tapOnNotification(by: Int(index))
+    case .selector(let selector):
+      automation.tapOnNotification(by: selector.textContains)
+    default:
+      throw PatrolError.generic("tapOnNotification(): neither index nor selector are set")
+    }
+    
+    return Empty()
   }
   
   func debug(

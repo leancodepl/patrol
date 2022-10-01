@@ -867,8 +867,7 @@ class TapRequest extends $pb.GeneratedMessage {
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'Selector',
-        protoName: 'Selector',
+            : 'selector',
         subBuilder: Selector.create)
     ..aOS(
         2,
@@ -1966,6 +1965,11 @@ class Notification extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'content')
+    ..aOS(
+        4,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'raw')
     ..hasRequiredFields = false;
 
   Notification._() : super();
@@ -1973,6 +1977,7 @@ class Notification extends $pb.GeneratedMessage {
     $core.String? appName,
     $core.String? title,
     $core.String? content,
+    $core.String? raw,
   }) {
     final _result = create();
     if (appName != null) {
@@ -1983,6 +1988,9 @@ class Notification extends $pb.GeneratedMessage {
     }
     if (content != null) {
       _result.content = content;
+    }
+    if (raw != null) {
+      _result.raw = raw;
     }
     return _result;
   }
@@ -2048,4 +2056,16 @@ class Notification extends $pb.GeneratedMessage {
   $core.bool hasContent() => $_has(2);
   @$pb.TagNumber(3)
   void clearContent() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get raw => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set raw($core.String v) {
+    $_setString(3, v);
+  }
+
+  @$pb.TagNumber(4)
+  $core.bool hasRaw() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearRaw() => clearField(4);
 }

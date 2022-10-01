@@ -1,7 +1,7 @@
 import 'package:example/main.dart';
 import 'package:patrol/patrol.dart';
 
-import '../config.dart';
+import '../../config.dart';
 
 void main() {
   patrolTest(

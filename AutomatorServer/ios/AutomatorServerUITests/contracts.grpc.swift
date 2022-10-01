@@ -58,20 +58,35 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_OpenAppRequest, Patrol_Empty>
 
-  func openNotifications(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
-
-  func closeNotifications(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
-
   func openQuickSettings(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
+
+  func getNativeWidgets(
+    _ request: Patrol_GetNativeWidgetsRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>
+
+  func tap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty>
+
+  func doubleTap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty>
+
+  func enterText(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_EnterTextRequest, Patrol_Empty>
+
+  func swipe(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
   func enableAirplaneMode(
     _ request: Patrol_AirplaneModeRequest,
@@ -123,35 +138,30 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
 
-  func getNativeWidgets(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  func openNotifications(
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
+
+  func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
+
+  func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
   func getNotifications(
     _ request: Patrol_GetNotificationsRequest,
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>
 
-  func tap(
-    _ request: Patrol_TapRequest,
+  func tapOnNotification(
+    _ request: Patrol_TapOnNotificationRequest,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty>
-
-  func doubleTap(
-    _ request: Patrol_TapRequest,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty>
-
-  func enterText(
-    _ request: Patrol_EnterTextRequest,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_EnterTextRequest, Patrol_Empty>
-
-  func swipe(
-    _ request: Patrol_SwipeRequest,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_SwipeRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
 
   func handlePermissionDialog(
     _ request: Patrol_HandlePermissionRequest,
@@ -162,11 +172,6 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     _ request: Patrol_SetLocationAccuracyRequest,
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty>
-
-  func tapOnNotification(
-    _ request: Patrol_TapOnNotificationRequest,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
 
   func debug(
     _ request: Patrol_Empty,
@@ -269,42 +274,6 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// Unary call to openNotifications
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to openNotifications.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func openNotifications(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
-    )
-  }
-
-  /// Unary call to closeNotifications
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to closeNotifications.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func closeNotifications(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
-    )
-  }
-
   /// Unary call to openQuickSettings
   ///
   /// - Parameters:
@@ -320,6 +289,96 @@ extension Patrol_NativeAutomatorClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
+    )
+  }
+
+  /// general UI interaction
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to getNativeWidgets.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func getNativeWidgets(
+    _ request: Patrol_GetNativeWidgetsRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to tap
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to tap.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func tap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to doubleTap
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to doubleTap.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func doubleTap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to enterText
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to enterText.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func enterText(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_EnterTextRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to swipe
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to swipe.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func swipe(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_SwipeRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
     )
   }
 
@@ -503,21 +562,57 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// Unary call to getNativeWidgets
+  /// notifications
   ///
   /// - Parameters:
-  ///   - request: Request to send to getNativeWidgets.
+  ///   - request: Request to send to openNotifications.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func getNativeWidgets(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  internal func openNotifications(
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to closeNotifications
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to closeNotifications.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to closeHeadsUpNotification
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to closeHeadsUpNotification.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
     )
   }
 
@@ -539,79 +634,25 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// Unary call to tap
+  /// Unary call to tapOnNotification
   ///
   /// - Parameters:
-  ///   - request: Request to send to tap.
+  ///   - request: Request to send to tapOnNotification.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func tap(
-    _ request: Patrol_TapRequest,
+  internal func tapOnNotification(
+    _ request: Patrol_TapOnNotificationRequest,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty> {
     return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.maketapInterceptors() ?? []
+      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
     )
   }
 
-  /// Unary call to doubleTap
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to doubleTap.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func doubleTap(
-    _ request: Patrol_TapRequest,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_TapRequest, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
-    )
-  }
-
-  /// Unary call to enterText
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to enterText.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func enterText(
-    _ request: Patrol_EnterTextRequest,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_EnterTextRequest, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
-    )
-  }
-
-  /// Unary call to swipe
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to swipe.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func swipe(
-    _ request: Patrol_SwipeRequest,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_SwipeRequest, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
-    )
-  }
-
-  /// Unary call to handlePermissionDialog
+  /// permissions
   ///
   /// - Parameters:
   ///   - request: Request to send to handlePermissionDialog.
@@ -644,24 +685,6 @@ extension Patrol_NativeAutomatorClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
-    )
-  }
-
-  /// Unary call to tapOnNotification
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to tapOnNotification.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func tapOnNotification(
-    _ request: Patrol_TapOnNotificationRequest,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
     )
   }
 
@@ -775,20 +798,35 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_OpenAppRequest, Patrol_Empty>
 
-  func makeOpenNotificationsCall(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
-
-  func makeCloseNotificationsCall(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
-
   func makeOpenQuickSettingsCall(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
+
+  func makeGetNativeWidgetsCall(
+    _ request: Patrol_GetNativeWidgetsRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>
+
+  func makeTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
+
+  func makeDoubleTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
+
+  func makeEnterTextCall(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty>
+
+  func makeSwipeCall(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
   func makeEnableAirplaneModeCall(
     _ request: Patrol_AirplaneModeRequest,
@@ -840,35 +878,30 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
 
-  func makeGetNativeWidgetsCall(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  func makeOpenNotificationsCall(
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+
+  func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+
+  func makeCloseHeadsUpNotificationCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
   func makeGetNotificationsCall(
     _ request: Patrol_GetNotificationsRequest,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>
 
-  func makeTapCall(
-    _ request: Patrol_TapRequest,
+  func makeTapOnNotificationCall(
+    _ request: Patrol_TapOnNotificationRequest,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
-
-  func makeDoubleTapCall(
-    _ request: Patrol_TapRequest,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
-
-  func makeEnterTextCall(
-    _ request: Patrol_EnterTextRequest,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty>
-
-  func makeSwipeCall(
-    _ request: Patrol_SwipeRequest,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
 
   func makeHandlePermissionDialogCall(
     _ request: Patrol_HandlePermissionRequest,
@@ -879,11 +912,6 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     _ request: Patrol_SetLocationAccuracyRequest,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty>
-
-  func makeTapOnNotificationCall(
-    _ request: Patrol_TapOnNotificationRequest,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
 
   func makeDebugCall(
     _ request: Patrol_Empty,
@@ -961,30 +989,6 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func makeOpenNotificationsCall(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
-    )
-  }
-
-  internal func makeCloseNotificationsCall(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
-    )
-  }
-
   internal func makeOpenQuickSettingsCall(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions? = nil
@@ -994,6 +998,66 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
+    )
+  }
+
+  internal func makeGetNativeWidgetsCall(
+    _ request: Patrol_GetNativeWidgetsRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+    )
+  }
+
+  internal func makeTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapInterceptors() ?? []
+    )
+  }
+
+  internal func makeDoubleTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnterTextCall(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
+    )
+  }
+
+  internal func makeSwipeCall(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
     )
   }
 
@@ -1117,15 +1181,39 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func makeGetNativeWidgetsCall(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  internal func makeOpenNotificationsCall(
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse> {
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeCloseHeadsUpNotificationCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
     )
   }
 
@@ -1141,51 +1229,15 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func makeTapCall(
-    _ request: Patrol_TapRequest,
+  internal func makeTapOnNotificationCall(
+    _ request: Patrol_TapOnNotificationRequest,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty> {
     return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.maketapInterceptors() ?? []
-    )
-  }
-
-  internal func makeDoubleTapCall(
-    _ request: Patrol_TapRequest,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
-    )
-  }
-
-  internal func makeEnterTextCall(
-    _ request: Patrol_EnterTextRequest,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
-    )
-  }
-
-  internal func makeSwipeCall(
-    _ request: Patrol_SwipeRequest,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
+      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
     )
   }
 
@@ -1210,18 +1262,6 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
-    )
-  }
-
-  internal func makeTapOnNotificationCall(
-    _ request: Patrol_TapOnNotificationRequest,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
     )
   }
 
@@ -1300,30 +1340,6 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func openNotifications(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
-    )
-  }
-
-  internal func closeNotifications(
-    _ request: Patrol_Empty,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
-    )
-  }
-
   internal func openQuickSettings(
     _ request: Patrol_OpenQuickSettingsRequest,
     callOptions: CallOptions? = nil
@@ -1333,6 +1349,66 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
+    )
+  }
+
+  internal func getNativeWidgets(
+    _ request: Patrol_GetNativeWidgetsRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_GetNativeWidgetsResponse {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+    )
+  }
+
+  internal func tap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapInterceptors() ?? []
+    )
+  }
+
+  internal func doubleTap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
+    )
+  }
+
+  internal func enterText(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
+    )
+  }
+
+  internal func swipe(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
     )
   }
 
@@ -1456,15 +1532,39 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func getNativeWidgets(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  internal func openNotifications(
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) async throws -> Patrol_GetNativeWidgetsResponse {
+  ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
     )
   }
 
@@ -1480,51 +1580,15 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func tap(
-    _ request: Patrol_TapRequest,
+  internal func tapOnNotification(
+    _ request: Patrol_TapOnNotificationRequest,
     callOptions: CallOptions? = nil
   ) async throws -> Patrol_Empty {
     return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.maketapInterceptors() ?? []
-    )
-  }
-
-  internal func doubleTap(
-    _ request: Patrol_TapRequest,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
-    )
-  }
-
-  internal func enterText(
-    _ request: Patrol_EnterTextRequest,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
-    )
-  }
-
-  internal func swipe(
-    _ request: Patrol_SwipeRequest,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
+      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
     )
   }
 
@@ -1549,18 +1613,6 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
-    )
-  }
-
-  internal func tapOnNotification(
-    _ request: Patrol_TapOnNotificationRequest,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
     )
   }
 
@@ -1613,14 +1665,23 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'openApp'.
   func makeopenAppInterceptors() -> [ClientInterceptor<Patrol_OpenAppRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when invoking 'openNotifications'.
-  func makeopenNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when invoking 'closeNotifications'.
-  func makecloseNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
-
   /// - Returns: Interceptors to use when invoking 'openQuickSettings'.
   func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'getNativeWidgets'.
+  func makegetNativeWidgetsInterceptors() -> [ClientInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
+
+  /// - Returns: Interceptors to use when invoking 'tap'.
+  func maketapInterceptors() -> [ClientInterceptor<Patrol_TapRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'doubleTap'.
+  func makedoubleTapInterceptors() -> [ClientInterceptor<Patrol_TapRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'enterText'.
+  func makeenterTextInterceptors() -> [ClientInterceptor<Patrol_EnterTextRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'swipe'.
+  func makeswipeInterceptors() -> [ClientInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'enableAirplaneMode'.
   func makeenableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_AirplaneModeRequest, Patrol_Empty>]
@@ -1652,32 +1713,26 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'disableDarkMode'.
   func makedisableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when invoking 'getNativeWidgets'.
-  func makegetNativeWidgetsInterceptors() -> [ClientInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
+  /// - Returns: Interceptors to use when invoking 'openNotifications'.
+  func makeopenNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'closeNotifications'.
+  func makecloseNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when invoking 'closeHeadsUpNotification'.
+  func makecloseHeadsUpNotificationInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'getNotifications'.
   func makegetNotificationsInterceptors() -> [ClientInterceptor<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>]
 
-  /// - Returns: Interceptors to use when invoking 'tap'.
-  func maketapInterceptors() -> [ClientInterceptor<Patrol_TapRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when invoking 'doubleTap'.
-  func makedoubleTapInterceptors() -> [ClientInterceptor<Patrol_TapRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when invoking 'enterText'.
-  func makeenterTextInterceptors() -> [ClientInterceptor<Patrol_EnterTextRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when invoking 'swipe'.
-  func makeswipeInterceptors() -> [ClientInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
+  /// - Returns: Interceptors to use when invoking 'tapOnNotification'.
+  func maketapOnNotificationInterceptors() -> [ClientInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'handlePermissionDialog'.
   func makehandlePermissionDialogInterceptors() -> [ClientInterceptor<Patrol_HandlePermissionRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'setLocationAccuracy'.
   func makesetLocationAccuracyInterceptors() -> [ClientInterceptor<Patrol_SetLocationAccuracyRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when invoking 'tapOnNotification'.
-  func maketapOnNotificationInterceptors() -> [ClientInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'debug'.
   func makedebugInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
@@ -1693,9 +1748,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.pressRecentApps,
       Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps,
       Patrol_NativeAutomatorClientMetadata.Methods.openApp,
-      Patrol_NativeAutomatorClientMetadata.Methods.openNotifications,
-      Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings,
+      Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets,
+      Patrol_NativeAutomatorClientMetadata.Methods.tap,
+      Patrol_NativeAutomatorClientMetadata.Methods.doubleTap,
+      Patrol_NativeAutomatorClientMetadata.Methods.enterText,
+      Patrol_NativeAutomatorClientMetadata.Methods.swipe,
       Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode,
       Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode,
       Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi,
@@ -1706,15 +1764,13 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth,
       Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode,
       Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode,
-      Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets,
+      Patrol_NativeAutomatorClientMetadata.Methods.openNotifications,
+      Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications,
+      Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification,
       Patrol_NativeAutomatorClientMetadata.Methods.getNotifications,
-      Patrol_NativeAutomatorClientMetadata.Methods.tap,
-      Patrol_NativeAutomatorClientMetadata.Methods.doubleTap,
-      Patrol_NativeAutomatorClientMetadata.Methods.enterText,
-      Patrol_NativeAutomatorClientMetadata.Methods.swipe,
+      Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification,
       Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy,
-      Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification,
       Patrol_NativeAutomatorClientMetadata.Methods.debug,
     ]
   )
@@ -1750,21 +1806,39 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let openNotifications = GRPCMethodDescriptor(
-      name: "openNotifications",
-      path: "/patrol.NativeAutomator/openNotifications",
-      type: GRPCCallType.unary
-    )
-
-    internal static let closeNotifications = GRPCMethodDescriptor(
-      name: "closeNotifications",
-      path: "/patrol.NativeAutomator/closeNotifications",
-      type: GRPCCallType.unary
-    )
-
     internal static let openQuickSettings = GRPCMethodDescriptor(
       name: "openQuickSettings",
       path: "/patrol.NativeAutomator/openQuickSettings",
+      type: GRPCCallType.unary
+    )
+
+    internal static let getNativeWidgets = GRPCMethodDescriptor(
+      name: "getNativeWidgets",
+      path: "/patrol.NativeAutomator/getNativeWidgets",
+      type: GRPCCallType.unary
+    )
+
+    internal static let tap = GRPCMethodDescriptor(
+      name: "tap",
+      path: "/patrol.NativeAutomator/tap",
+      type: GRPCCallType.unary
+    )
+
+    internal static let doubleTap = GRPCMethodDescriptor(
+      name: "doubleTap",
+      path: "/patrol.NativeAutomator/doubleTap",
+      type: GRPCCallType.unary
+    )
+
+    internal static let enterText = GRPCMethodDescriptor(
+      name: "enterText",
+      path: "/patrol.NativeAutomator/enterText",
+      type: GRPCCallType.unary
+    )
+
+    internal static let swipe = GRPCMethodDescriptor(
+      name: "swipe",
+      path: "/patrol.NativeAutomator/swipe",
       type: GRPCCallType.unary
     )
 
@@ -1828,9 +1902,21 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let getNativeWidgets = GRPCMethodDescriptor(
-      name: "getNativeWidgets",
-      path: "/patrol.NativeAutomator/getNativeWidgets",
+    internal static let openNotifications = GRPCMethodDescriptor(
+      name: "openNotifications",
+      path: "/patrol.NativeAutomator/openNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeNotifications = GRPCMethodDescriptor(
+      name: "closeNotifications",
+      path: "/patrol.NativeAutomator/closeNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeHeadsUpNotification = GRPCMethodDescriptor(
+      name: "closeHeadsUpNotification",
+      path: "/patrol.NativeAutomator/closeHeadsUpNotification",
       type: GRPCCallType.unary
     )
 
@@ -1840,27 +1926,9 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let tap = GRPCMethodDescriptor(
-      name: "tap",
-      path: "/patrol.NativeAutomator/tap",
-      type: GRPCCallType.unary
-    )
-
-    internal static let doubleTap = GRPCMethodDescriptor(
-      name: "doubleTap",
-      path: "/patrol.NativeAutomator/doubleTap",
-      type: GRPCCallType.unary
-    )
-
-    internal static let enterText = GRPCMethodDescriptor(
-      name: "enterText",
-      path: "/patrol.NativeAutomator/enterText",
-      type: GRPCCallType.unary
-    )
-
-    internal static let swipe = GRPCMethodDescriptor(
-      name: "swipe",
-      path: "/patrol.NativeAutomator/swipe",
+    internal static let tapOnNotification = GRPCMethodDescriptor(
+      name: "tapOnNotification",
+      path: "/patrol.NativeAutomator/tapOnNotification",
       type: GRPCCallType.unary
     )
 
@@ -1873,12 +1941,6 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     internal static let setLocationAccuracy = GRPCMethodDescriptor(
       name: "setLocationAccuracy",
       path: "/patrol.NativeAutomator/setLocationAccuracy",
-      type: GRPCCallType.unary
-    )
-
-    internal static let tapOnNotification = GRPCMethodDescriptor(
-      name: "tapOnNotification",
-      path: "/patrol.NativeAutomator/tapOnNotification",
       type: GRPCCallType.unary
     )
 
@@ -1906,11 +1968,18 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
 
   func openApp(request: Patrol_OpenAppRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func openNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
-  func closeNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
   func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  /// general UI interaction
+  func getNativeWidgets(request: Patrol_GetNativeWidgetsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNativeWidgetsResponse>
+
+  func tap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func doubleTap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func enterText(request: Patrol_EnterTextRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func swipe(request: Patrol_SwipeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// services
   func enableAirplaneMode(request: Patrol_AirplaneModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
@@ -1933,23 +2002,21 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
 
   func disableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func getNativeWidgets(request: Patrol_GetNativeWidgetsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNativeWidgetsResponse>
+  /// notifications
+  func openNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func closeNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func closeHeadsUpNotification(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func getNotifications(request: Patrol_GetNotificationsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNotificationsResponse>
 
-  func tap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func tapOnNotification(request: Patrol_TapOnNotificationRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func doubleTap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
-  func enterText(request: Patrol_EnterTextRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
-  func swipe(request: Patrol_SwipeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
+  /// permissions
   func handlePermissionDialog(request: Patrol_HandlePermissionRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func setLocationAccuracy(request: Patrol_SetLocationAccuracyRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
-  func tapOnNotification(request: Patrol_TapOnNotificationRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func debug(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 }
@@ -2011,24 +2078,6 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.openApp(request:context:)
       )
 
-    case "openNotifications":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
-        userFunction: self.openNotifications(request:context:)
-      )
-
-    case "closeNotifications":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
-        userFunction: self.closeNotifications(request:context:)
-      )
-
     case "openQuickSettings":
       return UnaryServerHandler(
         context: context,
@@ -2036,6 +2085,51 @@ extension Patrol_NativeAutomatorProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? [],
         userFunction: self.openQuickSettings(request:context:)
+      )
+
+    case "getNativeWidgets":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeWidgetsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_GetNativeWidgetsResponse>(),
+        interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? [],
+        userFunction: self.getNativeWidgets(request:context:)
+      )
+
+    case "tap":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.maketapInterceptors() ?? [],
+        userFunction: self.tap(request:context:)
+      )
+
+    case "doubleTap":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? [],
+        userFunction: self.doubleTap(request:context:)
+      )
+
+    case "enterText":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_EnterTextRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenterTextInterceptors() ?? [],
+        userFunction: self.enterText(request:context:)
+      )
+
+    case "swipe":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_SwipeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
+        userFunction: self.swipe(request:context:)
       )
 
     case "enableAirplaneMode":
@@ -2128,13 +2222,31 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.disableDarkMode(request:context:)
       )
 
-    case "getNativeWidgets":
+    case "openNotifications":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeWidgetsRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_GetNativeWidgetsResponse>(),
-        interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? [],
-        userFunction: self.getNativeWidgets(request:context:)
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
+        userFunction: self.openNotifications(request:context:)
+      )
+
+    case "closeNotifications":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
+        userFunction: self.closeNotifications(request:context:)
+      )
+
+    case "closeHeadsUpNotification":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? [],
+        userFunction: self.closeHeadsUpNotification(request:context:)
       )
 
     case "getNotifications":
@@ -2146,40 +2258,13 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.getNotifications(request:context:)
       )
 
-    case "tap":
+    case "tapOnNotification":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_TapOnNotificationRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.maketapInterceptors() ?? [],
-        userFunction: self.tap(request:context:)
-      )
-
-    case "doubleTap":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? [],
-        userFunction: self.doubleTap(request:context:)
-      )
-
-    case "enterText":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_EnterTextRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeenterTextInterceptors() ?? [],
-        userFunction: self.enterText(request:context:)
-      )
-
-    case "swipe":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_SwipeRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
-        userFunction: self.swipe(request:context:)
+        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? [],
+        userFunction: self.tapOnNotification(request:context:)
       )
 
     case "handlePermissionDialog":
@@ -2198,15 +2283,6 @@ extension Patrol_NativeAutomatorProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? [],
         userFunction: self.setLocationAccuracy(request:context:)
-      )
-
-    case "tapOnNotification":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_TapOnNotificationRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? [],
-        userFunction: self.tapOnNotification(request:context:)
       )
 
     case "debug":
@@ -2259,18 +2335,34 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
-  @Sendable func openNotifications(
-    request: Patrol_Empty,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
-  @Sendable func closeNotifications(
-    request: Patrol_Empty,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
   @Sendable func openQuickSettings(
     request: Patrol_OpenQuickSettingsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  /// general UI interaction
+  @Sendable func getNativeWidgets(
+    request: Patrol_GetNativeWidgetsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_GetNativeWidgetsResponse
+
+  @Sendable func tap(
+    request: Patrol_TapRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func doubleTap(
+    request: Patrol_TapRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func enterText(
+    request: Patrol_EnterTextRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func swipe(
+    request: Patrol_SwipeRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
@@ -2325,36 +2417,33 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
-  @Sendable func getNativeWidgets(
-    request: Patrol_GetNativeWidgetsRequest,
+  /// notifications
+  @Sendable func openNotifications(
+    request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_GetNativeWidgetsResponse
+  ) async throws -> Patrol_Empty
+
+  @Sendable func closeNotifications(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func closeHeadsUpNotification(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
   @Sendable func getNotifications(
     request: Patrol_GetNotificationsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_GetNotificationsResponse
 
-  @Sendable func tap(
-    request: Patrol_TapRequest,
+  @Sendable func tapOnNotification(
+    request: Patrol_TapOnNotificationRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
-  @Sendable func doubleTap(
-    request: Patrol_TapRequest,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
-  @Sendable func enterText(
-    request: Patrol_EnterTextRequest,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
-  @Sendable func swipe(
-    request: Patrol_SwipeRequest,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
+  /// permissions
   @Sendable func handlePermissionDialog(
     request: Patrol_HandlePermissionRequest,
     context: GRPCAsyncServerCallContext
@@ -2362,11 +2451,6 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
 
   @Sendable func setLocationAccuracy(
     request: Patrol_SetLocationAccuracyRequest,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
-  @Sendable func tapOnNotification(
-    request: Patrol_TapOnNotificationRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
@@ -2440,24 +2524,6 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.openApp(request:context:)
       )
 
-    case "openNotifications":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
-        wrapping: self.openNotifications(request:context:)
-      )
-
-    case "closeNotifications":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
-        wrapping: self.closeNotifications(request:context:)
-      )
-
     case "openQuickSettings":
       return GRPCAsyncServerHandler(
         context: context,
@@ -2465,6 +2531,51 @@ extension Patrol_NativeAutomatorAsyncProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? [],
         wrapping: self.openQuickSettings(request:context:)
+      )
+
+    case "getNativeWidgets":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeWidgetsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_GetNativeWidgetsResponse>(),
+        interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? [],
+        wrapping: self.getNativeWidgets(request:context:)
+      )
+
+    case "tap":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.maketapInterceptors() ?? [],
+        wrapping: self.tap(request:context:)
+      )
+
+    case "doubleTap":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? [],
+        wrapping: self.doubleTap(request:context:)
+      )
+
+    case "enterText":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_EnterTextRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenterTextInterceptors() ?? [],
+        wrapping: self.enterText(request:context:)
+      )
+
+    case "swipe":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_SwipeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
+        wrapping: self.swipe(request:context:)
       )
 
     case "enableAirplaneMode":
@@ -2557,13 +2668,31 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.disableDarkMode(request:context:)
       )
 
-    case "getNativeWidgets":
+    case "openNotifications":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeWidgetsRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_GetNativeWidgetsResponse>(),
-        interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? [],
-        wrapping: self.getNativeWidgets(request:context:)
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
+        wrapping: self.openNotifications(request:context:)
+      )
+
+    case "closeNotifications":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
+        wrapping: self.closeNotifications(request:context:)
+      )
+
+    case "closeHeadsUpNotification":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? [],
+        wrapping: self.closeHeadsUpNotification(request:context:)
       )
 
     case "getNotifications":
@@ -2575,40 +2704,13 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.getNotifications(request:context:)
       )
 
-    case "tap":
+    case "tapOnNotification":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_TapOnNotificationRequest>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.maketapInterceptors() ?? [],
-        wrapping: self.tap(request:context:)
-      )
-
-    case "doubleTap":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? [],
-        wrapping: self.doubleTap(request:context:)
-      )
-
-    case "enterText":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_EnterTextRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeenterTextInterceptors() ?? [],
-        wrapping: self.enterText(request:context:)
-      )
-
-    case "swipe":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_SwipeRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
-        wrapping: self.swipe(request:context:)
+        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? [],
+        wrapping: self.tapOnNotification(request:context:)
       )
 
     case "handlePermissionDialog":
@@ -2627,15 +2729,6 @@ extension Patrol_NativeAutomatorAsyncProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? [],
         wrapping: self.setLocationAccuracy(request:context:)
-      )
-
-    case "tapOnNotification":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_TapOnNotificationRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? [],
-        wrapping: self.tapOnNotification(request:context:)
       )
 
     case "debug":
@@ -2677,17 +2770,29 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeopenAppInterceptors() -> [ServerInterceptor<Patrol_OpenAppRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when handling 'openNotifications'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func makeopenNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when handling 'closeNotifications'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func makecloseNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
-
   /// - Returns: Interceptors to use when handling 'openQuickSettings'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'getNativeWidgets'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makegetNativeWidgetsInterceptors() -> [ServerInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
+
+  /// - Returns: Interceptors to use when handling 'tap'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func maketapInterceptors() -> [ServerInterceptor<Patrol_TapRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'doubleTap'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makedoubleTapInterceptors() -> [ServerInterceptor<Patrol_TapRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'enterText'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makeenterTextInterceptors() -> [ServerInterceptor<Patrol_EnterTextRequest, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'swipe'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makeswipeInterceptors() -> [ServerInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'enableAirplaneMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2729,29 +2834,25 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makedisableDarkModeInterceptors() -> [ServerInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when handling 'getNativeWidgets'.
+  /// - Returns: Interceptors to use when handling 'openNotifications'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makegetNativeWidgetsInterceptors() -> [ServerInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
+  func makeopenNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'closeNotifications'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makecloseNotificationsInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
+
+  /// - Returns: Interceptors to use when handling 'closeHeadsUpNotification'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makecloseHeadsUpNotificationInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'getNotifications'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makegetNotificationsInterceptors() -> [ServerInterceptor<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>]
 
-  /// - Returns: Interceptors to use when handling 'tap'.
+  /// - Returns: Interceptors to use when handling 'tapOnNotification'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func maketapInterceptors() -> [ServerInterceptor<Patrol_TapRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when handling 'doubleTap'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func makedoubleTapInterceptors() -> [ServerInterceptor<Patrol_TapRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when handling 'enterText'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func makeenterTextInterceptors() -> [ServerInterceptor<Patrol_EnterTextRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when handling 'swipe'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func makeswipeInterceptors() -> [ServerInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
+  func maketapOnNotificationInterceptors() -> [ServerInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'handlePermissionDialog'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2760,10 +2861,6 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   /// - Returns: Interceptors to use when handling 'setLocationAccuracy'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makesetLocationAccuracyInterceptors() -> [ServerInterceptor<Patrol_SetLocationAccuracyRequest, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when handling 'tapOnNotification'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func maketapOnNotificationInterceptors() -> [ServerInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'debug'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2780,9 +2877,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.pressRecentApps,
       Patrol_NativeAutomatorServerMetadata.Methods.doublePressRecentApps,
       Patrol_NativeAutomatorServerMetadata.Methods.openApp,
-      Patrol_NativeAutomatorServerMetadata.Methods.openNotifications,
-      Patrol_NativeAutomatorServerMetadata.Methods.closeNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.openQuickSettings,
+      Patrol_NativeAutomatorServerMetadata.Methods.getNativeWidgets,
+      Patrol_NativeAutomatorServerMetadata.Methods.tap,
+      Patrol_NativeAutomatorServerMetadata.Methods.doubleTap,
+      Patrol_NativeAutomatorServerMetadata.Methods.enterText,
+      Patrol_NativeAutomatorServerMetadata.Methods.swipe,
       Patrol_NativeAutomatorServerMetadata.Methods.enableAirplaneMode,
       Patrol_NativeAutomatorServerMetadata.Methods.disableAirplaneMode,
       Patrol_NativeAutomatorServerMetadata.Methods.enableWiFi,
@@ -2793,15 +2893,13 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.disableBluetooth,
       Patrol_NativeAutomatorServerMetadata.Methods.enableDarkMode,
       Patrol_NativeAutomatorServerMetadata.Methods.disableDarkMode,
-      Patrol_NativeAutomatorServerMetadata.Methods.getNativeWidgets,
+      Patrol_NativeAutomatorServerMetadata.Methods.openNotifications,
+      Patrol_NativeAutomatorServerMetadata.Methods.closeNotifications,
+      Patrol_NativeAutomatorServerMetadata.Methods.closeHeadsUpNotification,
       Patrol_NativeAutomatorServerMetadata.Methods.getNotifications,
-      Patrol_NativeAutomatorServerMetadata.Methods.tap,
-      Patrol_NativeAutomatorServerMetadata.Methods.doubleTap,
-      Patrol_NativeAutomatorServerMetadata.Methods.enterText,
-      Patrol_NativeAutomatorServerMetadata.Methods.swipe,
+      Patrol_NativeAutomatorServerMetadata.Methods.tapOnNotification,
       Patrol_NativeAutomatorServerMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorServerMetadata.Methods.setLocationAccuracy,
-      Patrol_NativeAutomatorServerMetadata.Methods.tapOnNotification,
       Patrol_NativeAutomatorServerMetadata.Methods.debug,
     ]
   )
@@ -2837,21 +2935,39 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let openNotifications = GRPCMethodDescriptor(
-      name: "openNotifications",
-      path: "/patrol.NativeAutomator/openNotifications",
-      type: GRPCCallType.unary
-    )
-
-    internal static let closeNotifications = GRPCMethodDescriptor(
-      name: "closeNotifications",
-      path: "/patrol.NativeAutomator/closeNotifications",
-      type: GRPCCallType.unary
-    )
-
     internal static let openQuickSettings = GRPCMethodDescriptor(
       name: "openQuickSettings",
       path: "/patrol.NativeAutomator/openQuickSettings",
+      type: GRPCCallType.unary
+    )
+
+    internal static let getNativeWidgets = GRPCMethodDescriptor(
+      name: "getNativeWidgets",
+      path: "/patrol.NativeAutomator/getNativeWidgets",
+      type: GRPCCallType.unary
+    )
+
+    internal static let tap = GRPCMethodDescriptor(
+      name: "tap",
+      path: "/patrol.NativeAutomator/tap",
+      type: GRPCCallType.unary
+    )
+
+    internal static let doubleTap = GRPCMethodDescriptor(
+      name: "doubleTap",
+      path: "/patrol.NativeAutomator/doubleTap",
+      type: GRPCCallType.unary
+    )
+
+    internal static let enterText = GRPCMethodDescriptor(
+      name: "enterText",
+      path: "/patrol.NativeAutomator/enterText",
+      type: GRPCCallType.unary
+    )
+
+    internal static let swipe = GRPCMethodDescriptor(
+      name: "swipe",
+      path: "/patrol.NativeAutomator/swipe",
       type: GRPCCallType.unary
     )
 
@@ -2915,9 +3031,21 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let getNativeWidgets = GRPCMethodDescriptor(
-      name: "getNativeWidgets",
-      path: "/patrol.NativeAutomator/getNativeWidgets",
+    internal static let openNotifications = GRPCMethodDescriptor(
+      name: "openNotifications",
+      path: "/patrol.NativeAutomator/openNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeNotifications = GRPCMethodDescriptor(
+      name: "closeNotifications",
+      path: "/patrol.NativeAutomator/closeNotifications",
+      type: GRPCCallType.unary
+    )
+
+    internal static let closeHeadsUpNotification = GRPCMethodDescriptor(
+      name: "closeHeadsUpNotification",
+      path: "/patrol.NativeAutomator/closeHeadsUpNotification",
       type: GRPCCallType.unary
     )
 
@@ -2927,27 +3055,9 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let tap = GRPCMethodDescriptor(
-      name: "tap",
-      path: "/patrol.NativeAutomator/tap",
-      type: GRPCCallType.unary
-    )
-
-    internal static let doubleTap = GRPCMethodDescriptor(
-      name: "doubleTap",
-      path: "/patrol.NativeAutomator/doubleTap",
-      type: GRPCCallType.unary
-    )
-
-    internal static let enterText = GRPCMethodDescriptor(
-      name: "enterText",
-      path: "/patrol.NativeAutomator/enterText",
-      type: GRPCCallType.unary
-    )
-
-    internal static let swipe = GRPCMethodDescriptor(
-      name: "swipe",
-      path: "/patrol.NativeAutomator/swipe",
+    internal static let tapOnNotification = GRPCMethodDescriptor(
+      name: "tapOnNotification",
+      path: "/patrol.NativeAutomator/tapOnNotification",
       type: GRPCCallType.unary
     )
 
@@ -2960,12 +3070,6 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let setLocationAccuracy = GRPCMethodDescriptor(
       name: "setLocationAccuracy",
       path: "/patrol.NativeAutomator/setLocationAccuracy",
-      type: GRPCCallType.unary
-    )
-
-    internal static let tapOnNotification = GRPCMethodDescriptor(
-      name: "tapOnNotification",
-      path: "/patrol.NativeAutomator/tapOnNotification",
       type: GRPCCallType.unary
     )
 

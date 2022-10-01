@@ -23,7 +23,7 @@ object TapRequestKt {
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.TapRequest = _builder.build()
 
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      */
     var selector: pl.leancode.automatorserver.contracts.Contracts.Selector
       @JvmName("getSelector")
@@ -33,13 +33,13 @@ object TapRequestKt {
         _builder.setSelector(value)
       }
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      */
     fun clearSelector() {
       _builder.clearSelector()
     }
     /**
-     * <code>.patrol.Selector Selector = 1;</code>
+     * <code>.patrol.Selector selector = 1;</code>
      * @return Whether the selector field is set.
      */
     fun hasSelector(): kotlin.Boolean {
