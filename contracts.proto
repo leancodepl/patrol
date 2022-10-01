@@ -13,6 +13,13 @@ service NativeAutomator {
   rpc openApp(OpenAppRequest) returns (Empty) {}
   rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
+  // general UI interaction
+  rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
+  rpc tap(TapRequest) returns (Empty) {}
+  rpc doubleTap(TapRequest) returns (Empty) {}
+  rpc enterText(EnterTextRequest) returns (Empty) {}
+  rpc swipe(SwipeRequest) returns (Empty) {}
+
   // services
   rpc enableAirplaneMode(AirplaneModeRequest) returns (Empty) {}
   rpc disableAirplaneMode(AirplaneModeRequest) returns (Empty) {}
@@ -24,13 +31,6 @@ service NativeAutomator {
   rpc disableBluetooth(BluetoothRequest) returns (Empty) {}
   rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
   rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
-
-  // general UI interaction
-  rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
-  rpc tap(TapRequest) returns (Empty) {}
-  rpc doubleTap(TapRequest) returns (Empty) {}
-  rpc enterText(EnterTextRequest) returns (Empty) {}
-  rpc swipe(SwipeRequest) returns (Empty) {}
 
   // notifications
   rpc openNotifications(Empty) returns (Empty) {}

@@ -18,6 +18,8 @@ class PatrolAutomation {
     return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
   }()
   
+  // MARK: General
+  
   func pressHome() {
     runAction("pressing home button") {
       self.device.press(XCUIDevice.Button.home)
@@ -28,26 +30,6 @@ class PatrolAutomation {
     runAction("opening app with id \(bundleIdentifier)") {
       let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
       app.activate()
-    }
-  }
-  
-  func openNotifications() {
-    // TODO: Check if works on iPhones without notch
-    
-    runAction("opening notifications") {
-      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
-      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
-      start.press(forDuration: 0.1, thenDragTo: end)
-    }
-  }
-  
-  func closeNotifications() {
-    // TODO: Check if works on iPhones without notch
-    
-    runAction("closing notifications") {
-      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
-      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
-      start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
 
@@ -70,6 +52,44 @@ class PatrolAutomation {
       start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
+  
+  // MARK: General UI interaction
+  
+  func tap(on text: String, inApp appId: String) {
+    runAction("tapping on text \(text)") {
+      let app = XCUIApplication(bundleIdentifier: appId)
+      app.descendants(matching: .any)[text].firstMatch.tap()
+    }
+  }
+
+  func doubleTap(on text: String, inApp appId: String) {
+    runAction("double tapping on text \(format: text)") {
+      let app = XCUIApplication(bundleIdentifier: appId)
+      app.descendants(matching: .any)[text].firstMatch.tap()
+    }
+  }
+
+  func enterText(_ data: String, by text: String, inApp appId: String) {
+    runAction("entering text \(format: data) into text field with text \(text)") {
+      let app = XCUIApplication(bundleIdentifier: appId)
+      app.textFields[text].firstMatch.typeText(data)
+    }
+  }
+
+  func enterText(_ data: String, by index: Int, inApp appId: String) {
+    runAction("entering text \(format: data) by index \(index)") {
+      let app = XCUIApplication(bundleIdentifier: appId)
+      let textField = app.textFields.element(boundBy: index)
+      if textField.exists {
+        textField.tap()
+        textField.typeText(data)
+      } else {
+        Logger.shared.e("textField at index \(index) doesn't exist")
+      }
+    }
+  }
+  
+  // MARK: Services
 
   func enableDarkMode(_ bundleIdentifier: String) {
     runSettingsAction("enabling dark mode", bundleIdentifier) {
@@ -102,8 +122,6 @@ class PatrolAutomation {
       #endif
     }
   }
-  
-  // MARK: Services
   
   func enableAirplaneMode(_ bundleIdentifier: String) throws {
     try runControlCenterAction("enabling airplane mode") {
@@ -178,17 +196,35 @@ class PatrolAutomation {
     }
   }
   
+  // MARK: Notifications
+  
+  func openNotifications() {
+    // TODO: Check if works on iPhones without notch
+    
+    runAction("opening notifications") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
+  
+  func closeNotifications() {
+    // TODO: Check if works on iPhones without notch
+    
+    runAction("closing notifications") {
+      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
+  
   func getNotifications() -> [Patrol_Notification] {
     var notifications = [Patrol_Notification]()
     runAction("getting notifications") {
-      let cells = self.springboard.buttons.allElementsBoundByIndex
+      let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
       for (i, cell) in cells.enumerated() {
-        if cell.identifier != "NotificationCell" {
-          continue
-        }
-        
         let notification = Patrol_Notification.with {
-          Logger.shared.i("Found notification at index \(i) with label \(format: cell.label)")
+          Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
           $0.raw = cell.label
         }
         notifications.append(notification)
@@ -197,51 +233,47 @@ class PatrolAutomation {
     
     return notifications
   }
-
-  func tap(on text: String, inApp appId: String) {
-    runAction("tapping on text \(text)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      app.descendants(matching: .any)[text].firstMatch.tap()
-    }
-  }
-
-  func doubleTap(on text: String, inApp appId: String) {
-    runAction("double tapping on text \(format: text)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      app.descendants(matching: .any)[text].firstMatch.tap()
-    }
-  }
-
-  func enterText(_ data: String, by text: String, inApp appId: String) {
-    runAction("entering text \(format: data) into text field with text \(text)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      app.textFields[text].firstMatch.typeText(data)
-    }
-  }
-
-  func enterText(_ data: String, by index: Int, inApp appId: String) {
-    runAction("entering text \(format: data) by index \(index)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      let textField = app.textFields.element(boundBy: index)
-      if textField.exists {
-        textField.tap()
-        textField.typeText(data)
-      } else {
-        Logger.shared.e("textField at index \(index) doesn't exist")
+  
+  func tapOnNotification(by index: Int) {
+    runAction("tapping on notification at index \(index)") {
+      let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
+      if !cells.indices.contains(index) {
+        Logger.shared.e("notification at index \(index) doesn't exist")
+        self.closeNotifications()
       }
+      
+      cells[index].tap()
     }
   }
-
+  
+  func tapOnNotification(by text: String) {
+    runAction("tapping on notification containing text \(format: text)") {
+      let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
+      for (i, cell) in cells.enumerated() {
+        if cell.label.contains(text) {
+          Logger.shared.i("tapping on notification at index \(i) which contains text \(text)")
+          cell.tap()
+          return
+        }
+      }
+      
+      Logger.shared.e("no notification contains text \(format: text)")
+      self.closeNotifications()
+    }
+  }
+  
+  // MARK: Permissions
+  
   func allowPermissionWhileUsingApp() {
     runAction("allowing while using app") {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow While Using App"]
       
       for label in labels {
-        Logger.shared.i("Checking if button \(format: label) exists")
+        Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
-          Logger.shared.i("Found button \(format: label)")
+          Logger.shared.i("found button \(format: label)")
           button.tap()
           break
         }
@@ -255,10 +287,10 @@ class PatrolAutomation {
       let labels = ["OK", "Allow", "Allow Once"]
       
       for label in labels {
-        Logger.shared.i("Checking if button \(format: label) exists")
+        Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
-          Logger.shared.i("Found button \(format: label)")
+          Logger.shared.i("found button \(format: label)")
           button.tap()
           break
         }
@@ -294,31 +326,7 @@ class PatrolAutomation {
     }
   }
   
-  func tapOnNotification(by index: Int) {
-    runAction("tapping on notification at index \(index)") {
-      let cells = self.springboard.buttons.allElementsBoundByIndex
-      if !cells.indices.contains(index) {
-        Logger.shared.e("notification at index \(index) doesn't exist")
-        
-      }
-      
-      cells[index].tap()
-    }
-  }
-  
-  func tapOnNotification(by text: String) {
-    runAction("tapping on notification containing text \(format: text)") {
-      let cells = self.springboard.buttons.allElementsBoundByIndex
-      for (i, cell) in cells.enumerated() {
-        if cell.label.contains(text) {
-          Logger.shared.i("Tapping on notification at index \(i) which contains text \(text)")
-          cell.tap()
-        }
-      }
-      
-      Logger.shared.e("No notification contains text \(format: text)")
-    }
-  }
+  // MARK: Other
   
   func debug() throws {
     runAction("debug()") {
