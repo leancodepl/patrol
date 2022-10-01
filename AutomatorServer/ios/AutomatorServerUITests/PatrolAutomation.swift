@@ -1,10 +1,5 @@
 import XCTest
 
-struct NativeWidget: Codable {
-  var className: String
-  var text: String
-}
-
 class PatrolAutomation {
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared

@@ -14,7 +14,7 @@ service NativeAutomator {
   rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // general UI interaction
-  rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
+  rpc getNativeViews(GetNativeViewsRequest) returns (GetNativeViewsResponse) {}
   rpc tap(TapRequest) returns (Empty) {}
   rpc doubleTap(TapRequest) returns (Empty) {}
   rpc enterText(EnterTextRequest) returns (Empty) {}
@@ -68,8 +68,8 @@ message OpenQuickSettingsRequest {}
 
 message DarkModeRequest { string appId = 1; }
 
-message GetNativeWidgetsRequest { Selector selector = 1; }
-message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
+message GetNativeViewsRequest { Selector selector = 1; }
+message GetNativeViewsResponse { repeated NativeView nativeViews = 1; }
 
 message GetNotificationsRequest {}
 message GetNotificationsResponse { repeated Notification notifications = 1; }
@@ -134,7 +134,7 @@ message Selector {
 // Represents a native UI control.
 //
 // On Android, this is `android.view.View`.
-message NativeWidget {
+message NativeView {
   string className = 1;
   string text = 2;
   string contentDescription = 3;
@@ -143,7 +143,7 @@ message NativeWidget {
   int32 childCount = 6;
   string resourceName = 7;
   string applicationPackage = 8;
-  repeated NativeWidget children = 9;
+  repeated NativeView children = 9;
 }
 
 // Represents a notification visible in the notification shade.

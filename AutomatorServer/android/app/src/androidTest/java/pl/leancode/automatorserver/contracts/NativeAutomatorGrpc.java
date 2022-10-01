@@ -204,35 +204,35 @@ public final class NativeAutomatorGrpc {
     return getOpenQuickSettingsMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
-      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod;
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest,
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse> getGetNativeViewsMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "getNativeWidgets",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class,
-      responseType = pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class,
+      fullMethodName = SERVICE_NAME + '/' + "getNativeViews",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
-      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getGetNativeWidgetsMethod;
-    if ((getGetNativeWidgetsMethod = NativeAutomatorGrpc.getGetNativeWidgetsMethod) == null) {
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest,
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse> getGetNativeViewsMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse> getGetNativeViewsMethod;
+    if ((getGetNativeViewsMethod = NativeAutomatorGrpc.getGetNativeViewsMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
-        if ((getGetNativeWidgetsMethod = NativeAutomatorGrpc.getGetNativeWidgetsMethod) == null) {
-          NativeAutomatorGrpc.getGetNativeWidgetsMethod = getGetNativeWidgetsMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>newBuilder()
+        if ((getGetNativeViewsMethod = NativeAutomatorGrpc.getGetNativeViewsMethod) == null) {
+          NativeAutomatorGrpc.getGetNativeViewsMethod = getGetNativeViewsMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNativeWidgets"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNativeViews"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("getNativeWidgets"))
+                  pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("getNativeViews"))
               .build();
         }
       }
     }
-    return getGetNativeWidgetsMethod;
+    return getGetNativeViewsMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TapRequest,
@@ -1015,9 +1015,9 @@ public final class NativeAutomatorGrpc {
      * general UI interaction
      * </pre>
      */
-    public void getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetNativeWidgetsMethod(), responseObserver);
+    public void getNativeViews(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetNativeViewsMethod(), responseObserver);
     }
 
     /**
@@ -1228,12 +1228,12 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_OPEN_QUICK_SETTINGS)))
           .addMethod(
-            getGetNativeWidgetsMethod(),
+            getGetNativeViewsMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest,
-                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>(
-                  this, METHODID_GET_NATIVE_WIDGETS)))
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest,
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse>(
+                  this, METHODID_GET_NATIVE_VIEWS)))
           .addMethod(
             getTapMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1462,10 +1462,10 @@ public final class NativeAutomatorGrpc {
      * general UI interaction
      * </pre>
      */
-    public void getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> responseObserver) {
+    public void getNativeViews(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getGetNativeWidgetsMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getGetNativeViewsMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1718,9 +1718,9 @@ public final class NativeAutomatorGrpc {
      * general UI interaction
      * </pre>
      */
-    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request) {
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getNativeViews(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getGetNativeWidgetsMethod(), getCallOptions(), request);
+          getChannel(), getGetNativeViewsMethod(), getCallOptions(), request);
     }
 
     /**
@@ -1957,10 +1957,10 @@ public final class NativeAutomatorGrpc {
      * general UI interaction
      * </pre>
      */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse> getNativeWidgets(
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse> getNativeViews(
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getGetNativeWidgetsMethod(), getCallOptions()), request);
+          getChannel().newCall(getGetNativeViewsMethod(), getCallOptions()), request);
     }
 
     /**
@@ -2155,7 +2155,7 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_DOUBLE_PRESS_RECENT_APPS = 3;
   private static final int METHODID_OPEN_APP = 4;
   private static final int METHODID_OPEN_QUICK_SETTINGS = 5;
-  private static final int METHODID_GET_NATIVE_WIDGETS = 6;
+  private static final int METHODID_GET_NATIVE_VIEWS = 6;
   private static final int METHODID_TAP = 7;
   private static final int METHODID_DOUBLE_TAP = 8;
   private static final int METHODID_ENTER_TEXT = 9;
@@ -2220,9 +2220,9 @@ public final class NativeAutomatorGrpc {
           serviceImpl.openQuickSettings((pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
-        case METHODID_GET_NATIVE_WIDGETS:
-          serviceImpl.getNativeWidgets((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse>) responseObserver);
+        case METHODID_GET_NATIVE_VIEWS:
+          serviceImpl.getNativeViews((pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse>) responseObserver);
           break;
         case METHODID_TAP:
           serviceImpl.tap((pl.leancode.automatorserver.contracts.Contracts.TapRequest) request,
@@ -2379,7 +2379,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getDoublePressRecentAppsMethod())
               .addMethod(getOpenAppMethod())
               .addMethod(getOpenQuickSettingsMethod())
-              .addMethod(getGetNativeWidgetsMethod())
+              .addMethod(getGetNativeViewsMethod())
               .addMethod(getTapMethod())
               .addMethod(getDoubleTapMethod())
               .addMethod(getEnterTextMethod())

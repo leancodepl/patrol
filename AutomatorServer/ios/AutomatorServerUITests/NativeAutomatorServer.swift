@@ -155,11 +155,11 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return Empty()
   }
   
-  func getNativeWidgets(
-    request: Patrol_GetNativeWidgetsRequest,
+  func getNativeViews(
+    request: Patrol_GetNativeViewsRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_GetNativeWidgetsResponse {
-    throw PatrolError.generic("getNativeWidgets() is not supported on iOS")
+  ) async throws -> Patrol_GetNativeViewsResponse {
+    throw PatrolError.generic("getNativeViews() is not supported on iOS")
   }
   
   func getNotifications(

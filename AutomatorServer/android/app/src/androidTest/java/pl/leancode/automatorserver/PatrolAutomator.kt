@@ -11,12 +11,12 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiSelector
 import pl.leancode.automatorserver.contracts.Contracts
-import pl.leancode.automatorserver.contracts.nativeWidget
+import pl.leancode.automatorserver.contracts.nativeView
 import pl.leancode.automatorserver.contracts.notification
 import kotlin.math.roundToInt
 
-private fun fromUiObject2(obj: UiObject2): Contracts.NativeWidget {
-    return nativeWidget {
+private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
+    return nativeView {
         if (obj.className != null) {
             className = obj.className
         }
@@ -141,8 +141,8 @@ class PatrolAutomator private constructor() {
 
     fun disableBluetooth(): Unit = TODO()
 
-    fun getNativeWidgets(selector: BySelector): List<Contracts.NativeWidget> {
-        Logger.d("getNativeWidgets()")
+    fun getNativeViews(selector: BySelector): List<Contracts.NativeView> {
+        Logger.d("getNativeViews()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }

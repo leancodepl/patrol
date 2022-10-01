@@ -63,10 +63,10 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
 
-  func getNativeWidgets(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  func getNativeViews(
+    _ request: Patrol_GetNativeViewsRequest,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>
+  ) -> UnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>
 
   func tap(
     _ request: Patrol_TapRequest,
@@ -295,18 +295,18 @@ extension Patrol_NativeAutomatorClientProtocol {
   /// general UI interaction
   ///
   /// - Parameters:
-  ///   - request: Request to send to getNativeWidgets.
+  ///   - request: Request to send to getNativeViews.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func getNativeWidgets(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  internal func getNativeViews(
+    _ request: Patrol_GetNativeViewsRequest,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse> {
+  ) -> UnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse> {
     return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+      interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
     )
   }
 
@@ -803,10 +803,10 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
 
-  func makeGetNativeWidgetsCall(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  func makeGetNativeViewsCall(
+    _ request: Patrol_GetNativeViewsRequest,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>
 
   func makeTapCall(
     _ request: Patrol_TapRequest,
@@ -1001,15 +1001,15 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func makeGetNativeWidgetsCall(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  internal func makeGetNativeViewsCall(
+    _ request: Patrol_GetNativeViewsRequest,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse> {
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse> {
     return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+      interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
     )
   }
 
@@ -1352,15 +1352,15 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
-  internal func getNativeWidgets(
-    _ request: Patrol_GetNativeWidgetsRequest,
+  internal func getNativeViews(
+    _ request: Patrol_GetNativeViewsRequest,
     callOptions: CallOptions? = nil
-  ) async throws -> Patrol_GetNativeWidgetsResponse {
+  ) async throws -> Patrol_GetNativeViewsResponse {
     return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? []
+      interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
     )
   }
 
@@ -1668,8 +1668,8 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'openQuickSettings'.
   func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when invoking 'getNativeWidgets'.
-  func makegetNativeWidgetsInterceptors() -> [ClientInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
+  /// - Returns: Interceptors to use when invoking 'getNativeViews'.
+  func makegetNativeViewsInterceptors() -> [ClientInterceptor<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>]
 
   /// - Returns: Interceptors to use when invoking 'tap'.
   func maketapInterceptors() -> [ClientInterceptor<Patrol_TapRequest, Patrol_Empty>]
@@ -1749,7 +1749,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps,
       Patrol_NativeAutomatorClientMetadata.Methods.openApp,
       Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings,
-      Patrol_NativeAutomatorClientMetadata.Methods.getNativeWidgets,
+      Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews,
       Patrol_NativeAutomatorClientMetadata.Methods.tap,
       Patrol_NativeAutomatorClientMetadata.Methods.doubleTap,
       Patrol_NativeAutomatorClientMetadata.Methods.enterText,
@@ -1812,9 +1812,9 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let getNativeWidgets = GRPCMethodDescriptor(
-      name: "getNativeWidgets",
-      path: "/patrol.NativeAutomator/getNativeWidgets",
+    internal static let getNativeViews = GRPCMethodDescriptor(
+      name: "getNativeViews",
+      path: "/patrol.NativeAutomator/getNativeViews",
       type: GRPCCallType.unary
     )
 
@@ -1971,7 +1971,7 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// general UI interaction
-  func getNativeWidgets(request: Patrol_GetNativeWidgetsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNativeWidgetsResponse>
+  func getNativeViews(request: Patrol_GetNativeViewsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNativeViewsResponse>
 
   func tap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
@@ -2087,13 +2087,13 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.openQuickSettings(request:context:)
       )
 
-    case "getNativeWidgets":
+    case "getNativeViews":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeWidgetsRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_GetNativeWidgetsResponse>(),
-        interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? [],
-        userFunction: self.getNativeWidgets(request:context:)
+        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeViewsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_GetNativeViewsResponse>(),
+        interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? [],
+        userFunction: self.getNativeViews(request:context:)
       )
 
     case "tap":
@@ -2341,10 +2341,10 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
   ) async throws -> Patrol_Empty
 
   /// general UI interaction
-  @Sendable func getNativeWidgets(
-    request: Patrol_GetNativeWidgetsRequest,
+  @Sendable func getNativeViews(
+    request: Patrol_GetNativeViewsRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_GetNativeWidgetsResponse
+  ) async throws -> Patrol_GetNativeViewsResponse
 
   @Sendable func tap(
     request: Patrol_TapRequest,
@@ -2533,13 +2533,13 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.openQuickSettings(request:context:)
       )
 
-    case "getNativeWidgets":
+    case "getNativeViews":
       return GRPCAsyncServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeWidgetsRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_GetNativeWidgetsResponse>(),
-        interceptors: self.interceptors?.makegetNativeWidgetsInterceptors() ?? [],
-        wrapping: self.getNativeWidgets(request:context:)
+        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeViewsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_GetNativeViewsResponse>(),
+        interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? [],
+        wrapping: self.getNativeViews(request:context:)
       )
 
     case "tap":
@@ -2774,9 +2774,9 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when handling 'getNativeWidgets'.
+  /// - Returns: Interceptors to use when handling 'getNativeViews'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makegetNativeWidgetsInterceptors() -> [ServerInterceptor<Patrol_GetNativeWidgetsRequest, Patrol_GetNativeWidgetsResponse>]
+  func makegetNativeViewsInterceptors() -> [ServerInterceptor<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>]
 
   /// - Returns: Interceptors to use when handling 'tap'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -2878,7 +2878,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.doublePressRecentApps,
       Patrol_NativeAutomatorServerMetadata.Methods.openApp,
       Patrol_NativeAutomatorServerMetadata.Methods.openQuickSettings,
-      Patrol_NativeAutomatorServerMetadata.Methods.getNativeWidgets,
+      Patrol_NativeAutomatorServerMetadata.Methods.getNativeViews,
       Patrol_NativeAutomatorServerMetadata.Methods.tap,
       Patrol_NativeAutomatorServerMetadata.Methods.doubleTap,
       Patrol_NativeAutomatorServerMetadata.Methods.enterText,
@@ -2941,9 +2941,9 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let getNativeWidgets = GRPCMethodDescriptor(
-      name: "getNativeWidgets",
-      path: "/patrol.NativeAutomator/getNativeWidgets",
+    internal static let getNativeViews = GRPCMethodDescriptor(
+      name: "getNativeViews",
+      path: "/patrol.NativeAutomator/getNativeViews",
       type: GRPCCallType.unary
     )
 

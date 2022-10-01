@@ -12,7 +12,7 @@ void main() {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $.native.pressHome();
-      await $.native.getNativeWidgets(Selector(textContains: 'a'));
+      await $.native.getNativeViews(Selector(textContains: 'a'));
     },
   );
 }

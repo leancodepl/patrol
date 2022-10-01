@@ -10,7 +10,7 @@ import pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyReques
 import pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.FINE
 import pl.leancode.automatorserver.contracts.NativeAutomatorGrpcKt
 import pl.leancode.automatorserver.contracts.empty
-import pl.leancode.automatorserver.contracts.getNativeWidgetsResponse
+import pl.leancode.automatorserver.contracts.getNativeViewsResponse
 import pl.leancode.automatorserver.contracts.getNotificationsResponse
 
 typealias Empty = Contracts.Empty
@@ -103,9 +103,9 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
-    override suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest): Contracts.GetNativeWidgetsResponse {
-        val widgets = automation.getNativeWidgets(request.selector.toBySelector())
-        return getNativeWidgetsResponse { nativeWidgets.addAll(widgets) }
+    override suspend fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse {
+        val views = automation.getNativeViews(request.selector.toBySelector())
+        return getNativeViewsResponse { nativeViews.addAll(views) }
     }
 
     override suspend fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse {

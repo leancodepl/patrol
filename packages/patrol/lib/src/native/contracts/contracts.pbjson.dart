@@ -71,9 +71,9 @@ const DarkModeRequest$json = const {
 /// Descriptor for `DarkModeRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List darkModeRequestDescriptor = $convert
     .base64Decode('Cg9EYXJrTW9kZVJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElk');
-@$core.Deprecated('Use getNativeWidgetsRequestDescriptor instead')
-const GetNativeWidgetsRequest$json = const {
-  '1': 'GetNativeWidgetsRequest',
+@$core.Deprecated('Use getNativeViewsRequestDescriptor instead')
+const GetNativeViewsRequest$json = const {
+  '1': 'GetNativeViewsRequest',
   '2': const [
     const {
       '1': 'selector',
@@ -86,29 +86,28 @@ const GetNativeWidgetsRequest$json = const {
   ],
 };
 
-/// Descriptor for `GetNativeWidgetsRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getNativeWidgetsRequestDescriptor =
-    $convert.base64Decode(
-        'ChdHZXROYXRpdmVXaWRnZXRzUmVxdWVzdBIsCghzZWxlY3RvchgBIAEoCzIQLnBhdHJvbC5TZWxlY3RvclIIc2VsZWN0b3I=');
-@$core.Deprecated('Use getNativeWidgetsResponseDescriptor instead')
-const GetNativeWidgetsResponse$json = const {
-  '1': 'GetNativeWidgetsResponse',
+/// Descriptor for `GetNativeViewsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getNativeViewsRequestDescriptor = $convert.base64Decode(
+    'ChVHZXROYXRpdmVWaWV3c1JlcXVlc3QSLAoIc2VsZWN0b3IYASABKAsyEC5wYXRyb2wuU2VsZWN0b3JSCHNlbGVjdG9y');
+@$core.Deprecated('Use getNativeViewsResponseDescriptor instead')
+const GetNativeViewsResponse$json = const {
+  '1': 'GetNativeViewsResponse',
   '2': const [
     const {
-      '1': 'nativeWidgets',
+      '1': 'nativeViews',
       '3': 1,
       '4': 3,
       '5': 11,
-      '6': '.patrol.NativeWidget',
-      '10': 'nativeWidgets'
+      '6': '.patrol.NativeView',
+      '10': 'nativeViews'
     },
   ],
 };
 
-/// Descriptor for `GetNativeWidgetsResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getNativeWidgetsResponseDescriptor =
+/// Descriptor for `GetNativeViewsResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getNativeViewsResponseDescriptor =
     $convert.base64Decode(
-        'ChhHZXROYXRpdmVXaWRnZXRzUmVzcG9uc2USOgoNbmF0aXZlV2lkZ2V0cxgBIAMoCzIULnBhdHJvbC5OYXRpdmVXaWRnZXRSDW5hdGl2ZVdpZGdldHM=');
+        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAEgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
 @$core.Deprecated('Use getNotificationsRequestDescriptor instead')
 const GetNotificationsRequest$json = const {
   '1': 'GetNotificationsRequest',
@@ -386,9 +385,9 @@ const Selector$json = const {
 /// Descriptor for `Selector`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List selectorDescriptor = $convert.base64Decode(
     'CghTZWxlY3RvchIXCgR0ZXh0GAEgASgJSABSBHRleHSIAQESKwoOdGV4dFN0YXJ0c1dpdGgYAiABKAlIAVIOdGV4dFN0YXJ0c1dpdGiIAQESJwoMdGV4dENvbnRhaW5zGAMgASgJSAJSDHRleHRDb250YWluc4gBARIhCgljbGFzc05hbWUYBCABKAlIA1IJY2xhc3NOYW1liAEBEjMKEmNvbnRlbnREZXNjcmlwdGlvbhgFIAEoCUgEUhJjb250ZW50RGVzY3JpcHRpb26IAQESRwocY29udGVudERlc2NyaXB0aW9uU3RhcnRzV2l0aBgGIAEoCUgFUhxjb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoiAEBEkMKGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5zGAcgASgJSAZSGmNvbnRlbnREZXNjcmlwdGlvbkNvbnRhaW5ziAEBEiMKCnJlc291cmNlSWQYCCABKAlIB1IKcmVzb3VyY2VJZIgBARIfCghpbnN0YW5jZRgJIAEoDUgIUghpbnN0YW5jZYgBARIdCgdlbmFibGVkGAogASgISAlSB2VuYWJsZWSIAQESHQoHZm9jdXNlZBgLIAEoCEgKUgdmb2N1c2VkiAEBEhUKA3BrZxgMIAEoCUgLUgNwa2eIAQFCBwoFX3RleHRCEQoPX3RleHRTdGFydHNXaXRoQg8KDV90ZXh0Q29udGFpbnNCDAoKX2NsYXNzTmFtZUIVChNfY29udGVudERlc2NyaXB0aW9uQh8KHV9jb250ZW50RGVzY3JpcHRpb25TdGFydHNXaXRoQh0KG19jb250ZW50RGVzY3JpcHRpb25Db250YWluc0INCgtfcmVzb3VyY2VJZEILCglfaW5zdGFuY2VCCgoIX2VuYWJsZWRCCgoIX2ZvY3VzZWRCBgoEX3BrZw==');
-@$core.Deprecated('Use nativeWidgetDescriptor instead')
-const NativeWidget$json = const {
-  '1': 'NativeWidget',
+@$core.Deprecated('Use nativeViewDescriptor instead')
+const NativeView$json = const {
+  '1': 'NativeView',
   '2': const [
     const {'1': 'className', '3': 1, '4': 1, '5': 9, '10': 'className'},
     const {'1': 'text', '3': 2, '4': 1, '5': 9, '10': 'text'},
@@ -415,15 +414,15 @@ const NativeWidget$json = const {
       '3': 9,
       '4': 3,
       '5': 11,
-      '6': '.patrol.NativeWidget',
+      '6': '.patrol.NativeView',
       '10': 'children'
     },
   ],
 };
 
-/// Descriptor for `NativeWidget`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List nativeWidgetDescriptor = $convert.base64Decode(
-    'CgxOYXRpdmVXaWRnZXQSHAoJY2xhc3NOYW1lGAEgASgJUgljbGFzc05hbWUSEgoEdGV4dBgCIAEoCVIEdGV4dBIuChJjb250ZW50RGVzY3JpcHRpb24YAyABKAlSEmNvbnRlbnREZXNjcmlwdGlvbhIYCgdmb2N1c2VkGAQgASgIUgdmb2N1c2VkEhgKB2VuYWJsZWQYBSABKAhSB2VuYWJsZWQSHgoKY2hpbGRDb3VudBgGIAEoBVIKY2hpbGRDb3VudBIiCgxyZXNvdXJjZU5hbWUYByABKAlSDHJlc291cmNlTmFtZRIuChJhcHBsaWNhdGlvblBhY2thZ2UYCCABKAlSEmFwcGxpY2F0aW9uUGFja2FnZRIwCghjaGlsZHJlbhgJIAMoCzIULnBhdHJvbC5OYXRpdmVXaWRnZXRSCGNoaWxkcmVu');
+/// Descriptor for `NativeView`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List nativeViewDescriptor = $convert.base64Decode(
+    'CgpOYXRpdmVWaWV3EhwKCWNsYXNzTmFtZRgBIAEoCVIJY2xhc3NOYW1lEhIKBHRleHQYAiABKAlSBHRleHQSLgoSY29udGVudERlc2NyaXB0aW9uGAMgASgJUhJjb250ZW50RGVzY3JpcHRpb24SGAoHZm9jdXNlZBgEIAEoCFIHZm9jdXNlZBIYCgdlbmFibGVkGAUgASgIUgdlbmFibGVkEh4KCmNoaWxkQ291bnQYBiABKAVSCmNoaWxkQ291bnQSIgoMcmVzb3VyY2VOYW1lGAcgASgJUgxyZXNvdXJjZU5hbWUSLgoSYXBwbGljYXRpb25QYWNrYWdlGAggASgJUhJhcHBsaWNhdGlvblBhY2thZ2USLgoIY2hpbGRyZW4YCSADKAsyEi5wYXRyb2wuTmF0aXZlVmlld1IIY2hpbGRyZW4=');
 @$core.Deprecated('Use notificationDescriptor instead')
 const Notification$json = const {
   '1': 'Notification',

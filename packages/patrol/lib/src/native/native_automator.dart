@@ -405,15 +405,13 @@ class NativeAutomator {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
-  Future<List<NativeWidget>> getNativeWidgets(Selector selector) async {
+  Future<List<NativeView>> getNativeViews(Selector selector) async {
     final response = await _wrapRequest(
-      'getNativeWidgets',
-      () => _client.getNativeWidgets(
-        GetNativeWidgetsRequest(selector: selector),
-      ),
+      'getNativeViews',
+      () => _client.getNativeViews(GetNativeViewsRequest(selector: selector)),
     );
 
-    return response.nativeWidgets;
+    return response.nativeViews;
   }
 
   /// Grants the permission that the currently visible native permission request

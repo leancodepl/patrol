@@ -60,10 +60,10 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenQuickSettingsMethod()
 
-  public val getNativeWidgetsMethod:
-      MethodDescriptor<Contracts.GetNativeWidgetsRequest, Contracts.GetNativeWidgetsResponse>
+  public val getNativeViewsMethod:
+      MethodDescriptor<Contracts.GetNativeViewsRequest, Contracts.GetNativeViewsResponse>
     @JvmStatic
-    get() = NativeAutomatorGrpc.getGetNativeWidgetsMethod()
+    get() = NativeAutomatorGrpc.getGetNativeViewsMethod()
 
   public val tapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
     @JvmStatic
@@ -306,10 +306,10 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest,
-        headers: Metadata = Metadata()): Contracts.GetNativeWidgetsResponse = unaryRpc(
+    public suspend fun getNativeViews(request: Contracts.GetNativeViewsRequest, headers: Metadata =
+        Metadata()): Contracts.GetNativeViewsResponse = unaryRpc(
       channel,
-      NativeAutomatorGrpc.getGetNativeWidgetsMethod(),
+      NativeAutomatorGrpc.getGetNativeViewsMethod(),
       request,
       callOptions,
       headers
@@ -870,7 +870,7 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openQuickSettings is unimplemented"))
 
     /**
-     * Returns the response to an RPC for patrol.NativeAutomator.getNativeWidgets.
+     * Returns the response to an RPC for patrol.NativeAutomator.getNativeViews.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
      * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
@@ -880,9 +880,9 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun getNativeWidgets(request: Contracts.GetNativeWidgetsRequest):
-        Contracts.GetNativeWidgetsResponse = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNativeWidgets is unimplemented"))
+    public open suspend fun getNativeViews(request: Contracts.GetNativeViewsRequest):
+        Contracts.GetNativeViewsResponse = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.getNativeViews is unimplemented"))
 
     /**
      * Returns the response to an RPC for patrol.NativeAutomator.tap.
@@ -1233,8 +1233,8 @@ public object NativeAutomatorGrpcKt {
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
-      descriptor = NativeAutomatorGrpc.getGetNativeWidgetsMethod(),
-      implementation = ::getNativeWidgets
+      descriptor = NativeAutomatorGrpc.getGetNativeViewsMethod(),
+      implementation = ::getNativeViews
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,

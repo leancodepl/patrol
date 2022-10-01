@@ -341,11 +341,11 @@ class DarkModeRequest extends $pb.GeneratedMessage {
   void clearAppId() => clearField(1);
 }
 
-class GetNativeWidgetsRequest extends $pb.GeneratedMessage {
+class GetNativeViewsRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
-          : 'GetNativeWidgetsRequest',
+          : 'GetNativeViewsRequest',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
@@ -359,8 +359,8 @@ class GetNativeWidgetsRequest extends $pb.GeneratedMessage {
         subBuilder: Selector.create)
     ..hasRequiredFields = false;
 
-  GetNativeWidgetsRequest._() : super();
-  factory GetNativeWidgetsRequest({
+  GetNativeViewsRequest._() : super();
+  factory GetNativeViewsRequest({
     Selector? selector,
   }) {
     final _result = create();
@@ -369,34 +369,34 @@ class GetNativeWidgetsRequest extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory GetNativeWidgetsRequest.fromBuffer($core.List<$core.int> i,
+  factory GetNativeViewsRequest.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
-  factory GetNativeWidgetsRequest.fromJson($core.String i,
+  factory GetNativeViewsRequest.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
-  GetNativeWidgetsRequest clone() =>
-      GetNativeWidgetsRequest()..mergeFromMessage(this);
+  GetNativeViewsRequest clone() =>
+      GetNativeViewsRequest()..mergeFromMessage(this);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  GetNativeWidgetsRequest copyWith(
-          void Function(GetNativeWidgetsRequest) updates) =>
-      super.copyWith((message) => updates(message as GetNativeWidgetsRequest))
-          as GetNativeWidgetsRequest; // ignore: deprecated_member_use
+  GetNativeViewsRequest copyWith(
+          void Function(GetNativeViewsRequest) updates) =>
+      super.copyWith((message) => updates(message as GetNativeViewsRequest))
+          as GetNativeViewsRequest; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static GetNativeWidgetsRequest create() => GetNativeWidgetsRequest._();
-  GetNativeWidgetsRequest createEmptyInstance() => create();
-  static $pb.PbList<GetNativeWidgetsRequest> createRepeated() =>
-      $pb.PbList<GetNativeWidgetsRequest>();
+  static GetNativeViewsRequest create() => GetNativeViewsRequest._();
+  GetNativeViewsRequest createEmptyInstance() => create();
+  static $pb.PbList<GetNativeViewsRequest> createRepeated() =>
+      $pb.PbList<GetNativeViewsRequest>();
   @$core.pragma('dart2js:noInline')
-  static GetNativeWidgetsRequest getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<GetNativeWidgetsRequest>(create);
-  static GetNativeWidgetsRequest? _defaultInstance;
+  static GetNativeViewsRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetNativeViewsRequest>(create);
+  static GetNativeViewsRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
   Selector get selector => $_getN(0);
@@ -413,67 +413,67 @@ class GetNativeWidgetsRequest extends $pb.GeneratedMessage {
   Selector ensureSelector() => $_ensure(0);
 }
 
-class GetNativeWidgetsResponse extends $pb.GeneratedMessage {
+class GetNativeViewsResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
-          : 'GetNativeWidgetsResponse',
+          : 'GetNativeViewsResponse',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
               : 'patrol'),
       createEmptyInstance: create)
-    ..pc<NativeWidget>(
+    ..pc<NativeView>(
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'nativeWidgets',
+            : 'nativeViews',
         $pb.PbFieldType.PM,
-        protoName: 'nativeWidgets',
-        subBuilder: NativeWidget.create)
+        protoName: 'nativeViews',
+        subBuilder: NativeView.create)
     ..hasRequiredFields = false;
 
-  GetNativeWidgetsResponse._() : super();
-  factory GetNativeWidgetsResponse({
-    $core.Iterable<NativeWidget>? nativeWidgets,
+  GetNativeViewsResponse._() : super();
+  factory GetNativeViewsResponse({
+    $core.Iterable<NativeView>? nativeViews,
   }) {
     final _result = create();
-    if (nativeWidgets != null) {
-      _result.nativeWidgets.addAll(nativeWidgets);
+    if (nativeViews != null) {
+      _result.nativeViews.addAll(nativeViews);
     }
     return _result;
   }
-  factory GetNativeWidgetsResponse.fromBuffer($core.List<$core.int> i,
+  factory GetNativeViewsResponse.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
-  factory GetNativeWidgetsResponse.fromJson($core.String i,
+  factory GetNativeViewsResponse.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
-  GetNativeWidgetsResponse clone() =>
-      GetNativeWidgetsResponse()..mergeFromMessage(this);
+  GetNativeViewsResponse clone() =>
+      GetNativeViewsResponse()..mergeFromMessage(this);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  GetNativeWidgetsResponse copyWith(
-          void Function(GetNativeWidgetsResponse) updates) =>
-      super.copyWith((message) => updates(message as GetNativeWidgetsResponse))
-          as GetNativeWidgetsResponse; // ignore: deprecated_member_use
+  GetNativeViewsResponse copyWith(
+          void Function(GetNativeViewsResponse) updates) =>
+      super.copyWith((message) => updates(message as GetNativeViewsResponse))
+          as GetNativeViewsResponse; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static GetNativeWidgetsResponse create() => GetNativeWidgetsResponse._();
-  GetNativeWidgetsResponse createEmptyInstance() => create();
-  static $pb.PbList<GetNativeWidgetsResponse> createRepeated() =>
-      $pb.PbList<GetNativeWidgetsResponse>();
+  static GetNativeViewsResponse create() => GetNativeViewsResponse._();
+  GetNativeViewsResponse createEmptyInstance() => create();
+  static $pb.PbList<GetNativeViewsResponse> createRepeated() =>
+      $pb.PbList<GetNativeViewsResponse>();
   @$core.pragma('dart2js:noInline')
-  static GetNativeWidgetsResponse getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<GetNativeWidgetsResponse>(create);
-  static GetNativeWidgetsResponse? _defaultInstance;
+  static GetNativeViewsResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetNativeViewsResponse>(create);
+  static GetNativeViewsResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<NativeWidget> get nativeWidgets => $_getList(0);
+  $core.List<NativeView> get nativeViews => $_getList(0);
 }
 
 class GetNotificationsRequest extends $pb.GeneratedMessage {
@@ -1434,11 +1434,11 @@ class Selector extends $pb.GeneratedMessage {
   void clearPkg() => clearField(12);
 }
 
-class NativeWidget extends $pb.GeneratedMessage {
+class NativeView extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
-          : 'NativeWidget',
+          : 'NativeView',
       package: const $pb.PackageName(
           const $core.bool.fromEnvironment('protobuf.omit_message_names')
               ? ''
@@ -1490,17 +1490,17 @@ class NativeWidget extends $pb.GeneratedMessage {
             ? ''
             : 'applicationPackage',
         protoName: 'applicationPackage')
-    ..pc<NativeWidget>(
+    ..pc<NativeView>(
         9,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'children',
         $pb.PbFieldType.PM,
-        subBuilder: NativeWidget.create)
+        subBuilder: NativeView.create)
     ..hasRequiredFields = false;
 
-  NativeWidget._() : super();
-  factory NativeWidget({
+  NativeView._() : super();
+  factory NativeView({
     $core.String? className,
     $core.String? text,
     $core.String? contentDescription,
@@ -1509,7 +1509,7 @@ class NativeWidget extends $pb.GeneratedMessage {
     $core.int? childCount,
     $core.String? resourceName,
     $core.String? applicationPackage,
-    $core.Iterable<NativeWidget>? children,
+    $core.Iterable<NativeView>? children,
   }) {
     final _result = create();
     if (className != null) {
@@ -1541,32 +1541,31 @@ class NativeWidget extends $pb.GeneratedMessage {
     }
     return _result;
   }
-  factory NativeWidget.fromBuffer($core.List<$core.int> i,
+  factory NativeView.fromBuffer($core.List<$core.int> i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(i, r);
-  factory NativeWidget.fromJson($core.String i,
+  factory NativeView.fromJson($core.String i,
           [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(i, r);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
       'Will be removed in next major version')
-  NativeWidget clone() => NativeWidget()..mergeFromMessage(this);
+  NativeView clone() => NativeView()..mergeFromMessage(this);
   @$core.Deprecated('Using this can add significant overhead to your binary. '
       'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
       'Will be removed in next major version')
-  NativeWidget copyWith(void Function(NativeWidget) updates) =>
-      super.copyWith((message) => updates(message as NativeWidget))
-          as NativeWidget; // ignore: deprecated_member_use
+  NativeView copyWith(void Function(NativeView) updates) =>
+      super.copyWith((message) => updates(message as NativeView))
+          as NativeView; // ignore: deprecated_member_use
   $pb.BuilderInfo get info_ => _i;
   @$core.pragma('dart2js:noInline')
-  static NativeWidget create() => NativeWidget._();
-  NativeWidget createEmptyInstance() => create();
-  static $pb.PbList<NativeWidget> createRepeated() =>
-      $pb.PbList<NativeWidget>();
+  static NativeView create() => NativeView._();
+  NativeView createEmptyInstance() => create();
+  static $pb.PbList<NativeView> createRepeated() => $pb.PbList<NativeView>();
   @$core.pragma('dart2js:noInline')
-  static NativeWidget getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<NativeWidget>(create);
-  static NativeWidget? _defaultInstance;
+  static NativeView getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<NativeView>(create);
+  static NativeView? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get className => $_getSZ(0);
@@ -1665,7 +1664,7 @@ class NativeWidget extends $pb.GeneratedMessage {
   void clearApplicationPackage() => clearField(8);
 
   @$pb.TagNumber(9)
-  $core.List<NativeWidget> get children => $_getList(8);
+  $core.List<NativeView> get children => $_getList(8);
 }
 
 class Notification extends $pb.GeneratedMessage {

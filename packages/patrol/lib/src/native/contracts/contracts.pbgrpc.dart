@@ -39,12 +39,12 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/openQuickSettings',
           ($0.OpenQuickSettingsRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$getNativeWidgets = $grpc.ClientMethod<
-          $0.GetNativeWidgetsRequest, $0.GetNativeWidgetsResponse>(
-      '/patrol.NativeAutomator/getNativeWidgets',
-      ($0.GetNativeWidgetsRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) =>
-          $0.GetNativeWidgetsResponse.fromBuffer(value));
+  static final _$getNativeViews =
+      $grpc.ClientMethod<$0.GetNativeViewsRequest, $0.GetNativeViewsResponse>(
+          '/patrol.NativeAutomator/getNativeViews',
+          ($0.GetNativeViewsRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.GetNativeViewsResponse.fromBuffer(value));
   static final _$tap = $grpc.ClientMethod<$0.TapRequest, $0.Empty>(
       '/patrol.NativeAutomator/tap',
       ($0.TapRequest value) => value.writeToBuffer(),
@@ -178,10 +178,10 @@ class NativeAutomatorClient extends $grpc.Client {
     return $createUnaryCall(_$openQuickSettings, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.GetNativeWidgetsResponse> getNativeWidgets(
-      $0.GetNativeWidgetsRequest request,
+  $grpc.ResponseFuture<$0.GetNativeViewsResponse> getNativeViews(
+      $0.GetNativeViewsRequest request,
       {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$getNativeWidgets, request, options: options);
+    return $createUnaryCall(_$getNativeViews, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> tap($0.TapRequest request,
@@ -348,15 +348,15 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.OpenQuickSettingsRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.GetNativeWidgetsRequest,
-            $0.GetNativeWidgetsResponse>(
-        'getNativeWidgets',
-        getNativeWidgets_Pre,
+    $addMethod($grpc.ServiceMethod<$0.GetNativeViewsRequest,
+            $0.GetNativeViewsResponse>(
+        'getNativeViews',
+        getNativeViews_Pre,
         false,
         false,
         ($core.List<$core.int> value) =>
-            $0.GetNativeWidgetsRequest.fromBuffer(value),
-        ($0.GetNativeWidgetsResponse value) => value.writeToBuffer()));
+            $0.GetNativeViewsRequest.fromBuffer(value),
+        ($0.GetNativeViewsResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.TapRequest, $0.Empty>(
         'tap',
         tap_Pre,
@@ -548,10 +548,10 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return openQuickSettings(call, await request);
   }
 
-  $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets_Pre(
+  $async.Future<$0.GetNativeViewsResponse> getNativeViews_Pre(
       $grpc.ServiceCall call,
-      $async.Future<$0.GetNativeWidgetsRequest> request) async {
-    return getNativeWidgets(call, await request);
+      $async.Future<$0.GetNativeViewsRequest> request) async {
+    return getNativeViews(call, await request);
   }
 
   $async.Future<$0.Empty> tap_Pre(
@@ -675,8 +675,8 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.OpenAppRequest request);
   $async.Future<$0.Empty> openQuickSettings(
       $grpc.ServiceCall call, $0.OpenQuickSettingsRequest request);
-  $async.Future<$0.GetNativeWidgetsResponse> getNativeWidgets(
-      $grpc.ServiceCall call, $0.GetNativeWidgetsRequest request);
+  $async.Future<$0.GetNativeViewsResponse> getNativeViews(
+      $grpc.ServiceCall call, $0.GetNativeViewsRequest request);
   $async.Future<$0.Empty> tap($grpc.ServiceCall call, $0.TapRequest request);
   $async.Future<$0.Empty> doubleTap(
       $grpc.ServiceCall call, $0.TapRequest request);
