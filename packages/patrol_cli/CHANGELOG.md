@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.11
 
 - Improve stability (#397)
 - AutomatorServer:
