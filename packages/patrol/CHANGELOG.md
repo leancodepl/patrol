@@ -1,3 +1,7 @@
+## 0.6.10
+
+- Make `$()` accept a `Widget` as an argument (#402)
+
 ## 0.6.9
 
 - Remove the unused `appId` argument from most methods (#399)
