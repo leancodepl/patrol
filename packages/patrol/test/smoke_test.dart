@@ -43,6 +43,12 @@ void main() {
       expect($(Icons.front_hand), findsOneWidget);
     });
 
+    patrolTest('widget', ($) async {
+      await smallPump($);
+      final widget = $('Hello').evaluate().first.widget;
+      expect($(widget), findsOneWidget);
+    });
+
     patrolTest('text using PatrolFinder', ($) async {
       await smallPump($);
       expect($('Hello'), findsOneWidget);
