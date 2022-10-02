@@ -273,7 +273,7 @@ class NativeAutomator {
   }
 
   /// Enables airplane mode.
-  Future<void> enableAirplaneMode({String? appId}) async {
+  Future<void> enableAirplaneMode() async {
     await _wrapRequest(
       'enableAirplaneMode',
       () => _client.enableAirplaneMode(Empty()),
@@ -281,7 +281,7 @@ class NativeAutomator {
   }
 
   /// Enables airplane mode.
-  Future<void> disableAirplaneMode({String? appId}) async {
+  Future<void> disableAirplaneMode() async {
     await _wrapRequest(
       'disableAirplaneMode',
       () => _client.disableAirplaneMode(Empty()),
@@ -289,7 +289,7 @@ class NativeAutomator {
   }
 
   /// Enables cellular (aka mobile data connection).
-  Future<void> enableCellular({String? appId}) async {
+  Future<void> enableCellular() async {
     await _wrapRequest(
       'enableCellular',
       () => _client.enableCellular(Empty()),
@@ -297,7 +297,7 @@ class NativeAutomator {
   }
 
   /// Disables cellular (aka mobile data connection).
-  Future<void> disableCellular({String? appId}) {
+  Future<void> disableCellular() {
     return _wrapRequest(
       'disableCellular',
       () => _client.disableCellular(Empty()),
@@ -305,7 +305,7 @@ class NativeAutomator {
   }
 
   /// Enables Wi-Fi.
-  Future<void> enableWifi({String? appId}) async {
+  Future<void> enableWifi() async {
     await _wrapRequest(
       'enableWifi',
       () => _client.enableWiFi(Empty()),
@@ -313,7 +313,7 @@ class NativeAutomator {
   }
 
   /// Disables Wi-Fi.
-  Future<void> disableWifi({String? appId}) async {
+  Future<void> disableWifi() async {
     await _wrapRequest(
       'disableWifi',
       () => _client.disableWiFi(Empty()),
@@ -321,7 +321,7 @@ class NativeAutomator {
   }
 
   /// Enables bluetooth.
-  Future<void> enableBluetooth({String? appId}) async {
+  Future<void> enableBluetooth() async {
     await _wrapRequest(
       'enableBluetooth',
       () => _client.enableBluetooth(Empty()),
@@ -329,16 +329,16 @@ class NativeAutomator {
   }
 
   /// Disables bluetooth.
-  Future<void> disableBluetooth({String? appId}) async {
+  Future<void> disableBluetooth() async {
     await _wrapRequest(
       'disableBluetooth',
       () => _client.disableBluetooth(Empty()),
     );
   }
 
-  /// Taps on the native widget specified by [selector].
+  /// Taps on the native view specified by [selector].
   ///
-  /// If the native widget is not found, an exception is thrown.
+  /// If the native view is not found, an exception is thrown.
   Future<void> tap(Selector selector, {String? appId}) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
@@ -350,9 +350,9 @@ class NativeAutomator {
     });
   }
 
-  /// Double taps on the native widget specified by [selector].
+  /// Double taps on the native view specified by [selector].
   ///
-  /// If the native widget is not found, an exception is thrown.
+  /// If the native view is not found, an exception is thrown.
   Future<void> doubleTap(Selector selector, {String? appId}) async {
     await _wrapRequest(
       'doubleTap',
@@ -365,9 +365,9 @@ class NativeAutomator {
     );
   }
 
-  /// Enters text to the native widget specified by [selector].
+  /// Enters text to the native view specified by [selector].
   ///
-  /// The native widget specified by selector must be an EditText on Android.
+  /// The native view specified by selector must be an EditText on Android.
   Future<void> enterText(
     Selector selector, {
     required String text,
