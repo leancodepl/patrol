@@ -1,3 +1,8 @@
+## 0.6.9
+
+- Remove the unused `appId` argument from most methods (#399)
+- Rename `getNativeWidgets()` to `getNativeViews()` (#399)
+
 ## 0.6.8
 
 - Fix handling permission prompts now working in some edge cases (#383)
