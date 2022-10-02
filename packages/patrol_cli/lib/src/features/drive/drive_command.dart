@@ -1,7 +1,7 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -12,7 +12,6 @@ import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
-import 'package:patrol_cli/src/top_level_flags.dart';
 
 part 'drive_command.freezed.dart';
 
@@ -34,17 +33,17 @@ class DriveCommandConfig with _$DriveCommandConfig {
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
     required DisposeScope parentDisposeScope,
-    required TopLevelFlags topLevelFlags,
     required ArtifactsRepository artifactsRepository,
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
+    required Logger logger,
   })  : _disposeScope = DisposeScope(),
-        _topLevelFlags = topLevelFlags,
         _artifactsRepository = artifactsRepository,
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
-        _testRunner = testRunner {
+        _testRunner = testRunner,
+        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
@@ -106,11 +105,11 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
-  final TopLevelFlags _topLevelFlags;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestRunner _testRunner;
+  final Logger _logger;
 
   @override
   String get name => 'drive';
@@ -150,7 +149,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     for (final dartDefine in dartDefines.entries) {
-      log.info('Passed --dart-define: ${dartDefine.key}=${dartDefine.value}');
+      _logger
+          .info('Passed --dart-define: ${dartDefine.key}=${dartDefine.value}');
     }
 
     final dynamic packageName = argResults?['package-name'];
@@ -188,31 +188,39 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver(_disposeScope, _artifactsRepository).run(
+          await AndroidDriver(
+            parentDisposeScope: _disposeScope,
+            artifactsRepository: _artifactsRepository,
+            logger: _logger,
+          ).run(
             port: config.port,
             device: device,
             flavor: config.flavor,
-            verbose: _topLevelFlags.verbose,
-            debug: _topLevelFlags.debug,
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver(_disposeScope, _artifactsRepository).run(
+          await IOSDriver(
+            parentDisposeScope: _disposeScope,
+            artifactsRepository: _artifactsRepository,
+            logger: _logger,
+          ).run(
             port: config.port,
             device: device,
             flavor: config.flavor,
-            verbose: _topLevelFlags.verbose,
           );
           break;
       }
     }
 
-    final flutterDriver = FlutterDriver(_disposeScope);
+    final flutterDriver = FlutterDriver(
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
 
     for (final target in config.targets) {
       _testRunner.addTest((device) async {
         if (_disposeScope.disposed) {
-          log.fine('Skipping running $target...');
+          _logger.fine('Skipping running $target...');
           return;
         }
 
@@ -223,14 +231,13 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           port: config.port,
           device: device,
           flavor: config.flavor,
-          verbose: _topLevelFlags.verbose,
           dartDefines: config.dartDefines,
         );
 
         try {
           await flutterDriver.run(flutterDriverOptions);
         } on FlutterDriverFailedException catch (err) {
-          log
+          _logger
             ..severe(err)
             ..severe(
               "See the logs above to learn what happened. If the logs above aren't "

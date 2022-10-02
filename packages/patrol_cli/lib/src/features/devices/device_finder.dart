@@ -1,13 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' show Process;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 class DeviceFinder {
-  DeviceFinder();
+  DeviceFinder({required Logger logger}) : _logger = logger;
+
+  final Logger _logger;
 
   Future<List<Device>> getAttachedDevices() async {
     final output = await _getCommandOutput();
@@ -72,7 +75,9 @@ class DeviceFinder {
 
     if (wantDevices.isEmpty) {
       final firstDeviceName = attachedDevices.first.resolvedName;
-      log.info('No device specified, using the first one ($firstDeviceName)');
+      _logger.info(
+        'No device specified, using the first one ($firstDeviceName)',
+      );
       return attachedDevices;
     }
 

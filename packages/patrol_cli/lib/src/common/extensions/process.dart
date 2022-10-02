@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Process, ProcessResult, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 
@@ -7,12 +7,12 @@ extension ProcessResultX on ProcessResult {
   /// A shortcut to avoid typing `as String` every time.
   ///
   /// If [stdout] is not a String, this will crash.
-  String get stdOut => this.stderr as String;
+  String get stdOut => stdout as String;
 
   /// A shortcut to avoid typing `as String` every time.
   ///
   /// If [stderr] is not a String, this will crash.
-  String get stdErr => this.stderr as String;
+  String get stdErr => stderr as String;
 }
 
 extension ProcessListeners on Process {
@@ -22,7 +22,7 @@ extension ProcessListeners on Process {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    return this.stdout.listen(
+    return stdout.listen(
       (msg) {
         systemEncoding.decode(msg).split('\n').map((str) => str.trim()).toList()
           ..removeWhere((element) => element.isEmpty)
@@ -40,7 +40,7 @@ extension ProcessListeners on Process {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    return this.stderr.listen(
+    return stderr.listen(
       (msg) {
         systemEncoding
             .decode(msg)

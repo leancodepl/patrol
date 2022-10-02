@@ -1,15 +1,17 @@
-import 'dart:io';
-
 import 'package:args/command_runner.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 
 class CleanCommand extends Command<int> {
   CleanCommand({
     required ArtifactsRepository artifactsRepository,
-  }) : _artifactsRepository = artifactsRepository;
+    required Logger logger,
+  })  : _artifactsRepository = artifactsRepository,
+        _logger = logger;
 
   final ArtifactsRepository _artifactsRepository;
+  final Logger _logger;
 
   @override
   String get name => 'clean';
@@ -21,10 +23,10 @@ class CleanCommand extends Command<int> {
   Future<int> run() async {
     final artifactPath = _artifactsRepository.artifactPath;
 
-    final progress = log.progress('Deleting $artifactPath');
+    final progress = _logger.progress('Deleting $artifactPath');
 
     try {
-      final dir = Directory(artifactPath);
+      final dir = _artifactsRepository.artifactPathDir;
       if (!dir.existsSync()) {
         progress.complete("Nothing to clean, $artifactPath doesn't exist");
         return 1;

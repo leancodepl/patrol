@@ -3,30 +3,33 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
 import 'package:patrol_cli/src/common/constants.dart' show version;
-import 'package:patrol_cli/src/top_level_flags.dart';
 import 'package:platform/platform.dart';
 
 class ArtifactsRepository {
   ArtifactsRepository({
     required FileSystem fs,
-    required Platform platform,
-    required TopLevelFlags topLevelFlags,
+    required this.platform,
+    http.Client? httpClient,
+    ZipDecoder? zipDecoder,
   })  : _fs = fs,
-        _platform = platform,
-        _topLevelFlags = topLevelFlags {
+        _httpClient = httpClient ?? http.Client(),
+        _zipDecoder = zipDecoder ?? ZipDecoder(),
+        debug = false {
     _paths = _Paths(artifactPath);
   }
 
   static const artifactPathEnv = 'PATROL_CACHE';
 
   final FileSystem _fs;
-  final Platform _platform;
-  final TopLevelFlags _topLevelFlags;
+  Platform platform;
+  final http.Client _httpClient;
+  final ZipDecoder _zipDecoder;
+  bool debug;
 
   late final _Paths _paths;
 
   String get artifactPath {
-    final env = _platform.environment;
+    final env = platform.environment;
     String p;
     if (env.containsKey(env)) {
       p = env[env]!;
@@ -37,15 +40,17 @@ class ArtifactsRepository {
     return p;
   }
 
+  Directory get artifactPathDir => _fs.directory(artifactPath);
+
   String get _defaultArtifactPath => join(_homeDirPath, '.cache', 'patrol');
 
   String get _homeDirPath {
-    final envVars = _platform.environment;
-    if (_platform.isMacOS) {
+    final envVars = platform.environment;
+    if (platform.isMacOS) {
       return envVars['HOME']!;
-    } else if (_platform.isLinux) {
+    } else if (platform.isLinux) {
       return envVars['HOME']!;
-    } else if (_platform.isWindows) {
+    } else if (platform.isWindows) {
       return envVars['UserProfile']!;
     } else {
       throw Exception('Cannot find home directory. Unsupported platform');
@@ -53,35 +58,31 @@ class ArtifactsRepository {
   }
 
   bool get artifactPathSetFromEnv {
-    return _platform.environment.containsKey(artifactPathEnv);
+    return platform.environment.containsKey(artifactPathEnv);
   }
 
   String get serverArtifactPath {
-    return _topLevelFlags.debug
-        ? _paths.debugServerArtifactPath
-        : _paths.serverArtifactPath;
+    return debug ? _paths.debugServerArtifactPath : _paths.serverArtifactPath;
   }
 
   String get instrumentationArtifactPath {
-    return _topLevelFlags.debug
+    return debug
         ? _paths.debugInstrumentationArtifactPath
         : _paths.instrumentationArtifactPath;
   }
 
   String get iosArtifactDirPath {
-    return _topLevelFlags.debug
-        ? _paths.debugIOSArtifactDirPath
-        : _paths.iosArtifactDirPath;
+    return debug ? _paths.debugIOSArtifactDirPath : _paths.iosArtifactDirPath;
   }
 
   /// Returns true if artifacts for the current patrol_cli version are present
   /// in [artifactPath], false otherwise.
   bool areArtifactsPresent() {
-    final serverApk = _fs.file(_paths.serverArtifactPath);
-    final instrumentationApk = _fs.file(_paths.instrumentationArtifactPath);
+    final serverApk = _fs.file(serverArtifactPath);
+    final instrumentationApk = _fs.file(instrumentationArtifactPath);
 
-    if (_platform.isMacOS) {
-      final iosDir = _fs.directory(_paths.iosArtifactDirPath);
+    if (platform.isMacOS) {
+      final iosDir = _fs.directory(iosArtifactDirPath);
       return serverApk.existsSync() &&
           instrumentationApk.existsSync() &&
           iosDir.existsSync();
@@ -90,38 +91,25 @@ class ArtifactsRepository {
     }
   }
 
-  /// Same as [areArtifactsPresent] but looks for unversioned artifacts instead.
-  bool areDebugArtifactsPresent() {
-    final serverApk = _fs.file(_paths.debugServerArtifactPath);
-    final instrumentationApk = _fs.file(
-      _paths.debugInstrumentationArtifactPath,
-    );
-    final iosDir = _fs.directory(_paths.debugIOSArtifactDirPath);
-
-    return serverApk.existsSync() &&
-        instrumentationApk.existsSync() &&
-        iosDir.existsSync();
-  }
-
   /// Downloads artifacts for the current patrol_cli version.
   Future<void> downloadArtifacts() async {
     await Future.wait<void>([
       _downloadArtifact(_paths.serverArtifactFile),
       _downloadArtifact(_paths.instrumentationArtifactFile),
-      if (_platform.isMacOS) _downloadArtifact(_paths.iosArtifactZip),
+      if (platform.isMacOS) _downloadArtifact(_paths.iosArtifactZip),
     ]);
 
-    if (!_platform.isMacOS) {
+    if (!platform.isMacOS) {
       return;
     }
 
     final bytes = await _fs.file(_paths.iosArtifactZipPath).readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
+    final archive = _zipDecoder.decodeBytes(bytes);
 
     for (final archiveFile in archive) {
       final filename = archiveFile.name;
       final extractPath =
-          _paths.iosArtifactDirPath + _platform.pathSeparator + filename;
+          _paths.iosArtifactDirPath + platform.pathSeparator + filename;
       if (archiveFile.isFile) {
         final data = archiveFile.content as List<int>;
         final newFile = _fs.file(extractPath);
@@ -136,7 +124,7 @@ class ArtifactsRepository {
 
   Future<void> _downloadArtifact(String artifact) async {
     final uri = _paths.getUriForArtifact(artifact);
-    final response = await http.get(uri);
+    final response = await _httpClient.get(uri);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to download $artifact from $uri');
@@ -161,16 +149,21 @@ class _Paths {
   final String _artifactPath;
 
   String get serverArtifact => 'server-$version';
+
   String get serverArtifactFile => '$serverArtifact.apk';
 
   String get instrumentationArtifact => 'instrumentation-$version';
+
   String get instrumentationArtifactFile => '$instrumentationArtifact.apk';
 
   String get iosArtifactDir => 'ios-$version';
+
   String get iosArtifactZip => 'ios-$version.zip';
 
   String get debugServerArtifactFile => 'server.apk';
+
   String get debugInstrumentationArtifactFile => 'instrumentation.apk';
+
   String get debugIOSArtifactDir => 'ios';
 
   /// Returns a URI where [artifact] can be downloaded from.

@@ -1,10 +1,13 @@
 import 'package:args/command_runner.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
 
 class DoctorCommand extends Command<int> {
-  DoctorCommand({required ArtifactsRepository artifactsRepository})
-      : _artifactsRepository = artifactsRepository {
+  DoctorCommand({
+    required ArtifactsRepository artifactsRepository,
+    required Logger logger,
+  })  : _artifactsRepository = artifactsRepository,
+        _logger = logger {
     argParser.addFlag(
       'artifact-path',
       help: 'Print only artifact path.',
@@ -13,6 +16,7 @@ class DoctorCommand extends Command<int> {
   }
 
   final ArtifactsRepository _artifactsRepository;
+  final Logger _logger;
 
   @override
   String get name => 'doctor';
@@ -27,7 +31,7 @@ class DoctorCommand extends Command<int> {
     final artifactPathFlag = argResults?['artifact-path'] as bool?;
 
     if (artifactPathFlag ?? false) {
-      log.info(artifactPath);
+      _logger.info(artifactPath);
       return 0;
     }
 
@@ -35,7 +39,7 @@ class DoctorCommand extends Command<int> {
         ? '(set from ${ArtifactsRepository.artifactPathEnv})'
         : '(default)';
 
-    log.info('artifact path: $artifactPath $extra');
+    _logger.info('artifact path: $artifactPath $extra');
     return 0;
   }
 }

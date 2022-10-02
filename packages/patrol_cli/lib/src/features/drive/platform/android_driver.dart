@@ -1,46 +1,46 @@
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 class AndroidDriver {
-  AndroidDriver(
-    DisposeScope parentDisposeScope,
-    this._artifactsRepository,
-  )   : _disposeScope = DisposeScope(),
-        _adb = Adb() {
+  AndroidDriver({
+    required DisposeScope parentDisposeScope,
+    required ArtifactsRepository artifactsRepository,
+    Adb? adb,
+    required Logger logger,
+  })  : _disposeScope = DisposeScope(),
+        _artifactsRepository = artifactsRepository,
+        _adb = adb ?? Adb(),
+        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
   static const _serverPackage = 'pl.leancode.automatorserver';
   static const _instrumentationPackage = 'pl.leancode.automatorserver.test';
 
-  final ArtifactsRepository _artifactsRepository;
-
   final DisposeScope _disposeScope;
+  final ArtifactsRepository _artifactsRepository;
   final Adb _adb;
+  final Logger _logger;
 
   Future<void> run({
     required String port,
     required Device device,
     required String? flavor,
-    required bool verbose,
-    required bool debug,
   }) async {
     await _forwardPorts(port, device: device.id);
-    await _installServer(device: device.id, debug: debug);
-    await _installInstrumentation(device: device.id, debug: debug);
+    await _installServer(device: device.id);
+    await _installInstrumentation(device: device.id);
     await _runServer(device: device.id, port: port);
   }
 
-  Future<void> _installServer({
-    required String device,
-    required bool debug,
-  }) async {
+  Future<void> _installServer({required String device}) async {
     await _disposeScope.run((scope) async {
-      final progress = log.progress('Installing server');
+      final progress = _logger.progress('Installing server');
       try {
         scope.addDispose(() async {
           final result = await _adb.uninstall(_serverPackage, device: device);
@@ -48,7 +48,7 @@ class AndroidDriver {
               ? 'Uninstalled server package $_serverPackage'
               : 'Failed to uninstall server package $_serverPackage '
                   '(code ${result.exitCode})';
-          log.fine(msg);
+          _logger.fine(msg);
         });
 
         await _forceInstallApk(
@@ -65,12 +65,9 @@ class AndroidDriver {
     });
   }
 
-  Future<void> _installInstrumentation({
-    String? device,
-    bool debug = false,
-  }) async {
+  Future<void> _installInstrumentation({String? device}) async {
     await _disposeScope.run((scope) async {
-      final progress = log.progress('Installing instrumentation');
+      final progress = _logger.progress('Installing instrumentation');
 
       try {
         scope.addDispose(() async {
@@ -82,7 +79,7 @@ class AndroidDriver {
               ? 'Uninstalled instrumentation package $_instrumentationPackage'
               : 'Failed to uninstall instrumentation package $_instrumentationPackage '
                   '(code ${result.exitCode})';
-          log.fine(msg);
+          _logger.fine(msg);
         });
 
         await _forceInstallApk(
@@ -101,7 +98,7 @@ class AndroidDriver {
 
   Future<void> _forwardPorts(String port, {String? device}) async {
     await _disposeScope.run((scope) async {
-      final progress = log.progress('Forwarding ports');
+      final progress = _logger.progress('Forwarding ports');
 
       try {
         final cancel = await _adb.forwardPorts(
@@ -112,7 +109,7 @@ class AndroidDriver {
 
         scope.addDispose(() async {
           await cancel();
-          log.fine('Stopped port forwarding');
+          _logger.fine('Stopped port forwarding');
         });
       } catch (err) {
         progress.fail('Failed to forward ports');
@@ -128,7 +125,7 @@ class AndroidDriver {
     required String port,
   }) async {
     await _disposeScope.run((scope) async {
-      log.fine('Started native Android instrumentation');
+      _logger.fine('Started native Android instrumentation');
       final process = await _adb.instrument(
         packageName: _instrumentationPackage,
         intentClass: 'androidx.test.runner.AndroidJUnitRunner',
@@ -136,13 +133,13 @@ class AndroidDriver {
         arguments: {envPortKey: port},
       );
 
-      process.listenStdOut(log.info).disposedBy(scope);
-      process.listenStdErr(log.severe).disposedBy(scope);
+      process.listenStdOut(_logger.info).disposedBy(scope);
+      process.listenStdErr(_logger.severe).disposedBy(scope);
       scope.addDispose(() async {
         final msg = process.kill()
             ? 'Killed native Android instrumentation'
             : 'Failed to kill native Android instrumentation';
-        log.fine(msg);
+        _logger.fine(msg);
       });
     });
   }
