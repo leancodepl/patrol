@@ -14,21 +14,21 @@ service NativeAutomator {
   rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // general UI interaction
-  rpc getNativeWidgets(GetNativeWidgetsRequest) returns (GetNativeWidgetsResponse) {}
+  rpc getNativeViews(GetNativeViewsRequest) returns (GetNativeViewsResponse) {}
   rpc tap(TapRequest) returns (Empty) {}
   rpc doubleTap(TapRequest) returns (Empty) {}
   rpc enterText(EnterTextRequest) returns (Empty) {}
   rpc swipe(SwipeRequest) returns (Empty) {}
 
   // services
-  rpc enableAirplaneMode(AirplaneModeRequest) returns (Empty) {}
-  rpc disableAirplaneMode(AirplaneModeRequest) returns (Empty) {}
-  rpc enableWiFi(WiFiRequest) returns (Empty) {}
-  rpc disableWiFi(WiFiRequest) returns (Empty) {}
-  rpc enableCellular(CellularRequest) returns (Empty) {}
-  rpc disableCellular(CellularRequest) returns (Empty) {}
-  rpc enableBluetooth(BluetoothRequest) returns (Empty) {}
-  rpc disableBluetooth(BluetoothRequest) returns (Empty) {}
+  rpc enableAirplaneMode(Empty) returns (Empty) {}
+  rpc disableAirplaneMode(Empty) returns (Empty) {}
+  rpc enableWiFi(Empty) returns (Empty) {}
+  rpc disableWiFi(Empty) returns (Empty) {}
+  rpc enableCellular(Empty) returns (Empty) {}
+  rpc disableCellular(Empty) returns (Empty) {}
+  rpc enableBluetooth(Empty) returns (Empty) {}
+  rpc disableBluetooth(Empty) returns (Empty) {}
   rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
   rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
 
@@ -66,14 +66,10 @@ message Empty {}
 
 message OpenQuickSettingsRequest {}
 
-message AirplaneModeRequest { string appId = 1; }
-message CellularRequest { string appId = 1; }
-message WiFiRequest { string appId = 1; }
-message BluetoothRequest { string appId = 1; }
 message DarkModeRequest { string appId = 1; }
 
-message GetNativeWidgetsRequest { Selector selector = 1; }
-message GetNativeWidgetsResponse { repeated NativeWidget nativeWidgets = 1; }
+message GetNativeViewsRequest { Selector selector = 1; }
+message GetNativeViewsResponse { repeated NativeView nativeViews = 1; }
 
 message GetNotificationsRequest {}
 message GetNotificationsResponse { repeated Notification notifications = 1; }
@@ -138,7 +134,7 @@ message Selector {
 // Represents a native UI control.
 //
 // On Android, this is `android.view.View`.
-message NativeWidget {
+message NativeView {
   string className = 1;
   string text = 2;
   string contentDescription = 3;
@@ -147,7 +143,7 @@ message NativeWidget {
   int32 childCount = 6;
   string resourceName = 7;
   string applicationPackage = 8;
-  repeated NativeWidget children = 9;
+  repeated NativeView children = 9;
 }
 
 // Represents a notification visible in the notification shade.

@@ -2265,2286 +2265,6 @@ public final class Contracts {
 
   }
 
-  public interface AirplaneModeRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.AirplaneModeRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-  }
-  /**
-   * Protobuf type {@code patrol.AirplaneModeRequest}
-   */
-  public static final class AirplaneModeRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.AirplaneModeRequest)
-      AirplaneModeRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use AirplaneModeRequest.newBuilder() to construct.
-    private AirplaneModeRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private AirplaneModeRequest() {
-      appId_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new AirplaneModeRequest();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private AirplaneModeRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest other = (pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) obj;
-
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.AirplaneModeRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.AirplaneModeRequest)
-        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.class, pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        appId_ = "";
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_AirplaneModeRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest result = new pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest(this);
-        result.appId_ = appId_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.AirplaneModeRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.AirplaneModeRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<AirplaneModeRequest>
-        PARSER = new com.google.protobuf.AbstractParser<AirplaneModeRequest>() {
-      @java.lang.Override
-      public AirplaneModeRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new AirplaneModeRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<AirplaneModeRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<AirplaneModeRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.AirplaneModeRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface CellularRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.CellularRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-  }
-  /**
-   * Protobuf type {@code patrol.CellularRequest}
-   */
-  public static final class CellularRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.CellularRequest)
-      CellularRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use CellularRequest.newBuilder() to construct.
-    private CellularRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private CellularRequest() {
-      appId_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new CellularRequest();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private CellularRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.CellularRequest other = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) obj;
-
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.CellularRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.CellularRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.CellularRequest)
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.CellularRequest.class, pl.leancode.automatorserver.contracts.Contracts.CellularRequest.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.CellularRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        appId_ = "";
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_CellularRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.CellularRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest result = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest(this);
-        result.appId_ = appId_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.CellularRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.CellularRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.CellularRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.CellularRequest.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.CellularRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.CellularRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.CellularRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.CellularRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.CellularRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.CellularRequest();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<CellularRequest>
-        PARSER = new com.google.protobuf.AbstractParser<CellularRequest>() {
-      @java.lang.Override
-      public CellularRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CellularRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<CellularRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<CellularRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.CellularRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface WiFiRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.WiFiRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-  }
-  /**
-   * Protobuf type {@code patrol.WiFiRequest}
-   */
-  public static final class WiFiRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.WiFiRequest)
-      WiFiRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use WiFiRequest.newBuilder() to construct.
-    private WiFiRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private WiFiRequest() {
-      appId_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new WiFiRequest();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private WiFiRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.class, pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.WiFiRequest)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.WiFiRequest other = (pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) obj;
-
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.WiFiRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.WiFiRequest)
-        pl.leancode.automatorserver.contracts.Contracts.WiFiRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.class, pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        appId_ = "";
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_WiFiRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest result = new pl.leancode.automatorserver.contracts.Contracts.WiFiRequest(this);
-        result.appId_ = appId_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.WiFiRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.WiFiRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.WiFiRequest.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.WiFiRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.WiFiRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.WiFiRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.WiFiRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.WiFiRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.WiFiRequest();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.WiFiRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<WiFiRequest>
-        PARSER = new com.google.protobuf.AbstractParser<WiFiRequest>() {
-      @java.lang.Override
-      public WiFiRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new WiFiRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<WiFiRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<WiFiRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.WiFiRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface BluetoothRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.BluetoothRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    java.lang.String getAppId();
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    com.google.protobuf.ByteString
-        getAppIdBytes();
-  }
-  /**
-   * Protobuf type {@code patrol.BluetoothRequest}
-   */
-  public static final class BluetoothRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.BluetoothRequest)
-      BluetoothRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use BluetoothRequest.newBuilder() to construct.
-    private BluetoothRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private BluetoothRequest() {
-      appId_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new BluetoothRequest();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private BluetoothRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class, pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.Builder.class);
-    }
-
-    public static final int APPID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object appId_;
-    /**
-     * <code>string appId = 1;</code>
-     * @return The appId.
-     */
-    @java.lang.Override
-    public java.lang.String getAppId() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        appId_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string appId = 1;</code>
-     * @return The bytes for appId.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getAppIdBytes() {
-      java.lang.Object ref = appId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        appId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest other = (pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) obj;
-
-      if (!getAppId()
-          .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + APPID_FIELD_NUMBER;
-      hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.BluetoothRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.BluetoothRequest)
-        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.class, pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        appId_ = "";
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_BluetoothRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest result = new pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest(this);
-        result.appId_ = appId_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest.getDefaultInstance()) return this;
-        if (!other.getAppId().isEmpty()) {
-          appId_ = other.appId_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private java.lang.Object appId_ = "";
-      /**
-       * <code>string appId = 1;</code>
-       * @return The appId.
-       */
-      public java.lang.String getAppId() {
-        java.lang.Object ref = appId_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          appId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return The bytes for appId.
-       */
-      public com.google.protobuf.ByteString
-          getAppIdBytes() {
-        java.lang.Object ref = appId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          appId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearAppId() {
-        
-        appId_ = getDefaultInstance().getAppId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string appId = 1;</code>
-       * @param value The bytes for appId to set.
-       * @return This builder for chaining.
-       */
-      public Builder setAppIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        appId_ = value;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.BluetoothRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.BluetoothRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<BluetoothRequest>
-        PARSER = new com.google.protobuf.AbstractParser<BluetoothRequest>() {
-      @java.lang.Override
-      public BluetoothRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new BluetoothRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<BluetoothRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<BluetoothRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.BluetoothRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface DarkModeRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.DarkModeRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -5115,8 +2835,8 @@ public final class Contracts {
 
   }
 
-  public interface GetNativeWidgetsRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.GetNativeWidgetsRequest)
+  public interface GetNativeViewsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.GetNativeViewsRequest)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -5135,25 +2855,25 @@ public final class Contracts {
     pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
   }
   /**
-   * Protobuf type {@code patrol.GetNativeWidgetsRequest}
+   * Protobuf type {@code patrol.GetNativeViewsRequest}
    */
-  public static final class GetNativeWidgetsRequest extends
+  public static final class GetNativeViewsRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.GetNativeWidgetsRequest)
-      GetNativeWidgetsRequestOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.GetNativeViewsRequest)
+      GetNativeViewsRequestOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use GetNativeWidgetsRequest.newBuilder() to construct.
-    private GetNativeWidgetsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use GetNativeViewsRequest.newBuilder() to construct.
+    private GetNativeViewsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private GetNativeWidgetsRequest() {
+    private GetNativeViewsRequest() {
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new GetNativeWidgetsRequest();
+      return new GetNativeViewsRequest();
     }
 
     @java.lang.Override
@@ -5161,7 +2881,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private GetNativeWidgetsRequest(
+    private GetNativeViewsRequest(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5215,15 +2935,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsRequest_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsRequest_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.Builder.class);
     }
 
     public static final int SELECTOR_FIELD_NUMBER = 1;
@@ -5292,10 +3012,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) obj;
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest) obj;
 
       if (hasSelector() != other.hasSelector()) return false;
       if (hasSelector()) {
@@ -5322,69 +3042,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5397,7 +3117,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -5413,26 +3133,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.GetNativeWidgetsRequest}
+     * Protobuf type {@code patrol.GetNativeViewsRequest}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.GetNativeWidgetsRequest)
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequestOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.GetNativeViewsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequestOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsRequest_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsRequest_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5462,17 +3182,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsRequest_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsRequest_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest build() {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -5480,8 +3200,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest(this);
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest(this);
         if (selectorBuilder_ == null) {
           result.selector_ = selector_;
         } else {
@@ -5525,16 +3245,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.getDefaultInstance()) return this;
         if (other.hasSelector()) {
           mergeSelector(other.getSelector());
         }
@@ -5553,11 +3273,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -5698,95 +3418,95 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.GetNativeWidgetsRequest)
+      // @@protoc_insertion_point(builder_scope:patrol.GetNativeViewsRequest)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.GetNativeWidgetsRequest)
-    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.GetNativeViewsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<GetNativeWidgetsRequest>
-        PARSER = new com.google.protobuf.AbstractParser<GetNativeWidgetsRequest>() {
+    private static final com.google.protobuf.Parser<GetNativeViewsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<GetNativeViewsRequest>() {
       @java.lang.Override
-      public GetNativeWidgetsRequest parsePartialFrom(
+      public GetNativeViewsRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetNativeWidgetsRequest(input, extensionRegistry);
+        return new GetNativeViewsRequest(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<GetNativeWidgetsRequest> parser() {
+    public static com.google.protobuf.Parser<GetNativeViewsRequest> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<GetNativeWidgetsRequest> getParserForType() {
+    public com.google.protobuf.Parser<GetNativeViewsRequest> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsRequest getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface GetNativeWidgetsResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.GetNativeWidgetsResponse)
+  public interface GetNativeViewsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.GetNativeViewsResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> 
-        getNativeWidgetsList();
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> 
+        getNativeViewsList();
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index);
+    pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index);
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
-    int getNativeWidgetsCount();
+    int getNativeViewsCount();
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-        getNativeWidgetsOrBuilderList();
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+        getNativeViewsOrBuilderList();
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
+    pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
         int index);
   }
   /**
-   * Protobuf type {@code patrol.GetNativeWidgetsResponse}
+   * Protobuf type {@code patrol.GetNativeViewsResponse}
    */
-  public static final class GetNativeWidgetsResponse extends
+  public static final class GetNativeViewsResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.GetNativeWidgetsResponse)
-      GetNativeWidgetsResponseOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.GetNativeViewsResponse)
+      GetNativeViewsResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use GetNativeWidgetsResponse.newBuilder() to construct.
-    private GetNativeWidgetsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use GetNativeViewsResponse.newBuilder() to construct.
+    private GetNativeViewsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private GetNativeWidgetsResponse() {
-      nativeWidgets_ = java.util.Collections.emptyList();
+    private GetNativeViewsResponse() {
+      nativeViews_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new GetNativeWidgetsResponse();
+      return new GetNativeViewsResponse();
     }
 
     @java.lang.Override
@@ -5794,7 +3514,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private GetNativeWidgetsResponse(
+    private GetNativeViewsResponse(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5815,11 +3535,11 @@ public final class Contracts {
               break;
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                nativeWidgets_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>();
+                nativeViews_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              nativeWidgets_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeWidget.parser(), extensionRegistry));
+              nativeViews_.add(
+                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -5840,7 +3560,7 @@ public final class Contracts {
             e).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          nativeWidgets_ = java.util.Collections.unmodifiableList(nativeWidgets_);
+          nativeViews_ = java.util.Collections.unmodifiableList(nativeViews_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -5848,55 +3568,55 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.Builder.class);
     }
 
-    public static final int NATIVEWIDGETS_FIELD_NUMBER = 1;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> nativeWidgets_;
+    public static final int NATIVEVIEWS_FIELD_NUMBER = 1;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> nativeViews_;
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
     @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getNativeWidgetsList() {
-      return nativeWidgets_;
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getNativeViewsList() {
+      return nativeViews_;
     }
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-        getNativeWidgetsOrBuilderList() {
-      return nativeWidgets_;
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+        getNativeViewsOrBuilderList() {
+      return nativeViews_;
     }
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
     @java.lang.Override
-    public int getNativeWidgetsCount() {
-      return nativeWidgets_.size();
+    public int getNativeViewsCount() {
+      return nativeViews_.size();
     }
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index) {
-      return nativeWidgets_.get(index);
+    public pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index) {
+      return nativeViews_.get(index);
     }
     /**
-     * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
         int index) {
-      return nativeWidgets_.get(index);
+      return nativeViews_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -5913,8 +3633,8 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < nativeWidgets_.size(); i++) {
-        output.writeMessage(1, nativeWidgets_.get(i));
+      for (int i = 0; i < nativeViews_.size(); i++) {
+        output.writeMessage(1, nativeViews_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -5925,9 +3645,9 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < nativeWidgets_.size(); i++) {
+      for (int i = 0; i < nativeViews_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, nativeWidgets_.get(i));
+          .computeMessageSize(1, nativeViews_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5939,13 +3659,13 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse) obj;
+      pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse) obj;
 
-      if (!getNativeWidgetsList()
-          .equals(other.getNativeWidgetsList())) return false;
+      if (!getNativeViewsList()
+          .equals(other.getNativeViewsList())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -5957,78 +3677,78 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNativeWidgetsCount() > 0) {
-        hash = (37 * hash) + NATIVEWIDGETS_FIELD_NUMBER;
-        hash = (53 * hash) + getNativeWidgetsList().hashCode();
+      if (getNativeViewsCount() > 0) {
+        hash = (37 * hash) + NATIVEVIEWS_FIELD_NUMBER;
+        hash = (53 * hash) + getNativeViewsList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -6041,7 +3761,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -6057,26 +3777,26 @@ public final class Contracts {
       return builder;
     }
     /**
-     * Protobuf type {@code patrol.GetNativeWidgetsResponse}
+     * Protobuf type {@code patrol.GetNativeViewsResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.GetNativeWidgetsResponse)
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponseOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.GetNativeViewsResponse)
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsResponse_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -6089,17 +3809,17 @@ public final class Contracts {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
-          getNativeWidgetsFieldBuilder();
+          getNativeViewsFieldBuilder();
         }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nativeWidgetsBuilder_ == null) {
-          nativeWidgets_ = java.util.Collections.emptyList();
+        if (nativeViewsBuilder_ == null) {
+          nativeViews_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          nativeWidgetsBuilder_.clear();
+          nativeViewsBuilder_.clear();
         }
         return this;
       }
@@ -6107,17 +3827,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsResponse_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse build() {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -6125,17 +3845,17 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse(this);
+      public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse(this);
         int from_bitField0_ = bitField0_;
-        if (nativeWidgetsBuilder_ == null) {
+        if (nativeViewsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
-            nativeWidgets_ = java.util.Collections.unmodifiableList(nativeWidgets_);
+            nativeViews_ = java.util.Collections.unmodifiableList(nativeViews_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
-          result.nativeWidgets_ = nativeWidgets_;
+          result.nativeViews_ = nativeViews_;
         } else {
-          result.nativeWidgets_ = nativeWidgetsBuilder_.build();
+          result.nativeViews_ = nativeViewsBuilder_.build();
         }
         onBuilt();
         return result;
@@ -6175,39 +3895,39 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse.getDefaultInstance()) return this;
-        if (nativeWidgetsBuilder_ == null) {
-          if (!other.nativeWidgets_.isEmpty()) {
-            if (nativeWidgets_.isEmpty()) {
-              nativeWidgets_ = other.nativeWidgets_;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.getDefaultInstance()) return this;
+        if (nativeViewsBuilder_ == null) {
+          if (!other.nativeViews_.isEmpty()) {
+            if (nativeViews_.isEmpty()) {
+              nativeViews_ = other.nativeViews_;
               bitField0_ = (bitField0_ & ~0x00000001);
             } else {
-              ensureNativeWidgetsIsMutable();
-              nativeWidgets_.addAll(other.nativeWidgets_);
+              ensureNativeViewsIsMutable();
+              nativeViews_.addAll(other.nativeViews_);
             }
             onChanged();
           }
         } else {
-          if (!other.nativeWidgets_.isEmpty()) {
-            if (nativeWidgetsBuilder_.isEmpty()) {
-              nativeWidgetsBuilder_.dispose();
-              nativeWidgetsBuilder_ = null;
-              nativeWidgets_ = other.nativeWidgets_;
+          if (!other.nativeViews_.isEmpty()) {
+            if (nativeViewsBuilder_.isEmpty()) {
+              nativeViewsBuilder_.dispose();
+              nativeViewsBuilder_ = null;
+              nativeViews_ = other.nativeViews_;
               bitField0_ = (bitField0_ & ~0x00000001);
-              nativeWidgetsBuilder_ = 
+              nativeViewsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getNativeWidgetsFieldBuilder() : null;
+                   getNativeViewsFieldBuilder() : null;
             } else {
-              nativeWidgetsBuilder_.addAllMessages(other.nativeWidgets_);
+              nativeViewsBuilder_.addAllMessages(other.nativeViews_);
             }
           }
         }
@@ -6226,11 +3946,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -6241,244 +3961,244 @@ public final class Contracts {
       }
       private int bitField0_;
 
-      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> nativeWidgets_ =
+      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> nativeViews_ =
         java.util.Collections.emptyList();
-      private void ensureNativeWidgetsIsMutable() {
+      private void ensureNativeViewsIsMutable() {
         if (!((bitField0_ & 0x00000001) != 0)) {
-          nativeWidgets_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>(nativeWidgets_);
+          nativeViews_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>(nativeViews_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> nativeWidgetsBuilder_;
+          pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> nativeViewsBuilder_;
 
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getNativeWidgetsList() {
-        if (nativeWidgetsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(nativeWidgets_);
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getNativeViewsList() {
+        if (nativeViewsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(nativeViews_);
         } else {
-          return nativeWidgetsBuilder_.getMessageList();
+          return nativeViewsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public int getNativeWidgetsCount() {
-        if (nativeWidgetsBuilder_ == null) {
-          return nativeWidgets_.size();
+      public int getNativeViewsCount() {
+        if (nativeViewsBuilder_ == null) {
+          return nativeViews_.size();
         } else {
-          return nativeWidgetsBuilder_.getCount();
+          return nativeViewsBuilder_.getCount();
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getNativeWidgets(int index) {
-        if (nativeWidgetsBuilder_ == null) {
-          return nativeWidgets_.get(index);
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index) {
+        if (nativeViewsBuilder_ == null) {
+          return nativeViews_.get(index);
         } else {
-          return nativeWidgetsBuilder_.getMessage(index);
+          return nativeViewsBuilder_.getMessage(index);
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder setNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
-        if (nativeWidgetsBuilder_ == null) {
+      public Builder setNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
+        if (nativeViewsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.set(index, value);
+          ensureNativeViewsIsMutable();
+          nativeViews_.set(index, value);
           onChanged();
         } else {
-          nativeWidgetsBuilder_.setMessage(index, value);
+          nativeViewsBuilder_.setMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder setNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.set(index, builderForValue.build());
+      public Builder setNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.set(index, builderForValue.build());
           onChanged();
         } else {
-          nativeWidgetsBuilder_.setMessage(index, builderForValue.build());
+          nativeViewsBuilder_.setMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder addNativeWidgets(pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
-        if (nativeWidgetsBuilder_ == null) {
+      public Builder addNativeViews(pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
+        if (nativeViewsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(value);
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(value);
           onChanged();
         } else {
-          nativeWidgetsBuilder_.addMessage(value);
+          nativeViewsBuilder_.addMessage(value);
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder addNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
-        if (nativeWidgetsBuilder_ == null) {
+      public Builder addNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
+        if (nativeViewsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(index, value);
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(index, value);
           onChanged();
         } else {
-          nativeWidgetsBuilder_.addMessage(index, value);
+          nativeViewsBuilder_.addMessage(index, value);
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder addNativeWidgets(
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(builderForValue.build());
+      public Builder addNativeViews(
+          pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(builderForValue.build());
           onChanged();
         } else {
-          nativeWidgetsBuilder_.addMessage(builderForValue.build());
+          nativeViewsBuilder_.addMessage(builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder addNativeWidgets(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.add(index, builderForValue.build());
+      public Builder addNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(index, builderForValue.build());
           onChanged();
         } else {
-          nativeWidgetsBuilder_.addMessage(index, builderForValue.build());
+          nativeViewsBuilder_.addMessage(index, builderForValue.build());
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder addAllNativeWidgets(
-          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidget> values) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
+      public Builder addAllNativeViews(
+          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeView> values) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, nativeWidgets_);
+              values, nativeViews_);
           onChanged();
         } else {
-          nativeWidgetsBuilder_.addAllMessages(values);
+          nativeViewsBuilder_.addAllMessages(values);
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder clearNativeWidgets() {
-        if (nativeWidgetsBuilder_ == null) {
-          nativeWidgets_ = java.util.Collections.emptyList();
+      public Builder clearNativeViews() {
+        if (nativeViewsBuilder_ == null) {
+          nativeViews_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
           onChanged();
         } else {
-          nativeWidgetsBuilder_.clear();
+          nativeViewsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public Builder removeNativeWidgets(int index) {
-        if (nativeWidgetsBuilder_ == null) {
-          ensureNativeWidgetsIsMutable();
-          nativeWidgets_.remove(index);
+      public Builder removeNativeViews(int index) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.remove(index);
           onChanged();
         } else {
-          nativeWidgetsBuilder_.remove(index);
+          nativeViewsBuilder_.remove(index);
         }
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder getNativeWidgetsBuilder(
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder getNativeViewsBuilder(
           int index) {
-        return getNativeWidgetsFieldBuilder().getBuilder(index);
+        return getNativeViewsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getNativeWidgetsOrBuilder(
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
           int index) {
-        if (nativeWidgetsBuilder_ == null) {
-          return nativeWidgets_.get(index);  } else {
-          return nativeWidgetsBuilder_.getMessageOrBuilder(index);
+        if (nativeViewsBuilder_ == null) {
+          return nativeViews_.get(index);  } else {
+          return nativeViewsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-           getNativeWidgetsOrBuilderList() {
-        if (nativeWidgetsBuilder_ != null) {
-          return nativeWidgetsBuilder_.getMessageOrBuilderList();
+      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+           getNativeViewsOrBuilderList() {
+        if (nativeViewsBuilder_ != null) {
+          return nativeViewsBuilder_.getMessageOrBuilderList();
         } else {
-          return java.util.Collections.unmodifiableList(nativeWidgets_);
+          return java.util.Collections.unmodifiableList(nativeViews_);
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addNativeWidgetsBuilder() {
-        return getNativeWidgetsFieldBuilder().addBuilder(
-            pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder addNativeViewsBuilder() {
+        return getNativeViewsFieldBuilder().addBuilder(
+            pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance());
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addNativeWidgetsBuilder(
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder addNativeViewsBuilder(
           int index) {
-        return getNativeWidgetsFieldBuilder().addBuilder(
-            index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
+        return getNativeViewsFieldBuilder().addBuilder(
+            index, pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance());
       }
       /**
-       * <code>repeated .patrol.NativeWidget nativeWidgets = 1;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 1;</code>
        */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder> 
-           getNativeWidgetsBuilderList() {
-        return getNativeWidgetsFieldBuilder().getBuilderList();
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder> 
+           getNativeViewsBuilderList() {
+        return getNativeViewsFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
-          getNativeWidgetsFieldBuilder() {
-        if (nativeWidgetsBuilder_ == null) {
-          nativeWidgetsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder>(
-                  nativeWidgets_,
+          pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+          getNativeViewsFieldBuilder() {
+        if (nativeViewsBuilder_ == null) {
+          nativeViewsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder>(
+                  nativeViews_,
                   ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
-          nativeWidgets_ = null;
+          nativeViews_ = null;
         }
-        return nativeWidgetsBuilder_;
+        return nativeViewsBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -6493,41 +4213,41 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.GetNativeWidgetsResponse)
+      // @@protoc_insertion_point(builder_scope:patrol.GetNativeViewsResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.GetNativeWidgetsResponse)
-    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.GetNativeViewsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<GetNativeWidgetsResponse>
-        PARSER = new com.google.protobuf.AbstractParser<GetNativeWidgetsResponse>() {
+    private static final com.google.protobuf.Parser<GetNativeViewsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<GetNativeViewsResponse>() {
       @java.lang.Override
-      public GetNativeWidgetsResponse parsePartialFrom(
+      public GetNativeViewsResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetNativeWidgetsResponse(input, extensionRegistry);
+        return new GetNativeViewsResponse(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<GetNativeWidgetsResponse> parser() {
+    public static com.google.protobuf.Parser<GetNativeViewsResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<GetNativeWidgetsResponse> getParserForType() {
+    public com.google.protobuf.Parser<GetNativeViewsResponse> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.GetNativeWidgetsResponse getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -14039,8 +11759,8 @@ public final class Contracts {
 
   }
 
-  public interface NativeWidgetOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.NativeWidget)
+  public interface NativeViewOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.NativeView)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -14122,27 +11842,27 @@ public final class Contracts {
         getApplicationPackageBytes();
 
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> 
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> 
         getChildrenList();
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeWidget getChildren(int index);
+    pl.leancode.automatorserver.contracts.Contracts.NativeView getChildren(int index);
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
     int getChildrenCount();
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
         getChildrenOrBuilderList();
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getChildrenOrBuilder(
+    pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getChildrenOrBuilder(
         int index);
   }
   /**
@@ -14151,18 +11871,18 @@ public final class Contracts {
    * On Android, this is `android.view.View`.
    * </pre>
    *
-   * Protobuf type {@code patrol.NativeWidget}
+   * Protobuf type {@code patrol.NativeView}
    */
-  public static final class NativeWidget extends
+  public static final class NativeView extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.NativeWidget)
-      NativeWidgetOrBuilder {
+      // @@protoc_insertion_point(message_implements:patrol.NativeView)
+      NativeViewOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use NativeWidget.newBuilder() to construct.
-    private NativeWidget(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use NativeView.newBuilder() to construct.
+    private NativeView(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private NativeWidget() {
+    private NativeView() {
       className_ = "";
       text_ = "";
       contentDescription_ = "";
@@ -14175,7 +11895,7 @@ public final class Contracts {
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new NativeWidget();
+      return new NativeView();
     }
 
     @java.lang.Override
@@ -14183,7 +11903,7 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private NativeWidget(
+    private NativeView(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -14249,11 +11969,11 @@ public final class Contracts {
             }
             case 74: {
               if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                children_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>();
+                children_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>();
                 mutable_bitField0_ |= 0x00000001;
               }
               children_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeWidget.parser(), extensionRegistry));
+                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -14282,15 +12002,15 @@ public final class Contracts {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidget_descriptor;
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeView_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidget_fieldAccessorTable
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeView_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.NativeWidget.class, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder.class);
+              pl.leancode.automatorserver.contracts.Contracts.NativeView.class, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder.class);
     }
 
     public static final int CLASSNAME_FIELD_NUMBER = 1;
@@ -14517,41 +12237,41 @@ public final class Contracts {
     }
 
     public static final int CHILDREN_FIELD_NUMBER = 9;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> children_;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> children_;
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
     @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getChildrenList() {
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getChildrenList() {
       return children_;
     }
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
         getChildrenOrBuilderList() {
       return children_;
     }
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
     @java.lang.Override
     public int getChildrenCount() {
       return children_.size();
     }
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getChildren(int index) {
+    public pl.leancode.automatorserver.contracts.Contracts.NativeView getChildren(int index) {
       return children_.get(index);
     }
     /**
-     * <code>repeated .patrol.NativeWidget children = 9;</code>
+     * <code>repeated .patrol.NativeView children = 9;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getChildrenOrBuilder(
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getChildrenOrBuilder(
         int index) {
       return children_.get(index);
     }
@@ -14647,10 +12367,10 @@ public final class Contracts {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.NativeWidget)) {
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.NativeView)) {
         return super.equals(obj);
       }
-      pl.leancode.automatorserver.contracts.Contracts.NativeWidget other = (pl.leancode.automatorserver.contracts.Contracts.NativeWidget) obj;
+      pl.leancode.automatorserver.contracts.Contracts.NativeView other = (pl.leancode.automatorserver.contracts.Contracts.NativeView) obj;
 
       if (!getClassName()
           .equals(other.getClassName())) return false;
@@ -14708,69 +12428,69 @@ public final class Contracts {
       return hash;
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(byte[] data)
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseDelimitedFrom(java.io.InputStream input)
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseDelimitedFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget parseFrom(
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -14783,7 +12503,7 @@ public final class Contracts {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.NativeWidget prototype) {
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.NativeView prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -14804,26 +12524,26 @@ public final class Contracts {
      * On Android, this is `android.view.View`.
      * </pre>
      *
-     * Protobuf type {@code patrol.NativeWidget}
+     * Protobuf type {@code patrol.NativeView}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.NativeWidget)
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder {
+        // @@protoc_insertion_point(builder_implements:patrol.NativeView)
+        pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidget_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeView_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidget_fieldAccessorTable
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeView_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.NativeWidget.class, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder.class);
+                pl.leancode.automatorserver.contracts.Contracts.NativeView.class, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder.class);
       }
 
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.NativeWidget.newBuilder()
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.NativeView.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -14870,17 +12590,17 @@ public final class Contracts {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeWidget_descriptor;
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeView_descriptor;
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance();
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget build() {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidget result = buildPartial();
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView build() {
+        pl.leancode.automatorserver.contracts.Contracts.NativeView result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -14888,8 +12608,8 @@ public final class Contracts {
       }
 
       @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidget result = new pl.leancode.automatorserver.contracts.Contracts.NativeWidget(this);
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.NativeView result = new pl.leancode.automatorserver.contracts.Contracts.NativeView(this);
         int from_bitField0_ = bitField0_;
         result.className_ = className_;
         result.text_ = text_;
@@ -14946,16 +12666,16 @@ public final class Contracts {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.NativeWidget) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.NativeWidget)other);
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.NativeView) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.NativeView)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.NativeWidget other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance()) return this;
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.NativeView other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance()) return this;
         if (!other.getClassName().isEmpty()) {
           className_ = other.className_;
           onChanged();
@@ -15026,11 +12746,11 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.NativeWidget parsedMessage = null;
+        pl.leancode.automatorserver.contracts.Contracts.NativeView parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.NativeWidget) e.getUnfinishedMessage();
+          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.NativeView) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -15514,22 +13234,22 @@ public final class Contracts {
         return this;
       }
 
-      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> children_ =
+      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> children_ =
         java.util.Collections.emptyList();
       private void ensureChildrenIsMutable() {
         if (!((bitField0_ & 0x00000001) != 0)) {
-          children_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeWidget>(children_);
+          children_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>(children_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> childrenBuilder_;
+          pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> childrenBuilder_;
 
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget> getChildrenList() {
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getChildrenList() {
         if (childrenBuilder_ == null) {
           return java.util.Collections.unmodifiableList(children_);
         } else {
@@ -15537,7 +13257,7 @@ public final class Contracts {
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public int getChildrenCount() {
         if (childrenBuilder_ == null) {
@@ -15547,9 +13267,9 @@ public final class Contracts {
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getChildren(int index) {
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView getChildren(int index) {
         if (childrenBuilder_ == null) {
           return children_.get(index);
         } else {
@@ -15557,10 +13277,10 @@ public final class Contracts {
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder setChildren(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
         if (childrenBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -15574,10 +13294,10 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder setChildren(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
         if (childrenBuilder_ == null) {
           ensureChildrenIsMutable();
           children_.set(index, builderForValue.build());
@@ -15588,9 +13308,9 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public Builder addChildren(pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
+      public Builder addChildren(pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
         if (childrenBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -15604,10 +13324,10 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder addChildren(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget value) {
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
         if (childrenBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -15621,10 +13341,10 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder addChildren(
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
+          pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
         if (childrenBuilder_ == null) {
           ensureChildrenIsMutable();
           children_.add(builderForValue.build());
@@ -15635,10 +13355,10 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder addChildren(
-          int index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder builderForValue) {
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
         if (childrenBuilder_ == null) {
           ensureChildrenIsMutable();
           children_.add(index, builderForValue.build());
@@ -15649,10 +13369,10 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder addAllChildren(
-          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidget> values) {
+          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeView> values) {
         if (childrenBuilder_ == null) {
           ensureChildrenIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -15664,7 +13384,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder clearChildren() {
         if (childrenBuilder_ == null) {
@@ -15677,7 +13397,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
       public Builder removeChildren(int index) {
         if (childrenBuilder_ == null) {
@@ -15690,16 +13410,16 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder getChildrenBuilder(
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder getChildrenBuilder(
           int index) {
         return getChildrenFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder getChildrenOrBuilder(
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getChildrenOrBuilder(
           int index) {
         if (childrenBuilder_ == null) {
           return children_.get(index);  } else {
@@ -15707,9 +13427,9 @@ public final class Contracts {
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
            getChildrenOrBuilderList() {
         if (childrenBuilder_ != null) {
           return childrenBuilder_.getMessageOrBuilderList();
@@ -15718,33 +13438,33 @@ public final class Contracts {
         }
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addChildrenBuilder() {
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder addChildrenBuilder() {
         return getChildrenFieldBuilder().addBuilder(
-            pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
+            pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance());
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder addChildrenBuilder(
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder addChildrenBuilder(
           int index) {
         return getChildrenFieldBuilder().addBuilder(
-            index, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.getDefaultInstance());
+            index, pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance());
       }
       /**
-       * <code>repeated .patrol.NativeWidget children = 9;</code>
+       * <code>repeated .patrol.NativeView children = 9;</code>
        */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder> 
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder> 
            getChildrenBuilderList() {
         return getChildrenFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder> 
+          pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
           getChildrenFieldBuilder() {
         if (childrenBuilder_ == null) {
           childrenBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.NativeWidget, pl.leancode.automatorserver.contracts.Contracts.NativeWidget.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeWidgetOrBuilder>(
+              pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder>(
                   children_,
                   ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
@@ -15766,41 +13486,41 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.NativeWidget)
+      // @@protoc_insertion_point(builder_scope:patrol.NativeView)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.NativeWidget)
-    private static final pl.leancode.automatorserver.contracts.Contracts.NativeWidget DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.NativeView)
+    private static final pl.leancode.automatorserver.contracts.Contracts.NativeView DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.NativeWidget();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.NativeView();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.NativeWidget getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeView getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<NativeWidget>
-        PARSER = new com.google.protobuf.AbstractParser<NativeWidget>() {
+    private static final com.google.protobuf.Parser<NativeView>
+        PARSER = new com.google.protobuf.AbstractParser<NativeView>() {
       @java.lang.Override
-      public NativeWidget parsePartialFrom(
+      public NativeView parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NativeWidget(input, extensionRegistry);
+        return new NativeView(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<NativeWidget> parser() {
+    public static com.google.protobuf.Parser<NativeView> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<NativeWidget> getParserForType() {
+    public com.google.protobuf.Parser<NativeView> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeWidget getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.NativeView getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -16890,40 +14610,20 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_AirplaneModeRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_AirplaneModeRequest_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_CellularRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_CellularRequest_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_WiFiRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_WiFiRequest_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_BluetoothRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_BluetoothRequest_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_DarkModeRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_DarkModeRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_GetNativeWidgetsRequest_descriptor;
+    internal_static_patrol_GetNativeViewsRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable;
+      internal_static_patrol_GetNativeViewsRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_GetNativeWidgetsResponse_descriptor;
+    internal_static_patrol_GetNativeViewsResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable;
+      internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_GetNotificationsRequest_descriptor;
   private static final 
@@ -16965,10 +14665,10 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_Selector_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_NativeWidget_descriptor;
+    internal_static_patrol_NativeView_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_NativeWidget_fieldAccessorTable;
+      internal_static_patrol_NativeView_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_Notification_descriptor;
   private static final 
@@ -16987,98 +14687,92 @@ public final class Contracts {
       "est\022\r\n\005appId\030\001 \001(\t\"[\n\030TapOnNotificationR" +
       "equest\022\017\n\005index\030\001 \001(\rH\000\022$\n\010selector\030\002 \001(" +
       "\0132\020.patrol.SelectorH\000B\010\n\006findBy\"\007\n\005Empty" +
-      "\"\032\n\030OpenQuickSettingsRequest\"$\n\023Airplane" +
-      "ModeRequest\022\r\n\005appId\030\001 \001(\t\" \n\017CellularRe" +
-      "quest\022\r\n\005appId\030\001 \001(\t\"\034\n\013WiFiRequest\022\r\n\005a" +
-      "ppId\030\001 \001(\t\"!\n\020BluetoothRequest\022\r\n\005appId\030" +
-      "\001 \001(\t\" \n\017DarkModeRequest\022\r\n\005appId\030\001 \001(\t\"" +
-      "=\n\027GetNativeWidgetsRequest\022\"\n\010selector\030\001" +
-      " \001(\0132\020.patrol.Selector\"G\n\030GetNativeWidge" +
-      "tsResponse\022+\n\rnativeWidgets\030\001 \003(\0132\024.patr" +
-      "ol.NativeWidget\"\031\n\027GetNotificationsReque" +
-      "st\"G\n\030GetNotificationsResponse\022+\n\rnotifi" +
-      "cations\030\001 \003(\0132\024.patrol.Notification\"?\n\nT" +
-      "apRequest\022\"\n\010selector\030\001 \001(\0132\020.patrol.Sel" +
-      "ector\022\r\n\005appId\030\002 \001(\t\"p\n\020EnterTextRequest" +
-      "\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005index\030\003" +
-      " \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol.Select" +
-      "orH\000B\010\n\006findBy\"Y\n\014SwipeRequest\022\016\n\006startX" +
-      "\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n\004endX\030\003 \001(\002\022\014\n\004" +
-      "endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027HandlePerm" +
-      "issionRequest\0222\n\004code\030\001 \001(\0162$.patrol.Han" +
-      "dlePermissionRequest.Code\"7\n\004Code\022\017\n\013WHI" +
-      "LE_USING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED" +
-      "\020\002\"\225\001\n\032SetLocationAccuracyRequest\022M\n\020loc" +
-      "ationAccuracy\030\001 \001(\01623.patrol.SetLocation" +
-      "AccuracyRequest.LocationAccuracy\"(\n\020Loca" +
-      "tionAccuracy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020\001\"\236\004\n\010S" +
-      "elector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStarts" +
-      "With\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210" +
-      "\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDes" +
-      "cription\030\005 \001(\tH\004\210\001\001\022)\n\034contentDescriptio" +
-      "nStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescrip" +
-      "tionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 " +
-      "\001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabl" +
-      "ed\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003p" +
-      "kg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textStartsWit" +
-      "hB\017\n\r_textContainsB\014\n\n_classNameB\025\n\023_con" +
-      "tentDescriptionB\037\n\035_contentDescriptionSt" +
-      "artsWithB\035\n\033_contentDescriptionContainsB" +
-      "\r\n\013_resourceIdB\013\n\t_instanceB\n\n\010_enabledB" +
-      "\n\n\010_focusedB\006\n\004_pkg\"\333\001\n\014NativeWidget\022\021\n\t" +
-      "className\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022content" +
-      "Description\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007en" +
-      "abled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resou" +
-      "rceName\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(" +
-      "\t\022&\n\010children\030\t \003(\0132\024.patrol.NativeWidge" +
-      "t\"]\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022" +
-      "\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw\030\004" +
-      " \001(\tB\n\n\010_appName2\334\r\n\017NativeAutomator\022+\n\t" +
-      "pressHome\022\r.patrol.Empty\032\r.patrol.Empty\"" +
-      "\000\022+\n\tpressBack\022\r.patrol.Empty\032\r.patrol.E" +
-      "mpty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0227\n\025doublePressRecentAp" +
-      "ps\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007op" +
-      "enApp\022\026.patrol.OpenAppRequest\032\r.patrol.E" +
-      "mpty\"\000\022F\n\021openQuickSettings\022 .patrol.Ope" +
-      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022W" +
-      "\n\020getNativeWidgets\022\037.patrol.GetNativeWid" +
-      "getsRequest\032 .patrol.GetNativeWidgetsRes" +
-      "ponse\"\000\022*\n\003tap\022\022.patrol.TapRequest\032\r.pat" +
-      "rol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.TapReq" +
-      "uest\032\r.patrol.Empty\"\000\0226\n\tenterText\022\030.pat" +
-      "rol.EnterTextRequest\032\r.patrol.Empty\"\000\022.\n" +
-      "\005swipe\022\024.patrol.SwipeRequest\032\r.patrol.Em" +
-      "pty\"\000\022B\n\022enableAirplaneMode\022\033.patrol.Air" +
-      "planeModeRequest\032\r.patrol.Empty\"\000\022C\n\023dis" +
-      "ableAirplaneMode\022\033.patrol.AirplaneModeRe" +
-      "quest\032\r.patrol.Empty\"\000\0222\n\nenableWiFi\022\023.p" +
-      "atrol.WiFiRequest\032\r.patrol.Empty\"\000\0223\n\013di" +
-      "sableWiFi\022\023.patrol.WiFiRequest\032\r.patrol." +
-      "Empty\"\000\022:\n\016enableCellular\022\027.patrol.Cellu" +
-      "larRequest\032\r.patrol.Empty\"\000\022;\n\017disableCe" +
-      "llular\022\027.patrol.CellularRequest\032\r.patrol" +
-      ".Empty\"\000\022<\n\017enableBluetooth\022\030.patrol.Blu" +
-      "etoothRequest\032\r.patrol.Empty\"\000\022=\n\020disabl" +
-      "eBluetooth\022\030.patrol.BluetoothRequest\032\r.p" +
-      "atrol.Empty\"\000\022:\n\016enableDarkMode\022\027.patrol" +
-      ".DarkModeRequest\032\r.patrol.Empty\"\000\022;\n\017dis" +
-      "ableDarkMode\022\027.patrol.DarkModeRequest\032\r." +
-      "patrol.Empty\"\000\0223\n\021openNotifications\022\r.pa" +
-      "trol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeNoti" +
-      "fications\022\r.patrol.Empty\032\r.patrol.Empty\"" +
-      "\000\022:\n\030closeHeadsUpNotification\022\r.patrol.E" +
-      "mpty\032\r.patrol.Empty\"\000\022W\n\020getNotification" +
-      "s\022\037.patrol.GetNotificationsRequest\032 .pat" +
-      "rol.GetNotificationsResponse\"\000\022F\n\021tapOnN" +
-      "otification\022 .patrol.TapOnNotificationRe" +
-      "quest\032\r.patrol.Empty\"\000\022J\n\026handlePermissi" +
-      "onDialog\022\037.patrol.HandlePermissionReques" +
-      "t\032\r.patrol.Empty\"\000\022J\n\023setLocationAccurac" +
-      "y\022\".patrol.SetLocationAccuracyRequest\032\r." +
-      "patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empty\032\r" +
-      ".patrol.Empty\"\000B\'\n%pl.leancode.automator" +
-      "server.contractsb\006proto3"
+      "\"\032\n\030OpenQuickSettingsRequest\" \n\017DarkMode" +
+      "Request\022\r\n\005appId\030\001 \001(\t\";\n\025GetNativeViews" +
+      "Request\022\"\n\010selector\030\001 \001(\0132\020.patrol.Selec" +
+      "tor\"A\n\026GetNativeViewsResponse\022\'\n\013nativeV" +
+      "iews\030\001 \003(\0132\022.patrol.NativeView\"\031\n\027GetNot" +
+      "ificationsRequest\"G\n\030GetNotificationsRes" +
+      "ponse\022+\n\rnotifications\030\001 \003(\0132\024.patrol.No" +
+      "tification\"?\n\nTapRequest\022\"\n\010selector\030\001 \001" +
+      "(\0132\020.patrol.Selector\022\r\n\005appId\030\002 \001(\t\"p\n\020E" +
+      "nterTextRequest\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002" +
+      " \001(\t\022\017\n\005index\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132" +
+      "\020.patrol.SelectorH\000B\010\n\006findBy\"Y\n\014SwipeRe" +
+      "quest\022\016\n\006startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n" +
+      "\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r" +
+      "\"\206\001\n\027HandlePermissionRequest\0222\n\004code\030\001 \001" +
+      "(\0162$.patrol.HandlePermissionRequest.Code" +
+      "\"7\n\004Code\022\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THIS_T" +
+      "IME\020\001\022\n\n\006DENIED\020\002\"\225\001\n\032SetLocationAccurac" +
+      "yRequest\022M\n\020locationAccuracy\030\001 \001(\01623.pat" +
+      "rol.SetLocationAccuracyRequest.LocationA" +
+      "ccuracy\"(\n\020LocationAccuracy\022\n\n\006COARSE\020\000\022" +
+      "\010\n\004FINE\020\001\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001" +
+      "\001\022\033\n\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textCo" +
+      "ntains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001" +
+      "\001\022\037\n\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034co" +
+      "ntentDescriptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n" +
+      "\032contentDescriptionContains\030\007 \001(\tH\006\210\001\001\022\027" +
+      "\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(" +
+      "\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030" +
+      "\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n" +
+      "\017_textStartsWithB\017\n\r_textContainsB\014\n\n_cl" +
+      "assNameB\025\n\023_contentDescriptionB\037\n\035_conte" +
+      "ntDescriptionStartsWithB\035\n\033_contentDescr" +
+      "iptionContainsB\r\n\013_resourceIdB\013\n\t_instan" +
+      "ceB\n\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nN" +
+      "ativeView\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001" +
+      "(\t\022\032\n\022contentDescription\030\003 \001(\t\022\017\n\007focuse" +
+      "d\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006" +
+      " \001(\005\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applicatio" +
+      "nPackage\030\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patro" +
+      "l.NativeView\"]\n\014Notification\022\024\n\007appName\030" +
+      "\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001" +
+      "(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName2\204\r\n\017NativeAu" +
+      "tomator\022+\n\tpressHome\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\022+\n\tpressBack\022\r.patrol.Empty" +
+      "\032\r.patrol.Empty\"\000\0221\n\017pressRecentApps\022\r.p" +
+      "atrol.Empty\032\r.patrol.Empty\"\000\0227\n\025doublePr" +
+      "essRecentApps\022\r.patrol.Empty\032\r.patrol.Em" +
+      "pty\"\000\0222\n\007openApp\022\026.patrol.OpenAppRequest" +
+      "\032\r.patrol.Empty\"\000\022F\n\021openQuickSettings\022 " +
+      ".patrol.OpenQuickSettingsRequest\032\r.patro" +
+      "l.Empty\"\000\022Q\n\016getNativeViews\022\035.patrol.Get" +
+      "NativeViewsRequest\032\036.patrol.GetNativeVie" +
+      "wsResponse\"\000\022*\n\003tap\022\022.patrol.TapRequest\032" +
+      "\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.T" +
+      "apRequest\032\r.patrol.Empty\"\000\0226\n\tenterText\022" +
+      "\030.patrol.EnterTextRequest\032\r.patrol.Empty" +
+      "\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r.patr" +
+      "ol.Empty\"\000\0224\n\022enableAirplaneMode\022\r.patro" +
+      "l.Empty\032\r.patrol.Empty\"\000\0225\n\023disableAirpl" +
+      "aneMode\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
+      ",\n\nenableWiFi\022\r.patrol.Empty\032\r.patrol.Em" +
+      "pty\"\000\022-\n\013disableWiFi\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\0220\n\016enableCellular\022\r.patrol." +
+      "Empty\032\r.patrol.Empty\"\000\0221\n\017disableCellula" +
+      "r\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017ena" +
+      "bleBluetooth\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\0222\n\020disableBluetooth\022\r.patrol.Empty\032" +
+      "\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027.pat" +
+      "rol.DarkModeRequest\032\r.patrol.Empty\"\000\022;\n\017" +
+      "disableDarkMode\022\027.patrol.DarkModeRequest" +
+      "\032\r.patrol.Empty\"\000\0223\n\021openNotifications\022\r" +
+      ".patrol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeN" +
+      "otifications\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\022:\n\030closeHeadsUpNotification\022\r.patro" +
+      "l.Empty\032\r.patrol.Empty\"\000\022W\n\020getNotificat" +
+      "ions\022\037.patrol.GetNotificationsRequest\032 ." +
+      "patrol.GetNotificationsResponse\"\000\022F\n\021tap" +
+      "OnNotification\022 .patrol.TapOnNotificatio" +
+      "nRequest\032\r.patrol.Empty\"\000\022J\n\026handlePermi" +
+      "ssionDialog\022\037.patrol.HandlePermissionReq" +
+      "uest\032\r.patrol.Empty\"\000\022J\n\023setLocationAccu" +
+      "racy\022\".patrol.SetLocationAccuracyRequest" +
+      "\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empt" +
+      "y\032\r.patrol.Empty\"\000B\'\n%pl.leancode.automa" +
+      "torserver.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -17108,104 +14802,80 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_OpenQuickSettingsRequest_descriptor,
         new java.lang.String[] { });
-    internal_static_patrol_AirplaneModeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
-    internal_static_patrol_AirplaneModeRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_AirplaneModeRequest_descriptor,
-        new java.lang.String[] { "AppId", });
-    internal_static_patrol_CellularRequest_descriptor =
-      getDescriptor().getMessageTypes().get(5);
-    internal_static_patrol_CellularRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_CellularRequest_descriptor,
-        new java.lang.String[] { "AppId", });
-    internal_static_patrol_WiFiRequest_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_patrol_WiFiRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_WiFiRequest_descriptor,
-        new java.lang.String[] { "AppId", });
-    internal_static_patrol_BluetoothRequest_descriptor =
-      getDescriptor().getMessageTypes().get(7);
-    internal_static_patrol_BluetoothRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_BluetoothRequest_descriptor,
-        new java.lang.String[] { "AppId", });
     internal_static_patrol_DarkModeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_patrol_DarkModeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_DarkModeRequest_descriptor,
         new java.lang.String[] { "AppId", });
-    internal_static_patrol_GetNativeWidgetsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(9);
-    internal_static_patrol_GetNativeWidgetsRequest_fieldAccessorTable = new
+    internal_static_patrol_GetNativeViewsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_patrol_GetNativeViewsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_GetNativeWidgetsRequest_descriptor,
+        internal_static_patrol_GetNativeViewsRequest_descriptor,
         new java.lang.String[] { "Selector", });
-    internal_static_patrol_GetNativeWidgetsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(10);
-    internal_static_patrol_GetNativeWidgetsResponse_fieldAccessorTable = new
+    internal_static_patrol_GetNativeViewsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_GetNativeWidgetsResponse_descriptor,
-        new java.lang.String[] { "NativeWidgets", });
+        internal_static_patrol_GetNativeViewsResponse_descriptor,
+        new java.lang.String[] { "NativeViews", });
     internal_static_patrol_GetNotificationsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_patrol_GetNotificationsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsRequest_descriptor,
         new java.lang.String[] { });
     internal_static_patrol_GetNotificationsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_patrol_GetNotificationsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsResponse_descriptor,
         new java.lang.String[] { "Notifications", });
     internal_static_patrol_TapRequest_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_patrol_TapRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_TapRequest_descriptor,
         new java.lang.String[] { "Selector", "AppId", });
     internal_static_patrol_EnterTextRequest_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_patrol_EnterTextRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_EnterTextRequest_descriptor,
         new java.lang.String[] { "Data", "AppId", "Index", "Selector", "FindBy", });
     internal_static_patrol_SwipeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_patrol_SwipeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SwipeRequest_descriptor,
         new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
     internal_static_patrol_HandlePermissionRequest_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_patrol_HandlePermissionRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_HandlePermissionRequest_descriptor,
         new java.lang.String[] { "Code", });
     internal_static_patrol_SetLocationAccuracyRequest_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SetLocationAccuracyRequest_descriptor,
         new java.lang.String[] { "LocationAccuracy", });
     internal_static_patrol_Selector_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
-    internal_static_patrol_NativeWidget_descriptor =
-      getDescriptor().getMessageTypes().get(19);
-    internal_static_patrol_NativeWidget_fieldAccessorTable = new
+    internal_static_patrol_NativeView_descriptor =
+      getDescriptor().getMessageTypes().get(15);
+    internal_static_patrol_NativeView_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_NativeWidget_descriptor,
+        internal_static_patrol_NativeView_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,

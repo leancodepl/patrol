@@ -1,3 +1,7 @@
+## Unreleased
+
+- Rename `getNativeWidgets()` to `getNativeViews()`
+
 ## 0.6.10
 
 - Fix artifacts being downloaded on every run on Linux and Windows (#392)

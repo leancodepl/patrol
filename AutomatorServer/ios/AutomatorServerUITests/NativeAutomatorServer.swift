@@ -92,74 +92,74 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   }
   
   func enableAirplaneMode(
-    request: Patrol_AirplaneModeRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.enableAirplaneMode(request.appID)
+    try automation.enableAirplaneMode()
     return Empty()
   }
   
   func disableAirplaneMode(
-    request: Patrol_AirplaneModeRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.disableAirplaneMode(request.appID)
+    try automation.disableAirplaneMode()
     return Empty()
   }
   
   func enableCellular(
-    request: Patrol_CellularRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.enableCellular(request.appID)
+    try automation.enableCellular()
     return Empty()
   }
   
   func disableCellular(
-    request: Patrol_CellularRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.disableCellular(request.appID)
+    try automation.disableCellular()
     return Empty()
   }
   
   func enableWiFi(
-    request: Patrol_WiFiRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.enableWiFi(request.appID)
+    try automation.enableWiFi()
     return Empty()
   }
   
   func disableWiFi(
-    request: Patrol_WiFiRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.disableWiFi(request.appID)
+    try automation.disableWiFi()
     return Empty()
   }
   
   func enableBluetooth(
-    request: Patrol_BluetoothRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.enableBluetooth(request.appID)
+    try automation.enableBluetooth()
     return Empty()
   }
   
   func disableBluetooth(
-    request: Patrol_BluetoothRequest,
+    request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    try automation.disableBluetooth(request.appID)
+    try automation.disableBluetooth()
     return Empty()
   }
   
-  func getNativeWidgets(
-    request: Patrol_GetNativeWidgetsRequest,
+  func getNativeViews(
+    request: Patrol_GetNativeViewsRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_GetNativeWidgetsResponse {
-    throw PatrolError.generic("getNativeWidgets() is not supported on iOS")
+  ) async throws -> Patrol_GetNativeViewsResponse {
+    throw PatrolError.generic("getNativeViews() is not supported on iOS")
   }
   
   func getNotifications(

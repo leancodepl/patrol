@@ -109,54 +109,6 @@ public struct Patrol_OpenQuickSettingsRequest {
   public init() {}
 }
 
-public struct Patrol_AirplaneModeRequest {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var appID: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct Patrol_CellularRequest {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var appID: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct Patrol_WiFiRequest {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var appID: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
-public struct Patrol_BluetoothRequest {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  public var appID: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
-}
-
 public struct Patrol_DarkModeRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -169,7 +121,7 @@ public struct Patrol_DarkModeRequest {
   public init() {}
 }
 
-public struct Patrol_GetNativeWidgetsRequest {
+public struct Patrol_GetNativeViewsRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -190,12 +142,12 @@ public struct Patrol_GetNativeWidgetsRequest {
   fileprivate var _selector: Patrol_Selector? = nil
 }
 
-public struct Patrol_GetNativeWidgetsResponse {
+public struct Patrol_GetNativeViewsResponse {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var nativeWidgets: [Patrol_NativeWidget] = []
+  public var nativeViews: [Patrol_NativeView] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -565,7 +517,7 @@ public struct Patrol_Selector {
 /// Represents a native UI control.
 ///
 /// On Android, this is `android.view.View`.
-public struct Patrol_NativeWidget {
+public struct Patrol_NativeView {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -586,7 +538,7 @@ public struct Patrol_NativeWidget {
 
   public var applicationPackage: String = String()
 
-  public var children: [Patrol_NativeWidget] = []
+  public var children: [Patrol_NativeView] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -627,13 +579,9 @@ extension Patrol_TapOnNotificationRequest: @unchecked Sendable {}
 extension Patrol_TapOnNotificationRequest.OneOf_FindBy: @unchecked Sendable {}
 extension Patrol_Empty: @unchecked Sendable {}
 extension Patrol_OpenQuickSettingsRequest: @unchecked Sendable {}
-extension Patrol_AirplaneModeRequest: @unchecked Sendable {}
-extension Patrol_CellularRequest: @unchecked Sendable {}
-extension Patrol_WiFiRequest: @unchecked Sendable {}
-extension Patrol_BluetoothRequest: @unchecked Sendable {}
 extension Patrol_DarkModeRequest: @unchecked Sendable {}
-extension Patrol_GetNativeWidgetsRequest: @unchecked Sendable {}
-extension Patrol_GetNativeWidgetsResponse: @unchecked Sendable {}
+extension Patrol_GetNativeViewsRequest: @unchecked Sendable {}
+extension Patrol_GetNativeViewsResponse: @unchecked Sendable {}
 extension Patrol_GetNotificationsRequest: @unchecked Sendable {}
 extension Patrol_GetNotificationsResponse: @unchecked Sendable {}
 extension Patrol_TapRequest: @unchecked Sendable {}
@@ -645,7 +593,7 @@ extension Patrol_HandlePermissionRequest.Code: @unchecked Sendable {}
 extension Patrol_SetLocationAccuracyRequest: @unchecked Sendable {}
 extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: @unchecked Sendable {}
 extension Patrol_Selector: @unchecked Sendable {}
-extension Patrol_NativeWidget: @unchecked Sendable {}
+extension Patrol_NativeView: @unchecked Sendable {}
 extension Patrol_Notification: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
@@ -788,134 +736,6 @@ extension Patrol_OpenQuickSettingsRequest: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-extension Patrol_AirplaneModeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".AirplaneModeRequest"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Patrol_AirplaneModeRequest, rhs: Patrol_AirplaneModeRequest) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Patrol_CellularRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".CellularRequest"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Patrol_CellularRequest, rhs: Patrol_CellularRequest) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Patrol_WiFiRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".WiFiRequest"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Patrol_WiFiRequest, rhs: Patrol_WiFiRequest) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension Patrol_BluetoothRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".BluetoothRequest"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "appId"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.appID.isEmpty {
-      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Patrol_BluetoothRequest, rhs: Patrol_BluetoothRequest) -> Bool {
-    if lhs.appID != rhs.appID {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
 extension Patrol_DarkModeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DarkModeRequest"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -948,8 +768,8 @@ extension Patrol_DarkModeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageI
   }
 }
 
-extension Patrol_GetNativeWidgetsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".GetNativeWidgetsRequest"
+extension Patrol_GetNativeViewsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetNativeViewsRequest"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "selector"),
   ]
@@ -977,17 +797,17 @@ extension Patrol_GetNativeWidgetsRequest: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Patrol_GetNativeWidgetsRequest, rhs: Patrol_GetNativeWidgetsRequest) -> Bool {
+  public static func ==(lhs: Patrol_GetNativeViewsRequest, rhs: Patrol_GetNativeViewsRequest) -> Bool {
     if lhs._selector != rhs._selector {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_GetNativeWidgetsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".GetNativeWidgetsResponse"
+extension Patrol_GetNativeViewsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetNativeViewsResponse"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "nativeWidgets"),
+    1: .same(proto: "nativeViews"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -996,21 +816,21 @@ extension Patrol_GetNativeWidgetsResponse: SwiftProtobuf.Message, SwiftProtobuf.
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.nativeWidgets) }()
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.nativeViews) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.nativeWidgets.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.nativeWidgets, fieldNumber: 1)
+    if !self.nativeViews.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.nativeViews, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Patrol_GetNativeWidgetsResponse, rhs: Patrol_GetNativeWidgetsResponse) -> Bool {
-    if lhs.nativeWidgets != rhs.nativeWidgets {return false}
+  public static func ==(lhs: Patrol_GetNativeViewsResponse, rhs: Patrol_GetNativeViewsResponse) -> Bool {
+    if lhs.nativeViews != rhs.nativeViews {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1423,8 +1243,8 @@ extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplemen
   }
 }
 
-extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".NativeWidget"
+extension Patrol_NativeView: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".NativeView"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "className"),
     2: .same(proto: "text"),
@@ -1488,7 +1308,7 @@ extension Patrol_NativeWidget: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Patrol_NativeWidget, rhs: Patrol_NativeWidget) -> Bool {
+  public static func ==(lhs: Patrol_NativeView, rhs: Patrol_NativeView) -> Bool {
     if lhs.className != rhs.className {return false}
     if lhs.text != rhs.text {return false}
     if lhs.contentDescription != rhs.contentDescription {return false}
