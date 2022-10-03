@@ -16,5 +16,6 @@ class ServerLoop {
         } catch (e: Exception) {
             Logger.e("Failure while running the server: ", e)
         }
+        patrolServer.blockUntilShutdown()
     }
 }

@@ -1,8 +1,60 @@
-## Unreleased
+## 0.6.11
 
-- Rename option `target` to `targets` to let the users fine-tune the tests they
-  want to run (#305)
-- Remove support for the `patrol.toml` config file
+- Improve stability (#397)
+- AutomatorServer:
+  - Rename `getNativeWidgets()` to `getNativeViews()` (#399)
+  - Add `tapOnNotificationByIndex()`, `tapOnNotificationBySelector()`, and
+    `closeHeadsUpNotification()` on iOS (#398)
+
+## 0.6.10
+
+- Fix artifacts being downloaded on every run on Linux and Windows (#392)
+- Fix a small typo during `patrol drive` (#391)
+- AutomatorServer:
+  - Fix `getNativeWidgets()` crashing on Android (#393)
+
+## 0.6.9
+
+- AutomatorServer:
+  - Fix handling permission prompts now working in some edge cases (#383)
+
+## 0.6.8
+
+- Improve update prompt (#377)
+- AutomatorServer:
+  - Remove remaining Objective-C code (#374)
+
+## 0.6.7
+
+- AutomatorServer:
+  - Implement enabling and disabling cellular on iOS (#371)
+  - Fix crash with trying to use non-existent `AutomatorServer.xcworkspace` when
+    running tests on iOS (#371)
+
+## 0.6.6+2
+
+- Build iOS test runner artifact in GitHub Actions (#362)
+
+## 0.6.6+1
+
+- Download artifacts from GitHub Releases insted of LeanCode's Azure Storage
+  (#363)
+
+## 0.6.6
+
+- Release updated `AutomatorServer`s (#338)
+
+## 0.6.5
+
+- Fix `--targets` argument to `patrol drive` (#330)
+
+## 0.6.4
+
+- Add the `targets` alias for `target` option for `patrol drive` (#314)
+- Add the `devices` alias for `device` option for `patrol drive` (#314)
+- Add the `dart-defines` alias for `dart-define` option for `patrol drive`
+  (#314)
+- Remove support for the `patrol.toml` config file (#313)
 
 ## 0.6.3
 

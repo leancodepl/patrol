@@ -115,7 +115,7 @@ class _PermissionTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   name,
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ],
             ),
@@ -129,7 +129,7 @@ class _PermissionTile extends StatelessWidget {
                 'Request ${name.toLowerCase()} permission',
                 style: Theme.of(context)
                     .textTheme
-                    .button
+                    .labelLarge
                     ?.copyWith(color: Colors.white),
               ),
             ),

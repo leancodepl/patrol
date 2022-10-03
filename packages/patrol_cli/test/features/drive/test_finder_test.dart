@@ -15,14 +15,14 @@ void main() {
 
     testFinder = TestFinder(
       integrationTestDir: fs.directory('integration_test'),
-      fileSystem: fs,
+      fs: fs,
     );
   });
 
   test(
     'throws FileSystemException when integration_test directory does not exist',
     () {
-      expect(testFinder.findTests, throwsA(isA<FileSystemException>()));
+      expect(testFinder.findAllTests, throwsA(isA<FileSystemException>()));
     },
   );
 
@@ -30,7 +30,7 @@ void main() {
     fs.file('integration_test/app_test.dart').createSync(recursive: true);
     fs.file('integration_test/permission_test.dart').createSync();
 
-    expect(testFinder.findTests(), [
+    expect(testFinder.findAllTests(), [
       '${wd.path}/integration_test/app_test.dart',
       '${wd.path}/integration_test/permission_test.dart'
     ]);
@@ -43,7 +43,7 @@ void main() {
         .file('integration_test/auth/sign_in_test.dart')
         .createSync(recursive: true);
 
-    expect(testFinder.findTests(), [
+    expect(testFinder.findAllTests(), [
       '${wd.path}/integration_test/app_test.dart',
       '${wd.path}/integration_test/permission_test.dart',
       '${wd.path}/integration_test/auth/sign_in_test.dart',

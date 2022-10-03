@@ -11,9 +11,9 @@ dependencies:
   convenient_test: ^1.2.0
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^11.0.0
-  geolocator: ^9.0.1
-  permission_handler: ^10.0.0
+  flutter_local_notifications: ^11.0.1
+  geolocator: ^9.0.2
+  permission_handler: ^10.0.1
   webview_flutter: ^3.0.4
 
 dev_dependencies:

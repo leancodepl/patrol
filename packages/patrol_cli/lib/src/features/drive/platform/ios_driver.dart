@@ -1,29 +1,32 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Process, Platform;
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 class IOSDriver {
-  IOSDriver(
-    DisposeScope parentDisposeScope,
-    this._artifactsRepository,
-  ) : _disposeScope = DisposeScope() {
+  IOSDriver({
+    required DisposeScope parentDisposeScope,
+    required ArtifactsRepository artifactsRepository,
+    required Logger logger,
+  })  : _disposeScope = DisposeScope(),
+        _artifactsRepository = artifactsRepository,
+        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
-  final ArtifactsRepository _artifactsRepository;
-
   final DisposeScope _disposeScope;
+  final ArtifactsRepository _artifactsRepository;
+  final Logger _logger;
 
   Future<void> run({
     required String port,
     required Device device,
     required String? flavor,
-    required bool verbose,
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
@@ -41,7 +44,7 @@ class IOSDriver {
     required String port,
     required String deviceId,
   }) async {
-    final progress = log.progress('Forwarding ports');
+    final progress = _logger.progress('Forwarding ports');
 
     try {
       // See https://github.com/libimobiledevice/libusbmuxd/issues/103
@@ -61,7 +64,7 @@ class IOSDriver {
 
       _disposeScope.addDispose(() async {
         process.kill();
-        log.fine('Killed iproxy');
+        _logger.fine('Killed iproxy');
       });
 
       final completer = Completer<void>();
@@ -76,7 +79,7 @@ class IOSDriver {
       ).disposedBy(_disposeScope);
 
       process
-          .listenStdErr((line) => log.warning('iproxy: $line'))
+          .listenStdErr((line) => _logger.warning('iproxy: $line'))
           .disposedBy(_disposeScope);
 
       await completer.future;
@@ -95,13 +98,16 @@ class IOSDriver {
     required String deviceId,
     required bool simulator,
   }) async {
+    _logger
+        .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
+
     // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
       'xcodebuild',
       [
         'test',
-        '-workspace',
-        'AutomatorServer.xcworkspace',
+        '-project',
+        'AutomatorServer.xcodeproj',
         '-scheme',
         'AutomatorServer',
         '-sdk',
@@ -138,21 +144,21 @@ class IOSDriver {
         final msg = exitCode == 0
             ? 'Uninstalled AutomatorServer'
             : 'Failed to uninstall AutomatorServer (code $exitCode)';
-        log.fine(msg);
+        _logger.fine(msg);
       })
       ..addDispose(() async {
         final msg = process.kill()
             ? 'Killed xcodebuild'
             : 'Failed to kill xcodebuild (${await process.exitCode})';
-        log.fine(msg);
+        _logger.fine(msg);
       });
 
     final completer = Completer<void>();
     process.listenStdOut((line) {
       if (line.startsWith('PatrolServer')) {
-        log.info(line);
+        _logger.info(line);
       } else {
-        log.fine(line);
+        _logger.fine(line);
       }
 
       if (line.contains('Server started')) {
@@ -163,7 +169,7 @@ class IOSDriver {
     }).disposedBy(_disposeScope);
 
     process.listenStdErr((line) {
-      log.severe(line);
+      _logger.severe(line);
       if (line.contains('** TEST FAILED **')) {
         throw Exception(
           'Test failed. See logs above. Also, consider running with --verbose.',

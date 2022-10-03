@@ -30,19 +30,23 @@ class CounterTemplate extends AppTestTemplate {
   @override
   String generateCode() {
     return '''
-  // ignore_for_file: avoid_print
-  import 'package:$projectName/main.dart';
-  import 'package:flutter/material.dart';
-  import 'package:patrol/patrol.dart';
+// ignore_for_file: avoid_print
+import 'package:$projectName/main.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
+
+import 'config.dart';
+
+// This is an example integration test using Patrol. Use it as a base to
+// create your own Patrol-powered test.
+//
+// To run it, you have to use `patrol drive` instead of `flutter test`.
   
-  // This is an example integration test using Patrol. Use it as a base to
-  // create your own Patrol-powered test.
-  //
-  // It runs on target device.
-  
-  void main() {
+void main() {
   patrolTest(
     'counter state is the same after going to Home and switching apps',
+    config: patrolConfig,
     nativeAutomation: true,
     (\$) async {
       /// Find the first Text widget whose content is a String which represents
@@ -89,9 +93,8 @@ class CounterTemplate extends AppTestTemplate {
       await \$.native.pressDoubleRecentApps();
     },
   );
-  }
-
-  ''';
+}
+''';
   }
 }
 
@@ -106,16 +109,20 @@ class BasicTemplate extends AppTestTemplate {
   String generateCode() => r'''
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
-// This is an example integration test using Patrol. Use it as a base to create
-// your own Patrol-powered test.
+import 'config.dart';
+
+// This is an example integration test using Patrol. Use it as a base to
+// create your own Patrol-powered test.
 //
-// It runs on the target device.
+// To run it, you have to use `patrol drive` instead of `flutter test`.
 
 void main() {
   patrolTest(
     'counter state is the same after going to home and switching apps',
+    config: patrolConfig,
     nativeAutomation: true,
     ($) async {
       // Replace with your own app widget.
@@ -148,24 +155,18 @@ void main() {
 }
 
 const driverFileContent = '''
-// ignore_for_file: avoid_print
 import 'package:integration_test/integration_test_driver.dart';
-import 'package:patrol/patrol_drive_helper.dart';
 
-// Runs on our machine. Knows nothing about the app being tested.
+Future<void> main() => integrationDriver();
+''';
 
-Future<void> main() async {
-  final patrol = PatrolDriveHelper();
-  while (!await patrol.isRunning()) {
-    print('Waiting for patrol automation server...');
-    await Future<void>.delayed(const Duration(seconds: 1));
-  }
-  print('Patrol automation server is running, starting test drive');
-  try {
-    await integrationDriver();
-  } finally {
-    print('Stopping Patrol automation server');
-    await patrol.stop();
-  }
-}
+const configFileContent = '''
+import 'package:patrol/patrol.dart';
+
+// TODO: Replace with values specific to your app.
+const patrolConfig = PatrolTestConfig(
+  appName: 'Example App',
+  packageName: 'pl.leancode.patrol.example',
+  bundleId: 'pl.leancode.patrol.Example',
+);
 ''';

@@ -27,25 +27,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
+    nativeAutomation: true,
     'counter state is the same after going to Home and going back',
     ($) async {
-      await tester.pumpWidgetAndSettle(const MyApp());
+      await $.pumpWidgetAndSettle(const MyApp());
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 
-      await patrol.pressHome();
-      await patrol.pressDoubleRecentApps();
+      await $.native.pressHome();
+      await $.native.pressDoubleRecentApps();
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '2');
 
-      await patrol.openNotifications();
-      await patrol.pressBack();
+      await $.native.openNotifications();
+      await $.native.pressBack();
     },
   );
 }
@@ -85,7 +84,7 @@ void main() {
 }
 ```
 
-[patrol_ci]: https://pub.dev/packages/patrol_cli
+[patrol_cli]: https://pub.dev/packages/patrol_cli
 [pub_badge]: https://img.shields.io/pub/v/patrol.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black

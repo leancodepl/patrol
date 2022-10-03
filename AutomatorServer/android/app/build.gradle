@@ -2,20 +2,27 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "org.jlleitschuh.gradle.ktlint" version "10.3.0"
+    id "com.google.protobuf" version "0.8.19"
 }
 
 apply plugin: "kotlinx-serialization"
 
+ktlint {
+    filter {
+        exclude("**/contracts/**")
+    }
+}
+
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     namespace "pl.leancode.automatorserver"
 
     defaultConfig {
         applicationId "pl.leancode.automatorserver"
         minSdkVersion 26
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0.0"
 
@@ -37,27 +44,30 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
     packagingOptions {
         jniLibs {
-            excludes += ['META-INF/*']
+            excludes += ["META-INF/*"]
         }
         resources {
-            excludes += ['META-INF/*']
+            excludes += ["META-INF/*"]
         }
     }
-
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.core:core-ktx:1.8.0"
-    implementation "androidx.appcompat:appcompat:1.4.2"
+    implementation "androidx.core:core-ktx:1.9.0"
+    implementation "androidx.appcompat:appcompat:1.5.1"
     implementation "com.google.android.material:material:1.6.1"
 
-    androidTestImplementation platform("org.http4k:http4k-bom:4.25.14.0")
-    androidTestImplementation "org.http4k:http4k-core"
-    androidTestImplementation "org.http4k:http4k-server-netty"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3"
+    androidTestImplementation "com.google.protobuf:protobuf-kotlin:3.21.6"
+    androidTestImplementation "com.google.protobuf:protobuf-java-util:3.21.6"
+    androidTestImplementation "io.grpc:grpc-protobuf:1.49.1"
+    androidTestImplementation "io.grpc:grpc-stub:1.49.1"
+    androidTestImplementation "io.grpc:grpc-kotlin-stub:1.3.0"
+    androidTestImplementation "io.grpc:grpc-netty:1.49.1"
+    androidTestImplementation "javax.annotation:javax.annotation-api:1.3.2"
 
     androidTestImplementation "androidx.test.ext:junit:1.1.3"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"

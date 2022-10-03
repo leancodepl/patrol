@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# gen_protobufs generates Protocol Buffers classes for every used language
+# (Dart, Swift, Kotlin/Java) in the appropriate directory.
+#
+# To use it, you need to have the following programs in your $PATH:
+#
+#  * protoc
+#
+#  * Dart plugin (https://pub.dev/packages/protoc_plugin)
+#
+#  * Swift plugin (https://github.com/apple/swift-protobuf)
+#
+#  * Java plugin (https://github.com/grpc/grpc-java)
+#
+#  * Kotlin plugin (https://github.com/grpc/grpc-kotlin/tree/master/compiler)
+
+cd "$(dirname "$0")" || exit
+
+SRC_DIR="."
+PROTO_PATH="./contracts.proto"
+
+dart_out="./packages/patrol/lib/src/native/contracts"
+java_out="./AutomatorServer/android/app/src/androidTest/java"
+kotlin_out="./AutomatorServer/android/app/src/androidTest/java"
+swift_out="./AutomatorServer/ios/AutomatorServerUITests"
+
+mkdir -p "$dart_out"
+protoc \
+	--dart_out="grpc:$dart_out" \
+	-I="$SRC_DIR" \
+	"$PROTO_PATH"
+
+# Remove the server, which causes problems with pub.dev score and is not needed.
+# rm "$dart_out/contracts.pbserver.dart"
+
+protoc \
+	--java_out="$java_out" \
+	--kotlin_out="$kotlin_out" \
+	--grpc-java_out="$java_out" \
+	--grpckt_out="$kotlin_out" \
+	"$PROTO_PATH"
+
+protoc \
+	--swift_out="$swift_out" \
+	--grpc-swift_out="$swift_out" \
+	--swift_opt=Visibility=Public \
+	"$PROTO_PATH"

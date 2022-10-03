@@ -1,7 +1,15 @@
 # clean
 
-This command removes the directory pointed to by `$PATROL_CACHE` environment
-variable, where artifacts and logs are stored.
+### Synopsis
 
-If `$PATROL_CACHE` environment variable doesn't exist, it defaults to
-`$HOME/.patrol`.
+Removes the directory where artifacts are stored.
+
+```bash
+patrol clean
+```
+
+To learn more about this command, run `patrol clean --help`.
+
+### Description
+
+To see where the artifacts are stored, run `patrol doctor`.

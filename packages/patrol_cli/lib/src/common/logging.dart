@@ -6,8 +6,6 @@ import 'package:ansi_styles/ansi_styles.dart';
 import 'package:logging/logging.dart';
 import 'package:mason_logger/mason_logger.dart' as mason_logger;
 
-final log = Logger('');
-
 extension LoggerX on Logger {
   static final _logger = mason_logger.Logger();
 
@@ -15,8 +13,11 @@ extension LoggerX on Logger {
   mason_logger.Progress progress(String message) {
     return _logger.progress(message);
   }
+
+  set verbose(bool newValue) => _verbose = newValue;
 }
 
+bool _verbose = false;
 StreamSubscription<void>? _sub;
 
 /// Sets up the global logger.
@@ -25,12 +26,8 @@ StreamSubscription<void>? _sub;
 /// - [Level.SEVERE], printed in red
 /// - [Level.WARNING], printed in yellow
 /// - [Level.INFO], printed in white
-/// - [Level.FINE], printed in grey and only when [verbose] is true
-Future<void> setUpLogger({bool verbose = false}) async {
-  if (verbose) {
-    print('Verbose mode enabled. More logs will be printed.');
-  }
-
+/// - [Level.FINE], printed in grey and only when [_verbose] is true
+Future<void> setUpLogger() async {
   Logger.root.level = Level.ALL;
 
   await _sub?.cancel();
@@ -43,7 +40,7 @@ Future<void> setUpLogger({bool verbose = false}) async {
       print(AnsiStyles.yellow(fmtLog));
     } else if (log.level >= Level.INFO) {
       print(fmtLog);
-    } else if (log.level >= Level.FINE && verbose) {
+    } else if (log.level >= Level.FINE && _verbose) {
       print(AnsiStyles.grey(fmtLog));
     }
   });

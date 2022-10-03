@@ -19,9 +19,9 @@ See [packages/patrol][patrol].
 
 1. Create a git tag:
 
-```
-$ git tag patrol_cli-v0.3.4
-```
+   ```
+   $ git tag patrol_cli-v0.3.4
+   ```
 
 2. Push it! GitHub Actions will take care of the rest.
 

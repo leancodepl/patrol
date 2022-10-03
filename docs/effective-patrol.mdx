@@ -2,7 +2,12 @@
 
 Over the past months, we've written many Patrol tests and often learned the
 hard way what works well and what doesn't. We're sharing our findings hoping
-that they'll help you write robust tests:
+that they'll help you write robust tests.
+
+> The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+> NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+> "OPTIONAL" in this document are to be interpreted as described in
+> [RFC 2119][rfc2119].
 
 ### PREFER using keys to find widgets
 
@@ -139,10 +144,9 @@ import 'package:awesome_app/main.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'signs up for the newsletter and receives a reward',
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
@@ -151,7 +155,6 @@ void main() {
 
       // lots of lines
     },
-    appName: 'AwesomeApp',
   );
 }
 ```
@@ -159,10 +162,9 @@ void main() {
 ```dart
 // BAD
 void main() {
-  final patrol = Patrol.forTest();
-
   patrolTest(
     'test',
+    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
@@ -171,7 +173,8 @@ void main() {
 
       // lots of lines
     },
-    appName: 'AwesomeApp',
   );
 }
 ```
+
+[rfc2119]: https://www.ietf.org/rfc/rfc2119.txt

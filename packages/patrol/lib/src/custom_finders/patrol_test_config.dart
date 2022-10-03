@@ -18,8 +18,8 @@ class PatrolTestConfig with _$PatrolTestConfig {
     /// Time after which [PatrolFinder.waitUntilVisible] fails if it doesn't
     /// finds a widget.
     ///
-    /// [PatrolFinder.waitUntilVisible] is used internally by
-    /// [PatrolFinder.tap] and [PatrolFinder.enterText].
+    /// [PatrolFinder.waitUntilVisible] is used internally by [PatrolFinder.tap]
+    /// and [PatrolFinder.enterText].
     @Default(Duration(seconds: 10)) Duration visibleTimeout,
 
     /// Time after which [PatrolTester.pumpAndSettle] fails.
@@ -34,5 +34,15 @@ class PatrolTestConfig with _$PatrolTestConfig {
     ///
     /// Used in [PatrolTester.log].
     String? appName,
+
+    /// Package name of the application under test.
+    ///
+    /// Android only.
+    String? packageName,
+
+    /// Bundle identifier name of the application under test.
+    ///
+    /// iOS only.
+    String? bundleId,
   }) = _PatrolTestConfig;
 }

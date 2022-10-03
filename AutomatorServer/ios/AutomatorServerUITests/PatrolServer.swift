@@ -1,45 +1,16 @@
-import Telegraph
+import GRPC
+import NIOCore
+import Foundation
+import NIOPosix
 
-struct OpenAppCommand: Codable {
+struct DarkModeCommand: Codable {
   var appId: String
-}
-
-struct TapCommand: Codable {
-  var appId: String
-  var selector: Selector
-}
-
-struct DoubleTapCommand: Codable {
-  var appId: String
-  var selector: Selector
-}
-
-struct EnterTextBySelectorCommand: Codable {
-  var appId: String
-  var data: String
-  var selector: Selector
-}
-
-struct EnterTextByIndexCommand: Codable {
-  var appId: String
-  var data: String
-  var index: Int
-}
-
-struct PermissionCommand: Codable {
-  var code: String
-}
-
-struct Selector: Codable {
-  var text: String
 }
 
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
 
   private let port: Int
-
-  private let server: Server
 
   private let automation = PatrolAutomation()
 
@@ -56,128 +27,20 @@ class PatrolServer {
     return Int(portStr)
   }()
 
-  init() throws {
+  init() {
     self.port = passedPort ?? 8081
-    self.server = Server()
   }
 
-  func setUpRoutes() {
-    server.route(.GET, "") { request in
-      HTTPResponse(content: "Hello from AutomatorServer on iOS!")
-    }
+  func start() async throws {
+    let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+    
+    let provider = NativeAutomatorServer()
+    
+    let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(host: "0.0.0.0", port: port).get()
+    
+    Logger.shared.i("Server started on http://localhost:\(port)")
 
-    server.route(.GET, "isRunning") { request in
-      HTTPResponse(.ok, headers: [:], content: "All is good.")
-    }
-
-    server.route(.POST, "stop") { request in
-      self.stop()
-      return HTTPResponse(.ok)
-    }
-
-    server.route(.POST, "pressHome") { request in
-      self.automation.pressHome()
-      return HTTPResponse(.ok)
-    }
-
-    server.route(.POST, "openApp") { request in
-      do {
-        let command = try self.decoder.decode(OpenAppCommand.self, from: request.body)
-        self.automation.openApp(command.appId)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "tap") { request in
-      do {
-        let command = try self.decoder.decode(TapCommand.self, from: request.body)
-        self.automation.tap(on: command.selector.text, inApp: command.appId)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "doubleTap") { request in
-      do {
-        let command = try self.decoder.decode(DoubleTapCommand.self, from: request.body)
-        self.automation.doubleTap(on: command.selector.text, inApp: command.appId)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "enterTextBySelector") { request in
-      do {
-        let command = try self.decoder.decode(EnterTextBySelectorCommand.self, from: request.body)
-        self.automation.enterText(command.data, by: command.selector.text, inApp: command.appId)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "enterTextByIndex") { request in
-      do {
-        let command = try self.decoder.decode(EnterTextByIndexCommand.self, from: request.body)
-        self.automation.enterText(command.data, by: command.index, inApp: command.appId)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "handlePermission") { request in
-      do {
-        let command = try self.decoder.decode(PermissionCommand.self, from: request.body)
-        self.automation.handlePermission(code: command.code)
-        return HTTPResponse(.ok)
-      } catch let err {
-        return HTTPResponse(.badRequest, headers: [:], error: err)
-      }
-    }
-
-    server.route(.POST, "selectFineLocation") { request in
-      self.automation.selectFineLocation()
-      return HTTPResponse(.ok)
-    }
-
-    server.route(.POST, "selectCoarseLocation") { request in
-      self.automation.selectCoarseLocation()
-      return HTTPResponse(.ok)
-    }
-  }
-
-  func start() throws {
-    Logger.shared.i("Starting server...")
-    do {
-      try server.start(port: 8081)
-      setUpRoutes()
-      dispatchGroup.enter()
-      logServerStarted()
-    } catch let err {
-      Logger.shared.e("Failed to start server: \(err)")
-      throw err
-    }
-
-    dispatchGroup.wait()
-  }
-
-  func stop() {
-    Logger.shared.i("Stopping server...")
-    server.stop()
-    dispatchGroup.leave()
+    try await server.onClose.get()
     Logger.shared.i("Server stopped")
-  }
-
-  func logServerStarted() {
-    if let ip = automation.ipAddress {
-      Logger.shared.i("Server started on http://\(ip):\(port) (http://localhost:\(port))")
-    } else {
-      Logger.shared.i("Server started on http://localhost:\(port)")
-    }
   }
 }

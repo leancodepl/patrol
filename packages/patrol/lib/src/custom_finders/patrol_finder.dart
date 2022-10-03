@@ -65,6 +65,10 @@ import 'package:patrol/src/extensions.dart';
 ///   ```dart
 ///   final finder = createFinder(find.text('Log in'));
 ///   ```
+/// - [Widget], which translates to [CommonFinders.byWidget], for example:
+///   ```dart
+///   final finder = createFinder(Text('some text'));
+///   ```
 ///
 /// See also:
 ///  - [PatrolTester.call]
@@ -104,8 +108,14 @@ Finder createFinder(dynamic matching) {
     return matching;
   }
 
+  if (matching is Widget) {
+    return find.byWidget(matching);
+  }
+
   throw ArgumentError(
-    'expression of type ${matching.runtimeType} is not one of supported types `Type`, `Key`, `Symbol`, `String`, `Pattern`, `IconData`, or `PatrolFinder`',
+    'Argument of type ${matching.runtimeType} is not supported. '
+    'Supported types: Type, Key, Symbol, String, Pattern, IconData, '
+    'PatrolFinder, Finder, Widget',
   );
 }
 

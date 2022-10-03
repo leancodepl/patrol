@@ -11,7 +11,7 @@ void main() {
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');

@@ -13,10 +13,8 @@ late String myAppId;
 Future<void> main() async {
   if (Platform.isIOS) {
     mapsId = 'com.apple.Maps';
-    myAppId = 'pl.leancode.patrol.Example';
   } else if (Platform.isAndroid) {
     mapsId = 'com.google.android.apps.maps';
-    myAppId = 'pl.leancode.patrol.example';
   }
 
   patrolTest(
@@ -24,36 +22,17 @@ Future<void> main() async {
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
-      await $.pumpWidgetAndSettle(const ExampleApp());
+      await $.pumpWidgetAndSettle(ExampleApp());
 
       await $(FloatingActionButton).tap();
       await $(FloatingActionButton).tap();
 
-      await _wait();
-
       await $.native.pressHome();
-
-      $.log("I went to home! Now I'm gonna open the mail app");
-
-      await _wait();
-
-      await $.native.openApp(id: mapsId);
-      $.log("Opened mail app! Now I'm gonna go to home");
-
-      await _wait();
-
+      await $.native.openApp(appId: mapsId);
       await $.native.pressHome();
-
-      await $.native.openApp(id: myAppId);
-      $.log('Opening the app under test again...');
+      await $.native.openApp(); // opens the app under test
 
       expect($(#counterText).text, '2');
-
-      await _wait();
-
-      $.log("More functionality is not implemented, so I'm gonna head out now");
     },
   );
 }
-
-Future<void> _wait() => Future<void>.delayed(const Duration(seconds: 2));

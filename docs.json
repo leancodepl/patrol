@@ -2,6 +2,7 @@
   "name": "Patrol",
   "twitter": "leancodepl",
   "theme": "#FFA03F",
+  "favicon": "/assets/favicon.png",
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
@@ -18,6 +19,7 @@
       "Native",
       [
         ["Overview", "/native/overview"],
+        ["Setup", "/native/setup"],
         ["Getting started", "/native/getting-started"],
         ["Feature parity", "/native/feature-parity"]
       ]

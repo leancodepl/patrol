@@ -35,7 +35,12 @@ void patrolTest(
   PatrolTestConfig config = const PatrolTestConfig(),
   bool nativeAutomation = false,
 }) {
-  final patrol = nativeAutomation ? NativeAutomator.forTest() : null;
+  final patrol = nativeAutomation
+      ? NativeAutomator.forTest(
+          packageName: config.packageName,
+          bundleId: config.bundleId,
+        )
+      : null;
 
   return testWidgets(
     description,

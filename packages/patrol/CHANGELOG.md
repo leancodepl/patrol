@@ -1,6 +1,48 @@
-## Unreleased
+## 0.6.10
 
-- Stop re-exporting `package:flutter_test (#308)
+- Make `$()` accept a `Widget` as an argument (#402)
+
+## 0.6.9
+
+- Remove the unused `appId` argument from most methods (#399)
+- Rename `getNativeWidgets()` to `getNativeViews()` (#399)
+
+## 0.6.8
+
+- Fix handling permission prompts now working in some edge cases (#383)
+
+## 0.6.7+1
+
+- Fix package score on pub.dev (#375)
+
+## 0.6.7
+
+- Implement enabling and disabling cellular on iOS (#371)
+
+## 0.6.6
+
+- Make `openApp()` open the app under test when no `appId` is passed (#338)
+- Implement `enableWifi()`, `disableWifi()`, and `openRecentApps()` on iOS
+  (#338)
+- Completely rewrite communication with native automation servers (#338)
+
+## 0.6.5
+
+- Implement enabling and disabling dark mode on iOS (#345)
+
+## 0.6.4+1
+
+- Fix spelling of "cellular" (was "celluar") (#336)
+- Fix a typo in docs (#337)
+- Fix README and docs mentioning the removed `Patrol` class (#349)
+
+## 0.6.4
+
+- A bunch of post-release fixes (#330)
+
+## 0.6.3
+
+- Stop re-exporting `package:flutter_test` (#308)
 
 ## 0.6.2
 
@@ -202,7 +244,7 @@ Native:
 
 - Add basic means of controlling platform-native Widgets (`TextView`,
   `EditText`, and `Button` on Android). This also applies to WebView.
-- Add enabling and disabling of Wi-Fi, Celluar, and Night Mode
+- Add enabling and disabling of Wi-Fi, Cellular, and Night Mode
 - Improve stability
 
 ## 0.0.6

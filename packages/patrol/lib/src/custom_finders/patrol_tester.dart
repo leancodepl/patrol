@@ -85,7 +85,7 @@ class PatrolTester {
     log.write(object);
 
     // ignore: avoid_print
-    print(log.toString());
+    print(log);
   }
 
   /// Returns a [PatrolFinder] that matches [matching].

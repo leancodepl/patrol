@@ -1,7 +1,8 @@
-import 'dart:io';
+import 'dart:io' show Process, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:patrol_cli/src/common/common.dart';
+import 'package:logging/logging.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -15,7 +16,6 @@ class FlutterDriverOptions {
     required this.device,
     required this.flavor,
     required this.dartDefines,
-    required this.verbose,
   });
 
   final String driver;
@@ -25,7 +25,6 @@ class FlutterDriverOptions {
   final Device? device;
   final String? flavor;
   final Map<String, String> dartDefines;
-  final bool verbose;
 }
 
 /// Thrown when `flutter drive` exits with non-zero exit code.
@@ -39,25 +38,28 @@ class FlutterDriverFailedException implements Exception {
 }
 
 class FlutterDriver {
-  FlutterDriver(DisposeScope parentDisposeScope)
-      : _disposeScope = DisposeScope() {
+  FlutterDriver({
+    required DisposeScope parentDisposeScope,
+    required Logger logger,
+  })  : _disposeScope = DisposeScope(),
+        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
   final DisposeScope _disposeScope;
+  final Logger _logger;
 
   /// Runs flutter driver with the given [options] and waits until the drive
   /// completes.
   ///
   /// Prints stdout and stderr of "flutter drive".
   Future<void> run(FlutterDriverOptions options) async {
-    final device = options.device;
-    if (device != null) {
-      log.info(
-        'Running ${options.target} with flutter_driver on ${device.resolvedName}...',
-      );
+    final deviceName = options.device?.resolvedName;
+    final targetName = basename(options.target);
+    if (deviceName != null) {
+      _logger.info('Running $targetName with flutter_driver on $deviceName...');
     } else {
-      log.info('Running ${options.target} with flutter_driver...');
+      _logger.info('Running $targetName with flutter_driver...');
     }
 
     final env = {
@@ -71,7 +73,7 @@ class FlutterDriver {
       _flutterDriveArguments(
         driver: options.driver,
         target: options.target,
-        device: device?.id,
+        device: options.device?.id,
         flavor: options.flavor,
         dartDefines: {...options.dartDefines, ...env},
       ),
@@ -99,18 +101,18 @@ class FlutterDriver {
         // On Android, "flutter" is prefixed with "I\"
         final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
         if (line.startsWith(flutterWithPortPrefix)) {
-          log.info(line.replaceFirst(flutterWithPortPrefix, ''));
+          _logger.info(line.replaceFirst(flutterWithPortPrefix, ''));
         } else if (line.startsWith(flutterPrefix)) {
-          log.info(line.replaceFirst(flutterPrefix, ''));
+          _logger.info(line.replaceFirst(flutterPrefix, ''));
         } else {
-          log.fine(line);
+          _logger.fine(line);
         }
       }
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      log.severe(msg);
+      _logger.severe(msg);
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -118,20 +120,20 @@ class FlutterDriver {
         return;
       }
 
-      log.fine(kill());
+      _logger.fine(kill());
     });
 
     exitCode = await process.exitCode;
 
     final msg = 'flutter_driver exited with code $exitCode';
-    log.info(msg);
-
     if (exitCode == -15) {
       // Occurs when the VM is killed. Do nothing because it was most probably
       // killed by us.
       // https://github.com/dart-lang/sdk/blob/master/pkg/dartdev/test/commands/create_integration_test.dart#L149-L152
     } else if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
+    } else {
+      _logger.info(msg);
     }
   }
 

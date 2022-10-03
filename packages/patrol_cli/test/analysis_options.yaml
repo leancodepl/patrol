@@ -3,3 +3,4 @@ include: package:leancode_lint/analysis_options.yaml
 linter:
   rules:
     prefer_const_constructors: false
+    discarded_futures: false

@@ -9,8 +9,8 @@ void main() {
     nativeAutomation: true,
     ($) async {
       await $.native.openQuickSettings();
-      await $.native.tap(const Selector(text: 'Bluetooth'));
-      await $.native.tap(const Selector(text: 'Bluetooth'));
+      await $.native.tap(Selector(text: 'Bluetooth'));
+      await $.native.tap(Selector(text: 'Bluetooth'));
       await $.native.pressBack();
 
       await $.native.openNotifications();
@@ -19,9 +19,9 @@ void main() {
       await $.native.disableWifi();
       await $.native.enableWifi();
 
-      await $.native.enableCelluar();
-      await $.native.disableCelluar();
-      await $.native.enableCelluar();
+      await $.native.enableCellular();
+      await $.native.disableCellular();
+      await $.native.enableCellular();
 
       await $.native.enableDarkMode();
       await $.native.disableDarkMode();

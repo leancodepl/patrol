@@ -18,17 +18,24 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     super.initState();
 
     unawaited(
-      _notificationsPlugin.initialize(
-        const InitializationSettings(
-          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-          iOS: DarwinInitializationSettings(),
-        ),
-        onDidReceiveNotificationResponse: (notificationResponse) {
-          print(
-            'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
-          );
-        },
-      ),
+      () async {
+        await _notificationsPlugin.initialize(
+          const InitializationSettings(
+            android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+            iOS: DarwinInitializationSettings(),
+          ),
+          onDidReceiveNotificationResponse: (notificationResponse) {
+            print(
+              'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
+            );
+          },
+        );
+
+        await _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.requestPermission();
+      }(),
     );
   }
 
@@ -40,8 +47,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     await _notificationsPlugin.show(
       id,
       title,
-      '$body. BTW, this notification has ID $id',
-      const NotificationDetails(
+      '$body ID: $id',
+      NotificationDetails(
+        iOS: DarwinNotificationDetails(),
         android: AndroidNotificationDetails(
           'main',
           'Default notification channel',
@@ -73,7 +81,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               title: 'Special offer',
               body: 'We have something special for you!',
             ),
-            child: const Text('Show special offer notification'),
+            child: const Text('Show "special offer" notification'),
           ),
         ],
       ),

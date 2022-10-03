@@ -1,9 +1,8 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
-import 'package:patrol_cli/src/common/globals.dart' as globals;
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -13,7 +12,6 @@ import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
-import 'package:patrol_cli/src/top_level_flags.dart';
 
 part 'drive_command.freezed.dart';
 
@@ -33,31 +31,32 @@ class DriveCommandConfig with _$DriveCommandConfig {
 }
 
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
-  DriveCommand(
-    DisposeScope parentDisposeScope,
-    this._topLevelFlags,
-    this._artifactsRepository, [
-    DeviceFinder? deviceFinder,
-    TestFinder? testFinder,
-  ])  : _disposeScope = DisposeScope(),
-        _deviceFinder = deviceFinder ?? DeviceFinder(),
-        _testFinder = testFinder ??
-            TestFinder(
-              integrationTestDir: globals.fs.directory('integration_test'),
-              fileSystem: globals.fs,
-            ),
-        _testRunner = TestRunner() {
+  DriveCommand({
+    required DisposeScope parentDisposeScope,
+    required ArtifactsRepository artifactsRepository,
+    required DeviceFinder deviceFinder,
+    required TestFinder testFinder,
+    required TestRunner testRunner,
+    required Logger logger,
+  })  : _disposeScope = DisposeScope(),
+        _artifactsRepository = artifactsRepository,
+        _deviceFinder = deviceFinder,
+        _testFinder = testFinder,
+        _testRunner = testRunner,
+        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
     argParser
       ..addMultiOption(
-        'targets',
+        'target',
+        aliases: ['targets'],
         abbr: 't',
         help: 'Integration tests to run. If empty, all tests are run.',
         valueHelp: 'integration_test/app_test.dart',
       )
       ..addMultiOption(
-        'devices',
+        'device',
+        aliases: ['devices'],
         abbr: 'd',
         help:
             'Devices to run the tests on. If empty, the first device is used.',
@@ -82,6 +81,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       )
       ..addMultiOption(
         'dart-define',
+        aliases: ['dart-defines'],
         help: 'Additional key-value pairs that will be available to the app '
             'under test.',
         valueHelp: 'KEY=VALUE',
@@ -105,11 +105,11 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   final DisposeScope _disposeScope;
   final ArtifactsRepository _artifactsRepository;
-  final TopLevelFlags _topLevelFlags;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestRunner _testRunner;
+  final Logger _logger;
 
   @override
   String get name => 'drive';
@@ -119,52 +119,28 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   @override
   Future<DriveCommandConfig> parseInput() async {
-    final dynamic host = argResults?['host'];
-    if (host != null && host is! String) {
-      throw const FormatException('`host` argument is not a string');
+    final host = argResults?['host'] as String?;
+
+    final port = argResults?['port'] as String?;
+    if (port is String && int.tryParse(port) == null) {
+      throw const FormatException('`port` is not an int');
     }
 
-    final dynamic port = argResults?['port'];
-    if (port != null && port is String && int.tryParse(port) == null) {
-      throw const FormatException('`port` argument does not represent an int');
-    }
+    final target = argResults?['target'] as List<String>? ?? [];
+    final targets = target.isNotEmpty
+        ? _testFinder.findTests(target)
+        : _testFinder.findAllTests();
 
-    final dynamic target = argResults?['targets'];
-    if (target != null && target is! String) {
-      throw const FormatException('`target` argument is not a string');
-    }
+    final driver = argResults?['driver'] as String?;
 
-    if (target != null && !globals.fs.file(target as String).existsSync()) {
-      throw Exception('target file $target does not exist');
-    }
+    final flavor = argResults?['flavor'] as String?;
 
-    final targets =
-        target != null ? [target as String] : _testFinder.findTests();
+    final devices = argResults?['device'] as List<String>? ?? [];
 
-    final dynamic driver = argResults?['driver'];
-    if (driver != null && driver is! String) {
-      throw const FormatException('`driver` argument is not a string');
-    }
-
-    final dynamic flavor = argResults?['flavor'];
-    if (flavor != null && flavor is! String) {
-      throw const FormatException('`flavor` argument is not a string');
-    }
-
-    final devices = argResults?['devices'] as List<String>? ?? [];
-    for (var i = 0; i < devices.length; i++) {
-      devices[i] = devices[i].trim();
-    }
-
-    final dynamic cliDartDefines = argResults?['dart-define'] ?? <String>[];
-    if (cliDartDefines != null && cliDartDefines is! List<String>) {
-      throw FormatException(
-        '`dart-define` argument $cliDartDefines is not a list',
-      );
-    }
+    final cliDartDefines = argResults?['dart-define'] as List<String>? ?? [];
 
     final dartDefines = <String, String>{};
-    for (final entry in cliDartDefines as List<String>) {
+    for (final entry in cliDartDefines) {
       final split = entry.split('=');
       if (split.length != 2) {
         throw FormatException('`dart-define` value $split is not valid');
@@ -173,53 +149,30 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     for (final dartDefine in dartDefines.entries) {
-      log.info('Passed --dart--define: ${dartDefine.key}=${dartDefine.value}');
+      _logger
+          .info('Passed --dart-define: ${dartDefine.key}=${dartDefine.value}');
     }
 
     final dynamic packageName = argResults?['package-name'];
     final dynamic bundleId = argResults?['bundle-id'];
 
-    final dynamic wait = argResults?['wait'] ?? '0';
-    if (int.tryParse(wait as String) == null) {
+    final dynamic wait = argResults?['wait'];
+    if (wait != null && int.tryParse(wait as String) == null) {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final attachedDevices = await _deviceFinder.getAttachedDevices();
-    if (attachedDevices.isEmpty) {
-      throw Exception('No devices attached');
-    } else {
-      log.fine('Successfully queried available devices');
-    }
-
-    if (devices.isEmpty) {
-      final firstDevice = attachedDevices.first;
-      devices.add(firstDevice.resolvedName);
-      log.info(
-        'No device specified, using the first one (${firstDevice.resolvedName})',
-      );
-    } else if (devices.contains('all')) {
-      if (devices.length > 1) {
-        throw Exception("Device 'all' must be the only device");
-      }
-
-      devices.addAll(attachedDevices.map((e) => e.resolvedName));
-    }
-
-    final activeDevices = _deviceFinder.findDevicesToUse(
-      attachedDevices: attachedDevices,
-      wantDevices: devices,
-    );
+    final attachedDevices = await _deviceFinder.find(devices);
 
     return DriveCommandConfig(
-      devices: activeDevices,
+      devices: attachedDevices,
       targets: targets,
-      host: host as String? ?? envHostDefaultValue,
-      port: port as String? ?? envPortDefaultValue,
-      driver: driver as String? ?? 'test_driver/integration_test.dart',
-      flavor: flavor as String?,
-      dartDefines: {
+      host: host ?? envHostDefaultValue,
+      port: port ?? envPortDefaultValue,
+      driver: driver ?? 'test_driver/integration_test.dart',
+      flavor: flavor,
+      dartDefines: <String, String?>{
         ...dartDefines,
-        envWaitKey: wait,
+        envWaitKey: wait as String? ?? '0',
         envPackageNameKey: packageName as String?,
         envBundleIdKey: bundleId as String?,
       }.withNullsRemoved(),
@@ -235,31 +188,39 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver(_disposeScope, _artifactsRepository).run(
+          await AndroidDriver(
+            parentDisposeScope: _disposeScope,
+            artifactsRepository: _artifactsRepository,
+            logger: _logger,
+          ).run(
             port: config.port,
             device: device,
             flavor: config.flavor,
-            verbose: _topLevelFlags.verbose,
-            debug: _topLevelFlags.debug,
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver(_disposeScope, _artifactsRepository).run(
+          await IOSDriver(
+            parentDisposeScope: _disposeScope,
+            artifactsRepository: _artifactsRepository,
+            logger: _logger,
+          ).run(
             port: config.port,
             device: device,
             flavor: config.flavor,
-            verbose: _topLevelFlags.verbose,
           );
           break;
       }
     }
 
-    final flutterDriver = FlutterDriver(_disposeScope);
+    final flutterDriver = FlutterDriver(
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
 
     for (final target in config.targets) {
       _testRunner.addTest((device) async {
         if (_disposeScope.disposed) {
-          log.fine('Skipping running $target...');
+          _logger.fine('Skipping running $target...');
           return;
         }
 
@@ -270,11 +231,19 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           port: config.port,
           device: device,
           flavor: config.flavor,
-          verbose: _topLevelFlags.verbose,
           dartDefines: config.dartDefines,
         );
 
-        await flutterDriver.run(flutterDriverOptions);
+        try {
+          await flutterDriver.run(flutterDriverOptions);
+        } on FlutterDriverFailedException catch (err) {
+          _logger
+            ..severe(err)
+            ..severe(
+              "See the logs above to learn what happened. If the logs above aren't "
+              "useful then it's a bug – please report it.",
+            );
+        }
       });
     }
 

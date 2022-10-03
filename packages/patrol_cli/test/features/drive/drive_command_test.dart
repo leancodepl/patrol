@@ -1,12 +1,13 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
-import 'package:patrol_cli/src/top_level_flags.dart';
+import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
 import 'fixures/devices.dart';
@@ -34,7 +35,6 @@ void main() {
   group('parse input', () {
     setUp(() {
       final parentDisposeScope = DisposeScope();
-      final topLevelFlags = TopLevelFlags();
       final artifactsRepository = MockArtifactsRepository();
 
       fs = MemoryFileSystem.test();
@@ -44,36 +44,24 @@ void main() {
       final integrationTestDir = fs.directory('integration_test')..createSync();
 
       final deviceFinder = MockDeviceFinder();
-      when(deviceFinder.getAttachedDevices)
-          .thenAnswer((_) async => [androidDevice]);
       when(
-        () => deviceFinder.findDevicesToUse(
-          attachedDevices: any(named: 'attachedDevices'),
-          wantDevices: any(named: 'wantDevices'),
-        ),
-      ).thenReturn([androidDevice]);
+        () => deviceFinder.find(any()),
+      ).thenAnswer((_) async => [androidDevice]);
 
       final testFinder = TestFinder(
         integrationTestDir: fs.directory(integrationTestDir),
-        fileSystem: fs,
+        fs: fs,
       );
 
       driveCommand = DriveCommand(
-        parentDisposeScope,
-        topLevelFlags,
-        artifactsRepository,
-        deviceFinder,
-        testFinder,
+        parentDisposeScope: parentDisposeScope,
+        artifactsRepository: artifactsRepository,
+        deviceFinder: deviceFinder,
+        testFinder: testFinder,
+        testRunner: TestRunner(),
+        logger: Logger(''),
       );
     });
-
-    test(
-      'creates empty default config when config file does not exist',
-      () async {
-        final config = await driveCommand.parseInput();
-        expect(config, _defaultConfig);
-      },
-    );
 
     test('creates empty default config when config file is empty', () async {
       final config = await driveCommand.parseInput();
