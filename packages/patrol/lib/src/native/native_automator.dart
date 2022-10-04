@@ -24,16 +24,18 @@ class PatrolActionException implements Exception {
 /// Provides functionality to interact with the host OS that the app under test
 /// is running on.
 ///
-/// Communicates over HTTP with the Patrol automator server running on the
+/// Communicates over gRPC with the native automation server running on the
 /// target device.
 class NativeAutomator {
-  /// Creates a new [NativeAutomator] instance for use in testing environment
-  /// (on the target device).
+  /// Creates a new [NativeAutomator].
+  ///
+  /// If [useBinding] is true, [PatrolBinding] is initialized.
   NativeAutomator({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
+    bool useBinding = true,
   })  : _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
@@ -64,7 +66,11 @@ class NativeAutomator {
 
     _client = NativeAutomatorClient(channel);
 
-    PatrolBinding.ensureInitialized();
+    if (useBinding) {
+      _logger('Initializing PatrolBinding...');
+      PatrolBinding.ensureInitialized();
+      _logger('Initialized PatrolBinding');
+    }
   }
 
   final _LoggerCallback _logger;

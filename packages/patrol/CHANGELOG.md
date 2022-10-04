@@ -1,7 +1,9 @@
 ## Unreleased
 
-- **Breaking:** Rename `NativeAutomator.forTest()` constructor to simply
-  `NativeAutomator()` (#410)
+- **Breaking:** Rename `NativeAutomator.forTest()` constructor to an unnamed
+  constructor (#410)
+- Add `useBinding` flag to `NativeAutomator` constuctor. Defaults to true, which
+  means that `PatrolBinding` is initialized during the constructor call (#410)
 
 ## 0.6.10
 
