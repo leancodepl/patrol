@@ -181,6 +181,6 @@ Here's how you can access the default `WidgetTester`:
 patrolTest('adds comment', (PatrolTester $) async {
   final WidgetTester tester = $.tester;
 
-  await tester(#commentTextField).enterText('Very nice!');
-}
+  await tester.enterText(find.byKey(Key('commentTextField')), 'Very nice!');
+});
 ```
