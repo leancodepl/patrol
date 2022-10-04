@@ -64,7 +64,10 @@ class NativeAutomator {
       ),
     );
 
-    _client = NativeAutomatorClient(channel);
+    _client = NativeAutomatorClient(
+      channel,
+      options: CallOptions(timeout: timeout),
+    );
 
     if (useBinding) {
       _logger('Initializing PatrolBinding...');
