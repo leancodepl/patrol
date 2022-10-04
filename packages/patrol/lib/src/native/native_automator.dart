@@ -29,7 +29,7 @@ class PatrolActionException implements Exception {
 class NativeAutomator {
   /// Creates a new [NativeAutomator] instance for use in testing environment
   /// (on the target device).
-  NativeAutomator.forTest({
+  NativeAutomator({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,

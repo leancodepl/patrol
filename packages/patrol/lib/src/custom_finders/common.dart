@@ -36,7 +36,7 @@ void patrolTest(
   bool nativeAutomation = false,
 }) {
   final patrol = nativeAutomation
-      ? NativeAutomator.forTest(
+      ? NativeAutomator(
           packageName: config.packageName,
           bundleId: config.bundleId,
         )
