@@ -314,7 +314,7 @@ class PatrolAutomation {
   func denyPermission() {
     runAction("denying permission") {
       let systemAlerts = self.springboard.alerts
-      let denyButton = systemAlerts.buttons["Don't Allow"]
+      let denyButton = systemAlerts.buttons["Don’t Allow"] // not "Don't Allow"!
       if denyButton.exists {
         denyButton.tap()
       }
