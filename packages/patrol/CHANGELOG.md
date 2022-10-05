@@ -1,4 +1,4 @@
-## Unreleased
+## 0.6.11
 
 - **Breaking:** Rename `NativeAutomator.forTest()` constructor to an unnamed
   constructor (#410)
