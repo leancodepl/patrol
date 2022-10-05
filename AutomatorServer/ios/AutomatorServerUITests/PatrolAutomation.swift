@@ -1,6 +1,8 @@
 import XCTest
 
 class PatrolAutomation {
+  private static let defaultTimeout = TimeInterval(10)
+  
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
   }()
@@ -123,6 +125,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["airplane-mode-button"]
       if toggle.value! as! String == "0" {
         toggle.tap()
+      } else {
+        Logger.shared.i("airplane mode is already enabled")
       }
     }
   }
@@ -132,6 +136,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["airplane-mode-button"]
       if toggle.value! as! String == "1" {
         toggle.tap()
+      } else {
+        Logger.shared.i("airplane mode is already disabled")
       }
     }
   }
@@ -142,6 +148,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["cellular-data-button"]
       if toggle.value! as! String == "0" {
         toggle.tap()
+      } else {
+        Logger.shared.i("cellular is already enabled")
       }
     }
   }
@@ -151,6 +159,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["cellular-data-button"]
       if toggle.value! as! String == "1" {
         toggle.tap()
+      } else {
+        Logger.shared.i("cellular is already disabled")
       }
     }
   }
@@ -160,6 +170,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["wifi-button"]
       if toggle.value! as! String == "0" {
         toggle.tap()
+      } else {
+        Logger.shared.i("wifi is already enabled")
       }
     }
   }
@@ -169,6 +181,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["wifi-button"]
       if toggle.value! as! String == "1" {
         toggle.tap()
+      } else {
+        Logger.shared.i("wifi is already disabled")
       }
     }
   }
@@ -178,6 +192,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["bluetooth-button"]
       if toggle.value! as! String == "0" {
         toggle.tap()
+      } else {
+        Logger.shared.i("bluetooth is already enabled")
       }
     }
   }
@@ -187,6 +203,8 @@ class PatrolAutomation {
       let toggle = self.springboard.switches["bluetooth-button"]
       if toggle.value! as! String == "1" {
         toggle.tap()
+      } else {
+        Logger.shared.i("bluetooth is already disabled")
       }
     }
   }
@@ -282,14 +300,20 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow While Using App"]
       
+      var match = false
       for label in labels {
         Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
           Logger.shared.i("found button \(format: label)")
+          match = true
           button.tap()
           break
         }
+      }
+      
+      if !match {
+        throw PatrolError.generic("none of \(dump(labels)) exist")
       }
     }
   }
@@ -299,14 +323,20 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow Once"]
       
+      var match = false
       for label in labels {
         Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
           Logger.shared.i("found button \(format: label)")
+          match = true
           button.tap()
           break
         }
+      }
+      
+      if !match {
+        throw PatrolError.generic("none of \(dump(labels)) exist")
       }
     }
   }
@@ -314,34 +344,45 @@ class PatrolAutomation {
   func denyPermission() {
     runAction("denying permission") {
       let systemAlerts = self.springboard.alerts
-      let denyButton = systemAlerts.buttons["Don’t Allow"] // not "Don't Allow"!
-      if denyButton.exists {
-        denyButton.tap()
+      let button = systemAlerts.buttons["Don’t Allow"] // not "Don't Allow"!
+      
+      guard let button = self.waitForExistence(of: [button]) else {
+        throw PatrolError.generic("button \(button) doesn't exist")
       }
+      
+      button.tap()
     }
   }
 
   func selectFineLocation() {
     runAction("selecting fine location") {
       let alerts = self.springboard.alerts
-      if alerts.buttons["Precise: Off"].exists {
-        alerts.buttons["Precise: Off"].tap()
+      let button = alerts.buttons["Precise: Off"]
+      
+      guard let button = self.waitForExistence(of: [button]) else {
+        throw PatrolError.generic("button \(button) doesn't exist")
       }
+      
+      button.tap()
     }
   }
   
   func selectCoarseLocation() {
     runAction("selecting coarse location") {
       let alerts = self.springboard.alerts
-      if alerts.buttons["Precise: On"].exists {
-        alerts.buttons["Precise: On"].tap()
+      let button = alerts.buttons["Precise: On"]
+      
+      guard let button = self.waitForExistence(of: [button]) else {
+        throw PatrolError.generic("button \(button) doesn't exist")
       }
+      
+      button.tap()
     }
   }
   
   // MARK: Other
   
-  func debug() throws {
+  func debug() {
     runAction("debug()") {
       // TODO: Remove later
       for i in 0...150 {
@@ -399,25 +440,54 @@ class PatrolAutomation {
     }
   }
 
-  private func runAction(_ log: String, block: @escaping () -> Void) {
+  private func runAction(_ log: String, block: @escaping () throws -> Void) {
     dispatchOnMainThread {
       Logger.shared.i("\(log)...")
-      block()
+      try block()
       Logger.shared.i("done \(log)")
     }
   }
 
-  private func dispatchOnMainThread(block: @escaping () -> Void) {
+  private func dispatchOnMainThread(block: @escaping () throws -> Void) {
     let group = DispatchGroup()
     group.enter()
     DispatchQueue.main.async {
-      block()
+      do {
+        try block()
+      } catch PatrolError.generic(let msg) {
+        Logger.shared.e("PatrolError: \(msg)")
+      } catch let err {
+        Logger.shared.e("Error \(err) was thrown")
+      }
+      
       group.leave()
     }
 
     group.wait()
   }
+  
+  // MARK: Utilities
+
+  @discardableResult
+  func waitForExistence(
+    of elements: [XCUIElement],
+    timeout: TimeInterval = PatrolAutomation.defaultTimeout
+  ) -> XCUIElement? {
+      var existingElement: XCUIElement?
+      let startTime = Date()
+      
+      while Date().timeIntervalSince(startTime) < timeout {
+          if let elementFound = elements.first(where: { $0.exists }) {
+              existingElement = elementFound
+              break
+          }
+          sleep(1)
+      }
+    
+      return existingElement
+  }
 }
+
 
 extension String.StringInterpolation {
   mutating func appendInterpolation(format value: String) {
