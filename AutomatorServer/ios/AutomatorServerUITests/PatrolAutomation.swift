@@ -345,8 +345,8 @@ class PatrolAutomation {
     runAction("denying permission") {
       let systemAlerts = self.springboard.alerts
       let button = systemAlerts.buttons["Don’t Allow"] // not "Don't Allow"!
-      
-      guard let button = self.waitForExistence(of: [button]) else {
+
+      guard button.exists else {
         throw PatrolError.generic("button \(button) doesn't exist")
       }
       
@@ -359,7 +359,7 @@ class PatrolAutomation {
       let alerts = self.springboard.alerts
       let button = alerts.buttons["Precise: Off"]
       
-      guard let button = self.waitForExistence(of: [button]) else {
+      guard button.exists else {
         throw PatrolError.generic("button \(button) doesn't exist")
       }
       
@@ -372,7 +372,7 @@ class PatrolAutomation {
       let alerts = self.springboard.alerts
       let button = alerts.buttons["Precise: On"]
       
-      guard let button = self.waitForExistence(of: [button]) else {
+      guard button.exists else {
         throw PatrolError.generic("button \(button) doesn't exist")
       }
       
@@ -465,28 +465,9 @@ class PatrolAutomation {
 
     group.wait()
   }
-  
-  // MARK: Utilities
-
-  @discardableResult
-  func waitForExistence(
-    of elements: [XCUIElement],
-    timeout: TimeInterval = PatrolAutomation.defaultTimeout
-  ) -> XCUIElement? {
-      var existingElement: XCUIElement?
-      let startTime = Date()
-      
-      while Date().timeIntervalSince(startTime) < timeout {
-          if let elementFound = elements.first(where: { $0.exists }) {
-              existingElement = elementFound
-              break
-          }
-          sleep(1)
-      }
-    
-      return existingElement
-  }
 }
+
+// MARK: Utilities
 
 
 extension String.StringInterpolation {
