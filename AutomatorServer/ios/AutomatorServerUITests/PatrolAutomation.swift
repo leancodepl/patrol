@@ -23,9 +23,9 @@ class PatrolAutomation {
     }
   }
 
-  func openApp(_ bundleIdentifier: String) throws {
-    try runAction("opening app with id \(bundleIdentifier)") {
-      let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+  func openApp(_ bundleId: String) throws {
+    try runAction("opening app with id \(bundleId)") {
+      let app = try self.getApp(withBundleId: bundleId)
       app.activate()
     }
   }
@@ -52,60 +52,63 @@ class PatrolAutomation {
   
   // MARK: General UI interaction
   
-  func tap(on text: String, inApp appId: String) throws {
+  func tap(on text: String, inApp bundleId: String) throws {
     try runAction("tapping on text \(text)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
+      let app = try self.getApp(withBundleId: bundleId)
       let element = app.descendants(matching: .any)[text]
       
       guard element.exists else {
-        throw PatrolError.elementNotFound(element)
+        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
       
       element.firstMatch.tap()
     }
   }
 
-  func doubleTap(on text: String, inApp appId: String) throws {
+  func doubleTap(on text: String, inApp bundleId: String) throws {
     try runAction("double tapping on text \(format: text)") {
-      let element = XCUIApplication(bundleIdentifier: appId)
+      let app = try self.getApp(withBundleId: bundleId)
+      let element = app.descendants(matching: .any)[text]
       
       guard element.exists else {
-        throw PatrolError.elementNotFound(element)
+        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
       
-      element.descendants(matching: .any)[text].firstMatch.tap()
+      element.firstMatch.tap()
     }
   }
 
-  func enterText(_ data: String, by text: String, inApp appId: String) throws {
+  func enterText(_ data: String, by text: String, inApp bundleId: String) throws {
     try runAction("entering text \(format: data) into text field with text \(text)") {
-      let element = XCUIApplication(bundleIdentifier: appId).textFields[text]
+      let app = try self.getApp(withBundleId: bundleId)
+      let element = app.textFields[text]
       
       guard element.exists else {
-        throw PatrolError.elementNotFound(element)
+        throw PatrolError.viewNotExists("text field with text \(format: text) in app \(format: bundleId)")
       }
       
       element.firstMatch.typeText(data)
     }
   }
 
-  func enterText(_ data: String, by index: Int, inApp appId: String) throws {
+  func enterText(_ data: String, by index: Int, inApp bundleId: String) throws {
     try runAction("entering text \(format: data) by index \(index)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      let textField = app.textFields.element(boundBy: index)
-      if textField.exists {
-        textField.tap()
-        textField.typeText(data)
-      } else {
-        Logger.shared.e("textField at index \(index) doesn't exist")
+      let app = try self.getApp(withBundleId: bundleId)
+      let element = app.textFields.element(boundBy: index)
+      
+      guard element.exists else {
+        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
       }
+      
+      element.firstMatch.tap()
+      element.firstMatch.typeText(data)
     }
   }
   
   // MARK: Services
 
-  func enableDarkMode(_ bundleIdentifier: String) throws {
-    try runSettingsAction("enabling dark mode", bundleIdentifier) {
+  func enableDarkMode(_ bundleId: String) throws {
+    try runSettingsAction("enabling dark mode", bundleId) {
       #if targetEnvironment(simulator)
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
@@ -120,8 +123,8 @@ class PatrolAutomation {
     }
   }
 
-  func disableDarkMode(_ bundleIdentifier: String) throws {
-    try runSettingsAction("disabling dark mode", bundleIdentifier) {
+  func disableDarkMode(_ bundleId: String) throws {
+    try runSettingsAction("disabling dark mode", bundleId) {
       #if targetEnvironment(simulator)
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
@@ -284,8 +287,7 @@ class PatrolAutomation {
     try runAction("tapping on notification at index \(index)") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
       guard cells.indices.contains(index) else {
-        Logger.shared.e("notification at index \(index) doesn't exist")
-        return
+        throw PatrolError.viewNotExists("notification at index \(index)")
       }
       
       cells[index].tap()
@@ -305,7 +307,7 @@ class PatrolAutomation {
         }
       }
       
-      Logger.shared.e("no notification contains text \(format: text)")
+      throw PatrolError.viewNotExists("notification containing text \(format: text)")
     }
   }
   
@@ -316,21 +318,18 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow While Using App"]
       
-      var match = false
       for label in labels {
         Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
           Logger.shared.i("found button \(format: label)")
-          match = true
           button.tap()
-          break
+          return
         }
       }
       
-      if !match {
-        throw PatrolError.generic("none of \(dump(labels)) exist")
-      }
+      // FIXME: Replace with appropriate error
+      throw PatrolError.viewNotExists("button to allow permission while using")
     }
   }
 
@@ -339,31 +338,29 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow Once"]
       
-      var match = false
       for label in labels {
         Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
         if button.exists {
           Logger.shared.i("found button \(format: label)")
-          match = true
           button.tap()
-          break
+          return
         }
       }
       
-      if !match {
-        throw PatrolError.generic("none of \(dump(labels)) exist")
-      }
+      // FIXME: Replace with appropriate error
+      throw PatrolError.viewNotExists("button to allow permission only once")
     }
   }
 
   func denyPermission() throws {
     try runAction("denying permission") {
+      let label = "Don’t Allow" // not "Don't Allow"!
       let systemAlerts = self.springboard.alerts
-      let button = systemAlerts.buttons["Don’t Allow"] // not "Don't Allow"!
+      let button = systemAlerts.buttons[label]
 
       guard button.exists else {
-        throw PatrolError.generic("button \(button) doesn't exist")
+        throw PatrolError.viewNotExists("button to deny permission")
       }
       
       button.tap()
@@ -376,7 +373,7 @@ class PatrolAutomation {
       let button = alerts.buttons["Precise: Off"]
       
       guard button.exists else {
-        throw PatrolError.generic("button \(button) doesn't exist")
+        throw PatrolError.viewNotExists("button to select fine location")
       }
       
       button.tap()
@@ -389,7 +386,7 @@ class PatrolAutomation {
       let button = alerts.buttons["Precise: On"]
       
       guard button.exists else {
-        throw PatrolError.generic("button \(button) doesn't exist")
+        throw PatrolError.viewNotExists("button to select coarse location")
       }
       
       button.tap()
@@ -422,12 +419,15 @@ class PatrolAutomation {
   
   // MARK: Private stuff
   
-  private func tapIfExists(_ element: XCUIElement) throws {
-    guard element.exists else {
-      throw PatrolError.elementNotFound(element)
-    }
+  private func getApp(withBundleId bundleId: String) throws -> XCUIApplication {
+    let app = XCUIApplication(bundleIdentifier: bundleId)
+    // FIXME: Doesn't work
+    // See https://stackoverflow.com/questions/73976961/how-to-check-if-any-app-is-installed-during-xctest
+    // guard app.exists else {
+    //   throw PatrolError.appNotInstalled(bundleId)
+    // }
     
-    element.firstMatch.tap()
+    return app
   }
   
   private func runControlCenterAction(_ log: String, block: @escaping () -> Void) throws {
@@ -449,7 +449,7 @@ class PatrolAutomation {
   
   private func runSettingsAction(
     _ log: String,
-    _ bundleIdentifier: String,
+    _ bundleId: String,
     block: @escaping () -> Void
   ) throws {
     try runAction(log) {
@@ -460,7 +460,10 @@ class PatrolAutomation {
       
       self.springboard.activate()
       self.preferences.terminate()
-      XCUIApplication(bundleIdentifier: bundleIdentifier).activate() // go back to the app under test
+      
+      // go back to the app under test
+      let app = try self.getApp(withBundleId: bundleId)
+      app.activate()
     }
   }
 

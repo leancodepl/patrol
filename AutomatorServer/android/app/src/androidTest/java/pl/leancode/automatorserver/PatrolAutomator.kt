@@ -9,6 +9,7 @@ import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.nativeView
@@ -341,8 +342,15 @@ class PatrolAutomator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
         )
 
+        var match = false
         for (identifier in identifiers) {
             tapIfExists(identifier)
+            match = true
+            break
+        }
+
+        if (!match) {
+            throw UiObjectNotFoundException("No ")
         }
     }
 

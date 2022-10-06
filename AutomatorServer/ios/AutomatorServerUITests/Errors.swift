@@ -3,7 +3,8 @@ import XCTest
 
 
 enum PatrolError: Error {
-  case elementNotFound(_ element: XCUIElement)
+  case viewNotExists(_ elementDescription: String)
+  case appNotInstalled(_ bundleId: String)
   case generic(_ message: String)
 }
 
@@ -11,8 +12,9 @@ enum PatrolError: Error {
 extension PatrolError: CustomStringConvertible {
   var description: String {
     switch self {
-      case .elementNotFound(let element): return "PatrolError: element does not exist. Element: \(element)"
-      case .generic(let message): return "PatrolError: \(message)"
+      case .viewNotExists(let elementDescription): return "\(elementDescription) doesn't exist"
+      case .appNotInstalled(let bundleId): return "app \(format: bundleId) is not installed"
+      case .generic(let message): return message
     }
   }
 }
