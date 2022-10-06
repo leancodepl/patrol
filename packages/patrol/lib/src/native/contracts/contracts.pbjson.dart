@@ -52,17 +52,6 @@ const Empty$json = const {
 /// Descriptor for `Empty`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List emptyDescriptor =
     $convert.base64Decode('CgVFbXB0eQ==');
-@$core.Deprecated('Use defaultResponseDescriptor instead')
-const DefaultResponse$json = const {
-  '1': 'DefaultResponse',
-  '2': const [
-    const {'1': 'errorMessage', '3': 1, '4': 1, '5': 9, '10': 'errorMessage'},
-  ],
-};
-
-/// Descriptor for `DefaultResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List defaultResponseDescriptor = $convert.base64Decode(
-    'Cg9EZWZhdWx0UmVzcG9uc2USIgoMZXJyb3JNZXNzYWdlGAEgASgJUgxlcnJvck1lc3NhZ2U=');
 @$core.Deprecated('Use openQuickSettingsRequestDescriptor instead')
 const OpenQuickSettingsRequest$json = const {
   '1': 'OpenQuickSettingsRequest',
@@ -105,32 +94,20 @@ const GetNativeViewsResponse$json = const {
   '1': 'GetNativeViewsResponse',
   '2': const [
     const {
-      '1': 'errorMessage',
-      '3': 1,
-      '4': 1,
-      '5': 9,
-      '9': 0,
-      '10': 'errorMessage'
-    },
-    const {
       '1': 'nativeViews',
       '3': 2,
-      '4': 1,
+      '4': 3,
       '5': 11,
-      '6': '.patrol.NativeViews',
-      '9': 0,
+      '6': '.patrol.NativeView',
       '10': 'nativeViews'
     },
-  ],
-  '8': const [
-    const {'1': 'value'},
   ],
 };
 
 /// Descriptor for `GetNativeViewsResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getNativeViewsResponseDescriptor =
     $convert.base64Decode(
-        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEiQKDGVycm9yTWVzc2FnZRgBIAEoCUgAUgxlcnJvck1lc3NhZ2USNwoLbmF0aXZlVmlld3MYAiABKAsyEy5wYXRyb2wuTmF0aXZlVmlld3NIAFILbmF0aXZlVmlld3NCBwoFdmFsdWU=');
+        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAIgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
 @$core.Deprecated('Use nativeViewsDescriptor instead')
 const NativeViews$json = const {
   '1': 'NativeViews',
@@ -162,39 +139,8 @@ const GetNotificationsResponse$json = const {
   '1': 'GetNotificationsResponse',
   '2': const [
     const {
-      '1': 'errorMessage',
-      '3': 1,
-      '4': 1,
-      '5': 9,
-      '9': 0,
-      '10': 'errorMessage'
-    },
-    const {
       '1': 'notifications',
       '3': 2,
-      '4': 1,
-      '5': 11,
-      '6': '.patrol.Notifications',
-      '9': 0,
-      '10': 'notifications'
-    },
-  ],
-  '8': const [
-    const {'1': 'value'},
-  ],
-};
-
-/// Descriptor for `GetNotificationsResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getNotificationsResponseDescriptor =
-    $convert.base64Decode(
-        'ChhHZXROb3RpZmljYXRpb25zUmVzcG9uc2USJAoMZXJyb3JNZXNzYWdlGAEgASgJSABSDGVycm9yTWVzc2FnZRI9Cg1ub3RpZmljYXRpb25zGAIgASgLMhUucGF0cm9sLk5vdGlmaWNhdGlvbnNIAFINbm90aWZpY2F0aW9uc0IHCgV2YWx1ZQ==');
-@$core.Deprecated('Use notificationsDescriptor instead')
-const Notifications$json = const {
-  '1': 'Notifications',
-  '2': const [
-    const {
-      '1': 'notifications',
-      '3': 1,
       '4': 3,
       '5': 11,
       '6': '.patrol.Notification',
@@ -203,9 +149,10 @@ const Notifications$json = const {
   ],
 };
 
-/// Descriptor for `Notifications`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List notificationsDescriptor = $convert.base64Decode(
-    'Cg1Ob3RpZmljYXRpb25zEjoKDW5vdGlmaWNhdGlvbnMYASADKAsyFC5wYXRyb2wuTm90aWZpY2F0aW9uUg1ub3RpZmljYXRpb25z');
+/// Descriptor for `GetNotificationsResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getNotificationsResponseDescriptor =
+    $convert.base64Decode(
+        'ChhHZXROb3RpZmljYXRpb25zUmVzcG9uc2USOgoNbm90aWZpY2F0aW9ucxgCIAMoCzIULnBhdHJvbC5Ob3RpZmljYXRpb25SDW5vdGlmaWNhdGlvbnM=');
 @$core.Deprecated('Use tapRequestDescriptor instead')
 const TapRequest$json = const {
   '1': 'TapRequest',

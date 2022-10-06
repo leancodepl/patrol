@@ -1778,555 +1778,6 @@ public final class Contracts {
 
   }
 
-  public interface DefaultResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.DefaultResponse)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The errorMessage.
-     */
-    java.lang.String getErrorMessage();
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The bytes for errorMessage.
-     */
-    com.google.protobuf.ByteString
-        getErrorMessageBytes();
-  }
-  /**
-   * Protobuf type {@code patrol.DefaultResponse}
-   */
-  public static final class DefaultResponse extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.DefaultResponse)
-      DefaultResponseOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use DefaultResponse.newBuilder() to construct.
-    private DefaultResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private DefaultResponse() {
-      errorMessage_ = "";
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new DefaultResponse();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.class, pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.Builder.class);
-    }
-
-    public static final int ERRORMESSAGE_FIELD_NUMBER = 1;
-    private volatile java.lang.Object errorMessage_;
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The errorMessage.
-     */
-    @java.lang.Override
-    public java.lang.String getErrorMessage() {
-      java.lang.Object ref = errorMessage_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        errorMessage_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The bytes for errorMessage.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getErrorMessageBytes() {
-      java.lang.Object ref = errorMessage_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        errorMessage_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(errorMessage_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, errorMessage_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(errorMessage_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, errorMessage_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DefaultResponse)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.DefaultResponse other = (pl.leancode.automatorserver.contracts.Contracts.DefaultResponse) obj;
-
-      if (!getErrorMessage()
-          .equals(other.getErrorMessage())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + ERRORMESSAGE_FIELD_NUMBER;
-      hash = (53 * hash) + getErrorMessage().hashCode();
-      hash = (29 * hash) + getUnknownFields().hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DefaultResponse prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.DefaultResponse}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.DefaultResponse)
-        pl.leancode.automatorserver.contracts.Contracts.DefaultResponseOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.class, pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.newBuilder()
-      private Builder() {
-
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        errorMessage_ = "";
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse build() {
-        pl.leancode.automatorserver.contracts.Contracts.DefaultResponse result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.DefaultResponse result = new pl.leancode.automatorserver.contracts.Contracts.DefaultResponse(this);
-        result.errorMessage_ = errorMessage_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DefaultResponse) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DefaultResponse)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DefaultResponse other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.getDefaultInstance()) return this;
-        if (!other.getErrorMessage().isEmpty()) {
-          errorMessage_ = other.errorMessage_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                errorMessage_ = input.readStringRequireUtf8();
-
-                break;
-              } // case 10
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.unwrapIOException();
-        } finally {
-          onChanged();
-        } // finally
-        return this;
-      }
-
-      private java.lang.Object errorMessage_ = "";
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return The errorMessage.
-       */
-      public java.lang.String getErrorMessage() {
-        java.lang.Object ref = errorMessage_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          errorMessage_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return The bytes for errorMessage.
-       */
-      public com.google.protobuf.ByteString
-          getErrorMessageBytes() {
-        java.lang.Object ref = errorMessage_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          errorMessage_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @param value The errorMessage to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorMessage(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        errorMessage_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearErrorMessage() {
-        
-        errorMessage_ = getDefaultInstance().getErrorMessage();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @param value The bytes for errorMessage to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorMessageBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        errorMessage_ = value;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.DefaultResponse)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.DefaultResponse)
-    private static final pl.leancode.automatorserver.contracts.Contracts.DefaultResponse DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DefaultResponse();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<DefaultResponse>
-        PARSER = new com.google.protobuf.AbstractParser<DefaultResponse>() {
-      @java.lang.Override
-      public DefaultResponse parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
-      }
-    };
-
-    public static com.google.protobuf.Parser<DefaultResponse> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<DefaultResponse> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface OpenQuickSettingsRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.OpenQuickSettingsRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -3878,38 +3329,28 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return Whether the errorMessage field is set.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
-    boolean hasErrorMessage();
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> 
+        getNativeViewsList();
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return The errorMessage.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
-    java.lang.String getErrorMessage();
+    pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index);
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return The bytes for errorMessage.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
-    com.google.protobuf.ByteString
-        getErrorMessageBytes();
-
+    int getNativeViewsCount();
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
-     * @return Whether the nativeViews field is set.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
-    boolean hasNativeViews();
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+        getNativeViewsOrBuilderList();
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
-     * @return The nativeViews.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeViews getNativeViews();
-    /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder getNativeViewsOrBuilder();
-
-    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.ValueCase getValueCase();
+    pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code patrol.GetNativeViewsResponse}
@@ -3924,6 +3365,7 @@ public final class Contracts {
       super(builder);
     }
     private GetNativeViewsResponse() {
+      nativeViews_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -3951,128 +3393,44 @@ public final class Contracts {
               pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.Builder.class);
     }
 
-    private int valueCase_ = 0;
-    private java.lang.Object value_;
-    public enum ValueCase
-        implements com.google.protobuf.Internal.EnumLite,
-            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
-      ERRORMESSAGE(1),
-      NATIVEVIEWS(2),
-      VALUE_NOT_SET(0);
-      private final int value;
-      private ValueCase(int value) {
-        this.value = value;
-      }
-      /**
-       * @param value The number of the enum to look for.
-       * @return The enum associated with the given number.
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static ValueCase valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static ValueCase forNumber(int value) {
-        switch (value) {
-          case 1: return ERRORMESSAGE;
-          case 2: return NATIVEVIEWS;
-          case 0: return VALUE_NOT_SET;
-          default: return null;
-        }
-      }
-      public int getNumber() {
-        return this.value;
-      }
-    };
-
-    public ValueCase
-    getValueCase() {
-      return ValueCase.forNumber(
-          valueCase_);
-    }
-
-    public static final int ERRORMESSAGE_FIELD_NUMBER = 1;
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return Whether the errorMessage field is set.
-     */
-    public boolean hasErrorMessage() {
-      return valueCase_ == 1;
-    }
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The errorMessage.
-     */
-    public java.lang.String getErrorMessage() {
-      java.lang.Object ref = "";
-      if (valueCase_ == 1) {
-        ref = value_;
-      }
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (valueCase_ == 1) {
-          value_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The bytes for errorMessage.
-     */
-    public com.google.protobuf.ByteString
-        getErrorMessageBytes() {
-      java.lang.Object ref = "";
-      if (valueCase_ == 1) {
-        ref = value_;
-      }
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        if (valueCase_ == 1) {
-          value_ = b;
-        }
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     public static final int NATIVEVIEWS_FIELD_NUMBER = 2;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> nativeViews_;
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
-     * @return Whether the nativeViews field is set.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
     @java.lang.Override
-    public boolean hasNativeViews() {
-      return valueCase_ == 2;
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getNativeViewsList() {
+      return nativeViews_;
     }
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
-     * @return The nativeViews.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeViews getNativeViews() {
-      if (valueCase_ == 2) {
-         return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
-      }
-      return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+        getNativeViewsOrBuilderList() {
+      return nativeViews_;
     }
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder getNativeViewsOrBuilder() {
-      if (valueCase_ == 2) {
-         return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
-      }
-      return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+    public int getNativeViewsCount() {
+      return nativeViews_.size();
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index) {
+      return nativeViews_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
+        int index) {
+      return nativeViews_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -4089,11 +3447,8 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (valueCase_ == 1) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_);
-      }
-      if (valueCase_ == 2) {
-        output.writeMessage(2, (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_);
+      for (int i = 0; i < nativeViews_.size(); i++) {
+        output.writeMessage(2, nativeViews_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -4104,12 +3459,9 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (valueCase_ == 1) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, value_);
-      }
-      if (valueCase_ == 2) {
+      for (int i = 0; i < nativeViews_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_);
+          .computeMessageSize(2, nativeViews_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -4126,19 +3478,8 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse) obj;
 
-      if (!getValueCase().equals(other.getValueCase())) return false;
-      switch (valueCase_) {
-        case 1:
-          if (!getErrorMessage()
-              .equals(other.getErrorMessage())) return false;
-          break;
-        case 2:
-          if (!getNativeViews()
-              .equals(other.getNativeViews())) return false;
-          break;
-        case 0:
-        default:
-      }
+      if (!getNativeViewsList()
+          .equals(other.getNativeViewsList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -4150,17 +3491,9 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      switch (valueCase_) {
-        case 1:
-          hash = (37 * hash) + ERRORMESSAGE_FIELD_NUMBER;
-          hash = (53 * hash) + getErrorMessage().hashCode();
-          break;
-        case 2:
-          hash = (37 * hash) + NATIVEVIEWS_FIELD_NUMBER;
-          hash = (53 * hash) + getNativeViews().hashCode();
-          break;
-        case 0:
-        default:
+      if (getNativeViewsCount() > 0) {
+        hash = (37 * hash) + NATIVEVIEWS_FIELD_NUMBER;
+        hash = (53 * hash) + getNativeViewsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -4290,11 +3623,13 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nativeViewsBuilder_ != null) {
+        if (nativeViewsBuilder_ == null) {
+          nativeViews_ = java.util.Collections.emptyList();
+        } else {
+          nativeViews_ = null;
           nativeViewsBuilder_.clear();
         }
-        valueCase_ = 0;
-        value_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -4321,17 +3656,16 @@ public final class Contracts {
       @java.lang.Override
       public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse buildPartial() {
         pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse(this);
-        if (valueCase_ == 1) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 2) {
-          if (nativeViewsBuilder_ == null) {
-            result.value_ = value_;
-          } else {
-            result.value_ = nativeViewsBuilder_.build();
+        int from_bitField0_ = bitField0_;
+        if (nativeViewsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            nativeViews_ = java.util.Collections.unmodifiableList(nativeViews_);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
+          result.nativeViews_ = nativeViews_;
+        } else {
+          result.nativeViews_ = nativeViewsBuilder_.build();
         }
-        result.valueCase_ = valueCase_;
         onBuilt();
         return result;
       }
@@ -4380,19 +3714,30 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.getDefaultInstance()) return this;
-        switch (other.getValueCase()) {
-          case ERRORMESSAGE: {
-            valueCase_ = 1;
-            value_ = other.value_;
+        if (nativeViewsBuilder_ == null) {
+          if (!other.nativeViews_.isEmpty()) {
+            if (nativeViews_.isEmpty()) {
+              nativeViews_ = other.nativeViews_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureNativeViewsIsMutable();
+              nativeViews_.addAll(other.nativeViews_);
+            }
             onChanged();
-            break;
           }
-          case NATIVEVIEWS: {
-            mergeNativeViews(other.getNativeViews());
-            break;
-          }
-          case VALUE_NOT_SET: {
-            break;
+        } else {
+          if (!other.nativeViews_.isEmpty()) {
+            if (nativeViewsBuilder_.isEmpty()) {
+              nativeViewsBuilder_.dispose();
+              nativeViewsBuilder_ = null;
+              nativeViews_ = other.nativeViews_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              nativeViewsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getNativeViewsFieldBuilder() : null;
+            } else {
+              nativeViewsBuilder_.addAllMessages(other.nativeViews_);
+            }
           }
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -4421,17 +3766,17 @@ public final class Contracts {
               case 0:
                 done = true;
                 break;
-              case 10: {
-                java.lang.String s = input.readStringRequireUtf8();
-                valueCase_ = 1;
-                value_ = s;
-                break;
-              } // case 10
               case 18: {
-                input.readMessage(
-                    getNativeViewsFieldBuilder().getBuilder(),
-                    extensionRegistry);
-                valueCase_ = 2;
+                pl.leancode.automatorserver.contracts.Contracts.NativeView m =
+                    input.readMessage(
+                        pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(),
+                        extensionRegistry);
+                if (nativeViewsBuilder_ == null) {
+                  ensureNativeViewsIsMutable();
+                  nativeViews_.add(m);
+                } else {
+                  nativeViewsBuilder_.addMessage(m);
+                }
                 break;
               } // case 18
               default: {
@@ -4449,258 +3794,245 @@ public final class Contracts {
         } // finally
         return this;
       }
-      private int valueCase_ = 0;
-      private java.lang.Object value_;
-      public ValueCase
-          getValueCase() {
-        return ValueCase.forNumber(
-            valueCase_);
+      private int bitField0_;
+
+      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> nativeViews_ =
+        java.util.Collections.emptyList();
+      private void ensureNativeViewsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          nativeViews_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>(nativeViews_);
+          bitField0_ |= 0x00000001;
+         }
       }
 
-      public Builder clearValue() {
-        valueCase_ = 0;
-        value_ = null;
-        onChanged();
-        return this;
-      }
-
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> nativeViewsBuilder_;
 
       /**
-       * <code>string errorMessage = 1;</code>
-       * @return Whether the errorMessage field is set.
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
-      @java.lang.Override
-      public boolean hasErrorMessage() {
-        return valueCase_ == 1;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return The errorMessage.
-       */
-      @java.lang.Override
-      public java.lang.String getErrorMessage() {
-        java.lang.Object ref = "";
-        if (valueCase_ == 1) {
-          ref = value_;
-        }
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (valueCase_ == 1) {
-            value_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return The bytes for errorMessage.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString
-          getErrorMessageBytes() {
-        java.lang.Object ref = "";
-        if (valueCase_ == 1) {
-          ref = value_;
-        }
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          if (valueCase_ == 1) {
-            value_ = b;
-          }
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @param value The errorMessage to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorMessage(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 1;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearErrorMessage() {
-        if (valueCase_ == 1) {
-          valueCase_ = 0;
-          value_ = null;
-          onChanged();
-        }
-        return this;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @param value The bytes for errorMessage to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorMessageBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        valueCase_ = 1;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeViews, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder> nativeViewsBuilder_;
-      /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
-       * @return Whether the nativeViews field is set.
-       */
-      @java.lang.Override
-      public boolean hasNativeViews() {
-        return valueCase_ == 2;
-      }
-      /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
-       * @return The nativeViews.
-       */
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeViews getNativeViews() {
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getNativeViewsList() {
         if (nativeViewsBuilder_ == null) {
-          if (valueCase_ == 2) {
-            return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
-          }
-          return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+          return java.util.Collections.unmodifiableList(nativeViews_);
         } else {
-          if (valueCase_ == 2) {
-            return nativeViewsBuilder_.getMessage();
-          }
-          return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+          return nativeViewsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
-      public Builder setNativeViews(pl.leancode.automatorserver.contracts.Contracts.NativeViews value) {
+      public int getNativeViewsCount() {
+        if (nativeViewsBuilder_ == null) {
+          return nativeViews_.size();
+        } else {
+          return nativeViewsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index) {
+        if (nativeViewsBuilder_ == null) {
+          return nativeViews_.get(index);
+        } else {
+          return nativeViewsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public Builder setNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
         if (nativeViewsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          value_ = value;
+          ensureNativeViewsIsMutable();
+          nativeViews_.set(index, value);
           onChanged();
         } else {
-          nativeViewsBuilder_.setMessage(value);
+          nativeViewsBuilder_.setMessage(index, value);
         }
-        valueCase_ = 2;
         return this;
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
       public Builder setNativeViews(
-          pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder builderForValue) {
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
         if (nativeViewsBuilder_ == null) {
-          value_ = builderForValue.build();
+          ensureNativeViewsIsMutable();
+          nativeViews_.set(index, builderForValue.build());
           onChanged();
         } else {
-          nativeViewsBuilder_.setMessage(builderForValue.build());
+          nativeViewsBuilder_.setMessage(index, builderForValue.build());
         }
-        valueCase_ = 2;
         return this;
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
-      public Builder mergeNativeViews(pl.leancode.automatorserver.contracts.Contracts.NativeViews value) {
+      public Builder addNativeViews(pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
         if (nativeViewsBuilder_ == null) {
-          if (valueCase_ == 2 &&
-              value_ != pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance()) {
-            value_ = pl.leancode.automatorserver.contracts.Contracts.NativeViews.newBuilder((pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_)
-                .mergeFrom(value).buildPartial();
-          } else {
-            value_ = value;
+          if (value == null) {
+            throw new NullPointerException();
           }
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(value);
           onChanged();
         } else {
-          if (valueCase_ == 2) {
-            nativeViewsBuilder_.mergeFrom(value);
-          } else {
-            nativeViewsBuilder_.setMessage(value);
-          }
+          nativeViewsBuilder_.addMessage(value);
         }
-        valueCase_ = 2;
         return this;
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public Builder addNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView value) {
+        if (nativeViewsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(index, value);
+          onChanged();
+        } else {
+          nativeViewsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public Builder addNativeViews(
+          pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(builderForValue.build());
+          onChanged();
+        } else {
+          nativeViewsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public Builder addNativeViews(
+          int index, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder builderForValue) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          nativeViewsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public Builder addAllNativeViews(
+          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.NativeView> values) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, nativeViews_);
+          onChanged();
+        } else {
+          nativeViewsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
       public Builder clearNativeViews() {
         if (nativeViewsBuilder_ == null) {
-          if (valueCase_ == 2) {
-            valueCase_ = 0;
-            value_ = null;
-            onChanged();
-          }
+          nativeViews_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
         } else {
-          if (valueCase_ == 2) {
-            valueCase_ = 0;
-            value_ = null;
-          }
           nativeViewsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder getNativeViewsBuilder() {
-        return getNativeViewsFieldBuilder().getBuilder();
+      public Builder removeNativeViews(int index) {
+        if (nativeViewsBuilder_ == null) {
+          ensureNativeViewsIsMutable();
+          nativeViews_.remove(index);
+          onChanged();
+        } else {
+          nativeViewsBuilder_.remove(index);
+        }
+        return this;
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder getNativeViewsOrBuilder() {
-        if ((valueCase_ == 2) && (nativeViewsBuilder_ != null)) {
-          return nativeViewsBuilder_.getMessageOrBuilder();
-        } else {
-          if (valueCase_ == 2) {
-            return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
-          }
-          return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder getNativeViewsBuilder(
+          int index) {
+        return getNativeViewsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
+          int index) {
+        if (nativeViewsBuilder_ == null) {
+          return nativeViews_.get(index);  } else {
+          return nativeViewsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
        */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.NativeViews, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder> 
+      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+           getNativeViewsOrBuilderList() {
+        if (nativeViewsBuilder_ != null) {
+          return nativeViewsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(nativeViews_);
+        }
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder addNativeViewsBuilder() {
+        return getNativeViewsFieldBuilder().addBuilder(
+            pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder addNativeViewsBuilder(
+          int index) {
+        return getNativeViewsFieldBuilder().addBuilder(
+            index, pl.leancode.automatorserver.contracts.Contracts.NativeView.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+       */
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder> 
+           getNativeViewsBuilderList() {
+        return getNativeViewsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
           getNativeViewsFieldBuilder() {
         if (nativeViewsBuilder_ == null) {
-          if (!(valueCase_ == 2)) {
-            value_ = pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
-          }
-          nativeViewsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.NativeViews, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder>(
-                  (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_,
+          nativeViewsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.NativeView, pl.leancode.automatorserver.contracts.Contracts.NativeView.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder>(
+                  nativeViews_,
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
-          value_ = null;
+          nativeViews_ = null;
         }
-        valueCase_ = 2;
-        onChanged();;
         return nativeViewsBuilder_;
       }
       @java.lang.Override
@@ -5947,38 +5279,28 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return Whether the errorMessage field is set.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-    boolean hasErrorMessage();
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> 
+        getNotificationsList();
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return The errorMessage.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-    java.lang.String getErrorMessage();
+    pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index);
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return The bytes for errorMessage.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-    com.google.protobuf.ByteString
-        getErrorMessageBytes();
-
+    int getNotificationsCount();
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
-     * @return Whether the notifications field is set.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-    boolean hasNotifications();
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+        getNotificationsOrBuilderList();
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
-     * @return The notifications.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-    pl.leancode.automatorserver.contracts.Contracts.Notifications getNotifications();
-    /**
-     * <code>.patrol.Notifications notifications = 2;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder getNotificationsOrBuilder();
-
-    public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.ValueCase getValueCase();
+    pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code patrol.GetNotificationsResponse}
@@ -5993,6 +5315,7 @@ public final class Contracts {
       super(builder);
     }
     private GetNotificationsResponse() {
+      notifications_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -6020,128 +5343,44 @@ public final class Contracts {
               pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.Builder.class);
     }
 
-    private int valueCase_ = 0;
-    private java.lang.Object value_;
-    public enum ValueCase
-        implements com.google.protobuf.Internal.EnumLite,
-            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
-      ERRORMESSAGE(1),
-      NOTIFICATIONS(2),
-      VALUE_NOT_SET(0);
-      private final int value;
-      private ValueCase(int value) {
-        this.value = value;
-      }
-      /**
-       * @param value The number of the enum to look for.
-       * @return The enum associated with the given number.
-       * @deprecated Use {@link #forNumber(int)} instead.
-       */
-      @java.lang.Deprecated
-      public static ValueCase valueOf(int value) {
-        return forNumber(value);
-      }
-
-      public static ValueCase forNumber(int value) {
-        switch (value) {
-          case 1: return ERRORMESSAGE;
-          case 2: return NOTIFICATIONS;
-          case 0: return VALUE_NOT_SET;
-          default: return null;
-        }
-      }
-      public int getNumber() {
-        return this.value;
-      }
-    };
-
-    public ValueCase
-    getValueCase() {
-      return ValueCase.forNumber(
-          valueCase_);
-    }
-
-    public static final int ERRORMESSAGE_FIELD_NUMBER = 1;
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return Whether the errorMessage field is set.
-     */
-    public boolean hasErrorMessage() {
-      return valueCase_ == 1;
-    }
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The errorMessage.
-     */
-    public java.lang.String getErrorMessage() {
-      java.lang.Object ref = "";
-      if (valueCase_ == 1) {
-        ref = value_;
-      }
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (valueCase_ == 1) {
-          value_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>string errorMessage = 1;</code>
-     * @return The bytes for errorMessage.
-     */
-    public com.google.protobuf.ByteString
-        getErrorMessageBytes() {
-      java.lang.Object ref = "";
-      if (valueCase_ == 1) {
-        ref = value_;
-      }
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        if (valueCase_ == 1) {
-          value_ = b;
-        }
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     public static final int NOTIFICATIONS_FIELD_NUMBER = 2;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_;
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
-     * @return Whether the notifications field is set.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
     @java.lang.Override
-    public boolean hasNotifications() {
-      return valueCase_ == 2;
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
+      return notifications_;
     }
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
-     * @return The notifications.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Notifications getNotifications() {
-      if (valueCase_ == 2) {
-         return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
-      }
-      return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+        getNotificationsOrBuilderList() {
+      return notifications_;
     }
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder getNotificationsOrBuilder() {
-      if (valueCase_ == 2) {
-         return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
-      }
-      return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+    public int getNotificationsCount() {
+      return notifications_.size();
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
+      return notifications_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+        int index) {
+      return notifications_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
@@ -6158,11 +5397,8 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (valueCase_ == 1) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_);
-      }
-      if (valueCase_ == 2) {
-        output.writeMessage(2, (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_);
+      for (int i = 0; i < notifications_.size(); i++) {
+        output.writeMessage(2, notifications_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -6173,12 +5409,9 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      if (valueCase_ == 1) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, value_);
-      }
-      if (valueCase_ == 2) {
+      for (int i = 0; i < notifications_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_);
+          .computeMessageSize(2, notifications_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -6195,19 +5428,8 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse) obj;
 
-      if (!getValueCase().equals(other.getValueCase())) return false;
-      switch (valueCase_) {
-        case 1:
-          if (!getErrorMessage()
-              .equals(other.getErrorMessage())) return false;
-          break;
-        case 2:
-          if (!getNotifications()
-              .equals(other.getNotifications())) return false;
-          break;
-        case 0:
-        default:
-      }
+      if (!getNotificationsList()
+          .equals(other.getNotificationsList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -6219,17 +5441,9 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      switch (valueCase_) {
-        case 1:
-          hash = (37 * hash) + ERRORMESSAGE_FIELD_NUMBER;
-          hash = (53 * hash) + getErrorMessage().hashCode();
-          break;
-        case 2:
-          hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
-          hash = (53 * hash) + getNotifications().hashCode();
-          break;
-        case 0:
-        default:
+      if (getNotificationsCount() > 0) {
+        hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getNotificationsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -6359,11 +5573,13 @@ public final class Contracts {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (notificationsBuilder_ != null) {
+        if (notificationsBuilder_ == null) {
+          notifications_ = java.util.Collections.emptyList();
+        } else {
+          notifications_ = null;
           notificationsBuilder_.clear();
         }
-        valueCase_ = 0;
-        value_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -6390,17 +5606,16 @@ public final class Contracts {
       @java.lang.Override
       public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse buildPartial() {
         pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse(this);
-        if (valueCase_ == 1) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 2) {
-          if (notificationsBuilder_ == null) {
-            result.value_ = value_;
-          } else {
-            result.value_ = notificationsBuilder_.build();
+        int from_bitField0_ = bitField0_;
+        if (notificationsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            notifications_ = java.util.Collections.unmodifiableList(notifications_);
+            bitField0_ = (bitField0_ & ~0x00000001);
           }
+          result.notifications_ = notifications_;
+        } else {
+          result.notifications_ = notificationsBuilder_.build();
         }
-        result.valueCase_ = valueCase_;
         onBuilt();
         return result;
       }
@@ -6449,19 +5664,30 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.getDefaultInstance()) return this;
-        switch (other.getValueCase()) {
-          case ERRORMESSAGE: {
-            valueCase_ = 1;
-            value_ = other.value_;
+        if (notificationsBuilder_ == null) {
+          if (!other.notifications_.isEmpty()) {
+            if (notifications_.isEmpty()) {
+              notifications_ = other.notifications_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureNotificationsIsMutable();
+              notifications_.addAll(other.notifications_);
+            }
             onChanged();
-            break;
           }
-          case NOTIFICATIONS: {
-            mergeNotifications(other.getNotifications());
-            break;
-          }
-          case VALUE_NOT_SET: {
-            break;
+        } else {
+          if (!other.notifications_.isEmpty()) {
+            if (notificationsBuilder_.isEmpty()) {
+              notificationsBuilder_.dispose();
+              notificationsBuilder_ = null;
+              notifications_ = other.notifications_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              notificationsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getNotificationsFieldBuilder() : null;
+            } else {
+              notificationsBuilder_.addAllMessages(other.notifications_);
+            }
           }
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -6490,17 +5716,17 @@ public final class Contracts {
               case 0:
                 done = true;
                 break;
-              case 10: {
-                java.lang.String s = input.readStringRequireUtf8();
-                valueCase_ = 1;
-                value_ = s;
-                break;
-              } // case 10
               case 18: {
-                input.readMessage(
-                    getNotificationsFieldBuilder().getBuilder(),
-                    extensionRegistry);
-                valueCase_ = 2;
+                pl.leancode.automatorserver.contracts.Contracts.Notification m =
+                    input.readMessage(
+                        pl.leancode.automatorserver.contracts.Contracts.Notification.parser(),
+                        extensionRegistry);
+                if (notificationsBuilder_ == null) {
+                  ensureNotificationsIsMutable();
+                  notifications_.add(m);
+                } else {
+                  notificationsBuilder_.addMessage(m);
+                }
                 break;
               } // case 18
               default: {
@@ -6518,258 +5744,245 @@ public final class Contracts {
         } // finally
         return this;
       }
-      private int valueCase_ = 0;
-      private java.lang.Object value_;
-      public ValueCase
-          getValueCase() {
-        return ValueCase.forNumber(
-            valueCase_);
+      private int bitField0_;
+
+      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_ =
+        java.util.Collections.emptyList();
+      private void ensureNotificationsIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>(notifications_);
+          bitField0_ |= 0x00000001;
+         }
       }
 
-      public Builder clearValue() {
-        valueCase_ = 0;
-        value_ = null;
-        onChanged();
-        return this;
-      }
-
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> notificationsBuilder_;
 
       /**
-       * <code>string errorMessage = 1;</code>
-       * @return Whether the errorMessage field is set.
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
-      @java.lang.Override
-      public boolean hasErrorMessage() {
-        return valueCase_ == 1;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return The errorMessage.
-       */
-      @java.lang.Override
-      public java.lang.String getErrorMessage() {
-        java.lang.Object ref = "";
-        if (valueCase_ == 1) {
-          ref = value_;
-        }
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          if (valueCase_ == 1) {
-            value_ = s;
-          }
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return The bytes for errorMessage.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString
-          getErrorMessageBytes() {
-        java.lang.Object ref = "";
-        if (valueCase_ == 1) {
-          ref = value_;
-        }
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          if (valueCase_ == 1) {
-            value_ = b;
-          }
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @param value The errorMessage to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorMessage(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 1;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearErrorMessage() {
-        if (valueCase_ == 1) {
-          valueCase_ = 0;
-          value_ = null;
-          onChanged();
-        }
-        return this;
-      }
-      /**
-       * <code>string errorMessage = 1;</code>
-       * @param value The bytes for errorMessage to set.
-       * @return This builder for chaining.
-       */
-      public Builder setErrorMessageBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        valueCase_ = 1;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Notifications, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder> notificationsBuilder_;
-      /**
-       * <code>.patrol.Notifications notifications = 2;</code>
-       * @return Whether the notifications field is set.
-       */
-      @java.lang.Override
-      public boolean hasNotifications() {
-        return valueCase_ == 2;
-      }
-      /**
-       * <code>.patrol.Notifications notifications = 2;</code>
-       * @return The notifications.
-       */
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.Notifications getNotifications() {
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
         if (notificationsBuilder_ == null) {
-          if (valueCase_ == 2) {
-            return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
-          }
-          return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+          return java.util.Collections.unmodifiableList(notifications_);
         } else {
-          if (valueCase_ == 2) {
-            return notificationsBuilder_.getMessage();
-          }
-          return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+          return notificationsBuilder_.getMessageList();
         }
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
-      public Builder setNotifications(pl.leancode.automatorserver.contracts.Contracts.Notifications value) {
+      public int getNotificationsCount() {
+        if (notificationsBuilder_ == null) {
+          return notifications_.size();
+        } else {
+          return notificationsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
+        if (notificationsBuilder_ == null) {
+          return notifications_.get(index);
+        } else {
+          return notificationsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public Builder setNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
         if (notificationsBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          value_ = value;
+          ensureNotificationsIsMutable();
+          notifications_.set(index, value);
           onChanged();
         } else {
-          notificationsBuilder_.setMessage(value);
+          notificationsBuilder_.setMessage(index, value);
         }
-        valueCase_ = 2;
         return this;
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
       public Builder setNotifications(
-          pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder builderForValue) {
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
         if (notificationsBuilder_ == null) {
-          value_ = builderForValue.build();
+          ensureNotificationsIsMutable();
+          notifications_.set(index, builderForValue.build());
           onChanged();
         } else {
-          notificationsBuilder_.setMessage(builderForValue.build());
+          notificationsBuilder_.setMessage(index, builderForValue.build());
         }
-        valueCase_ = 2;
         return this;
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
-      public Builder mergeNotifications(pl.leancode.automatorserver.contracts.Contracts.Notifications value) {
+      public Builder addNotifications(pl.leancode.automatorserver.contracts.Contracts.Notification value) {
         if (notificationsBuilder_ == null) {
-          if (valueCase_ == 2 &&
-              value_ != pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance()) {
-            value_ = pl.leancode.automatorserver.contracts.Contracts.Notifications.newBuilder((pl.leancode.automatorserver.contracts.Contracts.Notifications) value_)
-                .mergeFrom(value).buildPartial();
-          } else {
-            value_ = value;
+          if (value == null) {
+            throw new NullPointerException();
           }
+          ensureNotificationsIsMutable();
+          notifications_.add(value);
           onChanged();
         } else {
-          if (valueCase_ == 2) {
-            notificationsBuilder_.mergeFrom(value);
-          } else {
-            notificationsBuilder_.setMessage(value);
-          }
+          notificationsBuilder_.addMessage(value);
         }
-        valueCase_ = 2;
         return this;
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public Builder addNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
+        if (notificationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureNotificationsIsMutable();
+          notifications_.add(index, value);
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public Builder addNotifications(
+          pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.add(builderForValue.build());
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public Builder addNotifications(
+          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          notificationsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public Builder addAllNotifications(
+          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.Notification> values) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, notifications_);
+          onChanged();
+        } else {
+          notificationsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
       public Builder clearNotifications() {
         if (notificationsBuilder_ == null) {
-          if (valueCase_ == 2) {
-            valueCase_ = 0;
-            value_ = null;
-            onChanged();
-          }
+          notifications_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
         } else {
-          if (valueCase_ == 2) {
-            valueCase_ = 0;
-            value_ = null;
-          }
           notificationsBuilder_.clear();
         }
         return this;
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
-      public pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder getNotificationsBuilder() {
-        return getNotificationsFieldBuilder().getBuilder();
+      public Builder removeNotifications(int index) {
+        if (notificationsBuilder_ == null) {
+          ensureNotificationsIsMutable();
+          notifications_.remove(index);
+          onChanged();
+        } else {
+          notificationsBuilder_.remove(index);
+        }
+        return this;
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder getNotificationsOrBuilder() {
-        if ((valueCase_ == 2) && (notificationsBuilder_ != null)) {
-          return notificationsBuilder_.getMessageOrBuilder();
-        } else {
-          if (valueCase_ == 2) {
-            return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
-          }
-          return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder getNotificationsBuilder(
+          int index) {
+        return getNotificationsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+          int index) {
+        if (notificationsBuilder_ == null) {
+          return notifications_.get(index);  } else {
+          return notificationsBuilder_.getMessageOrBuilder(index);
         }
       }
       /**
-       * <code>.patrol.Notifications notifications = 2;</code>
+       * <code>repeated .patrol.Notification notifications = 2;</code>
        */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Notifications, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder> 
+      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+           getNotificationsOrBuilderList() {
+        if (notificationsBuilder_ != null) {
+          return notificationsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(notifications_);
+        }
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder() {
+        return getNotificationsFieldBuilder().addBuilder(
+            pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder(
+          int index) {
+        return getNotificationsFieldBuilder().addBuilder(
+            index, pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .patrol.Notification notifications = 2;</code>
+       */
+      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification.Builder> 
+           getNotificationsBuilderList() {
+        return getNotificationsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
           getNotificationsFieldBuilder() {
         if (notificationsBuilder_ == null) {
-          if (!(valueCase_ == 2)) {
-            value_ = pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
-          }
-          notificationsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Notifications, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder>(
-                  (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_,
+          notificationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder>(
+                  notifications_,
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
-          value_ = null;
+          notifications_ = null;
         }
-        valueCase_ = 2;
-        onChanged();;
         return notificationsBuilder_;
       }
       @java.lang.Override
@@ -6831,781 +6044,6 @@ public final class Contracts {
 
     @java.lang.Override
     public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
-  public interface NotificationsOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.Notifications)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> 
-        getNotificationsList();
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index);
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    int getNotificationsCount();
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-        getNotificationsOrBuilderList();
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-        int index);
-  }
-  /**
-   * Protobuf type {@code patrol.Notifications}
-   */
-  public static final class Notifications extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:patrol.Notifications)
-      NotificationsOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use Notifications.newBuilder() to construct.
-    private Notifications(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private Notifications() {
-      notifications_ = java.util.Collections.emptyList();
-    }
-
-    @java.lang.Override
-    @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
-      return new Notifications();
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              pl.leancode.automatorserver.contracts.Contracts.Notifications.class, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder.class);
-    }
-
-    public static final int NOTIFICATIONS_FIELD_NUMBER = 1;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_;
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
-      return notifications_;
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-        getNotificationsOrBuilderList() {
-      return notifications_;
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public int getNotificationsCount() {
-      return notifications_.size();
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
-      return notifications_.get(index);
-    }
-    /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-        int index) {
-      return notifications_.get(index);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      for (int i = 0; i < notifications_.size(); i++) {
-        output.writeMessage(1, notifications_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      for (int i = 0; i < notifications_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, notifications_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.Notifications)) {
-        return super.equals(obj);
-      }
-      pl.leancode.automatorserver.contracts.Contracts.Notifications other = (pl.leancode.automatorserver.contracts.Contracts.Notifications) obj;
-
-      if (!getNotificationsList()
-          .equals(other.getNotificationsList())) return false;
-      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
-      return true;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNotificationsCount() > 0) {
-        hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
-        hash = (53 * hash) + getNotificationsList().hashCode();
-      }
-      hash = (29 * hash) + getUnknownFields().hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.Notifications prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code patrol.Notifications}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.Notifications)
-        pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                pl.leancode.automatorserver.contracts.Contracts.Notifications.class, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder.class);
-      }
-
-      // Construct using pl.leancode.automatorserver.contracts.Contracts.Notifications.newBuilder()
-      private Builder() {
-
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        if (notificationsBuilder_ == null) {
-          notifications_ = java.util.Collections.emptyList();
-        } else {
-          notifications_ = null;
-          notificationsBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_descriptor;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.Notifications getDefaultInstanceForType() {
-        return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.Notifications build() {
-        pl.leancode.automatorserver.contracts.Contracts.Notifications result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public pl.leancode.automatorserver.contracts.Contracts.Notifications buildPartial() {
-        pl.leancode.automatorserver.contracts.Contracts.Notifications result = new pl.leancode.automatorserver.contracts.Contracts.Notifications(this);
-        int from_bitField0_ = bitField0_;
-        if (notificationsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            notifications_ = java.util.Collections.unmodifiableList(notifications_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.notifications_ = notifications_;
-        } else {
-          result.notifications_ = notificationsBuilder_.build();
-        }
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.Notifications) {
-          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.Notifications)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.Notifications other) {
-        if (other == pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance()) return this;
-        if (notificationsBuilder_ == null) {
-          if (!other.notifications_.isEmpty()) {
-            if (notifications_.isEmpty()) {
-              notifications_ = other.notifications_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureNotificationsIsMutable();
-              notifications_.addAll(other.notifications_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.notifications_.isEmpty()) {
-            if (notificationsBuilder_.isEmpty()) {
-              notificationsBuilder_.dispose();
-              notificationsBuilder_ = null;
-              notifications_ = other.notifications_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              notificationsBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getNotificationsFieldBuilder() : null;
-            } else {
-              notificationsBuilder_.addAllMessages(other.notifications_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                pl.leancode.automatorserver.contracts.Contracts.Notification m =
-                    input.readMessage(
-                        pl.leancode.automatorserver.contracts.Contracts.Notification.parser(),
-                        extensionRegistry);
-                if (notificationsBuilder_ == null) {
-                  ensureNotificationsIsMutable();
-                  notifications_.add(m);
-                } else {
-                  notificationsBuilder_.addMessage(m);
-                }
-                break;
-              } // case 10
-              default: {
-                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
-                  done = true; // was an endgroup tag
-                }
-                break;
-              } // default:
-            } // switch (tag)
-          } // while (!done)
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.unwrapIOException();
-        } finally {
-          onChanged();
-        } // finally
-        return this;
-      }
-      private int bitField0_;
-
-      private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_ =
-        java.util.Collections.emptyList();
-      private void ensureNotificationsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
-          notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>(notifications_);
-          bitField0_ |= 0x00000001;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> notificationsBuilder_;
-
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
-        if (notificationsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(notifications_);
-        } else {
-          return notificationsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public int getNotificationsCount() {
-        if (notificationsBuilder_ == null) {
-          return notifications_.size();
-        } else {
-          return notificationsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
-        if (notificationsBuilder_ == null) {
-          return notifications_.get(index);
-        } else {
-          return notificationsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder setNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
-        if (notificationsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNotificationsIsMutable();
-          notifications_.set(index, value);
-          onChanged();
-        } else {
-          notificationsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder setNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          notificationsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(pl.leancode.automatorserver.contracts.Contracts.Notification value) {
-        if (notificationsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNotificationsIsMutable();
-          notifications_.add(value);
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification value) {
-        if (notificationsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureNotificationsIsMutable();
-          notifications_.add(index, value);
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(
-          pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.add(builderForValue.build());
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addNotifications(
-          int index, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder builderForValue) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          notificationsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder addAllNotifications(
-          java.lang.Iterable<? extends pl.leancode.automatorserver.contracts.Contracts.Notification> values) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, notifications_);
-          onChanged();
-        } else {
-          notificationsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder clearNotifications() {
-        if (notificationsBuilder_ == null) {
-          notifications_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-        } else {
-          notificationsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public Builder removeNotifications(int index) {
-        if (notificationsBuilder_ == null) {
-          ensureNotificationsIsMutable();
-          notifications_.remove(index);
-          onChanged();
-        } else {
-          notificationsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder getNotificationsBuilder(
-          int index) {
-        return getNotificationsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-          int index) {
-        if (notificationsBuilder_ == null) {
-          return notifications_.get(index);  } else {
-          return notificationsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-           getNotificationsOrBuilderList() {
-        if (notificationsBuilder_ != null) {
-          return notificationsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(notifications_);
-        }
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder() {
-        return getNotificationsFieldBuilder().addBuilder(
-            pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public pl.leancode.automatorserver.contracts.Contracts.Notification.Builder addNotificationsBuilder(
-          int index) {
-        return getNotificationsFieldBuilder().addBuilder(
-            index, pl.leancode.automatorserver.contracts.Contracts.Notification.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .patrol.Notification notifications = 1;</code>
-       */
-      public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification.Builder> 
-           getNotificationsBuilderList() {
-        return getNotificationsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-          getNotificationsFieldBuilder() {
-        if (notificationsBuilder_ == null) {
-          notificationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              pl.leancode.automatorserver.contracts.Contracts.Notification, pl.leancode.automatorserver.contracts.Contracts.Notification.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder>(
-                  notifications_,
-                  ((bitField0_ & 0x00000001) != 0),
-                  getParentForChildren(),
-                  isClean());
-          notifications_ = null;
-        }
-        return notificationsBuilder_;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:patrol.Notifications)
-    }
-
-    // @@protoc_insertion_point(class_scope:patrol.Notifications)
-    private static final pl.leancode.automatorserver.contracts.Contracts.Notifications DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.Notifications();
-    }
-
-    public static pl.leancode.automatorserver.contracts.Contracts.Notifications getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<Notifications>
-        PARSER = new com.google.protobuf.AbstractParser<Notifications>() {
-      @java.lang.Override
-      public Notifications parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        Builder builder = newBuilder();
-        try {
-          builder.mergeFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(builder.buildPartial());
-        } catch (com.google.protobuf.UninitializedMessageException e) {
-          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
-        }
-        return builder.buildPartial();
-      }
-    };
-
-    public static com.google.protobuf.Parser<Notifications> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<Notifications> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Notifications getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -16553,11 +14991,6 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_Empty_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_DefaultResponse_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_DefaultResponse_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_OpenQuickSettingsRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -16592,11 +15025,6 @@ public final class Contracts {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_GetNotificationsResponse_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_patrol_Notifications_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_patrol_Notifications_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_TapRequest_descriptor;
   private static final 
@@ -16650,105 +15078,94 @@ public final class Contracts {
       "est\022\r\n\005appId\030\001 \001(\t\"[\n\030TapOnNotificationR" +
       "equest\022\017\n\005index\030\001 \001(\rH\000\022$\n\010selector\030\002 \001(" +
       "\0132\020.patrol.SelectorH\000B\010\n\006findBy\"\007\n\005Empty" +
-      "\"\'\n\017DefaultResponse\022\024\n\014errorMessage\030\001 \001(" +
-      "\t\"\032\n\030OpenQuickSettingsRequest\" \n\017DarkMod" +
-      "eRequest\022\r\n\005appId\030\001 \001(\t\";\n\025GetNativeView" +
-      "sRequest\022\"\n\010selector\030\001 \001(\0132\020.patrol.Sele" +
-      "ctor\"e\n\026GetNativeViewsResponse\022\026\n\014errorM" +
-      "essage\030\001 \001(\tH\000\022*\n\013nativeViews\030\002 \001(\0132\023.pa" +
-      "trol.NativeViewsH\000B\007\n\005value\"6\n\013NativeVie" +
-      "ws\022\'\n\013nativeViews\030\001 \003(\0132\022.patrol.NativeV" +
-      "iew\"\031\n\027GetNotificationsRequest\"k\n\030GetNot" +
-      "ificationsResponse\022\026\n\014errorMessage\030\001 \001(\t" +
-      "H\000\022.\n\rnotifications\030\002 \001(\0132\025.patrol.Notif" +
-      "icationsH\000B\007\n\005value\"<\n\rNotifications\022+\n\r" +
-      "notifications\030\001 \003(\0132\024.patrol.Notificatio" +
-      "n\"?\n\nTapRequest\022\"\n\010selector\030\001 \001(\0132\020.patr" +
-      "ol.Selector\022\r\n\005appId\030\002 \001(\t\"p\n\020EnterTextR" +
-      "equest\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005i" +
-      "ndex\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol." +
-      "SelectorH\000B\010\n\006findBy\"Y\n\014SwipeRequest\022\016\n\006" +
-      "startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n\004endX\030\003 \001" +
-      "(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027Hand" +
-      "lePermissionRequest\0222\n\004code\030\001 \001(\0162$.patr" +
-      "ol.HandlePermissionRequest.Code\"7\n\004Code\022" +
-      "\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006" +
-      "DENIED\020\002\"\225\001\n\032SetLocationAccuracyRequest\022" +
-      "M\n\020locationAccuracy\030\001 \001(\01623.patrol.SetLo" +
-      "cationAccuracyRequest.LocationAccuracy\"(" +
-      "\n\020LocationAccuracy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020\001" +
-      "\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016text" +
-      "StartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 " +
-      "\001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022cont" +
-      "entDescription\030\005 \001(\tH\004\210\001\001\022)\n\034contentDesc" +
-      "riptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentD" +
-      "escriptionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourc" +
-      "eId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n" +
-      "\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001" +
-      "\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textSta" +
-      "rtsWithB\017\n\r_textContainsB\014\n\n_classNameB\025" +
-      "\n\023_contentDescriptionB\037\n\035_contentDescrip" +
-      "tionStartsWithB\035\n\033_contentDescriptionCon" +
-      "tainsB\r\n\013_resourceIdB\013\n\t_instanceB\n\n\010_en" +
-      "abledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nNativeView" +
-      "\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022con" +
-      "tentDescription\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017" +
-      "\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014r" +
-      "esourceName\030\007 \001(\t\022\032\n\022applicationPackage\030" +
-      "\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patrol.NativeV" +
-      "iew\"]\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001" +
-      "\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw" +
-      "\030\004 \001(\tB\n\n\010_appName2\222\017\n\017NativeAutomator\0225" +
-      "\n\tpressHome\022\r.patrol.Empty\032\027.patrol.Defa" +
-      "ultResponse\"\000\0225\n\tpressBack\022\r.patrol.Empt" +
-      "y\032\027.patrol.DefaultResponse\"\000\022;\n\017pressRec" +
-      "entApps\022\r.patrol.Empty\032\027.patrol.DefaultR" +
-      "esponse\"\000\022A\n\025doublePressRecentApps\022\r.pat" +
-      "rol.Empty\032\027.patrol.DefaultResponse\"\000\022<\n\007" +
-      "openApp\022\026.patrol.OpenAppRequest\032\027.patrol" +
-      ".DefaultResponse\"\000\022P\n\021openQuickSettings\022" +
-      " .patrol.OpenQuickSettingsRequest\032\027.patr" +
-      "ol.DefaultResponse\"\000\022Q\n\016getNativeViews\022\035" +
-      ".patrol.GetNativeViewsRequest\032\036.patrol.G" +
-      "etNativeViewsResponse\"\000\0224\n\003tap\022\022.patrol." +
-      "TapRequest\032\027.patrol.DefaultResponse\"\000\022:\n" +
-      "\tdoubleTap\022\022.patrol.TapRequest\032\027.patrol." +
-      "DefaultResponse\"\000\022@\n\tenterText\022\030.patrol." +
-      "EnterTextRequest\032\027.patrol.DefaultRespons" +
-      "e\"\000\0228\n\005swipe\022\024.patrol.SwipeRequest\032\027.pat" +
-      "rol.DefaultResponse\"\000\022>\n\022enableAirplaneM" +
-      "ode\022\r.patrol.Empty\032\027.patrol.DefaultRespo" +
-      "nse\"\000\022?\n\023disableAirplaneMode\022\r.patrol.Em" +
-      "pty\032\027.patrol.DefaultResponse\"\000\0226\n\nenable" +
-      "WiFi\022\r.patrol.Empty\032\027.patrol.DefaultResp" +
-      "onse\"\000\0227\n\013disableWiFi\022\r.patrol.Empty\032\027.p" +
-      "atrol.DefaultResponse\"\000\022:\n\016enableCellula" +
-      "r\022\r.patrol.Empty\032\027.patrol.DefaultRespons" +
-      "e\"\000\022;\n\017disableCellular\022\r.patrol.Empty\032\027." +
-      "patrol.DefaultResponse\"\000\022;\n\017enableBlueto" +
-      "oth\022\r.patrol.Empty\032\027.patrol.DefaultRespo" +
-      "nse\"\000\022<\n\020disableBluetooth\022\r.patrol.Empty" +
-      "\032\027.patrol.DefaultResponse\"\000\022D\n\016enableDar" +
-      "kMode\022\027.patrol.DarkModeRequest\032\027.patrol." +
-      "DefaultResponse\"\000\022E\n\017disableDarkMode\022\027.p" +
-      "atrol.DarkModeRequest\032\027.patrol.DefaultRe" +
-      "sponse\"\000\022=\n\021openNotifications\022\r.patrol.E" +
-      "mpty\032\027.patrol.DefaultResponse\"\000\022>\n\022close" +
-      "Notifications\022\r.patrol.Empty\032\027.patrol.De" +
-      "faultResponse\"\000\022D\n\030closeHeadsUpNotificat" +
-      "ion\022\r.patrol.Empty\032\027.patrol.DefaultRespo" +
-      "nse\"\000\022W\n\020getNotifications\022\037.patrol.GetNo" +
-      "tificationsRequest\032 .patrol.GetNotificat" +
-      "ionsResponse\"\000\022P\n\021tapOnNotification\022 .pa" +
-      "trol.TapOnNotificationRequest\032\027.patrol.D" +
-      "efaultResponse\"\000\022T\n\026handlePermissionDial" +
-      "og\022\037.patrol.HandlePermissionRequest\032\027.pa" +
-      "trol.DefaultResponse\"\000\022T\n\023setLocationAcc" +
-      "uracy\022\".patrol.SetLocationAccuracyReques" +
-      "t\032\027.patrol.DefaultResponse\"\000\0221\n\005debug\022\r." +
-      "patrol.Empty\032\027.patrol.DefaultResponse\"\000B" +
-      "\'\n%pl.leancode.automatorserver.contracts" +
-      "b\006proto3"
+      "\"\032\n\030OpenQuickSettingsRequest\" \n\017DarkMode" +
+      "Request\022\r\n\005appId\030\001 \001(\t\";\n\025GetNativeViews" +
+      "Request\022\"\n\010selector\030\001 \001(\0132\020.patrol.Selec" +
+      "tor\"A\n\026GetNativeViewsResponse\022\'\n\013nativeV" +
+      "iews\030\002 \003(\0132\022.patrol.NativeView\"6\n\013Native" +
+      "Views\022\'\n\013nativeViews\030\001 \003(\0132\022.patrol.Nati" +
+      "veView\"\031\n\027GetNotificationsRequest\"G\n\030Get" +
+      "NotificationsResponse\022+\n\rnotifications\030\002" +
+      " \003(\0132\024.patrol.Notification\"?\n\nTapRequest" +
+      "\022\"\n\010selector\030\001 \001(\0132\020.patrol.Selector\022\r\n\005" +
+      "appId\030\002 \001(\t\"p\n\020EnterTextRequest\022\014\n\004data\030" +
+      "\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005index\030\003 \001(\rH\000\022$\n" +
+      "\010selector\030\004 \001(\0132\020.patrol.SelectorH\000B\010\n\006f" +
+      "indBy\"Y\n\014SwipeRequest\022\016\n\006startX\030\001 \001(\002\022\016\n" +
+      "\006startY\030\002 \001(\002\022\014\n\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(" +
+      "\002\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027HandlePermissionReq" +
+      "uest\0222\n\004code\030\001 \001(\0162$.patrol.HandlePermis" +
+      "sionRequest.Code\"7\n\004Code\022\017\n\013WHILE_USING\020" +
+      "\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"\225\001\n\032Se" +
+      "tLocationAccuracyRequest\022M\n\020locationAccu" +
+      "racy\030\001 \001(\01623.patrol.SetLocationAccuracyR" +
+      "equest.LocationAccuracy\"(\n\020LocationAccur" +
+      "acy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020\001\"\236\004\n\010Selector\022\021" +
+      "\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsWith\030\002 \001(" +
+      "\tH\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001\001\022\026\n\tcla" +
+      "ssName\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDescription\030" +
+      "\005 \001(\tH\004\210\001\001\022)\n\034contentDescriptionStartsWi" +
+      "th\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescriptionConta" +
+      "ins\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001(\tH\007\210\001\001\022" +
+      "\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H" +
+      "\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH" +
+      "\013\210\001\001B\007\n\005_textB\021\n\017_textStartsWithB\017\n\r_tex" +
+      "tContainsB\014\n\n_classNameB\025\n\023_contentDescr" +
+      "iptionB\037\n\035_contentDescriptionStartsWithB" +
+      "\035\n\033_contentDescriptionContainsB\r\n\013_resou" +
+      "rceIdB\013\n\t_instanceB\n\n\010_enabledB\n\n\010_focus" +
+      "edB\006\n\004_pkg\"\327\001\n\nNativeView\022\021\n\tclassName\030\001" +
+      " \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022contentDescription" +
+      "\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010" +
+      "\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resourceName\030\007 \001" +
+      "(\t\022\032\n\022applicationPackage\030\010 \001(\t\022$\n\010childr" +
+      "en\030\t \003(\0132\022.patrol.NativeView\"]\n\014Notifica" +
+      "tion\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(" +
+      "\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appN" +
+      "ame2\204\r\n\017NativeAutomator\022+\n\tpressHome\022\r.p" +
+      "atrol.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBac" +
+      "k\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pre" +
+      "ssRecentApps\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\0227\n\025doublePressRecentApps\022\r.patrol.E" +
+      "mpty\032\r.patrol.Empty\"\000\0222\n\007openApp\022\026.patro" +
+      "l.OpenAppRequest\032\r.patrol.Empty\"\000\022F\n\021ope" +
+      "nQuickSettings\022 .patrol.OpenQuickSetting" +
+      "sRequest\032\r.patrol.Empty\"\000\022Q\n\016getNativeVi" +
+      "ews\022\035.patrol.GetNativeViewsRequest\032\036.pat" +
+      "rol.GetNativeViewsResponse\"\000\022*\n\003tap\022\022.pa" +
+      "trol.TapRequest\032\r.patrol.Empty\"\000\0220\n\tdoub" +
+      "leTap\022\022.patrol.TapRequest\032\r.patrol.Empty" +
+      "\"\000\0226\n\tenterText\022\030.patrol.EnterTextReques" +
+      "t\032\r.patrol.Empty\"\000\022.\n\005swipe\022\024.patrol.Swi" +
+      "peRequest\032\r.patrol.Empty\"\000\0224\n\022enableAirp" +
+      "laneMode\022\r.patrol.Empty\032\r.patrol.Empty\"\000" +
+      "\0225\n\023disableAirplaneMode\022\r.patrol.Empty\032\r" +
+      ".patrol.Empty\"\000\022,\n\nenableWiFi\022\r.patrol.E" +
+      "mpty\032\r.patrol.Empty\"\000\022-\n\013disableWiFi\022\r.p" +
+      "atrol.Empty\032\r.patrol.Empty\"\000\0220\n\016enableCe" +
+      "llular\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221" +
+      "\n\017disableCellular\022\r.patrol.Empty\032\r.patro" +
+      "l.Empty\"\000\0221\n\017enableBluetooth\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\0222\n\020disableBluetooth" +
+      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022:\n\016enab" +
+      "leDarkMode\022\027.patrol.DarkModeRequest\032\r.pa" +
+      "trol.Empty\"\000\022;\n\017disableDarkMode\022\027.patrol" +
+      ".DarkModeRequest\032\r.patrol.Empty\"\000\0223\n\021ope" +
+      "nNotifications\022\r.patrol.Empty\032\r.patrol.E" +
+      "mpty\"\000\0224\n\022closeNotifications\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\022:\n\030closeHeadsUpNoti" +
+      "fication\022\r.patrol.Empty\032\r.patrol.Empty\"\000" +
+      "\022W\n\020getNotifications\022\037.patrol.GetNotific" +
+      "ationsRequest\032 .patrol.GetNotificationsR" +
+      "esponse\"\000\022F\n\021tapOnNotification\022 .patrol." +
+      "TapOnNotificationRequest\032\r.patrol.Empty\"" +
+      "\000\022J\n\026handlePermissionDialog\022\037.patrol.Han" +
+      "dlePermissionRequest\032\r.patrol.Empty\"\000\022J\n" +
+      "\023setLocationAccuracy\022\".patrol.SetLocatio" +
+      "nAccuracyRequest\032\r.patrol.Empty\"\000\022\'\n\005deb" +
+      "ug\022\r.patrol.Empty\032\r.patrol.Empty\"\000B\'\n%pl" +
+      ".leancode.automatorserver.contractsb\006pro" +
+      "to3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -16772,104 +15189,92 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Empty_descriptor,
         new java.lang.String[] { });
-    internal_static_patrol_DefaultResponse_descriptor =
-      getDescriptor().getMessageTypes().get(3);
-    internal_static_patrol_DefaultResponse_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_DefaultResponse_descriptor,
-        new java.lang.String[] { "ErrorMessage", });
     internal_static_patrol_OpenQuickSettingsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_OpenQuickSettingsRequest_descriptor,
         new java.lang.String[] { });
     internal_static_patrol_DarkModeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_patrol_DarkModeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_DarkModeRequest_descriptor,
         new java.lang.String[] { "AppId", });
     internal_static_patrol_GetNativeViewsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_patrol_GetNativeViewsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNativeViewsRequest_descriptor,
         new java.lang.String[] { "Selector", });
     internal_static_patrol_GetNativeViewsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNativeViewsResponse_descriptor,
-        new java.lang.String[] { "ErrorMessage", "NativeViews", "Value", });
+        new java.lang.String[] { "NativeViews", });
     internal_static_patrol_NativeViews_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_patrol_NativeViews_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeViews_descriptor,
         new java.lang.String[] { "NativeViews", });
     internal_static_patrol_GetNotificationsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_patrol_GetNotificationsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsRequest_descriptor,
         new java.lang.String[] { });
     internal_static_patrol_GetNotificationsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_patrol_GetNotificationsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsResponse_descriptor,
-        new java.lang.String[] { "ErrorMessage", "Notifications", "Value", });
-    internal_static_patrol_Notifications_descriptor =
-      getDescriptor().getMessageTypes().get(11);
-    internal_static_patrol_Notifications_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_patrol_Notifications_descriptor,
         new java.lang.String[] { "Notifications", });
     internal_static_patrol_TapRequest_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_patrol_TapRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_TapRequest_descriptor,
         new java.lang.String[] { "Selector", "AppId", });
     internal_static_patrol_EnterTextRequest_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_patrol_EnterTextRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_EnterTextRequest_descriptor,
         new java.lang.String[] { "Data", "AppId", "Index", "Selector", "FindBy", });
     internal_static_patrol_SwipeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_patrol_SwipeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SwipeRequest_descriptor,
         new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
     internal_static_patrol_HandlePermissionRequest_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_patrol_HandlePermissionRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_HandlePermissionRequest_descriptor,
         new java.lang.String[] { "Code", });
     internal_static_patrol_SetLocationAccuracyRequest_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SetLocationAccuracyRequest_descriptor,
         new java.lang.String[] { "LocationAccuracy", });
     internal_static_patrol_Selector_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeView_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_patrol_NativeView_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeView_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,

@@ -23,65 +23,79 @@ object GetNotificationsResponseKt {
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse = _builder.build()
 
     /**
-     * <code>string errorMessage = 1;</code>
+     * An uninstantiable, behaviorless type to represent the field in
+     * generics.
      */
-    var errorMessage: kotlin.String
-      @JvmName("getErrorMessage")
-      get() = _builder.getErrorMessage()
-      @JvmName("setErrorMessage")
-      set(value) {
-        _builder.setErrorMessage(value)
-      }
+    @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
+    class NotificationsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * <code>string errorMessage = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-    fun clearErrorMessage() {
-      _builder.clearErrorMessage()
+     val notifications: com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>
+      @kotlin.jvm.JvmSynthetic
+      get() = com.google.protobuf.kotlin.DslList(
+        _builder.getNotificationsList()
+      )
+    /**
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     * @param value The notifications to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addNotifications")
+    fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>.add(value: pl.leancode.automatorserver.contracts.Contracts.Notification) {
+      _builder.addNotifications(value)
     }
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return Whether the errorMessage field is set.
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     * @param value The notifications to add.
      */
-    fun hasErrorMessage(): kotlin.Boolean {
-      return _builder.hasErrorMessage()
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignNotifications")
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>.plusAssign(value: pl.leancode.automatorserver.contracts.Contracts.Notification) {
+      add(value)
     }
-
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     * @param values The notifications to add.
      */
-    var notifications: pl.leancode.automatorserver.contracts.Contracts.Notifications
-      @JvmName("getNotifications")
-      get() = _builder.getNotifications()
-      @JvmName("setNotifications")
-      set(value) {
-        _builder.setNotifications(value)
-      }
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addAllNotifications")
+    fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>.addAll(values: kotlin.collections.Iterable<pl.leancode.automatorserver.contracts.Contracts.Notification>) {
+      _builder.addAllNotifications(values)
+    }
     /**
-     * <code>.patrol.Notifications notifications = 2;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     * @param values The notifications to add.
      */
-    fun clearNotifications() {
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignAllNotifications")
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>.plusAssign(values: kotlin.collections.Iterable<pl.leancode.automatorserver.contracts.Contracts.Notification>) {
+      addAll(values)
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     * @param index The index to set the value at.
+     * @param value The notifications to set.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("setNotifications")
+    operator fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>.set(index: kotlin.Int, value: pl.leancode.automatorserver.contracts.Contracts.Notification) {
+      _builder.setNotifications(index, value)
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 2;</code>
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("clearNotifications")
+    fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>.clear() {
       _builder.clearNotifications()
     }
-    /**
-     * <code>.patrol.Notifications notifications = 2;</code>
-     * @return Whether the notifications field is set.
-     */
-    fun hasNotifications(): kotlin.Boolean {
-      return _builder.hasNotifications()
-    }
-    val valueCase: pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.ValueCase
-      @JvmName("getValueCase")
-      get() = _builder.getValueCase()
 
-    fun clearValue() {
-      _builder.clearValue()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic
 inline fun pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.copy(block: pl.leancode.automatorserver.contracts.GetNotificationsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse =
   pl.leancode.automatorserver.contracts.GetNotificationsResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
-
-val pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponseOrBuilder.notificationsOrNull: pl.leancode.automatorserver.contracts.Contracts.Notifications?
-  get() = if (hasNotifications()) getNotifications() else null
 

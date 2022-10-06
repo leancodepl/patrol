@@ -23,65 +23,79 @@ object GetNativeViewsResponseKt {
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse = _builder.build()
 
     /**
-     * <code>string errorMessage = 1;</code>
+     * An uninstantiable, behaviorless type to represent the field in
+     * generics.
      */
-    var errorMessage: kotlin.String
-      @JvmName("getErrorMessage")
-      get() = _builder.getErrorMessage()
-      @JvmName("setErrorMessage")
-      set(value) {
-        _builder.setErrorMessage(value)
-      }
+    @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
+    class NativeViewsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * <code>string errorMessage = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
-    fun clearErrorMessage() {
-      _builder.clearErrorMessage()
+     val nativeViews: com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>
+      @kotlin.jvm.JvmSynthetic
+      get() = com.google.protobuf.kotlin.DslList(
+        _builder.getNativeViewsList()
+      )
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * @param value The nativeViews to add.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addNativeViews")
+    fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>.add(value: pl.leancode.automatorserver.contracts.Contracts.NativeView) {
+      _builder.addNativeViews(value)
     }
     /**
-     * <code>string errorMessage = 1;</code>
-     * @return Whether the errorMessage field is set.
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * @param value The nativeViews to add.
      */
-    fun hasErrorMessage(): kotlin.Boolean {
-      return _builder.hasErrorMessage()
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignNativeViews")
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>.plusAssign(value: pl.leancode.automatorserver.contracts.Contracts.NativeView) {
+      add(value)
     }
-
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * @param values The nativeViews to add.
      */
-    var nativeViews: pl.leancode.automatorserver.contracts.Contracts.NativeViews
-      @JvmName("getNativeViews")
-      get() = _builder.getNativeViews()
-      @JvmName("setNativeViews")
-      set(value) {
-        _builder.setNativeViews(value)
-      }
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("addAllNativeViews")
+    fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>.addAll(values: kotlin.collections.Iterable<pl.leancode.automatorserver.contracts.Contracts.NativeView>) {
+      _builder.addAllNativeViews(values)
+    }
     /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * @param values The nativeViews to add.
      */
-    fun clearNativeViews() {
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("plusAssignAllNativeViews")
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>.plusAssign(values: kotlin.collections.Iterable<pl.leancode.automatorserver.contracts.Contracts.NativeView>) {
+      addAll(values)
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * @param index The index to set the value at.
+     * @param value The nativeViews to set.
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("setNativeViews")
+    operator fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>.set(index: kotlin.Int, value: pl.leancode.automatorserver.contracts.Contracts.NativeView) {
+      _builder.setNativeViews(index, value)
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     */
+    @kotlin.jvm.JvmSynthetic
+    @kotlin.jvm.JvmName("clearNativeViews")
+    fun com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>.clear() {
       _builder.clearNativeViews()
     }
-    /**
-     * <code>.patrol.NativeViews nativeViews = 2;</code>
-     * @return Whether the nativeViews field is set.
-     */
-    fun hasNativeViews(): kotlin.Boolean {
-      return _builder.hasNativeViews()
-    }
-    val valueCase: pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.ValueCase
-      @JvmName("getValueCase")
-      get() = _builder.getValueCase()
 
-    fun clearValue() {
-      _builder.clearValue()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic
 inline fun pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.copy(block: pl.leancode.automatorserver.contracts.GetNativeViewsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse =
   pl.leancode.automatorserver.contracts.GetNativeViewsResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
-
-val pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponseOrBuilder.nativeViewsOrNull: pl.leancode.automatorserver.contracts.Contracts.NativeViews?
-  get() = if (hasNativeViews()) getNativeViews() else null
 

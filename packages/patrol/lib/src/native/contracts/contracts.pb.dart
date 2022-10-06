@@ -229,74 +229,6 @@ class Empty extends $pb.GeneratedMessage {
   static Empty? _defaultInstance;
 }
 
-class DefaultResponse extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'DefaultResponse',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'patrol'),
-      createEmptyInstance: create)
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'errorMessage',
-        protoName: 'errorMessage')
-    ..hasRequiredFields = false;
-
-  DefaultResponse._() : super();
-  factory DefaultResponse({
-    $core.String? errorMessage,
-  }) {
-    final _result = create();
-    if (errorMessage != null) {
-      _result.errorMessage = errorMessage;
-    }
-    return _result;
-  }
-  factory DefaultResponse.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory DefaultResponse.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  DefaultResponse clone() => DefaultResponse()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
-  DefaultResponse copyWith(void Function(DefaultResponse) updates) =>
-      super.copyWith((message) => updates(message as DefaultResponse))
-          as DefaultResponse; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static DefaultResponse create() => DefaultResponse._();
-  DefaultResponse createEmptyInstance() => create();
-  static $pb.PbList<DefaultResponse> createRepeated() =>
-      $pb.PbList<DefaultResponse>();
-  @$core.pragma('dart2js:noInline')
-  static DefaultResponse getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<DefaultResponse>(create);
-  static DefaultResponse? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get errorMessage => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set errorMessage($core.String v) {
-    $_setString(0, v);
-  }
-
-  @$pb.TagNumber(1)
-  $core.bool hasErrorMessage() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearErrorMessage() => clearField(1);
-}
-
 class OpenQuickSettingsRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
@@ -481,15 +413,7 @@ class GetNativeViewsRequest extends $pb.GeneratedMessage {
   Selector ensureSelector() => $_ensure(0);
 }
 
-enum GetNativeViewsResponse_Value { errorMessage, nativeViews, notSet }
-
 class GetNativeViewsResponse extends $pb.GeneratedMessage {
-  static const $core.Map<$core.int, GetNativeViewsResponse_Value>
-      _GetNativeViewsResponse_ValueByTag = {
-    1: GetNativeViewsResponse_Value.errorMessage,
-    2: GetNativeViewsResponse_Value.nativeViews,
-    0: GetNativeViewsResponse_Value.notSet
-  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -499,33 +423,23 @@ class GetNativeViewsResponse extends $pb.GeneratedMessage {
               ? ''
               : 'patrol'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2])
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'errorMessage',
-        protoName: 'errorMessage')
-    ..aOM<NativeViews>(
+    ..pc<NativeView>(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'nativeViews',
+        $pb.PbFieldType.PM,
         protoName: 'nativeViews',
-        subBuilder: NativeViews.create)
+        subBuilder: NativeView.create)
     ..hasRequiredFields = false;
 
   GetNativeViewsResponse._() : super();
   factory GetNativeViewsResponse({
-    $core.String? errorMessage,
-    NativeViews? nativeViews,
+    $core.Iterable<NativeView>? nativeViews,
   }) {
     final _result = create();
-    if (errorMessage != null) {
-      _result.errorMessage = errorMessage;
-    }
     if (nativeViews != null) {
-      _result.nativeViews = nativeViews;
+      _result.nativeViews.addAll(nativeViews);
     }
     return _result;
   }
@@ -558,35 +472,8 @@ class GetNativeViewsResponse extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetNativeViewsResponse>(create);
   static GetNativeViewsResponse? _defaultInstance;
 
-  GetNativeViewsResponse_Value whichValue() =>
-      _GetNativeViewsResponse_ValueByTag[$_whichOneof(0)]!;
-  void clearValue() => clearField($_whichOneof(0));
-
-  @$pb.TagNumber(1)
-  $core.String get errorMessage => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set errorMessage($core.String v) {
-    $_setString(0, v);
-  }
-
-  @$pb.TagNumber(1)
-  $core.bool hasErrorMessage() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearErrorMessage() => clearField(1);
-
   @$pb.TagNumber(2)
-  NativeViews get nativeViews => $_getN(1);
-  @$pb.TagNumber(2)
-  set nativeViews(NativeViews v) {
-    setField(2, v);
-  }
-
-  @$pb.TagNumber(2)
-  $core.bool hasNativeViews() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearNativeViews() => clearField(2);
-  @$pb.TagNumber(2)
-  NativeViews ensureNativeViews() => $_ensure(1);
+  $core.List<NativeView> get nativeViews => $_getList(0);
 }
 
 class NativeViews extends $pb.GeneratedMessage {
@@ -693,15 +580,7 @@ class GetNotificationsRequest extends $pb.GeneratedMessage {
   static GetNotificationsRequest? _defaultInstance;
 }
 
-enum GetNotificationsResponse_Value { errorMessage, notifications, notSet }
-
 class GetNotificationsResponse extends $pb.GeneratedMessage {
-  static const $core.Map<$core.int, GetNotificationsResponse_Value>
-      _GetNotificationsResponse_ValueByTag = {
-    1: GetNotificationsResponse_Value.errorMessage,
-    2: GetNotificationsResponse_Value.notifications,
-    0: GetNotificationsResponse_Value.notSet
-  };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')
           ? ''
@@ -711,32 +590,22 @@ class GetNotificationsResponse extends $pb.GeneratedMessage {
               ? ''
               : 'patrol'),
       createEmptyInstance: create)
-    ..oo(0, [1, 2])
-    ..aOS(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'errorMessage',
-        protoName: 'errorMessage')
-    ..aOM<Notifications>(
+    ..pc<Notification>(
         2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'notifications',
-        subBuilder: Notifications.create)
+        $pb.PbFieldType.PM,
+        subBuilder: Notification.create)
     ..hasRequiredFields = false;
 
   GetNotificationsResponse._() : super();
   factory GetNotificationsResponse({
-    $core.String? errorMessage,
-    Notifications? notifications,
+    $core.Iterable<Notification>? notifications,
   }) {
     final _result = create();
-    if (errorMessage != null) {
-      _result.errorMessage = errorMessage;
-    }
     if (notifications != null) {
-      _result.notifications = notifications;
+      _result.notifications.addAll(notifications);
     }
     return _result;
   }
@@ -769,94 +638,7 @@ class GetNotificationsResponse extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetNotificationsResponse>(create);
   static GetNotificationsResponse? _defaultInstance;
 
-  GetNotificationsResponse_Value whichValue() =>
-      _GetNotificationsResponse_ValueByTag[$_whichOneof(0)]!;
-  void clearValue() => clearField($_whichOneof(0));
-
-  @$pb.TagNumber(1)
-  $core.String get errorMessage => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set errorMessage($core.String v) {
-    $_setString(0, v);
-  }
-
-  @$pb.TagNumber(1)
-  $core.bool hasErrorMessage() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearErrorMessage() => clearField(1);
-
   @$pb.TagNumber(2)
-  Notifications get notifications => $_getN(1);
-  @$pb.TagNumber(2)
-  set notifications(Notifications v) {
-    setField(2, v);
-  }
-
-  @$pb.TagNumber(2)
-  $core.bool hasNotifications() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearNotifications() => clearField(2);
-  @$pb.TagNumber(2)
-  Notifications ensureNotifications() => $_ensure(1);
-}
-
-class Notifications extends $pb.GeneratedMessage {
-  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      const $core.bool.fromEnvironment('protobuf.omit_message_names')
-          ? ''
-          : 'Notifications',
-      package: const $pb.PackageName(
-          const $core.bool.fromEnvironment('protobuf.omit_message_names')
-              ? ''
-              : 'patrol'),
-      createEmptyInstance: create)
-    ..pc<Notification>(
-        1,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'notifications',
-        $pb.PbFieldType.PM,
-        subBuilder: Notification.create)
-    ..hasRequiredFields = false;
-
-  Notifications._() : super();
-  factory Notifications({
-    $core.Iterable<Notification>? notifications,
-  }) {
-    final _result = create();
-    if (notifications != null) {
-      _result.notifications.addAll(notifications);
-    }
-    return _result;
-  }
-  factory Notifications.fromBuffer($core.List<$core.int> i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromBuffer(i, r);
-  factory Notifications.fromJson($core.String i,
-          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
-      create()..mergeFromJson(i, r);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
-      'Will be removed in next major version')
-  Notifications clone() => Notifications()..mergeFromMessage(this);
-  @$core.Deprecated('Using this can add significant overhead to your binary. '
-      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
-      'Will be removed in next major version')
-  Notifications copyWith(void Function(Notifications) updates) =>
-      super.copyWith((message) => updates(message as Notifications))
-          as Notifications; // ignore: deprecated_member_use
-  $pb.BuilderInfo get info_ => _i;
-  @$core.pragma('dart2js:noInline')
-  static Notifications create() => Notifications._();
-  Notifications createEmptyInstance() => create();
-  static $pb.PbList<Notifications> createRepeated() =>
-      $pb.PbList<Notifications>();
-  @$core.pragma('dart2js:noInline')
-  static Notifications getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<Notifications>(create);
-  static Notifications? _defaultInstance;
-
-  @$pb.TagNumber(1)
   $core.List<Notification> get notifications => $_getList(0);
 }
 

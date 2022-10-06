@@ -6,49 +6,49 @@ option java_package = "pl.leancode.automatorserver.contracts";
 service NativeAutomator {
   // general
 
-  rpc pressHome(Empty) returns (DefaultResponse) {}
-  rpc pressBack(Empty) returns (DefaultResponse) {}
-  rpc pressRecentApps(Empty) returns (DefaultResponse) {}
-  rpc doublePressRecentApps(Empty) returns (DefaultResponse) {}
-  rpc openApp(OpenAppRequest) returns (DefaultResponse) {}
-  rpc openQuickSettings(OpenQuickSettingsRequest) returns (DefaultResponse) {}
+  rpc pressHome(Empty) returns (Empty) {}
+  rpc pressBack(Empty) returns (Empty) {}
+  rpc pressRecentApps(Empty) returns (Empty) {}
+  rpc doublePressRecentApps(Empty) returns (Empty) {}
+  rpc openApp(OpenAppRequest) returns (Empty) {}
+  rpc openQuickSettings(OpenQuickSettingsRequest) returns (Empty) {}
 
   // general UI interaction
   rpc getNativeViews(GetNativeViewsRequest) returns (GetNativeViewsResponse) {}
-  rpc tap(TapRequest) returns (DefaultResponse) {}
-  rpc doubleTap(TapRequest) returns (DefaultResponse) {}
-  rpc enterText(EnterTextRequest) returns (DefaultResponse) {}
-  rpc swipe(SwipeRequest) returns (DefaultResponse) {}
+  rpc tap(TapRequest) returns (Empty) {}
+  rpc doubleTap(TapRequest) returns (Empty) {}
+  rpc enterText(EnterTextRequest) returns (Empty) {}
+  rpc swipe(SwipeRequest) returns (Empty) {}
 
   // services
-  rpc enableAirplaneMode(Empty) returns (DefaultResponse) {}
-  rpc disableAirplaneMode(Empty) returns (DefaultResponse) {}
-  rpc enableWiFi(Empty) returns (DefaultResponse) {}
-  rpc disableWiFi(Empty) returns (DefaultResponse) {}
-  rpc enableCellular(Empty) returns (DefaultResponse) {}
-  rpc disableCellular(Empty) returns (DefaultResponse) {}
-  rpc enableBluetooth(Empty) returns (DefaultResponse) {}
-  rpc disableBluetooth(Empty) returns (DefaultResponse) {}
-  rpc enableDarkMode(DarkModeRequest) returns (DefaultResponse) {}
-  rpc disableDarkMode(DarkModeRequest) returns (DefaultResponse) {}
+  rpc enableAirplaneMode(Empty) returns (Empty) {}
+  rpc disableAirplaneMode(Empty) returns (Empty) {}
+  rpc enableWiFi(Empty) returns (Empty) {}
+  rpc disableWiFi(Empty) returns (Empty) {}
+  rpc enableCellular(Empty) returns (Empty) {}
+  rpc disableCellular(Empty) returns (Empty) {}
+  rpc enableBluetooth(Empty) returns (Empty) {}
+  rpc disableBluetooth(Empty) returns (Empty) {}
+  rpc enableDarkMode(DarkModeRequest) returns (Empty) {}
+  rpc disableDarkMode(DarkModeRequest) returns (Empty) {}
 
   // notifications
-  rpc openNotifications(Empty) returns (DefaultResponse) {}
-  rpc closeNotifications(Empty) returns (DefaultResponse) {}
-  rpc closeHeadsUpNotification(Empty) returns (DefaultResponse) {}
+  rpc openNotifications(Empty) returns (Empty) {}
+  rpc closeNotifications(Empty) returns (Empty) {}
+  rpc closeHeadsUpNotification(Empty) returns (Empty) {}
   rpc getNotifications(GetNotificationsRequest)
       returns (GetNotificationsResponse) {}
-  rpc tapOnNotification(TapOnNotificationRequest) returns (DefaultResponse) {}
+  rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
 
   // permissions
   rpc handlePermissionDialog(HandlePermissionRequest)
-      returns (DefaultResponse) {}
+      returns (Empty) {}
   rpc setLocationAccuracy(SetLocationAccuracyRequest)
-      returns (DefaultResponse) {}
+      returns (Empty) {}
 
   // other
 
-  rpc debug(Empty) returns (DefaultResponse) {}
+  rpc debug(Empty) returns (Empty) {}
 }
 
 message OpenAppRequest { string appId = 1; }
@@ -67,29 +67,20 @@ message TapOnNotificationRequest {
 //  * https://github.com/google/protobuf.dart/issues/170
 message Empty {}
 
-message DefaultResponse { string errorMessage = 1; }
-
 message OpenQuickSettingsRequest {}
 
 message DarkModeRequest { string appId = 1; }
 
 message GetNativeViewsRequest { Selector selector = 1; }
 message GetNativeViewsResponse {
-  oneof value {
-    string errorMessage = 1;
-    NativeViews nativeViews = 2;
-  }
+    repeated NativeView nativeViews = 2;
 }
 message NativeViews { repeated NativeView nativeViews = 1; }
 
 message GetNotificationsRequest {}
 message GetNotificationsResponse {
-  oneof value {
-    string errorMessage = 1;
-    Notifications notifications = 2;
-  }
+    repeated Notification notifications = 2;
 }
-message Notifications { repeated Notification notifications = 1; }
 
 message TapRequest {
   Selector selector = 1;

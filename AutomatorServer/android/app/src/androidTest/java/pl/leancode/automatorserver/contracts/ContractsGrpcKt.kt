@@ -35,29 +35,28 @@ public object NativeAutomatorGrpcKt {
   public val serviceDescriptor: ServiceDescriptor
     get() = NativeAutomatorGrpc.getServiceDescriptor()
 
-  public val pressHomeMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val pressHomeMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getPressHomeMethod()
 
-  public val pressBackMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val pressBackMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getPressBackMethod()
 
-  public val pressRecentAppsMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val pressRecentAppsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getPressRecentAppsMethod()
 
-  public val doublePressRecentAppsMethod:
-      MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val doublePressRecentAppsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDoublePressRecentAppsMethod()
 
-  public val openAppMethod: MethodDescriptor<Contracts.OpenAppRequest, Contracts.DefaultResponse>
+  public val openAppMethod: MethodDescriptor<Contracts.OpenAppRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenAppMethod()
 
   public val openQuickSettingsMethod:
-      MethodDescriptor<Contracts.OpenQuickSettingsRequest, Contracts.DefaultResponse>
+      MethodDescriptor<Contracts.OpenQuickSettingsRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenQuickSettingsMethod()
 
@@ -66,75 +65,71 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getGetNativeViewsMethod()
 
-  public val tapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.DefaultResponse>
+  public val tapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getTapMethod()
 
-  public val doubleTapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.DefaultResponse>
+  public val doubleTapMethod: MethodDescriptor<Contracts.TapRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDoubleTapMethod()
 
-  public val enterTextMethod:
-      MethodDescriptor<Contracts.EnterTextRequest, Contracts.DefaultResponse>
+  public val enterTextMethod: MethodDescriptor<Contracts.EnterTextRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnterTextMethod()
 
-  public val swipeMethod: MethodDescriptor<Contracts.SwipeRequest, Contracts.DefaultResponse>
+  public val swipeMethod: MethodDescriptor<Contracts.SwipeRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getSwipeMethod()
 
-  public val enableAirplaneModeMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val enableAirplaneModeMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableAirplaneModeMethod()
 
-  public val disableAirplaneModeMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val disableAirplaneModeMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableAirplaneModeMethod()
 
-  public val enableWiFiMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val enableWiFiMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableWiFiMethod()
 
-  public val disableWiFiMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val disableWiFiMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableWiFiMethod()
 
-  public val enableCellularMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val enableCellularMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableCellularMethod()
 
-  public val disableCellularMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val disableCellularMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableCellularMethod()
 
-  public val enableBluetoothMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val enableBluetoothMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableBluetoothMethod()
 
-  public val disableBluetoothMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val disableBluetoothMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableBluetoothMethod()
 
-  public val enableDarkModeMethod:
-      MethodDescriptor<Contracts.DarkModeRequest, Contracts.DefaultResponse>
+  public val enableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getEnableDarkModeMethod()
 
-  public val disableDarkModeMethod:
-      MethodDescriptor<Contracts.DarkModeRequest, Contracts.DefaultResponse>
+  public val disableDarkModeMethod: MethodDescriptor<Contracts.DarkModeRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDisableDarkModeMethod()
 
-  public val openNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val openNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getOpenNotificationsMethod()
 
-  public val closeNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val closeNotificationsMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getCloseNotificationsMethod()
 
-  public val closeHeadsUpNotificationMethod:
-      MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val closeHeadsUpNotificationMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getCloseHeadsUpNotificationMethod()
 
@@ -144,21 +139,21 @@ public object NativeAutomatorGrpcKt {
     get() = NativeAutomatorGrpc.getGetNotificationsMethod()
 
   public val tapOnNotificationMethod:
-      MethodDescriptor<Contracts.TapOnNotificationRequest, Contracts.DefaultResponse>
+      MethodDescriptor<Contracts.TapOnNotificationRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getTapOnNotificationMethod()
 
   public val handlePermissionDialogMethod:
-      MethodDescriptor<Contracts.HandlePermissionRequest, Contracts.DefaultResponse>
+      MethodDescriptor<Contracts.HandlePermissionRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getHandlePermissionDialogMethod()
 
   public val setLocationAccuracyMethod:
-      MethodDescriptor<Contracts.SetLocationAccuracyRequest, Contracts.DefaultResponse>
+      MethodDescriptor<Contracts.SetLocationAccuracyRequest, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getSetLocationAccuracyMethod()
 
-  public val debugMethod: MethodDescriptor<Contracts.Empty, Contracts.DefaultResponse>
+  public val debugMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getDebugMethod()
 
@@ -186,7 +181,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun pressHome(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getPressHomeMethod(),
       request,
@@ -207,7 +202,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun pressBack(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getPressBackMethod(),
       request,
@@ -228,7 +223,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun pressRecentApps(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getPressRecentAppsMethod(),
       request,
@@ -249,7 +244,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun doublePressRecentApps(request: Contracts.Empty, headers: Metadata =
-        Metadata()): Contracts.DefaultResponse = unaryRpc(
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDoublePressRecentAppsMethod(),
       request,
@@ -270,7 +265,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun openApp(request: Contracts.OpenAppRequest, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getOpenAppMethod(),
       request,
@@ -291,7 +286,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest,
-        headers: Metadata = Metadata()): Contracts.DefaultResponse = unaryRpc(
+        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getOpenQuickSettingsMethod(),
       request,
@@ -333,7 +328,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun tap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getTapMethod(),
       request,
@@ -354,7 +349,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun doubleTap(request: Contracts.TapRequest, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDoubleTapMethod(),
       request,
@@ -375,7 +370,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun enterText(request: Contracts.EnterTextRequest, headers: Metadata =
-        Metadata()): Contracts.DefaultResponse = unaryRpc(
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnterTextMethod(),
       request,
@@ -396,7 +391,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun swipe(request: Contracts.SwipeRequest, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getSwipeMethod(),
       request,
@@ -417,7 +412,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun enableAirplaneMode(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableAirplaneModeMethod(),
       request,
@@ -438,7 +433,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun disableAirplaneMode(request: Contracts.Empty, headers: Metadata =
-        Metadata()): Contracts.DefaultResponse = unaryRpc(
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableAirplaneModeMethod(),
       request,
@@ -459,7 +454,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun enableWiFi(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableWiFiMethod(),
       request,
@@ -480,7 +475,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun disableWiFi(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableWiFiMethod(),
       request,
@@ -501,7 +496,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun enableCellular(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableCellularMethod(),
       request,
@@ -522,7 +517,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun disableCellular(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableCellularMethod(),
       request,
@@ -543,7 +538,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun enableBluetooth(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableBluetoothMethod(),
       request,
@@ -564,7 +559,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun disableBluetooth(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableBluetoothMethod(),
       request,
@@ -585,7 +580,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun enableDarkMode(request: Contracts.DarkModeRequest, headers: Metadata =
-        Metadata()): Contracts.DefaultResponse = unaryRpc(
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getEnableDarkModeMethod(),
       request,
@@ -606,7 +601,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun disableDarkMode(request: Contracts.DarkModeRequest, headers: Metadata =
-        Metadata()): Contracts.DefaultResponse = unaryRpc(
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDisableDarkModeMethod(),
       request,
@@ -627,7 +622,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun openNotifications(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getOpenNotificationsMethod(),
       request,
@@ -648,7 +643,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun closeNotifications(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getCloseNotificationsMethod(),
       request,
@@ -669,7 +664,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun closeHeadsUpNotification(request: Contracts.Empty, headers: Metadata =
-        Metadata()): Contracts.DefaultResponse = unaryRpc(
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getCloseHeadsUpNotificationMethod(),
       request,
@@ -711,7 +706,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest,
-        headers: Metadata = Metadata()): Contracts.DefaultResponse = unaryRpc(
+        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getTapOnNotificationMethod(),
       request,
@@ -732,7 +727,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest,
-        headers: Metadata = Metadata()): Contracts.DefaultResponse = unaryRpc(
+        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getHandlePermissionDialogMethod(),
       request,
@@ -753,7 +748,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest,
-        headers: Metadata = Metadata()): Contracts.DefaultResponse = unaryRpc(
+        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getSetLocationAccuracyMethod(),
       request,
@@ -774,7 +769,7 @@ public object NativeAutomatorGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun debug(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.DefaultResponse = unaryRpc(
+        Contracts.Empty = unaryRpc(
       channel,
       NativeAutomatorGrpc.getDebugMethod(),
       request,
@@ -800,7 +795,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun pressHome(request: Contracts.Empty): Contracts.DefaultResponse = throw
+    public open suspend fun pressHome(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.pressHome is unimplemented"))
 
     /**
@@ -814,7 +809,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun pressBack(request: Contracts.Empty): Contracts.DefaultResponse = throw
+    public open suspend fun pressBack(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.pressBack is unimplemented"))
 
     /**
@@ -828,8 +823,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun pressRecentApps(request: Contracts.Empty): Contracts.DefaultResponse =
-        throw
+    public open suspend fun pressRecentApps(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.pressRecentApps is unimplemented"))
 
     /**
@@ -843,8 +837,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun doublePressRecentApps(request: Contracts.Empty):
-        Contracts.DefaultResponse = throw
+    public open suspend fun doublePressRecentApps(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.doublePressRecentApps is unimplemented"))
 
     /**
@@ -858,8 +851,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun openApp(request: Contracts.OpenAppRequest): Contracts.DefaultResponse =
-        throw
+    public open suspend fun openApp(request: Contracts.OpenAppRequest): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openApp is unimplemented"))
 
     /**
@@ -874,7 +866,7 @@ public object NativeAutomatorGrpcKt {
      * @param request The request from the client.
      */
     public open suspend fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest):
-        Contracts.DefaultResponse = throw
+        Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openQuickSettings is unimplemented"))
 
     /**
@@ -903,7 +895,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun tap(request: Contracts.TapRequest): Contracts.DefaultResponse = throw
+    public open suspend fun tap(request: Contracts.TapRequest): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.tap is unimplemented"))
 
     /**
@@ -917,8 +909,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun doubleTap(request: Contracts.TapRequest): Contracts.DefaultResponse =
-        throw
+    public open suspend fun doubleTap(request: Contracts.TapRequest): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.doubleTap is unimplemented"))
 
     /**
@@ -932,8 +923,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enterText(request: Contracts.EnterTextRequest):
-        Contracts.DefaultResponse = throw
+    public open suspend fun enterText(request: Contracts.EnterTextRequest): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enterText is unimplemented"))
 
     /**
@@ -947,8 +937,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun swipe(request: Contracts.SwipeRequest): Contracts.DefaultResponse =
-        throw
+    public open suspend fun swipe(request: Contracts.SwipeRequest): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.swipe is unimplemented"))
 
     /**
@@ -962,8 +951,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableAirplaneMode(request: Contracts.Empty): Contracts.DefaultResponse
-        = throw
+    public open suspend fun enableAirplaneMode(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableAirplaneMode is unimplemented"))
 
     /**
@@ -977,8 +965,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableAirplaneMode(request: Contracts.Empty): Contracts.DefaultResponse
-        = throw
+    public open suspend fun disableAirplaneMode(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableAirplaneMode is unimplemented"))
 
     /**
@@ -992,7 +979,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableWiFi(request: Contracts.Empty): Contracts.DefaultResponse = throw
+    public open suspend fun enableWiFi(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableWiFi is unimplemented"))
 
     /**
@@ -1006,7 +993,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableWiFi(request: Contracts.Empty): Contracts.DefaultResponse = throw
+    public open suspend fun disableWiFi(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableWiFi is unimplemented"))
 
     /**
@@ -1020,8 +1007,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableCellular(request: Contracts.Empty): Contracts.DefaultResponse =
-        throw
+    public open suspend fun enableCellular(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableCellular is unimplemented"))
 
     /**
@@ -1035,8 +1021,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableCellular(request: Contracts.Empty): Contracts.DefaultResponse =
-        throw
+    public open suspend fun disableCellular(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableCellular is unimplemented"))
 
     /**
@@ -1050,8 +1035,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableBluetooth(request: Contracts.Empty): Contracts.DefaultResponse =
-        throw
+    public open suspend fun enableBluetooth(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableBluetooth is unimplemented"))
 
     /**
@@ -1065,8 +1049,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableBluetooth(request: Contracts.Empty): Contracts.DefaultResponse =
-        throw
+    public open suspend fun disableBluetooth(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableBluetooth is unimplemented"))
 
     /**
@@ -1080,8 +1063,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun enableDarkMode(request: Contracts.DarkModeRequest):
-        Contracts.DefaultResponse = throw
+    public open suspend fun enableDarkMode(request: Contracts.DarkModeRequest): Contracts.Empty =
+        throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.enableDarkMode is unimplemented"))
 
     /**
@@ -1095,8 +1078,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun disableDarkMode(request: Contracts.DarkModeRequest):
-        Contracts.DefaultResponse = throw
+    public open suspend fun disableDarkMode(request: Contracts.DarkModeRequest): Contracts.Empty =
+        throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.disableDarkMode is unimplemented"))
 
     /**
@@ -1110,8 +1093,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun openNotifications(request: Contracts.Empty): Contracts.DefaultResponse =
-        throw
+    public open suspend fun openNotifications(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.openNotifications is unimplemented"))
 
     /**
@@ -1125,8 +1107,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun closeNotifications(request: Contracts.Empty): Contracts.DefaultResponse
-        = throw
+    public open suspend fun closeNotifications(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.closeNotifications is unimplemented"))
 
     /**
@@ -1140,8 +1121,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun closeHeadsUpNotification(request: Contracts.Empty):
-        Contracts.DefaultResponse = throw
+    public open suspend fun closeHeadsUpNotification(request: Contracts.Empty): Contracts.Empty =
+        throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.closeHeadsUpNotification is unimplemented"))
 
     /**
@@ -1171,7 +1152,7 @@ public object NativeAutomatorGrpcKt {
      * @param request The request from the client.
      */
     public open suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest):
-        Contracts.DefaultResponse = throw
+        Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.tapOnNotification is unimplemented"))
 
     /**
@@ -1186,7 +1167,7 @@ public object NativeAutomatorGrpcKt {
      * @param request The request from the client.
      */
     public open suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest):
-        Contracts.DefaultResponse = throw
+        Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.handlePermissionDialog is unimplemented"))
 
     /**
@@ -1201,7 +1182,7 @@ public object NativeAutomatorGrpcKt {
      * @param request The request from the client.
      */
     public open suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest):
-        Contracts.DefaultResponse = throw
+        Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.setLocationAccuracy is unimplemented"))
 
     /**
@@ -1215,7 +1196,7 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun debug(request: Contracts.Empty): Contracts.DefaultResponse = throw
+    public open suspend fun debug(request: Contracts.Empty): Contracts.Empty = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.debug is unimplemented"))
 
     public final override fun bindService(): ServerServiceDefinition =
