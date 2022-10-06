@@ -1,3 +1,12 @@
+## 0.6.11
+
+- **Breaking:** Rename `NativeAutomator.forTest()` constructor to an unnamed
+  constructor (#410)
+- Add `useBinding` flag to `NativeAutomator` constructor. Defaults to true,
+  which means that `PatrolBinding` is initialized during the constructor call
+  (#410)
+- Fix `timeout` argument to `NativeAutomator` being ignored (#410)
+
 ## 0.6.10
 
 - Make `$()` accept a `Widget` as an argument (#402)
@@ -5,7 +14,7 @@
 ## 0.6.9
 
 - Remove the unused `appId` argument from most methods (#399)
-- Rename `getNativeWidgets()` to `getNativeViews()` (#399)
+- **Breaking:** Rename `getNativeWidgets()` to `getNativeViews()` (#399)
 
 ## 0.6.8
 

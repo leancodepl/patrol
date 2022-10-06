@@ -1,3 +1,8 @@
+## 0.6.12
+
+- AutomatorServer:
+  - Fix `denyPermission()` not working on iOS (#413)
+
 ## 0.6.11
 
 - Improve stability (#397)

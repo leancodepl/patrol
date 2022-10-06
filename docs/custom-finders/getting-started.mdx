@@ -41,6 +41,39 @@ For those wondering what is that `#` thing – it's a
 All the types that you can pass to `$` are [listed in the
 documentation][create_finder_docs].
 
+### Making assertions
+
+Creating a finder doesn't do anything – it just _is_. Let's put them to use and
+write a few simple assertions.
+
+Here's how you can make sure that a widget with text `Log in` exists in the
+widget tree:
+
+```dart
+expect(find.text('Log in'), findsOneWidget);
+```
+
+With our custom finders, you'd write the above as:
+
+```dart
+expect($('Log in'), findsOneWidget);
+```
+
+We can also make sure that no widget exists, or that a particular number of
+widgets exist:
+
+```dart
+expect(find.text("Can't touch this"), findsNothing);
+expect(find.byType(Card), findsNWidgets(3));
+```
+
+The above expressed with Patrol's custom finders:
+
+```dart
+expect($("Can't touch this"), findsNothing);
+expect($(Card), findsNWidgets(3));
+```
+
 ### Performing actions
 
 Finding widgets alone is cool, but what's even cooler is being able to tap on
@@ -135,3 +168,19 @@ await $(ListTile).containing('Activated').$(#learnMore).tap();
 
 [patrol]: https://pub.dev/packages/patrol
 [create_finder_docs]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html
+
+### Falling back
+
+What's cool about Patrol is that it builds on top of `flutter_test` instead of
+replacing it. This means that you can freely mix Patrol's finders with finders
+from `flutter_test`, `PatrolTester` with `WidgetTester`, and so on.
+
+Here's how you can access the default `WidgetTester`:
+
+```dart
+patrolTest('adds comment', (PatrolTester $) async {
+  final WidgetTester tester = $.tester;
+
+  await tester.enterText(find.byKey(Key('commentTextField')), 'Very nice!');
+});
+```
