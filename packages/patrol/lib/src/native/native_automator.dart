@@ -106,17 +106,23 @@ class NativeAutomator {
     throw StateError('unsupported platform');
   }
 
-  Future<T> _wrapRequest<T>(String name, Future<T> Function() request) async {
+  Future<void> _wrapRequest(
+    String name,
+    Future<DefaultResponse> Function() request,
+  ) async {
     _logger('$name() started');
     try {
       final result = await request();
       _logger('$name() succeeded');
-      return result;
+
+      // FIXME: Check if result has error
+
     } on GrpcError catch (err) {
       _logger('$name() failed');
       final log = '$name() failed with code ${err.codeName} (${err.message})';
-
       throw PatrolActionException(log);
+    } on PatrolActionException {
+      rethrow;
     } catch (err) {
       _logger('$name() failed');
       rethrow;

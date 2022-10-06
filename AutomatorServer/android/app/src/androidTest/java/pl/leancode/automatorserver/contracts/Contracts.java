@@ -58,51 +58,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private OpenAppRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenAppRequest_descriptor;
@@ -171,7 +126,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -183,7 +138,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -200,7 +155,7 @@ public final class Contracts {
 
       if (!getAppId()
           .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -213,7 +168,7 @@ public final class Contracts {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + APPID_FIELD_NUMBER;
       hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -330,18 +285,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -427,7 +377,7 @@ public final class Contracts {
           appId_ = other.appId_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -442,17 +392,35 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                appId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenAppRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -564,7 +532,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new OpenAppRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -642,64 +621,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private TapOnNotificationRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-              findBy_ = input.readUInt32();
-              findByCase_ = 1;
-              break;
-            }
-            case 18: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (findByCase_ == 2) {
-                subBuilder = ((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_).toBuilder();
-              }
-              findBy_ =
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
-                findBy_ = subBuilder.buildPartial();
-              }
-              findByCase_ = 2;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -828,7 +749,7 @@ public final class Contracts {
       if (findByCase_ == 2) {
         output.writeMessage(2, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -846,7 +767,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -874,7 +795,7 @@ public final class Contracts {
         case 0:
         default:
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -897,7 +818,7 @@ public final class Contracts {
         case 0:
         default:
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1014,22 +935,20 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        if (selectorBuilder_ != null) {
+          selectorBuilder_.clear();
+        }
         findByCase_ = 0;
         findBy_ = null;
         return this;
@@ -1130,7 +1049,7 @@ public final class Contracts {
             break;
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -1145,17 +1064,42 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                findBy_ = input.readUInt32();
+                findByCase_ = 1;
+                break;
+              } // case 8
+              case 18: {
+                input.readMessage(
+                    getSelectorFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                findByCase_ = 2;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapOnNotificationRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int findByCase_ = 0;
@@ -1389,7 +1333,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TapOnNotificationRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1416,8 +1371,7 @@ public final class Contracts {
   /**
    * <pre>
    * We're defining our own Empty instead of using google.protobuf.Empty because
-   * the Dart plugin can't easily generate it. 
-   * 
+   * the Dart plugin can't easily generate it.
    * See:
    *  * https://github.com/google/protobuf.dart/issues/170
    * </pre>
@@ -1448,45 +1402,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private Empty(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Empty_descriptor;
@@ -1514,7 +1429,7 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -1523,7 +1438,7 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1538,7 +1453,7 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.Empty other = (pl.leancode.automatorserver.contracts.Contracts.Empty) obj;
 
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -1549,7 +1464,7 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1647,8 +1562,7 @@ public final class Contracts {
     /**
      * <pre>
      * We're defining our own Empty instead of using google.protobuf.Empty because
-     * the Dart plugin can't easily generate it. 
-     * 
+     * the Dart plugin can't easily generate it.
      * See:
      *  * https://github.com/google/protobuf.dart/issues/170
      * </pre>
@@ -1674,18 +1588,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.Empty.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -1764,7 +1673,7 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.Empty other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -1779,17 +1688,30 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.Empty parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.Empty) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       @java.lang.Override
@@ -1825,7 +1747,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Empty(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1840,6 +1773,555 @@ public final class Contracts {
 
     @java.lang.Override
     public pl.leancode.automatorserver.contracts.Contracts.Empty getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface DefaultResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DefaultResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string errorMessage = 1;</code>
+     * @return The errorMessage.
+     */
+    java.lang.String getErrorMessage();
+    /**
+     * <code>string errorMessage = 1;</code>
+     * @return The bytes for errorMessage.
+     */
+    com.google.protobuf.ByteString
+        getErrorMessageBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.DefaultResponse}
+   */
+  public static final class DefaultResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.DefaultResponse)
+      DefaultResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use DefaultResponse.newBuilder() to construct.
+    private DefaultResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private DefaultResponse() {
+      errorMessage_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new DefaultResponse();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.class, pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.Builder.class);
+    }
+
+    public static final int ERRORMESSAGE_FIELD_NUMBER = 1;
+    private volatile java.lang.Object errorMessage_;
+    /**
+     * <code>string errorMessage = 1;</code>
+     * @return The errorMessage.
+     */
+    @java.lang.Override
+    public java.lang.String getErrorMessage() {
+      java.lang.Object ref = errorMessage_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        errorMessage_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string errorMessage = 1;</code>
+     * @return The bytes for errorMessage.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getErrorMessageBytes() {
+      java.lang.Object ref = errorMessage_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        errorMessage_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(errorMessage_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, errorMessage_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(errorMessage_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, errorMessage_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.DefaultResponse)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.DefaultResponse other = (pl.leancode.automatorserver.contracts.Contracts.DefaultResponse) obj;
+
+      if (!getErrorMessage()
+          .equals(other.getErrorMessage())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ERRORMESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getErrorMessage().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.DefaultResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.DefaultResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DefaultResponse)
+        pl.leancode.automatorserver.contracts.Contracts.DefaultResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.class, pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        errorMessage_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_DefaultResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse build() {
+        pl.leancode.automatorserver.contracts.Contracts.DefaultResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.DefaultResponse result = new pl.leancode.automatorserver.contracts.Contracts.DefaultResponse(this);
+        result.errorMessage_ = errorMessage_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.DefaultResponse) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.DefaultResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.DefaultResponse other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.DefaultResponse.getDefaultInstance()) return this;
+        if (!other.getErrorMessage().isEmpty()) {
+          errorMessage_ = other.errorMessage_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                errorMessage_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private java.lang.Object errorMessage_ = "";
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return The errorMessage.
+       */
+      public java.lang.String getErrorMessage() {
+        java.lang.Object ref = errorMessage_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          errorMessage_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return The bytes for errorMessage.
+       */
+      public com.google.protobuf.ByteString
+          getErrorMessageBytes() {
+        java.lang.Object ref = errorMessage_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          errorMessage_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @param value The errorMessage to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        errorMessage_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearErrorMessage() {
+        
+        errorMessage_ = getDefaultInstance().getErrorMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @param value The bytes for errorMessage to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        errorMessage_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.DefaultResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.DefaultResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.DefaultResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.DefaultResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.DefaultResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<DefaultResponse>
+        PARSER = new com.google.protobuf.AbstractParser<DefaultResponse>() {
+      @java.lang.Override
+      public DefaultResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<DefaultResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DefaultResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.DefaultResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1876,45 +2358,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private OpenQuickSettingsRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_OpenQuickSettingsRequest_descriptor;
@@ -1942,7 +2385,7 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -1951,7 +2394,7 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -1966,7 +2409,7 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest other = (pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) obj;
 
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -1977,7 +2420,7 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2094,18 +2537,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -2184,7 +2622,7 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2199,17 +2637,30 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.OpenQuickSettingsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       @java.lang.Override
@@ -2245,7 +2696,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new OpenQuickSettingsRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -2308,51 +2770,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private DarkModeRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -2422,7 +2839,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -2434,7 +2851,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -2451,7 +2868,7 @@ public final class Contracts {
 
       if (!getAppId()
           .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -2464,7 +2881,7 @@ public final class Contracts {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + APPID_FIELD_NUMBER;
       hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2581,18 +2998,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -2678,7 +3090,7 @@ public final class Contracts {
           appId_ = other.appId_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -2693,17 +3105,35 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                appId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.DarkModeRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -2815,7 +3245,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new DarkModeRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -2881,58 +3322,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private GetNativeViewsRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (selector_ != null) {
-                subBuilder = selector_.toBuilder();
-              }
-              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(selector_);
-                selector_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsRequest_descriptor;
@@ -2989,7 +3378,7 @@ public final class Contracts {
       if (selector_ != null) {
         output.writeMessage(1, getSelector());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3002,7 +3391,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getSelector());
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3022,7 +3411,7 @@ public final class Contracts {
         if (!getSelector()
             .equals(other.getSelector())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -3037,7 +3426,7 @@ public final class Contracts {
         hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
         hash = (53 * hash) + getSelector().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -3154,18 +3543,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -3258,7 +3642,7 @@ public final class Contracts {
         if (other.hasSelector()) {
           mergeSelector(other.getSelector());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -3273,17 +3657,37 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getSelectorFieldBuilder().getBuilder(),
+                    extensionRegistry);
+
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -3438,7 +3842,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetNativeViewsRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -3463,28 +3878,38 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return Whether the errorMessage field is set.
      */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> 
-        getNativeViewsList();
+    boolean hasErrorMessage();
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The errorMessage.
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index);
+    java.lang.String getErrorMessage();
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The bytes for errorMessage.
      */
-    int getNativeViewsCount();
+    com.google.protobuf.ByteString
+        getErrorMessageBytes();
+
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * @return Whether the nativeViews field is set.
      */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
-        getNativeViewsOrBuilderList();
+    boolean hasNativeViews();
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * @return The nativeViews.
      */
-    pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
-        int index);
+    pl.leancode.automatorserver.contracts.Contracts.NativeViews getNativeViews();
+    /**
+     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder getNativeViewsOrBuilder();
+
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.ValueCase getValueCase();
   }
   /**
    * Protobuf type {@code patrol.GetNativeViewsResponse}
@@ -3499,7 +3924,6 @@ public final class Contracts {
       super(builder);
     }
     private GetNativeViewsResponse() {
-      nativeViews_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -3514,58 +3938,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private GetNativeViewsResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                nativeViews_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              nativeViews_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          nativeViews_ = java.util.Collections.unmodifiableList(nativeViews_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNativeViewsResponse_descriptor;
@@ -3579,44 +3951,128 @@ public final class Contracts {
               pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.Builder.class);
     }
 
-    public static final int NATIVEVIEWS_FIELD_NUMBER = 1;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> nativeViews_;
+    private int valueCase_ = 0;
+    private java.lang.Object value_;
+    public enum ValueCase
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+      ERRORMESSAGE(1),
+      NATIVEVIEWS(2),
+      VALUE_NOT_SET(0);
+      private final int value;
+      private ValueCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ValueCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static ValueCase forNumber(int value) {
+        switch (value) {
+          case 1: return ERRORMESSAGE;
+          case 2: return NATIVEVIEWS;
+          case 0: return VALUE_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public ValueCase
+    getValueCase() {
+      return ValueCase.forNumber(
+          valueCase_);
+    }
+
+    public static final int ERRORMESSAGE_FIELD_NUMBER = 1;
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return Whether the errorMessage field is set.
      */
-    @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getNativeViewsList() {
-      return nativeViews_;
+    public boolean hasErrorMessage() {
+      return valueCase_ == 1;
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The errorMessage.
      */
-    @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
-        getNativeViewsOrBuilderList() {
-      return nativeViews_;
+    public java.lang.String getErrorMessage() {
+      java.lang.Object ref = "";
+      if (valueCase_ == 1) {
+        ref = value_;
+      }
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (valueCase_ == 1) {
+          value_ = s;
+        }
+        return s;
+      }
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The bytes for errorMessage.
+     */
+    public com.google.protobuf.ByteString
+        getErrorMessageBytes() {
+      java.lang.Object ref = "";
+      if (valueCase_ == 1) {
+        ref = value_;
+      }
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        if (valueCase_ == 1) {
+          value_ = b;
+        }
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int NATIVEVIEWS_FIELD_NUMBER = 2;
+    /**
+     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * @return Whether the nativeViews field is set.
      */
     @java.lang.Override
-    public int getNativeViewsCount() {
-      return nativeViews_.size();
+    public boolean hasNativeViews() {
+      return valueCase_ == 2;
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>.patrol.NativeViews nativeViews = 2;</code>
+     * @return The nativeViews.
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index) {
-      return nativeViews_.get(index);
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViews getNativeViews() {
+      if (valueCase_ == 2) {
+         return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>.patrol.NativeViews nativeViews = 2;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
-        int index) {
-      return nativeViews_.get(index);
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder getNativeViewsOrBuilder() {
+      if (valueCase_ == 2) {
+         return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3633,10 +4089,13 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < nativeViews_.size(); i++) {
-        output.writeMessage(1, nativeViews_.get(i));
+      if (valueCase_ == 1) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_);
       }
-      unknownFields.writeTo(output);
+      if (valueCase_ == 2) {
+        output.writeMessage(2, (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_);
+      }
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -3645,11 +4104,14 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < nativeViews_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, nativeViews_.get(i));
+      if (valueCase_ == 1) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, value_);
       }
-      size += unknownFields.getSerializedSize();
+      if (valueCase_ == 2) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_);
+      }
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -3664,9 +4126,20 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse) obj;
 
-      if (!getNativeViewsList()
-          .equals(other.getNativeViewsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getValueCase().equals(other.getValueCase())) return false;
+      switch (valueCase_) {
+        case 1:
+          if (!getErrorMessage()
+              .equals(other.getErrorMessage())) return false;
+          break;
+        case 2:
+          if (!getNativeViews()
+              .equals(other.getNativeViews())) return false;
+          break;
+        case 0:
+        default:
+      }
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -3677,11 +4150,19 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNativeViewsCount() > 0) {
-        hash = (37 * hash) + NATIVEVIEWS_FIELD_NUMBER;
-        hash = (53 * hash) + getNativeViewsList().hashCode();
+      switch (valueCase_) {
+        case 1:
+          hash = (37 * hash) + ERRORMESSAGE_FIELD_NUMBER;
+          hash = (53 * hash) + getErrorMessage().hashCode();
+          break;
+        case 2:
+          hash = (37 * hash) + NATIVEVIEWS_FIELD_NUMBER;
+          hash = (53 * hash) + getNativeViews().hashCode();
+          break;
+        case 0:
+        default:
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -3798,29 +4279,22 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getNativeViewsFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (nativeViewsBuilder_ == null) {
-          nativeViews_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
+        if (nativeViewsBuilder_ != null) {
           nativeViewsBuilder_.clear();
         }
+        valueCase_ = 0;
+        value_ = null;
         return this;
       }
 
@@ -3847,16 +4321,17 @@ public final class Contracts {
       @java.lang.Override
       public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse buildPartial() {
         pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (nativeViewsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            nativeViews_ = java.util.Collections.unmodifiableList(nativeViews_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.nativeViews_ = nativeViews_;
-        } else {
-          result.nativeViews_ = nativeViewsBuilder_.build();
+        if (valueCase_ == 1) {
+          result.value_ = value_;
         }
+        if (valueCase_ == 2) {
+          if (nativeViewsBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = nativeViewsBuilder_.build();
+          }
+        }
+        result.valueCase_ = valueCase_;
         onBuilt();
         return result;
       }
@@ -3905,6 +4380,783 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.getDefaultInstance()) return this;
+        switch (other.getValueCase()) {
+          case ERRORMESSAGE: {
+            valueCase_ = 1;
+            value_ = other.value_;
+            onChanged();
+            break;
+          }
+          case NATIVEVIEWS: {
+            mergeNativeViews(other.getNativeViews());
+            break;
+          }
+          case VALUE_NOT_SET: {
+            break;
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                valueCase_ = 1;
+                value_ = s;
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getNativeViewsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                valueCase_ = 2;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int valueCase_ = 0;
+      private java.lang.Object value_;
+      public ValueCase
+          getValueCase() {
+        return ValueCase.forNumber(
+            valueCase_);
+      }
+
+      public Builder clearValue() {
+        valueCase_ = 0;
+        value_ = null;
+        onChanged();
+        return this;
+      }
+
+
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return Whether the errorMessage field is set.
+       */
+      @java.lang.Override
+      public boolean hasErrorMessage() {
+        return valueCase_ == 1;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return The errorMessage.
+       */
+      @java.lang.Override
+      public java.lang.String getErrorMessage() {
+        java.lang.Object ref = "";
+        if (valueCase_ == 1) {
+          ref = value_;
+        }
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (valueCase_ == 1) {
+            value_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return The bytes for errorMessage.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getErrorMessageBytes() {
+        java.lang.Object ref = "";
+        if (valueCase_ == 1) {
+          ref = value_;
+        }
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          if (valueCase_ == 1) {
+            value_ = b;
+          }
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @param value The errorMessage to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  valueCase_ = 1;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearErrorMessage() {
+        if (valueCase_ == 1) {
+          valueCase_ = 0;
+          value_ = null;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @param value The bytes for errorMessage to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        valueCase_ = 1;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.NativeViews, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder> nativeViewsBuilder_;
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * @return Whether the nativeViews field is set.
+       */
+      @java.lang.Override
+      public boolean hasNativeViews() {
+        return valueCase_ == 2;
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       * @return The nativeViews.
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViews getNativeViews() {
+        if (nativeViewsBuilder_ == null) {
+          if (valueCase_ == 2) {
+            return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+        } else {
+          if (valueCase_ == 2) {
+            return nativeViewsBuilder_.getMessage();
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      public Builder setNativeViews(pl.leancode.automatorserver.contracts.Contracts.NativeViews value) {
+        if (nativeViewsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          nativeViewsBuilder_.setMessage(value);
+        }
+        valueCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      public Builder setNativeViews(
+          pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder builderForValue) {
+        if (nativeViewsBuilder_ == null) {
+          value_ = builderForValue.build();
+          onChanged();
+        } else {
+          nativeViewsBuilder_.setMessage(builderForValue.build());
+        }
+        valueCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      public Builder mergeNativeViews(pl.leancode.automatorserver.contracts.Contracts.NativeViews value) {
+        if (nativeViewsBuilder_ == null) {
+          if (valueCase_ == 2 &&
+              value_ != pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance()) {
+            value_ = pl.leancode.automatorserver.contracts.Contracts.NativeViews.newBuilder((pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
+          onChanged();
+        } else {
+          if (valueCase_ == 2) {
+            nativeViewsBuilder_.mergeFrom(value);
+          } else {
+            nativeViewsBuilder_.setMessage(value);
+          }
+        }
+        valueCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      public Builder clearNativeViews() {
+        if (nativeViewsBuilder_ == null) {
+          if (valueCase_ == 2) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+        } else {
+          if (valueCase_ == 2) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          nativeViewsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder getNativeViewsBuilder() {
+        return getNativeViewsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder getNativeViewsOrBuilder() {
+        if ((valueCase_ == 2) && (nativeViewsBuilder_ != null)) {
+          return nativeViewsBuilder_.getMessageOrBuilder();
+        } else {
+          if (valueCase_ == 2) {
+            return (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.NativeViews nativeViews = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.NativeViews, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder> 
+          getNativeViewsFieldBuilder() {
+        if (nativeViewsBuilder_ == null) {
+          if (!(valueCase_ == 2)) {
+            value_ = pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+          }
+          nativeViewsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.NativeViews, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder, pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder>(
+                  (pl.leancode.automatorserver.contracts.Contracts.NativeViews) value_,
+                  getParentForChildren(),
+                  isClean());
+          value_ = null;
+        }
+        valueCase_ = 2;
+        onChanged();;
+        return nativeViewsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.GetNativeViewsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.GetNativeViewsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GetNativeViewsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<GetNativeViewsResponse>() {
+      @java.lang.Override
+      public GetNativeViewsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<GetNativeViewsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GetNativeViewsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface NativeViewsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.NativeViews)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> 
+        getNativeViewsList();
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index);
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    int getNativeViewsCount();
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+        getNativeViewsOrBuilderList();
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code patrol.NativeViews}
+   */
+  public static final class NativeViews extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.NativeViews)
+      NativeViewsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use NativeViews.newBuilder() to construct.
+    private NativeViews(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private NativeViews() {
+      nativeViews_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new NativeViews();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeViews_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeViews_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.NativeViews.class, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder.class);
+    }
+
+    public static final int NATIVEVIEWS_FIELD_NUMBER = 1;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> nativeViews_;
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.NativeView> getNativeViewsList() {
+      return nativeViews_;
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder> 
+        getNativeViewsOrBuilderList() {
+      return nativeViews_;
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    @java.lang.Override
+    public int getNativeViewsCount() {
+      return nativeViews_.size();
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NativeView getNativeViews(int index) {
+      return nativeViews_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViewOrBuilder getNativeViewsOrBuilder(
+        int index) {
+      return nativeViews_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < nativeViews_.size(); i++) {
+        output.writeMessage(1, nativeViews_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < nativeViews_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, nativeViews_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.NativeViews)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.NativeViews other = (pl.leancode.automatorserver.contracts.Contracts.NativeViews) obj;
+
+      if (!getNativeViewsList()
+          .equals(other.getNativeViewsList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getNativeViewsCount() > 0) {
+        hash = (37 * hash) + NATIVEVIEWS_FIELD_NUMBER;
+        hash = (53 * hash) + getNativeViewsList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.NativeViews prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.NativeViews}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.NativeViews)
+        pl.leancode.automatorserver.contracts.Contracts.NativeViewsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeViews_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeViews_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.NativeViews.class, pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.NativeViews.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (nativeViewsBuilder_ == null) {
+          nativeViews_ = java.util.Collections.emptyList();
+        } else {
+          nativeViews_ = null;
+          nativeViewsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_NativeViews_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViews getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViews build() {
+        pl.leancode.automatorserver.contracts.Contracts.NativeViews result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.NativeViews buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.NativeViews result = new pl.leancode.automatorserver.contracts.Contracts.NativeViews(this);
+        int from_bitField0_ = bitField0_;
+        if (nativeViewsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            nativeViews_ = java.util.Collections.unmodifiableList(nativeViews_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.nativeViews_ = nativeViews_;
+        } else {
+          result.nativeViews_ = nativeViewsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.NativeViews) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.NativeViews)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.NativeViews other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.NativeViews.getDefaultInstance()) return this;
         if (nativeViewsBuilder_ == null) {
           if (!other.nativeViews_.isEmpty()) {
             if (nativeViews_.isEmpty()) {
@@ -3931,7 +5183,7 @@ public final class Contracts {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -3946,17 +5198,43 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                pl.leancode.automatorserver.contracts.Contracts.NativeView m =
+                    input.readMessage(
+                        pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(),
+                        extensionRegistry);
+                if (nativeViewsBuilder_ == null) {
+                  ensureNativeViewsIsMutable();
+                  nativeViews_.add(m);
+                } else {
+                  nativeViewsBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -4213,41 +5491,52 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.GetNativeViewsResponse)
+      // @@protoc_insertion_point(builder_scope:patrol.NativeViews)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.GetNativeViewsResponse)
-    private static final pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.NativeViews)
+    private static final pl.leancode.automatorserver.contracts.Contracts.NativeViews DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.NativeViews();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.NativeViews getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<GetNativeViewsResponse>
-        PARSER = new com.google.protobuf.AbstractParser<GetNativeViewsResponse>() {
+    private static final com.google.protobuf.Parser<NativeViews>
+        PARSER = new com.google.protobuf.AbstractParser<NativeViews>() {
       @java.lang.Override
-      public GetNativeViewsResponse parsePartialFrom(
+      public NativeViews parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetNativeViewsResponse(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
-    public static com.google.protobuf.Parser<GetNativeViewsResponse> parser() {
+    public static com.google.protobuf.Parser<NativeViews> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<GetNativeViewsResponse> getParserForType() {
+    public com.google.protobuf.Parser<NativeViews> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.NativeViews getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4284,45 +5573,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private GetNotificationsRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsRequest_descriptor;
@@ -4350,7 +5600,7 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4359,7 +5609,7 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4374,7 +5624,7 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest other = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest) obj;
 
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4385,7 +5635,7 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4502,18 +5752,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -4592,7 +5837,7 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -4607,17 +5852,30 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       @java.lang.Override
@@ -4653,7 +5911,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetNotificationsRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -4678,28 +5947,38 @@ public final class Contracts {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return Whether the errorMessage field is set.
      */
-    java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> 
-        getNotificationsList();
+    boolean hasErrorMessage();
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The errorMessage.
      */
-    pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index);
+    java.lang.String getErrorMessage();
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The bytes for errorMessage.
      */
-    int getNotificationsCount();
+    com.google.protobuf.ByteString
+        getErrorMessageBytes();
+
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>.patrol.Notifications notifications = 2;</code>
+     * @return Whether the notifications field is set.
      */
-    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-        getNotificationsOrBuilderList();
+    boolean hasNotifications();
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>.patrol.Notifications notifications = 2;</code>
+     * @return The notifications.
      */
-    pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-        int index);
+    pl.leancode.automatorserver.contracts.Contracts.Notifications getNotifications();
+    /**
+     * <code>.patrol.Notifications notifications = 2;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder getNotificationsOrBuilder();
+
+    public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.ValueCase getValueCase();
   }
   /**
    * Protobuf type {@code patrol.GetNotificationsResponse}
@@ -4714,7 +5993,6 @@ public final class Contracts {
       super(builder);
     }
     private GetNotificationsResponse() {
-      notifications_ = java.util.Collections.emptyList();
     }
 
     @java.lang.Override
@@ -4729,58 +6007,6 @@ public final class Contracts {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private GetNotificationsResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                notifications_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.Notification>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              notifications_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Notification.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          notifications_ = java.util.Collections.unmodifiableList(notifications_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_GetNotificationsResponse_descriptor;
@@ -4794,44 +6020,128 @@ public final class Contracts {
               pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.class, pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.Builder.class);
     }
 
-    public static final int NOTIFICATIONS_FIELD_NUMBER = 1;
-    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_;
+    private int valueCase_ = 0;
+    private java.lang.Object value_;
+    public enum ValueCase
+        implements com.google.protobuf.Internal.EnumLite,
+            com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+      ERRORMESSAGE(1),
+      NOTIFICATIONS(2),
+      VALUE_NOT_SET(0);
+      private final int value;
+      private ValueCase(int value) {
+        this.value = value;
+      }
+      /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static ValueCase valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static ValueCase forNumber(int value) {
+        switch (value) {
+          case 1: return ERRORMESSAGE;
+          case 2: return NOTIFICATIONS;
+          case 0: return VALUE_NOT_SET;
+          default: return null;
+        }
+      }
+      public int getNumber() {
+        return this.value;
+      }
+    };
+
+    public ValueCase
+    getValueCase() {
+      return ValueCase.forNumber(
+          valueCase_);
+    }
+
+    public static final int ERRORMESSAGE_FIELD_NUMBER = 1;
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return Whether the errorMessage field is set.
      */
-    @java.lang.Override
-    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
-      return notifications_;
+    public boolean hasErrorMessage() {
+      return valueCase_ == 1;
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The errorMessage.
      */
-    @java.lang.Override
-    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
-        getNotificationsOrBuilderList() {
-      return notifications_;
+    public java.lang.String getErrorMessage() {
+      java.lang.Object ref = "";
+      if (valueCase_ == 1) {
+        ref = value_;
+      }
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (valueCase_ == 1) {
+          value_ = s;
+        }
+        return s;
+      }
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>string errorMessage = 1;</code>
+     * @return The bytes for errorMessage.
+     */
+    public com.google.protobuf.ByteString
+        getErrorMessageBytes() {
+      java.lang.Object ref = "";
+      if (valueCase_ == 1) {
+        ref = value_;
+      }
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        if (valueCase_ == 1) {
+          value_ = b;
+        }
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int NOTIFICATIONS_FIELD_NUMBER = 2;
+    /**
+     * <code>.patrol.Notifications notifications = 2;</code>
+     * @return Whether the notifications field is set.
      */
     @java.lang.Override
-    public int getNotificationsCount() {
-      return notifications_.size();
+    public boolean hasNotifications() {
+      return valueCase_ == 2;
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>.patrol.Notifications notifications = 2;</code>
+     * @return The notifications.
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
-      return notifications_.get(index);
+    public pl.leancode.automatorserver.contracts.Contracts.Notifications getNotifications() {
+      if (valueCase_ == 2) {
+         return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>.patrol.Notifications notifications = 2;</code>
      */
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
-        int index) {
-      return notifications_.get(index);
+    public pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder getNotificationsOrBuilder() {
+      if (valueCase_ == 2) {
+         return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
+      }
+      return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -4848,10 +6158,13 @@ public final class Contracts {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      for (int i = 0; i < notifications_.size(); i++) {
-        output.writeMessage(1, notifications_.get(i));
+      if (valueCase_ == 1) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, value_);
       }
-      unknownFields.writeTo(output);
+      if (valueCase_ == 2) {
+        output.writeMessage(2, (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_);
+      }
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -4860,11 +6173,14 @@ public final class Contracts {
       if (size != -1) return size;
 
       size = 0;
-      for (int i = 0; i < notifications_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, notifications_.get(i));
+      if (valueCase_ == 1) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, value_);
       }
-      size += unknownFields.getSerializedSize();
+      if (valueCase_ == 2) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_);
+      }
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -4879,9 +6195,20 @@ public final class Contracts {
       }
       pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse other = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse) obj;
 
-      if (!getNotificationsList()
-          .equals(other.getNotificationsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getValueCase().equals(other.getValueCase())) return false;
+      switch (valueCase_) {
+        case 1:
+          if (!getErrorMessage()
+              .equals(other.getErrorMessage())) return false;
+          break;
+        case 2:
+          if (!getNotifications()
+              .equals(other.getNotifications())) return false;
+          break;
+        case 0:
+        default:
+      }
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -4892,11 +6219,19 @@ public final class Contracts {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (getNotificationsCount() > 0) {
-        hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
-        hash = (53 * hash) + getNotificationsList().hashCode();
+      switch (valueCase_) {
+        case 1:
+          hash = (37 * hash) + ERRORMESSAGE_FIELD_NUMBER;
+          hash = (53 * hash) + getErrorMessage().hashCode();
+          break;
+        case 2:
+          hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
+          hash = (53 * hash) + getNotifications().hashCode();
+          break;
+        case 0:
+        default:
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5013,29 +6348,22 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getNotificationsFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (notificationsBuilder_ == null) {
-          notifications_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
+        if (notificationsBuilder_ != null) {
           notificationsBuilder_.clear();
         }
+        valueCase_ = 0;
+        value_ = null;
         return this;
       }
 
@@ -5062,16 +6390,17 @@ public final class Contracts {
       @java.lang.Override
       public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse buildPartial() {
         pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse result = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (notificationsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
-            notifications_ = java.util.Collections.unmodifiableList(notifications_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.notifications_ = notifications_;
-        } else {
-          result.notifications_ = notificationsBuilder_.build();
+        if (valueCase_ == 1) {
+          result.value_ = value_;
         }
+        if (valueCase_ == 2) {
+          if (notificationsBuilder_ == null) {
+            result.value_ = value_;
+          } else {
+            result.value_ = notificationsBuilder_.build();
+          }
+        }
+        result.valueCase_ = valueCase_;
         onBuilt();
         return result;
       }
@@ -5120,6 +6449,783 @@ public final class Contracts {
 
       public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse other) {
         if (other == pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse.getDefaultInstance()) return this;
+        switch (other.getValueCase()) {
+          case ERRORMESSAGE: {
+            valueCase_ = 1;
+            value_ = other.value_;
+            onChanged();
+            break;
+          }
+          case NOTIFICATIONS: {
+            mergeNotifications(other.getNotifications());
+            break;
+          }
+          case VALUE_NOT_SET: {
+            break;
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                valueCase_ = 1;
+                value_ = s;
+                break;
+              } // case 10
+              case 18: {
+                input.readMessage(
+                    getNotificationsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                valueCase_ = 2;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int valueCase_ = 0;
+      private java.lang.Object value_;
+      public ValueCase
+          getValueCase() {
+        return ValueCase.forNumber(
+            valueCase_);
+      }
+
+      public Builder clearValue() {
+        valueCase_ = 0;
+        value_ = null;
+        onChanged();
+        return this;
+      }
+
+
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return Whether the errorMessage field is set.
+       */
+      @java.lang.Override
+      public boolean hasErrorMessage() {
+        return valueCase_ == 1;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return The errorMessage.
+       */
+      @java.lang.Override
+      public java.lang.String getErrorMessage() {
+        java.lang.Object ref = "";
+        if (valueCase_ == 1) {
+          ref = value_;
+        }
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (valueCase_ == 1) {
+            value_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return The bytes for errorMessage.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getErrorMessageBytes() {
+        java.lang.Object ref = "";
+        if (valueCase_ == 1) {
+          ref = value_;
+        }
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          if (valueCase_ == 1) {
+            value_ = b;
+          }
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @param value The errorMessage to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  valueCase_ = 1;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearErrorMessage() {
+        if (valueCase_ == 1) {
+          valueCase_ = 0;
+          value_ = null;
+          onChanged();
+        }
+        return this;
+      }
+      /**
+       * <code>string errorMessage = 1;</code>
+       * @param value The bytes for errorMessage to set.
+       * @return This builder for chaining.
+       */
+      public Builder setErrorMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        valueCase_ = 1;
+        value_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Notifications, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder> notificationsBuilder_;
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       * @return Whether the notifications field is set.
+       */
+      @java.lang.Override
+      public boolean hasNotifications() {
+        return valueCase_ == 2;
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       * @return The notifications.
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.Notifications getNotifications() {
+        if (notificationsBuilder_ == null) {
+          if (valueCase_ == 2) {
+            return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+        } else {
+          if (valueCase_ == 2) {
+            return notificationsBuilder_.getMessage();
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      public Builder setNotifications(pl.leancode.automatorserver.contracts.Contracts.Notifications value) {
+        if (notificationsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          value_ = value;
+          onChanged();
+        } else {
+          notificationsBuilder_.setMessage(value);
+        }
+        valueCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      public Builder setNotifications(
+          pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder builderForValue) {
+        if (notificationsBuilder_ == null) {
+          value_ = builderForValue.build();
+          onChanged();
+        } else {
+          notificationsBuilder_.setMessage(builderForValue.build());
+        }
+        valueCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      public Builder mergeNotifications(pl.leancode.automatorserver.contracts.Contracts.Notifications value) {
+        if (notificationsBuilder_ == null) {
+          if (valueCase_ == 2 &&
+              value_ != pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance()) {
+            value_ = pl.leancode.automatorserver.contracts.Contracts.Notifications.newBuilder((pl.leancode.automatorserver.contracts.Contracts.Notifications) value_)
+                .mergeFrom(value).buildPartial();
+          } else {
+            value_ = value;
+          }
+          onChanged();
+        } else {
+          if (valueCase_ == 2) {
+            notificationsBuilder_.mergeFrom(value);
+          } else {
+            notificationsBuilder_.setMessage(value);
+          }
+        }
+        valueCase_ = 2;
+        return this;
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      public Builder clearNotifications() {
+        if (notificationsBuilder_ == null) {
+          if (valueCase_ == 2) {
+            valueCase_ = 0;
+            value_ = null;
+            onChanged();
+          }
+        } else {
+          if (valueCase_ == 2) {
+            valueCase_ = 0;
+            value_ = null;
+          }
+          notificationsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      public pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder getNotificationsBuilder() {
+        return getNotificationsFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder getNotificationsOrBuilder() {
+        if ((valueCase_ == 2) && (notificationsBuilder_ != null)) {
+          return notificationsBuilder_.getMessageOrBuilder();
+        } else {
+          if (valueCase_ == 2) {
+            return (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_;
+          }
+          return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+        }
+      }
+      /**
+       * <code>.patrol.Notifications notifications = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          pl.leancode.automatorserver.contracts.Contracts.Notifications, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder> 
+          getNotificationsFieldBuilder() {
+        if (notificationsBuilder_ == null) {
+          if (!(valueCase_ == 2)) {
+            value_ = pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+          }
+          notificationsBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              pl.leancode.automatorserver.contracts.Contracts.Notifications, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder, pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder>(
+                  (pl.leancode.automatorserver.contracts.Contracts.Notifications) value_,
+                  getParentForChildren(),
+                  isClean());
+          value_ = null;
+        }
+        valueCase_ = 2;
+        onChanged();;
+        return notificationsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.GetNotificationsResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.GetNotificationsResponse)
+    private static final pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<GetNotificationsResponse>
+        PARSER = new com.google.protobuf.AbstractParser<GetNotificationsResponse>() {
+      @java.lang.Override
+      public GetNotificationsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<GetNotificationsResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<GetNotificationsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface NotificationsOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.Notifications)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> 
+        getNotificationsList();
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index);
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    int getNotificationsCount();
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+        getNotificationsOrBuilderList();
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code patrol.Notifications}
+   */
+  public static final class Notifications extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.Notifications)
+      NotificationsOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Notifications.newBuilder() to construct.
+    private Notifications(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Notifications() {
+      notifications_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new Notifications();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.Notifications.class, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder.class);
+    }
+
+    public static final int NOTIFICATIONS_FIELD_NUMBER = 1;
+    private java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> notifications_;
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<pl.leancode.automatorserver.contracts.Contracts.Notification> getNotificationsList() {
+      return notifications_;
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder> 
+        getNotificationsOrBuilderList() {
+      return notifications_;
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public int getNotificationsCount() {
+      return notifications_.size();
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.Notification getNotifications(int index) {
+      return notifications_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.Notification notifications = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.NotificationOrBuilder getNotificationsOrBuilder(
+        int index) {
+      return notifications_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < notifications_.size(); i++) {
+        output.writeMessage(1, notifications_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < notifications_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, notifications_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.Notifications)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.Notifications other = (pl.leancode.automatorserver.contracts.Contracts.Notifications) obj;
+
+      if (!getNotificationsList()
+          .equals(other.getNotificationsList())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getNotificationsCount() > 0) {
+        hash = (37 * hash) + NOTIFICATIONS_FIELD_NUMBER;
+        hash = (53 * hash) + getNotificationsList().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.Notifications prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.Notifications}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.Notifications)
+        pl.leancode.automatorserver.contracts.Contracts.NotificationsOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.Notifications.class, pl.leancode.automatorserver.contracts.Contracts.Notifications.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.Notifications.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (notificationsBuilder_ == null) {
+          notifications_ = java.util.Collections.emptyList();
+        } else {
+          notifications_ = null;
+          notificationsBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_Notifications_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.Notifications getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.Notifications build() {
+        pl.leancode.automatorserver.contracts.Contracts.Notifications result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.Notifications buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.Notifications result = new pl.leancode.automatorserver.contracts.Contracts.Notifications(this);
+        int from_bitField0_ = bitField0_;
+        if (notificationsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            notifications_ = java.util.Collections.unmodifiableList(notifications_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.notifications_ = notifications_;
+        } else {
+          result.notifications_ = notificationsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.Notifications) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.Notifications)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.Notifications other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.Notifications.getDefaultInstance()) return this;
         if (notificationsBuilder_ == null) {
           if (!other.notifications_.isEmpty()) {
             if (notifications_.isEmpty()) {
@@ -5146,7 +7252,7 @@ public final class Contracts {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -5161,17 +7267,43 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                pl.leancode.automatorserver.contracts.Contracts.Notification m =
+                    input.readMessage(
+                        pl.leancode.automatorserver.contracts.Contracts.Notification.parser(),
+                        extensionRegistry);
+                if (notificationsBuilder_ == null) {
+                  ensureNotificationsIsMutable();
+                  notifications_.add(m);
+                } else {
+                  notificationsBuilder_.addMessage(m);
+                }
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -5428,41 +7560,52 @@ public final class Contracts {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:patrol.GetNotificationsResponse)
+      // @@protoc_insertion_point(builder_scope:patrol.Notifications)
     }
 
-    // @@protoc_insertion_point(class_scope:patrol.GetNotificationsResponse)
-    private static final pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:patrol.Notifications)
+    private static final pl.leancode.automatorserver.contracts.Contracts.Notifications DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse();
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.Notifications();
     }
 
-    public static pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstance() {
+    public static pl.leancode.automatorserver.contracts.Contracts.Notifications getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<GetNotificationsResponse>
-        PARSER = new com.google.protobuf.AbstractParser<GetNotificationsResponse>() {
+    private static final com.google.protobuf.Parser<Notifications>
+        PARSER = new com.google.protobuf.AbstractParser<Notifications>() {
       @java.lang.Override
-      public GetNotificationsResponse parsePartialFrom(
+      public Notifications parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new GetNotificationsResponse(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
-    public static com.google.protobuf.Parser<GetNotificationsResponse> parser() {
+    public static com.google.protobuf.Parser<Notifications> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<GetNotificationsResponse> getParserForType() {
+    public com.google.protobuf.Parser<Notifications> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public pl.leancode.automatorserver.contracts.Contracts.GetNotificationsResponse getDefaultInstanceForType() {
+    public pl.leancode.automatorserver.contracts.Contracts.Notifications getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -5526,64 +7669,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private TapRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (selector_ != null) {
-                subBuilder = selector_.toBuilder();
-              }
-              selector_ = input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(selector_);
-                selector_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -5682,7 +7767,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, appId_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -5698,7 +7783,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, appId_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -5720,7 +7805,7 @@ public final class Contracts {
       }
       if (!getAppId()
           .equals(other.getAppId())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -5737,7 +7822,7 @@ public final class Contracts {
       }
       hash = (37 * hash) + APPID_FIELD_NUMBER;
       hash = (53 * hash) + getAppId().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5854,18 +7939,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.TapRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -5965,7 +8045,7 @@ public final class Contracts {
           appId_ = other.appId_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -5980,17 +8060,42 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.TapRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getSelectorFieldBuilder().getBuilder(),
+                    extensionRegistry);
+
+                break;
+              } // case 10
+              case 18: {
+                appId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.TapRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -6221,7 +8326,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TapRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -6325,76 +8441,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private EnterTextRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              data_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              appId_ = s;
-              break;
-            }
-            case 24: {
-              findBy_ = input.readUInt32();
-              findByCase_ = 3;
-              break;
-            }
-            case 34: {
-              pl.leancode.automatorserver.contracts.Contracts.Selector.Builder subBuilder = null;
-              if (findByCase_ == 4) {
-                subBuilder = ((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_).toBuilder();
-              }
-              findBy_ =
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.Selector.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
-                findBy_ = subBuilder.buildPartial();
-              }
-              findByCase_ = 4;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -6605,7 +8651,7 @@ public final class Contracts {
       if (findByCase_ == 4) {
         output.writeMessage(4, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -6629,7 +8675,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -6661,7 +8707,7 @@ public final class Contracts {
         case 0:
         default:
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -6688,7 +8734,7 @@ public final class Contracts {
         case 0:
         default:
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -6805,18 +8851,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -6825,6 +8866,9 @@ public final class Contracts {
 
         appId_ = "";
 
+        if (selectorBuilder_ != null) {
+          selectorBuilder_.clear();
+        }
         findByCase_ = 0;
         findBy_ = null;
         return this;
@@ -6935,7 +8979,7 @@ public final class Contracts {
             break;
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -6950,17 +8994,52 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                data_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              case 18: {
+                appId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              case 24: {
+                findBy_ = input.readUInt32();
+                findByCase_ = 3;
+                break;
+              } // case 24
+              case 34: {
+                input.readMessage(
+                    getSelectorFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                findByCase_ = 4;
+                break;
+              } // case 34
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int findByCase_ = 0;
@@ -7346,7 +9425,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EnterTextRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -7426,70 +9516,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private SwipeRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 13: {
-
-              startX_ = input.readFloat();
-              break;
-            }
-            case 21: {
-
-              startY_ = input.readFloat();
-              break;
-            }
-            case 29: {
-
-              endX_ = input.readFloat();
-              break;
-            }
-            case 37: {
-
-              endY_ = input.readFloat();
-              break;
-            }
-            case 40: {
-
-              steps_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -7588,7 +9614,7 @@ public final class Contracts {
       if (steps_ != 0) {
         output.writeUInt32(5, steps_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -7617,7 +9643,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, steps_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -7646,7 +9672,7 @@ public final class Contracts {
               other.getEndY())) return false;
       if (getSteps()
           != other.getSteps()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -7671,7 +9697,7 @@ public final class Contracts {
           getEndY());
       hash = (37 * hash) + STEPS_FIELD_NUMBER;
       hash = (53 * hash) + getSteps();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -7788,18 +9814,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.SwipeRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -7908,7 +9929,7 @@ public final class Contracts {
         if (other.getSteps() != 0) {
           setSteps(other.getSteps());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -7923,17 +9944,55 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.SwipeRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 13: {
+                startX_ = input.readFloat();
+
+                break;
+              } // case 13
+              case 21: {
+                startY_ = input.readFloat();
+
+                break;
+              } // case 21
+              case 29: {
+                endX_ = input.readFloat();
+
+                break;
+              } // case 29
+              case 37: {
+                endY_ = input.readFloat();
+
+                break;
+              } // case 37
+              case 40: {
+                steps_ = input.readUInt32();
+
+                break;
+              } // case 40
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SwipeRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -8124,7 +10183,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SwipeRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -8186,51 +10256,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private HandlePermissionRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-              int rawValue = input.readEnum();
-
-              code_ = rawValue;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -8398,7 +10423,7 @@ public final class Contracts {
       if (code_ != pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING.getNumber()) {
         output.writeEnum(1, code_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -8411,7 +10436,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, code_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -8427,7 +10452,7 @@ public final class Contracts {
       pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest other = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest) obj;
 
       if (code_ != other.code_) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -8440,7 +10465,7 @@ public final class Contracts {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + CODE_FIELD_NUMBER;
       hash = (53 * hash) + code_;
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -8557,18 +10582,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -8653,7 +10673,7 @@ public final class Contracts {
         if (other.code_ != 0) {
           setCodeValue(other.getCodeValue());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -8668,17 +10688,35 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                code_ = input.readEnum();
+
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.HandlePermissionRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -8768,7 +10806,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new HandlePermissionRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -8830,51 +10879,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private SetLocationAccuracyRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-              int rawValue = input.readEnum();
-
-              locationAccuracy_ = rawValue;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -9033,7 +11037,7 @@ public final class Contracts {
       if (locationAccuracy_ != pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE.getNumber()) {
         output.writeEnum(1, locationAccuracy_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -9046,7 +11050,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, locationAccuracy_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -9062,7 +11066,7 @@ public final class Contracts {
       pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest other = (pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest) obj;
 
       if (locationAccuracy_ != other.locationAccuracy_) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -9075,7 +11079,7 @@ public final class Contracts {
       hash = (19 * hash) + getDescriptor().hashCode();
       hash = (37 * hash) + LOCATIONACCURACY_FIELD_NUMBER;
       hash = (53 * hash) + locationAccuracy_;
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -9192,18 +11196,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -9288,7 +11287,7 @@ public final class Contracts {
         if (other.locationAccuracy_ != 0) {
           setLocationAccuracyValue(other.getLocationAccuracyValue());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -9303,17 +11302,35 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                locationAccuracy_ = input.readEnum();
+
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
@@ -9403,7 +11420,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SetLocationAccuracyRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -9648,115 +11676,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private Selector(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              text_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000002;
-              textStartsWith_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000004;
-              textContains_ = s;
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000008;
-              className_ = s;
-              break;
-            }
-            case 42: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000010;
-              contentDescription_ = s;
-              break;
-            }
-            case 50: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000020;
-              contentDescriptionStartsWith_ = s;
-              break;
-            }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000040;
-              contentDescriptionContains_ = s;
-              break;
-            }
-            case 66: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000080;
-              resourceId_ = s;
-              break;
-            }
-            case 72: {
-              bitField0_ |= 0x00000100;
-              instance_ = input.readUInt32();
-              break;
-            }
-            case 80: {
-              bitField0_ |= 0x00000200;
-              enabled_ = input.readBool();
-              break;
-            }
-            case 88: {
-              bitField0_ |= 0x00000400;
-              focused_ = input.readBool();
-              break;
-            }
-            case 98: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000800;
-              pkg_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -10293,7 +12212,7 @@ public final class Contracts {
       if (((bitField0_ & 0x00000800) != 0)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 12, pkg_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -10341,7 +12260,7 @@ public final class Contracts {
       if (((bitField0_ & 0x00000800) != 0)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, pkg_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -10416,7 +12335,7 @@ public final class Contracts {
         if (!getPkg()
             .equals(other.getPkg())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -10477,7 +12396,7 @@ public final class Contracts {
         hash = (37 * hash) + PKG_FIELD_NUMBER;
         hash = (53 * hash) + getPkg().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -10594,18 +12513,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -10813,7 +12727,7 @@ public final class Contracts {
           pkg_ = other.pkg_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -10828,17 +12742,90 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.Selector parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                text_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                textStartsWith_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                textContains_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                className_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                contentDescription_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              case 50: {
+                contentDescriptionStartsWith_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000020;
+                break;
+              } // case 50
+              case 58: {
+                contentDescriptionContains_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000040;
+                break;
+              } // case 58
+              case 66: {
+                resourceId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000080;
+                break;
+              } // case 66
+              case 72: {
+                instance_ = input.readUInt32();
+                bitField0_ |= 0x00000100;
+                break;
+              } // case 72
+              case 80: {
+                enabled_ = input.readBool();
+                bitField0_ |= 0x00000200;
+                break;
+              } // case 80
+              case 88: {
+                focused_ = input.readBool();
+                bitField0_ |= 0x00000400;
+                break;
+              } // case 88
+              case 98: {
+                pkg_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000800;
+                break;
+              } // case 98
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.Selector) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -11739,7 +13726,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Selector(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -11902,103 +13900,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private NativeView(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              className_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              text_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              contentDescription_ = s;
-              break;
-            }
-            case 32: {
-
-              focused_ = input.readBool();
-              break;
-            }
-            case 40: {
-
-              enabled_ = input.readBool();
-              break;
-            }
-            case 48: {
-
-              childCount_ = input.readInt32();
-              break;
-            }
-            case 58: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              resourceName_ = s;
-              break;
-            }
-            case 66: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              applicationPackage_ = s;
-              break;
-            }
-            case 74: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                children_ = new java.util.ArrayList<pl.leancode.automatorserver.contracts.Contracts.NativeView>();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              children_.add(
-                  input.readMessage(pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(), extensionRegistry));
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          children_ = java.util.Collections.unmodifiableList(children_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -12317,7 +14218,7 @@ public final class Contracts {
       for (int i = 0; i < children_.size(); i++) {
         output.writeMessage(9, children_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -12357,7 +14258,7 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(9, children_.get(i));
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -12390,7 +14291,7 @@ public final class Contracts {
           .equals(other.getApplicationPackage())) return false;
       if (!getChildrenList()
           .equals(other.getChildrenList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -12423,7 +14324,7 @@ public final class Contracts {
         hash = (37 * hash) + CHILDREN_FIELD_NUMBER;
         hash = (53 * hash) + getChildrenList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -12545,19 +14446,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.NativeView.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-          getChildrenFieldBuilder();
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -12580,10 +14475,11 @@ public final class Contracts {
 
         if (childrenBuilder_ == null) {
           children_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
         } else {
+          children_ = null;
           childrenBuilder_.clear();
         }
+        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -12731,7 +14627,7 @@ public final class Contracts {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -12746,17 +14642,83 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.NativeView parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                className_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              case 18: {
+                text_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              case 26: {
+                contentDescription_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 26
+              case 32: {
+                focused_ = input.readBool();
+
+                break;
+              } // case 32
+              case 40: {
+                enabled_ = input.readBool();
+
+                break;
+              } // case 40
+              case 48: {
+                childCount_ = input.readInt32();
+
+                break;
+              } // case 48
+              case 58: {
+                resourceName_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 58
+              case 66: {
+                applicationPackage_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 66
+              case 74: {
+                pl.leancode.automatorserver.contracts.Contracts.NativeView m =
+                    input.readMessage(
+                        pl.leancode.automatorserver.contracts.Contracts.NativeView.parser(),
+                        extensionRegistry);
+                if (childrenBuilder_ == null) {
+                  ensureChildrenIsMutable();
+                  children_.add(m);
+                } else {
+                  childrenBuilder_.addMessage(m);
+                }
+                break;
+              } // case 74
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.NativeView) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -13506,7 +15468,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new NativeView(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -13617,70 +15590,6 @@ public final class Contracts {
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
-    }
-    private Notification(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000001;
-              appName_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              title_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              content_ = s;
-              break;
-            }
-            case 34: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              raw_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (com.google.protobuf.UninitializedMessageException e) {
-        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
@@ -13882,7 +15791,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(raw_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, raw_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
     @java.lang.Override
@@ -13903,7 +15812,7 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(raw_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, raw_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -13929,7 +15838,7 @@ public final class Contracts {
           .equals(other.getContent())) return false;
       if (!getRaw()
           .equals(other.getRaw())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
@@ -13950,7 +15859,7 @@ public final class Contracts {
       hash = (53 * hash) + getContent().hashCode();
       hash = (37 * hash) + RAW_FIELD_NUMBER;
       hash = (53 * hash) + getRaw().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -14071,18 +15980,13 @@ public final class Contracts {
 
       // Construct using pl.leancode.automatorserver.contracts.Contracts.Notification.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
+
       }
       @java.lang.Override
       public Builder clear() {
@@ -14196,7 +16100,7 @@ public final class Contracts {
           raw_ = other.raw_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
@@ -14211,17 +16115,50 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        pl.leancode.automatorserver.contracts.Contracts.Notification parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                appName_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                title_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              case 26: {
+                content_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 26
+              case 34: {
+                raw_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 34
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (pl.leancode.automatorserver.contracts.Contracts.Notification) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -14569,7 +16506,18 @@ public final class Contracts {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Notification(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -14605,6 +16553,11 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_Empty_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_DefaultResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_DefaultResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_OpenQuickSettingsRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -14625,6 +16578,11 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_NativeViews_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_NativeViews_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_GetNotificationsRequest_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -14634,6 +16592,11 @@ public final class Contracts {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_GetNotificationsResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_Notifications_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_Notifications_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_TapRequest_descriptor;
   private static final 
@@ -14687,92 +16650,105 @@ public final class Contracts {
       "est\022\r\n\005appId\030\001 \001(\t\"[\n\030TapOnNotificationR" +
       "equest\022\017\n\005index\030\001 \001(\rH\000\022$\n\010selector\030\002 \001(" +
       "\0132\020.patrol.SelectorH\000B\010\n\006findBy\"\007\n\005Empty" +
-      "\"\032\n\030OpenQuickSettingsRequest\" \n\017DarkMode" +
-      "Request\022\r\n\005appId\030\001 \001(\t\";\n\025GetNativeViews" +
-      "Request\022\"\n\010selector\030\001 \001(\0132\020.patrol.Selec" +
-      "tor\"A\n\026GetNativeViewsResponse\022\'\n\013nativeV" +
-      "iews\030\001 \003(\0132\022.patrol.NativeView\"\031\n\027GetNot" +
-      "ificationsRequest\"G\n\030GetNotificationsRes" +
-      "ponse\022+\n\rnotifications\030\001 \003(\0132\024.patrol.No" +
-      "tification\"?\n\nTapRequest\022\"\n\010selector\030\001 \001" +
-      "(\0132\020.patrol.Selector\022\r\n\005appId\030\002 \001(\t\"p\n\020E" +
-      "nterTextRequest\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002" +
-      " \001(\t\022\017\n\005index\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132" +
-      "\020.patrol.SelectorH\000B\010\n\006findBy\"Y\n\014SwipeRe" +
-      "quest\022\016\n\006startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n" +
-      "\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r" +
-      "\"\206\001\n\027HandlePermissionRequest\0222\n\004code\030\001 \001" +
-      "(\0162$.patrol.HandlePermissionRequest.Code" +
-      "\"7\n\004Code\022\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THIS_T" +
-      "IME\020\001\022\n\n\006DENIED\020\002\"\225\001\n\032SetLocationAccurac" +
-      "yRequest\022M\n\020locationAccuracy\030\001 \001(\01623.pat" +
-      "rol.SetLocationAccuracyRequest.LocationA" +
-      "ccuracy\"(\n\020LocationAccuracy\022\n\n\006COARSE\020\000\022" +
-      "\010\n\004FINE\020\001\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001" +
-      "\001\022\033\n\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textCo" +
-      "ntains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001" +
-      "\001\022\037\n\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034co" +
-      "ntentDescriptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n" +
-      "\032contentDescriptionContains\030\007 \001(\tH\006\210\001\001\022\027" +
-      "\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(" +
-      "\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030" +
-      "\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n" +
-      "\017_textStartsWithB\017\n\r_textContainsB\014\n\n_cl" +
-      "assNameB\025\n\023_contentDescriptionB\037\n\035_conte" +
-      "ntDescriptionStartsWithB\035\n\033_contentDescr" +
-      "iptionContainsB\r\n\013_resourceIdB\013\n\t_instan" +
-      "ceB\n\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nN" +
-      "ativeView\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001" +
-      "(\t\022\032\n\022contentDescription\030\003 \001(\t\022\017\n\007focuse" +
-      "d\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006" +
-      " \001(\005\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applicatio" +
-      "nPackage\030\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patro" +
-      "l.NativeView\"]\n\014Notification\022\024\n\007appName\030" +
-      "\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001" +
-      "(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName2\204\r\n\017NativeAu" +
-      "tomator\022+\n\tpressHome\022\r.patrol.Empty\032\r.pa" +
-      "trol.Empty\"\000\022+\n\tpressBack\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0221\n\017pressRecentApps\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\0227\n\025doublePr" +
-      "essRecentApps\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\0222\n\007openApp\022\026.patrol.OpenAppRequest" +
-      "\032\r.patrol.Empty\"\000\022F\n\021openQuickSettings\022 " +
-      ".patrol.OpenQuickSettingsRequest\032\r.patro" +
-      "l.Empty\"\000\022Q\n\016getNativeViews\022\035.patrol.Get" +
-      "NativeViewsRequest\032\036.patrol.GetNativeVie" +
-      "wsResponse\"\000\022*\n\003tap\022\022.patrol.TapRequest\032" +
-      "\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.T" +
-      "apRequest\032\r.patrol.Empty\"\000\0226\n\tenterText\022" +
-      "\030.patrol.EnterTextRequest\032\r.patrol.Empty" +
-      "\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r.patr" +
-      "ol.Empty\"\000\0224\n\022enableAirplaneMode\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\0225\n\023disableAirpl" +
-      "aneMode\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
-      ",\n\nenableWiFi\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\022-\n\013disableWiFi\022\r.patrol.Empty\032\r.pa" +
-      "trol.Empty\"\000\0220\n\016enableCellular\022\r.patrol." +
-      "Empty\032\r.patrol.Empty\"\000\0221\n\017disableCellula" +
-      "r\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017ena" +
-      "bleBluetooth\022\r.patrol.Empty\032\r.patrol.Emp" +
-      "ty\"\000\0222\n\020disableBluetooth\022\r.patrol.Empty\032" +
-      "\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027.pat" +
-      "rol.DarkModeRequest\032\r.patrol.Empty\"\000\022;\n\017" +
-      "disableDarkMode\022\027.patrol.DarkModeRequest" +
-      "\032\r.patrol.Empty\"\000\0223\n\021openNotifications\022\r" +
-      ".patrol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeN" +
-      "otifications\022\r.patrol.Empty\032\r.patrol.Emp" +
-      "ty\"\000\022:\n\030closeHeadsUpNotification\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\022W\n\020getNotificat" +
-      "ions\022\037.patrol.GetNotificationsRequest\032 ." +
-      "patrol.GetNotificationsResponse\"\000\022F\n\021tap" +
-      "OnNotification\022 .patrol.TapOnNotificatio" +
-      "nRequest\032\r.patrol.Empty\"\000\022J\n\026handlePermi" +
-      "ssionDialog\022\037.patrol.HandlePermissionReq" +
-      "uest\032\r.patrol.Empty\"\000\022J\n\023setLocationAccu" +
-      "racy\022\".patrol.SetLocationAccuracyRequest" +
-      "\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empt" +
-      "y\032\r.patrol.Empty\"\000B\'\n%pl.leancode.automa" +
-      "torserver.contractsb\006proto3"
+      "\"\'\n\017DefaultResponse\022\024\n\014errorMessage\030\001 \001(" +
+      "\t\"\032\n\030OpenQuickSettingsRequest\" \n\017DarkMod" +
+      "eRequest\022\r\n\005appId\030\001 \001(\t\";\n\025GetNativeView" +
+      "sRequest\022\"\n\010selector\030\001 \001(\0132\020.patrol.Sele" +
+      "ctor\"e\n\026GetNativeViewsResponse\022\026\n\014errorM" +
+      "essage\030\001 \001(\tH\000\022*\n\013nativeViews\030\002 \001(\0132\023.pa" +
+      "trol.NativeViewsH\000B\007\n\005value\"6\n\013NativeVie" +
+      "ws\022\'\n\013nativeViews\030\001 \003(\0132\022.patrol.NativeV" +
+      "iew\"\031\n\027GetNotificationsRequest\"k\n\030GetNot" +
+      "ificationsResponse\022\026\n\014errorMessage\030\001 \001(\t" +
+      "H\000\022.\n\rnotifications\030\002 \001(\0132\025.patrol.Notif" +
+      "icationsH\000B\007\n\005value\"<\n\rNotifications\022+\n\r" +
+      "notifications\030\001 \003(\0132\024.patrol.Notificatio" +
+      "n\"?\n\nTapRequest\022\"\n\010selector\030\001 \001(\0132\020.patr" +
+      "ol.Selector\022\r\n\005appId\030\002 \001(\t\"p\n\020EnterTextR" +
+      "equest\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\017\n\005i" +
+      "ndex\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132\020.patrol." +
+      "SelectorH\000B\010\n\006findBy\"Y\n\014SwipeRequest\022\016\n\006" +
+      "startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n\004endX\030\003 \001" +
+      "(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r\"\206\001\n\027Hand" +
+      "lePermissionRequest\0222\n\004code\030\001 \001(\0162$.patr" +
+      "ol.HandlePermissionRequest.Code\"7\n\004Code\022" +
+      "\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006" +
+      "DENIED\020\002\"\225\001\n\032SetLocationAccuracyRequest\022" +
+      "M\n\020locationAccuracy\030\001 \001(\01623.patrol.SetLo" +
+      "cationAccuracyRequest.LocationAccuracy\"(" +
+      "\n\020LocationAccuracy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020\001" +
+      "\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016text" +
+      "StartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 " +
+      "\001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022cont" +
+      "entDescription\030\005 \001(\tH\004\210\001\001\022)\n\034contentDesc" +
+      "riptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentD" +
+      "escriptionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourc" +
+      "eId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n" +
+      "\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001" +
+      "\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textSta" +
+      "rtsWithB\017\n\r_textContainsB\014\n\n_classNameB\025" +
+      "\n\023_contentDescriptionB\037\n\035_contentDescrip" +
+      "tionStartsWithB\035\n\033_contentDescriptionCon" +
+      "tainsB\r\n\013_resourceIdB\013\n\t_instanceB\n\n\010_en" +
+      "abledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nNativeView" +
+      "\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022con" +
+      "tentDescription\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017" +
+      "\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014r" +
+      "esourceName\030\007 \001(\t\022\032\n\022applicationPackage\030" +
+      "\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patrol.NativeV" +
+      "iew\"]\n\014Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001" +
+      "\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw" +
+      "\030\004 \001(\tB\n\n\010_appName2\222\017\n\017NativeAutomator\0225" +
+      "\n\tpressHome\022\r.patrol.Empty\032\027.patrol.Defa" +
+      "ultResponse\"\000\0225\n\tpressBack\022\r.patrol.Empt" +
+      "y\032\027.patrol.DefaultResponse\"\000\022;\n\017pressRec" +
+      "entApps\022\r.patrol.Empty\032\027.patrol.DefaultR" +
+      "esponse\"\000\022A\n\025doublePressRecentApps\022\r.pat" +
+      "rol.Empty\032\027.patrol.DefaultResponse\"\000\022<\n\007" +
+      "openApp\022\026.patrol.OpenAppRequest\032\027.patrol" +
+      ".DefaultResponse\"\000\022P\n\021openQuickSettings\022" +
+      " .patrol.OpenQuickSettingsRequest\032\027.patr" +
+      "ol.DefaultResponse\"\000\022Q\n\016getNativeViews\022\035" +
+      ".patrol.GetNativeViewsRequest\032\036.patrol.G" +
+      "etNativeViewsResponse\"\000\0224\n\003tap\022\022.patrol." +
+      "TapRequest\032\027.patrol.DefaultResponse\"\000\022:\n" +
+      "\tdoubleTap\022\022.patrol.TapRequest\032\027.patrol." +
+      "DefaultResponse\"\000\022@\n\tenterText\022\030.patrol." +
+      "EnterTextRequest\032\027.patrol.DefaultRespons" +
+      "e\"\000\0228\n\005swipe\022\024.patrol.SwipeRequest\032\027.pat" +
+      "rol.DefaultResponse\"\000\022>\n\022enableAirplaneM" +
+      "ode\022\r.patrol.Empty\032\027.patrol.DefaultRespo" +
+      "nse\"\000\022?\n\023disableAirplaneMode\022\r.patrol.Em" +
+      "pty\032\027.patrol.DefaultResponse\"\000\0226\n\nenable" +
+      "WiFi\022\r.patrol.Empty\032\027.patrol.DefaultResp" +
+      "onse\"\000\0227\n\013disableWiFi\022\r.patrol.Empty\032\027.p" +
+      "atrol.DefaultResponse\"\000\022:\n\016enableCellula" +
+      "r\022\r.patrol.Empty\032\027.patrol.DefaultRespons" +
+      "e\"\000\022;\n\017disableCellular\022\r.patrol.Empty\032\027." +
+      "patrol.DefaultResponse\"\000\022;\n\017enableBlueto" +
+      "oth\022\r.patrol.Empty\032\027.patrol.DefaultRespo" +
+      "nse\"\000\022<\n\020disableBluetooth\022\r.patrol.Empty" +
+      "\032\027.patrol.DefaultResponse\"\000\022D\n\016enableDar" +
+      "kMode\022\027.patrol.DarkModeRequest\032\027.patrol." +
+      "DefaultResponse\"\000\022E\n\017disableDarkMode\022\027.p" +
+      "atrol.DarkModeRequest\032\027.patrol.DefaultRe" +
+      "sponse\"\000\022=\n\021openNotifications\022\r.patrol.E" +
+      "mpty\032\027.patrol.DefaultResponse\"\000\022>\n\022close" +
+      "Notifications\022\r.patrol.Empty\032\027.patrol.De" +
+      "faultResponse\"\000\022D\n\030closeHeadsUpNotificat" +
+      "ion\022\r.patrol.Empty\032\027.patrol.DefaultRespo" +
+      "nse\"\000\022W\n\020getNotifications\022\037.patrol.GetNo" +
+      "tificationsRequest\032 .patrol.GetNotificat" +
+      "ionsResponse\"\000\022P\n\021tapOnNotification\022 .pa" +
+      "trol.TapOnNotificationRequest\032\027.patrol.D" +
+      "efaultResponse\"\000\022T\n\026handlePermissionDial" +
+      "og\022\037.patrol.HandlePermissionRequest\032\027.pa" +
+      "trol.DefaultResponse\"\000\022T\n\023setLocationAcc" +
+      "uracy\022\".patrol.SetLocationAccuracyReques" +
+      "t\032\027.patrol.DefaultResponse\"\000\0221\n\005debug\022\r." +
+      "patrol.Empty\032\027.patrol.DefaultResponse\"\000B" +
+      "\'\n%pl.leancode.automatorserver.contracts" +
+      "b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -14796,86 +16772,104 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Empty_descriptor,
         new java.lang.String[] { });
-    internal_static_patrol_OpenQuickSettingsRequest_descriptor =
+    internal_static_patrol_DefaultResponse_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_patrol_DefaultResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_DefaultResponse_descriptor,
+        new java.lang.String[] { "ErrorMessage", });
+    internal_static_patrol_OpenQuickSettingsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(4);
     internal_static_patrol_OpenQuickSettingsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_OpenQuickSettingsRequest_descriptor,
         new java.lang.String[] { });
     internal_static_patrol_DarkModeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_patrol_DarkModeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_DarkModeRequest_descriptor,
         new java.lang.String[] { "AppId", });
     internal_static_patrol_GetNativeViewsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_patrol_GetNativeViewsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNativeViewsRequest_descriptor,
         new java.lang.String[] { "Selector", });
     internal_static_patrol_GetNativeViewsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_patrol_GetNativeViewsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNativeViewsResponse_descriptor,
+        new java.lang.String[] { "ErrorMessage", "NativeViews", "Value", });
+    internal_static_patrol_NativeViews_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_patrol_NativeViews_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_NativeViews_descriptor,
         new java.lang.String[] { "NativeViews", });
     internal_static_patrol_GetNotificationsRequest_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_patrol_GetNotificationsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsRequest_descriptor,
         new java.lang.String[] { });
     internal_static_patrol_GetNotificationsResponse_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_patrol_GetNotificationsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_GetNotificationsResponse_descriptor,
+        new java.lang.String[] { "ErrorMessage", "Notifications", "Value", });
+    internal_static_patrol_Notifications_descriptor =
+      getDescriptor().getMessageTypes().get(11);
+    internal_static_patrol_Notifications_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_Notifications_descriptor,
         new java.lang.String[] { "Notifications", });
     internal_static_patrol_TapRequest_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_patrol_TapRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_TapRequest_descriptor,
         new java.lang.String[] { "Selector", "AppId", });
     internal_static_patrol_EnterTextRequest_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_patrol_EnterTextRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_EnterTextRequest_descriptor,
         new java.lang.String[] { "Data", "AppId", "Index", "Selector", "FindBy", });
     internal_static_patrol_SwipeRequest_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_patrol_SwipeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SwipeRequest_descriptor,
         new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
     internal_static_patrol_HandlePermissionRequest_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_patrol_HandlePermissionRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_HandlePermissionRequest_descriptor,
         new java.lang.String[] { "Code", });
     internal_static_patrol_SetLocationAccuracyRequest_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SetLocationAccuracyRequest_descriptor,
         new java.lang.String[] { "LocationAccuracy", });
     internal_static_patrol_Selector_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeView_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_patrol_NativeView_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeView_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,

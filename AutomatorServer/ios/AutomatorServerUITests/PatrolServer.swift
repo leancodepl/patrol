@@ -3,10 +3,6 @@ import NIOCore
 import Foundation
 import NIOPosix
 
-struct DarkModeCommand: Codable {
-  var appId: String
-}
-
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
 

@@ -17,33 +17,33 @@ class PatrolAutomation {
   
   // MARK: General
   
-  func pressHome() {
-    runAction("pressing home button") {
+  func pressHome() throws {
+    try runAction("pressing home button") {
       self.device.press(XCUIDevice.Button.home)
     }
   }
 
-  func openApp(_ bundleIdentifier: String) {
-    runAction("opening app with id \(bundleIdentifier)") {
+  func openApp(_ bundleIdentifier: String) throws {
+    try runAction("opening app with id \(bundleIdentifier)") {
       let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
       app.activate()
     }
   }
 
-  func openAppSwitcher() {
+  func openAppSwitcher() throws {
     // TODO: Implement for iPhones without notch
     
-    runAction("opening app switcher") {
+    try runAction("opening app switcher") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
       start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
   
-  func openControlCenter() {
+  func openControlCenter() throws {
     // TODO: Implement for iPhones without notch
     
-    runAction("opening control center") {
+    try runAction("opening control center") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
       start.press(forDuration: 0.1, thenDragTo: end)
@@ -52,29 +52,45 @@ class PatrolAutomation {
   
   // MARK: General UI interaction
   
-  func tap(on text: String, inApp appId: String) {
-    runAction("tapping on text \(text)") {
+  func tap(on text: String, inApp appId: String) throws {
+    try runAction("tapping on text \(text)") {
       let app = XCUIApplication(bundleIdentifier: appId)
-      app.descendants(matching: .any)[text].firstMatch.tap()
+      let element = app.descendants(matching: .any)[text]
+      
+      guard element.exists else {
+        throw PatrolError.elementNotFound(element)
+      }
+      
+      element.firstMatch.tap()
     }
   }
 
-  func doubleTap(on text: String, inApp appId: String) {
-    runAction("double tapping on text \(format: text)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      app.descendants(matching: .any)[text].firstMatch.tap()
+  func doubleTap(on text: String, inApp appId: String) throws {
+    try runAction("double tapping on text \(format: text)") {
+      let element = XCUIApplication(bundleIdentifier: appId)
+      
+      guard element.exists else {
+        throw PatrolError.elementNotFound(element)
+      }
+      
+      element.descendants(matching: .any)[text].firstMatch.tap()
     }
   }
 
-  func enterText(_ data: String, by text: String, inApp appId: String) {
-    runAction("entering text \(format: data) into text field with text \(text)") {
-      let app = XCUIApplication(bundleIdentifier: appId)
-      app.textFields[text].firstMatch.typeText(data)
+  func enterText(_ data: String, by text: String, inApp appId: String) throws {
+    try runAction("entering text \(format: data) into text field with text \(text)") {
+      let element = XCUIApplication(bundleIdentifier: appId).textFields[text]
+      
+      guard element.exists else {
+        throw PatrolError.elementNotFound(element)
+      }
+      
+      element.firstMatch.typeText(data)
     }
   }
 
-  func enterText(_ data: String, by index: Int, inApp appId: String) {
-    runAction("entering text \(format: data) by index \(index)") {
+  func enterText(_ data: String, by index: Int, inApp appId: String) throws {
+    try runAction("entering text \(format: data) by index \(index)") {
       let app = XCUIApplication(bundleIdentifier: appId)
       let textField = app.textFields.element(boundBy: index)
       if textField.exists {
@@ -88,8 +104,8 @@ class PatrolAutomation {
   
   // MARK: Services
 
-  func enableDarkMode(_ bundleIdentifier: String) {
-    runSettingsAction("enabling dark mode", bundleIdentifier) {
+  func enableDarkMode(_ bundleIdentifier: String) throws {
+    try runSettingsAction("enabling dark mode", bundleIdentifier) {
       #if targetEnvironment(simulator)
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
@@ -104,8 +120,8 @@ class PatrolAutomation {
     }
   }
 
-  func disableDarkMode(_ bundleIdentifier: String) {
-    runSettingsAction("disabling dark mode", bundleIdentifier) {
+  func disableDarkMode(_ bundleIdentifier: String) throws {
+    try runSettingsAction("disabling dark mode", bundleIdentifier) {
       #if targetEnvironment(simulator)
         self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
         
@@ -211,20 +227,20 @@ class PatrolAutomation {
   
   // MARK: Notifications
   
-  func openNotifications() {
+  func openNotifications() throws {
     // TODO: Check if works on iPhones without notch
     
-    runAction("opening notifications") {
+    try runAction("opening notifications") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
       start.press(forDuration: 0.1, thenDragTo: end)
     }
   }
   
-  func closeNotifications() {
+  func closeNotifications() throws {
     // TODO: Check if works on iPhones without notch
     
-    runAction("closing notifications") {
+    try runAction("closing notifications") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
       start.press(forDuration: 0.1, thenDragTo: end)
@@ -235,7 +251,7 @@ class PatrolAutomation {
     // If the notification was triggered just now, let's wait for it
     try await Task.sleep(nanoseconds: UInt64(2 * Double(NSEC_PER_SEC)))
     
-    runAction("closing heads up notification") {
+    try runAction("closing heads up notification") {
       let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
       let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.07))
       start.press(forDuration: 0.1, thenDragTo: end)
@@ -248,9 +264,9 @@ class PatrolAutomation {
   }
   
   
-  func getNotifications() -> [Patrol_Notification] {
+  func getNotifications() throws -> [Patrol_Notification] {
     var notifications = [Patrol_Notification]()
-    runAction("getting notifications") {
+    try runAction("getting notifications") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
       for (i, cell) in cells.enumerated() {
         let notification = Patrol_Notification.with {
@@ -264,8 +280,8 @@ class PatrolAutomation {
     return notifications
   }
   
-  func tapOnNotification(by index: Int) {
-    runAction("tapping on notification at index \(index)") {
+  func tapOnNotification(by index: Int) throws {
+    try runAction("tapping on notification at index \(index)") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
       guard cells.indices.contains(index) else {
         Logger.shared.e("notification at index \(index) doesn't exist")
@@ -277,8 +293,8 @@ class PatrolAutomation {
     }
   }
   
-  func tapOnNotification(by text: String) {
-    runAction("tapping on notification containing text \(format: text)") {
+  func tapOnNotification(by text: String) throws {
+    try runAction("tapping on notification containing text \(format: text)") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell").allElementsBoundByIndex
       for (i, cell) in cells.enumerated() {
         if cell.label.contains(text) {
@@ -295,8 +311,8 @@ class PatrolAutomation {
   
   // MARK: Permissions
   
-  func allowPermissionWhileUsingApp() {
-    runAction("allowing while using app") {
+  func allowPermissionWhileUsingApp() throws {
+    try runAction("allowing while using app") {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow While Using App"]
       
@@ -318,8 +334,8 @@ class PatrolAutomation {
     }
   }
 
-  func allowPermissionOnce() {
-    runAction("allowing once") {
+  func allowPermissionOnce() throws {
+    try runAction("allowing once") {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow Once"]
       
@@ -341,8 +357,8 @@ class PatrolAutomation {
     }
   }
 
-  func denyPermission() {
-    runAction("denying permission") {
+  func denyPermission() throws {
+    try runAction("denying permission") {
       let systemAlerts = self.springboard.alerts
       let button = systemAlerts.buttons["Don’t Allow"] // not "Don't Allow"!
 
@@ -354,8 +370,8 @@ class PatrolAutomation {
     }
   }
 
-  func selectFineLocation() {
-    runAction("selecting fine location") {
+  func selectFineLocation() throws {
+    try runAction("selecting fine location") {
       let alerts = self.springboard.alerts
       let button = alerts.buttons["Precise: Off"]
       
@@ -367,8 +383,8 @@ class PatrolAutomation {
     }
   }
   
-  func selectCoarseLocation() {
-    runAction("selecting coarse location") {
+  func selectCoarseLocation() throws {
+    try runAction("selecting coarse location") {
       let alerts = self.springboard.alerts
       let button = alerts.buttons["Precise: On"]
       
@@ -382,8 +398,8 @@ class PatrolAutomation {
   
   // MARK: Other
   
-  func debug() {
-    runAction("debug()") {
+  func debug() throws {
+    try runAction("debug()") {
       // TODO: Remove later
       for i in 0...150 {
         let element = self.springboard.descendants(matching: .any).element(boundBy: i)
@@ -406,13 +422,21 @@ class PatrolAutomation {
   
   // MARK: Private stuff
   
-  private func runControlCenterAction(_ log: String,block: @escaping () -> Void) throws {
+  private func tapIfExists(_ element: XCUIElement) throws {
+    guard element.exists else {
+      throw PatrolError.elementNotFound(element)
+    }
+    
+    element.firstMatch.tap()
+  }
+  
+  private func runControlCenterAction(_ log: String, block: @escaping () -> Void) throws {
     #if targetEnvironment(simulator)
       throw PatrolError.generic("Control Center is not available on Simulator")
     #endif
     
-    runAction(log) {
-      self.openControlCenter()
+    try runAction(log) {
+      try self.openControlCenter()
       
       // perform the action
       block()
@@ -427,8 +451,8 @@ class PatrolAutomation {
     _ log: String,
     _ bundleIdentifier: String,
     block: @escaping () -> Void
-  ) {
-    runAction(log) {
+  ) throws {
+    try runAction(log) {
       self.springboard.activate()
       self.preferences.launch()  // reset to a known state
       
@@ -440,30 +464,36 @@ class PatrolAutomation {
     }
   }
 
-  private func runAction(_ log: String, block: @escaping () throws -> Void) {
-    dispatchOnMainThread {
+  private func runAction(_ log: String, block: @escaping () throws -> Void) throws {
+    try dispatchOnMainThread {
       Logger.shared.i("\(log)...")
       try block()
       Logger.shared.i("done \(log)")
     }
   }
 
-  private func dispatchOnMainThread(block: @escaping () throws -> Void) {
+  private func dispatchOnMainThread(block: @escaping () throws -> Void) throws {
     let group = DispatchGroup()
+    var err: Error?
+    
     group.enter()
     DispatchQueue.main.async {
-      do {
-        try block()
-      } catch PatrolError.generic(let msg) {
-        Logger.shared.e("PatrolError: \(msg)")
-      } catch let err {
-        Logger.shared.e("Error \(err) was thrown")
+      defer {
+        group.leave()
       }
       
-      group.leave()
+      do {
+        try block()
+      } catch let error {
+        err = error
+      }
     }
-
+    
     group.wait()
+    
+    if err != nil {
+      throw err!
+    }
   }
 }
 
