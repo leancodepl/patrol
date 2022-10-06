@@ -36,15 +36,12 @@ service NativeAutomator {
   rpc openNotifications(Empty) returns (Empty) {}
   rpc closeNotifications(Empty) returns (Empty) {}
   rpc closeHeadsUpNotification(Empty) returns (Empty) {}
-  rpc getNotifications(GetNotificationsRequest)
-      returns (GetNotificationsResponse) {}
+  rpc getNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {}
   rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
 
   // permissions
-  rpc handlePermissionDialog(HandlePermissionRequest)
-      returns (Empty) {}
-  rpc setLocationAccuracy(SetLocationAccuracyRequest)
-      returns (Empty) {}
+  rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
+  rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
 
   // other
 
@@ -72,15 +69,10 @@ message OpenQuickSettingsRequest {}
 message DarkModeRequest { string appId = 1; }
 
 message GetNativeViewsRequest { Selector selector = 1; }
-message GetNativeViewsResponse {
-    repeated NativeView nativeViews = 2;
-}
-message NativeViews { repeated NativeView nativeViews = 1; }
+message GetNativeViewsResponse { repeated NativeView nativeViews = 2;}
 
 message GetNotificationsRequest {}
-message GetNotificationsResponse {
-    repeated Notification notifications = 2;
-}
+message GetNotificationsResponse { repeated Notification notifications = 2; }
 
 message TapRequest {
   Selector selector = 1;

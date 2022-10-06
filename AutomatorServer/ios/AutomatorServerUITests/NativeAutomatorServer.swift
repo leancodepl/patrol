@@ -330,7 +330,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     do {
       return try await block()
     } catch let err {
-      // FIXME: Do it better, like is done on Android
+      // TODO: Try to do this with an Interceptor, like on Android
       throw GRPCError.InvalidState("\(err)")
     }
   }

@@ -79,11 +79,15 @@ class PatrolAutomator private constructor() {
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
-    private fun tapIfExists(byResourceId: String) {
+    private fun exists(byResourceId: String): Boolean {
         Logger.i("Checking if view with resourceId \"$byResourceId\" exists")
-        if (uiDevice.findObjects(By.res(byResourceId)).isNotEmpty()) {
-            Logger.i("Found view with resourceId \"$byResourceId\"")
-            uiDevice.findObject(UiSelector().resourceId(byResourceId)).click()
+        return if (uiDevice.findObjects(By.res(byResourceId)).isNotEmpty()) {
+            Logger.i("View with resourceId \"$byResourceId\" exists")
+            // uiDevice.findObject(UiSelector().resourceId(byResourceId)).click()
+            true
+        } else {
+            Logger.i("View with resourceId \"$byResourceId\" doesn't exist")
+            false
         }
     }
 
@@ -272,28 +276,31 @@ class PatrolAutomator private constructor() {
 
         val notifications = mutableListOf<Contracts.Notification>()
         for (notificationContainer in notificationContainers) {
-            try {
-                val notification = notification {
-                    val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
-                    if (appName != null) {
-                        this.appName = appName
-                    }
 
-                    val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                        ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
-                        ?: throw PatrolException("Could not find title text")
-                    this.title = title
-
-                    val content = notificationContainer.findObject(By.res("android:id/text"))?.text
-                        ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                        ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
-                        ?: throw PatrolException("Could not find content text")
-                    this.content = content
+            val notification = notification {
+                val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
+                if (appName != null) {
+                    this.appName = appName
                 }
-                notifications.add(notification)
-            } catch (e: PatrolException) {
-                Logger.e("Failed to find UI component of a notification:", e)
+
+                val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                    ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
+                if (title != null) {
+                    this.title = title
+                } else {
+                    Logger.e("Could not find title text")
+                }
+
+                val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                    ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
+                if (content != null) {
+                    this.content = content
+                } else {
+                    Logger.e("Could not find content text")
+                }
             }
+            notifications.add(notification)
         }
 
         return notifications
@@ -304,10 +311,14 @@ class PatrolAutomator private constructor() {
 
         openNotifications()
 
-        val query = Contracts.Selector.newBuilder().setResourceId("android:id/status_bar_latest_event_content")
-            .setInstance(index).build()
-        val obj = uiDevice.findObject(query.toUiSelector())
-        obj.click()
+        try {
+            val query = Contracts.Selector.newBuilder().setResourceId("android:id/status_bar_latest_event_content")
+                .setInstance(index).build()
+            val obj = uiDevice.findObject(query.toUiSelector())
+            obj.click()
+        } catch (err: UiObjectNotFoundException) {
+            throw UiObjectNotFoundException("notification at index $index")
+        }
 
         delay()
     }
@@ -331,8 +342,13 @@ class PatrolAutomator private constructor() {
         )
 
         for (identifier in identifiers) {
-            tapIfExists(identifier)
+            if (exists(identifier)) {
+                uiDevice.findObject(UiSelector().resourceId(identifier)).click()
+                return
+            }
         }
+
+        throw UiObjectNotFoundException("button to allow permission while using")
     }
 
     fun allowPermissionOnce() {
@@ -342,16 +358,14 @@ class PatrolAutomator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
         )
 
-        var match = false
         for (identifier in identifiers) {
-            tapIfExists(identifier)
-            match = true
-            break
+            if (exists(identifier)) {
+                uiDevice.findObject(UiSelector().resourceId(identifier)).click()
+                return
+            }
         }
 
-        if (!match) {
-            throw UiObjectNotFoundException("No ")
-        }
+        throw UiObjectNotFoundException("button to allow permission once")
     }
 
     fun denyPermission() {
@@ -361,14 +375,21 @@ class PatrolAutomator private constructor() {
         )
 
         for (identifier in identifiers) {
-            tapIfExists(identifier)
+            if (exists(identifier)) {
+                uiDevice.findObject(UiSelector().resourceId(identifier)).click()
+                return
+            }
         }
+
+        throw UiObjectNotFoundException("button to deny permission")
     }
 
     fun selectFineLocation() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
         if (uiDevice.findObjects(By.res(resourceId)).isNotEmpty()) {
             uiDevice.findObject(UiSelector().resourceId(resourceId)).click()
+        } else {
+            throw UiObjectNotFoundException("button to select fine location")
         }
     }
 
@@ -376,6 +397,8 @@ class PatrolAutomator private constructor() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
         if (uiDevice.findObjects(By.res(resourceId)).isNotEmpty()) {
             uiDevice.findObject(UiSelector().resourceId(resourceId)).click()
+        } else {
+            throw UiObjectNotFoundException("button to select coarse location")
         }
     }
 

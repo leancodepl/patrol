@@ -328,7 +328,6 @@ class PatrolAutomation {
         }
       }
       
-      // FIXME: Replace with appropriate error
       throw PatrolError.viewNotExists("button to allow permission while using")
     }
   }
@@ -348,7 +347,6 @@ class PatrolAutomation {
         }
       }
       
-      // FIXME: Replace with appropriate error
       throw PatrolError.viewNotExists("button to allow permission only once")
     }
   }
@@ -421,7 +419,7 @@ class PatrolAutomation {
   
   private func getApp(withBundleId bundleId: String) throws -> XCUIApplication {
     let app = XCUIApplication(bundleIdentifier: bundleId)
-    // FIXME: Doesn't work
+    // TODO: Doesn't work
     // See https://stackoverflow.com/questions/73976961/how-to-check-if-any-app-is-installed-during-xctest
     // guard app.exists else {
     //   throw PatrolError.appNotInstalled(bundleId)
