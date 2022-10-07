@@ -108,24 +108,6 @@ const GetNativeViewsResponse$json = const {
 final $typed_data.Uint8List getNativeViewsResponseDescriptor =
     $convert.base64Decode(
         'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAIgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
-@$core.Deprecated('Use nativeViewsDescriptor instead')
-const NativeViews$json = const {
-  '1': 'NativeViews',
-  '2': const [
-    const {
-      '1': 'nativeViews',
-      '3': 1,
-      '4': 3,
-      '5': 11,
-      '6': '.patrol.NativeView',
-      '10': 'nativeViews'
-    },
-  ],
-};
-
-/// Descriptor for `NativeViews`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List nativeViewsDescriptor = $convert.base64Decode(
-    'CgtOYXRpdmVWaWV3cxI0CgtuYXRpdmVWaWV3cxgBIAMoCzISLnBhdHJvbC5OYXRpdmVWaWV3UgtuYXRpdmVWaWV3cw==');
 @$core.Deprecated('Use getNotificationsRequestDescriptor instead')
 const GetNotificationsRequest$json = const {
   '1': 'GetNotificationsRequest',
