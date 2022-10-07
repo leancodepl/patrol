@@ -4,30 +4,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  group('LoadingScreen', () {
-    patrolTest('shows hello text when loading completes', ($) async {
-      await $.pumpWidget(MaterialApp(home: LoadingScreen()));
+  patrolTest('shows hello text when loading completes', ($) async {
+    await $.pumpWidget(MaterialApp(home: LoadingScreen()));
 
-      final helloText = $('Hello');
-      await helloText.waitUntilVisible();
-      await helloText.tap(andSettle: false);
-      expect(helloText, findsOneWidget);
-    });
-
-    patrolTest(
-      'throws TimeoutException when takes more than visibleTimeout',
-      ($) async {
-        await $.tester.runAsync(() async {
-          await $.pumpWidget(MaterialApp(home: LoadingScreen()));
-
-          final helloText = $('Hello');
-          await expectLater(
-            helloText.waitUntilVisible,
-            throwsA(isA<WaitUntilVisibleTimeoutException>()),
-          );
-        });
-      },
-      config: PatrolTestConfig(visibleTimeout: Duration(milliseconds: 100)),
-    );
+    final helloText = $('Hello');
+    await helloText.waitUntilVisible();
+    await helloText.tap(andSettle: false);
+    expect(helloText, findsOneWidget);
   });
+
+  patrolTest(
+    'throws TimeoutException when takes more than visibleTimeout',
+    ($) async {
+      await $.tester.runAsync(() async {
+        await $.pumpWidget(MaterialApp(home: LoadingScreen()));
+
+        final helloText = $('Hello');
+        await expectLater(
+          helloText.waitUntilVisible,
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
+        );
+      });
+    },
+    config: PatrolTestConfig(visibleTimeout: Duration(milliseconds: 100)),
+  );
 }

@@ -22,7 +22,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
-    throw PatrolError.generic("pressBack() is not supported on iOS")
+    return try await runCatching {
+      throw PatrolError.generic("pressBack() is not supported on iOS")
+    }
   }
   
   func pressRecentApps(
@@ -39,7 +41,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
-    throw PatrolError.generic("doublePressRecentApps() is not supported on iOS")
+    return try await runCatching {
+      throw PatrolError.generic("doublePressRecentApps() is not supported on iOS")
+    }
   }
   
   func openApp(
@@ -68,7 +72,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_GetNativeViewsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_GetNativeViewsResponse {
-    throw PatrolError.generic("getNativeViews() is not supported on iOS")
+    return try await runCatching {
+      throw PatrolError.generic("getNativeViews() is not supported on iOS")
+    }
   }
   
   func tap(
@@ -113,7 +119,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_SwipeRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
-    throw PatrolError.generic("swipe() is not supported on iOS")
+    return try await runCatching {
+      throw PatrolError.generic("swipe() is not supported on iOS")
+    }
   }
   
   // MARK: Services
@@ -122,8 +130,10 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
-    try automation.enableAirplaneMode()
-    return DefaultResponse()
+    return try await runCatching {
+      try automation.enableAirplaneMode()
+      return DefaultResponse()
+    }
   }
   
   func disableAirplaneMode(
@@ -252,9 +262,11 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_GetNotificationsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_GetNotificationsResponse {
-    let notifications = try automation.getNotifications()
-    return Patrol_GetNotificationsResponse.with {
-      $0.notifications = notifications
+    return try await runCatching {
+      let notifications = try automation.getNotifications()
+      return Patrol_GetNotificationsResponse.with {
+        $0.notifications = notifications
+      }
     }
   }
   
