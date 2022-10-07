@@ -83,7 +83,6 @@ class PatrolAutomator private constructor() {
         Logger.i("Checking if view with resourceId \"$byResourceId\" exists")
         return if (uiDevice.findObjects(By.res(byResourceId)).isNotEmpty()) {
             Logger.i("View with resourceId \"$byResourceId\" exists")
-            // uiDevice.findObject(UiSelector().resourceId(byResourceId)).click()
             true
         } else {
             Logger.i("View with resourceId \"$byResourceId\" doesn't exist")
