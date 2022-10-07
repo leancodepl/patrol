@@ -7,6 +7,7 @@ void main() {
     'taps around',
     config: patrolConfig,
     nativeAutomation: true,
+    binding: Binding.integrationTest,
     ($) async {
       await $.native.openQuickSettings();
       await $.native.tap(Selector(text: 'Bluetooth'));

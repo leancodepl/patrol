@@ -10,6 +10,7 @@ void main() {
     'counter state is the same after going to Home and switching apps',
     config: patrolConfig,
     nativeAutomation: true,
+    binding: Binding.integrationTest,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
