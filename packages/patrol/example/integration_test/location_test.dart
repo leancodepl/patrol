@@ -9,7 +9,6 @@ void main() {
     'accepts location permission',
     config: patrolConfig,
     nativeAutomation: true,
-    binding: Binding.integrationTest,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 

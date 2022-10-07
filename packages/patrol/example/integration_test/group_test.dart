@@ -8,83 +8,86 @@ import 'config.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-  // PatrolBinding.ensureInitialized();
 
-  group('3 unrelated tests', () {
-    // do common setup here
+  group(
+    '3 unrelated tests',
+    skip: true,
+    () {
+      // do common setup here
 
-    patrolTest(
-      'counter state is the same after going to Home and switching apps',
-      config: patrolConfig,
-      nativeAutomation: true,
-      binding: Binding.integrationTest,
-      ($) async {
-        await $.native.openApp();
-        await $.pumpWidgetAndSettle(ExampleApp());
+      patrolTest(
+        'counter state is the same after going to Home and switching apps',
+        config: patrolConfig,
+        nativeAutomation: true,
+        binding: Binding.integrationTest,
+        ($) async {
+          await $.native.openApp();
+          await $.pumpWidgetAndSettle(ExampleApp());
 
-        await $(FloatingActionButton).tap();
-        expect($(#counterText).text, '1');
+          await $(FloatingActionButton).tap();
+          expect($(#counterText).text, '1');
 
-        await $.native.pressHome();
-        await $.native.pressDoubleRecentApps();
+          await $.native.pressHome();
+          await $.native.pressDoubleRecentApps();
 
-        expect($(#counterText).text, '1');
-        await $(FloatingActionButton).tap();
-        expect($(#counterText).text, '2');
+          expect($(#counterText).text, '1');
+          await $(FloatingActionButton).tap();
+          expect($(#counterText).text, '2');
 
-        await $.native.openNotifications();
-        await $.native.pressBack();
-      },
-    );
+          await $.native.openNotifications();
+          await $.native.pressBack();
+        },
+      );
 
-    patrolTest(
-      'taps around',
-      config: patrolConfig,
-      nativeAutomation: true,
-      binding: Binding.integrationTest,
-      ($) async {
-        await $.native.openApp();
-        await $.pumpWidgetAndSettle(ExampleApp());
+      patrolTest(
+        'taps around',
+        config: patrolConfig,
+        nativeAutomation: true,
+        binding: Binding.integrationTest,
+        ($) async {
+          await $.native.openApp();
+          await $.pumpWidgetAndSettle(ExampleApp());
 
-        await $.native.openQuickSettings();
-        await $.native.tap(Selector(text: 'Bluetooth'));
-        await $.native.tap(Selector(text: 'Bluetooth'));
-        await $.native.pressBack();
+          await $.native.openQuickSettings();
+          await $.native.tap(Selector(text: 'Bluetooth'));
+          await $.native.tap(Selector(text: 'Bluetooth'));
+          await $.native.pressBack();
 
-        await $.native.openNotifications();
+          await $.native.openNotifications();
 
-        await $.native.enableWifi();
-        await $.native.disableWifi();
-        await $.native.enableWifi();
+          await $.native.enableWifi();
+          await $.native.disableWifi();
+          await $.native.enableWifi();
 
-        await $.native.enableCellular();
-        await $.native.disableCellular();
-        await $.native.enableCellular();
+          await $.native.enableCellular();
+          await $.native.disableCellular();
+          await $.native.enableCellular();
 
-        await $.native.enableDarkMode();
-        await $.native.disableDarkMode();
-        await $.native.enableDarkMode();
+          await $.native.enableDarkMode();
+          await $.native.disableDarkMode();
+          await $.native.enableDarkMode();
 
-        await $.native.pressBack();
-      },
-    );
+          await $.native.pressBack();
+        },
+      );
 
-    patrolTest(
-      'grants various permissions',
-      config: patrolConfig,
-      nativeAutomation: true,
-      binding: Binding.integrationTest,
-      ($) async {
-        await $.native.openApp();
-        await $.pumpWidgetAndSettle(ExampleApp());
+      patrolTest(
+        'grants various permissions',
+        config: patrolConfig,
+        nativeAutomation: true,
+        binding: Binding.integrationTest,
+        ($) async {
+          await $.native.openApp();
+          await $.pumpWidgetAndSettle(ExampleApp());
 
-        await $('Open permissions screen').scrollTo().tap();
+          await $('Open permissions screen').scrollTo().tap();
 
-        await requestAndGrantCameraPermission($);
-        await requestAndGrantMicrophonePermission($);
-      },
-    );
-  });
+          await requestAndGrantCameraPermission($);
+          await requestAndGrantMicrophonePermission($);
+        },
+      );
+    },
+  );
 }
 
 Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
