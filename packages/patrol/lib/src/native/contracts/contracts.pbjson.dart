@@ -95,7 +95,7 @@ const GetNativeViewsResponse$json = const {
   '2': const [
     const {
       '1': 'nativeViews',
-      '3': 1,
+      '3': 2,
       '4': 3,
       '5': 11,
       '6': '.patrol.NativeView',
@@ -107,7 +107,25 @@ const GetNativeViewsResponse$json = const {
 /// Descriptor for `GetNativeViewsResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getNativeViewsResponseDescriptor =
     $convert.base64Decode(
-        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAEgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
+        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAIgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
+@$core.Deprecated('Use nativeViewsDescriptor instead')
+const NativeViews$json = const {
+  '1': 'NativeViews',
+  '2': const [
+    const {
+      '1': 'nativeViews',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.patrol.NativeView',
+      '10': 'nativeViews'
+    },
+  ],
+};
+
+/// Descriptor for `NativeViews`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List nativeViewsDescriptor = $convert.base64Decode(
+    'CgtOYXRpdmVWaWV3cxI0CgtuYXRpdmVWaWV3cxgBIAMoCzISLnBhdHJvbC5OYXRpdmVWaWV3UgtuYXRpdmVWaWV3cw==');
 @$core.Deprecated('Use getNotificationsRequestDescriptor instead')
 const GetNotificationsRequest$json = const {
   '1': 'GetNotificationsRequest',
@@ -122,7 +140,7 @@ const GetNotificationsResponse$json = const {
   '2': const [
     const {
       '1': 'notifications',
-      '3': 1,
+      '3': 2,
       '4': 3,
       '5': 11,
       '6': '.patrol.Notification',
@@ -134,7 +152,7 @@ const GetNotificationsResponse$json = const {
 /// Descriptor for `GetNotificationsResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getNotificationsResponseDescriptor =
     $convert.base64Decode(
-        'ChhHZXROb3RpZmljYXRpb25zUmVzcG9uc2USOgoNbm90aWZpY2F0aW9ucxgBIAMoCzIULnBhdHJvbC5Ob3RpZmljYXRpb25SDW5vdGlmaWNhdGlvbnM=');
+        'ChhHZXROb3RpZmljYXRpb25zUmVzcG9uc2USOgoNbm90aWZpY2F0aW9ucxgCIAMoCzIULnBhdHJvbC5Ob3RpZmljYXRpb25SDW5vdGlmaWNhdGlvbnM=');
 @$core.Deprecated('Use tapRequestDescriptor instead')
 const TapRequest$json = const {
   '1': 'TapRequest',

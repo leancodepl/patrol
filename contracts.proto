@@ -58,8 +58,8 @@ message TapOnNotificationRequest {
 }
 
 // We're defining our own Empty instead of using google.protobuf.Empty because
-// the Dart plugin can't easily generate it. 
-// 
+// the Dart plugin can't easily generate it.
+//
 // See:
 //  * https://github.com/google/protobuf.dart/issues/170
 message Empty {}
@@ -69,10 +69,10 @@ message OpenQuickSettingsRequest {}
 message DarkModeRequest { string appId = 1; }
 
 message GetNativeViewsRequest { Selector selector = 1; }
-message GetNativeViewsResponse { repeated NativeView nativeViews = 1; }
+message GetNativeViewsResponse { repeated NativeView nativeViews = 2;}
 
 message GetNotificationsRequest {}
-message GetNotificationsResponse { repeated Notification notifications = 1; }
+message GetNotificationsResponse { repeated Notification notifications = 2; }
 
 message TapRequest {
   Selector selector = 1;

@@ -115,7 +115,6 @@ class NativeAutomator {
     } on GrpcError catch (err) {
       _logger('$name() failed');
       final log = '$name() failed with code ${err.codeName} (${err.message})';
-
       throw PatrolActionException(log);
     } catch (err) {
       _logger('$name() failed');

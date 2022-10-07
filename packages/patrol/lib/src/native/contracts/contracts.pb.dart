@@ -424,7 +424,7 @@ class GetNativeViewsResponse extends $pb.GeneratedMessage {
               : 'patrol'),
       createEmptyInstance: create)
     ..pc<NativeView>(
-        1,
+        2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'nativeViews',
@@ -471,6 +471,66 @@ class GetNativeViewsResponse extends $pb.GeneratedMessage {
   static GetNativeViewsResponse getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<GetNativeViewsResponse>(create);
   static GetNativeViewsResponse? _defaultInstance;
+
+  @$pb.TagNumber(2)
+  $core.List<NativeView> get nativeViews => $_getList(0);
+}
+
+class NativeViews extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'NativeViews',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..pc<NativeView>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'nativeViews',
+        $pb.PbFieldType.PM,
+        protoName: 'nativeViews',
+        subBuilder: NativeView.create)
+    ..hasRequiredFields = false;
+
+  NativeViews._() : super();
+  factory NativeViews({
+    $core.Iterable<NativeView>? nativeViews,
+  }) {
+    final _result = create();
+    if (nativeViews != null) {
+      _result.nativeViews.addAll(nativeViews);
+    }
+    return _result;
+  }
+  factory NativeViews.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory NativeViews.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  NativeViews clone() => NativeViews()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  NativeViews copyWith(void Function(NativeViews) updates) =>
+      super.copyWith((message) => updates(message as NativeViews))
+          as NativeViews; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static NativeViews create() => NativeViews._();
+  NativeViews createEmptyInstance() => create();
+  static $pb.PbList<NativeViews> createRepeated() => $pb.PbList<NativeViews>();
+  @$core.pragma('dart2js:noInline')
+  static NativeViews getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<NativeViews>(create);
+  static NativeViews? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.List<NativeView> get nativeViews => $_getList(0);
@@ -531,7 +591,7 @@ class GetNotificationsResponse extends $pb.GeneratedMessage {
               : 'patrol'),
       createEmptyInstance: create)
     ..pc<Notification>(
-        1,
+        2,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'notifications',
@@ -578,7 +638,7 @@ class GetNotificationsResponse extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetNotificationsResponse>(create);
   static GetNotificationsResponse? _defaultInstance;
 
-  @$pb.TagNumber(1)
+  @$pb.TagNumber(2)
   $core.List<Notification> get notifications => $_getList(0);
 }
 

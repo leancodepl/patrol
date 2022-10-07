@@ -29,7 +29,7 @@ object GetNotificationsResponseKt {
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
     class NotificationsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
      val notifications: com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.Notification, NotificationsProxy>
       @kotlin.jvm.JvmSynthetic
@@ -37,7 +37,7 @@ object GetNotificationsResponseKt {
         _builder.getNotificationsList()
       )
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      * @param value The notifications to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -46,7 +46,7 @@ object GetNotificationsResponseKt {
       _builder.addNotifications(value)
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      * @param value The notifications to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -56,7 +56,7 @@ object GetNotificationsResponseKt {
       add(value)
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      * @param values The notifications to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -65,7 +65,7 @@ object GetNotificationsResponseKt {
       _builder.addAllNotifications(values)
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      * @param values The notifications to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -75,7 +75,7 @@ object GetNotificationsResponseKt {
       addAll(values)
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      * @param index The index to set the value at.
      * @param value The notifications to set.
      */
@@ -85,7 +85,7 @@ object GetNotificationsResponseKt {
       _builder.setNotifications(index, value)
     }
     /**
-     * <code>repeated .patrol.Notification notifications = 1;</code>
+     * <code>repeated .patrol.Notification notifications = 2;</code>
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearNotifications")

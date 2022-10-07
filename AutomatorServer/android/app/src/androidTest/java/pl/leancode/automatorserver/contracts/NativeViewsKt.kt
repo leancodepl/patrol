@@ -3,24 +3,24 @@
 
 package pl.leancode.automatorserver.contracts;
 
-@kotlin.jvm.JvmName("-initializegetNativeViewsResponse")
-inline fun getNativeViewsResponse(block: pl.leancode.automatorserver.contracts.GetNativeViewsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse =
-  pl.leancode.automatorserver.contracts.GetNativeViewsResponseKt.Dsl._create(pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.newBuilder()).apply { block() }._build()
-object GetNativeViewsResponseKt {
+@kotlin.jvm.JvmName("-initializenativeViews")
+inline fun nativeViews(block: pl.leancode.automatorserver.contracts.NativeViewsKt.Dsl.() -> kotlin.Unit): pl.leancode.automatorserver.contracts.Contracts.NativeViews =
+  pl.leancode.automatorserver.contracts.NativeViewsKt.Dsl._create(pl.leancode.automatorserver.contracts.Contracts.NativeViews.newBuilder()).apply { block() }._build()
+object NativeViewsKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
   class Dsl private constructor(
-    private val _builder: pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.Builder
+    private val _builder: pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder
   ) {
     companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
-      internal fun _create(builder: pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.Builder): Dsl = Dsl(builder)
+      internal fun _create(builder: pl.leancode.automatorserver.contracts.Contracts.NativeViews.Builder): Dsl = Dsl(builder)
     }
 
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
-    internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse = _builder.build()
+    internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.NativeViews = _builder.build()
 
     /**
      * An uninstantiable, behaviorless type to represent the field in
@@ -29,7 +29,7 @@ object GetNativeViewsResponseKt {
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
     class NativeViewsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
      val nativeViews: com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>
       @kotlin.jvm.JvmSynthetic
@@ -37,7 +37,7 @@ object GetNativeViewsResponseKt {
         _builder.getNativeViewsList()
       )
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      * @param value The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -46,7 +46,7 @@ object GetNativeViewsResponseKt {
       _builder.addNativeViews(value)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      * @param value The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -56,7 +56,7 @@ object GetNativeViewsResponseKt {
       add(value)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      * @param values The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -65,7 +65,7 @@ object GetNativeViewsResponseKt {
       _builder.addAllNativeViews(values)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      * @param values The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -75,7 +75,7 @@ object GetNativeViewsResponseKt {
       addAll(values)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      * @param index The index to set the value at.
      * @param value The nativeViews to set.
      */
@@ -85,7 +85,7 @@ object GetNativeViewsResponseKt {
       _builder.setNativeViews(index, value)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearNativeViews")
@@ -96,6 +96,6 @@ object GetNativeViewsResponseKt {
   }
 }
 @kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse.copy(block: pl.leancode.automatorserver.contracts.GetNativeViewsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.automatorserver.contracts.Contracts.GetNativeViewsResponse =
-  pl.leancode.automatorserver.contracts.GetNativeViewsResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+inline fun pl.leancode.automatorserver.contracts.Contracts.NativeViews.copy(block: pl.leancode.automatorserver.contracts.NativeViewsKt.Dsl.() -> kotlin.Unit): pl.leancode.automatorserver.contracts.Contracts.NativeViews =
+  pl.leancode.automatorserver.contracts.NativeViewsKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
