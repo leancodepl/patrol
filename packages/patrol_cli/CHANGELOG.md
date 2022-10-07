@@ -1,3 +1,8 @@
+## 0.6.13
+
+- AutomatorServer:
+  - Print more info about errors occuring on the native side (#414)
+
 ## 0.6.12
 
 - AutomatorServer:
