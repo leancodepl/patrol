@@ -1,6 +1,7 @@
 import 'dart:io' as io;
 
 import 'package:grpc/grpc.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:patrol/src/native/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
@@ -21,6 +22,18 @@ class PatrolActionException implements Exception {
   String toString() => 'Patrol action failed: $message';
 }
 
+/// Bindings available to use with [NativeAutomator].
+enum Binding {
+  /// Initialize [PatrolBinding].
+  patrol,
+
+  /// Initializes [IntegrationTestWidgetsFlutterBinding]
+  integrationTest,
+
+  /// Doesn't initialize any binding.
+  none,
+}
+
 /// Provides functionality to interact with the host OS that the app under test
 /// is running on.
 ///
@@ -28,14 +41,12 @@ class PatrolActionException implements Exception {
 /// target device.
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
-  ///
-  /// If [useBinding] is true, [PatrolBinding] is initialized.
   NativeAutomator({
     this.timeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
-    bool useBinding = true,
+    Binding binding = Binding.patrol,
   })  : _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
@@ -69,10 +80,18 @@ class NativeAutomator {
       options: CallOptions(timeout: timeout),
     );
 
-    if (useBinding) {
-      _logger('Initializing PatrolBinding...');
-      PatrolBinding.ensureInitialized();
-      _logger('Initialized PatrolBinding');
+    switch (binding) {
+      case Binding.patrol:
+        _logger('Initializing PatrolBinding...');
+        PatrolBinding.ensureInitialized();
+        break;
+      case Binding.integrationTest:
+        _logger('Initializing IntegrationTestWidgetsFlutterBinding...');
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        break;
+      case Binding.none:
+        _logger('No bindings will be initialized');
+        break;
     }
   }
 

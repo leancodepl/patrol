@@ -34,13 +34,13 @@ void patrolTest(
   dynamic tags,
   PatrolTestConfig config = const PatrolTestConfig(),
   bool nativeAutomation = false,
-  bool useBinding = true,
+  Binding binding = Binding.patrol,
 }) {
   final patrol = nativeAutomation
       ? NativeAutomator(
           packageName: config.packageName,
           bundleId: config.bundleId,
-          useBinding: useBinding,
+          binding: binding,
         )
       : null;
 
