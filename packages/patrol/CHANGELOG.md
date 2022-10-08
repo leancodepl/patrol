@@ -1,3 +1,7 @@
+## 0.6.12
+
+- Add useBinding flag to `patrolTest` (#419)
+
 ## 0.6.11
 
 - **Breaking:** Rename `NativeAutomator.forTest()` constructor to an unnamed
