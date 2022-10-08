@@ -63,8 +63,11 @@ class NativeAutomator {
         bundleId ?? const String.fromEnvironment('PATROL_APP_BUNDLE_ID');
 
     _logger(
-      'creating NativeAutomator, host: $host, port: $port, '
-      'packageName: $packageName, bundleId: $bundleId',
+      'creating NativeAutomator\n'
+      '\thost: $host\n'
+      '\tport: $port\n'
+      '\tpackageName: $packageName\n'
+      '\tbundleId: $bundleId\n',
     );
 
     final channel = ClientChannel(
