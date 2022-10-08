@@ -1,3 +1,8 @@
+## 0.6.14
+
+- AutomatorServer:
+  - Further improve error messages occuring on the native side (#429)
+
 ## 0.6.13
 
 - AutomatorServer:
