@@ -430,7 +430,7 @@ class PatrolAutomation {
   
   private func runControlCenterAction(_ log: String, block: @escaping () -> Void) throws {
     #if targetEnvironment(simulator)
-      throw PatrolError.generic("Control Center is not available on Simulator")
+      throw PatrolError.internal("Control Center is not available on Simulator")
     #endif
     
     try runAction(log) {
