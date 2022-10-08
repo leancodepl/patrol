@@ -23,7 +23,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      throw PatrolError.generic("pressBack() is not supported on iOS")
+      throw PatrolError.methodNotImplemented("pressBack")
     }
   }
   
@@ -42,7 +42,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      throw PatrolError.generic("doublePressRecentApps() is not supported on iOS")
+      throw PatrolError.methodNotImplemented("doublePressRecentApps")
     }
   }
   
@@ -73,7 +73,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_GetNativeViewsResponse {
     return try await runCatching {
-      throw PatrolError.generic("getNativeViews() is not supported on iOS")
+      throw PatrolError.internal("getNativeViews() is not supported on iOS")
     }
   }
   
@@ -108,7 +108,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       case .selector(let selector):
         try automation.enterText(request.data, by: selector.text, inApp: request.appID)
       default:
-        throw PatrolError.generic("enterText(): neither index nor selector are set")
+        throw PatrolError.internal("enterText(): neither index nor selector are set")
       }
       
       return DefaultResponse()
@@ -120,7 +120,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      throw PatrolError.generic("swipe() is not supported on iOS")
+      throw PatrolError.methodNotImplemented("swipe")
     }
   }
   
@@ -281,7 +281,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
         case .selector(let selector):
           try automation.tapOnNotification(by: selector.textContains)
         default:
-          throw PatrolError.generic("tapOnNotification(): neither index nor selector are set")
+          throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
       }
       
       return DefaultResponse()
@@ -303,7 +303,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       case .denied:
         try automation.denyPermission()
       case .UNRECOGNIZED:
-        throw PatrolError.generic("handlePermissionDialog(): bad permission code")
+        throw PatrolError.internal("handlePermissionDialog(): bad permission code")
       }
       
       return DefaultResponse()
@@ -321,7 +321,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       case .fine:
         try automation.selectFineLocation()
       case .UNRECOGNIZED:
-        throw PatrolError.generic("unrecognized location accuracy")
+        throw PatrolError.internal("unrecognized location accuracy")
       }
       
       return DefaultResponse()
@@ -339,11 +339,14 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   }
   
   private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
+    // TODO: Use an interceptor (like on Android)
+    // See: https://github.com/grpc/grpc-swift/issues/1148
     do {
       return try await block()
+    } catch let err as PatrolError {
+      throw err
     } catch let err {
-      // TODO: Try to do this with an Interceptor, like on Android
-      throw GRPCError.InvalidState("\(err)")
+      throw PatrolError.unknown(err)
     }
   }
 }

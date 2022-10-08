@@ -129,9 +129,9 @@ class PatrolAutomator private constructor() {
 
     fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
-    fun enableAirplaneMode(): Unit = TODO()
+    fun enableAirplaneMode(): Unit = throw NotImplementedError("enableAirplaneMode")
 
-    fun disableAirplaneMode(): Unit = TODO()
+    fun disableAirplaneMode(): Unit = throw NotImplementedError("disableAirplaneMode")
 
     fun disableCellular() = executeShellCommand("svc data disable")
 
@@ -141,9 +141,9 @@ class PatrolAutomator private constructor() {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun enableBluetooth(): Unit = TODO()
+    fun enableBluetooth(): Unit = throw NotImplementedError("enableBluetooth")
 
-    fun disableBluetooth(): Unit = TODO()
+    fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
 
     fun getNativeViews(selector: BySelector): List<Contracts.NativeView> {
         Logger.d("getNativeViews()")
