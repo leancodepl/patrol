@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import io.grpc.Grpc
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR

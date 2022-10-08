@@ -339,6 +339,14 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   }
   
   private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
-    return try await block()
+    // TODO: Use an interceptor (like on Android)
+    // See: https://github.com/grpc/grpc-swift/issues/1148
+    do {
+      return try await block()
+    } catch let err as PatrolError {
+      throw err
+    } catch let err {
+      throw PatrolError.unknown(err)
+    }
   }
 }

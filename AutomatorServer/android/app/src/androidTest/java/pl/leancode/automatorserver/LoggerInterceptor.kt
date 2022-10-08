@@ -16,18 +16,6 @@ class LoggerInterceptor : ServerInterceptor {
 
         private fun handleErrorStatus(cause: Throwable?): Status {
             val newStatus = when (cause) {
-                is IllegalArgumentException -> {
-                    Status
-                        .INVALID_ARGUMENT
-                        .withDescription(cause.message)
-                }
-
-                is IllegalStateException -> {
-                    Status
-                        .FAILED_PRECONDITION
-                        .withDescription(cause.message)
-                }
-
                 is UiObjectNotFoundException -> {
                     Status
                         .NOT_FOUND
@@ -37,7 +25,7 @@ class LoggerInterceptor : ServerInterceptor {
                 else -> {
                     Status
                         .UNKNOWN
-                        .withDescription("Caught unknown exception $cause")
+                        .withDescription("unknown error: $cause")
                 }
             }
 
