@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
@@ -50,7 +51,7 @@ class NativeAutomator {
     String? bundleId,
     Binding binding = Binding.patrol,
   })  : assert(
-          findTimeout > connectionTimeout,
+          connectionTimeout > findTimeout,
           'find timeout is longer than connection timeout',
         ),
         _logger = logger,
@@ -152,6 +153,18 @@ class NativeAutomator {
       _logger('$name() failed');
       rethrow;
     }
+  }
+
+  /// Configures the native automator.
+  ///
+  /// Must be called before using any native features.
+  Future<void> configure() async {
+    await _wrapRequest(
+      'configure',
+      () => _client.configure(
+        ConfigureRequest(findTimeout: Int64(findTimeout.inMilliseconds)),
+      ),
+    );
   }
 
   /// Presses the back button.

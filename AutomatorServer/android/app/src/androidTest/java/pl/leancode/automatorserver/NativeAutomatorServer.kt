@@ -1,6 +1,5 @@
 package pl.leancode.automatorserver
 
-import io.grpc.Grpc
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
@@ -18,6 +17,11 @@ typealias Empty = Contracts.Empty
 
 class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
     private val automation = PatrolAutomator.instance
+
+    override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
+        automation.configure(waitForSelectorTimeout = request.findTimeout)
+        return empty { }
+    }
 
     override suspend fun pressHome(request: Empty): Empty {
         automation.pressHome()
@@ -64,42 +68,42 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
-    override suspend fun enableAirplaneMode(request: Contracts.Empty): Empty {
+    override suspend fun enableAirplaneMode(request: Empty): Empty {
         automation.enableAirplaneMode()
         return empty {}
     }
 
-    override suspend fun disableAirplaneMode(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun disableAirplaneMode(request: Empty): Empty {
         automation.disableAirplaneMode()
         return empty {}
     }
 
-    override suspend fun enableCellular(request: Contracts.Empty): Empty {
+    override suspend fun enableCellular(request: Empty): Empty {
         automation.enableCellular()
         return empty { }
     }
 
-    override suspend fun disableCellular(request: Contracts.Empty): Empty {
+    override suspend fun disableCellular(request: Empty): Empty {
         automation.disableCellular()
         return empty { }
     }
 
-    override suspend fun enableWiFi(request: Contracts.Empty): Empty {
+    override suspend fun enableWiFi(request: Empty): Empty {
         automation.enableWifi()
         return empty { }
     }
 
-    override suspend fun disableWiFi(request: Contracts.Empty): Empty {
+    override suspend fun disableWiFi(request: Empty): Empty {
         automation.disableWifi()
         return empty { }
     }
 
-    override suspend fun enableBluetooth(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun enableBluetooth(request: Empty): Empty {
         automation.enableBluetooth()
         return empty { }
     }
 
-    override suspend fun disableBluetooth(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun disableBluetooth(request: Empty): Empty {
         automation.disableBluetooth()
         return empty { }
     }

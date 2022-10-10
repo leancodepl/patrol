@@ -36,7 +36,7 @@ void patrolTest(
   bool nativeAutomation = false,
   Binding binding = Binding.patrol,
 }) {
-  final patrol = nativeAutomation
+  final automator = nativeAutomation
       ? NativeAutomator(
           packageName: config.packageName,
           bundleId: config.bundleId,
@@ -44,7 +44,7 @@ void patrolTest(
         )
       : null;
 
-  return testWidgets(
+  testWidgets(
     description,
     skip: skip,
     timeout: timeout,
@@ -52,9 +52,11 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
+      await automator?.configure();
+
       final patrolTester = PatrolTester(
         tester: widgetTester,
-        nativeAutomator: patrol,
+        nativeAutomator: automator,
         config: config,
       );
       await callback(patrolTester);

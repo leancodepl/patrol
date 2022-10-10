@@ -48,9 +48,9 @@ private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
 
 class PatrolAutomator private constructor() {
 
-    fun configure() {
+    fun configure(waitForSelectorTimeout: Long) {
         val configurator = Configurator.getInstance()
-        configurator.waitForSelectorTimeout = 5000
+        configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
 

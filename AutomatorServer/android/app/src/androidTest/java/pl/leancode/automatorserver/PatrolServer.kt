@@ -22,7 +22,6 @@ class PatrolServer {
 
     fun start() {
         Logger.i("Starting server...")
-        PatrolAutomator.instance.configure()
         server.start()
         Logger.i("Server started on http://localhost:$port")
 
