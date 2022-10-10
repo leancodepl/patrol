@@ -19,11 +19,13 @@ $ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
 
 ## Inspecting native view hierarchy
 
-It's hard to tap on or enter text into something you don't know how to refer to.
-It's helpful to do a native view hierarchy dump and find the properties of the
-view you want to act on.
+It's hard to tap on or enter text into a view you don't know how to refer to. In
+such situation we recommmend doing a native view hierarchy dump and finding the
+properties of the view you want to act on.
 
-### Android
+**Android**
+
+First, perform a native view hierarchy dump using `adb`:
 
 ```bash
 $ adb shell uiautomator dump
@@ -35,7 +37,12 @@ Then, copy the dump file from the device to your machine:
 $ adb pull /sdcard/window_dump.xml .
 ```
 
-### iOS
+**iOS**
+
+The easiest way to perform the native view hierarchy dumb on iOS is to use the
+[idb] tool.
+
+Once you have [idb] installed, perform a dump:
 
 ```bash
 $ idb ui describe-all
@@ -76,18 +83,22 @@ Testing such flows is not as simple as simply granting normal permission, but
 it's totally possible with Patrol.
 
 Below we present you with a snippet that will make the built-in Camera app have
-access to the Do Not Disturb feature on Android. To tap on the `Camera toggle`
-and then to tap on the `ALLOW` use `$.native`.
+access to the Do Not Disturb feature on Android. Let's assume that the Settings
+app on the device we want to run the tests on looks like this:
+
+![settings_screenshot]
+
+And here's the code:
 
 ```dart
-await $.native.tap(Selector(text: 'Camera'));
-await $.native.tap(Selector(text: 'ALLOW'));
-await $.native.pressBack();
+await $.native.tap(Selector(text: 'Camera')); // tap on the list tile
+await $.native.tap(Selector(text: 'ALLOW')); // handle the confirmation dialog
+await $.native.pressBack(); // go back to the app under test
 ```
 
 Please note that the UI of the Settings app differs across operating systems,
-their versions, and OEM flavors (in case of Android).
+their versions, and OEM flavors (in case of Android). You'll have to handle all
+edge cases yourself.
 
-### Screenshot
-
-![image](https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png)
+[idb]: https://github.com/facebook/idb
+[settings_screenshot]: https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png
