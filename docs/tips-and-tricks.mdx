@@ -64,3 +64,28 @@ To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 ```bash
 $ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
 ```
+
+## Granting `Do Not Disturb access` permission on Android
+Some particularly sensitive permissions (such as access to background location or controlling the Do Not Disturb feature) cannot be requested in the permission dialog like most of the common permissions. Instead, you have to ask the user to go to the Settings app and grant your app the permission you need.
+
+Testing such flows is not as simple as simply granting normal permission, but it's totally possible with Patrol.
+
+Below we present you with a snippet that will make the built-in Camera app have access to the Do Not Disturb feature on Android.
+To tap on the `Camera toggle` and then to tap on the `ALLOW` use `$.native`
+
+### Enable `nativeAutomation`
+```dart
+  patrolTest(nativeAutomation: true,
+      ($) async {
+```
+Use `Selector` from `UIAutomator` (in this case `text` is used). 
+
+More info about `Selector` capabilites https://developer.android.com/reference/androidx/test/uiautomator/UiSelector
+
+```dart
+await $.native.tap(Selector(text: 'Camera'));
+await $.native.tap(Selector(text: 'ALLOW'));
+await $.native.pressBack();
+```
+### Screenshot
+![image](https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png)
