@@ -19,7 +19,7 @@ See [packages/patrol][patrol].
 
 1. Create a git tag:
 
-   ```
+   ```console
    $ git tag patrol_cli-v0.3.4
    ```
 
