@@ -51,8 +51,8 @@ class NativeAutomator {
     String? bundleId,
     Binding binding = Binding.patrol,
   })  : assert(
-          connectionTimeout > findTimeout,
-          'connection timeout is not longer than find timeout',
+          findTimeout > connectionTimeout,
+          'find timeout is longer than connection timeout',
         ),
         _logger = logger,
         host = const String.fromEnvironment(
