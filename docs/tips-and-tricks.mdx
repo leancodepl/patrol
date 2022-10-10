@@ -7,8 +7,8 @@ these one-liners for you:
 
 **Bash**
 
-```bash
-for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
+```console
+$ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
 ```
 
 **PowerShell**
@@ -25,18 +25,18 @@ view you want to act on.
 
 ### Android
 
-```bash
-adb shell uiautomator dump
+```console
+$ adb shell uiautomator dump
 ```
 
 Then, copy the dump file from the device to your machine:
 
-```bash
-adb pull /sdcard/window_dump.xml .
+```console
+$ adb pull /sdcard/window_dump.xml .
 ```
 
 ### iOS
 
-```bash
-idb ui describe-all
+```console
+$ idb ui describe-all
 ```
