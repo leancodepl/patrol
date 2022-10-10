@@ -66,13 +66,19 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               name: 'Camera',
               icon: Icons.camera,
               granted: _cameraPermissionGranted,
-              onTap: _requestCameraPermission,
+              onTap: () async {
+                await Future<void>.delayed(Duration(seconds: 7));
+                await _requestCameraPermission();
+              },
             ),
             _PermissionTile(
               name: 'Microphone',
               icon: Icons.mic,
               granted: _microphonePermissionGranted,
-              onTap: _requestMicrophonePermission,
+              onTap: () async {
+                await Future<void>.delayed(Duration(seconds: 7));
+                await _requestMicrophonePermission();
+              },
             ),
           ],
         ),
