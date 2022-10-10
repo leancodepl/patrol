@@ -64,3 +64,24 @@ To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 ```console
 $ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
 ```
+
+## Allowing native `Do Not Disturb acesss` permission on Android
+
+To tap on the `Camera toggle` and then to tap on the `ALLOW` use `$.native`
+
+### Enable `nativeAutomation`
+```dart
+  patrolTest(nativeAutomation: true,
+      ($) async {
+```
+Use `Selector` from `UIAutomator` (in this case `text` is used). 
+
+More info about `Selector` capabilites https://developer.android.com/reference/androidx/test/uiautomator/UiSelector
+
+```dart
+await $.native.tap(Selector(text: 'Camera'));
+await $.native.tap(Selector(text: 'ALLOW'));
+await $.native.pressBack();
+```
+### Screenshot
+![image](https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png)
