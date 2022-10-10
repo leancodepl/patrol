@@ -192,6 +192,8 @@ public struct Patrol_TapRequest {
 
   public var appID: String = String()
 
+  public var findTimeout: UInt64 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -207,6 +209,8 @@ public struct Patrol_EnterTextRequest {
   public var data: String = String()
 
   public var appID: String = String()
+
+  public var findTimeout: UInt64 = 0
 
   public var findBy: Patrol_EnterTextRequest.OneOf_FindBy? = nil
 
@@ -532,7 +536,7 @@ public struct Patrol_NativeView {
 
   public var enabled: Bool = false
 
-  public var childCount: Int32 = 0
+  public var childCount: UInt32 = 0
 
   public var resourceName: String = String()
 
@@ -892,6 +896,7 @@ extension Patrol_TapRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "selector"),
     2: .same(proto: "appId"),
+    3: .same(proto: "findTimeout"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -902,6 +907,7 @@ extension Patrol_TapRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.appID) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self.findTimeout) }()
       default: break
       }
     }
@@ -918,12 +924,16 @@ extension Patrol_TapRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
     if !self.appID.isEmpty {
       try visitor.visitSingularStringField(value: self.appID, fieldNumber: 2)
     }
+    if self.findTimeout != 0 {
+      try visitor.visitSingularUInt64Field(value: self.findTimeout, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Patrol_TapRequest, rhs: Patrol_TapRequest) -> Bool {
     if lhs._selector != rhs._selector {return false}
     if lhs.appID != rhs.appID {return false}
+    if lhs.findTimeout != rhs.findTimeout {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -934,8 +944,9 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "data"),
     2: .same(proto: "appId"),
-    3: .same(proto: "index"),
-    4: .same(proto: "selector"),
+    4: .same(proto: "findTimeout"),
+    5: .same(proto: "index"),
+    6: .same(proto: "selector"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -946,7 +957,8 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.data) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.appID) }()
-      case 3: try {
+      case 4: try { try decoder.decodeSingularUInt64Field(value: &self.findTimeout) }()
+      case 5: try {
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
         if let v = v {
@@ -954,7 +966,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.findBy = .index(v)
         }
       }()
-      case 4: try {
+      case 6: try {
         var v: Patrol_Selector?
         var hadOneofValue = false
         if let current = self.findBy {
@@ -983,14 +995,17 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     if !self.appID.isEmpty {
       try visitor.visitSingularStringField(value: self.appID, fieldNumber: 2)
     }
+    if self.findTimeout != 0 {
+      try visitor.visitSingularUInt64Field(value: self.findTimeout, fieldNumber: 4)
+    }
     switch self.findBy {
     case .index?: try {
       guard case .index(let v)? = self.findBy else { preconditionFailure() }
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 5)
     }()
     case .selector?: try {
       guard case .selector(let v)? = self.findBy else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
     }()
     case nil: break
     }
@@ -1000,6 +1015,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
   public static func ==(lhs: Patrol_EnterTextRequest, rhs: Patrol_EnterTextRequest) -> Bool {
     if lhs.data != rhs.data {return false}
     if lhs.appID != rhs.appID {return false}
+    if lhs.findTimeout != rhs.findTimeout {return false}
     if lhs.findBy != rhs.findBy {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1268,7 +1284,7 @@ extension Patrol_NativeView: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       case 3: try { try decoder.decodeSingularStringField(value: &self.contentDescription) }()
       case 4: try { try decoder.decodeSingularBoolField(value: &self.focused) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
-      case 6: try { try decoder.decodeSingularInt32Field(value: &self.childCount) }()
+      case 6: try { try decoder.decodeSingularUInt32Field(value: &self.childCount) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.resourceName) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.applicationPackage) }()
       case 9: try { try decoder.decodeRepeatedMessageField(value: &self.children) }()
@@ -1294,7 +1310,7 @@ extension Patrol_NativeView: SwiftProtobuf.Message, SwiftProtobuf._MessageImplem
       try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 5)
     }
     if self.childCount != 0 {
-      try visitor.visitSingularInt32Field(value: self.childCount, fieldNumber: 6)
+      try visitor.visitSingularUInt32Field(value: self.childCount, fieldNumber: 6)
     }
     if !self.resourceName.isEmpty {
       try visitor.visitSingularStringField(value: self.resourceName, fieldNumber: 7)

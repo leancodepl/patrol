@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
@@ -379,12 +380,19 @@ class NativeAutomator {
   /// Taps on the native view specified by [selector].
   ///
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId}) async {
+  Future<void> tap(
+    Selector selector, {
+    String? appId,
+    Duration? findTimeout,
+  }) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
         TapRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          findTimeout: Int64(
+            findTimeout?.inMilliseconds ?? this.findTimeout.inMilliseconds,
+          ),
         ),
       );
     });
@@ -393,13 +401,20 @@ class NativeAutomator {
   /// Double taps on the native view specified by [selector].
   ///
   /// If the native view is not found, an exception is thrown.
-  Future<void> doubleTap(Selector selector, {String? appId}) async {
+  Future<void> doubleTap(
+    Selector selector, {
+    String? appId,
+    Duration? findTimeout,
+  }) async {
     await _wrapRequest(
       'doubleTap',
       () => _client.doubleTap(
         TapRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          findTimeout: Int64(
+            findTimeout?.inMilliseconds ?? this.findTimeout.inMilliseconds,
+          ),
         ),
       ),
     );

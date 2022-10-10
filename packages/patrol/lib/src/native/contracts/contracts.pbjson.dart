@@ -148,22 +148,24 @@ const TapRequest$json = const {
       '10': 'selector'
     },
     const {'1': 'appId', '3': 2, '4': 1, '5': 9, '10': 'appId'},
+    const {'1': 'findTimeout', '3': 3, '4': 1, '5': 4, '10': 'findTimeout'},
   ],
 };
 
 /// Descriptor for `TapRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List tapRequestDescriptor = $convert.base64Decode(
-    'CgpUYXBSZXF1ZXN0EiwKCHNlbGVjdG9yGAEgASgLMhAucGF0cm9sLlNlbGVjdG9yUghzZWxlY3RvchIUCgVhcHBJZBgCIAEoCVIFYXBwSWQ=');
+    'CgpUYXBSZXF1ZXN0EiwKCHNlbGVjdG9yGAEgASgLMhAucGF0cm9sLlNlbGVjdG9yUghzZWxlY3RvchIUCgVhcHBJZBgCIAEoCVIFYXBwSWQSIAoLZmluZFRpbWVvdXQYAyABKARSC2ZpbmRUaW1lb3V0');
 @$core.Deprecated('Use enterTextRequestDescriptor instead')
 const EnterTextRequest$json = const {
   '1': 'EnterTextRequest',
   '2': const [
     const {'1': 'data', '3': 1, '4': 1, '5': 9, '10': 'data'},
     const {'1': 'appId', '3': 2, '4': 1, '5': 9, '10': 'appId'},
-    const {'1': 'index', '3': 3, '4': 1, '5': 13, '9': 0, '10': 'index'},
+    const {'1': 'findTimeout', '3': 4, '4': 1, '5': 4, '10': 'findTimeout'},
+    const {'1': 'index', '3': 5, '4': 1, '5': 13, '9': 0, '10': 'index'},
     const {
       '1': 'selector',
-      '3': 4,
+      '3': 6,
       '4': 1,
       '5': 11,
       '6': '.patrol.Selector',
@@ -178,7 +180,7 @@ const EnterTextRequest$json = const {
 
 /// Descriptor for `EnterTextRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List enterTextRequestDescriptor = $convert.base64Decode(
-    'ChBFbnRlclRleHRSZXF1ZXN0EhIKBGRhdGEYASABKAlSBGRhdGESFAoFYXBwSWQYAiABKAlSBWFwcElkEhYKBWluZGV4GAMgASgNSABSBWluZGV4Ei4KCHNlbGVjdG9yGAQgASgLMhAucGF0cm9sLlNlbGVjdG9ySABSCHNlbGVjdG9yQggKBmZpbmRCeQ==');
+    'ChBFbnRlclRleHRSZXF1ZXN0EhIKBGRhdGEYASABKAlSBGRhdGESFAoFYXBwSWQYAiABKAlSBWFwcElkEiAKC2ZpbmRUaW1lb3V0GAQgASgEUgtmaW5kVGltZW91dBIWCgVpbmRleBgFIAEoDUgAUgVpbmRleBIuCghzZWxlY3RvchgGIAEoCzIQLnBhdHJvbC5TZWxlY3RvckgAUghzZWxlY3RvckIICgZmaW5kQnk=');
 @$core.Deprecated('Use swipeRequestDescriptor instead')
 const SwipeRequest$json = const {
   '1': 'SwipeRequest',
@@ -400,7 +402,7 @@ const NativeView$json = const {
     },
     const {'1': 'focused', '3': 4, '4': 1, '5': 8, '10': 'focused'},
     const {'1': 'enabled', '3': 5, '4': 1, '5': 8, '10': 'enabled'},
-    const {'1': 'childCount', '3': 6, '4': 1, '5': 5, '10': 'childCount'},
+    const {'1': 'childCount', '3': 6, '4': 1, '5': 13, '10': 'childCount'},
     const {'1': 'resourceName', '3': 7, '4': 1, '5': 9, '10': 'resourceName'},
     const {
       '1': 'applicationPackage',
@@ -422,7 +424,7 @@ const NativeView$json = const {
 
 /// Descriptor for `NativeView`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List nativeViewDescriptor = $convert.base64Decode(
-    'CgpOYXRpdmVWaWV3EhwKCWNsYXNzTmFtZRgBIAEoCVIJY2xhc3NOYW1lEhIKBHRleHQYAiABKAlSBHRleHQSLgoSY29udGVudERlc2NyaXB0aW9uGAMgASgJUhJjb250ZW50RGVzY3JpcHRpb24SGAoHZm9jdXNlZBgEIAEoCFIHZm9jdXNlZBIYCgdlbmFibGVkGAUgASgIUgdlbmFibGVkEh4KCmNoaWxkQ291bnQYBiABKAVSCmNoaWxkQ291bnQSIgoMcmVzb3VyY2VOYW1lGAcgASgJUgxyZXNvdXJjZU5hbWUSLgoSYXBwbGljYXRpb25QYWNrYWdlGAggASgJUhJhcHBsaWNhdGlvblBhY2thZ2USLgoIY2hpbGRyZW4YCSADKAsyEi5wYXRyb2wuTmF0aXZlVmlld1IIY2hpbGRyZW4=');
+    'CgpOYXRpdmVWaWV3EhwKCWNsYXNzTmFtZRgBIAEoCVIJY2xhc3NOYW1lEhIKBHRleHQYAiABKAlSBHRleHQSLgoSY29udGVudERlc2NyaXB0aW9uGAMgASgJUhJjb250ZW50RGVzY3JpcHRpb24SGAoHZm9jdXNlZBgEIAEoCFIHZm9jdXNlZBIYCgdlbmFibGVkGAUgASgIUgdlbmFibGVkEh4KCmNoaWxkQ291bnQYBiABKA1SCmNoaWxkQ291bnQSIgoMcmVzb3VyY2VOYW1lGAcgASgJUgxyZXNvdXJjZU5hbWUSLgoSYXBwbGljYXRpb25QYWNrYWdlGAggASgJUhJhcHBsaWNhdGlvblBhY2thZ2USLgoIY2hpbGRyZW4YCSADKAsyEi5wYXRyb2wuTmF0aXZlVmlld1IIY2hpbGRyZW4=');
 @$core.Deprecated('Use notificationDescriptor instead')
 const Notification$json = const {
   '1': 'Notification',

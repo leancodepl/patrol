@@ -114,12 +114,20 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
     }
 
     override suspend fun tap(request: Contracts.TapRequest): Empty {
-        automation.tap(selector = request.selector.toUiSelector())
+        automation.tap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            findTimeout = request.findTimeout,
+        )
         return empty { }
     }
 
     override suspend fun doubleTap(request: Contracts.TapRequest): Empty {
-        automation.doubleTap(selector = request.selector.toUiSelector())
+        automation.doubleTap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            findTimeout = request.findTimeout,
+        )
         return empty { }
     }
 

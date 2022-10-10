@@ -108,7 +108,7 @@ object NativeViewKt {
     }
 
     /**
-     * <code>int32 childCount = 6;</code>
+     * <code>uint32 childCount = 6;</code>
      */
     var childCount: kotlin.Int
       @JvmName("getChildCount")
@@ -118,7 +118,7 @@ object NativeViewKt {
         _builder.setChildCount(value)
       }
     /**
-     * <code>int32 childCount = 6;</code>
+     * <code>uint32 childCount = 6;</code>
      */
     fun clearChildCount() {
       _builder.clearChildCount()

@@ -11,6 +11,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.nativeView
 import pl.leancode.automatorserver.contracts.notification
@@ -152,20 +153,23 @@ class PatrolAutomator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun tap(selector: UiSelector) {
-        Logger.d("tap() selector $selector")
+    fun tap(uiSelector: UiSelector, bySelector: BySelector, findTimeout: Long) {
+        Logger.d("tap() selector $uiSelector")
 
-        val uiObject = uiDevice.findObject(selector)
+        uiDevice.wait(Until.hasObject(bySelector), findTimeout)
+        val uiObject = uiDevice.findObject(uiSelector)
 
         Logger.d("Clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()
         delay()
     }
 
-    fun doubleTap(selector: UiSelector) {
-        Logger.d("doubleTap() selector $selector")
+    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, findTimeout: Long) {
+        Logger.d("doubleTap() selector $uiSelector")
 
-        val uiObject = uiDevice.findObject(selector)
+        uiDevice.wait(Until.hasObject(bySelector), findTimeout)
+
+        val uiObject = uiDevice.findObject(uiSelector)
 
         Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()

@@ -5304,6 +5304,12 @@ public final class Contracts {
      */
     com.google.protobuf.ByteString
         getAppIdBytes();
+
+    /**
+     * <code>uint64 findTimeout = 3;</code>
+     * @return The findTimeout.
+     */
+    long getFindTimeout();
   }
   /**
    * Protobuf type {@code patrol.TapRequest}
@@ -5410,6 +5416,17 @@ public final class Contracts {
       }
     }
 
+    public static final int FINDTIMEOUT_FIELD_NUMBER = 3;
+    private long findTimeout_;
+    /**
+     * <code>uint64 findTimeout = 3;</code>
+     * @return The findTimeout.
+     */
+    @java.lang.Override
+    public long getFindTimeout() {
+      return findTimeout_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -5430,6 +5447,9 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, appId_);
       }
+      if (findTimeout_ != 0L) {
+        output.writeUInt64(3, findTimeout_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5445,6 +5465,10 @@ public final class Contracts {
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, appId_);
+      }
+      if (findTimeout_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(3, findTimeout_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -5468,6 +5492,8 @@ public final class Contracts {
       }
       if (!getAppId()
           .equals(other.getAppId())) return false;
+      if (getFindTimeout()
+          != other.getFindTimeout()) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -5485,6 +5511,9 @@ public final class Contracts {
       }
       hash = (37 * hash) + APPID_FIELD_NUMBER;
       hash = (53 * hash) + getAppId().hashCode();
+      hash = (37 * hash) + FINDTIMEOUT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getFindTimeout());
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -5621,6 +5650,8 @@ public final class Contracts {
         }
         appId_ = "";
 
+        findTimeout_ = 0L;
+
         return this;
       }
 
@@ -5653,6 +5684,7 @@ public final class Contracts {
           result.selector_ = selectorBuilder_.build();
         }
         result.appId_ = appId_;
+        result.findTimeout_ = findTimeout_;
         onBuilt();
         return result;
       }
@@ -5708,6 +5740,9 @@ public final class Contracts {
           appId_ = other.appId_;
           onChanged();
         }
+        if (other.getFindTimeout() != 0L) {
+          setFindTimeout(other.getFindTimeout());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -5746,6 +5781,11 @@ public final class Contracts {
 
                 break;
               } // case 18
+              case 24: {
+                findTimeout_ = input.readUInt64();
+
+                break;
+              } // case 24
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -5956,6 +5996,37 @@ public final class Contracts {
         onChanged();
         return this;
       }
+
+      private long findTimeout_ ;
+      /**
+       * <code>uint64 findTimeout = 3;</code>
+       * @return The findTimeout.
+       */
+      @java.lang.Override
+      public long getFindTimeout() {
+        return findTimeout_;
+      }
+      /**
+       * <code>uint64 findTimeout = 3;</code>
+       * @param value The findTimeout to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFindTimeout(long value) {
+        
+        findTimeout_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 findTimeout = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFindTimeout() {
+        
+        findTimeout_ = 0L;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -6049,28 +6120,34 @@ public final class Contracts {
         getAppIdBytes();
 
     /**
-     * <code>uint32 index = 3;</code>
+     * <code>uint64 findTimeout = 4;</code>
+     * @return The findTimeout.
+     */
+    long getFindTimeout();
+
+    /**
+     * <code>uint32 index = 5;</code>
      * @return Whether the index field is set.
      */
     boolean hasIndex();
     /**
-     * <code>uint32 index = 3;</code>
+     * <code>uint32 index = 5;</code>
      * @return The index.
      */
     int getIndex();
 
     /**
-     * <code>.patrol.Selector selector = 4;</code>
+     * <code>.patrol.Selector selector = 6;</code>
      * @return Whether the selector field is set.
      */
     boolean hasSelector();
     /**
-     * <code>.patrol.Selector selector = 4;</code>
+     * <code>.patrol.Selector selector = 6;</code>
      * @return The selector.
      */
     pl.leancode.automatorserver.contracts.Contracts.Selector getSelector();
     /**
-     * <code>.patrol.Selector selector = 4;</code>
+     * <code>.patrol.Selector selector = 6;</code>
      */
     pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder();
 
@@ -6123,8 +6200,8 @@ public final class Contracts {
     public enum FindByCase
         implements com.google.protobuf.Internal.EnumLite,
             com.google.protobuf.AbstractMessage.InternalOneOfEnum {
-      INDEX(3),
-      SELECTOR(4),
+      INDEX(5),
+      SELECTOR(6),
       FINDBY_NOT_SET(0);
       private final int value;
       private FindByCase(int value) {
@@ -6142,8 +6219,8 @@ public final class Contracts {
 
       public static FindByCase forNumber(int value) {
         switch (value) {
-          case 3: return INDEX;
-          case 4: return SELECTOR;
+          case 5: return INDEX;
+          case 6: return SELECTOR;
           case 0: return FINDBY_NOT_SET;
           default: return null;
         }
@@ -6235,53 +6312,64 @@ public final class Contracts {
       }
     }
 
-    public static final int INDEX_FIELD_NUMBER = 3;
+    public static final int FINDTIMEOUT_FIELD_NUMBER = 4;
+    private long findTimeout_;
     /**
-     * <code>uint32 index = 3;</code>
+     * <code>uint64 findTimeout = 4;</code>
+     * @return The findTimeout.
+     */
+    @java.lang.Override
+    public long getFindTimeout() {
+      return findTimeout_;
+    }
+
+    public static final int INDEX_FIELD_NUMBER = 5;
+    /**
+     * <code>uint32 index = 5;</code>
      * @return Whether the index field is set.
      */
     @java.lang.Override
     public boolean hasIndex() {
-      return findByCase_ == 3;
+      return findByCase_ == 5;
     }
     /**
-     * <code>uint32 index = 3;</code>
+     * <code>uint32 index = 5;</code>
      * @return The index.
      */
     @java.lang.Override
     public int getIndex() {
-      if (findByCase_ == 3) {
+      if (findByCase_ == 5) {
         return (java.lang.Integer) findBy_;
       }
       return 0;
     }
 
-    public static final int SELECTOR_FIELD_NUMBER = 4;
+    public static final int SELECTOR_FIELD_NUMBER = 6;
     /**
-     * <code>.patrol.Selector selector = 4;</code>
+     * <code>.patrol.Selector selector = 6;</code>
      * @return Whether the selector field is set.
      */
     @java.lang.Override
     public boolean hasSelector() {
-      return findByCase_ == 4;
+      return findByCase_ == 6;
     }
     /**
-     * <code>.patrol.Selector selector = 4;</code>
+     * <code>.patrol.Selector selector = 6;</code>
      * @return The selector.
      */
     @java.lang.Override
     public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
-      if (findByCase_ == 4) {
+      if (findByCase_ == 6) {
          return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
       }
       return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
     }
     /**
-     * <code>.patrol.Selector selector = 4;</code>
+     * <code>.patrol.Selector selector = 6;</code>
      */
     @java.lang.Override
     public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-      if (findByCase_ == 4) {
+      if (findByCase_ == 6) {
          return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
       }
       return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
@@ -6307,12 +6395,15 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, appId_);
       }
-      if (findByCase_ == 3) {
-        output.writeUInt32(
-            3, (int)((java.lang.Integer) findBy_));
+      if (findTimeout_ != 0L) {
+        output.writeUInt64(4, findTimeout_);
       }
-      if (findByCase_ == 4) {
-        output.writeMessage(4, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
+      if (findByCase_ == 5) {
+        output.writeUInt32(
+            5, (int)((java.lang.Integer) findBy_));
+      }
+      if (findByCase_ == 6) {
+        output.writeMessage(6, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -6329,14 +6420,18 @@ public final class Contracts {
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, appId_);
       }
-      if (findByCase_ == 3) {
+      if (findTimeout_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(4, findTimeout_);
+      }
+      if (findByCase_ == 5) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(
-              3, (int)((java.lang.Integer) findBy_));
+              5, (int)((java.lang.Integer) findBy_));
       }
-      if (findByCase_ == 4) {
+      if (findByCase_ == 6) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
+          .computeMessageSize(6, (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -6357,13 +6452,15 @@ public final class Contracts {
           .equals(other.getData())) return false;
       if (!getAppId()
           .equals(other.getAppId())) return false;
+      if (getFindTimeout()
+          != other.getFindTimeout()) return false;
       if (!getFindByCase().equals(other.getFindByCase())) return false;
       switch (findByCase_) {
-        case 3:
+        case 5:
           if (getIndex()
               != other.getIndex()) return false;
           break;
-        case 4:
+        case 6:
           if (!getSelector()
               .equals(other.getSelector())) return false;
           break;
@@ -6385,12 +6482,15 @@ public final class Contracts {
       hash = (53 * hash) + getData().hashCode();
       hash = (37 * hash) + APPID_FIELD_NUMBER;
       hash = (53 * hash) + getAppId().hashCode();
+      hash = (37 * hash) + FINDTIMEOUT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getFindTimeout());
       switch (findByCase_) {
-        case 3:
+        case 5:
           hash = (37 * hash) + INDEX_FIELD_NUMBER;
           hash = (53 * hash) + getIndex();
           break;
-        case 4:
+        case 6:
           hash = (37 * hash) + SELECTOR_FIELD_NUMBER;
           hash = (53 * hash) + getSelector().hashCode();
           break;
@@ -6529,6 +6629,8 @@ public final class Contracts {
 
         appId_ = "";
 
+        findTimeout_ = 0L;
+
         if (selectorBuilder_ != null) {
           selectorBuilder_.clear();
         }
@@ -6562,10 +6664,11 @@ public final class Contracts {
         pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest result = new pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest(this);
         result.data_ = data_;
         result.appId_ = appId_;
-        if (findByCase_ == 3) {
+        result.findTimeout_ = findTimeout_;
+        if (findByCase_ == 5) {
           result.findBy_ = findBy_;
         }
-        if (findByCase_ == 4) {
+        if (findByCase_ == 6) {
           if (selectorBuilder_ == null) {
             result.findBy_ = findBy_;
           } else {
@@ -6629,6 +6732,9 @@ public final class Contracts {
           appId_ = other.appId_;
           onChanged();
         }
+        if (other.getFindTimeout() != 0L) {
+          setFindTimeout(other.getFindTimeout());
+        }
         switch (other.getFindByCase()) {
           case INDEX: {
             setIndex(other.getIndex());
@@ -6678,18 +6784,23 @@ public final class Contracts {
 
                 break;
               } // case 18
-              case 24: {
-                findBy_ = input.readUInt32();
-                findByCase_ = 3;
+              case 32: {
+                findTimeout_ = input.readUInt64();
+
                 break;
-              } // case 24
-              case 34: {
+              } // case 32
+              case 40: {
+                findBy_ = input.readUInt32();
+                findByCase_ = 5;
+                break;
+              } // case 40
+              case 50: {
                 input.readMessage(
                     getSelectorFieldBuilder().getBuilder(),
                     extensionRegistry);
-                findByCase_ = 4;
+                findByCase_ = 6;
                 break;
-              } // case 34
+              } // case 50
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -6873,40 +6984,71 @@ public final class Contracts {
         return this;
       }
 
+      private long findTimeout_ ;
       /**
-       * <code>uint32 index = 3;</code>
+       * <code>uint64 findTimeout = 4;</code>
+       * @return The findTimeout.
+       */
+      @java.lang.Override
+      public long getFindTimeout() {
+        return findTimeout_;
+      }
+      /**
+       * <code>uint64 findTimeout = 4;</code>
+       * @param value The findTimeout to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFindTimeout(long value) {
+        
+        findTimeout_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 findTimeout = 4;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFindTimeout() {
+        
+        findTimeout_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      /**
+       * <code>uint32 index = 5;</code>
        * @return Whether the index field is set.
        */
       public boolean hasIndex() {
-        return findByCase_ == 3;
+        return findByCase_ == 5;
       }
       /**
-       * <code>uint32 index = 3;</code>
+       * <code>uint32 index = 5;</code>
        * @return The index.
        */
       public int getIndex() {
-        if (findByCase_ == 3) {
+        if (findByCase_ == 5) {
           return (java.lang.Integer) findBy_;
         }
         return 0;
       }
       /**
-       * <code>uint32 index = 3;</code>
+       * <code>uint32 index = 5;</code>
        * @param value The index to set.
        * @return This builder for chaining.
        */
       public Builder setIndex(int value) {
-        findByCase_ = 3;
+        findByCase_ = 5;
         findBy_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>uint32 index = 3;</code>
+       * <code>uint32 index = 5;</code>
        * @return This builder for chaining.
        */
       public Builder clearIndex() {
-        if (findByCase_ == 3) {
+        if (findByCase_ == 5) {
           findByCase_ = 0;
           findBy_ = null;
           onChanged();
@@ -6917,33 +7059,33 @@ public final class Contracts {
       private com.google.protobuf.SingleFieldBuilderV3<
           pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> selectorBuilder_;
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        * @return Whether the selector field is set.
        */
       @java.lang.Override
       public boolean hasSelector() {
-        return findByCase_ == 4;
+        return findByCase_ == 6;
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        * @return The selector.
        */
       @java.lang.Override
       public pl.leancode.automatorserver.contracts.Contracts.Selector getSelector() {
         if (selectorBuilder_ == null) {
-          if (findByCase_ == 4) {
+          if (findByCase_ == 6) {
             return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
           }
           return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
         } else {
-          if (findByCase_ == 4) {
+          if (findByCase_ == 6) {
             return selectorBuilder_.getMessage();
           }
           return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
         }
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       public Builder setSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
         if (selectorBuilder_ == null) {
@@ -6955,11 +7097,11 @@ public final class Contracts {
         } else {
           selectorBuilder_.setMessage(value);
         }
-        findByCase_ = 4;
+        findByCase_ = 6;
         return this;
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       public Builder setSelector(
           pl.leancode.automatorserver.contracts.Contracts.Selector.Builder builderForValue) {
@@ -6969,15 +7111,15 @@ public final class Contracts {
         } else {
           selectorBuilder_.setMessage(builderForValue.build());
         }
-        findByCase_ = 4;
+        findByCase_ = 6;
         return this;
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       public Builder mergeSelector(pl.leancode.automatorserver.contracts.Contracts.Selector value) {
         if (selectorBuilder_ == null) {
-          if (findByCase_ == 4 &&
+          if (findByCase_ == 6 &&
               findBy_ != pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance()) {
             findBy_ = pl.leancode.automatorserver.contracts.Contracts.Selector.newBuilder((pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_)
                 .mergeFrom(value).buildPartial();
@@ -6986,27 +7128,27 @@ public final class Contracts {
           }
           onChanged();
         } else {
-          if (findByCase_ == 4) {
+          if (findByCase_ == 6) {
             selectorBuilder_.mergeFrom(value);
           } else {
             selectorBuilder_.setMessage(value);
           }
         }
-        findByCase_ = 4;
+        findByCase_ = 6;
         return this;
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       public Builder clearSelector() {
         if (selectorBuilder_ == null) {
-          if (findByCase_ == 4) {
+          if (findByCase_ == 6) {
             findByCase_ = 0;
             findBy_ = null;
             onChanged();
           }
         } else {
-          if (findByCase_ == 4) {
+          if (findByCase_ == 6) {
             findByCase_ = 0;
             findBy_ = null;
           }
@@ -7015,33 +7157,33 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       public pl.leancode.automatorserver.contracts.Contracts.Selector.Builder getSelectorBuilder() {
         return getSelectorFieldBuilder().getBuilder();
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       @java.lang.Override
       public pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder getSelectorOrBuilder() {
-        if ((findByCase_ == 4) && (selectorBuilder_ != null)) {
+        if ((findByCase_ == 6) && (selectorBuilder_ != null)) {
           return selectorBuilder_.getMessageOrBuilder();
         } else {
-          if (findByCase_ == 4) {
+          if (findByCase_ == 6) {
             return (pl.leancode.automatorserver.contracts.Contracts.Selector) findBy_;
           }
           return pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
         }
       }
       /**
-       * <code>.patrol.Selector selector = 4;</code>
+       * <code>.patrol.Selector selector = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
           pl.leancode.automatorserver.contracts.Contracts.Selector, pl.leancode.automatorserver.contracts.Contracts.Selector.Builder, pl.leancode.automatorserver.contracts.Contracts.SelectorOrBuilder> 
           getSelectorFieldBuilder() {
         if (selectorBuilder_ == null) {
-          if (!(findByCase_ == 4)) {
+          if (!(findByCase_ == 6)) {
             findBy_ = pl.leancode.automatorserver.contracts.Contracts.Selector.getDefaultInstance();
           }
           selectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
@@ -7051,7 +7193,7 @@ public final class Contracts {
                   isClean());
           findBy_ = null;
         }
-        findByCase_ = 4;
+        findByCase_ = 6;
         onChanged();;
         return selectorBuilder_;
       }
@@ -11473,7 +11615,7 @@ public final class Contracts {
     boolean getEnabled();
 
     /**
-     * <code>int32 childCount = 6;</code>
+     * <code>uint32 childCount = 6;</code>
      * @return The childCount.
      */
     int getChildCount();
@@ -11716,7 +11858,7 @@ public final class Contracts {
     public static final int CHILDCOUNT_FIELD_NUMBER = 6;
     private int childCount_;
     /**
-     * <code>int32 childCount = 6;</code>
+     * <code>uint32 childCount = 6;</code>
      * @return The childCount.
      */
     @java.lang.Override
@@ -11870,7 +12012,7 @@ public final class Contracts {
         output.writeBool(5, enabled_);
       }
       if (childCount_ != 0) {
-        output.writeInt32(6, childCount_);
+        output.writeUInt32(6, childCount_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 7, resourceName_);
@@ -11909,7 +12051,7 @@ public final class Contracts {
       }
       if (childCount_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(6, childCount_);
+          .computeUInt32Size(6, childCount_);
       }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(resourceName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, resourceName_);
@@ -12342,7 +12484,7 @@ public final class Contracts {
                 break;
               } // case 40
               case 48: {
-                childCount_ = input.readInt32();
+                childCount_ = input.readUInt32();
 
                 break;
               } // case 48
@@ -12678,7 +12820,7 @@ public final class Contracts {
 
       private int childCount_ ;
       /**
-       * <code>int32 childCount = 6;</code>
+       * <code>uint32 childCount = 6;</code>
        * @return The childCount.
        */
       @java.lang.Override
@@ -12686,7 +12828,7 @@ public final class Contracts {
         return childCount_;
       }
       /**
-       * <code>int32 childCount = 6;</code>
+       * <code>uint32 childCount = 6;</code>
        * @param value The childCount to set.
        * @return This builder for chaining.
        */
@@ -12697,7 +12839,7 @@ public final class Contracts {
         return this;
       }
       /**
-       * <code>int32 childCount = 6;</code>
+       * <code>uint32 childCount = 6;</code>
        * @return This builder for chaining.
        */
       public Builder clearChildCount() {
@@ -14305,85 +14447,86 @@ public final class Contracts {
       "iews\030\002 \003(\0132\022.patrol.NativeView\"\031\n\027GetNot" +
       "ificationsRequest\"G\n\030GetNotificationsRes" +
       "ponse\022+\n\rnotifications\030\002 \003(\0132\024.patrol.No" +
-      "tification\"?\n\nTapRequest\022\"\n\010selector\030\001 \001" +
-      "(\0132\020.patrol.Selector\022\r\n\005appId\030\002 \001(\t\"p\n\020E" +
-      "nterTextRequest\022\014\n\004data\030\001 \001(\t\022\r\n\005appId\030\002" +
-      " \001(\t\022\017\n\005index\030\003 \001(\rH\000\022$\n\010selector\030\004 \001(\0132" +
-      "\020.patrol.SelectorH\000B\010\n\006findBy\"Y\n\014SwipeRe" +
-      "quest\022\016\n\006startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002\022\014\n" +
-      "\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 \001(\r" +
-      "\"\206\001\n\027HandlePermissionRequest\0222\n\004code\030\001 \001" +
-      "(\0162$.patrol.HandlePermissionRequest.Code" +
-      "\"7\n\004Code\022\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THIS_T" +
-      "IME\020\001\022\n\n\006DENIED\020\002\"\225\001\n\032SetLocationAccurac" +
-      "yRequest\022M\n\020locationAccuracy\030\001 \001(\01623.pat" +
-      "rol.SetLocationAccuracyRequest.LocationA" +
-      "ccuracy\"(\n\020LocationAccuracy\022\n\n\006COARSE\020\000\022" +
-      "\010\n\004FINE\020\001\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001" +
-      "\001\022\033\n\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textCo" +
-      "ntains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001" +
-      "\001\022\037\n\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034co" +
-      "ntentDescriptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n" +
-      "\032contentDescriptionContains\030\007 \001(\tH\006\210\001\001\022\027" +
-      "\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(" +
-      "\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030" +
-      "\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n" +
-      "\017_textStartsWithB\017\n\r_textContainsB\014\n\n_cl" +
-      "assNameB\025\n\023_contentDescriptionB\037\n\035_conte" +
-      "ntDescriptionStartsWithB\035\n\033_contentDescr" +
-      "iptionContainsB\r\n\013_resourceIdB\013\n\t_instan" +
-      "ceB\n\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nN" +
-      "ativeView\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001" +
-      "(\t\022\032\n\022contentDescription\030\003 \001(\t\022\017\n\007focuse" +
-      "d\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006" +
-      " \001(\005\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applicatio" +
-      "nPackage\030\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patro" +
-      "l.NativeView\"]\n\014Notification\022\024\n\007appName\030" +
-      "\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001" +
-      "(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName2\204\r\n\017NativeAu" +
-      "tomator\022+\n\tpressHome\022\r.patrol.Empty\032\r.pa" +
-      "trol.Empty\"\000\022+\n\tpressBack\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0221\n\017pressRecentApps\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\0227\n\025doublePr" +
-      "essRecentApps\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\0222\n\007openApp\022\026.patrol.OpenAppRequest" +
-      "\032\r.patrol.Empty\"\000\022F\n\021openQuickSettings\022 " +
-      ".patrol.OpenQuickSettingsRequest\032\r.patro" +
-      "l.Empty\"\000\022Q\n\016getNativeViews\022\035.patrol.Get" +
-      "NativeViewsRequest\032\036.patrol.GetNativeVie" +
-      "wsResponse\"\000\022*\n\003tap\022\022.patrol.TapRequest\032" +
-      "\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.T" +
-      "apRequest\032\r.patrol.Empty\"\000\0226\n\tenterText\022" +
-      "\030.patrol.EnterTextRequest\032\r.patrol.Empty" +
-      "\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r.patr" +
-      "ol.Empty\"\000\0224\n\022enableAirplaneMode\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\0225\n\023disableAirpl" +
-      "aneMode\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
-      ",\n\nenableWiFi\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\022-\n\013disableWiFi\022\r.patrol.Empty\032\r.pa" +
-      "trol.Empty\"\000\0220\n\016enableCellular\022\r.patrol." +
-      "Empty\032\r.patrol.Empty\"\000\0221\n\017disableCellula" +
-      "r\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017ena" +
-      "bleBluetooth\022\r.patrol.Empty\032\r.patrol.Emp" +
-      "ty\"\000\0222\n\020disableBluetooth\022\r.patrol.Empty\032" +
-      "\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027.pat" +
-      "rol.DarkModeRequest\032\r.patrol.Empty\"\000\022;\n\017" +
-      "disableDarkMode\022\027.patrol.DarkModeRequest" +
-      "\032\r.patrol.Empty\"\000\0223\n\021openNotifications\022\r" +
-      ".patrol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeN" +
-      "otifications\022\r.patrol.Empty\032\r.patrol.Emp" +
-      "ty\"\000\022:\n\030closeHeadsUpNotification\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\022W\n\020getNotificat" +
-      "ions\022\037.patrol.GetNotificationsRequest\032 ." +
-      "patrol.GetNotificationsResponse\"\000\022F\n\021tap" +
-      "OnNotification\022 .patrol.TapOnNotificatio" +
-      "nRequest\032\r.patrol.Empty\"\000\022J\n\026handlePermi" +
-      "ssionDialog\022\037.patrol.HandlePermissionReq" +
-      "uest\032\r.patrol.Empty\"\000\022J\n\023setLocationAccu" +
-      "racy\022\".patrol.SetLocationAccuracyRequest" +
-      "\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empt" +
-      "y\032\r.patrol.Empty\"\000B\'\n%pl.leancode.automa" +
-      "torserver.contractsb\006proto3"
+      "tification\"T\n\nTapRequest\022\"\n\010selector\030\001 \001" +
+      "(\0132\020.patrol.Selector\022\r\n\005appId\030\002 \001(\t\022\023\n\013f" +
+      "indTimeout\030\003 \001(\004\"\205\001\n\020EnterTextRequest\022\014\n" +
+      "\004data\030\001 \001(\t\022\r\n\005appId\030\002 \001(\t\022\023\n\013findTimeou" +
+      "t\030\004 \001(\004\022\017\n\005index\030\005 \001(\rH\000\022$\n\010selector\030\006 \001" +
+      "(\0132\020.patrol.SelectorH\000B\010\n\006findBy\"Y\n\014Swip" +
+      "eRequest\022\016\n\006startX\030\001 \001(\002\022\016\n\006startY\030\002 \001(\002" +
+      "\022\014\n\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005steps\030\005 " +
+      "\001(\r\"\206\001\n\027HandlePermissionRequest\0222\n\004code\030" +
+      "\001 \001(\0162$.patrol.HandlePermissionRequest.C" +
+      "ode\"7\n\004Code\022\017\n\013WHILE_USING\020\000\022\022\n\016ONLY_THI" +
+      "S_TIME\020\001\022\n\n\006DENIED\020\002\"\225\001\n\032SetLocationAccu" +
+      "racyRequest\022M\n\020locationAccuracy\030\001 \001(\01623." +
+      "patrol.SetLocationAccuracyRequest.Locati" +
+      "onAccuracy\"(\n\020LocationAccuracy\022\n\n\006COARSE" +
+      "\020\000\022\010\n\004FINE\020\001\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH" +
+      "\000\210\001\001\022\033\n\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014tex" +
+      "tContains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH" +
+      "\003\210\001\001\022\037\n\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n" +
+      "\034contentDescriptionStartsWith\030\006 \001(\tH\005\210\001\001" +
+      "\022\'\n\032contentDescriptionContains\030\007 \001(\tH\006\210\001" +
+      "\001\022\027\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t" +
+      " \001(\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focus" +
+      "ed\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_text" +
+      "B\021\n\017_textStartsWithB\017\n\r_textContainsB\014\n\n" +
+      "_classNameB\025\n\023_contentDescriptionB\037\n\035_co" +
+      "ntentDescriptionStartsWithB\035\n\033_contentDe" +
+      "scriptionContainsB\r\n\013_resourceIdB\013\n\t_ins" +
+      "tanceB\n\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\327\001" +
+      "\n\nNativeView\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030" +
+      "\002 \001(\t\022\032\n\022contentDescription\030\003 \001(\t\022\017\n\007foc" +
+      "used\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCoun" +
+      "t\030\006 \001(\r\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applica" +
+      "tionPackage\030\010 \001(\t\022$\n\010children\030\t \003(\0132\022.pa" +
+      "trol.NativeView\"]\n\014Notification\022\024\n\007appNa" +
+      "me\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030" +
+      "\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName2\204\r\n\017Nativ" +
+      "eAutomator\022+\n\tpressHome\022\r.patrol.Empty\032\r" +
+      ".patrol.Empty\"\000\022+\n\tpressBack\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\0221\n\017pressRecentApps\022" +
+      "\r.patrol.Empty\032\r.patrol.Empty\"\000\0227\n\025doubl" +
+      "ePressRecentApps\022\r.patrol.Empty\032\r.patrol" +
+      ".Empty\"\000\0222\n\007openApp\022\026.patrol.OpenAppRequ" +
+      "est\032\r.patrol.Empty\"\000\022F\n\021openQuickSetting" +
+      "s\022 .patrol.OpenQuickSettingsRequest\032\r.pa" +
+      "trol.Empty\"\000\022Q\n\016getNativeViews\022\035.patrol." +
+      "GetNativeViewsRequest\032\036.patrol.GetNative" +
+      "ViewsResponse\"\000\022*\n\003tap\022\022.patrol.TapReque" +
+      "st\032\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patro" +
+      "l.TapRequest\032\r.patrol.Empty\"\000\0226\n\tenterTe" +
+      "xt\022\030.patrol.EnterTextRequest\032\r.patrol.Em" +
+      "pty\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r.p" +
+      "atrol.Empty\"\000\0224\n\022enableAirplaneMode\022\r.pa" +
+      "trol.Empty\032\r.patrol.Empty\"\000\0225\n\023disableAi" +
+      "rplaneMode\022\r.patrol.Empty\032\r.patrol.Empty" +
+      "\"\000\022,\n\nenableWiFi\022\r.patrol.Empty\032\r.patrol" +
+      ".Empty\"\000\022-\n\013disableWiFi\022\r.patrol.Empty\032\r" +
+      ".patrol.Empty\"\000\0220\n\016enableCellular\022\r.patr" +
+      "ol.Empty\032\r.patrol.Empty\"\000\0221\n\017disableCell" +
+      "ular\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017" +
+      "enableBluetooth\022\r.patrol.Empty\032\r.patrol." +
+      "Empty\"\000\0222\n\020disableBluetooth\022\r.patrol.Emp" +
+      "ty\032\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027." +
+      "patrol.DarkModeRequest\032\r.patrol.Empty\"\000\022" +
+      ";\n\017disableDarkMode\022\027.patrol.DarkModeRequ" +
+      "est\032\r.patrol.Empty\"\000\0223\n\021openNotification" +
+      "s\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0224\n\022clo" +
+      "seNotifications\022\r.patrol.Empty\032\r.patrol." +
+      "Empty\"\000\022:\n\030closeHeadsUpNotification\022\r.pa" +
+      "trol.Empty\032\r.patrol.Empty\"\000\022W\n\020getNotifi" +
+      "cations\022\037.patrol.GetNotificationsRequest" +
+      "\032 .patrol.GetNotificationsResponse\"\000\022F\n\021" +
+      "tapOnNotification\022 .patrol.TapOnNotifica" +
+      "tionRequest\032\r.patrol.Empty\"\000\022J\n\026handlePe" +
+      "rmissionDialog\022\037.patrol.HandlePermission" +
+      "Request\032\r.patrol.Empty\"\000\022J\n\023setLocationA" +
+      "ccuracy\022\".patrol.SetLocationAccuracyRequ" +
+      "est\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.E" +
+      "mpty\032\r.patrol.Empty\"\000B\'\n%pl.leancode.aut" +
+      "omatorserver.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -14448,13 +14591,13 @@ public final class Contracts {
     internal_static_patrol_TapRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_TapRequest_descriptor,
-        new java.lang.String[] { "Selector", "AppId", });
+        new java.lang.String[] { "Selector", "AppId", "FindTimeout", });
     internal_static_patrol_EnterTextRequest_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_patrol_EnterTextRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_EnterTextRequest_descriptor,
-        new java.lang.String[] { "Data", "AppId", "Index", "Selector", "FindBy", });
+        new java.lang.String[] { "Data", "AppId", "FindTimeout", "Index", "Selector", "FindBy", });
     internal_static_patrol_SwipeRequest_descriptor =
       getDescriptor().getMessageTypes().get(11);
     internal_static_patrol_SwipeRequest_fieldAccessorTable = new
