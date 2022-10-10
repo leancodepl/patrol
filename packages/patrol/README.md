@@ -13,7 +13,7 @@ It can be used on its own or with [patrol_cli].
 
 ### Installation
 
-```bash
+```console
 $ dart pub add patrol
 ```
 

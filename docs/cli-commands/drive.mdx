@@ -4,7 +4,7 @@
 
 Runs tests on devices.
 
-```console
+```bash
 $ patrol drive
 ```
 
@@ -24,13 +24,13 @@ By default, `patrol drive` runs all integration tests (files ending with
 
 To run a single test, use `--target`:
 
-```console
+```bash
 $ patrol drive --target integration_test/login_test.dart
 ```
 
 You can use `--target` more than once to run multiple tests:
 
-```console
+```bash
 $ patrol drive \
     --target integration_test/login_test.dart \
     --target integration_test/change_profile_picture_test.dart
