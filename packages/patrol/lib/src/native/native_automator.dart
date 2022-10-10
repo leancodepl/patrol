@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/src/native/binding.dart';
@@ -42,12 +43,17 @@ enum Binding {
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
   NativeAutomator({
-    this.timeout = const Duration(seconds: 10),
+    this.connectionTimeout = const Duration(seconds: 20),
+    this.findTimeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
     Binding binding = Binding.patrol,
-  })  : _logger = logger,
+  })  : assert(
+          findTimeout > connectionTimeout,
+          'find timeout is longer than connection timeout',
+        ),
+        _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
           defaultValue: 'localhost',
@@ -80,7 +86,7 @@ class NativeAutomator {
 
     _client = NativeAutomatorClient(
       channel,
-      options: CallOptions(timeout: timeout),
+      options: CallOptions(timeout: connectionTimeout),
     );
 
     switch (binding) {
@@ -106,8 +112,12 @@ class NativeAutomator {
   /// Port on [host] on which Patrol server instrumentation is running.
   final String port;
 
-  /// Timeout for HTTP requests to Patrol automation server.
-  final Duration timeout;
+  /// Timeout for requests to Patrol automation server. It must be bigger than
+  /// [findTimeout].
+  final Duration connectionTimeout;
+
+  /// Time to wait for native views to appear.
+  final Duration findTimeout;
 
   /// Unique identifier of the app under test on Android.
   late final String packageName;
