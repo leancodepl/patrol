@@ -57,24 +57,7 @@ object EnterTextRequestKt {
     }
 
     /**
-     * <code>uint64 findTimeout = 4;</code>
-     */
-    var findTimeout: kotlin.Long
-      @JvmName("getFindTimeout")
-      get() = _builder.getFindTimeout()
-      @JvmName("setFindTimeout")
-      set(value) {
-        _builder.setFindTimeout(value)
-      }
-    /**
-     * <code>uint64 findTimeout = 4;</code>
-     */
-    fun clearFindTimeout() {
-      _builder.clearFindTimeout()
-    }
-
-    /**
-     * <code>uint32 index = 5;</code>
+     * <code>uint32 index = 3;</code>
      */
     var index: kotlin.Int
       @JvmName("getIndex")
@@ -84,13 +67,13 @@ object EnterTextRequestKt {
         _builder.setIndex(value)
       }
     /**
-     * <code>uint32 index = 5;</code>
+     * <code>uint32 index = 3;</code>
      */
     fun clearIndex() {
       _builder.clearIndex()
     }
     /**
-     * <code>uint32 index = 5;</code>
+     * <code>uint32 index = 3;</code>
      * @return Whether the index field is set.
      */
     fun hasIndex(): kotlin.Boolean {
@@ -98,7 +81,7 @@ object EnterTextRequestKt {
     }
 
     /**
-     * <code>.patrol.Selector selector = 6;</code>
+     * <code>.patrol.Selector selector = 4;</code>
      */
     var selector: pl.leancode.automatorserver.contracts.Contracts.Selector
       @JvmName("getSelector")
@@ -108,13 +91,13 @@ object EnterTextRequestKt {
         _builder.setSelector(value)
       }
     /**
-     * <code>.patrol.Selector selector = 6;</code>
+     * <code>.patrol.Selector selector = 4;</code>
      */
     fun clearSelector() {
       _builder.clearSelector()
     }
     /**
-     * <code>.patrol.Selector selector = 6;</code>
+     * <code>.patrol.Selector selector = 4;</code>
      * @return Whether the selector field is set.
      */
     fun hasSelector(): kotlin.Boolean {

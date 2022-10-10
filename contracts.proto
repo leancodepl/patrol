@@ -77,17 +77,15 @@ message GetNotificationsResponse { repeated Notification notifications = 2; }
 message TapRequest {
   Selector selector = 1;
   string appId = 2;
-  uint64 findTimeout = 3;
 }
 
 message EnterTextRequest {
   string data = 1;
   string appId = 2;
-  uint64 findTimeout = 4;
 
   oneof findBy {
-    uint32 index = 5;
-    Selector selector = 6;
+    uint32 index = 3;
+    Selector selector = 4;
   }
 }
 
@@ -142,7 +140,7 @@ message NativeView {
   string contentDescription = 3;
   bool focused = 4;
   bool enabled = 5;
-  uint32 childCount = 6;
+  int32 childCount = 6;
   string resourceName = 7;
   string applicationPackage = 8;
   repeated NativeView children = 9;

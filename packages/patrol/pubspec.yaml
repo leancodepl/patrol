@@ -12,7 +12,6 @@ environment:
   flutter: ">=3.0.0 <4.0.0"
 
 dependencies:
-  fixnum: ^1.0.1
   flutter:
     sdk: flutter
   flutter_test:

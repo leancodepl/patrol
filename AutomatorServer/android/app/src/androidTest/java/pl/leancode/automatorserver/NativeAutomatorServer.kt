@@ -1,5 +1,6 @@
 package pl.leancode.automatorserver
 
+import io.grpc.Grpc
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.automatorserver.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
@@ -114,20 +115,12 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
     }
 
     override suspend fun tap(request: Contracts.TapRequest): Empty {
-        automation.tap(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            findTimeout = request.findTimeout,
-        )
+        automation.tap(selector = request.selector.toUiSelector())
         return empty { }
     }
 
     override suspend fun doubleTap(request: Contracts.TapRequest): Empty {
-        automation.doubleTap(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            findTimeout = request.findTimeout,
-        )
+        automation.doubleTap(selector = request.selector.toUiSelector())
         return empty { }
     }
 

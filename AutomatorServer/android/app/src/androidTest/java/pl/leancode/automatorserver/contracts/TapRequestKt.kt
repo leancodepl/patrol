@@ -62,23 +62,6 @@ object TapRequestKt {
     fun clearAppId() {
       _builder.clearAppId()
     }
-
-    /**
-     * <code>uint64 findTimeout = 3;</code>
-     */
-    var findTimeout: kotlin.Long
-      @JvmName("getFindTimeout")
-      get() = _builder.getFindTimeout()
-      @JvmName("setFindTimeout")
-      set(value) {
-        _builder.setFindTimeout(value)
-      }
-    /**
-     * <code>uint64 findTimeout = 3;</code>
-     */
-    fun clearFindTimeout() {
-      _builder.clearFindTimeout()
-    }
   }
 }
 @kotlin.jvm.JvmSynthetic

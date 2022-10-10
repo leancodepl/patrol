@@ -7,7 +7,6 @@
 
 import 'dart:core' as $core;
 
-import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'contracts.pbenum.dart';
@@ -605,21 +604,12 @@ class TapRequest extends $pb.GeneratedMessage {
             ? ''
             : 'appId',
         protoName: 'appId')
-    ..a<$fixnum.Int64>(
-        3,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'findTimeout',
-        $pb.PbFieldType.OU6,
-        protoName: 'findTimeout',
-        defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
   TapRequest._() : super();
   factory TapRequest({
     Selector? selector,
     $core.String? appId,
-    $fixnum.Int64? findTimeout,
   }) {
     final _result = create();
     if (selector != null) {
@@ -627,9 +617,6 @@ class TapRequest extends $pb.GeneratedMessage {
     }
     if (appId != null) {
       _result.appId = appId;
-    }
-    if (findTimeout != null) {
-      _result.findTimeout = findTimeout;
     }
     return _result;
   }
@@ -684,18 +671,6 @@ class TapRequest extends $pb.GeneratedMessage {
   $core.bool hasAppId() => $_has(1);
   @$pb.TagNumber(2)
   void clearAppId() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $fixnum.Int64 get findTimeout => $_getI64(2);
-  @$pb.TagNumber(3)
-  set findTimeout($fixnum.Int64 v) {
-    $_setInt64(2, v);
-  }
-
-  @$pb.TagNumber(3)
-  $core.bool hasFindTimeout() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearFindTimeout() => clearField(3);
 }
 
 enum EnterTextRequest_FindBy { index_, selector, notSet }
@@ -703,8 +678,8 @@ enum EnterTextRequest_FindBy { index_, selector, notSet }
 class EnterTextRequest extends $pb.GeneratedMessage {
   static const $core.Map<$core.int, EnterTextRequest_FindBy>
       _EnterTextRequest_FindByByTag = {
-    5: EnterTextRequest_FindBy.index_,
-    6: EnterTextRequest_FindBy.selector,
+    3: EnterTextRequest_FindBy.index_,
+    4: EnterTextRequest_FindBy.selector,
     0: EnterTextRequest_FindBy.notSet
   };
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
@@ -716,7 +691,7 @@ class EnterTextRequest extends $pb.GeneratedMessage {
               ? ''
               : 'patrol'),
       createEmptyInstance: create)
-    ..oo(0, [5, 6])
+    ..oo(0, [3, 4])
     ..aOS(
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -728,22 +703,14 @@ class EnterTextRequest extends $pb.GeneratedMessage {
             ? ''
             : 'appId',
         protoName: 'appId')
-    ..a<$fixnum.Int64>(
-        4,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'findTimeout',
-        $pb.PbFieldType.OU6,
-        protoName: 'findTimeout',
-        defaultOrMaker: $fixnum.Int64.ZERO)
     ..a<$core.int>(
-        5,
+        3,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'index',
         $pb.PbFieldType.OU3)
     ..aOM<Selector>(
-        6,
+        4,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'selector',
@@ -754,7 +721,6 @@ class EnterTextRequest extends $pb.GeneratedMessage {
   factory EnterTextRequest({
     $core.String? data,
     $core.String? appId,
-    $fixnum.Int64? findTimeout,
     $core.int? index,
     Selector? selector,
   }) {
@@ -764,9 +730,6 @@ class EnterTextRequest extends $pb.GeneratedMessage {
     }
     if (appId != null) {
       _result.appId = appId;
-    }
-    if (findTimeout != null) {
-      _result.findTimeout = findTimeout;
     }
     if (index != null) {
       _result.index = index;
@@ -831,43 +794,31 @@ class EnterTextRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(2)
   void clearAppId() => clearField(2);
 
-  @$pb.TagNumber(4)
-  $fixnum.Int64 get findTimeout => $_getI64(2);
-  @$pb.TagNumber(4)
-  set findTimeout($fixnum.Int64 v) {
-    $_setInt64(2, v);
-  }
-
-  @$pb.TagNumber(4)
-  $core.bool hasFindTimeout() => $_has(2);
-  @$pb.TagNumber(4)
-  void clearFindTimeout() => clearField(4);
-
-  @$pb.TagNumber(5)
-  $core.int get index => $_getIZ(3);
-  @$pb.TagNumber(5)
+  @$pb.TagNumber(3)
+  $core.int get index => $_getIZ(2);
+  @$pb.TagNumber(3)
   set index($core.int v) {
-    $_setUnsignedInt32(3, v);
+    $_setUnsignedInt32(2, v);
   }
 
-  @$pb.TagNumber(5)
-  $core.bool hasIndex() => $_has(3);
-  @$pb.TagNumber(5)
-  void clearIndex() => clearField(5);
+  @$pb.TagNumber(3)
+  $core.bool hasIndex() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearIndex() => clearField(3);
 
-  @$pb.TagNumber(6)
-  Selector get selector => $_getN(4);
-  @$pb.TagNumber(6)
+  @$pb.TagNumber(4)
+  Selector get selector => $_getN(3);
+  @$pb.TagNumber(4)
   set selector(Selector v) {
-    setField(6, v);
+    setField(4, v);
   }
 
-  @$pb.TagNumber(6)
-  $core.bool hasSelector() => $_has(4);
-  @$pb.TagNumber(6)
-  void clearSelector() => clearField(6);
-  @$pb.TagNumber(6)
-  Selector ensureSelector() => $_ensure(4);
+  @$pb.TagNumber(4)
+  $core.bool hasSelector() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearSelector() => clearField(4);
+  @$pb.TagNumber(4)
+  Selector ensureSelector() => $_ensure(3);
 }
 
 class SwipeRequest extends $pb.GeneratedMessage {
@@ -1525,7 +1476,7 @@ class NativeView extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'childCount',
-        $pb.PbFieldType.OU3,
+        $pb.PbFieldType.O3,
         protoName: 'childCount')
     ..aOS(
         7,
@@ -1680,7 +1631,7 @@ class NativeView extends $pb.GeneratedMessage {
   $core.int get childCount => $_getIZ(5);
   @$pb.TagNumber(6)
   set childCount($core.int v) {
-    $_setUnsignedInt32(5, v);
+    $_setSignedInt32(5, v);
   }
 
   @$pb.TagNumber(6)
