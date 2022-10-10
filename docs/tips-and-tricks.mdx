@@ -40,3 +40,27 @@ $ adb pull /sdcard/window_dump.xml .
 ```console
 $ idb ui describe-all
 ```
+
+## Avoiding hardcoding credentials in tests
+
+It's a bad practice to hardcode data such as emails, usernames, and passwords in
+test code.
+
+```dart
+await $(#nameTextField).enterText('Bartek'); // bad!
+await $(#passwordTextField).enterText('ny4ncat'); // bad as well!
+```
+
+To fix this, we recommend to remove the hardcoded credentials from test code and
+provide them through the environemnt:
+
+```dart
+await $(#nameTextField).enterText(String.fromEnvironment('USERNAME'));
+await $(#passwordTextField).enterText(String.fromEnvironment('PASSWORD'));
+```
+
+To set `USERNAME` and `PASSWORD`, use `--dart-define`:
+
+```console
+$ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
+```

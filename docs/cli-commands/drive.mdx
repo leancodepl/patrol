@@ -16,3 +16,27 @@ This command is the one use you'll be using most often.
 
 It does all the low-level things required to enable interacting with native OS,
 such as tapping on permission dialgos, notifications, and controlling Wi-Fi.
+
+### Discussion
+
+By default, `patrol drive` runs all integration tests (files ending with
+`_test.dart` located in the `integration_test` directory).
+
+To run a single test, use `--target`:
+
+```console
+$ patrol drive --target integration_test/login_test.dart
+```
+
+You can use `--target` more than once to run multiple tests:
+
+```console
+$ patrol drive \
+    --target integration_test/login_test.dart \
+    --target integration_test/change_profile_picture_test.dart
+```
+
+Test files must end with `_test.dart`. Otherwise the file is not considered a
+test and is not run.
+
+There's no difference between `--target` and `--targets`.
