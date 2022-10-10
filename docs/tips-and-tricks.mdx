@@ -7,7 +7,7 @@ these one-liners for you:
 
 **Bash**
 
-```console
+```bash
 $ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
 ```
 
@@ -25,19 +25,19 @@ view you want to act on.
 
 ### Android
 
-```console
+```bash
 $ adb shell uiautomator dump
 ```
 
 Then, copy the dump file from the device to your machine:
 
-```console
+```bash
 $ adb pull /sdcard/window_dump.xml .
 ```
 
 ### iOS
 
-```console
+```bash
 $ idb ui describe-all
 ```
 
@@ -61,6 +61,6 @@ await $(#passwordTextField).enterText(String.fromEnvironment('PASSWORD'));
 
 To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 
-```console
+```bash
 $ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
 ```
