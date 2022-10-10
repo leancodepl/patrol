@@ -1,6 +1,8 @@
-"p: adb":
+"package: adb":
   - packages/adb/**/*
-"p: patrol_cli":
+"package: patrol_cli":
   - packages/patrol_cli/**/*
-"p: patrol":
+"package: patrol":
   - packages/patrol/**/*
+"docs":
+  - docs/**/*
