@@ -4,8 +4,9 @@ package patrol;
 option java_package = "pl.leancode.automatorserver.contracts";
 
 service NativeAutomator {
-  // general
+  rpc configure(ConfigureRequest) returns (Empty) {}
 
+  // general
   rpc pressHome(Empty) returns (Empty) {}
   rpc pressBack(Empty) returns (Empty) {}
   rpc pressRecentApps(Empty) returns (Empty) {}
@@ -46,6 +47,10 @@ service NativeAutomator {
   // other
 
   rpc debug(Empty) returns (Empty) {}
+}
+
+message ConfigureRequest {
+  uint64 findTimeout = 1;
 }
 
 message OpenAppRequest { string appId = 1; }

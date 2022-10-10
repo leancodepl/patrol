@@ -35,6 +35,10 @@ public object NativeAutomatorGrpcKt {
   public val serviceDescriptor: ServiceDescriptor
     get() = NativeAutomatorGrpc.getServiceDescriptor()
 
+  public val configureMethod: MethodDescriptor<Contracts.ConfigureRequest, Contracts.Empty>
+    @JvmStatic
+    get() = NativeAutomatorGrpc.getConfigureMethod()
+
   public val pressHomeMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
     get() = NativeAutomatorGrpc.getPressHomeMethod()
@@ -167,6 +171,27 @@ public object NativeAutomatorGrpcKt {
   ) : AbstractCoroutineStub<NativeAutomatorCoroutineStub>(channel, callOptions) {
     public override fun build(channel: Channel, callOptions: CallOptions):
         NativeAutomatorCoroutineStub = NativeAutomatorCoroutineStub(channel, callOptions)
+
+    /**
+     * Executes this RPC and returns the response message, suspending until the RPC completes
+     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
+     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
+     * with the corresponding exception as a cause.
+     *
+     * @param request The request message to send to the server.
+     *
+     * @param headers Metadata to attach to the request.  Most users will not need this.
+     *
+     * @return The single response from the server.
+     */
+    public suspend fun configure(request: Contracts.ConfigureRequest, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
+      channel,
+      NativeAutomatorGrpc.getConfigureMethod(),
+      request,
+      callOptions,
+      headers
+    )
 
     /**
      * Executes this RPC and returns the response message, suspending until the RPC completes
@@ -785,6 +810,20 @@ public object NativeAutomatorGrpcKt {
     coroutineContext: CoroutineContext = EmptyCoroutineContext,
   ) : AbstractCoroutineServerImpl(coroutineContext) {
     /**
+     * Returns the response to an RPC for patrol.NativeAutomator.configure.
+     *
+     * If this method fails with a [StatusException], the RPC will fail with the corresponding
+     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
+     * will fail
+     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
+     * fail with `Status.UNKNOWN` with the exception as a cause.
+     *
+     * @param request The request from the client.
+     */
+    public open suspend fun configure(request: Contracts.ConfigureRequest): Contracts.Empty = throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.configure is unimplemented"))
+
+    /**
      * Returns the response to an RPC for patrol.NativeAutomator.pressHome.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
@@ -1201,6 +1240,11 @@ public object NativeAutomatorGrpcKt {
 
     public final override fun bindService(): ServerServiceDefinition =
         builder(getServiceDescriptor())
+      .addMethod(unaryServerMethodDefinition(
+      context = this.context,
+      descriptor = NativeAutomatorGrpc.getConfigureMethod(),
+      implementation = ::configure
+    ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
       descriptor = NativeAutomatorGrpc.getPressHomeMethod(),

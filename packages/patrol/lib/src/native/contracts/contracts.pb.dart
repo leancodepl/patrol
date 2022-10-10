@@ -7,11 +7,82 @@
 
 import 'dart:core' as $core;
 
+import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'contracts.pbenum.dart';
 
 export 'contracts.pbenum.dart';
+
+class ConfigureRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ConfigureRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..a<$fixnum.Int64>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'findTimeout',
+        $pb.PbFieldType.OU6,
+        protoName: 'findTimeout',
+        defaultOrMaker: $fixnum.Int64.ZERO)
+    ..hasRequiredFields = false;
+
+  ConfigureRequest._() : super();
+  factory ConfigureRequest({
+    $fixnum.Int64? findTimeout,
+  }) {
+    final _result = create();
+    if (findTimeout != null) {
+      _result.findTimeout = findTimeout;
+    }
+    return _result;
+  }
+  factory ConfigureRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ConfigureRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  ConfigureRequest clone() => ConfigureRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  ConfigureRequest copyWith(void Function(ConfigureRequest) updates) =>
+      super.copyWith((message) => updates(message as ConfigureRequest))
+          as ConfigureRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ConfigureRequest create() => ConfigureRequest._();
+  ConfigureRequest createEmptyInstance() => create();
+  static $pb.PbList<ConfigureRequest> createRepeated() =>
+      $pb.PbList<ConfigureRequest>();
+  @$core.pragma('dart2js:noInline')
+  static ConfigureRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ConfigureRequest>(create);
+  static ConfigureRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get findTimeout => $_getI64(0);
+  @$pb.TagNumber(1)
+  set findTimeout($fixnum.Int64 v) {
+    $_setInt64(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasFindTimeout() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearFindTimeout() => clearField(1);
+}
 
 class OpenAppRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
