@@ -1,4 +1,5 @@
 import GRPC
+import Foundation
 
 typealias Empty = Patrol_Empty
 typealias DefaultResponse = Patrol_Empty
@@ -10,7 +11,8 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_ConfigureRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    return Empty()
+    automation.configure(timeout: TimeInterval(request.findTimeout / 1000))
+    return DefaultResponse()
   }
   
   // MARK: General

@@ -8,7 +8,7 @@ void main() {
   Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
     expect($(#camera).$(#statusText).text, 'Not granted');
     await $('Request camera permission').tap();
-    await $.native.grantPermissionWhenInUse();
+    await $.native.tap(Selector(text: 'While using the app'));
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
   }
@@ -16,7 +16,7 @@ void main() {
   Future<void> requestAndGrantMicrophonePermission(PatrolTester $) async {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
-    await $.native.grantPermissionWhenInUse();
+    await $.native.tap(Selector(text: 'While using the app'));
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
   }

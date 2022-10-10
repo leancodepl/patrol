@@ -1,8 +1,6 @@
 import XCTest
 
 class PatrolAutomation {
-  private static let defaultTimeout = TimeInterval(10)
-  
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
   }()
@@ -14,6 +12,12 @@ class PatrolAutomation {
   private lazy var preferences: XCUIApplication = {
     return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
   }()
+  
+  private var timeout: TimeInterval = 10
+  
+  func configure(timeout: TimeInterval) {
+    self.timeout = timeout
+  }
   
   // MARK: General
   
