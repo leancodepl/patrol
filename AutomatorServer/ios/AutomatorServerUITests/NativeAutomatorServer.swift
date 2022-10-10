@@ -6,6 +6,13 @@ typealias DefaultResponse = Patrol_Empty
 final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   private let automation = PatrolAutomation()
   
+  func configure(
+    request: Patrol_ConfigureRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    return Empty()
+  }
+  
   // MARK: General
   
   func pressHome(
