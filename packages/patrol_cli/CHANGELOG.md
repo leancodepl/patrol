@@ -1,3 +1,8 @@
+## 0.6.15
+
+- Fix trying to run on all attached devices (instead of only the first one) when
+  no device is specified (#442)
+
 ## 0.6.14
 
 - AutomatorServer:
