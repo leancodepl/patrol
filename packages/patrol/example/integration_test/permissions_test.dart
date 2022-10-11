@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -8,7 +10,13 @@ void main() {
   Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
     expect($(#camera).$(#statusText).text, 'Not granted');
     await $('Request camera permission').tap();
-    await $.native.tap(Selector(text: 'While using the app'));
+
+    if (Platform.isAndroid) {
+      await $.native.tap(Selector(text: 'While using the app'));
+    } else {
+      await $.native.tap(Selector(text: 'OK'), appId: 'com.apple.springboard');
+    }
+
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
   }
@@ -16,7 +24,13 @@ void main() {
   Future<void> requestAndGrantMicrophonePermission(PatrolTester $) async {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
-    await $.native.tap(Selector(text: 'While using the app'));
+
+    if (Platform.isAndroid) {
+      await $.native.tap(Selector(text: 'While using the app'));
+    } else {
+      await $.native.tap(Selector(text: 'OK'), appId: 'com.apple.springboard');
+    }
+
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
   }

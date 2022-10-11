@@ -1,4 +1,5 @@
 import XCTest
+import AsyncAlgorithms
 
 class PatrolAutomation {
   private lazy var device: XCUIDevice = {
@@ -61,7 +62,8 @@ class PatrolAutomation {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.descendants(matching: .any)[text]
       
-      guard element.exists else {
+      let exists = element.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
       
@@ -74,7 +76,8 @@ class PatrolAutomation {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.descendants(matching: .any)[text]
       
-      guard element.exists else {
+      let exists = element.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
       
@@ -87,7 +90,8 @@ class PatrolAutomation {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.textFields[text]
       
-      guard element.exists else {
+      let exists = element.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("text field with text \(format: text) in app \(format: bundleId)")
       }
       
@@ -100,7 +104,8 @@ class PatrolAutomation {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.textFields.element(boundBy: index)
       
-      guard element.exists else {
+      let exists = element.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
       }
       
@@ -336,14 +341,19 @@ class PatrolAutomation {
     }
   }
 
+  
   func allowPermissionOnce() throws {
+    // FIXME: work here
+    
     try runAction("allowing once") {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow Once"]
       
+      
       for label in labels {
         Logger.shared.i("checking if button \(format: label) exists")
         let button = systemAlerts.buttons[label]
+        // let exists = button.waitForExistence(timeout: self.timeout)
         if button.exists {
           Logger.shared.i("found button \(format: label)")
           button.tap()
@@ -361,7 +371,8 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let button = systemAlerts.buttons[label]
 
-      guard button.exists else {
+      let exists = button.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("button to deny permission")
       }
       
@@ -374,7 +385,8 @@ class PatrolAutomation {
       let alerts = self.springboard.alerts
       let button = alerts.buttons["Precise: Off"]
       
-      guard button.exists else {
+      let exists = button.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("button to select fine location")
       }
       
@@ -387,7 +399,8 @@ class PatrolAutomation {
       let alerts = self.springboard.alerts
       let button = alerts.buttons["Precise: On"]
       
-      guard button.exists else {
+      let exists = button.waitForExistence(timeout: self.timeout)
+      guard exists else {
         throw PatrolError.viewNotExists("button to select coarse location")
       }
       
@@ -508,5 +521,31 @@ class PatrolAutomation {
 extension String.StringInterpolation {
   mutating func appendInterpolation(format value: String) {
       appendInterpolation("\"\(value)\"")
+  }
+}
+
+actor EagerFinder {
+  private let timeout: TimeInterval
+  
+  var activeJobs: [Task<(XCUIElement, Bool), Never>]
+  
+  init(timeout: TimeInterval) {
+    self.timeout = timeout
+    self.activeJobs = []
+  }
+
+  func addElement(_ element: XCUIElement) async {
+    activeJobs.append(Task {
+      let exists = element.waitForExistence(timeout: self.timeout)
+      return (element, exists)
+    })
+  }
+
+  /// Returns the first found element.
+  ///
+  /// If no element is found, then the second element will be false.
+  func firstFound() async -> (XCUIElement, Bool) {
+    let finishedJob = await Task.select(activeJobs)
+    return await finishedJob.value
   }
 }

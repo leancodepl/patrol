@@ -3,7 +3,6 @@ package pl.leancode.automatorserver
 import android.app.UiAutomation
 import android.os.SystemClock
 import android.widget.EditText
-import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
@@ -13,15 +12,12 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.selects.select
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.nativeView
 import pl.leancode.automatorserver.contracts.notification
-import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
 
 private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
