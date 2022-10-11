@@ -1,6 +1,6 @@
 import XCTest
 
-class PatrolAutomation {
+class Automator {
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
   }()
@@ -14,12 +14,6 @@ class PatrolAutomation {
   }()
   
   private var timeout: TimeInterval = 10
-  
-  private let testCase: XCTestCase
-  
-  init(testCase: XCTestCase) {
-    self.testCase = testCase
-  }
   
   func configure(timeout: TimeInterval) {
     self.timeout = timeout
@@ -330,14 +324,14 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow While Using App"]
       
-      guard let foundLabel = self.waitForAnyElement(
+      guard let button = self.waitForAnyElement(
         elements: labels.map { systemAlerts.buttons[$0] },
         timeout: self.timeout
       ) else {
         throw PatrolError.viewNotExists("button to allow permission only once")
       }
       
-      foundLabel.tap()
+      button.tap()
     }
   }
 
@@ -346,14 +340,14 @@ class PatrolAutomation {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow Once"]
       
-      guard let foundLabel = self.waitForAnyElement(
+      guard let button = self.waitForAnyElement(
         elements: labels.map { systemAlerts.buttons[$0] },
         timeout: self.timeout
       ) else {
         throw PatrolError.viewNotExists("button to allow permission only once")
       }
       
-      foundLabel.tap()
+      button.tap()
     }
   }
 
@@ -454,6 +448,12 @@ class PatrolAutomation {
     return app
   }
   
+  private func swipeToOpenControlCenter() {
+    let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
+    let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
+    start.press(forDuration: 0.1, thenDragTo: end)
+  }
+  
   private func runControlCenterAction(_ log: String, block: @escaping () -> Void) async throws {
     #if targetEnvironment(simulator)
       throw PatrolError.internal("Control Center is not available on Simulator")
@@ -469,12 +469,6 @@ class PatrolAutomation {
       let empty = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.1))
       empty.tap()
     }
-  }
-  
-  private func swipeToOpenControlCenter() {
-    let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
-    let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
-    start.press(forDuration: 0.1, thenDragTo: end)
   }
   
   private func runSettingsAction(

@@ -5,17 +5,17 @@ typealias Empty = Patrol_Empty
 typealias DefaultResponse = Patrol_Empty
 
 final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
-  private let automation: PatrolAutomation
+  private let automator: Automator
   
-  init(automation: PatrolAutomation) {
-    self.automation = automation
+  init(automator: Automator) {
+    self.automator = automator
   }
   
   func configure(
     request: Patrol_ConfigureRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    automation.configure(timeout: TimeInterval(request.findTimeout / 1000))
+    automator.configure(timeout: TimeInterval(request.findTimeout / 1000))
     return DefaultResponse()
   }
   
@@ -26,7 +26,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.pressHome()
+      try await automator.pressHome()
       return DefaultResponse()
     }
   }
@@ -45,7 +45,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.openAppSwitcher()
+      try await automator.openAppSwitcher()
       return DefaultResponse()
     }
   }
@@ -64,7 +64,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.openApp(request.appID)
+      try await automator.openApp(request.appID)
       return DefaultResponse()
     }
   }
@@ -74,7 +74,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await  automation.openControlCenter()
+      try await  automator.openControlCenter()
       return DefaultResponse()
     }
   }
@@ -95,7 +95,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.tap(on: request.selector.text, inApp: request.appID)
+      try await automator.tap(on: request.selector.text, inApp: request.appID)
       return DefaultResponse()
     }
   }
@@ -105,7 +105,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.doubleTap(on: request.selector.text, inApp: request.appID)
+      try await automator.doubleTap(on: request.selector.text, inApp: request.appID)
       return DefaultResponse()
     }
   }
@@ -117,9 +117,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return try await runCatching {
       switch request.findBy {
       case .index(let index):
-        try await automation.enterText(request.data, by: Int(index), inApp: request.appID)
+        try await automator.enterText(request.data, by: Int(index), inApp: request.appID)
       case .selector(let selector):
-        try await automation.enterText(request.data, by: selector.text, inApp: request.appID)
+        try await automator.enterText(request.data, by: selector.text, inApp: request.appID)
       default:
         throw PatrolError.internal("enterText(): neither index nor selector are set")
       }
@@ -144,7 +144,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.enableAirplaneMode()
+      try await automator.enableAirplaneMode()
       return DefaultResponse()
     }
   }
@@ -154,7 +154,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.disableAirplaneMode()
+      try await automator.disableAirplaneMode()
       return DefaultResponse()
     }
   }
@@ -164,7 +164,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.enableWiFi()
+      try await automator.enableWiFi()
       return DefaultResponse()
     }
   }
@@ -174,7 +174,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.disableWiFi()
+      try await automator.disableWiFi()
       return DefaultResponse()
     }
   }
@@ -184,7 +184,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.enableCellular()
+      try await automator.enableCellular()
       return DefaultResponse()
     }
   }
@@ -194,7 +194,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.disableCellular()
+      try await automator.disableCellular()
       return DefaultResponse()
     }
   }
@@ -204,7 +204,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.enableBluetooth()
+      try await automator.enableBluetooth()
       return DefaultResponse()
     }
   }
@@ -214,7 +214,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.disableBluetooth()
+      try await automator.disableBluetooth()
       return DefaultResponse()
     }
   }
@@ -224,7 +224,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.enableDarkMode(request.appID)
+      try await automator.enableDarkMode(request.appID)
       return DefaultResponse()
     }
   }
@@ -234,7 +234,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.disableDarkMode(request.appID)
+      try await automator.disableDarkMode(request.appID)
       return DefaultResponse()
     }
   }
@@ -246,7 +246,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.openNotifications()
+      try await automator.openNotifications()
       return DefaultResponse()
     }
   }
@@ -256,7 +256,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.closeNotifications()
+      try await automator.closeNotifications()
       return DefaultResponse()
     }
   }
@@ -266,7 +266,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.closeHeadsUpNotification()
+      try await automator.closeHeadsUpNotification()
       return DefaultResponse()
     }
   }
@@ -276,7 +276,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_GetNotificationsResponse {
     return try await runCatching {
-      let notifications = try await automation.getNotifications()
+      let notifications = try await automator.getNotifications()
       return Patrol_GetNotificationsResponse.with {
         $0.notifications = notifications
       }
@@ -290,9 +290,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return try await runCatching {
       switch request.findBy {
         case .index(let index):
-          try await automation.tapOnNotification(by: Int(index))
+          try await automator.tapOnNotification(by: Int(index))
         case .selector(let selector):
-          try await automation.tapOnNotification(by: selector.textContains)
+          try await automator.tapOnNotification(by: selector.textContains)
         default:
           throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
       }
@@ -310,11 +310,11 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return try await runCatching {
       switch request.code {
       case .whileUsing:
-        try await automation.allowPermissionWhileUsingApp()
+        try await automator.allowPermissionWhileUsingApp()
       case .onlyThisTime:
-        try await automation.allowPermissionOnce()
+        try await automator.allowPermissionOnce()
       case .denied:
-        try await automation.denyPermission()
+        try await automator.denyPermission()
       case .UNRECOGNIZED:
         throw PatrolError.internal("handlePermissionDialog(): bad permission code")
       }
@@ -330,9 +330,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return try await runCatching {
       switch request.locationAccuracy {
       case .coarse:
-        try await automation.selectCoarseLocation()
+        try await automator.selectCoarseLocation()
       case .fine:
-        try await automation.selectFineLocation()
+        try await automator.selectFineLocation()
       case .UNRECOGNIZED:
         throw PatrolError.internal("unrecognized location accuracy")
       }
@@ -346,7 +346,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automation.debug()
+      try await automator.debug()
       return DefaultResponse()
     }
   }
