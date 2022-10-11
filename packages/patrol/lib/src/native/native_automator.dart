@@ -470,7 +470,7 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Does nothing if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
     await _wrapRequest(
       'grantPermissionWhenInUse',
@@ -483,7 +483,7 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Does nothing if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   ///
   /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
   /// location permission.
@@ -501,7 +501,7 @@ class NativeAutomator {
   /// Denies the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> denyPermission() async {
     await _wrapRequest(
       'denyPermission',
@@ -514,7 +514,7 @@ class NativeAutomator {
   /// Select the "coarse location" (aka "approximate") setting on the currently
   /// visible native permission request dialog.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> selectCoarseLocation() async {
     await _wrapRequest(
       'selectCoarseLocation',
@@ -529,7 +529,7 @@ class NativeAutomator {
   /// Select the "fine location" (aka "precise") setting on the currently
   /// visible native permission request dialog.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> selectFineLocation() async {
     await _wrapRequest(
       'selectFineLocation',

@@ -8,13 +8,10 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.selects.select
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.nativeView
 import pl.leancode.automatorserver.contracts.notification
@@ -51,15 +48,20 @@ private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
 }
 
 class PatrolAutomator private constructor() {
+    // Timeout in milliseconds
+    private var timeout: Long = 10_000
 
     fun configure(waitForSelectorTimeout: Long) {
         val configurator = Configurator.getInstance()
+
+        timeout = waitForSelectorTimeout
         configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
 
         Configurator.getInstance().uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
 
+        Logger.i("Timeout: $timeout ms")
         Logger.i("Android UiAutomator configuration:")
         Logger.i("\twaitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
         Logger.i("\twaitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
@@ -82,17 +84,6 @@ class PatrolAutomator private constructor() {
     }
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
-
-    private fun exists(byResourceId: String): Boolean {
-        Logger.i("Checking if view with resourceId \"$byResourceId\" exists")
-        return if (uiDevice.findObjects(By.res(byResourceId)).isNotEmpty()) {
-            Logger.i("View with resourceId \"$byResourceId\" exists")
-            true
-        } else {
-            Logger.i("View with resourceId \"$byResourceId\" doesn't exist")
-            false
-        }
-    }
 
     fun openApp(packageName: String) {
         val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)
@@ -156,20 +147,23 @@ class PatrolAutomator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun tap(selector: UiSelector) {
-        Logger.d("tap() selector $selector")
+    fun tap(uiSelector: UiSelector, bySelector: BySelector) {
+        Logger.d("tap() selector $uiSelector")
 
-        val uiObject = uiDevice.findObject(selector)
+        waitForSelector(bySelector)
 
+        val uiObject = uiDevice.findObject(uiSelector)
         Logger.d("Clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()
         delay()
     }
 
-    fun doubleTap(selector: UiSelector) {
-        Logger.d("doubleTap() selector $selector")
+    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector) {
+        Logger.d("doubleTap() selector $uiSelector")
 
-        val uiObject = uiDevice.findObject(selector)
+        val uiObject = uiDevice.findObject(uiSelector)
+
+        waitForSelector(bySelector)
 
         Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()
@@ -195,10 +189,12 @@ class PatrolAutomator private constructor() {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(text: String, selector: UiSelector) {
-        Logger.d("enterText(text: $text, selector: $selector)")
+    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector) {
+        Logger.d("enterText(text: $text, selector: $uiSelector)")
 
-        val uiObject = uiDevice.findObject(selector).getFromParent(UiSelector().className(EditText::class.java))
+        waitForSelector(bySelector)
+
+        val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.click()
         uiObject.text = text
 
@@ -337,94 +333,89 @@ class PatrolAutomator private constructor() {
         delay()
     }
 
-    suspend fun waitForObject(bySelector: BySelector) = coroutineScope {
-        uiDevice.findObject(bySelector)
-    }
-
-    suspend fun findFirstVisible(selectors: List<BySelector>) = coroutineScope {
-        val deferreds = mutableListOf<Deferred<UiObject2>>()
-
-        for (bySelector in selectors) {
-            val deferred = async {
-                uiDevice.findObject(bySelector)
-            }
-            deferreds.add(deferred)
-        }
-
-        select<UiObject2?> {
-            waitForObject().
-        }
-
-        deferreds.
-    }
-
-    suspend fun allowPermissionWhileUsingApp(): Unit = coroutineScope {
-        val identifiers = listOf(
+    fun allowPermissionWhileUsingApp() {
+        val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
         )
 
-        for (identifier in identifiers) {
-            if (exists(identifier)) {
-                uiDevice.findObject(UiSelector().resourceId(identifier)).click()
+        val uiObject = waitForUiObjectByResourceId(*identifiers)
+            ?: throw UiObjectNotFoundException("button to allow permission while using")
 
-            }
-        }
-
-        throw UiObjectNotFoundException("button to allow permission while using")
-
+        uiObject.click()
     }
 
     fun allowPermissionOnce() {
-        val identifiers = listOf(
+        val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
         )
 
-        for (identifier in identifiers) {
-            if (exists(identifier)) {
-                uiDevice.findObject(UiSelector().resourceId(identifier)).click()
-                return
-            }
-        }
+        val uiObject = waitForUiObjectByResourceId(*identifiers)
+            ?: throw UiObjectNotFoundException("button to allow permission once")
 
-        throw UiObjectNotFoundException("button to allow permission once")
+        uiObject.click()
     }
 
     fun denyPermission() {
-        val identifiers = listOf(
+        val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button",
             "com.android.permissioncontroller:id/permission_deny_button",
         )
 
-        for (identifier in identifiers) {
-            if (exists(identifier)) {
-                uiDevice.findObject(UiSelector().resourceId(identifier)).click()
-                return
-            }
-        }
+        val uiObject = waitForUiObjectByResourceId(*identifiers)
+            ?: throw UiObjectNotFoundException("button to deny permission")
 
-        throw UiObjectNotFoundException("button to deny permission")
+        uiObject.click()
     }
 
     fun selectFineLocation() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
-        if (uiDevice.findObjects(By.res(resourceId)).isNotEmpty()) {
-            uiDevice.findObject(UiSelector().resourceId(resourceId)).click()
-        } else {
-            throw UiObjectNotFoundException("button to select fine location")
-        }
+
+        val uiObject = waitForUiObjectByResourceId(resourceId)
+            ?: throw UiObjectNotFoundException("button to select fine location")
+
+        uiObject.click()
     }
 
     fun selectCoarseLocation() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
-        if (uiDevice.findObjects(By.res(resourceId)).isNotEmpty()) {
-            uiDevice.findObject(UiSelector().resourceId(resourceId)).click()
-        } else {
-            throw UiObjectNotFoundException("button to select coarse location")
+
+        val uiObject = waitForUiObjectByResourceId(resourceId)
+            ?: throw UiObjectNotFoundException("button to select coarse location")
+
+        uiObject.click()
+    }
+
+    private fun waitForSelector(bySelector: BySelector) {
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < timeout) {
+            if (uiDevice.findObjects(bySelector).isNotEmpty()) {
+                return
+            }
+
+            delay(ms = 500)
         }
+
+        throw UiObjectNotFoundException("$bySelector")
+    }
+
+    private fun waitForUiObjectByResourceId(vararg identifiers: String): UiObject? {
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < timeout) {
+            for (ident in identifiers) {
+                val bySelector = By.res(ident)
+                if (uiDevice.findObjects(bySelector).isNotEmpty()) {
+                    return uiDevice.findObject(UiSelector().resourceId(ident))
+                }
+            }
+
+            delay(ms = 500)
+        }
+
+        return null
     }
 
     companion object {

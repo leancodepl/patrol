@@ -119,19 +119,32 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
     }
 
     override suspend fun tap(request: Contracts.TapRequest): Empty {
-        automation.tap(selector = request.selector.toUiSelector())
+        automation.tap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+        )
+
         return empty { }
     }
 
     override suspend fun doubleTap(request: Contracts.TapRequest): Empty {
-        automation.doubleTap(selector = request.selector.toUiSelector())
+        automation.doubleTap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+        )
+
         return empty { }
     }
 
     override suspend fun enterText(request: Contracts.EnterTextRequest): Empty {
         when (request.findByCase) {
             INDEX -> automation.enterText(text = request.data, index = request.index)
-            SELECTOR -> automation.enterText(text = request.data, selector = request.selector.toUiSelector())
+            SELECTOR -> automation.enterText(
+                text = request.data,
+                uiSelector = request.selector.toUiSelector(),
+                bySelector = request.selector.toBySelector(),
+            )
+
             else -> throw PatrolException("enterText(): neither index nor selector are set")
         }
 

@@ -12,7 +12,6 @@
 		98245C1728E8C9FA000501D5 /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98245C1528E8C9FA000501D5 /* contracts.grpc.swift */; };
 		98245C1828E8C9FA000501D5 /* contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98245C1628E8C9FA000501D5 /* contracts.pb.swift */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
-		9856C92228F5ACDE00A536DF /* AsyncAlgorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 9856C92128F5ACDE00A536DF /* AsyncAlgorithms */; };
 		988FE74C28A5138800EA2141 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 988FE74B28A5138800EA2141 /* Errors.swift */; };
 		98B365452890333D008B5B8B /* ServerLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B365442890333D008B5B8B /* ServerLoop.swift */; };
 		98B3654728903353008B5B8B /* PatrolServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98B3654628903353008B5B8B /* PatrolServer.swift */; };
@@ -70,7 +69,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9856C92228F5ACDE00A536DF /* AsyncAlgorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,7 +161,6 @@
 			);
 			name = AutomatorServer;
 			packageProductDependencies = (
-				9856C92128F5ACDE00A536DF /* AsyncAlgorithms */,
 			);
 			productName = AutomatorServer;
 			productReference = 98E9E57D288FFC0900B62271 /* AutomatorServer.app */;
@@ -201,7 +198,6 @@
 			packageReferences = (
 				98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */,
 				9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */,
-				9856C92028F5ACDE00A536DF /* XCRemoteSwiftPackageReference "swift-async-algorithms" */,
 			);
 			productRefGroup = 98E9E57E288FFC0900B62271 /* Products */;
 			projectDirPath = "";
@@ -549,14 +545,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		9856C92028F5ACDE00A536DF /* XCRemoteSwiftPackageReference "swift-async-algorithms" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-async-algorithms";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.3;
-			};
-		};
 		98DB0A4F28DB5B2A00A042FA /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-protobuf.git";
@@ -572,11 +560,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9816533928DDF4AF00C2BB4C /* XCRemoteSwiftPackageReference "grpc-swift" */;
 			productName = GRPC;
-		};
-		9856C92128F5ACDE00A536DF /* AsyncAlgorithms */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 9856C92028F5ACDE00A536DF /* XCRemoteSwiftPackageReference "swift-async-algorithms" */;
-			productName = AsyncAlgorithms;
 		};
 		98DB0A5828DB67B000A042FA /* SwiftProtobuf */ = {
 			isa = XCSwiftPackageProductDependency;
