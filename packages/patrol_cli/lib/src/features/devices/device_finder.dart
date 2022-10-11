@@ -74,11 +74,11 @@ class DeviceFinder {
     }
 
     if (wantDevices.isEmpty) {
-      final firstDeviceName = attachedDevices.first.resolvedName;
+      final firstDevice = attachedDevices.first;
       _logger.info(
-        'No device specified, using the first one ($firstDeviceName)',
+        'No device specified, using the first one (${firstDevice.resolvedName})',
       );
-      return attachedDevices;
+      return [firstDevice];
     }
 
     if (wantDevices.contains('all')) {
