@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -11,11 +9,13 @@ void main() {
     expect($(#camera).$(#statusText).text, 'Not granted');
     await $('Request camera permission').tap();
 
-    if (Platform.isAndroid) {
-      await $.native.tap(Selector(text: 'While using the app'));
-    } else {
-      await $.native.tap(Selector(text: 'OK'), appId: 'com.apple.springboard');
-    }
+    await $.native.grantPermissionWhenInUse();
+
+    // if (Platform.isAndroid) {
+    //   await $.native.tap(Selector(text: 'While using the app'));
+    // } else {
+    //   await $.native.tap(Selector(text: 'OK'), appId: 'com.apple.springboard');
+    // }
 
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
@@ -25,11 +25,12 @@ void main() {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
 
-    if (Platform.isAndroid) {
-      await $.native.tap(Selector(text: 'While using the app'));
-    } else {
-      await $.native.tap(Selector(text: 'OK'), appId: 'com.apple.springboard');
-    }
+    await $.native.grantPermissionWhenInUse();
+    // if (Platform.isAndroid) {
+    //   await $.native.tap(Selector(text: 'While using the app'));
+    // } else {
+    //   await $.native.tap(Selector(text: 'OK'), appId: 'com.apple.springboard');
+    // }
 
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
