@@ -1,5 +1,7 @@
 import 'dart:io' as io;
 
+import 'package:fixnum/fixnum.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/src/native/binding.dart';
@@ -42,12 +44,17 @@ enum Binding {
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
   NativeAutomator({
-    this.timeout = const Duration(seconds: 10),
+    this.connectionTimeout = const Duration(seconds: 20),
+    this.findTimeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
     Binding binding = Binding.patrol,
-  })  : _logger = logger,
+  })  : assert(
+          connectionTimeout > findTimeout,
+          'find timeout is longer than connection timeout',
+        ),
+        _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
           defaultValue: 'localhost',
@@ -80,7 +87,7 @@ class NativeAutomator {
 
     _client = NativeAutomatorClient(
       channel,
-      options: CallOptions(timeout: timeout),
+      options: CallOptions(timeout: connectionTimeout),
     );
 
     switch (binding) {
@@ -106,8 +113,12 @@ class NativeAutomator {
   /// Port on [host] on which Patrol server instrumentation is running.
   final String port;
 
-  /// Timeout for HTTP requests to Patrol automation server.
-  final Duration timeout;
+  /// Timeout for requests to Patrol automation server. It must be bigger than
+  /// [findTimeout].
+  final Duration connectionTimeout;
+
+  /// Time to wait for native views to appear.
+  final Duration findTimeout;
 
   /// Unique identifier of the app under test on Android.
   late final String packageName;
@@ -142,6 +153,18 @@ class NativeAutomator {
       _logger('$name() failed');
       rethrow;
     }
+  }
+
+  /// Configures the native automator.
+  ///
+  /// Must be called before using any native features.
+  Future<void> configure() async {
+    await _wrapRequest(
+      'configure',
+      () => _client.configure(
+        ConfigureRequest(findTimeout: Int64(findTimeout.inMilliseconds)),
+      ),
+    );
   }
 
   /// Presses the back button.
@@ -447,7 +470,7 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Does nothing if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
     await _wrapRequest(
       'grantPermissionWhenInUse',
@@ -460,7 +483,7 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Does nothing if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   ///
   /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
   /// location permission.
@@ -478,7 +501,7 @@ class NativeAutomator {
   /// Denies the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> denyPermission() async {
     await _wrapRequest(
       'denyPermission',
@@ -491,7 +514,7 @@ class NativeAutomator {
   /// Select the "coarse location" (aka "approximate") setting on the currently
   /// visible native permission request dialog.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> selectCoarseLocation() async {
     await _wrapRequest(
       'selectCoarseLocation',
@@ -506,7 +529,7 @@ class NativeAutomator {
   /// Select the "fine location" (aka "precise") setting on the currently
   /// visible native permission request dialog.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> selectFineLocation() async {
     await _wrapRequest(
       'selectFineLocation',

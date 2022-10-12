@@ -26,12 +26,15 @@ import NIOConcurrencyHelpers
 import SwiftProtobuf
 
 
-/// general
-///
 /// Usage: instantiate `Patrol_NativeAutomatorClient`, then call methods of this protocol to make API calls.
 internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
   var serviceName: String { get }
   var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? { get }
+
+  func configure(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_ConfigureRequest, Patrol_Empty>
 
   func pressHome(
     _ request: Patrol_Empty,
@@ -184,7 +187,25 @@ extension Patrol_NativeAutomatorClientProtocol {
     return "patrol.NativeAutomator"
   }
 
-  /// Unary call to pressHome
+  /// Unary call to configure
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to configure.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func configure(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_ConfigureRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
+    )
+  }
+
+  /// general
   ///
   /// - Parameters:
   ///   - request: Request to send to pressHome.
@@ -767,11 +788,15 @@ internal struct Patrol_NativeAutomatorNIOClient: Patrol_NativeAutomatorClientPro
 }
 
 #if compiler(>=5.6)
-/// general
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
   static var serviceDescriptor: GRPCServiceDescriptor { get }
   var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? { get }
+
+  func makeConfigureCall(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_ConfigureRequest, Patrol_Empty>
 
   func makePressHomeCall(
     _ request: Patrol_Empty,
@@ -927,6 +952,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
 
   internal var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? {
     return nil
+  }
+
+  internal func makeConfigureCall(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_ConfigureRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
+    )
   }
 
   internal func makePressHomeCall(
@@ -1280,6 +1317,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension Patrol_NativeAutomatorAsyncClientProtocol {
+  internal func configure(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
+    )
+  }
+
   internal func pressHome(
     _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
@@ -1650,6 +1699,9 @@ internal struct Patrol_NativeAutomatorAsyncClient: Patrol_NativeAutomatorAsyncCl
 
 internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSendable {
 
+  /// - Returns: Interceptors to use when invoking 'configure'.
+  func makeconfigureInterceptors() -> [ClientInterceptor<Patrol_ConfigureRequest, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when invoking 'pressHome'.
   func makepressHomeInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
@@ -1743,6 +1795,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     name: "NativeAutomator",
     fullName: "patrol.NativeAutomator",
     methods: [
+      Patrol_NativeAutomatorClientMetadata.Methods.configure,
       Patrol_NativeAutomatorClientMetadata.Methods.pressHome,
       Patrol_NativeAutomatorClientMetadata.Methods.pressBack,
       Patrol_NativeAutomatorClientMetadata.Methods.pressRecentApps,
@@ -1776,6 +1829,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
   )
 
   internal enum Methods {
+    internal static let configure = GRPCMethodDescriptor(
+      name: "configure",
+      path: "/patrol.NativeAutomator/configure",
+      type: GRPCCallType.unary
+    )
+
     internal static let pressHome = GRPCMethodDescriptor(
       name: "pressHome",
       path: "/patrol.NativeAutomator/pressHome",
@@ -1952,12 +2011,13 @@ internal enum Patrol_NativeAutomatorClientMetadata {
   }
 }
 
-/// general
-///
 /// To build a server, implement a class that conforms to this protocol.
 internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? { get }
 
+  func configure(request: Patrol_ConfigureRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  /// general
   func pressHome(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func pressBack(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
@@ -2033,6 +2093,15 @@ extension Patrol_NativeAutomatorProvider {
     context: CallHandlerContext
   ) -> GRPCServerHandlerProtocol? {
     switch name {
+    case "configure":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_ConfigureRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeconfigureInterceptors() ?? [],
+        userFunction: self.configure(request:context:)
+      )
+
     case "pressHome":
       return UnaryServerHandler(
         context: context,
@@ -2302,14 +2371,18 @@ extension Patrol_NativeAutomatorProvider {
 
 #if compiler(>=5.6)
 
-/// general
-///
 /// To implement a server, implement an object which conforms to this protocol.
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
   static var serviceDescriptor: GRPCServiceDescriptor { get }
   var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? { get }
 
+  @Sendable func configure(
+    request: Patrol_ConfigureRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  /// general
   @Sendable func pressHome(
     request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
@@ -2479,6 +2552,15 @@ extension Patrol_NativeAutomatorAsyncProvider {
     context: CallHandlerContext
   ) -> GRPCServerHandlerProtocol? {
     switch name {
+    case "configure":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_ConfigureRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeconfigureInterceptors() ?? [],
+        wrapping: self.configure(request:context:)
+      )
+
     case "pressHome":
       return GRPCAsyncServerHandler(
         context: context,
@@ -2750,6 +2832,10 @@ extension Patrol_NativeAutomatorAsyncProvider {
 
 internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
+  /// - Returns: Interceptors to use when handling 'configure'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makeconfigureInterceptors() -> [ServerInterceptor<Patrol_ConfigureRequest, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when handling 'pressHome'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makepressHomeInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
@@ -2872,6 +2958,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     name: "NativeAutomator",
     fullName: "patrol.NativeAutomator",
     methods: [
+      Patrol_NativeAutomatorServerMetadata.Methods.configure,
       Patrol_NativeAutomatorServerMetadata.Methods.pressHome,
       Patrol_NativeAutomatorServerMetadata.Methods.pressBack,
       Patrol_NativeAutomatorServerMetadata.Methods.pressRecentApps,
@@ -2905,6 +2992,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
   )
 
   internal enum Methods {
+    internal static let configure = GRPCMethodDescriptor(
+      name: "configure",
+      path: "/patrol.NativeAutomator/configure",
+      type: GRPCCallType.unary
+    )
+
     internal static let pressHome = GRPCMethodDescriptor(
       name: "pressHome",
       path: "/patrol.NativeAutomator/pressHome",

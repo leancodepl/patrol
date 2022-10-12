@@ -7,16 +7,20 @@ import 'config.dart';
 void main() {
   Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
     expect($(#camera).$(#statusText).text, 'Not granted');
+
     await $('Request camera permission').tap();
     await $.native.grantPermissionWhenInUse();
+
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
   }
 
   Future<void> requestAndGrantMicrophonePermission(PatrolTester $) async {
     expect($(#microphone).$(#statusText).text, 'Not granted');
+
     await $('Request microphone permission').tap();
     await $.native.grantPermissionWhenInUse();
+
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
   }

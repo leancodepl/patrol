@@ -18,6 +18,11 @@ typealias Empty = Contracts.Empty
 class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
     private val automation = PatrolAutomator.instance
 
+    override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
+        automation.configure(waitForSelectorTimeout = request.findTimeout)
+        return empty { }
+    }
+
     override suspend fun pressHome(request: Empty): Empty {
         automation.pressHome()
         return empty { }
@@ -63,42 +68,42 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
-    override suspend fun enableAirplaneMode(request: Contracts.Empty): Empty {
+    override suspend fun enableAirplaneMode(request: Empty): Empty {
         automation.enableAirplaneMode()
         return empty {}
     }
 
-    override suspend fun disableAirplaneMode(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun disableAirplaneMode(request: Empty): Empty {
         automation.disableAirplaneMode()
         return empty {}
     }
 
-    override suspend fun enableCellular(request: Contracts.Empty): Empty {
+    override suspend fun enableCellular(request: Empty): Empty {
         automation.enableCellular()
         return empty { }
     }
 
-    override suspend fun disableCellular(request: Contracts.Empty): Empty {
+    override suspend fun disableCellular(request: Empty): Empty {
         automation.disableCellular()
         return empty { }
     }
 
-    override suspend fun enableWiFi(request: Contracts.Empty): Empty {
+    override suspend fun enableWiFi(request: Empty): Empty {
         automation.enableWifi()
         return empty { }
     }
 
-    override suspend fun disableWiFi(request: Contracts.Empty): Empty {
+    override suspend fun disableWiFi(request: Empty): Empty {
         automation.disableWifi()
         return empty { }
     }
 
-    override suspend fun enableBluetooth(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun enableBluetooth(request: Empty): Empty {
         automation.enableBluetooth()
         return empty { }
     }
 
-    override suspend fun disableBluetooth(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun disableBluetooth(request: Empty): Empty {
         automation.disableBluetooth()
         return empty { }
     }
@@ -114,19 +119,32 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
     }
 
     override suspend fun tap(request: Contracts.TapRequest): Empty {
-        automation.tap(selector = request.selector.toUiSelector())
+        automation.tap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+        )
+
         return empty { }
     }
 
     override suspend fun doubleTap(request: Contracts.TapRequest): Empty {
-        automation.doubleTap(selector = request.selector.toUiSelector())
+        automation.doubleTap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+        )
+
         return empty { }
     }
 
     override suspend fun enterText(request: Contracts.EnterTextRequest): Empty {
         when (request.findByCase) {
             INDEX -> automation.enterText(text = request.data, index = request.index)
-            SELECTOR -> automation.enterText(text = request.data, selector = request.selector.toUiSelector())
+            SELECTOR -> automation.enterText(
+                text = request.data,
+                uiSelector = request.selector.toUiSelector(),
+                bySelector = request.selector.toBySelector(),
+            )
+
             else -> throw PatrolException("enterText(): neither index nor selector are set")
         }
 
