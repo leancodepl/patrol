@@ -48,20 +48,19 @@ private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
 }
 
 class PatrolAutomator private constructor() {
-    // Timeout in milliseconds
-    private var timeout: Long = 10_000
+    private var timeoutMillis: Long = 10_000
 
     fun configure(waitForSelectorTimeout: Long) {
         val configurator = Configurator.getInstance()
 
-        timeout = waitForSelectorTimeout
+        timeoutMillis = waitForSelectorTimeout
         configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
 
         Configurator.getInstance().uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
 
-        Logger.i("Timeout: $timeout ms")
+        Logger.i("Timeout: $timeoutMillis ms")
         Logger.i("Android UiAutomator configuration:")
         Logger.i("\twaitForSelectorTimeout: ${configurator.waitForSelectorTimeout} ms")
         Logger.i("\twaitForIdleTimeout: ${configurator.waitForIdleTimeout} ms")
@@ -395,10 +394,10 @@ class PatrolAutomator private constructor() {
         uiObject.click()
     }
 
-    /// Returns true if selector found something withing timeout, false otherwise.
+    // Returns true if selector found something withing timeout, false otherwise.
     private fun waitForSelector(bySelector: BySelector): Boolean {
         val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeout) {
+        while (System.currentTimeMillis() - startTime < timeoutMillis) {
             if (uiDevice.findObjects(bySelector).isNotEmpty()) {
                 return true
             }
@@ -411,7 +410,7 @@ class PatrolAutomator private constructor() {
 
     private fun waitForUiObjectByResourceId(vararg identifiers: String): UiObject? {
         val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeout) {
+        while (System.currentTimeMillis() - startTime < timeoutMillis) {
             for (ident in identifiers) {
                 val bySelector = By.res(ident)
                 if (uiDevice.findObjects(bySelector).isNotEmpty()) {
