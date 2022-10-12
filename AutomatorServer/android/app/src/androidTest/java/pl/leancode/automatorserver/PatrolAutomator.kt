@@ -148,9 +148,11 @@ class PatrolAutomator private constructor() {
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector) {
-        Logger.d("tap() selector $uiSelector")
+        Logger.d("tap(): $uiSelector, $bySelector")
 
-        waitForSelector(bySelector)
+        if (!waitForSelector(bySelector)) {
+            throw UiObjectNotFoundException("$uiSelector")
+        }
 
         val uiObject = uiDevice.findObject(uiSelector)
         Logger.d("Clicking on UIObject with text: ${uiObject.text}")
@@ -159,11 +161,13 @@ class PatrolAutomator private constructor() {
     }
 
     fun doubleTap(uiSelector: UiSelector, bySelector: BySelector) {
-        Logger.d("doubleTap() selector $uiSelector")
+        Logger.d("doubleTap(): $uiSelector, $bySelector")
 
         val uiObject = uiDevice.findObject(uiSelector)
 
-        waitForSelector(bySelector)
+        if (!waitForSelector(bySelector)) {
+            throw UiObjectNotFoundException("$uiSelector")
+        }
 
         Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
         uiObject.click()
@@ -190,9 +194,11 @@ class PatrolAutomator private constructor() {
     }
 
     fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector) {
-        Logger.d("enterText(text: $text, selector: $uiSelector)")
+        Logger.d("enterText($text): $uiSelector, $bySelector")
 
-        waitForSelector(bySelector)
+        if (!waitForSelector(bySelector)) {
+            throw UiObjectNotFoundException("$uiSelector")
+        }
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
         uiObject.click()
@@ -337,7 +343,7 @@ class PatrolAutomator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers)
@@ -389,17 +395,18 @@ class PatrolAutomator private constructor() {
         uiObject.click()
     }
 
-    private fun waitForSelector(bySelector: BySelector) {
+    /// Returns true if selector found something withing timeout, false otherwise.
+    private fun waitForSelector(bySelector: BySelector): Boolean {
         val startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < timeout) {
             if (uiDevice.findObjects(bySelector).isNotEmpty()) {
-                return
+                return true
             }
 
             delay(ms = 500)
         }
 
-        throw UiObjectNotFoundException("$bySelector")
+        return false
     }
 
     private fun waitForUiObjectByResourceId(vararg identifiers: String): UiObject? {
