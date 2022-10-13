@@ -467,6 +467,17 @@ class NativeAutomator {
     return response.nativeViews;
   }
 
+  /// Checks if a native permission request dialog is visible now and in the
+  /// next 1 second.
+  Future<bool> isPermissionDialogVisible() async {
+    final response = await _wrapRequest(
+      'isPermissionDialogVisible',
+      () => _client.isPermissionDialogVisible(Empty()),
+    );
+
+    return response.visible;
+  }
+
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///

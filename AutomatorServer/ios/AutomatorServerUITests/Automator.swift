@@ -319,6 +319,20 @@ class Automator {
   
   // MARK: Permissions
   
+  func isPermissionDialogVisible() async -> Bool {
+    return await runAction("checking if permission dialog is visible") {
+      let systemAlerts = self.springboard.alerts
+      let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]
+      
+      let button = self.waitForAnyElement(
+        elements: labels.map { systemAlerts.buttons[$0] },
+        timeout: 1
+      )
+      
+      return button != nil
+    }
+  }
+  
   func allowPermissionWhileUsingApp() async throws {
     try await runAction("allowing while using app") {
       let systemAlerts = self.springboard.alerts
@@ -491,11 +505,12 @@ class Automator {
     }
   }
 
-  private func runAction(_ log: String, block: @escaping () throws -> Void) async rethrows {
-    try await MainActor.run {
+  private func runAction<T>(_ log: String, block: @escaping () throws -> T) async rethrows -> T {
+    return try await MainActor.run {
       Logger.shared.i("\(log)...")
-      try block()
+      let result = try block()
       Logger.shared.i("done \(log)")
+      return result
     }
   }
 }

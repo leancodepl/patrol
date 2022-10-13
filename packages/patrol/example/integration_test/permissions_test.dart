@@ -9,7 +9,10 @@ void main() {
     expect($(#camera).$(#statusText).text, 'Not granted');
 
     await $('Request camera permission').tap();
-    await $.native.grantPermissionWhenInUse();
+
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
 
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
@@ -19,7 +22,10 @@ void main() {
     expect($(#microphone).$(#statusText).text, 'Not granted');
 
     await $('Request microphone permission').tap();
-    await $.native.grantPermissionWhenInUse();
+
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
 
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
