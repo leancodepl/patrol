@@ -55,16 +55,18 @@ class Automator {
   // MARK: General UI interaction
   
   func tap(on text: String, inApp bundleId: String) async throws {
-    try await runAction("tapping on text \(text)") {
+    try await runAction("tapping on view with text \(format: text)") {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.descendants(matching: .any)[text]
       
+      Logger.shared.i("waiting for existence of view with text \(format: text)")
       let exists = element.waitForExistence(timeout: self.timeout)
       guard exists else {
         throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
+      Logger.shared.i("found view with text \(format: text), will tap on it")
       
-      element.firstMatch.tap()
+      element.firstMatch.forceTap()
     }
   }
 
@@ -78,7 +80,7 @@ class Automator {
         throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
       
-      element.firstMatch.tap()
+      element.firstMatch.forceTap()
     }
   }
 
@@ -106,7 +108,7 @@ class Automator {
         throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
       }
       
-      element.firstMatch.tap()
+      element.firstMatch.forceTap()
       element.firstMatch.typeText(data)
     }
   }
@@ -506,5 +508,17 @@ class Automator {
 extension String.StringInterpolation {
   mutating func appendInterpolation(format value: String) {
       appendInterpolation("\"\(value)\"")
+  }
+}
+
+// Adapted from https://samwize.com/2016/02/28/everything-about-xcode-ui-testing-snapshot/
+extension XCUIElement {
+  func forceTap() {
+    if self.isHittable {
+      self.tap()
+    } else {
+      let coordinate = self.coordinate(withNormalizedOffset: CGVectorMake(0.0, 0.0))
+      coordinate.tap()
+    }
   }
 }
