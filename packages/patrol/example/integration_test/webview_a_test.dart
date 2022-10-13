@@ -34,7 +34,7 @@ Future<void> main() async {
 extension PatrolX on NativeAutomator {
   Future<void> waitAndTap(PatrolTester $, Selector selector) async {
     await tap(selector, appId: resolvedAppId);
-    await $.pumpAndSettle();
+    //await $.pumpAndSettle();
   }
 
   Future<void> waitAndEnterText(
@@ -43,7 +43,7 @@ extension PatrolX on NativeAutomator {
     required String text,
   }) async {
     await enterText(selector, text: text, appId: resolvedAppId);
-    await $.pumpAndSettle();
+    //await $.pumpAndSettle();
   }
 
   Future<void> waitAndEnterTextByIndex(
@@ -53,6 +53,6 @@ extension PatrolX on NativeAutomator {
     required int index,
   }) async {
     await enterTextByIndex(text, index: index, appId: resolvedAppId);
-    await $.pumpAndSettle();
+    //await $.pumpAndSettle();
   }
 }
