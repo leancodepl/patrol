@@ -165,14 +165,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const PermissionsScreen(),
-              ),
-            ),
-            child: const Text('Open permissions screen'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
                 builder: (_) => const ScrollingScreen(),
               ),
             ),
@@ -193,6 +185,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               ),
             ),
             child: const Text('Open webview screen B'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const PermissionsScreen(),
+              ),
+            ),
+            child: const Text('Open permissions screen'),
           ),
         ],
       ),
