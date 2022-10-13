@@ -264,6 +264,18 @@ const SetLocationAccuracyRequest_LocationAccuracy$json = const {
 final $typed_data.Uint8List setLocationAccuracyRequestDescriptor =
     $convert.base64Decode(
         'ChpTZXRMb2NhdGlvbkFjY3VyYWN5UmVxdWVzdBJfChBsb2NhdGlvbkFjY3VyYWN5GAEgASgOMjMucGF0cm9sLlNldExvY2F0aW9uQWNjdXJhY3lSZXF1ZXN0LkxvY2F0aW9uQWNjdXJhY3lSEGxvY2F0aW9uQWNjdXJhY3kiKAoQTG9jYXRpb25BY2N1cmFjeRIKCgZDT0FSU0UQABIICgRGSU5FEAE=');
+@$core.Deprecated('Use permissionDialogVisibleResponseDescriptor instead')
+const PermissionDialogVisibleResponse$json = const {
+  '1': 'PermissionDialogVisibleResponse',
+  '2': const [
+    const {'1': 'visible', '3': 1, '4': 1, '5': 8, '10': 'visible'},
+  ],
+};
+
+/// Descriptor for `PermissionDialogVisibleResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List permissionDialogVisibleResponseDescriptor =
+    $convert.base64Decode(
+        'Ch9QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlc3BvbnNlEhgKB3Zpc2libGUYASABKAhSB3Zpc2libGU=');
 @$core.Deprecated('Use selectorDescriptor instead')
 const Selector$json = const {
   '1': 'Selector',

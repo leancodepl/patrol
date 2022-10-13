@@ -166,6 +166,11 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
 
+  func isPermissionDialogVisible(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_PermissionDialogVisibleResponse>
+
   func handlePermissionDialog(
     _ request: Patrol_HandlePermissionRequest,
     callOptions: CallOptions?
@@ -676,6 +681,24 @@ extension Patrol_NativeAutomatorClientProtocol {
   /// permissions
   ///
   /// - Parameters:
+  ///   - request: Request to send to isPermissionDialogVisible.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func isPermissionDialogVisible(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_PermissionDialogVisibleResponse> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to handlePermissionDialog
+  ///
+  /// - Parameters:
   ///   - request: Request to send to handlePermissionDialog.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
@@ -927,6 +950,11 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     _ request: Patrol_TapOnNotificationRequest,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
+
+  func makeIsPermissionDialogVisibleCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_PermissionDialogVisibleResponse>
 
   func makeHandlePermissionDialogCall(
     _ request: Patrol_HandlePermissionRequest,
@@ -1275,6 +1303,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
+    )
+  }
+
+  internal func makeIsPermissionDialogVisibleCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_PermissionDialogVisibleResponse> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
     )
   }
 
@@ -1641,6 +1681,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
+  internal func isPermissionDialogVisible(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_PermissionDialogVisibleResponse {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
+    )
+  }
+
   internal func handlePermissionDialog(
     _ request: Patrol_HandlePermissionRequest,
     callOptions: CallOptions? = nil
@@ -1780,6 +1832,9 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'tapOnNotification'.
   func maketapOnNotificationInterceptors() -> [ClientInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when invoking 'isPermissionDialogVisible'.
+  func makeisPermissionDialogVisibleInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_PermissionDialogVisibleResponse>]
+
   /// - Returns: Interceptors to use when invoking 'handlePermissionDialog'.
   func makehandlePermissionDialogInterceptors() -> [ClientInterceptor<Patrol_HandlePermissionRequest, Patrol_Empty>]
 
@@ -1822,6 +1877,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification,
       Patrol_NativeAutomatorClientMetadata.Methods.getNotifications,
       Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification,
+      Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible,
       Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorClientMetadata.Methods.debug,
@@ -1991,6 +2047,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
+    internal static let isPermissionDialogVisible = GRPCMethodDescriptor(
+      name: "isPermissionDialogVisible",
+      path: "/patrol.NativeAutomator/isPermissionDialogVisible",
+      type: GRPCCallType.unary
+    )
+
     internal static let handlePermissionDialog = GRPCMethodDescriptor(
       name: "handlePermissionDialog",
       path: "/patrol.NativeAutomator/handlePermissionDialog",
@@ -2074,6 +2136,8 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   func tapOnNotification(request: Patrol_TapOnNotificationRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// permissions
+  func isPermissionDialogVisible(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_PermissionDialogVisibleResponse>
+
   func handlePermissionDialog(request: Patrol_HandlePermissionRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func setLocationAccuracy(request: Patrol_SetLocationAccuracyRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
@@ -2336,6 +2400,15 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.tapOnNotification(request:context:)
       )
 
+    case "isPermissionDialogVisible":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_PermissionDialogVisibleResponse>(),
+        interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? [],
+        userFunction: self.isPermissionDialogVisible(request:context:)
+      )
+
     case "handlePermissionDialog":
       return UnaryServerHandler(
         context: context,
@@ -2517,6 +2590,11 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
   ) async throws -> Patrol_Empty
 
   /// permissions
+  @Sendable func isPermissionDialogVisible(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_PermissionDialogVisibleResponse
+
   @Sendable func handlePermissionDialog(
     request: Patrol_HandlePermissionRequest,
     context: GRPCAsyncServerCallContext
@@ -2795,6 +2873,15 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.tapOnNotification(request:context:)
       )
 
+    case "isPermissionDialogVisible":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_PermissionDialogVisibleResponse>(),
+        interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? [],
+        wrapping: self.isPermissionDialogVisible(request:context:)
+      )
+
     case "handlePermissionDialog":
       return GRPCAsyncServerHandler(
         context: context,
@@ -2940,6 +3027,10 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func maketapOnNotificationInterceptors() -> [ServerInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when handling 'isPermissionDialogVisible'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makeisPermissionDialogVisibleInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_PermissionDialogVisibleResponse>]
+
   /// - Returns: Interceptors to use when handling 'handlePermissionDialog'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makehandlePermissionDialogInterceptors() -> [ServerInterceptor<Patrol_HandlePermissionRequest, Patrol_Empty>]
@@ -2985,6 +3076,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.closeHeadsUpNotification,
       Patrol_NativeAutomatorServerMetadata.Methods.getNotifications,
       Patrol_NativeAutomatorServerMetadata.Methods.tapOnNotification,
+      Patrol_NativeAutomatorServerMetadata.Methods.isPermissionDialogVisible,
       Patrol_NativeAutomatorServerMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorServerMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorServerMetadata.Methods.debug,
@@ -3151,6 +3243,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let tapOnNotification = GRPCMethodDescriptor(
       name: "tapOnNotification",
       path: "/patrol.NativeAutomator/tapOnNotification",
+      type: GRPCCallType.unary
+    )
+
+    internal static let isPermissionDialogVisible = GRPCMethodDescriptor(
+      name: "isPermissionDialogVisible",
+      path: "/patrol.NativeAutomator/isPermissionDialogVisible",
       type: GRPCCallType.unary
     )
 
