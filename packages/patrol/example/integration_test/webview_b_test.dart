@@ -11,21 +11,22 @@ Future<void> main() async {
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
-      await $('Open webview screen A').scrollTo();
+      await $('Open webview screen B').scrollTo();
 
-      await $.native.tap(Selector(text: 'Open webview screen A'));
+      await $.native.tap(Selector(text: 'Open webview screen B'));
 
       await $.pumpAndSettle();
 
-      await $.native.waitAndTap($, Selector(text: 'Accept cookies'));
-      await $.native.waitAndTap($, Selector(text: 'Select items'));
-      await $.native.waitAndTap($, Selector(text: 'Developer'));
-      await $.native.waitAndTap($, Selector(text: '1 item selected'));
+      await $.native.waitAndTap($, Selector(text: 'login'));
       await $.native.waitAndEnterTextByIndex(
         $,
-        Selector(text: '1 item selected'),
         text: 'test@leancode.pl',
         index: 0,
+      );
+      await $.native.waitAndEnterTextByIndex(
+        $,
+        text: 'ny4ncat',
+        index: 1,
       );
     },
   );
@@ -47,8 +48,7 @@ extension PatrolX on NativeAutomator {
   }
 
   Future<void> waitAndEnterTextByIndex(
-    PatrolTester $,
-    Selector selector, {
+    PatrolTester $, {
     required String text,
     required int index,
   }) async {

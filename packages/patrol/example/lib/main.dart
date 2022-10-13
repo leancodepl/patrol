@@ -184,7 +184,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 builder: (_) => const WebViewScreenA(),
               ),
             ),
-            child: const Text('Open webview screen'),
+            child: const Text('Open webview screen A'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(
