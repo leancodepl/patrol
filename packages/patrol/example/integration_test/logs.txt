@@ -1,0 +1,18 @@
+2022-10-13 17:56:34.463002+0200 AutomatorServerUITests-Runner[11305:1047776] PatrolServer: INFO: entering text "myLogin" by index 0...
+    t =     1.44s Waiting 10.0s for TextField to exist
+    t =     2.46s     Checking `Expect predicate `exists == 1` for object TextField`
+    t =     2.46s         Checking existence of `TextField`
+    t =     2.52s Find the TextField
+    t =     2.57s Tap TextField at {{81.0, 180.0}, {228.0, 33.0}}
+    t =     2.57s     Wait for pl.leancode.patrol.Example to idle
+    t =     2.59s     Find the TextField at {{81.0, 180.0}, {228.0, 33.0}}
+    t =     2.62s     Check for interrupting elements affecting TextField
+    t =     2.65s     Synthesize event
+    t =     2.95s     Wait for pl.leancode.patrol.Example to idle
+    t =     3.07s Type 'myLogin' into TextField
+    t =     3.08s     Wait for pl.leancode.patrol.Example to idle
+    t =     3.11s     Find the TextField
+    t =     3.16s     Check for interrupting elements affecting TextField
+    t =     3.19s     Synthesize event
+    t =     3.52s     Wait for pl.leancode.patrol.Example to idle
+2022-10-13 17:56:36.767774+0200 AutomatorServerUITests-Runner[11305:1047776] PatrolServer: INFO: done entering text "myLogin" by index 0

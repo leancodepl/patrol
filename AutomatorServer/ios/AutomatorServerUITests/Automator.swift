@@ -99,31 +99,47 @@ class Automator {
       element.firstMatch.typeText(data)
     }
   }
-
+  
   func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
     try await runAction("entering text \(format: data) by index \(index)") {
       let app = try self.getApp(withBundleId: bundleId)
       
       
-//      let textFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeTextField'")
-//      let secureTextFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeSecureTextField'")
-//      let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
-//        textFieldPredicate,
-//        secureTextFieldPredicate
-//        ]
+      let textFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeTextField AND exists == 1'")
+      //let secureTextFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeSecureTextField'")
+      //let existsPredicate = NSPredicate(format: "exists == 1")
+//      let predicate = NSCompoundPredicate(
+//        orPredicateWithSubpredicates: [
+//          textFieldPredicate,
+//          //secureTextFieldPredicate
+//          ]
 //      )
-//
-//    let element = app.descendants(matching: .any).matching(textFieldPredicate).element(boundBy: index)
-      let element = app.textFields.element(boundBy: index)
-      let exists = element.waitForExistence(timeout: self.timeout)
-      guard exists else {
-        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
-      }
+
+      let element = app.descendants(matching: .any).matching(textFieldPredicate)
+//      let exists = element.waitForExistence(timeout: self.timeout)
+//      guard exists else {
+//        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
+//      }
       
       element.firstMatch.forceTap()
       element.firstMatch.typeText(data)
     }
   }
+
+//  func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
+//    try await runAction("entering text \(format: data) by index \(index)") {
+//      let app = try self.getApp(withBundleId: bundleId)
+//      let element = app.textFields.element(boundBy: index)
+//
+//      let exists = element.waitForExistence(timeout: self.timeout)
+//      guard exists else {
+//        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
+//      }
+//
+//      element.firstMatch.tap()
+//      element.firstMatch.typeText(data)
+//    }
+//  }
   
   // MARK: Services
 
