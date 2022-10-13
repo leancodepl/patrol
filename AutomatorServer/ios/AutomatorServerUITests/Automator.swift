@@ -89,8 +89,10 @@ class Automator {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.textFields[text]
       
-      let exists = element.waitForExistence(timeout: self.timeout)
-      guard exists else {
+      guard let element = self.waitForAnyElement(
+        elements: [app.textFields[text], app.secureTextFields[text]],
+        timeout: self.timeout
+      ) else {
         throw PatrolError.viewNotExists("text field with text \(format: text) in app \(format: bundleId)")
       }
       
@@ -101,8 +103,18 @@ class Automator {
   func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
     try await runAction("entering text \(format: data) by index \(index)") {
       let app = try self.getApp(withBundleId: bundleId)
-      let element = app.textFields.element(boundBy: index)
       
+      
+//      let textFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeTextField'")
+//      let secureTextFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeSecureTextField'")
+//      let predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
+//        textFieldPredicate,
+//        secureTextFieldPredicate
+//        ]
+//      )
+//
+//    let element = app.descendants(matching: .any).matching(textFieldPredicate).element(boundBy: index)
+      let element = app.textFields.element(boundBy: index)
       let exists = element.waitForExistence(timeout: self.timeout)
       guard exists else {
         throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
