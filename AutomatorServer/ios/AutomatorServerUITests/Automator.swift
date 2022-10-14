@@ -104,36 +104,29 @@ class Automator {
     try await runAction("entering text \(format: data) by index \(index)") {
       let app = try self.getApp(withBundleId: bundleId)
       
+      // elementType must be specified as integer
+      // See:
+      // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
+      // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
       let textFieldPredicate = NSPredicate(format: "elementType == 49")
       let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
       let predicate = NSCompoundPredicate(
         orPredicateWithSubpredicates: [textFieldPredicate, secureTextFieldPredicate]
       )
       
-      let elements = app.descendants(matching: .any).matching(predicate).allElementsBoundByIndex
-      guard let element = self.waitForAnyElement(elements: elements, timeout: self.timeout) else {
-        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
+      let textFields = app.descendants(matching: .any).matching(predicate)
+      let textFieldCount = textFields.allElementsBoundByIndex.count
+      Logger.shared.i("found \(textFields.count) text fields")
+      guard index < textFieldCount else {
+        throw PatrolError.viewNotExists("text field at index \(index)")
       }
       
-      element.firstMatch.forceTap()
-      element.firstMatch.typeText(data)
+      
+      let textField = textFields.element(boundBy: index)
+      textField.forceTap()
+      textField.typeText(data)
     }
   }
-
-//  func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
-//    try await runAction("entering text \(format: data) by index \(index)") {
-//      let app = try self.getApp(withBundleId: bundleId)
-//      let element = app.textFields.element(boundBy: index)
-//
-//      let exists = element.waitForExistence(timeout: self.timeout)
-//      guard exists else {
-//        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
-//      }
-//
-//      element.firstMatch.tap()
-//      element.firstMatch.typeText(data)
-//    }
-//  }
   
   // MARK: Services
 
