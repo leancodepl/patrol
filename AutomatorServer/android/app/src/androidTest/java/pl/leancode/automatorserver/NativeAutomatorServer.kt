@@ -12,6 +12,7 @@ import pl.leancode.automatorserver.contracts.NativeAutomatorGrpcKt
 import pl.leancode.automatorserver.contracts.empty
 import pl.leancode.automatorserver.contracts.getNativeViewsResponse
 import pl.leancode.automatorserver.contracts.getNotificationsResponse
+import pl.leancode.automatorserver.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
@@ -160,6 +161,11 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
             steps = request.steps
         )
         return empty { }
+    }
+
+    override suspend fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
+        val visible = automation.isPermissionDialogVisible(timeout = request.timeout)
+        return permissionDialogVisibleResponse { this.visible = visible }
     }
 
     override suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest): Empty {
