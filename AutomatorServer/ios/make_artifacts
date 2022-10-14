@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cd "$(dirname "$0")"
+
 mkdir -p ./artifacts
 
 xcodebuild \
@@ -37,3 +39,9 @@ xcodebuild \
 cp -r \
     ./DerivedData/Build/Products/Debug-iphoneos/AutomatorServerUITests-Runner.app \
     ./artifacts/AutomatorServer-iphoneos.app
+
+cd ./artifacts
+zip -r AutomatorServer-iphonesimulator-arm64.zip AutomatorServer-iphonesimulator-arm64.app
+zip -r AutomatorServer-iphonesimulator-x86_64.zip AutomatorServer-iphonesimulator-x86_64.app
+zip -r AutomatorServer-iphoneos.zip AutomatorServer-iphoneos.app
+cd ..
