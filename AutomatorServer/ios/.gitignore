@@ -22,4 +22,5 @@ xcuserdata
 !default.pbxuser
 !default.perspectivev3
 report.xml
-derived_data
+DerivedData
+artifacts
