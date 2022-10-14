@@ -4,6 +4,7 @@ set -euo pipefail
 mkdir -p ./artifacts
 
 xcodebuild \
+    build-for-testing \
     -project AutomatorServer.xcodeproj \
     -scheme AutomatorServer \
     -derivedDataPath ./DerivedData \
@@ -11,10 +12,11 @@ xcodebuild \
     -arch arm64
 
 cp -r \
-    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServer.app \
+    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app \
     ./artifacts/AutomatorServer-iphonesimulator-arm64.app
 
 xcodebuild \
+    build-for-testing \
     -project AutomatorServer.xcodeproj \
     -scheme AutomatorServer \
     -derivedDataPath ./DerivedData \
@@ -22,15 +24,16 @@ xcodebuild \
     -arch x86_64
 
 cp -r \
-    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServer.app \
+    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app \
     ./artifacts/AutomatorServer-iphonesimulator-x86_64.app
 
 xcodebuild \
+    build-for-testing \
     -project AutomatorServer.xcodeproj \
     -scheme AutomatorServer \
     -derivedDataPath ./DerivedData \
     -sdk iphoneos
 
 cp -r \
-    ./DerivedData/Build/Products/Debug-iphoneos/AutomatorServer.app \
+    ./DerivedData/Build/Products/Debug-iphoneos/AutomatorServerUITests-Runner.app \
     ./artifacts/AutomatorServer-iphoneos.app
