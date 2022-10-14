@@ -34,6 +34,19 @@ void main() {
     expect($(#microphone).$(#statusText).text, 'Granted');
   }
 
+  Future<void> requestAndDenyContactsPermission(PatrolTester $) async {
+    expect($(#contacts).$(#statusText).text, 'Not granted');
+
+    await $('Request contacts permission').tap();
+
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.denyPermission();
+    }
+
+    await $.pump();
+    expect($(#contacts).$(#statusText).text, 'Not granted');
+  }
+
   patrolTest(
     'grants various permissions',
     config: patrolConfig,
@@ -45,6 +58,7 @@ void main() {
 
       await requestAndGrantCameraPermission($);
       await requestAndGrantMicrophonePermission($);
+      await requestAndDenyContactsPermission($);
     },
   );
 }

@@ -467,8 +467,8 @@ class NativeAutomator {
     return response.nativeViews;
   }
 
-  /// Checks if a native permission request dialog is visible now and in the
-  /// next 1 second.
+  /// Checks if a native permission request dialog is from now until [timeout]
+  /// passees.
   Future<bool> isPermissionDialogVisible({
     Duration timeout = const Duration(seconds: 1),
   }) async {
