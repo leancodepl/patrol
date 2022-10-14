@@ -11,8 +11,8 @@ xcodebuild \
     -arch arm64
 
 cp -r \
-    ./DerivedData/Build/Products/Debug-iphoneimulator/AutomatorServer.app \
-    ./artifacts/AutomatorServer-iphoneimulator-arm64.app
+    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServer.app \
+    ./artifacts/AutomatorServer-iphonesimulator-arm64.app
 
 xcodebuild \
     -project AutomatorServer.xcodeproj \
@@ -22,8 +22,8 @@ xcodebuild \
     -arch x86_64
 
 cp -r \
-    ./DerivedData/Build/Products/Debug-iphoneimulator/AutomatorServer.app \
-    ./artifacts/AutomatorServer-iphoneimulator-x86_64.app
+    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServer.app \
+    ./artifacts/AutomatorServer-iphonesimulator-x86_64.app
 
 xcodebuild \
     -project AutomatorServer.xcodeproj \
@@ -32,5 +32,5 @@ xcodebuild \
     -sdk iphoneos
 
 cp -r \
-    ./DerivedData/Build/Products/Debug-iphoneimulator/AutomatorServer.app \
+    ./DerivedData/Build/Products/Debug-iphoneos/AutomatorServer.app \
     ./artifacts/AutomatorServer-iphoneos.app
