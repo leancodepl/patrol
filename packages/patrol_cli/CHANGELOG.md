@@ -1,6 +1,6 @@
 ## 0.7.0+1
 
-- Build iOS artifacts on CI (#452)
+- Build iOS artifacts on CI (#452, #452)
 
 ## 0.7.0
 
