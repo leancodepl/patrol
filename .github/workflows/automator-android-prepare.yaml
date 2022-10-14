@@ -1,0 +1,32 @@
+name: automator-android prepare
+
+on:
+  push:
+    branches: [master]
+    tags-ignore: ["*"]
+    paths:
+      - "AutomatorServer/android/**"
+  pull_request:
+    branches: [master]
+    paths:
+      - "AutomatorServer/android/**"
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: AutomatorServer/android
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: ktlint check
+        working-directory: ./AutomatorServer/android
+        run: ./gradlew ktlintCheck
+
+      - name: ktlint format
+        working-directory: ./AutomatorServer/android
+        run: ./gradlew ktlintFormat
