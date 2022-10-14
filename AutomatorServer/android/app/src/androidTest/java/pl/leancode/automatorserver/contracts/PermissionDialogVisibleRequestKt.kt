@@ -23,20 +23,20 @@ object PermissionDialogVisibleRequestKt {
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest = _builder.build()
 
     /**
-     * <code>uint64 timeout = 1;</code>
+     * <code>uint64 timeoutMillis = 1;</code>
      */
-    var timeout: kotlin.Long
-      @JvmName("getTimeout")
-      get() = _builder.getTimeout()
-      @JvmName("setTimeout")
+    var timeoutMillis: kotlin.Long
+      @JvmName("getTimeoutMillis")
+      get() = _builder.getTimeoutMillis()
+      @JvmName("setTimeoutMillis")
       set(value) {
-        _builder.setTimeout(value)
+        _builder.setTimeoutMillis(value)
       }
     /**
-     * <code>uint64 timeout = 1;</code>
+     * <code>uint64 timeoutMillis = 1;</code>
      */
-    fun clearTimeout() {
-      _builder.clearTimeout()
+    fun clearTimeoutMillis() {
+      _builder.clearTimeoutMillis()
     }
   }
 }

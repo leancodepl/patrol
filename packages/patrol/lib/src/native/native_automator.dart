@@ -162,7 +162,7 @@ class NativeAutomator {
     await _wrapRequest(
       'configure',
       () => _client.configure(
-        ConfigureRequest(findTimeout: Int64(findTimeout.inMilliseconds)),
+        ConfigureRequest(findTimeoutMillis: Int64(findTimeout.inMilliseconds)),
       ),
     );
   }
@@ -476,7 +476,7 @@ class NativeAutomator {
       'isPermissionDialogVisible',
       () => _client.isPermissionDialogVisible(
         PermissionDialogVisibleRequest(
-          timeout: Int64(timeout.inMilliseconds),
+          timeoutMillis: Int64(timeout.inMilliseconds),
         ),
       ),
     );

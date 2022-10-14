@@ -20,7 +20,7 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
     private val automation = PatrolAutomator.instance
 
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
-        automation.configure(waitForSelectorTimeout = request.findTimeout)
+        automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
         return empty { }
     }
 
@@ -164,7 +164,7 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
     }
 
     override suspend fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
-        val visible = automation.isPermissionDialogVisible(timeout = request.timeout)
+        val visible = automation.isPermissionDialogVisible(timeout = request.timeoutMillis)
         return permissionDialogVisibleResponse { this.visible = visible }
     }
 

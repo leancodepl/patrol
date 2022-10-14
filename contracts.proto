@@ -51,7 +51,7 @@ service NativeAutomator {
 }
 
 message ConfigureRequest {
-  uint64 findTimeout = 1;
+  uint64 findTimeoutMillis = 1;
 }
 
 message OpenAppRequest { string appId = 1; }
@@ -123,7 +123,7 @@ message SetLocationAccuracyRequest {
 }
 
 message PermissionDialogVisibleRequest {
-  uint64 timeout = 1;
+  uint64 timeoutMillis = 1;
 }
 
 message PermissionDialogVisibleResponse {

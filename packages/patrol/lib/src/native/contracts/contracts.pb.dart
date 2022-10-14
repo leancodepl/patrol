@@ -28,19 +28,19 @@ class ConfigureRequest extends $pb.GeneratedMessage {
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'findTimeout',
+            : 'findTimeoutMillis',
         $pb.PbFieldType.OU6,
-        protoName: 'findTimeout',
+        protoName: 'findTimeoutMillis',
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
   ConfigureRequest._() : super();
   factory ConfigureRequest({
-    $fixnum.Int64? findTimeout,
+    $fixnum.Int64? findTimeoutMillis,
   }) {
     final _result = create();
-    if (findTimeout != null) {
-      _result.findTimeout = findTimeout;
+    if (findTimeoutMillis != null) {
+      _result.findTimeoutMillis = findTimeoutMillis;
     }
     return _result;
   }
@@ -72,16 +72,16 @@ class ConfigureRequest extends $pb.GeneratedMessage {
   static ConfigureRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $fixnum.Int64 get findTimeout => $_getI64(0);
+  $fixnum.Int64 get findTimeoutMillis => $_getI64(0);
   @$pb.TagNumber(1)
-  set findTimeout($fixnum.Int64 v) {
+  set findTimeoutMillis($fixnum.Int64 v) {
     $_setInt64(0, v);
   }
 
   @$pb.TagNumber(1)
-  $core.bool hasFindTimeout() => $_has(0);
+  $core.bool hasFindTimeoutMillis() => $_has(0);
   @$pb.TagNumber(1)
-  void clearFindTimeout() => clearField(1);
+  void clearFindTimeoutMillis() => clearField(1);
 }
 
 class OpenAppRequest extends $pb.GeneratedMessage {
@@ -1214,18 +1214,19 @@ class PermissionDialogVisibleRequest extends $pb.GeneratedMessage {
         1,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'timeout',
+            : 'timeoutMillis',
         $pb.PbFieldType.OU6,
+        protoName: 'timeoutMillis',
         defaultOrMaker: $fixnum.Int64.ZERO)
     ..hasRequiredFields = false;
 
   PermissionDialogVisibleRequest._() : super();
   factory PermissionDialogVisibleRequest({
-    $fixnum.Int64? timeout,
+    $fixnum.Int64? timeoutMillis,
   }) {
     final _result = create();
-    if (timeout != null) {
-      _result.timeout = timeout;
+    if (timeoutMillis != null) {
+      _result.timeoutMillis = timeoutMillis;
     }
     return _result;
   }
@@ -1261,16 +1262,16 @@ class PermissionDialogVisibleRequest extends $pb.GeneratedMessage {
   static PermissionDialogVisibleRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $fixnum.Int64 get timeout => $_getI64(0);
+  $fixnum.Int64 get timeoutMillis => $_getI64(0);
   @$pb.TagNumber(1)
-  set timeout($fixnum.Int64 v) {
+  set timeoutMillis($fixnum.Int64 v) {
     $_setInt64(0, v);
   }
 
   @$pb.TagNumber(1)
-  $core.bool hasTimeout() => $_has(0);
+  $core.bool hasTimeoutMillis() => $_has(0);
   @$pb.TagNumber(1)
-  void clearTimeout() => clearField(1);
+  void clearTimeoutMillis() => clearField(1);
 }
 
 class PermissionDialogVisibleResponse extends $pb.GeneratedMessage {

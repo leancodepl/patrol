@@ -15,7 +15,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     request: Patrol_ConfigureRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
-    automator.configure(timeout: TimeInterval(request.findTimeout / 1000))
+    automator.configure(timeout: TimeInterval(request.findTimeoutMillis / 1000))
     return DefaultResponse()
   }
   
@@ -309,7 +309,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   ) async throws -> Patrol_PermissionDialogVisibleResponse {
     return try await runCatching {
       let visible = await automator.isPermissionDialogVisible(
-        timeout: TimeInterval(request.timeout / 1000)
+        timeout: TimeInterval(request.timeoutMillis / 1000)
       )
 
       return Patrol_PermissionDialogVisibleResponse.with {

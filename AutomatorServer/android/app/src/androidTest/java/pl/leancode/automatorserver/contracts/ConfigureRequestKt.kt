@@ -23,20 +23,20 @@ object ConfigureRequestKt {
     internal fun _build(): pl.leancode.automatorserver.contracts.Contracts.ConfigureRequest = _builder.build()
 
     /**
-     * <code>uint64 findTimeout = 1;</code>
+     * <code>uint64 findTimeoutMillis = 1;</code>
      */
-    var findTimeout: kotlin.Long
-      @JvmName("getFindTimeout")
-      get() = _builder.getFindTimeout()
-      @JvmName("setFindTimeout")
+    var findTimeoutMillis: kotlin.Long
+      @JvmName("getFindTimeoutMillis")
+      get() = _builder.getFindTimeoutMillis()
+      @JvmName("setFindTimeoutMillis")
       set(value) {
-        _builder.setFindTimeout(value)
+        _builder.setFindTimeoutMillis(value)
       }
     /**
-     * <code>uint64 findTimeout = 1;</code>
+     * <code>uint64 findTimeoutMillis = 1;</code>
      */
-    fun clearFindTimeout() {
-      _builder.clearFindTimeout()
+    fun clearFindTimeoutMillis() {
+      _builder.clearFindTimeoutMillis()
     }
   }
 }

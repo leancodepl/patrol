@@ -13,13 +13,19 @@ import 'dart:typed_data' as $typed_data;
 const ConfigureRequest$json = const {
   '1': 'ConfigureRequest',
   '2': const [
-    const {'1': 'findTimeout', '3': 1, '4': 1, '5': 4, '10': 'findTimeout'},
+    const {
+      '1': 'findTimeoutMillis',
+      '3': 1,
+      '4': 1,
+      '5': 4,
+      '10': 'findTimeoutMillis'
+    },
   ],
 };
 
 /// Descriptor for `ConfigureRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List configureRequestDescriptor = $convert.base64Decode(
-    'ChBDb25maWd1cmVSZXF1ZXN0EiAKC2ZpbmRUaW1lb3V0GAEgASgEUgtmaW5kVGltZW91dA==');
+    'ChBDb25maWd1cmVSZXF1ZXN0EiwKEWZpbmRUaW1lb3V0TWlsbGlzGAEgASgEUhFmaW5kVGltZW91dE1pbGxpcw==');
 @$core.Deprecated('Use openAppRequestDescriptor instead')
 const OpenAppRequest$json = const {
   '1': 'OpenAppRequest',
@@ -268,14 +274,14 @@ final $typed_data.Uint8List setLocationAccuracyRequestDescriptor =
 const PermissionDialogVisibleRequest$json = const {
   '1': 'PermissionDialogVisibleRequest',
   '2': const [
-    const {'1': 'timeout', '3': 1, '4': 1, '5': 4, '10': 'timeout'},
+    const {'1': 'timeoutMillis', '3': 1, '4': 1, '5': 4, '10': 'timeoutMillis'},
   ],
 };
 
 /// Descriptor for `PermissionDialogVisibleRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List permissionDialogVisibleRequestDescriptor =
     $convert.base64Decode(
-        'Ch5QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlcXVlc3QSGAoHdGltZW91dBgBIAEoBFIHdGltZW91dA==');
+        'Ch5QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlcXVlc3QSJAoNdGltZW91dE1pbGxpcxgBIAEoBFINdGltZW91dE1pbGxpcw==');
 @$core.Deprecated('Use permissionDialogVisibleResponseDescriptor instead')
 const PermissionDialogVisibleResponse$json = const {
   '1': 'PermissionDialogVisibleResponse',
