@@ -1,16 +1,16 @@
-import GRPC
 import Foundation
+import GRPC
 
 typealias Empty = Patrol_Empty
 typealias DefaultResponse = Patrol_Empty
 
 final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   private let automator: Automator
-  
+
   init(automator: Automator) {
     self.automator = automator
   }
-  
+
   func configure(
     request: Patrol_ConfigureRequest,
     context: GRPCAsyncServerCallContext
@@ -18,9 +18,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     automator.configure(timeout: TimeInterval(request.findTimeoutMillis / 1000))
     return DefaultResponse()
   }
-  
+
   // MARK: General
-  
+
   func pressHome(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -30,7 +30,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func pressBack(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -39,7 +39,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.methodNotImplemented("pressBack")
     }
   }
-  
+
   func pressRecentApps(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -49,7 +49,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func doublePressRecentApps(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -58,7 +58,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.methodNotImplemented("doublePressRecentApps")
     }
   }
-  
+
   func openApp(
     request: Patrol_OpenAppRequest,
     context: GRPCAsyncServerCallContext
@@ -68,19 +68,19 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func openQuickSettings(
     request: Patrol_OpenQuickSettingsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await  automator.openControlCenter()
+      try await automator.openControlCenter()
       return DefaultResponse()
     }
   }
-  
+
   // MARK: General UI interaction
-  
+
   func getNativeViews(
     request: Patrol_GetNativeViewsRequest,
     context: GRPCAsyncServerCallContext
@@ -89,7 +89,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.internal("getNativeViews() is not supported on iOS")
     }
   }
-  
+
   func tap(
     request: Patrol_TapRequest,
     context: GRPCAsyncServerCallContext
@@ -99,7 +99,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func doubleTap(
     request: Patrol_TapRequest,
     context: GRPCAsyncServerCallContext
@@ -109,7 +109,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func enterText(
     request: Patrol_EnterTextRequest,
     context: GRPCAsyncServerCallContext
@@ -123,11 +123,11 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       default:
         throw PatrolError.internal("enterText(): neither index nor selector are set")
       }
-      
+
       return DefaultResponse()
     }
   }
-  
+
   func swipe(
     request: Patrol_SwipeRequest,
     context: GRPCAsyncServerCallContext
@@ -136,9 +136,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       throw PatrolError.methodNotImplemented("swipe")
     }
   }
-  
+
   // MARK: Services
-  
+
   func enableAirplaneMode(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -148,7 +148,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func disableAirplaneMode(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -158,7 +158,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func enableWiFi(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -168,7 +168,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func disableWiFi(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -178,7 +178,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func enableCellular(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -188,7 +188,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func disableCellular(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -198,7 +198,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func enableBluetooth(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -208,7 +208,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func disableBluetooth(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -218,7 +218,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func enableDarkMode(
     request: Patrol_DarkModeRequest,
     context: GRPCAsyncServerCallContext
@@ -228,7 +228,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func disableDarkMode(
     request: Patrol_DarkModeRequest,
     context: GRPCAsyncServerCallContext
@@ -238,9 +238,9 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   // MARK: Notifications
-  
+
   func openNotifications(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -250,7 +250,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func closeNotifications(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -260,7 +260,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func closeHeadsUpNotification(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -270,7 +270,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func getNotifications(
     request: Patrol_GetNotificationsRequest,
     context: GRPCAsyncServerCallContext
@@ -282,27 +282,27 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       }
     }
   }
-  
+
   func tapOnNotification(
     request: Patrol_TapOnNotificationRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
       switch request.findBy {
-        case .index(let index):
-          try await automator.tapOnNotification(by: Int(index))
-        case .selector(let selector):
-          try await automator.tapOnNotification(by: selector.textContains)
-        default:
-          throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
+      case .index(let index):
+        try await automator.tapOnNotification(by: Int(index))
+      case .selector(let selector):
+        try await automator.tapOnNotification(by: selector.textContains)
+      default:
+        throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
       }
-      
+
       return DefaultResponse()
     }
   }
-  
+
   // MARK: Permissions
-  
+
   func isPermissionDialogVisible(
     request: Patrol_PermissionDialogVisibleRequest,
     context: GRPCAsyncServerCallContext
@@ -317,7 +317,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       }
     }
   }
-  
+
   func handlePermissionDialog(
     request: Patrol_HandlePermissionRequest,
     context: GRPCAsyncServerCallContext
@@ -333,11 +333,11 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       case .UNRECOGNIZED:
         throw PatrolError.internal("handlePermissionDialog(): bad permission code")
       }
-      
+
       return DefaultResponse()
     }
   }
-  
+
   func setLocationAccuracy(
     request: Patrol_SetLocationAccuracyRequest,
     context: GRPCAsyncServerCallContext
@@ -351,11 +351,11 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       case .UNRECOGNIZED:
         throw PatrolError.internal("unrecognized location accuracy")
       }
-      
+
       return DefaultResponse()
     }
   }
-  
+
   func debug(
     request: Empty,
     context: GRPCAsyncServerCallContext
@@ -365,7 +365,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
     // TODO: Use an interceptor (like on Android)
     // See: https://github.com/grpc/grpc-swift/issues/1148

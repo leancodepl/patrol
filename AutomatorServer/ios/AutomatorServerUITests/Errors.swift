@@ -1,6 +1,6 @@
 import Foundation
-import XCTest
 import GRPC
+import XCTest
 
 enum PatrolError: Error {
   case viewNotExists(_ elementDescription: String)
@@ -9,7 +9,6 @@ enum PatrolError: Error {
   case `internal`(_ message: String)
   case unknown(_ error: Error)
 }
-
 
 extension PatrolError: CustomStringConvertible, GRPCStatusTransformable {
   var description: String {
@@ -26,7 +25,7 @@ extension PatrolError: CustomStringConvertible, GRPCStatusTransformable {
       return "\(err)"
     }
   }
-  
+
   func makeGRPCStatus() -> GRPC.GRPCStatus {
     switch self {
     case .viewNotExists, .appNotInstalled:
