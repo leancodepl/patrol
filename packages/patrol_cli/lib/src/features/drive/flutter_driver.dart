@@ -2,6 +2,7 @@ import 'dart:io' show Process, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart' show green, red;
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -22,14 +23,16 @@ class FlutterDriverOptions {
   final String target;
   final String? host;
   final String? port;
-  final Device? device;
+  final Device device;
   final String? flavor;
   final Map<String, String> dartDefines;
 }
 
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
-  FlutterDriverFailedException(this.code) : super();
+  FlutterDriverFailedException(this.code)
+      : assert(code != 0, 'exit code is 0, which means success'),
+        super();
 
   final int code;
 
@@ -54,13 +57,10 @@ class FlutterDriver {
   ///
   /// Prints stdout and stderr of "flutter drive".
   Future<void> run(FlutterDriverOptions options) async {
-    final deviceName = options.device?.resolvedName;
+    final deviceName = options.device.resolvedName;
     final targetName = basename(options.target);
-    if (deviceName != null) {
-      _logger.info('Running $targetName with flutter_driver on $deviceName...');
-    } else {
-      _logger.info('Running $targetName with flutter_driver...');
-    }
+
+    _logger.info('${green.wrap(">")} Running $targetName on $deviceName...');
 
     final env = {
       envHostKey: options.host,
@@ -73,7 +73,7 @@ class FlutterDriver {
       _flutterDriveArguments(
         driver: options.driver,
         target: options.target,
-        device: options.device?.id,
+        device: options.device.id,
         flavor: options.flavor,
         dartDefines: {...options.dartDefines, ...env},
       ),
@@ -125,15 +125,13 @@ class FlutterDriver {
 
     exitCode = await process.exitCode;
 
-    final msg = 'flutter_driver exited with code $exitCode';
-    if (exitCode == -15) {
-      // Occurs when the VM is killed. Do nothing because it was most probably
-      // killed by us.
-      // https://github.com/dart-lang/sdk/blob/master/pkg/dartdev/test/commands/create_integration_test.dart#L149-L152
-    } else if (exitCode != 0) {
+    final msg = exitCode == 0
+        ? '${green.wrap("✓")} $targetName passed!'
+        : '${red.wrap("✗")} $targetName failed';
+
+    _logger.severe(msg);
+    if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
-    } else {
-      _logger.info(msg);
     }
   }
 
