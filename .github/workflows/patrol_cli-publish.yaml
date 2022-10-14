@@ -94,7 +94,10 @@ jobs:
 
       - name: Build iOS test runner artifact
         working-directory: AutomatorServer/ios
-        run: ./make_artifacts
+        run: |
+          ./make_artifacts iphonesimulator arm64
+          ./make_artifacts iphonesimulator x86_64
+          # ./make_artifacts iphoneos arm64
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -110,7 +113,8 @@ jobs:
             AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
             AutomatorServer/ios/artifacts/AutomatorServer-iphonesimulator-arm64.zip
             AutomatorServer/ios/artifacts/AutomatorServer-iphonesimulator-x86_64.zip
-            AutomatorServer/ios/artifacts/AutomatorServer-iphoneos.zip
+
+          # AutomatorServer/ios/artifacts/AutomatorServer-iphoneos.zip
 
   publish_cli:
     name: Publish on pub.dev
