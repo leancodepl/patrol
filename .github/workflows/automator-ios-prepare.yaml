@@ -13,7 +13,6 @@ on:
 
 jobs:
   main:
-    name: Check iOS Automator
     runs-on: macos-12
 
     defaults:
@@ -26,6 +25,10 @@ jobs:
 
       - name: Install swift-format
         run: brew install swift-format
+
+      - run: swift-format --version
+
+      - run: swift --version
 
       - name: swift-format lint
         working-directory: ./AutomatorServer/ios/AutomatorServerUITests
