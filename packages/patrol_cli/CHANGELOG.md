@@ -1,3 +1,7 @@
+## 0.7.0+1
+
+- Build iOS artifacts on CI (#452)
+
 ## 0.7.0
 
 In this release, we've focused on stability, reliability, and reducing
