@@ -264,6 +264,18 @@ const SetLocationAccuracyRequest_LocationAccuracy$json = const {
 final $typed_data.Uint8List setLocationAccuracyRequestDescriptor =
     $convert.base64Decode(
         'ChpTZXRMb2NhdGlvbkFjY3VyYWN5UmVxdWVzdBJfChBsb2NhdGlvbkFjY3VyYWN5GAEgASgOMjMucGF0cm9sLlNldExvY2F0aW9uQWNjdXJhY3lSZXF1ZXN0LkxvY2F0aW9uQWNjdXJhY3lSEGxvY2F0aW9uQWNjdXJhY3kiKAoQTG9jYXRpb25BY2N1cmFjeRIKCgZDT0FSU0UQABIICgRGSU5FEAE=');
+@$core.Deprecated('Use permissionDialogVisibleRequestDescriptor instead')
+const PermissionDialogVisibleRequest$json = const {
+  '1': 'PermissionDialogVisibleRequest',
+  '2': const [
+    const {'1': 'timeout', '3': 1, '4': 1, '5': 4, '10': 'timeout'},
+  ],
+};
+
+/// Descriptor for `PermissionDialogVisibleRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List permissionDialogVisibleRequestDescriptor =
+    $convert.base64Decode(
+        'Ch5QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlcXVlc3QSGAoHdGltZW91dBgBIAEoBFIHdGltZW91dA==');
 @$core.Deprecated('Use permissionDialogVisibleResponseDescriptor instead')
 const PermissionDialogVisibleResponse$json = const {
   '1': 'PermissionDialogVisibleResponse',

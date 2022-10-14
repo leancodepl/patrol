@@ -1200,6 +1200,79 @@ class SetLocationAccuracyRequest extends $pb.GeneratedMessage {
   void clearLocationAccuracy() => clearField(1);
 }
 
+class PermissionDialogVisibleRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'PermissionDialogVisibleRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..a<$fixnum.Int64>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'timeout',
+        $pb.PbFieldType.OU6,
+        defaultOrMaker: $fixnum.Int64.ZERO)
+    ..hasRequiredFields = false;
+
+  PermissionDialogVisibleRequest._() : super();
+  factory PermissionDialogVisibleRequest({
+    $fixnum.Int64? timeout,
+  }) {
+    final _result = create();
+    if (timeout != null) {
+      _result.timeout = timeout;
+    }
+    return _result;
+  }
+  factory PermissionDialogVisibleRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory PermissionDialogVisibleRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  PermissionDialogVisibleRequest clone() =>
+      PermissionDialogVisibleRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  PermissionDialogVisibleRequest copyWith(
+          void Function(PermissionDialogVisibleRequest) updates) =>
+      super.copyWith(
+              (message) => updates(message as PermissionDialogVisibleRequest))
+          as PermissionDialogVisibleRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static PermissionDialogVisibleRequest create() =>
+      PermissionDialogVisibleRequest._();
+  PermissionDialogVisibleRequest createEmptyInstance() => create();
+  static $pb.PbList<PermissionDialogVisibleRequest> createRepeated() =>
+      $pb.PbList<PermissionDialogVisibleRequest>();
+  @$core.pragma('dart2js:noInline')
+  static PermissionDialogVisibleRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<PermissionDialogVisibleRequest>(create);
+  static PermissionDialogVisibleRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get timeout => $_getI64(0);
+  @$pb.TagNumber(1)
+  set timeout($fixnum.Int64 v) {
+    $_setInt64(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasTimeout() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTimeout() => clearField(1);
+}
+
 class PermissionDialogVisibleResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')

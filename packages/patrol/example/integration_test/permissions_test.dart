@@ -10,7 +10,10 @@ void main() {
 
     await $('Request camera permission').tap();
 
-    if (await $.native.isPermissionDialogVisible()) {
+    final request = await $.native.isPermissionDialogVisible(
+      timeout: Duration(seconds: 2),
+    );
+    if (request) {
       await $.native.grantPermissionWhenInUse();
     }
 

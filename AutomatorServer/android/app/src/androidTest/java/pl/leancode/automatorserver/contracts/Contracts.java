@@ -9585,6 +9585,477 @@ public final class Contracts {
 
   }
 
+  public interface PermissionDialogVisibleRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.PermissionDialogVisibleRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>uint64 timeout = 1;</code>
+     * @return The timeout.
+     */
+    long getTimeout();
+  }
+  /**
+   * Protobuf type {@code patrol.PermissionDialogVisibleRequest}
+   */
+  public static final class PermissionDialogVisibleRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.PermissionDialogVisibleRequest)
+      PermissionDialogVisibleRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use PermissionDialogVisibleRequest.newBuilder() to construct.
+    private PermissionDialogVisibleRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private PermissionDialogVisibleRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new PermissionDialogVisibleRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PermissionDialogVisibleRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PermissionDialogVisibleRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.class, pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.Builder.class);
+    }
+
+    public static final int TIMEOUT_FIELD_NUMBER = 1;
+    private long timeout_;
+    /**
+     * <code>uint64 timeout = 1;</code>
+     * @return The timeout.
+     */
+    @java.lang.Override
+    public long getTimeout() {
+      return timeout_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (timeout_ != 0L) {
+        output.writeUInt64(1, timeout_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (timeout_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(1, timeout_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest other = (pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest) obj;
+
+      if (getTimeout()
+          != other.getTimeout()) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TIMEOUT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimeout());
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.PermissionDialogVisibleRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.PermissionDialogVisibleRequest)
+        pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PermissionDialogVisibleRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PermissionDialogVisibleRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.class, pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        timeout_ = 0L;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_PermissionDialogVisibleRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest result = new pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest(this);
+        result.timeout_ = timeout_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.getDefaultInstance()) return this;
+        if (other.getTimeout() != 0L) {
+          setTimeout(other.getTimeout());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                timeout_ = input.readUInt64();
+
+                break;
+              } // case 8
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private long timeout_ ;
+      /**
+       * <code>uint64 timeout = 1;</code>
+       * @return The timeout.
+       */
+      @java.lang.Override
+      public long getTimeout() {
+        return timeout_;
+      }
+      /**
+       * <code>uint64 timeout = 1;</code>
+       * @param value The timeout to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTimeout(long value) {
+        
+        timeout_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 timeout = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearTimeout() {
+        
+        timeout_ = 0L;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.PermissionDialogVisibleRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.PermissionDialogVisibleRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<PermissionDialogVisibleRequest>
+        PARSER = new com.google.protobuf.AbstractParser<PermissionDialogVisibleRequest>() {
+      @java.lang.Override
+      public PermissionDialogVisibleRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<PermissionDialogVisibleRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PermissionDialogVisibleRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface PermissionDialogVisibleResponseOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.PermissionDialogVisibleResponse)
       com.google.protobuf.MessageOrBuilder {
@@ -15218,6 +15689,11 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_SetLocationAccuracyRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_PermissionDialogVisibleRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_PermissionDialogVisibleRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_PermissionDialogVisibleResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -15272,76 +15748,78 @@ public final class Contracts {
       "cyRequest\022M\n\020locationAccuracy\030\001 \001(\01623.pa" +
       "trol.SetLocationAccuracyRequest.Location" +
       "Accuracy\"(\n\020LocationAccuracy\022\n\n\006COARSE\020\000" +
-      "\022\010\n\004FINE\020\001\"2\n\037PermissionDialogVisibleRes" +
-      "ponse\022\017\n\007visible\030\001 \001(\010\"\236\004\n\010Selector\022\021\n\004t" +
-      "ext\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsWith\030\002 \001(\tH\001" +
-      "\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassN" +
-      "ame\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDescription\030\005 \001" +
-      "(\tH\004\210\001\001\022)\n\034contentDescriptionStartsWith\030" +
-      "\006 \001(\tH\005\210\001\001\022\'\n\032contentDescriptionContains" +
-      "\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010" +
-      "instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001" +
-      "\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001" +
-      "\001B\007\n\005_textB\021\n\017_textStartsWithB\017\n\r_textCo" +
-      "ntainsB\014\n\n_classNameB\025\n\023_contentDescript" +
-      "ionB\037\n\035_contentDescriptionStartsWithB\035\n\033" +
-      "_contentDescriptionContainsB\r\n\013_resource" +
-      "IdB\013\n\t_instanceB\n\n\010_enabledB\n\n\010_focusedB" +
-      "\006\n\004_pkg\"\327\001\n\nNativeView\022\021\n\tclassName\030\001 \001(" +
-      "\t\022\014\n\004text\030\002 \001(\t\022\032\n\022contentDescription\030\003 " +
-      "\001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n" +
-      "\nchildCount\030\006 \001(\005\022\024\n\014resourceName\030\007 \001(\t\022" +
-      "\032\n\022applicationPackage\030\010 \001(\t\022$\n\010children\030" +
-      "\t \003(\0132\022.patrol.NativeView\"]\n\014Notificatio" +
-      "n\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017" +
-      "\n\007content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName" +
-      "2\223\016\n\017NativeAutomator\0226\n\tconfigure\022\030.patr" +
-      "ol.ConfigureRequest\032\r.patrol.Empty\"\000\022+\n\t" +
-      "pressHome\022\r.patrol.Empty\032\r.patrol.Empty\"" +
-      "\000\022+\n\tpressBack\022\r.patrol.Empty\032\r.patrol.E" +
-      "mpty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0227\n\025doublePressRecentAp" +
-      "ps\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007op" +
-      "enApp\022\026.patrol.OpenAppRequest\032\r.patrol.E" +
-      "mpty\"\000\022F\n\021openQuickSettings\022 .patrol.Ope" +
-      "nQuickSettingsRequest\032\r.patrol.Empty\"\000\022Q" +
-      "\n\016getNativeViews\022\035.patrol.GetNativeViews" +
-      "Request\032\036.patrol.GetNativeViewsResponse\"" +
-      "\000\022*\n\003tap\022\022.patrol.TapRequest\032\r.patrol.Em" +
-      "pty\"\000\0220\n\tdoubleTap\022\022.patrol.TapRequest\032\r" +
-      ".patrol.Empty\"\000\0226\n\tenterText\022\030.patrol.En" +
-      "terTextRequest\032\r.patrol.Empty\"\000\022.\n\005swipe" +
-      "\022\024.patrol.SwipeRequest\032\r.patrol.Empty\"\000\022" +
-      "4\n\022enableAirplaneMode\022\r.patrol.Empty\032\r.p" +
-      "atrol.Empty\"\000\0225\n\023disableAirplaneMode\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\022,\n\nenableWi" +
-      "Fi\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022-\n\013di" +
-      "sableWiFi\022\r.patrol.Empty\032\r.patrol.Empty\"" +
-      "\000\0220\n\016enableCellular\022\r.patrol.Empty\032\r.pat" +
-      "rol.Empty\"\000\0221\n\017disableCellular\022\r.patrol." +
-      "Empty\032\r.patrol.Empty\"\000\0221\n\017enableBluetoot" +
-      "h\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\020dis" +
-      "ableBluetooth\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMod" +
-      "eRequest\032\r.patrol.Empty\"\000\022;\n\017disableDark" +
-      "Mode\022\027.patrol.DarkModeRequest\032\r.patrol.E" +
-      "mpty\"\000\0223\n\021openNotifications\022\r.patrol.Emp" +
-      "ty\032\r.patrol.Empty\"\000\0224\n\022closeNotification" +
-      "s\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022:\n\030clo" +
-      "seHeadsUpNotification\022\r.patrol.Empty\032\r.p" +
-      "atrol.Empty\"\000\022W\n\020getNotifications\022\037.patr" +
-      "ol.GetNotificationsRequest\032 .patrol.GetN" +
-      "otificationsResponse\"\000\022F\n\021tapOnNotificat" +
-      "ion\022 .patrol.TapOnNotificationRequest\032\r." +
-      "patrol.Empty\"\000\022U\n\031isPermissionDialogVisi" +
-      "ble\022\r.patrol.Empty\032\'.patrol.PermissionDi" +
-      "alogVisibleResponse\"\000\022J\n\026handlePermissio" +
-      "nDialog\022\037.patrol.HandlePermissionRequest" +
-      "\032\r.patrol.Empty\"\000\022J\n\023setLocationAccuracy" +
-      "\022\".patrol.SetLocationAccuracyRequest\032\r.p" +
-      "atrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empty\032\r." +
-      "patrol.Empty\"\000B\'\n%pl.leancode.automators" +
-      "erver.contractsb\006proto3"
+      "\022\010\n\004FINE\020\001\"1\n\036PermissionDialogVisibleReq" +
+      "uest\022\017\n\007timeout\030\001 \001(\004\"2\n\037PermissionDialo" +
+      "gVisibleResponse\022\017\n\007visible\030\001 \001(\010\"\236\004\n\010Se" +
+      "lector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsW" +
+      "ith\030\002 \001(\tH\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001" +
+      "\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDesc" +
+      "ription\030\005 \001(\tH\004\210\001\001\022)\n\034contentDescription" +
+      "StartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescript" +
+      "ionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001" +
+      "(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enable" +
+      "d\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pk" +
+      "g\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_textStartsWith" +
+      "B\017\n\r_textContainsB\014\n\n_classNameB\025\n\023_cont" +
+      "entDescriptionB\037\n\035_contentDescriptionSta" +
+      "rtsWithB\035\n\033_contentDescriptionContainsB\r" +
+      "\n\013_resourceIdB\013\n\t_instanceB\n\n\010_enabledB\n" +
+      "\n\010_focusedB\006\n\004_pkg\"\327\001\n\nNativeView\022\021\n\tcla" +
+      "ssName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022contentDes" +
+      "cription\030\003 \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enabl" +
+      "ed\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005\022\024\n\014resource" +
+      "Name\030\007 \001(\t\022\032\n\022applicationPackage\030\010 \001(\t\022$" +
+      "\n\010children\030\t \003(\0132\022.patrol.NativeView\"]\n\014" +
+      "Notification\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022\r\n\005ti" +
+      "tle\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB" +
+      "\n\n\010_appName2\254\016\n\017NativeAutomator\0226\n\tconfi" +
+      "gure\022\030.patrol.ConfigureRequest\032\r.patrol." +
+      "Empty\"\000\022+\n\tpressHome\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\022+\n\tpressBack\022\r.patrol.Empty" +
+      "\032\r.patrol.Empty\"\000\0221\n\017pressRecentApps\022\r.p" +
+      "atrol.Empty\032\r.patrol.Empty\"\000\0227\n\025doublePr" +
+      "essRecentApps\022\r.patrol.Empty\032\r.patrol.Em" +
+      "pty\"\000\0222\n\007openApp\022\026.patrol.OpenAppRequest" +
+      "\032\r.patrol.Empty\"\000\022F\n\021openQuickSettings\022 " +
+      ".patrol.OpenQuickSettingsRequest\032\r.patro" +
+      "l.Empty\"\000\022Q\n\016getNativeViews\022\035.patrol.Get" +
+      "NativeViewsRequest\032\036.patrol.GetNativeVie" +
+      "wsResponse\"\000\022*\n\003tap\022\022.patrol.TapRequest\032" +
+      "\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022.patrol.T" +
+      "apRequest\032\r.patrol.Empty\"\000\0226\n\tenterText\022" +
+      "\030.patrol.EnterTextRequest\032\r.patrol.Empty" +
+      "\"\000\022.\n\005swipe\022\024.patrol.SwipeRequest\032\r.patr" +
+      "ol.Empty\"\000\0224\n\022enableAirplaneMode\022\r.patro" +
+      "l.Empty\032\r.patrol.Empty\"\000\0225\n\023disableAirpl" +
+      "aneMode\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
+      ",\n\nenableWiFi\022\r.patrol.Empty\032\r.patrol.Em" +
+      "pty\"\000\022-\n\013disableWiFi\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\0220\n\016enableCellular\022\r.patrol." +
+      "Empty\032\r.patrol.Empty\"\000\0221\n\017disableCellula" +
+      "r\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017ena" +
+      "bleBluetooth\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\0222\n\020disableBluetooth\022\r.patrol.Empty\032" +
+      "\r.patrol.Empty\"\000\022:\n\016enableDarkMode\022\027.pat" +
+      "rol.DarkModeRequest\032\r.patrol.Empty\"\000\022;\n\017" +
+      "disableDarkMode\022\027.patrol.DarkModeRequest" +
+      "\032\r.patrol.Empty\"\000\0223\n\021openNotifications\022\r" +
+      ".patrol.Empty\032\r.patrol.Empty\"\000\0224\n\022closeN" +
+      "otifications\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\022:\n\030closeHeadsUpNotification\022\r.patro" +
+      "l.Empty\032\r.patrol.Empty\"\000\022W\n\020getNotificat" +
+      "ions\022\037.patrol.GetNotificationsRequest\032 ." +
+      "patrol.GetNotificationsResponse\"\000\022F\n\021tap" +
+      "OnNotification\022 .patrol.TapOnNotificatio" +
+      "nRequest\032\r.patrol.Empty\"\000\022n\n\031isPermissio" +
+      "nDialogVisible\022&.patrol.PermissionDialog" +
+      "VisibleRequest\032\'.patrol.PermissionDialog" +
+      "VisibleResponse\"\000\022J\n\026handlePermissionDia" +
+      "log\022\037.patrol.HandlePermissionRequest\032\r.p" +
+      "atrol.Empty\"\000\022J\n\023setLocationAccuracy\022\".p" +
+      "atrol.SetLocationAccuracyRequest\032\r.patro" +
+      "l.Empty\"\000\022\'\n\005debug\022\r.patrol.Empty\032\r.patr" +
+      "ol.Empty\"\000B\'\n%pl.leancode.automatorserve" +
+      "r.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -15437,26 +15915,32 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SetLocationAccuracyRequest_descriptor,
         new java.lang.String[] { "LocationAccuracy", });
-    internal_static_patrol_PermissionDialogVisibleResponse_descriptor =
+    internal_static_patrol_PermissionDialogVisibleRequest_descriptor =
       getDescriptor().getMessageTypes().get(15);
+    internal_static_patrol_PermissionDialogVisibleRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_PermissionDialogVisibleRequest_descriptor,
+        new java.lang.String[] { "Timeout", });
+    internal_static_patrol_PermissionDialogVisibleResponse_descriptor =
+      getDescriptor().getMessageTypes().get(16);
     internal_static_patrol_PermissionDialogVisibleResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_PermissionDialogVisibleResponse_descriptor,
         new java.lang.String[] { "Visible", });
     internal_static_patrol_Selector_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeView_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_patrol_NativeView_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeView_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,

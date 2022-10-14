@@ -148,7 +148,7 @@ public object NativeAutomatorGrpcKt {
     get() = NativeAutomatorGrpc.getTapOnNotificationMethod()
 
   public val isPermissionDialogVisibleMethod:
-      MethodDescriptor<Contracts.Empty, Contracts.PermissionDialogVisibleResponse>
+      MethodDescriptor<Contracts.PermissionDialogVisibleRequest, Contracts.PermissionDialogVisibleResponse>
     @JvmStatic
     get() = NativeAutomatorGrpc.getIsPermissionDialogVisibleMethod()
 
@@ -756,8 +756,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun isPermissionDialogVisible(request: Contracts.Empty, headers: Metadata =
-        Metadata()): Contracts.PermissionDialogVisibleResponse = unaryRpc(
+    public suspend fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest,
+        headers: Metadata = Metadata()): Contracts.PermissionDialogVisibleResponse = unaryRpc(
       channel,
       NativeAutomatorGrpc.getIsPermissionDialogVisibleMethod(),
       request,
@@ -1231,7 +1231,8 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun isPermissionDialogVisible(request: Contracts.Empty):
+    public open suspend
+        fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest):
         Contracts.PermissionDialogVisibleResponse = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.isPermissionDialogVisible is unimplemented"))
 

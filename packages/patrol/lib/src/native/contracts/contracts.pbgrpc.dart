@@ -131,12 +131,13 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/tapOnNotification',
           ($0.TapOnNotificationRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$isPermissionDialogVisible =
-      $grpc.ClientMethod<$0.Empty, $0.PermissionDialogVisibleResponse>(
-          '/patrol.NativeAutomator/isPermissionDialogVisible',
-          ($0.Empty value) => value.writeToBuffer(),
-          ($core.List<$core.int> value) =>
-              $0.PermissionDialogVisibleResponse.fromBuffer(value));
+  static final _$isPermissionDialogVisible = $grpc.ClientMethod<
+          $0.PermissionDialogVisibleRequest,
+          $0.PermissionDialogVisibleResponse>(
+      '/patrol.NativeAutomator/isPermissionDialogVisible',
+      ($0.PermissionDialogVisibleRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) =>
+          $0.PermissionDialogVisibleResponse.fromBuffer(value));
   static final _$handlePermissionDialog =
       $grpc.ClientMethod<$0.HandlePermissionRequest, $0.Empty>(
           '/patrol.NativeAutomator/handlePermissionDialog',
@@ -298,7 +299,7 @@ class NativeAutomatorClient extends $grpc.Client {
   }
 
   $grpc.ResponseFuture<$0.PermissionDialogVisibleResponse>
-      isPermissionDialogVisible($0.Empty request,
+      isPermissionDialogVisible($0.PermissionDialogVisibleRequest request,
           {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$isPermissionDialogVisible, request,
         options: options);
@@ -522,15 +523,15 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.TapOnNotificationRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod(
-        $grpc.ServiceMethod<$0.Empty, $0.PermissionDialogVisibleResponse>(
-            'isPermissionDialogVisible',
-            isPermissionDialogVisible_Pre,
-            false,
-            false,
-            ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
-            ($0.PermissionDialogVisibleResponse value) =>
-                value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.PermissionDialogVisibleRequest,
+            $0.PermissionDialogVisibleResponse>(
+        'isPermissionDialogVisible',
+        isPermissionDialogVisible_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.PermissionDialogVisibleRequest.fromBuffer(value),
+        ($0.PermissionDialogVisibleResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.HandlePermissionRequest, $0.Empty>(
         'handlePermissionDialog',
         handlePermissionDialog_Pre,
@@ -694,8 +695,8 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   }
 
   $async.Future<$0.PermissionDialogVisibleResponse>
-      isPermissionDialogVisible_Pre(
-          $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+      isPermissionDialogVisible_Pre($grpc.ServiceCall call,
+          $async.Future<$0.PermissionDialogVisibleRequest> request) async {
     return isPermissionDialogVisible(call, await request);
   }
 
@@ -764,7 +765,7 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> tapOnNotification(
       $grpc.ServiceCall call, $0.TapOnNotificationRequest request);
   $async.Future<$0.PermissionDialogVisibleResponse> isPermissionDialogVisible(
-      $grpc.ServiceCall call, $0.Empty request);
+      $grpc.ServiceCall call, $0.PermissionDialogVisibleRequest request);
   $async.Future<$0.Empty> handlePermissionDialog(
       $grpc.ServiceCall call, $0.HandlePermissionRequest request);
   $async.Future<$0.Empty> setLocationAccuracy(

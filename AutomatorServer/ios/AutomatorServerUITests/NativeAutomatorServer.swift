@@ -304,11 +304,14 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   // MARK: Permissions
   
   func isPermissionDialogVisible(
-    request: Empty,
+    request: Patrol_PermissionDialogVisibleRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_PermissionDialogVisibleResponse {
     return try await runCatching {
-      let visible = await automator.isPermissionDialogVisible()
+      let visible = await automator.isPermissionDialogVisible(
+        timeout: TimeInterval(request.timeout / 1000)
+      )
+
       return Patrol_PermissionDialogVisibleResponse.with {
         $0.visible = visible
       }

@@ -319,14 +319,14 @@ class Automator {
   
   // MARK: Permissions
   
-  func isPermissionDialogVisible() async -> Bool {
+  func isPermissionDialogVisible(timeout: TimeInterval) async -> Bool {
     return await runAction("checking if permission dialog is visible") {
       let systemAlerts = self.springboard.alerts
       let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]
       
       let button = self.waitForAnyElement(
         elements: labels.map { systemAlerts.buttons[$0] },
-        timeout: 1
+        timeout: timeout
       )
       
       return button != nil

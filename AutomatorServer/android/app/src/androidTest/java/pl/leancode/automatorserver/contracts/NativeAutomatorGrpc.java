@@ -852,27 +852,27 @@ public final class NativeAutomatorGrpc {
     return getTapOnNotificationMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest,
       pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> getIsPermissionDialogVisibleMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "isPermissionDialogVisible",
-      requestType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      requestType = pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.class,
       responseType = pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest,
       pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> getIsPermissionDialogVisibleMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> getIsPermissionDialogVisibleMethod;
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest, pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> getIsPermissionDialogVisibleMethod;
     if ((getIsPermissionDialogVisibleMethod = NativeAutomatorGrpc.getIsPermissionDialogVisibleMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
         if ((getIsPermissionDialogVisibleMethod = NativeAutomatorGrpc.getIsPermissionDialogVisibleMethod) == null) {
           NativeAutomatorGrpc.getIsPermissionDialogVisibleMethod = getIsPermissionDialogVisibleMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.Empty, pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest, pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "isPermissionDialogVisible"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+                  pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse.getDefaultInstance()))
               .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("isPermissionDialogVisible"))
@@ -1230,7 +1230,7 @@ public final class NativeAutomatorGrpc {
      * permissions
      * </pre>
      */
-    public void isPermissionDialogVisible(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+    public void isPermissionDialogVisible(pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getIsPermissionDialogVisibleMethod(), responseObserver);
     }
@@ -1451,7 +1451,7 @@ public final class NativeAutomatorGrpc {
             getIsPermissionDialogVisibleMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                pl.leancode.automatorserver.contracts.Contracts.Empty,
+                pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest,
                 pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse>(
                   this, METHODID_IS_PERMISSION_DIALOG_VISIBLE)))
           .addMethod(
@@ -1726,7 +1726,7 @@ public final class NativeAutomatorGrpc {
      * permissions
      * </pre>
      */
-    public void isPermissionDialogVisible(pl.leancode.automatorserver.contracts.Contracts.Empty request,
+    public void isPermissionDialogVisible(pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getIsPermissionDialogVisibleMethod(), getCallOptions()), request, responseObserver);
@@ -1977,7 +1977,7 @@ public final class NativeAutomatorGrpc {
      * permissions
      * </pre>
      */
-    public pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse isPermissionDialogVisible(pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+    public pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse isPermissionDialogVisible(pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getIsPermissionDialogVisibleMethod(), getCallOptions(), request);
     }
@@ -2252,7 +2252,7 @@ public final class NativeAutomatorGrpc {
      * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse> isPermissionDialogVisible(
-        pl.leancode.automatorserver.contracts.Contracts.Empty request) {
+        pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getIsPermissionDialogVisibleMethod(), getCallOptions()), request);
     }
@@ -2440,7 +2440,7 @@ public final class NativeAutomatorGrpc {
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_IS_PERMISSION_DIALOG_VISIBLE:
-          serviceImpl.isPermissionDialogVisible((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
+          serviceImpl.isPermissionDialogVisible((pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.PermissionDialogVisibleResponse>) responseObserver);
           break;
         case METHODID_HANDLE_PERMISSION_DIALOG:

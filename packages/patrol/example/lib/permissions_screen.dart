@@ -15,7 +15,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   bool _microphonePermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
-    await Future<void>.delayed(Duration(seconds: 5));
+    await Future<void>.delayed(Duration(seconds: 1));
     final status = await Permission.camera.request();
     setState(() {
       _cameraPermissionGranted = status == PermissionStatus.granted;

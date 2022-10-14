@@ -41,7 +41,7 @@ service NativeAutomator {
   rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
 
   // permissions
-  rpc isPermissionDialogVisible(Empty) returns (PermissionDialogVisibleResponse) {}
+  rpc isPermissionDialogVisible(PermissionDialogVisibleRequest) returns (PermissionDialogVisibleResponse) {}
   rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
   rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
 
@@ -120,6 +120,10 @@ message SetLocationAccuracyRequest {
     COARSE = 0;
     FINE = 1;
   }
+}
+
+message PermissionDialogVisibleRequest {
+  uint64 timeout = 1;
 }
 
 message PermissionDialogVisibleResponse {
