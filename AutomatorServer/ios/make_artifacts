@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+mkdir -p ./artifacts
+
+xcodebuild \
+    build-for-testing \
+    -project AutomatorServer.xcodeproj \
+    -scheme AutomatorServer \
+    -derivedDataPath ./DerivedData \
+    -sdk iphonesimulator \
+    -arch arm64
+
+cp -r \
+    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app \
+    ./artifacts/AutomatorServer-iphonesimulator-arm64.app
+
+xcodebuild \
+    build-for-testing \
+    -project AutomatorServer.xcodeproj \
+    -scheme AutomatorServer \
+    -derivedDataPath ./DerivedData \
+    -sdk iphonesimulator \
+    -arch x86_64
+
+cp -r \
+    ./DerivedData/Build/Products/Debug-iphonesimulator/AutomatorServerUITests-Runner.app \
+    ./artifacts/AutomatorServer-iphonesimulator-x86_64.app
+
+xcodebuild \
+    build-for-testing \
+    -project AutomatorServer.xcodeproj \
+    -scheme AutomatorServer \
+    -derivedDataPath ./DerivedData \
+    -sdk iphoneos
+
+cp -r \
+    ./DerivedData/Build/Products/Debug-iphoneos/AutomatorServerUITests-Runner.app \
+    ./artifacts/AutomatorServer-iphoneos.app
+
+cd ./artifacts
+zip -r AutomatorServer-iphonesimulator-arm64.zip AutomatorServer-iphonesimulator-arm64.app
+zip -r AutomatorServer-iphonesimulator-x86_64.zip AutomatorServer-iphonesimulator-x86_64.app
+zip -r AutomatorServer-iphoneos.zip AutomatorServer-iphoneos.app
+cd ..
