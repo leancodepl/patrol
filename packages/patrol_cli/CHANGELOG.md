@@ -1,3 +1,13 @@
+## 0.7.0
+
+In this release, we've focused on stability, reliability, and reducing
+flakiness.
+
+- AutomatorServer:
+  - Add timeouts when interacting with native UI (#437)
+  - Implement `isPermissionDialogVisible()` method (#448)
+  - Fix entering text into SecureTextField on iOS (#446)
+
 ## 0.6.15
 
 - Fix trying to run on all attached devices (instead of only the first one) when
