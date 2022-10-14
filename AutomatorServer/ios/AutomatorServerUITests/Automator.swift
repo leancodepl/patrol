@@ -104,22 +104,16 @@ class Automator {
     try await runAction("entering text \(format: data) by index \(index)") {
       let app = try self.getApp(withBundleId: bundleId)
       
+      let textFieldPredicate = NSPredicate(format: "elementType == 49")
+      let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
+      let predicate = NSCompoundPredicate(
+        orPredicateWithSubpredicates: [textFieldPredicate, secureTextFieldPredicate]
+      )
       
-      let textFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeTextField AND exists == 1'")
-      //let secureTextFieldPredicate = NSPredicate(format: "elementType == 'XCUIElementTypeSecureTextField'")
-      //let existsPredicate = NSPredicate(format: "exists == 1")
-//      let predicate = NSCompoundPredicate(
-//        orPredicateWithSubpredicates: [
-//          textFieldPredicate,
-//          //secureTextFieldPredicate
-//          ]
-//      )
-
-      let element = app.descendants(matching: .any).matching(textFieldPredicate)
-//      let exists = element.waitForExistence(timeout: self.timeout)
-//      guard exists else {
-//        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
-//      }
+      let elements = app.descendants(matching: .any).matching(predicate).allElementsBoundByIndex
+      guard let element = self.waitForAnyElement(elements: elements, timeout: self.timeout) else {
+        throw PatrolError.viewNotExists("text field at index \(index) in app \(format: bundleId)")
+      }
       
       element.firstMatch.forceTap()
       element.firstMatch.typeText(data)
