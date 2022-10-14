@@ -60,5 +60,8 @@
 	<!-- Permission options for the `microphone` group -->
 	<key>NSMicrophoneUsageDescription</key>
 	<string>microphone</string>
+	<!-- Permission options for the `contacts` group -->
+	<key>NSContactsUsageDescription</key>
+	<string>contacts</string>
 </dict>
 </plist>

@@ -338,6 +338,25 @@ class PatrolAutomator private constructor() {
         delay()
     }
 
+    fun isPermissionDialogVisible(timeout: Long): Boolean {
+        val identifiers = arrayOf(
+            // while using
+            "com.android.packageinstaller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
+            // once
+            "com.android.packageinstaller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_button",
+            "com.android.permissioncontroller:id/permission_allow_one_time_button",
+            // deny
+            "com.android.packageinstaller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_button",
+        )
+
+        val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
+        return uiObject != null
+    }
+
     fun allowPermissionWhileUsingApp() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
@@ -345,7 +364,7 @@ class PatrolAutomator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
         )
 
-        val uiObject = waitForUiObjectByResourceId(*identifiers)
+        val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to allow permission while using")
 
         uiObject.click()
@@ -358,7 +377,7 @@ class PatrolAutomator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
         )
 
-        val uiObject = waitForUiObjectByResourceId(*identifiers)
+        val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to allow permission once")
 
         uiObject.click()
@@ -370,7 +389,7 @@ class PatrolAutomator private constructor() {
             "com.android.permissioncontroller:id/permission_deny_button",
         )
 
-        val uiObject = waitForUiObjectByResourceId(*identifiers)
+        val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to deny permission")
 
         uiObject.click()
@@ -379,7 +398,7 @@ class PatrolAutomator private constructor() {
     fun selectFineLocation() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
 
-        val uiObject = waitForUiObjectByResourceId(resourceId)
+        val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to select fine location")
 
         uiObject.click()
@@ -388,7 +407,7 @@ class PatrolAutomator private constructor() {
     fun selectCoarseLocation() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
 
-        val uiObject = waitForUiObjectByResourceId(resourceId)
+        val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to select coarse location")
 
         uiObject.click()
@@ -408,9 +427,9 @@ class PatrolAutomator private constructor() {
         return false
     }
 
-    private fun waitForUiObjectByResourceId(vararg identifiers: String): UiObject? {
+    private fun waitForUiObjectByResourceId(vararg identifiers: String, timeout: Long): UiObject? {
         val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeoutMillis) {
+        while (System.currentTimeMillis() - startTime < timeout) {
             for (ident in identifiers) {
                 val bySelector = By.res(ident)
                 if (uiDevice.findObjects(bySelector).isNotEmpty()) {

@@ -9,7 +9,13 @@ void main() {
     expect($(#camera).$(#statusText).text, 'Not granted');
 
     await $('Request camera permission').tap();
-    await $.native.grantPermissionWhenInUse();
+
+    final request = await $.native.isPermissionDialogVisible(
+      timeout: Duration(seconds: 2),
+    );
+    if (request) {
+      await $.native.grantPermissionWhenInUse();
+    }
 
     await $.pump();
     expect($(#camera).$(#statusText).text, 'Granted');
@@ -19,10 +25,26 @@ void main() {
     expect($(#microphone).$(#statusText).text, 'Not granted');
 
     await $('Request microphone permission').tap();
-    await $.native.grantPermissionWhenInUse();
+
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
 
     await $.pump();
     expect($(#microphone).$(#statusText).text, 'Granted');
+  }
+
+  Future<void> requestAndDenyContactsPermission(PatrolTester $) async {
+    expect($(#contacts).$(#statusText).text, 'Not granted');
+
+    await $('Request contacts permission').tap();
+
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.denyPermission();
+    }
+
+    await $.pump();
+    expect($(#contacts).$(#statusText).text, 'Not granted');
   }
 
   patrolTest(
@@ -36,6 +58,7 @@ void main() {
 
       await requestAndGrantCameraPermission($);
       await requestAndGrantMicrophonePermission($);
+      await requestAndDenyContactsPermission($);
     },
   );
 }

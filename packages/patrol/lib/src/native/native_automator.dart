@@ -162,7 +162,7 @@ class NativeAutomator {
     await _wrapRequest(
       'configure',
       () => _client.configure(
-        ConfigureRequest(findTimeout: Int64(findTimeout.inMilliseconds)),
+        ConfigureRequest(findTimeoutMillis: Int64(findTimeout.inMilliseconds)),
       ),
     );
   }
@@ -465,6 +465,23 @@ class NativeAutomator {
     );
 
     return response.nativeViews;
+  }
+
+  /// Checks if a native permission request dialog is from now until [timeout]
+  /// passees.
+  Future<bool> isPermissionDialogVisible({
+    Duration timeout = const Duration(seconds: 1),
+  }) async {
+    final response = await _wrapRequest(
+      'isPermissionDialogVisible',
+      () => _client.isPermissionDialogVisible(
+        PermissionDialogVisibleRequest(
+          timeoutMillis: Int64(timeout.inMilliseconds),
+        ),
+      ),
+    );
+
+    return response.visible;
   }
 
   /// Grants the permission that the currently visible native permission request
