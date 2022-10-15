@@ -32,7 +32,7 @@ void main() {
   late DriveCommand driveCommand;
   late FileSystem fs;
 
-  group('parse input', () {
+  group('drive command', () {
     setUp(() {
       final parentDisposeScope = DisposeScope();
       final artifactsRepository = MockArtifactsRepository();
@@ -63,12 +63,12 @@ void main() {
       );
     });
 
-    test('creates empty default config when config file is empty', () async {
+    test('has correct default config', () async {
       final config = await driveCommand.parseInput();
       expect(config, _defaultConfig);
     });
 
-    test('creates config with single target', () async {
+    test('has correct config when single target is given', () async {
       fs.file('integration_test/app_test.dart').createSync();
 
       final config = await driveCommand.parseInput();
@@ -81,7 +81,7 @@ void main() {
       );
     });
 
-    test('creates config with multiple targets', () async {
+    test('has correct config when multiple targets are given', () async {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
@@ -96,6 +96,26 @@ void main() {
           ],
         ),
       );
+    });
+
+    test('returns exit code 0 when all tests pass', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+      fs.file('integration_test/login_test.dart').createSync();
+
+      final config = await driveCommand.parseInput();
+
+      final exitCode = await driveCommand.execute(config);
+      expect(exitCode, isZero);
+    });
+
+    test('returns exit code 1 when any test fails', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+      fs.file('integration_test/login_test.dart').createSync();
+
+      final config = await driveCommand.parseInput();
+
+      final exitCode = await driveCommand.execute(config);
+      expect(exitCode, equals(1));
     });
   });
 }
