@@ -8,7 +8,7 @@ these one-liners for you:
 **Bash**
 
 ```bash
-for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
+$ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
 ```
 
 **PowerShell**
@@ -19,24 +19,86 @@ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
 
 ## Inspecting native view hierarchy
 
-It's hard to tap on or enter text into something you don't know how to refer to.
-It's heplful to do a native view hierarchy dump and find the properties of the
-view you want to act on.
+It's hard to tap on or enter text into a view you don't know how to refer to. In
+such situation we recommmend doing a native view hierarchy dump and finding the
+properties of the view you want to act on.
 
-### Android
+**Android**
+
+First, perform a native view hierarchy dump using `adb`:
 
 ```bash
-adb shell uiautomator dump
+$ adb shell uiautomator dump
 ```
 
 Then, copy the dump file from the device to your machine:
 
 ```bash
-adb pull /sdcard/window_dump.xml .
+$ adb pull /sdcard/window_dump.xml .
 ```
 
-### iOS
+**iOS**
+
+The easiest way to perform the native view hierarchy dumb on iOS is to use the
+[idb] tool.
+
+Once you have [idb] installed, perform a dump:
 
 ```bash
-idb ui describe-all
+$ idb ui describe-all
 ```
+
+## Avoiding hardcoding credentials in tests
+
+It's a bad practice to hardcode data such as emails, usernames, and passwords in
+test code.
+
+```dart
+await $(#nameTextField).enterText('Bartek'); // bad!
+await $(#passwordTextField).enterText('ny4ncat'); // bad as well!
+```
+
+To fix this, we recommend removing the hardcoded credentials from test code and
+providing them through the environment:
+
+```dart
+await $(#nameTextField).enterText(String.fromEnvironment('USERNAME'));
+await $(#passwordTextField).enterText(String.fromEnvironment('PASSWORD'));
+```
+
+To set `USERNAME` and `PASSWORD`, use `--dart-define`:
+
+```bash
+$ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
+```
+
+## Granting sensitive permission through the Settings app
+
+Some particularly sensitive permissions (such as access to background location
+or controlling the Do Not Disturb feature) cannot be requested in the permission
+dialog like most of the common permissions. Instead, you have to ask the user to
+go to the Settings app and grant your app the permission you need.
+
+Testing such flows is not as simple as simply granting normal permission, but
+it's totally possible with Patrol.
+
+Below we present you with a snippet that will make the built-in Camera app have
+access to the Do Not Disturb feature on Android. Let's assume that the Settings
+app on the device we want to run the tests on looks like this:
+
+![settings_screenshot]
+
+And here's the code:
+
+```dart
+await $.native.tap(Selector(text: 'Camera')); // tap on the list tile
+await $.native.tap(Selector(text: 'ALLOW')); // handle the confirmation dialog
+await $.native.pressBack(); // go back to the app under test
+```
+
+Please note that the UI of the Settings app differs across operating systems,
+their versions, and OEM flavors (in case of Android). You'll have to handle all
+edge cases yourself.
+
+[idb]: https://github.com/facebook/idb
+[settings_screenshot]: https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png

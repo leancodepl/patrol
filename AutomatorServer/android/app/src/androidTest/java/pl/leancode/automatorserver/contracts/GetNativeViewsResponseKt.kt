@@ -29,7 +29,7 @@ object GetNativeViewsResponseKt {
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
     class NativeViewsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
      val nativeViews: com.google.protobuf.kotlin.DslList<pl.leancode.automatorserver.contracts.Contracts.NativeView, NativeViewsProxy>
       @kotlin.jvm.JvmSynthetic
@@ -37,7 +37,7 @@ object GetNativeViewsResponseKt {
         _builder.getNativeViewsList()
       )
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      * @param value The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -46,7 +46,7 @@ object GetNativeViewsResponseKt {
       _builder.addNativeViews(value)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      * @param value The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -56,7 +56,7 @@ object GetNativeViewsResponseKt {
       add(value)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      * @param values The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -65,7 +65,7 @@ object GetNativeViewsResponseKt {
       _builder.addAllNativeViews(values)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      * @param values The nativeViews to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -75,7 +75,7 @@ object GetNativeViewsResponseKt {
       addAll(values)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      * @param index The index to set the value at.
      * @param value The nativeViews to set.
      */
@@ -85,7 +85,7 @@ object GetNativeViewsResponseKt {
       _builder.setNativeViews(index, value)
     }
     /**
-     * <code>repeated .patrol.NativeView nativeViews = 1;</code>
+     * <code>repeated .patrol.NativeView nativeViews = 2;</code>
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearNativeViews")

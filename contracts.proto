@@ -4,8 +4,9 @@ package patrol;
 option java_package = "pl.leancode.automatorserver.contracts";
 
 service NativeAutomator {
-  // general
+  rpc configure(ConfigureRequest) returns (Empty) {}
 
+  // general
   rpc pressHome(Empty) returns (Empty) {}
   rpc pressBack(Empty) returns (Empty) {}
   rpc pressRecentApps(Empty) returns (Empty) {}
@@ -40,12 +41,17 @@ service NativeAutomator {
   rpc tapOnNotification(TapOnNotificationRequest) returns (Empty) {}
 
   // permissions
+  rpc isPermissionDialogVisible(PermissionDialogVisibleRequest) returns (PermissionDialogVisibleResponse) {}
   rpc handlePermissionDialog(HandlePermissionRequest) returns (Empty) {}
   rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
 
   // other
 
   rpc debug(Empty) returns (Empty) {}
+}
+
+message ConfigureRequest {
+  uint64 findTimeoutMillis = 1;
 }
 
 message OpenAppRequest { string appId = 1; }
@@ -58,8 +64,8 @@ message TapOnNotificationRequest {
 }
 
 // We're defining our own Empty instead of using google.protobuf.Empty because
-// the Dart plugin can't easily generate it. 
-// 
+// the Dart plugin can't easily generate it.
+//
 // See:
 //  * https://github.com/google/protobuf.dart/issues/170
 message Empty {}
@@ -69,10 +75,10 @@ message OpenQuickSettingsRequest {}
 message DarkModeRequest { string appId = 1; }
 
 message GetNativeViewsRequest { Selector selector = 1; }
-message GetNativeViewsResponse { repeated NativeView nativeViews = 1; }
+message GetNativeViewsResponse { repeated NativeView nativeViews = 2;}
 
 message GetNotificationsRequest {}
-message GetNotificationsResponse { repeated Notification notifications = 1; }
+message GetNotificationsResponse { repeated Notification notifications = 2; }
 
 message TapRequest {
   Selector selector = 1;
@@ -114,6 +120,14 @@ message SetLocationAccuracyRequest {
     COARSE = 0;
     FINE = 1;
   }
+}
+
+message PermissionDialogVisibleRequest {
+  uint64 timeoutMillis = 1;
+}
+
+message PermissionDialogVisibleResponse {
+  bool visible = 1;
 }
 
 message Selector {

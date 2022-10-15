@@ -14,34 +14,28 @@ class LoggerInterceptor : ServerInterceptor {
         delegate: ServerCall<ReqT, RespT>
     ) : ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(delegate) {
 
-        private fun handleErrorStatus(cause: Throwable?): Status {
-            val newStatus = when (cause) {
-                is IllegalArgumentException -> {
-                    Status
-                        .INVALID_ARGUMENT
-                        .withDescription(cause.message)
-                }
-
-                is IllegalStateException -> {
-                    Status
-                        .FAILED_PRECONDITION
-                        .withDescription(cause.message)
-                }
-
+        private fun handleErrorStatus(exception: Throwable?): Status {
+            val newStatus = when (exception) {
                 is UiObjectNotFoundException -> {
                     Status
                         .NOT_FOUND
-                        .withDescription("selector ${cause.message} found nothing")
+                        .withDescription("selector ${exception.message} found nothing")
+                }
+
+                is NotImplementedError -> {
+                    Status
+                        .UNIMPLEMENTED
+                        .withDescription("method ${exception.message}() is not implemented on Android")
                 }
 
                 else -> {
                     Status
                         .UNKNOWN
-                        .withDescription("Caught unknown exception $cause")
+                        .withDescription("unknown error: $exception")
                 }
             }
 
-            return newStatus.withCause(cause)
+            return newStatus.withCause(exception)
         }
 
         override fun close(status: Status, trailers: Metadata) {

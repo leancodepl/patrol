@@ -9,6 +9,23 @@ import 'dart:core' as $core;
 import 'dart:convert' as $convert;
 import 'dart:typed_data' as $typed_data;
 
+@$core.Deprecated('Use configureRequestDescriptor instead')
+const ConfigureRequest$json = const {
+  '1': 'ConfigureRequest',
+  '2': const [
+    const {
+      '1': 'findTimeoutMillis',
+      '3': 1,
+      '4': 1,
+      '5': 4,
+      '10': 'findTimeoutMillis'
+    },
+  ],
+};
+
+/// Descriptor for `ConfigureRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List configureRequestDescriptor = $convert.base64Decode(
+    'ChBDb25maWd1cmVSZXF1ZXN0EiwKEWZpbmRUaW1lb3V0TWlsbGlzGAEgASgEUhFmaW5kVGltZW91dE1pbGxpcw==');
 @$core.Deprecated('Use openAppRequestDescriptor instead')
 const OpenAppRequest$json = const {
   '1': 'OpenAppRequest',
@@ -95,7 +112,7 @@ const GetNativeViewsResponse$json = const {
   '2': const [
     const {
       '1': 'nativeViews',
-      '3': 1,
+      '3': 2,
       '4': 3,
       '5': 11,
       '6': '.patrol.NativeView',
@@ -107,7 +124,7 @@ const GetNativeViewsResponse$json = const {
 /// Descriptor for `GetNativeViewsResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getNativeViewsResponseDescriptor =
     $convert.base64Decode(
-        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAEgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
+        'ChZHZXROYXRpdmVWaWV3c1Jlc3BvbnNlEjQKC25hdGl2ZVZpZXdzGAIgAygLMhIucGF0cm9sLk5hdGl2ZVZpZXdSC25hdGl2ZVZpZXdz');
 @$core.Deprecated('Use getNotificationsRequestDescriptor instead')
 const GetNotificationsRequest$json = const {
   '1': 'GetNotificationsRequest',
@@ -122,7 +139,7 @@ const GetNotificationsResponse$json = const {
   '2': const [
     const {
       '1': 'notifications',
-      '3': 1,
+      '3': 2,
       '4': 3,
       '5': 11,
       '6': '.patrol.Notification',
@@ -134,7 +151,7 @@ const GetNotificationsResponse$json = const {
 /// Descriptor for `GetNotificationsResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getNotificationsResponseDescriptor =
     $convert.base64Decode(
-        'ChhHZXROb3RpZmljYXRpb25zUmVzcG9uc2USOgoNbm90aWZpY2F0aW9ucxgBIAMoCzIULnBhdHJvbC5Ob3RpZmljYXRpb25SDW5vdGlmaWNhdGlvbnM=');
+        'ChhHZXROb3RpZmljYXRpb25zUmVzcG9uc2USOgoNbm90aWZpY2F0aW9ucxgCIAMoCzIULnBhdHJvbC5Ob3RpZmljYXRpb25SDW5vdGlmaWNhdGlvbnM=');
 @$core.Deprecated('Use tapRequestDescriptor instead')
 const TapRequest$json = const {
   '1': 'TapRequest',
@@ -253,6 +270,30 @@ const SetLocationAccuracyRequest_LocationAccuracy$json = const {
 final $typed_data.Uint8List setLocationAccuracyRequestDescriptor =
     $convert.base64Decode(
         'ChpTZXRMb2NhdGlvbkFjY3VyYWN5UmVxdWVzdBJfChBsb2NhdGlvbkFjY3VyYWN5GAEgASgOMjMucGF0cm9sLlNldExvY2F0aW9uQWNjdXJhY3lSZXF1ZXN0LkxvY2F0aW9uQWNjdXJhY3lSEGxvY2F0aW9uQWNjdXJhY3kiKAoQTG9jYXRpb25BY2N1cmFjeRIKCgZDT0FSU0UQABIICgRGSU5FEAE=');
+@$core.Deprecated('Use permissionDialogVisibleRequestDescriptor instead')
+const PermissionDialogVisibleRequest$json = const {
+  '1': 'PermissionDialogVisibleRequest',
+  '2': const [
+    const {'1': 'timeoutMillis', '3': 1, '4': 1, '5': 4, '10': 'timeoutMillis'},
+  ],
+};
+
+/// Descriptor for `PermissionDialogVisibleRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List permissionDialogVisibleRequestDescriptor =
+    $convert.base64Decode(
+        'Ch5QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlcXVlc3QSJAoNdGltZW91dE1pbGxpcxgBIAEoBFINdGltZW91dE1pbGxpcw==');
+@$core.Deprecated('Use permissionDialogVisibleResponseDescriptor instead')
+const PermissionDialogVisibleResponse$json = const {
+  '1': 'PermissionDialogVisibleResponse',
+  '2': const [
+    const {'1': 'visible', '3': 1, '4': 1, '5': 8, '10': 'visible'},
+  ],
+};
+
+/// Descriptor for `PermissionDialogVisibleResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List permissionDialogVisibleResponseDescriptor =
+    $convert.base64Decode(
+        'Ch9QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlc3BvbnNlEhgKB3Zpc2libGUYASABKAhSB3Zpc2libGU=');
 @$core.Deprecated('Use selectorDescriptor instead')
 const Selector$json = const {
   '1': 'Selector',

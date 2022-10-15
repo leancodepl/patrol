@@ -1,6 +1,9 @@
 import 'dart:io' as io;
 
+import 'package:fixnum/fixnum.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:patrol/src/native/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
@@ -21,6 +24,18 @@ class PatrolActionException implements Exception {
   String toString() => 'Patrol action failed: $message';
 }
 
+/// Bindings available to use with [NativeAutomator].
+enum Binding {
+  /// Initialize [PatrolBinding].
+  patrol,
+
+  /// Initializes [IntegrationTestWidgetsFlutterBinding]
+  integrationTest,
+
+  /// Doesn't initialize any binding.
+  none,
+}
+
 /// Provides functionality to interact with the host OS that the app under test
 /// is running on.
 ///
@@ -28,15 +43,18 @@ class PatrolActionException implements Exception {
 /// target device.
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
-  ///
-  /// If [useBinding] is true, [PatrolBinding] is initialized.
   NativeAutomator({
-    this.timeout = const Duration(seconds: 10),
+    this.connectionTimeout = const Duration(seconds: 20),
+    this.findTimeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
-    bool useBinding = true,
-  })  : _logger = logger,
+    Binding binding = Binding.patrol,
+  })  : assert(
+          connectionTimeout > findTimeout,
+          'find timeout is longer than connection timeout',
+        ),
+        _logger = logger,
         host = const String.fromEnvironment(
           'PATROL_HOST',
           defaultValue: 'localhost',
@@ -52,8 +70,11 @@ class NativeAutomator {
         bundleId ?? const String.fromEnvironment('PATROL_APP_BUNDLE_ID');
 
     _logger(
-      'creating NativeAutomator, host: $host, port: $port, '
-      'packageName: $packageName, bundleId: $bundleId',
+      'creating NativeAutomator\n'
+      '\thost: $host\n'
+      '\tport: $port\n'
+      '\tpackageName: $packageName\n'
+      '\tbundleId: $bundleId\n',
     );
 
     final channel = ClientChannel(
@@ -66,13 +87,21 @@ class NativeAutomator {
 
     _client = NativeAutomatorClient(
       channel,
-      options: CallOptions(timeout: timeout),
+      options: CallOptions(timeout: connectionTimeout),
     );
 
-    if (useBinding) {
-      _logger('Initializing PatrolBinding...');
-      PatrolBinding.ensureInitialized();
-      _logger('Initialized PatrolBinding');
+    switch (binding) {
+      case Binding.patrol:
+        _logger('Initializing PatrolBinding...');
+        PatrolBinding.ensureInitialized();
+        break;
+      case Binding.integrationTest:
+        _logger('Initializing IntegrationTestWidgetsFlutterBinding...');
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        break;
+      case Binding.none:
+        _logger('No bindings will be initialized');
+        break;
     }
   }
 
@@ -84,8 +113,12 @@ class NativeAutomator {
   /// Port on [host] on which Patrol server instrumentation is running.
   final String port;
 
-  /// Timeout for HTTP requests to Patrol automation server.
-  final Duration timeout;
+  /// Timeout for requests to Patrol automation server. It must be bigger than
+  /// [findTimeout].
+  final Duration connectionTimeout;
+
+  /// Time to wait for native views to appear.
+  final Duration findTimeout;
 
   /// Unique identifier of the app under test on Android.
   late final String packageName;
@@ -115,12 +148,23 @@ class NativeAutomator {
     } on GrpcError catch (err) {
       _logger('$name() failed');
       final log = '$name() failed with code ${err.codeName} (${err.message})';
-
       throw PatrolActionException(log);
     } catch (err) {
       _logger('$name() failed');
       rethrow;
     }
+  }
+
+  /// Configures the native automator.
+  ///
+  /// Must be called before using any native features.
+  Future<void> configure() async {
+    await _wrapRequest(
+      'configure',
+      () => _client.configure(
+        ConfigureRequest(findTimeoutMillis: Int64(findTimeout.inMilliseconds)),
+      ),
+    );
   }
 
   /// Presses the back button.
@@ -423,10 +467,27 @@ class NativeAutomator {
     return response.nativeViews;
   }
 
+  /// Checks if a native permission request dialog is from now until [timeout]
+  /// passees.
+  Future<bool> isPermissionDialogVisible({
+    Duration timeout = const Duration(seconds: 1),
+  }) async {
+    final response = await _wrapRequest(
+      'isPermissionDialogVisible',
+      () => _client.isPermissionDialogVisible(
+        PermissionDialogVisibleRequest(
+          timeoutMillis: Int64(timeout.inMilliseconds),
+        ),
+      ),
+    );
+
+    return response.visible;
+  }
+
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Does nothing if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> grantPermissionWhenInUse() async {
     await _wrapRequest(
       'grantPermissionWhenInUse',
@@ -439,7 +500,7 @@ class NativeAutomator {
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Does nothing if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   ///
   /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
   /// location permission.
@@ -457,7 +518,7 @@ class NativeAutomator {
   /// Denies the permission that the currently visible native permission request
   /// dialog is asking for.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> denyPermission() async {
     await _wrapRequest(
       'denyPermission',
@@ -470,7 +531,7 @@ class NativeAutomator {
   /// Select the "coarse location" (aka "approximate") setting on the currently
   /// visible native permission request dialog.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> selectCoarseLocation() async {
     await _wrapRequest(
       'selectCoarseLocation',
@@ -485,7 +546,7 @@ class NativeAutomator {
   /// Select the "fine location" (aka "precise") setting on the currently
   /// visible native permission request dialog.
   ///
-  /// Throws an exception if no permission request dialog is present.
+  /// Throws if no permission request dialog is present.
   Future<void> selectFineLocation() async {
     await _wrapRequest(
       'selectFineLocation',

@@ -1,0 +1,44 @@
+name: automator-ios prepare
+
+on:
+  push:
+    branches: [master]
+    tags-ignore: ["*"]
+    paths:
+      - "AutomatorServer/ios/**"
+  pull_request:
+    branches: [master]
+    paths:
+      - "AutomatorServer/ios/**"
+
+jobs:
+  main:
+    runs-on: macos-12
+
+    defaults:
+      run:
+        working-directory: AutomatorServer/ios
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - run: brew update && brew upgrade
+
+      - name: Install swift-format
+        run: brew install swift-format
+
+      - run: swift-format --version
+
+      - run: swift --version
+
+      - name: swift-format lint
+        working-directory: ./AutomatorServer/ios/AutomatorServerUITests
+        run: test -z $(swift-format lint --recursive .)
+
+      - name: swift-format format
+        working-directory: ./AutomatorServer/ios/AutomatorServerUITests
+        run: |
+          swift-format format --recursive --in-place .
+          git update-index --refresh
+          git diff-index --quiet HEAD --

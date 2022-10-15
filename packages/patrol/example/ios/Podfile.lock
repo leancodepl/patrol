@@ -47,6 +47,6 @@ SPEC CHECKSUMS:
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: bbe30a4fd2747a7ad1e3df66104ba432e789d64c
+PODFILE CHECKSUM: 16a1f1f98a4b3ba0611395c3475bbcdf891db214
 
 COCOAPODS: 1.11.3

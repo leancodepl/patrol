@@ -5,7 +5,8 @@ import 'package:example/notifications_screen.dart';
 import 'package:example/overlay_screen.dart';
 import 'package:example/permissions_screen.dart';
 import 'package:example/scrolling_screen.dart';
-import 'package:example/webview_screen.dart';
+import 'package:example/webview_screen_a.dart';
+import 'package:example/webview_screen_b.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -169,14 +170,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const PermissionsScreen(),
-              ),
-            ),
-            child: const Text('Open permissions screen'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
                 builder: (_) => const ScrollingScreen(),
               ),
             ),
@@ -185,10 +178,26 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(),
+                builder: (_) => const WebViewScreenA(),
               ),
             ),
-            child: const Text('Open webview screen'),
+            child: const Text('Open webview screen A'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreenB(),
+              ),
+            ),
+            child: const Text('Open webview screen B'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const PermissionsScreen(),
+              ),
+            ),
+            child: const Text('Open permissions screen'),
           ),
         ],
       ),

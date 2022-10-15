@@ -6,12 +6,10 @@ on:
     tags-ignore: ["*"]
     paths:
       - "packages/patrol_cli/**"
-      - "AutomatorServer/**"
   pull_request:
     branches: [master]
     paths:
       - "packages/patrol_cli/**"
-      - "AutomatorServer/**"
 
 jobs:
   main:
@@ -40,14 +38,14 @@ jobs:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
 
-      - name: Install Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "11"
+      # - name: Install Java
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     distribution: "temurin"
+      #     java-version: "11"
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+      # - name: Setup Android SDK
+      #   uses: android-actions/setup-android@v2
 
       - name: dart pub get
         run: dart pub get
@@ -63,29 +61,6 @@ jobs:
 
       - name: Install patrol_cli
         run: dart pub global activate --source path . && patrol
-
-      - name: ktlint check
-        working-directory: ./AutomatorServer/android
-        run: ./gradlew ktlintCheck
-
-      - name: ktlint format
-        working-directory: ./AutomatorServer/android
-        run: ./gradlew ktlintFormat
-
-      # # Temporarily disabled because takes too much time
-      # - name: Install swift-format
-      #   run: brew install swift-format
-
-      # - name: swift-format lint
-      #   working-directory: ./AutomatorServer/ios/AutomatorServerUITests
-      #   run: test -z $(swift-format lint --recursive .)
-
-      # - name: swift-format format
-      #   working-directory: ./AutomatorServer/ios/AutomatorServerUITests
-      #   run: |
-      #     swift-format format --recursive --in-place .
-      #     git update-index --refresh
-      #     git diff-index --quiet HEAD --
 
       - name: Test patrol bootstrap --template basic
         working-directory: ../

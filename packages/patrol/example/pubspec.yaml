@@ -11,9 +11,9 @@ dependencies:
   convenient_test: ^1.2.0
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^11.0.1
+  flutter_local_notifications: ^12.0.2
   geolocator: ^9.0.2
-  permission_handler: ^10.0.1
+  permission_handler: ^10.1.0
   webview_flutter: ^3.0.4
 
 dev_dependencies:
@@ -22,7 +22,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  leancode_lint: ^1.3.0
+  leancode_lint: ^2.0.0+1
   patrol:
     path: ../
 

@@ -34,15 +34,17 @@ void patrolTest(
   dynamic tags,
   PatrolTestConfig config = const PatrolTestConfig(),
   bool nativeAutomation = false,
+  Binding binding = Binding.patrol,
 }) {
-  final patrol = nativeAutomation
+  final automator = nativeAutomation
       ? NativeAutomator(
           packageName: config.packageName,
           bundleId: config.bundleId,
+          binding: binding,
         )
       : null;
 
-  return testWidgets(
+  testWidgets(
     description,
     skip: skip,
     timeout: timeout,
@@ -50,9 +52,11 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
+      await automator?.configure();
+
       final patrolTester = PatrolTester(
         tester: widgetTester,
-        nativeAutomator: patrol,
+        nativeAutomator: automator,
         config: config,
       );
       await callback(patrolTester);

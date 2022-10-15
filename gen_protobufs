@@ -33,6 +33,7 @@ protoc \
 
 # Remove the server, which causes problems with pub.dev score and is not needed.
 # rm "$dart_out/contracts.pbserver.dart"
+rm -rf "./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts"
 
 protoc \
 	--java_out="$java_out" \

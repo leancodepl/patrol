@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+sdk="${1:-}"
+arch="${2:-}"
+
+if [ -z "$sdk" ] || [ -z "$arch" ]; then
+    echo "usage: ./make_artifacts <sdk> <arch>"
+    exit 1
+fi
+
+
+mkdir -p ./artifacts
+
+xcodebuild \
+    build-for-testing \
+    -project AutomatorServer.xcodeproj \
+    -scheme AutomatorServer \
+    -derivedDataPath ./DerivedData \
+    -sdk "$sdk" \
+    -arch "$arch"
+
+cp -r \
+    "./DerivedData/Build/Products/Debug-$sdk/AutomatorServerUITests-Runner.app" \
+    "./artifacts/AutomatorServer-$sdk-$arch.app"
+
+cd ./artifacts
+zip -r "AutomatorServer-$sdk-$arch.zip" "AutomatorServer-$sdk-$arch.app"
+cd ..

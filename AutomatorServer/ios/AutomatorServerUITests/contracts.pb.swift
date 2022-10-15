@@ -20,6 +20,18 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
+public struct Patrol_ConfigureRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var findTimeoutMillis: UInt64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Patrol_OpenAppRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -85,8 +97,8 @@ public struct Patrol_TapOnNotificationRequest {
 }
 
 /// We're defining our own Empty instead of using google.protobuf.Empty because
-/// the Dart plugin can't easily generate it. 
-/// 
+/// the Dart plugin can't easily generate it.
+///
 /// See:
 ///  * https://github.com/google/protobuf.dart/issues/170
 public struct Patrol_Empty {
@@ -383,6 +395,30 @@ extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+public struct Patrol_PermissionDialogVisibleRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var timeoutMillis: UInt64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Patrol_PermissionDialogVisibleResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var visible: Bool = false
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Patrol_Selector {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -574,6 +610,7 @@ public struct Patrol_Notification {
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
+extension Patrol_ConfigureRequest: @unchecked Sendable {}
 extension Patrol_OpenAppRequest: @unchecked Sendable {}
 extension Patrol_TapOnNotificationRequest: @unchecked Sendable {}
 extension Patrol_TapOnNotificationRequest.OneOf_FindBy: @unchecked Sendable {}
@@ -592,6 +629,8 @@ extension Patrol_HandlePermissionRequest: @unchecked Sendable {}
 extension Patrol_HandlePermissionRequest.Code: @unchecked Sendable {}
 extension Patrol_SetLocationAccuracyRequest: @unchecked Sendable {}
 extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: @unchecked Sendable {}
+extension Patrol_PermissionDialogVisibleRequest: @unchecked Sendable {}
+extension Patrol_PermissionDialogVisibleResponse: @unchecked Sendable {}
 extension Patrol_Selector: @unchecked Sendable {}
 extension Patrol_NativeView: @unchecked Sendable {}
 extension Patrol_Notification: @unchecked Sendable {}
@@ -600,6 +639,38 @@ extension Patrol_Notification: @unchecked Sendable {}
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "patrol"
+
+extension Patrol_ConfigureRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ConfigureRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "findTimeoutMillis"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.findTimeoutMillis) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.findTimeoutMillis != 0 {
+      try visitor.visitSingularUInt64Field(value: self.findTimeoutMillis, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_ConfigureRequest, rhs: Patrol_ConfigureRequest) -> Bool {
+    if lhs.findTimeoutMillis != rhs.findTimeoutMillis {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
 
 extension Patrol_OpenAppRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".OpenAppRequest"
@@ -807,7 +878,7 @@ extension Patrol_GetNativeViewsRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
 extension Patrol_GetNativeViewsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetNativeViewsResponse"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "nativeViews"),
+    2: .same(proto: "nativeViews"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -816,7 +887,7 @@ extension Patrol_GetNativeViewsResponse: SwiftProtobuf.Message, SwiftProtobuf._M
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.nativeViews) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.nativeViews) }()
       default: break
       }
     }
@@ -824,7 +895,7 @@ extension Patrol_GetNativeViewsResponse: SwiftProtobuf.Message, SwiftProtobuf._M
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.nativeViews.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.nativeViews, fieldNumber: 1)
+      try visitor.visitRepeatedMessageField(value: self.nativeViews, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -858,7 +929,7 @@ extension Patrol_GetNotificationsRequest: SwiftProtobuf.Message, SwiftProtobuf._
 extension Patrol_GetNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetNotificationsResponse"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "notifications"),
+    2: .same(proto: "notifications"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -867,7 +938,7 @@ extension Patrol_GetNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf.
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.notifications) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.notifications) }()
       default: break
       }
     }
@@ -875,7 +946,7 @@ extension Patrol_GetNotificationsResponse: SwiftProtobuf.Message, SwiftProtobuf.
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.notifications.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.notifications, fieldNumber: 1)
+      try visitor.visitRepeatedMessageField(value: self.notifications, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1139,6 +1210,70 @@ extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: SwiftProtobuf._Pro
     0: .same(proto: "COARSE"),
     1: .same(proto: "FINE"),
   ]
+}
+
+extension Patrol_PermissionDialogVisibleRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PermissionDialogVisibleRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "timeoutMillis"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.timeoutMillis) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.timeoutMillis != 0 {
+      try visitor.visitSingularUInt64Field(value: self.timeoutMillis, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PermissionDialogVisibleRequest, rhs: Patrol_PermissionDialogVisibleRequest) -> Bool {
+    if lhs.timeoutMillis != rhs.timeoutMillis {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_PermissionDialogVisibleResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PermissionDialogVisibleResponse"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "visible"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self.visible) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.visible != false {
+      try visitor.visitSingularBoolField(value: self.visible, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_PermissionDialogVisibleResponse, rhs: Patrol_PermissionDialogVisibleResponse) -> Bool {
+    if lhs.visible != rhs.visible {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension Patrol_Selector: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

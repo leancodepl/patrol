@@ -1,3 +1,36 @@
+## 0.7.1
+
+- Fix occasional crashes caused by Flutter's version prompt (#456)
+
+## 0.7.0+1
+
+- Build iOS artifacts on CI (#452, #452)
+
+## 0.7.0
+
+In this release, we've focused on stability, reliability, and reducing
+flakiness.
+
+- AutomatorServer:
+  - Add timeouts when interacting with native UI (#437)
+  - Implement `isPermissionDialogVisible()` method (#448)
+  - Fix entering text into SecureTextField on iOS (#446)
+
+## 0.6.15
+
+- Fix trying to run on all attached devices (instead of only the first one) when
+  no device is specified (#442)
+
+## 0.6.14
+
+- AutomatorServer:
+  - Further improve error messages occuring on the native side (#429)
+
+## 0.6.13
+
+- AutomatorServer:
+  - Print more info about errors occuring on the native side (#414)
+
 ## 0.6.12
 
 - AutomatorServer:
