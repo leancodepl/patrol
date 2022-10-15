@@ -217,6 +217,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       logger: _logger,
     );
 
+    var exitCode = 0;
     for (final target in config.targets) {
       _testRunner.addTest((device) async {
         if (_disposeScope.disposed) {
@@ -237,6 +238,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         try {
           await flutterDriver.run(flutterDriverOptions);
         } on FlutterDriverFailedException catch (err) {
+          exitCode = 1;
           _logger
             ..severe(err)
             ..severe(
@@ -249,6 +251,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
     await _testRunner.run();
 
-    return 0;
+    return exitCode;
   }
 }
