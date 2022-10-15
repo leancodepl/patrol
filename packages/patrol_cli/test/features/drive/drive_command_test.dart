@@ -6,12 +6,14 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
+import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
+import '../../fakes.dart';
 import 'fixures/devices.dart';
 
 class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
@@ -21,6 +23,8 @@ class MockDeviceFinder extends Mock implements DeviceFinder {}
 class MockAndroidDriver extends Mock implements AndroidDriver {}
 
 class MockIOSDriver extends Mock implements IOSDriver {}
+
+class MockFlutterDriver extends Mock implements FlutterDriver {}
 
 const _defaultConfig = DriveCommandConfig(
   targets: [],
@@ -35,8 +39,11 @@ const _defaultConfig = DriveCommandConfig(
 );
 
 void main() {
+  setUpFakes();
+
   late DriveCommand driveCommand;
   late FileSystem fs;
+  late FlutterDriver flutterDriver;
 
   group('drive command', () {
     setUp(() {
@@ -59,8 +66,16 @@ void main() {
       );
 
       final androidDriver = MockAndroidDriver();
+      when(
+        () => androidDriver.run(
+          port: any(named: 'port'),
+          device: any(named: 'device'),
+          flavor: any(named: 'flavor'),
+        ),
+      ).thenAnswer((_) async {});
 
       final iosDriver = MockIOSDriver();
+      flutterDriver = MockFlutterDriver();
 
       driveCommand = DriveCommand(
         parentDisposeScope: parentDisposeScope,
@@ -68,6 +83,7 @@ void main() {
         testFinder: testFinder,
         iosDriver: iosDriver,
         androidDriver: androidDriver,
+        flutterDriver: flutterDriver,
         testRunner: TestRunner(),
         logger: Logger(''),
       );
@@ -114,6 +130,8 @@ void main() {
 
       final config = await driveCommand.parseInput();
 
+      when(() => flutterDriver.run(any(), any())).thenAnswer((_) async {});
+
       final exitCode = await driveCommand.execute(config);
       expect(exitCode, isZero);
     });
@@ -123,6 +141,10 @@ void main() {
       fs.file('integration_test/login_test.dart').createSync();
 
       final config = await driveCommand.parseInput();
+
+      when(() => flutterDriver.run(any(), any())).thenThrow(
+        FlutterDriverFailedException(1),
+      );
 
       final exitCode = await driveCommand.execute(config);
       expect(exitCode, equals(1));

@@ -16,6 +16,7 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
+import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
@@ -87,6 +88,10 @@ class PatrolCommandRunner extends CommandRunner<int> {
         iosDriver: IOSDriver(
           parentDisposeScope: _disposeScope,
           artifactsRepository: _artifactsRepository,
+          logger: _logger,
+        ),
+        flutterDriver: FlutterDriver(
+          parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
         testRunner: TestRunner(),

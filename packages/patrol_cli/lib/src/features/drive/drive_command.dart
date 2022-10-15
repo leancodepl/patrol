@@ -37,6 +37,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required TestRunner testRunner,
     required AndroidDriver androidDriver,
     required IOSDriver iosDriver,
+    required FlutterDriver flutterDriver,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
@@ -44,6 +45,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _testRunner = testRunner,
         _androidDriver = androidDriver,
         _iosDriver = iosDriver,
+        _flutterDriver = flutterDriver,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -111,6 +113,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   final TestRunner _testRunner;
   final AndroidDriver _androidDriver;
   final IOSDriver _iosDriver;
+  final FlutterDriver _flutterDriver;
   final Logger _logger;
 
   @override
@@ -206,9 +209,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    final flutterDriver = FlutterDriver(
-      parentDisposeScope: _disposeScope,
-      logger: _logger,
+    _flutterDriver.init(
+      driver: config.driver,
+      host: config.host,
+      port: config.port,
+      flavor: config.flavor,
+      dartDefines: config.dartDefines,
     );
 
     var exitCode = 0;
@@ -219,18 +225,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           return;
         }
 
-        final flutterDriverOptions = FlutterDriverOptions(
-          driver: config.driver,
-          target: target,
-          host: config.host,
-          port: config.port,
-          device: device,
-          flavor: config.flavor,
-          dartDefines: config.dartDefines,
-        );
-
         try {
-          await flutterDriver.run(flutterDriverOptions);
+          await _flutterDriver.run(target, device);
         } on FlutterDriverFailedException catch (err) {
           exitCode = 1;
           _logger
