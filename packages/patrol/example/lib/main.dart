@@ -19,8 +19,13 @@ class ExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      darkTheme: ThemeData(
+        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+      ),
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        brightness: Brightness.light,
       ),
       home: const ExampleHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -73,7 +78,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           Container(
             key: const Key('box1'),
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.background,
             padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +108,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           const SizedBox(height: 16),
           Container(
             key: const Key('box2'),
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.background,
             padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

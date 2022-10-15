@@ -17,6 +17,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));
+
     final status = await Permission.camera.request();
     setState(() {
       _cameraPermissionGranted = status == PermissionStatus.granted;
@@ -118,8 +119,8 @@ class _PermissionTile extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: granted
-              ? Theme.of(context).colorScheme.background
-              : Colors.redAccent,
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.error,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

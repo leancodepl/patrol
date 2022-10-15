@@ -19,6 +19,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
     unawaited(
       Future<void>.delayed(const Duration(seconds: 3)).then(
         (_) {
+          if (!mounted) {
+            return;
+          }
+
           setState(() {
             _visible = true;
           });
@@ -38,6 +42,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const CircularProgressIndicator(),
+            SizedBox(height: 32),
             if (_visible)
               const Text('Hello')
             else
