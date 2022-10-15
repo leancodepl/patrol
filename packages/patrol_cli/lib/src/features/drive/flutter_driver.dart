@@ -70,13 +70,16 @@ class FlutterDriver {
     int? exitCode;
     final process = await Process.start(
       'flutter',
-      _flutterDriveArguments(
-        driver: options.driver,
-        target: options.target,
-        device: options.device.id,
-        flavor: options.flavor,
-        dartDefines: {...options.dartDefines, ...env},
-      ),
+      [
+        '--no-version-check',
+        ..._flutterDriveArguments(
+          driver: options.driver,
+          target: options.target,
+          device: options.device.id,
+          flavor: options.flavor,
+          dartDefines: {...options.dartDefines, ...env},
+        ),
+      ],
       environment: env,
       runInShell: true,
     );
