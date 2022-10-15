@@ -64,7 +64,13 @@ class BootstrapCommand extends Command<int> {
 
     final result = await Process.run(
       'flutter',
-      ['pub', 'add', package, '--dev'],
+      [
+        '--no-version-check',
+        'pub',
+        'add',
+        package,
+        '--dev',
+      ],
       runInShell: true,
     );
 
@@ -87,7 +93,15 @@ class BootstrapCommand extends Command<int> {
 
     final result = await Process.run(
       'flutter',
-      ['pub', 'add', package, '--dev', '--sdk', 'flutter'],
+      [
+        '--no-version-check',
+        'pub',
+        'add',
+        package,
+        '--dev',
+        '--sdk',
+        'flutter',
+      ],
       runInShell: true,
     );
 

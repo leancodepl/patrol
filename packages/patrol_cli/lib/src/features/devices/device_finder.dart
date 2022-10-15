@@ -106,7 +106,7 @@ class DeviceFinder {
   Future<String> _getCommandOutput() async {
     final process = await Process.start(
       'flutter',
-      ['devices', '--machine'],
+      ['--no-version-check', 'devices', '--machine'],
       runInShell: true,
     );
 
