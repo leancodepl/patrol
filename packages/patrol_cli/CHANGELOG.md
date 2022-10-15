@@ -1,3 +1,7 @@
+## 0.7.1
+
+- Fix occasional crashes caused by Flutter's version prompt (#456)
+
 ## 0.7.0+1
 
 - Build iOS artifacts on CI (#452, #452)
