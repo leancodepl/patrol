@@ -1,7 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -33,16 +32,18 @@ class DriveCommandConfig with _$DriveCommandConfig {
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
     required DisposeScope parentDisposeScope,
-    required ArtifactsRepository artifactsRepository,
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
+    required AndroidDriver androidDriver,
+    required IOSDriver iosDriver,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
-        _artifactsRepository = artifactsRepository,
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
+        _androidDriver = androidDriver,
+        _iosDriver = iosDriver,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -104,11 +105,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   }
 
   final DisposeScope _disposeScope;
-  final ArtifactsRepository _artifactsRepository;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestRunner _testRunner;
+  final AndroidDriver _androidDriver;
+  final IOSDriver _iosDriver;
   final Logger _logger;
 
   @override
@@ -188,22 +190,14 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver(
-            parentDisposeScope: _disposeScope,
-            artifactsRepository: _artifactsRepository,
-            logger: _logger,
-          ).run(
+          await _androidDriver.run(
             port: config.port,
             device: device,
             flavor: config.flavor,
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver(
-            parentDisposeScope: _disposeScope,
-            artifactsRepository: _artifactsRepository,
-            logger: _logger,
-          ).run(
+          await _iosDriver.run(
             port: config.port,
             device: device,
             flavor: config.flavor,

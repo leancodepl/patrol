@@ -6,6 +6,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
+import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
@@ -15,6 +17,10 @@ import 'fixures/devices.dart';
 class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
 
 class MockDeviceFinder extends Mock implements DeviceFinder {}
+
+class MockAndroidDriver extends Mock implements AndroidDriver {}
+
+class MockIOSDriver extends Mock implements IOSDriver {}
 
 const _defaultConfig = DriveCommandConfig(
   targets: [],
@@ -35,7 +41,6 @@ void main() {
   group('drive command', () {
     setUp(() {
       final parentDisposeScope = DisposeScope();
-      final artifactsRepository = MockArtifactsRepository();
 
       fs = MemoryFileSystem.test();
       final wd = fs.directory('/projects/awesome_app')
@@ -53,11 +58,16 @@ void main() {
         fs: fs,
       );
 
+      final androidDriver = MockAndroidDriver();
+
+      final iosDriver = MockIOSDriver();
+
       driveCommand = DriveCommand(
         parentDisposeScope: parentDisposeScope,
-        artifactsRepository: artifactsRepository,
         deviceFinder: deviceFinder,
         testFinder: testFinder,
+        iosDriver: iosDriver,
+        androidDriver: androidDriver,
         testRunner: TestRunner(),
         logger: Logger(''),
       );
