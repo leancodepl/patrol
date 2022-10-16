@@ -95,9 +95,9 @@ jobs:
       - name: Build iOS test runner artifact
         working-directory: AutomatorServer/ios
         run: |
-          ./make_artifacts iphonesimulator arm64 "$VERSION""
-          ./make_artifacts iphonesimulator x86_64 "$VERSION""
-          # ./make_artifacts iphoneos arm64 "$VERSION""
+          ./make_artifacts iphonesimulator arm64 "$VERSION"
+          ./make_artifacts iphonesimulator x86_64 "$VERSION"
+          # ./make_artifacts iphoneos arm64 "$VERSION"
 
       - name: Create release
         uses: softprops/action-gh-release@v1
