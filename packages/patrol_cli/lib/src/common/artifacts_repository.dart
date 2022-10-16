@@ -15,7 +15,7 @@ class ArtifactsRepository {
         _httpClient = httpClient ?? http.Client(),
         _zipDecoder = zipDecoder ?? ZipDecoder(),
         debug = false {
-    _paths = _Paths(artifactPath);
+    _paths = _ArtifactPaths(artifactPath);
   }
 
   static const artifactPathEnv = 'PATROL_CACHE';
@@ -26,7 +26,7 @@ class ArtifactsRepository {
   final ZipDecoder _zipDecoder;
   bool debug;
 
-  late final _Paths _paths;
+  late final _ArtifactPaths _paths;
 
   String get artifactPath {
     final env = platform.environment;
@@ -72,7 +72,7 @@ class ArtifactsRepository {
   }
 
   String get iosArtifactDirPath {
-    return debug ? _paths.debugIOSArtifactDirPath : _paths.iosArtifactDirPath;
+    return debug ? _paths.iosDirDebugPath : _paths.iosDirPath;
   }
 
   /// Returns true if artifacts for the current patrol_cli version are present
@@ -83,6 +83,8 @@ class ArtifactsRepository {
 
     if (platform.isMacOS) {
       final iosDir = _fs.directory(iosArtifactDirPath);
+      //final iosSimArmApp = _fs.directory(ios)
+
       return serverApk.existsSync() &&
           instrumentationApk.existsSync() &&
           iosDir.existsSync();
@@ -94,22 +96,25 @@ class ArtifactsRepository {
   /// Downloads artifacts for the current patrol_cli version.
   Future<void> downloadArtifacts() async {
     await Future.wait<void>([
-      _downloadArtifact(_paths.serverArtifactFile),
-      _downloadArtifact(_paths.instrumentationArtifactFile),
-      if (platform.isMacOS) _downloadArtifact(_paths.iosArtifactZip),
+      _downloadArtifact(_paths.androidServerFile),
+      _downloadArtifact(_paths.androidInstrumentationFile),
+      if (platform.isMacOS) ...[
+        _downloadArtifact(_paths.iosProjectZip),
+        _downloadArtifact(_paths.iosAutomatorSimAmdZip),
+        _downloadArtifact(_paths.iosAutomatorSimArmZip),
+      ],
     ]);
 
     if (!platform.isMacOS) {
       return;
     }
 
-    final bytes = await _fs.file(_paths.iosArtifactZipPath).readAsBytes();
+    final bytes = await _fs.file(_paths.iosZipPath).readAsBytes();
     final archive = _zipDecoder.decodeBytes(bytes);
 
     for (final archiveFile in archive) {
       final filename = archiveFile.name;
-      final extractPath =
-          _paths.iosArtifactDirPath + platform.pathSeparator + filename;
+      final extractPath = _paths.iosDirPath + platform.pathSeparator + filename;
       if (archiveFile.isFile) {
         final data = archiveFile.content as List<int>;
         final newFile = _fs.file(extractPath);
@@ -143,66 +148,68 @@ class ArtifactsRepository {
   }
 }
 
-class _Paths {
-  const _Paths(this._artifactPath);
+class _ArtifactPaths {
+  const _ArtifactPaths(this._artifactPath);
 
   final String _artifactPath;
-
-  String get serverArtifact => 'server-$version';
-
-  String get serverArtifactFile => '$serverArtifact.apk';
-
-  String get instrumentationArtifact => 'instrumentation-$version';
-
-  String get instrumentationArtifactFile => '$instrumentationArtifact.apk';
-
-  String get iosArtifactDir => 'ios-$version';
-
-  String get iosArtifactZip => 'ios-$version.zip';
-
-  String get debugServerArtifactFile => 'server.apk';
-
-  String get debugInstrumentationArtifactFile => 'instrumentation.apk';
-
-  String get debugIOSArtifactDir => 'ios';
 
   /// Returns a URI where [artifact] can be downloaded from.
   ///
   /// [artifact] must be in the form of `$artifact-$version.$extension`, for
   /// example: `server-1.0.0.apk` or `ios-4.2.0.zip`.
-  Uri getUriForArtifact(
-    String artifact,
-  ) {
+  Uri getUriForArtifact(String artifact) {
     return Uri.parse(
       'https://github.com/leancodepl/patrol/releases/download/patrol_cli-v$version/$artifact',
     );
   }
 
+  String get androidServerFile => 'server-$version.apk';
+
+  String get androidInstrumentationFile => 'instrumentation-$version.apk';
+
+  String get androidServerDebugFile => 'server.apk';
+
+  String get androidInstrumentationDebugFile => 'instrumentation.apk';
+
+  String get iosProjectDir => 'ios-$version';
+
+  String get iosProjectZip => 'ios-$version.zip';
+
+  String get iosProjectDebugDir => 'ios';
+
+  String get iosAutomatorSimAmdZip {
+    return 'AutomatorServer-iphonesimulator-x86_64-$version.zip';
+  }
+
+  String get iosAutomatorSimArmZip {
+    return 'AutomatorServer-iphonesimulator-arm64-$version.zip';
+  }
+
   String get serverArtifactPath {
-    return join(_artifactPath, serverArtifactFile);
+    return join(_artifactPath, androidServerFile);
   }
 
   String get debugServerArtifactPath {
-    return join(_artifactPath, debugServerArtifactFile);
+    return join(_artifactPath, androidServerDebugFile);
   }
 
   String get instrumentationArtifactPath {
-    return join(_artifactPath, instrumentationArtifactFile);
+    return join(_artifactPath, androidInstrumentationFile);
   }
 
   String get debugInstrumentationArtifactPath {
-    return join(_artifactPath, debugInstrumentationArtifactFile);
+    return join(_artifactPath, androidInstrumentationDebugFile);
   }
 
-  String get iosArtifactZipPath {
-    return join(_artifactPath, iosArtifactZip);
+  String get iosZipPath {
+    return join(_artifactPath, iosProjectZip);
   }
 
-  String get iosArtifactDirPath {
-    return join(_artifactPath, iosArtifactDir);
+  String get iosDirPath {
+    return join(_artifactPath, iosProjectDir);
   }
 
-  String get debugIOSArtifactDirPath {
-    return join(_artifactPath, debugIOSArtifactDir);
+  String get iosDirDebugPath {
+    return join(_artifactPath, iosProjectDebugDir);
   }
 }
