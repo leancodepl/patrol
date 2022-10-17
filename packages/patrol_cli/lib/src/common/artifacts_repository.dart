@@ -1,20 +1,78 @@
 import 'package:archive/archive.dart';
 import 'package:file/file.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
 import 'package:patrol_cli/src/common/constants.dart' show version;
 import 'package:platform/platform.dart';
 
-class _Artifact {
-  const _Artifact({
-    required this.name,
-    required this.version,
-    required this.ext,
-  });
+part 'artifacts_repository.freezed.dart';
 
-  final String name;
-  final String? version;
-  final String ext;
+class Artifacts {
+  const Artifacts._();
+
+  // Android
+
+  // The dummy app under test.
+  static const androidApp = Artifact.file(
+    name: 'server',
+    version: version,
+    ext: '.apk',
+  );
+
+  static const androidInstrumentation = Artifact.file(
+    name: 'instrumentation',
+    version: version,
+    ext: '.apk',
+  );
+
+  // iOS
+
+  static const ios = Artifact.archive(
+    name: 'ios',
+    version: version,
+    ext: '.app',
+  );
+
+  static const iosSimulatorArm = Artifact.archive(
+    name: 'AutomatorServer-iphonesimulator-arm64',
+    version: version,
+    ext: '.app',
+  );
+
+  static const iosSimulatorAmd = Artifact.archive(
+    name: 'AutomatorServer-iphonesimulator-x86_64',
+    version: version,
+    ext: '.app',
+  );
+}
+
+@freezed
+class Artifact with _$Artifact {
+  const factory Artifact.file({
+    required String name,
+    String? version,
+    required String ext,
+  }) = _ArtifactFile;
+
+  const factory Artifact.archive({
+    required String name,
+    String? version,
+    required String ext,
+  }) = _ArtifactArchive;
+
+  const Artifact._();
+
+  String get filename {
+    var result = name;
+    result += '-$version';
+    result += '.$ext';
+
+    return result;
+  }
+
+  /// Returns an unversioned (i.e debug) variant of this artifact.
+  Artifact get debug => copyWith(version: null);
 
   /// Returns a URI where this artifact is hosted.
   Uri get uri {
@@ -23,40 +81,22 @@ class _Artifact {
       throw StateError('cannot get uri for an unversioned artifact');
     }
 
-    return Uri.parse(
-      'https://github.com/leancodepl/patrol/releases/download/patrol_cli-v$version/$filename',
+    const repo = 'https://github.com/leancodepl/patrol';
+
+    return map(
+      file: (file) {
+        return Uri.parse(
+          '$repo/releases/download/patrol_cli-v$version/$filename',
+        );
+      },
+      archive: (archive) {
+        return Uri.parse(
+          '$repo/releases/download/patrol_cli-v$version/$name-$version.zip',
+        );
+      },
     );
   }
-
-  String get filename {
-    var result = name;
-    if (version != null) {
-      result += '-$version';
-    }
-    result += '.$ext';
-
-    return result;
-  }
 }
-
-const _androidArtifacts = [
-  _Artifact(name: 'server', version: version, ext: '.apk'),
-  _Artifact(name: 'instrumentation', version: version, ext: '.apk'),
-];
-
-const _iosArtifacts = [
-  _Artifact(name: 'ios', version: version, ext: '.zip'),
-  _Artifact(
-    name: 'AutomatorServer-iphonesimulator-arm64',
-    version: version,
-    ext: '.zip',
-  ),
-  _Artifact(
-    name: 'AutomatorServer-iphonesimulator-x86_64',
-    version: version,
-    ext: '.zip',
-  ),
-];
 
 class ArtifactsRepository {
   ArtifactsRepository({
@@ -67,9 +107,7 @@ class ArtifactsRepository {
   })  : _fs = fs,
         _httpClient = httpClient ?? http.Client(),
         _zipDecoder = zipDecoder ?? ZipDecoder(),
-        debug = false {
-    _paths = _ArtifactPaths(artifactPath);
-  }
+        debug = false;
 
   static const artifactPathEnv = 'PATROL_CACHE';
 
@@ -78,8 +116,6 @@ class ArtifactsRepository {
   final http.Client _httpClient;
   final ZipDecoder _zipDecoder;
   bool debug;
-
-  late final _ArtifactPaths _paths;
 
   String get artifactPath {
     final env = platform.environment;
@@ -115,17 +151,37 @@ class ArtifactsRepository {
   }
 
   String get serverArtifactPath {
-    return debug ? _paths.debugServerArtifactPath : _paths.serverArtifactPath;
+    final artifact = debug ? Artifacts.androidApp.debug : Artifacts.androidApp;
+
+    return join(artifactPath, artifact.filename);
   }
 
   String get instrumentationArtifactPath {
-    return debug
-        ? _paths.debugInstrumentationArtifactPath
-        : _paths.instrumentationArtifactPath;
+    final artifact = debug
+        ? Artifacts.androidInstrumentation.debug
+        : Artifacts.androidInstrumentation;
+
+    return join(artifactPath, artifact.filename);
   }
 
-  String get iosArtifactDirPath {
-    return debug ? _paths.iosDirDebugPath : _paths.iosDirPath;
+  String get iosDevicePath {
+    final artifact = debug ? Artifacts.ios.debug : Artifacts.ios;
+
+    return join(artifactPath, artifact.filename);
+  }
+
+  String get iosSimulatorArmPath {
+    final artifact =
+        debug ? Artifacts.iosSimulatorArm.debug : Artifacts.iosSimulatorArm;
+
+    return join(artifactPath, artifact.filename);
+  }
+
+  String get iosSimulatorAmdPath {
+    final artifact =
+        debug ? Artifacts.iosSimulatorAmd.debug : Artifacts.iosSimulatorAmd;
+
+    return join(artifactPath, artifact.filename);
   }
 
   /// Returns true if artifacts for the current patrol_cli version are present
@@ -134,27 +190,37 @@ class ArtifactsRepository {
     final serverApk = _fs.file(serverArtifactPath);
     final instrumentationApk = _fs.file(instrumentationArtifactPath);
 
-    if (platform.isMacOS) {
-      final iosDir = _fs.directory(iosArtifactDirPath);
-      //final iosSimArmApp = _fs.directory(ios)
+    final androidArtifactsExist =
+        serverApk.existsSync() && instrumentationApk.existsSync();
 
-      return serverApk.existsSync() &&
-          instrumentationApk.existsSync() &&
-          iosDir.existsSync();
+    if (platform.isMacOS) {
+      final iosDir = _fs.directory(iosDevicePath);
+      final iosSimArmDir = _fs.directory(iosSimulatorArmPath);
+      final iosSimAmdDir = _fs.directory(iosSimulatorAmdPath);
+
+      final iosArtifactsExist = iosDir.existsSync() &&
+          iosSimArmDir.existsSync() &&
+          iosSimAmdDir.existsSync();
+
+      return androidArtifactsExist && iosArtifactsExist;
     } else {
-      return serverApk.existsSync() && instrumentationApk.existsSync();
+      return androidArtifactsExist;
     }
   }
 
   /// Downloads artifacts for the current patrol_cli version.
-  Future<void> downloadArtifacts() async {
+  Future<void> downloadArtifacts({String? ver}) async {
+    ver ??= version;
+
     await Future.wait<void>([
-      _downloadArtifact(_paths.androidServerFile),
-      _downloadArtifact(_paths.androidInstrumentationFile),
+      _downloadArtifact(Artifacts.androidApp.copyWith(version: version)),
+      _downloadArtifact(
+        Artifacts.androidInstrumentation.copyWith(version: version),
+      ),
       if (platform.isMacOS) ...[
-        _downloadArtifact(_paths.iosProjectZip),
-        _downloadArtifact(_paths.iosAutomatorSimAmdZip),
-        _downloadArtifact(_paths.iosAutomatorSimArmZip),
+        _downloadArtifact(Artifacts.ios),
+        _downloadArtifact(Artifacts.iosSimulatorArm),
+        _downloadArtifact(Artifacts.iosSimulatorAmd),
       ],
     ]);
 
@@ -180,15 +246,14 @@ class ArtifactsRepository {
     }
   }
 
-  Future<void> _downloadArtifact(String artifact) async {
-    final uri = _paths.getUriForArtifact(artifact);
-    final response = await _httpClient.get(uri);
+  Future<void> _downloadArtifact(Artifact artifact) async {
+    final response = await _httpClient.get(artifact.uri);
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to download $artifact from $uri');
+      throw Exception('Failed to download $artifact from ${artifact.uri}');
     }
 
-    final p = join(artifactPath, artifact);
+    final p = join(artifactPath, artifact.filename);
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
   }
 
@@ -201,7 +266,7 @@ class ArtifactsRepository {
   }
 }
 
-class _ArtifactPaths {
+/* class _ArtifactPaths {
   const _ArtifactPaths(this._artifactPath);
 
   final String _artifactPath;
@@ -266,3 +331,4 @@ class _ArtifactPaths {
     return join(_artifactPath, iosProjectDebugDir);
   }
 }
+ */
