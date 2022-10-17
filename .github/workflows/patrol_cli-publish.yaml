@@ -72,28 +72,33 @@ jobs:
           echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
           echo "IOS_SERVER_FILE=$ios_server_file" >> $GITHUB_ENV
 
-      - name: Build Android test target APK artifact
+      - name: Build test target artifact for Android
         working-directory: AutomatorServer/android
         run: |
           echo "server file: $SERVER_FILE"
           ./gradlew assembleDebug
           mv app/build/outputs/apk/debug/app-debug.apk $SERVER_FILE
 
-      - name: Build Android AutomatorServer artifact
+      - name: Build AutomatorServer artifact for Android
         working-directory: AutomatorServer/android
         run: |
           echo "instrumentation file: $INSTRUMENTATION_FILE"
           ./gradlew assembleDebugAndroidTest
           mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
 
-      - name: Build iOS AutomatorServer artifacts
+      - name: Build AutomatorServer artifact for iOS Simulator (arm64)
         working-directory: AutomatorServer/ios
-        run: |
-          ./make_artifacts iphonesimulator arm64 "$VERSION"
-          ./make_artifacts iphonesimulator x86_64 "$VERSION"
-          ./make_artifacts iphoneos arm64 "$VERSION"
+        run: ./make_artifacts iphonesimulator arm64 "$VERSION
 
-      - name: "[deprecateed] Create zip archive from iOS project"
+      - name: Build AutomatorServer artifact for iOS Simulator (x86_64)
+        working-directory: AutomatorServer/ios
+        run: ./make_artifacts iphonesimulator x86_64 "$VERSION"
+
+      - name: Build AutomatorServer artifact for iOS
+        working-directory: AutomatorServer/ios
+        run: ./make_artifacts iphoneos arm64 "$VERSION"
+
+      - name: "[deprecated] Create zip archive from iOS project"
         working-directory: AutomatorServer/ios
         run: |
           echo "ios zip directory: $IOS_ZIP_DIRECTORY"
@@ -113,7 +118,7 @@ jobs:
             AutomatorServer/${{ env.IOS_ZIP_DIRECTORY }}
             AutomatorServer/ios/artifacts/AutomatorServer-iphonesimulator-arm64-${{ env.VERSION }}.zip
             AutomatorServer/ios/artifacts/AutomatorServer-iphonesimulator-x86_64-${{ env.VERSION }}.zip
-            AutomatorServer/ios/artifacts/AutomatorServer-iphoneos-${{ env.VERSION }}.zip
+            AutomatorServer/ios/artifacts/AutomatorServer-iphoneos-arm64-${{ env.VERSION }}.zip
 
   publish_cli:
     name: Publish on pub.dev
