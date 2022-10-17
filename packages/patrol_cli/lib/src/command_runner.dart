@@ -116,7 +116,13 @@ class PatrolCommandRunner extends CommandRunner<int> {
         logger: _logger,
       ),
     );
-    addCommand(UpdateCommand(pubUpdater: _pubUpdater, logger: _logger));
+    addCommand(
+      UpdateCommand(
+        pubUpdater: _pubUpdater,
+        artifactsRepository: _artifactsRepository,
+        logger: _logger,
+      ),
+    );
 
     argParser
       ..addFlag(

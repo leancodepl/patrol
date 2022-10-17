@@ -2,6 +2,7 @@ import 'package:archive/archive.dart';
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
+import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/constants.dart' show version;
 import 'package:platform/platform.dart';
 
@@ -92,7 +93,9 @@ class ArtifactsRepository {
   }
 
   /// Downloads artifacts for the current patrol_cli version.
-  Future<void> downloadArtifacts() async {
+  Future<void> downloadArtifacts({String? ver}) async {
+    ver ??= version;
+
     await Future.wait<void>([
       _downloadArtifact(_paths.serverArtifactFile),
       _downloadArtifact(_paths.instrumentationArtifactFile),
