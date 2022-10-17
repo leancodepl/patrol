@@ -13,8 +13,6 @@ if [ -z "$version" ]; then
 fi
 
 if [ "$(basename "$PWD")" = "ios" ]; then
-	rm -rf ./artifacts
-	rm -rf ./DerivedData
     zip -r "../ios-$version.zip" .
 else
 	echo "this program must be run from the ios project directory"

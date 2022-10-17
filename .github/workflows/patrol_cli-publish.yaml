@@ -86,6 +86,12 @@ jobs:
           ./gradlew assembleDebugAndroidTest
           mv app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk $INSTRUMENTATION_FILE
 
+      - name: "[deprecated] Create zip archive from iOS project"
+        working-directory: AutomatorServer/ios
+        run: |
+          echo "ios zip directory: $IOS_ZIP_DIRECTORY"
+          ./makearchive "$VERSION"
+
       - name: Build AutomatorServer artifact for iOS Simulator (arm64)
         working-directory: AutomatorServer/ios
         run: ./make_artifacts iphonesimulator arm64 "$VERSION"
@@ -97,12 +103,6 @@ jobs:
       - name: Build AutomatorServer artifact for iOS
         working-directory: AutomatorServer/ios
         run: ./make_artifacts iphoneos arm64 "$VERSION"
-
-      - name: "[deprecated] Create zip archive from iOS project"
-        working-directory: AutomatorServer/ios
-        run: |
-          echo "ios zip directory: $IOS_ZIP_DIRECTORY"
-          ./makearchive "$VERSION"
 
       - name: Create release
         uses: softprops/action-gh-release@v1
