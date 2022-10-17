@@ -1,8 +1,14 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/action
+  desc "Build automation server artifacts"
+  lane :build do
+    run_tests(
+      project: "AutomatorServer.xcodeproj",
+      scheme: "AutomatorServer",
+      derived_data_path: "./derivedData",
+      build_for_testing: true,
+      sdk: "iphonesimulator"
+    )
   end
 end

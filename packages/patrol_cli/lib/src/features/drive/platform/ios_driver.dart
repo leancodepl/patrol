@@ -31,16 +31,12 @@ class IOSDriver {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
     }
-
-    if (device.real) {
-      await _runServerPhysical(
-        deviceName: device.name,
-        deviceId: device.id,
-        port: port,
-      );
-    } else {
-      await _runServerSimulator(deviceId: device.id, port: port);
-    }
+    await _runServer(
+      deviceName: device.name,
+      deviceId: device.id,
+      simulator: !device.real,
+      port: port,
+    );
   }
 
   /// Forwards ports using iproxy.
@@ -95,49 +91,17 @@ class IOSDriver {
     progress.complete('Forwarded ports');
   }
 
-  Future<void> _runServerSimulator({
-    required String port,
-    required String deviceId,
-  }) async {
-    // FIXME: artifact path to .app
-    _logger
-        .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
-
-    // FIXME: fix artifact path to .app
-    final installProcess = await Process.start(
-      'xcrun',
-      [
-        'simctl',
-        'install',
-        deviceId,
-        _artifactsRepository.iosArtifactDirPath,
-      ],
-      runInShell: true,
-    );
-
-    await installProcess.exitCode;
-
-    final runProcess = await Process.start(
-      'xcrun',
-      [
-        'simctl',
-        'launch',
-        deviceId,
-        'pl.leancode.AutomatorServerUITests.xctrunner',
-      ],
-      runInShell: true,
-    );
-  }
-
   /// Runs the server which is an infinite XCUITest.
-  Future<void> _runServerPhysical({
+  Future<void> _runServer({
     required String port,
     required String deviceName,
     required String deviceId,
+    required bool simulator,
   }) async {
     _logger
         .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
 
+    // This xcodebuild fails when using Dart < 2.17.
     final process = await Process.start(
       'xcodebuild',
       [
@@ -147,9 +111,9 @@ class IOSDriver {
         '-scheme',
         'AutomatorServer',
         '-sdk',
-        'iphoneos',
+        if (simulator) 'iphonesimulator' else 'iphoneos',
         '-destination',
-        'platform=iOS,name=$deviceName',
+        'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
       ],
       runInShell: true,
       workingDirectory: _artifactsRepository.iosArtifactDirPath,
@@ -164,11 +128,17 @@ class IOSDriver {
       // Uninstall AutomatorServer
       ..addDispose(() async {
         const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
-        final process = await Process.run(
-          'ideviceinstaller',
-          ['--uninstall', bundleId, '--udid', deviceId],
-          runInShell: true,
-        );
+        final process = simulator
+            ? await Process.run(
+                'xcrun',
+                ['simctl', 'uninstall', deviceId, bundleId],
+                runInShell: true,
+              )
+            : await Process.run(
+                'ideviceinstaller',
+                ['--uninstall', bundleId, '--udid', deviceId],
+                runInShell: true,
+              );
 
         final exitCode = process.exitCode;
         final msg = exitCode == 0
