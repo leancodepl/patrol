@@ -88,7 +88,7 @@ jobs:
 
       - name: Build AutomatorServer artifact for iOS Simulator (arm64)
         working-directory: AutomatorServer/ios
-        run: ./make_artifacts iphonesimulator arm64 "$VERSION
+        run: ./make_artifacts iphonesimulator arm64 "$VERSION"
 
       - name: Build AutomatorServer artifact for iOS Simulator (x86_64)
         working-directory: AutomatorServer/ios
