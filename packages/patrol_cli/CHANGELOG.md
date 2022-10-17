@@ -1,3 +1,7 @@
+## 0.7.1+3
+
+- Minimize iOS artifact size (#469)
+
 ## 0.7.1+2
 
 - Prebuild iOS artifacts for iPhones (#454)
