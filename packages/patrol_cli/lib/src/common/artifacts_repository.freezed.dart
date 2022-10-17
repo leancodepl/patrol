@@ -18,23 +18,24 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$Artifact {
   String get name => throw _privateConstructorUsedError;
   String? get version => throw _privateConstructorUsedError;
-  String get ext => throw _privateConstructorUsedError;
+  String? get ext => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String name, String? version, String ext) file,
-    required TResult Function(String name, String? version, String ext) archive,
+    required TResult Function(String name, String? version, String? ext) file,
+    required TResult Function(String name, String? version, String? ext)
+        archive,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String name, String? version, String ext)? file,
-    TResult Function(String name, String? version, String ext)? archive,
+    TResult Function(String name, String? version, String? ext)? file,
+    TResult Function(String name, String? version, String? ext)? archive,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String name, String? version, String ext)? file,
-    TResult Function(String name, String? version, String ext)? archive,
+    TResult Function(String name, String? version, String? ext)? file,
+    TResult Function(String name, String? version, String? ext)? archive,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -67,7 +68,7 @@ mixin _$Artifact {
 abstract class $ArtifactCopyWith<$Res> {
   factory $ArtifactCopyWith(Artifact value, $Res Function(Artifact) then) =
       _$ArtifactCopyWithImpl<$Res>;
-  $Res call({String name, String? version, String ext});
+  $Res call({String name, String? version, String? ext});
 }
 
 /// @nodoc
@@ -96,7 +97,7 @@ class _$ArtifactCopyWithImpl<$Res> implements $ArtifactCopyWith<$Res> {
       ext: ext == freezed
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
@@ -108,7 +109,7 @@ abstract class _$$_ArtifactFileCopyWith<$Res>
           _$_ArtifactFile value, $Res Function(_$_ArtifactFile) then) =
       __$$_ArtifactFileCopyWithImpl<$Res>;
   @override
-  $Res call({String name, String? version, String ext});
+  $Res call({String name, String? version, String? ext});
 }
 
 /// @nodoc
@@ -139,7 +140,7 @@ class __$$_ArtifactFileCopyWithImpl<$Res> extends _$ArtifactCopyWithImpl<$Res>
       ext: ext == freezed
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
@@ -147,7 +148,7 @@ class __$$_ArtifactFileCopyWithImpl<$Res> extends _$ArtifactCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ArtifactFile extends _ArtifactFile {
-  const _$_ArtifactFile({required this.name, this.version, required this.ext})
+  const _$_ArtifactFile({required this.name, this.version, this.ext})
       : super._();
 
   @override
@@ -155,7 +156,7 @@ class _$_ArtifactFile extends _ArtifactFile {
   @override
   final String? version;
   @override
-  final String ext;
+  final String? ext;
 
   @override
   String toString() {
@@ -187,8 +188,9 @@ class _$_ArtifactFile extends _ArtifactFile {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String name, String? version, String ext) file,
-    required TResult Function(String name, String? version, String ext) archive,
+    required TResult Function(String name, String? version, String? ext) file,
+    required TResult Function(String name, String? version, String? ext)
+        archive,
   }) {
     return file(name, version, ext);
   }
@@ -196,8 +198,8 @@ class _$_ArtifactFile extends _ArtifactFile {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String name, String? version, String ext)? file,
-    TResult Function(String name, String? version, String ext)? archive,
+    TResult Function(String name, String? version, String? ext)? file,
+    TResult Function(String name, String? version, String? ext)? archive,
   }) {
     return file?.call(name, version, ext);
   }
@@ -205,8 +207,8 @@ class _$_ArtifactFile extends _ArtifactFile {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String name, String? version, String ext)? file,
-    TResult Function(String name, String? version, String ext)? archive,
+    TResult Function(String name, String? version, String? ext)? file,
+    TResult Function(String name, String? version, String? ext)? archive,
     required TResult orElse(),
   }) {
     if (file != null) {
@@ -251,7 +253,7 @@ abstract class _ArtifactFile extends Artifact {
   const factory _ArtifactFile(
       {required final String name,
       final String? version,
-      required final String ext}) = _$_ArtifactFile;
+      final String? ext}) = _$_ArtifactFile;
   const _ArtifactFile._() : super._();
 
   @override
@@ -259,7 +261,7 @@ abstract class _ArtifactFile extends Artifact {
   @override
   String? get version;
   @override
-  String get ext;
+  String? get ext;
   @override
   @JsonKey(ignore: true)
   _$$_ArtifactFileCopyWith<_$_ArtifactFile> get copyWith =>
@@ -273,7 +275,7 @@ abstract class _$$_ArtifactArchiveCopyWith<$Res>
           _$_ArtifactArchive value, $Res Function(_$_ArtifactArchive) then) =
       __$$_ArtifactArchiveCopyWithImpl<$Res>;
   @override
-  $Res call({String name, String? version, String ext});
+  $Res call({String name, String? version, String? ext});
 }
 
 /// @nodoc
@@ -305,7 +307,7 @@ class __$$_ArtifactArchiveCopyWithImpl<$Res>
       ext: ext == freezed
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
@@ -313,8 +315,7 @@ class __$$_ArtifactArchiveCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_ArtifactArchive extends _ArtifactArchive {
-  const _$_ArtifactArchive(
-      {required this.name, this.version, required this.ext})
+  const _$_ArtifactArchive({required this.name, this.version, this.ext})
       : super._();
 
   @override
@@ -322,7 +323,7 @@ class _$_ArtifactArchive extends _ArtifactArchive {
   @override
   final String? version;
   @override
-  final String ext;
+  final String? ext;
 
   @override
   String toString() {
@@ -354,8 +355,9 @@ class _$_ArtifactArchive extends _ArtifactArchive {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String name, String? version, String ext) file,
-    required TResult Function(String name, String? version, String ext) archive,
+    required TResult Function(String name, String? version, String? ext) file,
+    required TResult Function(String name, String? version, String? ext)
+        archive,
   }) {
     return archive(name, version, ext);
   }
@@ -363,8 +365,8 @@ class _$_ArtifactArchive extends _ArtifactArchive {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String name, String? version, String ext)? file,
-    TResult Function(String name, String? version, String ext)? archive,
+    TResult Function(String name, String? version, String? ext)? file,
+    TResult Function(String name, String? version, String? ext)? archive,
   }) {
     return archive?.call(name, version, ext);
   }
@@ -372,8 +374,8 @@ class _$_ArtifactArchive extends _ArtifactArchive {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String name, String? version, String ext)? file,
-    TResult Function(String name, String? version, String ext)? archive,
+    TResult Function(String name, String? version, String? ext)? file,
+    TResult Function(String name, String? version, String? ext)? archive,
     required TResult orElse(),
   }) {
     if (archive != null) {
@@ -418,7 +420,7 @@ abstract class _ArtifactArchive extends Artifact {
   const factory _ArtifactArchive(
       {required final String name,
       final String? version,
-      required final String ext}) = _$_ArtifactArchive;
+      final String? ext}) = _$_ArtifactArchive;
   const _ArtifactArchive._() : super._();
 
   @override
@@ -426,7 +428,7 @@ abstract class _ArtifactArchive extends Artifact {
   @override
   String? get version;
   @override
-  String get ext;
+  String? get ext;
   @override
   @JsonKey(ignore: true)
   _$$_ArtifactArchiveCopyWith<_$_ArtifactArchive> get copyWith =>

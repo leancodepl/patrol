@@ -3,6 +3,7 @@ import 'dart:io' show Process, Platform;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -32,6 +33,7 @@ class IOSDriver {
       await _forwardPorts(port: port, deviceId: device.id);
     }
 
+    _logger.info(device);
     if (device.real) {
       await _runServerPhysical(
         deviceName: device.name,
@@ -39,7 +41,7 @@ class IOSDriver {
         port: port,
       );
     } else {
-      await _runServerSimulator(deviceId: device.id, port: port);
+      await _runServerOnDevice(deviceId: device.id, port: port);
     }
   }
 
@@ -95,25 +97,27 @@ class IOSDriver {
     progress.complete('Forwarded ports');
   }
 
-  Future<void> _runServerSimulator({
+  Future<void> _runServerOnDevice({
     required String port,
     required String deviceId,
   }) async {
-    // FIXME: artifact path to .app
-    _logger
-        .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
+    // TODO: Use artifact appropriate for the Simulator architecture
+    final artifactPath = _artifactsRepository.iosSimulatorArmPath;
+    _logger.fine('Using artifact ${basename(artifactPath)}');
 
-    // FIXME: fix artifact path to .app
     final installProcess = await Process.start(
       'xcrun',
       [
         'simctl',
         'install',
         deviceId,
-        _artifactsRepository.iosArtifactDirPath,
+        artifactPath,
       ],
       runInShell: true,
     );
+
+    installProcess.listenStdOut(_logger.info).disposedBy(_disposeScope);
+    installProcess.listenStdErr(_logger.fine).disposedBy(_disposeScope);
 
     await installProcess.exitCode;
 
@@ -127,6 +131,11 @@ class IOSDriver {
       ],
       runInShell: true,
     );
+
+    runProcess.listenStdOut(_logger.info).disposedBy(_disposeScope);
+    runProcess.listenStdErr(_logger.fine).disposedBy(_disposeScope);
+
+    await runProcess.exitCode;
   }
 
   /// Runs the server which is an infinite XCUITest.
@@ -135,8 +144,8 @@ class IOSDriver {
     required String deviceName,
     required String deviceId,
   }) async {
-    _logger
-        .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
+    // _logger
+    //     .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
 
     final process = await Process.start(
       'xcodebuild',
@@ -152,7 +161,8 @@ class IOSDriver {
         'platform=iOS,name=$deviceName',
       ],
       runInShell: true,
-      workingDirectory: _artifactsRepository.iosArtifactDirPath,
+      // FIXME: re-add workingDirectory
+      //workingDirectory: _artifactsRepository.iosArtifactDirPath,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800

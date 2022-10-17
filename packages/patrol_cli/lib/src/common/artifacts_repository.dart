@@ -3,7 +3,7 @@ import 'package:file/file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
-import 'package:patrol_cli/src/common/constants.dart' show version;
+import 'package:patrol_cli/src/common/constants.dart' show globalVersion;
 import 'package:platform/platform.dart';
 
 part 'artifacts_repository.freezed.dart';
@@ -16,34 +16,39 @@ class Artifacts {
   // The dummy app under test.
   static const androidApp = Artifact.file(
     name: 'server',
-    version: version,
-    ext: '.apk',
+    version: globalVersion,
+    ext: 'apk',
   );
 
   static const androidInstrumentation = Artifact.file(
     name: 'instrumentation',
-    version: version,
-    ext: '.apk',
+    version: globalVersion,
+    ext: 'apk',
   );
 
   // iOS
 
   static const ios = Artifact.archive(
     name: 'ios',
-    version: version,
-    ext: '.app',
+    version: globalVersion,
+  );
+
+  static const iosDevice = Artifact.archive(
+    name: 'AutomatorServer-iphoneos-arm64',
+    version: globalVersion,
+    ext: 'app',
   );
 
   static const iosSimulatorArm = Artifact.archive(
     name: 'AutomatorServer-iphonesimulator-arm64',
-    version: version,
-    ext: '.app',
+    version: globalVersion,
+    ext: 'app',
   );
 
   static const iosSimulatorAmd = Artifact.archive(
     name: 'AutomatorServer-iphonesimulator-x86_64',
-    version: version,
-    ext: '.app',
+    version: globalVersion,
+    ext: 'app',
   );
 }
 
@@ -52,23 +57,37 @@ class Artifact with _$Artifact {
   const factory Artifact.file({
     required String name,
     String? version,
-    required String ext,
+    String? ext,
   }) = _ArtifactFile;
 
   const factory Artifact.archive({
     required String name,
     String? version,
-    required String ext,
+    String? ext,
   }) = _ArtifactArchive;
 
   const Artifact._();
 
   String get filename {
     var result = name;
-    result += '-$version';
-    result += '.$ext';
+
+    if (version != null) {
+      result += '-$version';
+    }
+
+    if (ext != null) {
+      result += '.$ext';
+    }
 
     return result;
+  }
+
+  /// Name of the file that was originally downloaded.
+  String get remoteName {
+    return map(
+      file: (artifact) => artifact.filename,
+      archive: (archive) => '$name-$version.zip',
+    );
   }
 
   String get archiveName {
@@ -105,10 +124,6 @@ class Artifact with _$Artifact {
       },
     );
   }
-}
-
-extension _ArtifactArchiveX on _ArtifactArchive {
-  String get archiveName => '$name-$version.zip';
 }
 
 class ArtifactsRepository {
@@ -177,8 +192,14 @@ class ArtifactsRepository {
     return join(artifactPath, artifact.filename);
   }
 
-  String get iosDevicePath {
+  String get iosPath {
     final artifact = debug ? Artifacts.ios.debug : Artifacts.ios;
+
+    return join(artifactPath, artifact.filename);
+  }
+
+  String get iosDevicePath {
+    final artifact = debug ? Artifacts.iosDevice.debug : Artifacts.iosDevice;
 
     return join(artifactPath, artifact.filename);
   }
@@ -207,11 +228,13 @@ class ArtifactsRepository {
         serverApk.existsSync() && instrumentationApk.existsSync();
 
     if (platform.isMacOS) {
-      final iosDir = _fs.directory(iosDevicePath);
+      final iosDir = _fs.directory(iosPath);
+      final iosDeviceDir = _fs.directory(iosDevicePath);
       final iosSimArmDir = _fs.directory(iosSimulatorArmPath);
       final iosSimAmdDir = _fs.directory(iosSimulatorAmdPath);
 
       final iosArtifactsExist = iosDir.existsSync() &&
+          iosDeviceDir.existsSync() &&
           iosSimArmDir.existsSync() &&
           iosSimAmdDir.existsSync();
 
@@ -223,15 +246,16 @@ class ArtifactsRepository {
 
   /// Downloads artifacts for the current patrol_cli version.
   Future<void> downloadArtifacts({String? ver}) async {
-    ver ??= version;
+    ver ??= globalVersion;
 
     await Future.wait<void>([
-      _downloadArtifact(Artifacts.androidApp.copyWith(version: version)),
+      _downloadArtifact(Artifacts.androidApp.copyWith(version: ver)),
       _downloadArtifact(
-        Artifacts.androidInstrumentation.copyWith(version: version),
+        Artifacts.androidInstrumentation.copyWith(version: ver),
       ),
       if (platform.isMacOS) ...[
         _downloadArtifact(Artifacts.ios),
+        _downloadArtifact(Artifacts.iosDevice),
         _downloadArtifact(Artifacts.iosSimulatorArm),
         _downloadArtifact(Artifacts.iosSimulatorAmd),
       ],
@@ -239,6 +263,7 @@ class ArtifactsRepository {
 
     if (platform.isMacOS) {
       await _extractArtifact(Artifacts.ios);
+      await _extractArtifact(Artifacts.iosDevice);
       await _extractArtifact(Artifacts.iosSimulatorArm);
       await _extractArtifact(Artifacts.iosSimulatorAmd);
     }
@@ -251,7 +276,7 @@ class ArtifactsRepository {
       throw Exception('Failed to download $artifact from ${artifact.uri}');
     }
 
-    final p = join(artifactPath, artifact.filename);
+    final p = join(artifactPath, artifact.remoteName);
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
   }
 
@@ -262,7 +287,7 @@ class ArtifactsRepository {
 
     for (final archiveFile in archive) {
       final filename = archiveFile.name;
-      final extractPath = join(artifactPath, artifact.filename, filename);
+      final extractPath = join(artifactPath, filename);
       if (archiveFile.isFile) {
         final data = archiveFile.content as List<int>;
         final newFile = _fs.file(extractPath);

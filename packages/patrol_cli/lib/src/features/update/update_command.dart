@@ -23,7 +23,7 @@ class UpdateCommand extends Command<int> {
   Future<int> run() async {
     final isLatestVersion = await _pubUpdater.isUpToDate(
       packageName: patrolCliPackage,
-      currentVersion: version,
+      currentVersion: globalVersion,
     );
 
     if (!isLatestVersion) {
@@ -33,7 +33,7 @@ class UpdateCommand extends Command<int> {
       await _update(latestVersion);
     } else {
       _logger.info(
-        'You already have the newest version of $patrolCliPackage ($version)',
+        'You already have the newest version of $patrolCliPackage ($globalVersion)',
       );
     }
 
