@@ -8,15 +8,15 @@ plus some additional, awesome things.
 
 ### How is it different from Appium?
 
-Appium is one of the most popular tools for automating mobile app testing. It
-has a big community and there are lots of resources on the internet on it.
-Unfortunately, we found that Appium doesn't fit well into Flutter world.
+[Appium][appium] is one of the most popular tools for automating mobile app
+testing. It has a big community and there are lots of resources on the internet
+on it. Unfortunately, we found that Appium doesn't fit well into Flutter world.
 Actually, the idea for Patrol was born out of our frustration with trying to use
 Appium for testing Flutter apps of various sizes.
 
 1. Appium does not feel native to Flutter. To use it, you need `Node.js`, and
    you need to use `npm`. You used 1 language in your app (Dart), and now you
-   got the second one. It's setup is also very cumbersome.
+   got the second one. Its setup process is very cumbersome.
 
 1. While Patrol lets you do [greybox testing][greybox], Appium forces you to do
    [blackbox testing][blackbox]. This means that you know nothing about Flutter,
@@ -29,19 +29,52 @@ Appium for testing Flutter apps of various sizes.
 [Maestro by mobile.dev][evil_maestro] is a new cross-platform mobile testing
 framework.
 
-1. Maestro interacts with your app using the accessibility tree, which means
-   you're doing pure [blackbox testing][blackbox] (same as Appium).
+1. Maestro is a blackbox testing tool
 
-1. Maestro workflows are defined in YAML, while Patrol's test files are normal
-   Dart test files. With Patrol, you can express any logic because you're using
-   a real programming language.
+   It interacts with your app using the accessibility tree, which means you're
+   doing pure [blackbox testing][blackbox] (same as Appium).
 
-1. Maestro workflows run much faster than Flutter integration tests which Patrol
-   uses. It is because Maestro doesn't recompile your app, but only inspects its
-   accessibility tree.
+1. Maestro workflows are defined in YAML
+
+   They look simple and powerful, and even let you express control flow
+   constructs such as if statements and for loops. Trying to build a
+   Turing-complete language for testing on top of YAML is definitely
+   interesting, but it doesn't sound like an exceptionally good idea to us.
+
+   When you use Patrol, you write normal Dart code in normal Dart files. Thanks
+   to that, you can express any logic because you're using a real programming
+   language with a mature toolchain.
+
+1. Running Maestro workflows doesn't require a rebuild
+
+   Maestro works by inspecting your app's accessibility tree. It doesn't have to
+   know anything about its internals, which means that you don't have to rebuild
+   an app if you've edited your Maestro workflow file. Thanks to this, Maestro
+   workflows run much faster than Flutter integration tests (which Patrol is
+   based on).
+
+### How is it different from Fluttium?
+
+[Fluttium][fluttium] has a very similar approach to Maestro, sharing the same
+pros and cons.
+
+1. It cannot interact with native UI components (unlike Patrol and Maestro),
+   because it uses Flutter's accessibility tree.
+
+### How is it different from Honey?
+
+[Honey][honey] also has a very similar to Maestro and Fluttium, sharing most of
+the same pros and cons.
+
+1. It cannot interact with native UI components (unlike Patrol and Maestro),
+   because it uses Flutter's accessibility tree.
 
 [appium]: https://appium.io
 [evil_maestro]: https://maestro.mobile.dev
+[evil_maestro_ifs]: https://maestro.mobile.dev/advanced/conditions
+[evil_maestro_fors]: https://maestro.mobile.dev/advanced/loops
 [greybox]: https://en.wikipedia.org/wiki/Gray_box_testing
 [blackbox]: https://en.wikipedia.org/wiki/Black-box_testing
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[fluttium]: https://fluttium.dev/
+[honey]: https://github.com/clickup/honey
