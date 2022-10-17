@@ -1,3 +1,7 @@
+## 0.7.1+2
+
+- Prebuild iOS artifacts for iPhones (#454)
+
 ## 0.7.1+1
 
 - Add version to prebuild iOS artifacts (#460)
