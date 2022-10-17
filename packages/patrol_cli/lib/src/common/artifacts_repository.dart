@@ -5,6 +5,59 @@ import 'package:path/path.dart' show join, dirname;
 import 'package:patrol_cli/src/common/constants.dart' show version;
 import 'package:platform/platform.dart';
 
+class _Artifact {
+  const _Artifact({
+    required this.name,
+    required this.version,
+    required this.ext,
+  });
+
+  final String name;
+  final String? version;
+  final String ext;
+
+  /// Returns a URI where this artifact is hosted.
+  Uri get uri {
+    final version = this.version;
+    if (version == null) {
+      throw StateError('cannot get uri for an unversioned artifact');
+    }
+
+    return Uri.parse(
+      'https://github.com/leancodepl/patrol/releases/download/patrol_cli-v$version/$filename',
+    );
+  }
+
+  String get filename {
+    var result = name;
+    if (version != null) {
+      result += '-$version';
+    }
+    result += '.$ext';
+
+    return result;
+  }
+}
+
+const _androidArtifacts = [
+  _Artifact(name: 'server', version: version, ext: '.apk'),
+  _Artifact(name: 'instrumentation', version: version, ext: '.apk'),
+];
+
+const _iosArtifacts = [
+  _Artifact(name: 'ios', version: version, ext: '.zip'),
+  _Artifact(
+    name: 'AutomatorServer-iphonesimulator-arm64',
+    version: version,
+    ext: '.zip',
+  ),
+  _Artifact(
+    name: 'AutomatorServer-iphonesimulator-x86_64',
+    version: version,
+    ext: '.zip',
+  ),
+];
+
 class ArtifactsRepository {
   ArtifactsRepository({
     required FileSystem fs,
