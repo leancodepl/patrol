@@ -1,5 +1,5 @@
 git_url("git@github.com:leancodepl/certificates.git")
 storage_mode("git")
-team_id(ENV["APPLE_DEVELOPER_TEAM_ID"])
-app_identifier("pl.leancode.AutomatorServerUITests.xctrunner")
+team_id("U3EG6EALX7")
+app_identifier("pl.leancode.AutomatorServerUITests")
 type("development")
