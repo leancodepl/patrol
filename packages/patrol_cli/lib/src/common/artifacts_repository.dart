@@ -71,6 +71,15 @@ class Artifact with _$Artifact {
     return result;
   }
 
+  String get archiveName {
+    return map(
+      file: (_) => throw StateError(
+        'archiveName is not applicable for file artifacts',
+      ),
+      archive: (artifact) => '${artifact.name}-${artifact.version}.zip',
+    );
+  }
+
   /// Returns an unversioned (i.e debug) variant of this artifact.
   Artifact get debug => copyWith(version: null);
 
@@ -96,6 +105,10 @@ class Artifact with _$Artifact {
       },
     );
   }
+}
+
+extension _ArtifactArchiveX on _ArtifactArchive {
+  String get archiveName => '$name-$version.zip';
 }
 
 class ArtifactsRepository {
@@ -224,25 +237,10 @@ class ArtifactsRepository {
       ],
     ]);
 
-    if (!platform.isMacOS) {
-      return;
-    }
-
-    final bytes = await _fs.file(_paths.iosZipPath).readAsBytes();
-    final archive = _zipDecoder.decodeBytes(bytes);
-
-    for (final archiveFile in archive) {
-      final filename = archiveFile.name;
-      final extractPath = _paths.iosDirPath + platform.pathSeparator + filename;
-      if (archiveFile.isFile) {
-        final data = archiveFile.content as List<int>;
-        final newFile = _fs.file(extractPath);
-        await newFile.create(recursive: true);
-        await newFile.writeAsBytes(data);
-      } else {
-        final directory = _fs.directory(extractPath);
-        await directory.create(recursive: true);
-      }
+    if (platform.isMacOS) {
+      await _extractArtifact(Artifacts.ios);
+      await _extractArtifact(Artifacts.iosSimulatorArm);
+      await _extractArtifact(Artifacts.iosSimulatorAmd);
     }
   }
 
@@ -255,6 +253,26 @@ class ArtifactsRepository {
 
     final p = join(artifactPath, artifact.filename);
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
+  }
+
+  Future<void> _extractArtifact(Artifact artifact) async {
+    final archievePath = join(artifactPath, artifact.archiveName);
+    final bytes = await _fs.file(archievePath).readAsBytes();
+    final archive = _zipDecoder.decodeBytes(bytes);
+
+    for (final archiveFile in archive) {
+      final filename = archiveFile.name;
+      final extractPath = join(artifactPath, artifact.filename, filename);
+      if (archiveFile.isFile) {
+        final data = archiveFile.content as List<int>;
+        final newFile = _fs.file(extractPath);
+        await newFile.create(recursive: true);
+        await newFile.writeAsBytes(data);
+      } else {
+        final directory = _fs.directory(extractPath);
+        await directory.create(recursive: true);
+      }
+    }
   }
 
   /// Create a file at [fullPath], recursively creating non-existent
