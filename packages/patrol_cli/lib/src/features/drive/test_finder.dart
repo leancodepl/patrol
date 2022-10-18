@@ -16,7 +16,8 @@ class TestFinder {
   ///
   /// A target is valid if it:
   /// - is a path to a Dart test file, or
-  /// - is a directory containing at least one Dart test file
+  /// - is a path to a directory recursively containing at least one Dart test
+  ///   file
   List<String> findTests(List<String> targets) {
     for (var i = 0; i < targets.length; i++) {
       final target = targets[i];
@@ -47,7 +48,7 @@ class TestFinder {
   }
 
   /// Recursively searches the `integration_test` directory and returns files
-  /// that end with `_test.dart` as absolute paths.
+  /// ending with `_test.dart` as absolute paths.
   List<String> findAllTests({Directory? directory}) {
     directory ??= _integrationTestDirectory;
 

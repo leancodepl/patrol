@@ -1,5 +1,6 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:test/test.dart';
@@ -78,7 +79,7 @@ void main() {
 
       expect(
         testFinder.findTests(['integration_test/app_test.dart']),
-        equals(['${wd.path}/integration_test/app_test.dart']),
+        equals([join(wd.path, 'integration_test/app_test.dart')]),
       );
     });
 
@@ -93,7 +94,47 @@ void main() {
 
       expect(
         testFinder.findTests(['integration_test/features/login']),
-        equals(files.map((file) => '${wd.path}/$file').toList()),
+        equals(files.map((file) => join(wd.path, file))),
+      );
+    });
+
+    test(
+      'finds tests when target is a directory containing no direct test files',
+      () {
+        final files = [
+          'integration_test/features/login/new_user_test.dart',
+          'integration_test/features/login/existing_user_test.dart'
+        ];
+        for (final file in files) {
+          fs.file(file).createSync(recursive: true);
+        }
+
+        expect(
+          testFinder.findTests(['integration_test/features']),
+          equals(files.map((file) => join(wd.path, file))),
+        );
+      },
+    );
+
+    test('finds tests recursively when target is a directory', () {
+      final files = [
+        'integration_test/features/some_test.dart',
+        'integration_test/features/login/new_user_test.dart',
+        'integration_test/features/login/existing_user_test.dart'
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      expect(
+        testFinder.findTests(['integration_test/features']),
+        equals(files.map((file) => join(wd.path, file))),
+      );
+
+      expect(
+        testFinder.findTests(['integration_test/features/']),
+        equals(files.map((file) => join(wd.path, file))),
+        reason: 'trailing slash',
       );
     });
 
@@ -112,7 +153,16 @@ void main() {
           'integration_test/app_test.dart',
           'integration_test/features/login',
         ]),
-        equals(files.map((file) => '${wd.path}/$file').toList()),
+        equals(files.map((file) => join(wd.path, file))),
+      );
+
+      expect(
+        testFinder.findTests([
+          'integration_test/app_test.dart',
+          'integration_test/features/login/',
+        ]),
+        equals(files.map((file) => join(wd.path, file))),
+        reason: 'trailing slash',
       );
     });
   });
@@ -126,27 +176,34 @@ void main() {
     );
 
     test('finds tests that are directly in the directory', () {
-      fs.file('integration_test/app_test.dart').createSync(recursive: true);
-      fs.file('integration_test/permission_test.dart').createSync();
+      final files = [
+        'integration_test/app_test.dart',
+        'integration_test/permission_test.dart',
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
 
-      expect(testFinder.findAllTests(), [
-        '${wd.path}/integration_test/app_test.dart',
-        '${wd.path}/integration_test/permission_test.dart'
-      ]);
+      expect(
+        testFinder.findAllTests(),
+        equals(files.map((file) => join(wd.path, file))),
+      );
     });
 
     test('finds tests recursively', () {
-      fs.file('integration_test/app_test.dart').createSync(recursive: true);
-      fs.file('integration_test/permission_test.dart').createSync();
-      fs
-          .file('integration_test/auth/sign_in_test.dart')
-          .createSync(recursive: true);
+      final files = [
+        'integration_test/app_test.dart',
+        'integration_test/permission_test.dart',
+        'integration_test/auth/sign_in_test.dart'
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
 
-      expect(testFinder.findAllTests(), [
-        '${wd.path}/integration_test/app_test.dart',
-        '${wd.path}/integration_test/permission_test.dart',
-        '${wd.path}/integration_test/auth/sign_in_test.dart',
-      ]);
+      expect(
+        testFinder.findAllTests(),
+        equals(files.map((file) => join(wd.path, file))),
+      );
     });
   });
 }
