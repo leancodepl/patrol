@@ -30,23 +30,31 @@ void main() {
     fs.file('integration_test/app_test.dart').createSync(recursive: true);
     fs.file('integration_test/permission_test.dart').createSync();
 
-    expect(testFinder.findAllTests(), [
-      '${wd.path}/integration_test/app_test.dart',
-      '${wd.path}/integration_test/permission_test.dart'
-    ]);
+    expect(
+      testFinder.findAllTests(),
+      equals([
+        '${wd.path}/integration_test/app_test.dart',
+        '${wd.path}/integration_test/permission_test.dart'
+      ]),
+    );
   });
 
   test('finds tests recursively', () {
     fs.file('integration_test/app_test.dart').createSync(recursive: true);
     fs.file('integration_test/permission_test.dart').createSync();
+    fs.file('integration_test/webview_test.dart').createSync();
     fs
         .file('integration_test/auth/sign_in_test.dart')
         .createSync(recursive: true);
 
-    expect(testFinder.findAllTests(), [
-      '${wd.path}/integration_test/app_test.dart',
-      '${wd.path}/integration_test/permission_test.dart',
-      '${wd.path}/integration_test/auth/sign_in_test.dart',
-    ]);
+    expect(
+      testFinder.findAllTests(),
+      equals([
+        '${wd.path}/integration_test/app_test.dart',
+        '${wd.path}/integration_test/permission_test.dart',
+        '${wd.path}/integration_test/webview_test.dart',
+        '${wd.path}/integration_test/auth/sign_in_test.dart',
+      ]),
+    );
   });
 }

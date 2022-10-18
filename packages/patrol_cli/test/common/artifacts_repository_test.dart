@@ -29,6 +29,43 @@ class MockHttpClient extends Mock implements http.Client {}
 
 class MockZipDecoder extends Mock implements ZipDecoder {}
 
+extension _FileSystemX on FileSystem {
+  void _createAndroidArtifacts() {
+    file(
+      join(_artifactPath, 'server-$globalVersion.apk'),
+    ).createSync(recursive: true);
+
+    file(
+      join(_artifactPath, 'instrumentation-$globalVersion.apk'),
+    ).createSync();
+  }
+
+  void _createIOSArtifacts() {
+    directory(join(_artifactPath, 'ios-$globalVersion')).createSync();
+
+    directory(
+      join(
+        _artifactPath,
+        'AutomatorServer-iphonesimulator-arm64-$globalVersion.app',
+      ),
+    ).createSync();
+
+    directory(
+      join(
+        _artifactPath,
+        'AutomatorServer-iphonesimulator-x86_64-$globalVersion.app',
+      ),
+    ).createSync();
+
+    directory(
+      join(
+        _artifactPath,
+        'AutomatorServer-iphoneos-arm64-$globalVersion.app',
+      ),
+    ).createSync();
+  }
+}
+
 void main() {
   setUpFakes();
 
@@ -48,11 +85,30 @@ void main() {
       );
 
       zipDecoder = MockZipDecoder();
-      when(() => zipDecoder.decodeBytes(any())).thenAnswer((invocation) {
-        final archiveFile = ArchiveFile.string('ios-$globalVersion', '')
+      when(() => zipDecoder.decodeBytes(any())).thenAnswer((_) {
+        final iosArchive = ArchiveFile.string('ios-$globalVersion', '')
           ..isFile = false;
 
-        return Archive()..addFile(archiveFile);
+        final iosDeviceArchive = ArchiveFile.string(
+          'AutomatorServer-iphoneos-arm64-$globalVersion.app',
+          '',
+        )..isFile = false;
+
+        final iosSimulatorArmArchive = ArchiveFile.string(
+          'AutomatorServer-iphonesimulator-arm64-$globalVersion.app',
+          '',
+        )..isFile = false;
+
+        final iosSimulatorAmdArchive = ArchiveFile.string(
+          'AutomatorServer-iphonesimulator-x86_64-$globalVersion.app',
+          '',
+        )..isFile = false;
+
+        return Archive()
+          ..addFile(iosArchive)
+          ..addFile(iosDeviceArchive)
+          ..addFile(iosSimulatorArmArchive)
+          ..addFile(iosSimulatorAmdArchive);
       });
 
       fs = MemoryFileSystem.test();
@@ -78,13 +134,14 @@ void main() {
         expect(
           artifactsRepository.instrumentationArtifactPath,
           equals(
-              '/home/johndoe/.cache/patrol/instrumentation-$globalVersion.apk'),
+            '/home/johndoe/.cache/patrol/instrumentation-$globalVersion.apk',
+          ),
         );
 
-        // expect(
-        //   artifactsRepository.iosArtifactDirPath,
-        //   equals('/home/johndoe/.cache/patrol/ios-$version'),
-        // );
+        expect(
+          artifactsRepository.iosPath,
+          equals('/home/johndoe/.cache/patrol/ios-$globalVersion'),
+        );
       });
 
       test('are correct for debug artifacts', () {
@@ -142,25 +199,17 @@ void main() {
       test('returns false when only Android artifacts exist on macOS', () {
         artifactsRepository.platform = _macos;
 
-        fs
-            .file(join(_artifactPath, 'server-$globalVersion.apk'))
-            .createSync(recursive: true);
-        fs
-            .file(join(_artifactPath, 'instrumentation-$globalVersion.apk'))
-            .createSync();
+        fs._createAndroidArtifacts();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(false));
       });
 
       test('returns true when Android and iOS artifacts exist on macOS', () {
         artifactsRepository.platform = _macos;
+
         fs
-            .file(join(_artifactPath, 'server-$globalVersion.apk'))
-            .createSync(recursive: true);
-        fs
-            .file(join(_artifactPath, 'instrumentation-$globalVersion.apk'))
-            .createSync();
-        fs.directory(join(_artifactPath, 'ios-$globalVersion')).createSync();
+          .._createAndroidArtifacts()
+          .._createIOSArtifacts();
 
         expect(artifactsRepository.areArtifactsPresent(), equals(true));
       });
@@ -238,7 +287,44 @@ void main() {
           isTrue,
         );
 
-        verify(() => httpClient.get(any())).called(3);
+        expect(
+          fs
+              .directory(
+                join(
+                  _artifactPath,
+                  'AutomatorServer-iphonesimulator-arm64-$globalVersion.app',
+                ),
+              )
+              .existsSync(),
+          isTrue,
+          reason: "iOS Simulator arm64 artifact doesn't exist",
+        );
+
+        expect(
+          fs
+              .directory(
+                join(
+                  _artifactPath,
+                  'AutomatorServer-iphonesimulator-x86_64-$globalVersion.app',
+                ),
+              )
+              .existsSync(),
+          isTrue,
+        );
+
+        expect(
+          fs
+              .directory(
+                join(
+                  _artifactPath,
+                  'AutomatorServer-iphoneos-arm64-$globalVersion.app',
+                ),
+              )
+              .existsSync(),
+          isTrue,
+        );
+
+        verify(() => httpClient.get(any())).called(6);
       });
     });
   });
