@@ -35,13 +35,13 @@ class IOSDriver {
 
     _logger.info(device);
     if (device.real) {
-      await _runServerPhysical(
+      await _runServerOnDevice(
         deviceName: device.name,
         deviceId: device.id,
         port: port,
       );
     } else {
-      await _runServerOnDevice(deviceId: device.id, port: port);
+      await _runServerOnSimulator(deviceId: device.id, port: port);
     }
   }
 
@@ -97,7 +97,7 @@ class IOSDriver {
     progress.complete('Forwarded ports');
   }
 
-  Future<void> _runServerOnDevice({
+  Future<void> _runServerOnSimulator({
     required String port,
     required String deviceId,
   }) async {
@@ -115,6 +115,18 @@ class IOSDriver {
       ],
       runInShell: true,
     );
+
+    _disposeScope.addDispose(() async {
+      await Process.run(
+        'xcrun',
+        [
+          'simctl',
+          'uninstall',
+          deviceId,
+          'pl.leancode.AutomatorServerUITests.xctrunner',
+        ],
+      );
+    });
 
     installProcess.listenStdOut(_logger.info).disposedBy(_disposeScope);
     installProcess.listenStdErr(_logger.fine).disposedBy(_disposeScope);
@@ -139,13 +151,13 @@ class IOSDriver {
   }
 
   /// Runs the server which is an infinite XCUITest.
-  Future<void> _runServerPhysical({
+  Future<void> _runServerOnDevice({
     required String port,
     required String deviceName,
     required String deviceId,
   }) async {
-    // _logger
-    //     .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
+    final artifactPath = _artifactsRepository.iosPath;
+    _logger.fine('Using artifact ${basename(artifactPath)}');
 
     final process = await Process.start(
       'xcodebuild',
@@ -161,8 +173,7 @@ class IOSDriver {
         'platform=iOS,name=$deviceName',
       ],
       runInShell: true,
-      // FIXME: re-add workingDirectory
-      //workingDirectory: _artifactsRepository.iosArtifactDirPath,
+      workingDirectory: artifactPath,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
