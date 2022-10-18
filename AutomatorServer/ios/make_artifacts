@@ -5,9 +5,10 @@ cd "$(dirname "$0")"
 
 sdk="${1:-}"
 arch="${2:-}"
+version="${3:-}"
 
-if [ -z "$sdk" ] || [ -z "$arch" ]; then
-    echo "usage: ./make_artifacts <sdk> <arch>"
+if [ -z "$sdk" ] || [ -z "$arch" ] || [ -z "$version" ]; then
+    echo "usage: ./make_artifacts <sdk> <arch> <version>"
     exit 1
 fi
 
@@ -20,12 +21,16 @@ xcodebuild \
     -scheme AutomatorServer \
     -derivedDataPath ./DerivedData \
     -sdk "$sdk" \
-    -arch "$arch"
+    -arch "$arch" \
+    CODE_SIGN_IDENTITY="" \
+    CODE_SIGNING_REQUIRED="NO" \
+    CODE_SIGN_ENTITLEMENTS="" \
+    CODE_SIGNING_ALLOWED="NO"
 
 cp -r \
     "./DerivedData/Build/Products/Debug-$sdk/AutomatorServerUITests-Runner.app" \
-    "./artifacts/AutomatorServer-$sdk-$arch.app"
+    "./artifacts/AutomatorServer-$sdk-$arch-$version.app"
 
 cd ./artifacts
-zip -r "AutomatorServer-$sdk-$arch.zip" "AutomatorServer-$sdk-$arch.app"
+zip -r "AutomatorServer-$sdk-$arch-$version.zip" "AutomatorServer-$sdk-$arch-$version.app"
 cd ..

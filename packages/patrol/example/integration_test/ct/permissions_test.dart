@@ -7,7 +7,7 @@ import '../config.dart';
 import 'test_slot.dart';
 
 Future<void> main() async {
-  final nativeAutomator = NativeAutomator.forTest(useBinding: false);
+  final nativeAutomator = NativeAutomator(binding: Binding.integrationTest);
 
   Future<void> requestAndGrantCameraPermission(PatrolTester $) async {
     expect($(#camera).$(#statusText).text, 'Not granted');

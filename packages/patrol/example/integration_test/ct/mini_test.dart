@@ -18,10 +18,10 @@ Future<void> main() async {
     mapsId = 'com.google.android.apps.maps';
   }
 
-  final nativeAutomator = NativeAutomator.forTest(
-    useBinding: false,
+  final nativeAutomator = NativeAutomator(
     packageName: patrolConfig.packageName,
     bundleId: patrolConfig.bundleId,
+    binding: Binding.integrationTest,
   );
 
   await convenientTestMain(MyConvenientTestSlot(), () {

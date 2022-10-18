@@ -8,26 +8,6 @@ import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
-class FlutterDriverOptions {
-  const FlutterDriverOptions({
-    required this.driver,
-    required this.target,
-    required this.host,
-    required this.port,
-    required this.device,
-    required this.flavor,
-    required this.dartDefines,
-  });
-
-  final String driver;
-  final String target;
-  final String? host;
-  final String? port;
-  final Device device;
-  final String? flavor;
-  final Map<String, String> dartDefines;
-}
-
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
   FlutterDriverFailedException(this.code)
@@ -49,22 +29,41 @@ class FlutterDriver {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
+  late String driver;
+  String? host;
+  String? port;
+  String? flavor;
+  late Map<String, String> dartDefines;
+
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  /// Runs flutter driver with the given [options] and waits until the drive
-  /// completes.
+  void init({
+    required String driver,
+    required String? host,
+    required String? port,
+    required String? flavor,
+    required Map<String, String> dartDefines,
+  }) {
+    this.driver = driver;
+    this.host = host;
+    this.port = port;
+    this.flavor = flavor;
+    this.dartDefines = dartDefines;
+  }
+
+  /// Runs [target] on [device] and waits until the test completes.
   ///
   /// Prints stdout and stderr of "flutter drive".
-  Future<void> run(FlutterDriverOptions options) async {
-    final deviceName = options.device.resolvedName;
-    final targetName = basename(options.target);
+  Future<void> run(String target, Device device) async {
+    final deviceName = device.resolvedName;
+    final targetName = basename(target);
 
     _logger.info('${green.wrap(">")} Running $targetName on $deviceName...');
 
     final env = {
-      envHostKey: options.host,
-      envPortKey: options.port,
+      envHostKey: host,
+      envPortKey: port,
     }.withNullsRemoved();
 
     int? exitCode;
@@ -73,11 +72,11 @@ class FlutterDriver {
       [
         '--no-version-check',
         ..._flutterDriveArguments(
-          driver: options.driver,
-          target: options.target,
-          device: options.device.id,
-          flavor: options.flavor,
-          dartDefines: {...options.dartDefines, ...env},
+          driver: driver,
+          target: target,
+          device: device.id,
+          flavor: flavor,
+          dartDefines: {...dartDefines, ...env},
         ),
       ],
       environment: env,

@@ -1,0 +1,14 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build automation server artifacts"
+  lane :build do
+    run_tests(
+      project: "AutomatorServer.xcodeproj",
+      scheme: "AutomatorServer",
+      derived_data_path: "./derivedData",
+      build_for_testing: true,
+      sdk: "iphonesimulator"
+    )
+  end
+end

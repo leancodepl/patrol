@@ -9,10 +9,10 @@ import '../config.dart';
 import 'test_slot.dart';
 
 Future<void> main() async {
-  final nativeAutomator = NativeAutomator.forTest(
-    useBinding: false,
+  final nativeAutomator = NativeAutomator(
     packageName: patrolConfig.packageName,
     bundleId: patrolConfig.bundleId,
+    binding: Binding.integrationTest,
   );
 
   await convenientTestMain(MyConvenientTestSlot(), () {

@@ -16,7 +16,7 @@ class OverlayScreen extends StatelessWidget {
             child: Container(
               width: 150,
               height: 150,
-              color: Colors.blue,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],

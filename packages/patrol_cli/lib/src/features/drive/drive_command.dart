@@ -1,7 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -33,16 +32,20 @@ class DriveCommandConfig with _$DriveCommandConfig {
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
     required DisposeScope parentDisposeScope,
-    required ArtifactsRepository artifactsRepository,
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
+    required AndroidDriver androidDriver,
+    required IOSDriver iosDriver,
+    required FlutterDriver flutterDriver,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
-        _artifactsRepository = artifactsRepository,
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
+        _androidDriver = androidDriver,
+        _iosDriver = iosDriver,
+        _flutterDriver = flutterDriver,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -104,11 +107,13 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   }
 
   final DisposeScope _disposeScope;
-  final ArtifactsRepository _artifactsRepository;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestRunner _testRunner;
+  final AndroidDriver _androidDriver;
+  final IOSDriver _iosDriver;
+  final FlutterDriver _flutterDriver;
   final Logger _logger;
 
   @override
@@ -188,22 +193,14 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          await AndroidDriver(
-            parentDisposeScope: _disposeScope,
-            artifactsRepository: _artifactsRepository,
-            logger: _logger,
-          ).run(
+          await _androidDriver.run(
             port: config.port,
             device: device,
             flavor: config.flavor,
           );
           break;
         case TargetPlatform.iOS:
-          await IOSDriver(
-            parentDisposeScope: _disposeScope,
-            artifactsRepository: _artifactsRepository,
-            logger: _logger,
-          ).run(
+          await _iosDriver.run(
             port: config.port,
             device: device,
             flavor: config.flavor,
@@ -212,11 +209,15 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    final flutterDriver = FlutterDriver(
-      parentDisposeScope: _disposeScope,
-      logger: _logger,
+    _flutterDriver.init(
+      driver: config.driver,
+      host: config.host,
+      port: config.port,
+      flavor: config.flavor,
+      dartDefines: config.dartDefines,
     );
 
+    var exitCode = 0;
     for (final target in config.targets) {
       _testRunner.addTest((device) async {
         if (_disposeScope.disposed) {
@@ -224,19 +225,10 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           return;
         }
 
-        final flutterDriverOptions = FlutterDriverOptions(
-          driver: config.driver,
-          target: target,
-          host: config.host,
-          port: config.port,
-          device: device,
-          flavor: config.flavor,
-          dartDefines: config.dartDefines,
-        );
-
         try {
-          await flutterDriver.run(flutterDriverOptions);
+          await _flutterDriver.run(target, device);
         } on FlutterDriverFailedException catch (err) {
+          exitCode = 1;
           _logger
             ..severe(err)
             ..severe(
@@ -249,6 +241,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
     await _testRunner.run();
 
-    return 0;
+    return exitCode;
   }
 }
