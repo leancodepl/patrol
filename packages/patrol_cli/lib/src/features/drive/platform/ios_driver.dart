@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Process, Platform;
+import 'dart:io' show Platform, Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
@@ -24,6 +24,8 @@ class IOSDriver {
   final ArtifactsRepository _artifactsRepository;
   final Logger _logger;
 
+  static const _bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
+
   Future<void> run({
     required String port,
     required Device device,
@@ -31,17 +33,9 @@ class IOSDriver {
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
-    }
-
-    _logger.info(device);
-    if (device.real) {
-      await _runServerOnDevice(
-        deviceName: device.name,
-        deviceId: device.id,
-        port: port,
-      );
+      await _runServerOnDevice(device: device, port: port);
     } else {
-      await _runServerOnSimulator(deviceId: device.id, port: port);
+      await _runServerOnSimulator(device: device, port: port);
     }
   }
 
@@ -98,11 +92,10 @@ class IOSDriver {
   }
 
   Future<void> _runServerOnSimulator({
+    required Device device,
     required String port,
-    required String deviceId,
   }) async {
-    // TODO: Use artifact appropriate for the Simulator architecture
-    final artifactPath = _artifactsRepository.iosSimulatorArmPath;
+    final artifactPath = _artifactsRepository.iosSimulatorPath;
     _logger.fine('Using artifact ${basename(artifactPath)}');
 
     final installProcess = await Process.start(
@@ -110,11 +103,13 @@ class IOSDriver {
       [
         'simctl',
         'install',
-        deviceId,
+        device.id,
         artifactPath,
       ],
       runInShell: true,
-    );
+    )
+      ..listenStdOut(_logger.info).disposedBy(_disposeScope)
+      ..listenStdErr(_logger.info).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
       await Process.run(
@@ -122,14 +117,14 @@ class IOSDriver {
         [
           'simctl',
           'uninstall',
-          deviceId,
-          'pl.leancode.AutomatorServerUITests.xctrunner',
+          device.id,
+          _bundleId,
         ],
+        runInShell: true,
       );
-    });
 
-    installProcess.listenStdOut(_logger.info).disposedBy(_disposeScope);
-    installProcess.listenStdErr(_logger.fine).disposedBy(_disposeScope);
+      _logger.fine('Uninstalled $_bundleId');
+    });
 
     await installProcess.exitCode;
 
@@ -138,23 +133,21 @@ class IOSDriver {
       [
         'simctl',
         'launch',
-        deviceId,
-        'pl.leancode.AutomatorServerUITests.xctrunner',
+        device.id,
+        _bundleId,
       ],
       runInShell: true,
-    );
-
-    runProcess.listenStdOut(_logger.info).disposedBy(_disposeScope);
-    runProcess.listenStdErr(_logger.fine).disposedBy(_disposeScope);
+    )
+      ..listenStdOut(_logger.info).disposedBy(_disposeScope)
+      ..listenStdErr(_logger.info).disposedBy(_disposeScope);
 
     await runProcess.exitCode;
   }
 
   /// Runs the server which is an infinite XCUITest.
   Future<void> _runServerOnDevice({
+    required Device device,
     required String port,
-    required String deviceName,
-    required String deviceId,
   }) async {
     final artifactPath = _artifactsRepository.iosPath;
     _logger.fine('Using artifact ${basename(artifactPath)}');
@@ -170,7 +163,7 @@ class IOSDriver {
         '-sdk',
         'iphoneos',
         '-destination',
-        'platform=iOS,name=$deviceName',
+        'platform=iOS,name=${device.name}',
       ],
       runInShell: true,
       workingDirectory: artifactPath,
@@ -187,7 +180,7 @@ class IOSDriver {
         const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
         final process = await Process.run(
           'ideviceinstaller',
-          ['--uninstall', bundleId, '--udid', deviceId],
+          ['--uninstall', bundleId, '--udid', device.id],
           runInShell: true,
         );
 

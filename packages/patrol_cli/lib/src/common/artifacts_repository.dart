@@ -1,9 +1,12 @@
+import 'dart:io' show Process;
+
 import 'package:archive/archive.dart';
 import 'package:file/file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' show join, dirname;
 import 'package:patrol_cli/src/common/constants.dart' show globalVersion;
+import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:platform/platform.dart';
 
 part 'artifacts_repository.freezed.dart';
@@ -28,6 +31,7 @@ class Artifacts {
 
   // iOS
 
+  // TODO(bartekpacia): Remove once code signing for iosDevice works
   @Deprecated('Remove once code signing for iosDevice works')
   static const ios = Artifact.archive(
     name: 'ios',
@@ -69,7 +73,8 @@ class Artifact with _$Artifact {
 
   const Artifact._();
 
-  String get filename {
+  /// Nmae of the file once downloaded and extracted.
+  String get localFileName {
     var result = name;
 
     if (version != null) {
@@ -83,20 +88,11 @@ class Artifact with _$Artifact {
     return result;
   }
 
-  /// Name of the file that was originally downloaded.
-  String get remoteName {
+  /// Name of the file while hosted.
+  String get remoteFileName {
     return map(
-      file: (artifact) => artifact.filename,
+      file: (artifact) => artifact.localFileName,
       archive: (archive) => '$name-$version.zip',
-    );
-  }
-
-  String get archiveName {
-    return map(
-      file: (_) => throw StateError(
-        'archiveName is not applicable for file artifacts',
-      ),
-      archive: (artifact) => '${artifact.name}-${artifact.version}.zip',
     );
   }
 
@@ -111,18 +107,8 @@ class Artifact with _$Artifact {
     }
 
     const repo = 'https://github.com/leancodepl/patrol';
-
-    return map(
-      file: (file) {
-        return Uri.parse(
-          '$repo/releases/download/patrol_cli-v$version/$filename',
-        );
-      },
-      archive: (archive) {
-        return Uri.parse(
-          '$repo/releases/download/patrol_cli-v$version/$name-$version.zip',
-        );
-      },
+    return Uri.parse(
+      '$repo/releases/download/patrol_cli-v$version/$remoteFileName',
     );
   }
 }
@@ -182,7 +168,7 @@ class ArtifactsRepository {
   String get serverArtifactPath {
     final artifact = debug ? Artifacts.androidApp.debug : Artifacts.androidApp;
 
-    return join(artifactPath, artifact.filename);
+    return join(artifactPath, artifact.localFileName);
   }
 
   String get instrumentationArtifactPath {
@@ -190,34 +176,57 @@ class ArtifactsRepository {
         ? Artifacts.androidInstrumentation.debug
         : Artifacts.androidInstrumentation;
 
-    return join(artifactPath, artifact.filename);
+    return join(artifactPath, artifact.localFileName);
   }
 
   @Deprecated('Migrate to iosDevicePath once it works')
   String get iosPath {
     final artifact = debug ? Artifacts.ios.debug : Artifacts.ios;
 
-    return join(artifactPath, artifact.filename);
+    return join(artifactPath, artifact.localFileName);
   }
 
   String get iosDevicePath {
     final artifact = debug ? Artifacts.iosDevice.debug : Artifacts.iosDevice;
 
-    return join(artifactPath, artifact.filename);
+    return join(artifactPath, artifact.localFileName);
+  }
+
+  /// Returns path to the iOS artifact appropriate for the architecture of the
+  /// machine.
+  ///
+  /// Known issues on Apple Silicon:
+  ///
+  /// * If Simulator.app is run with Rosetta 2, then artifact for x86_64
+  ///   architecture is used, and it won't work
+  ///
+  /// * If Terminal.app is run with Rosetta 2, then artifact for x86_64
+  ///   architecture is used even if the Simulator.app is running without
+  ///   Rosetta 2, and it won't work
+  String get iosSimulatorPath {
+    final processResult = Process.runSync('uname', ['-m']);
+    final arch = processResult.stdOut.trim();
+    if (arch == 'arm64') {
+      return iosSimulatorArmPath;
+    } else if (arch == 'x86_64') {
+      return iosSimulatorAmdPath;
+    } else {
+      throw StateError('architecture $arch is not supported');
+    }
   }
 
   String get iosSimulatorArmPath {
     final artifact =
         debug ? Artifacts.iosSimulatorArm.debug : Artifacts.iosSimulatorArm;
 
-    return join(artifactPath, artifact.filename);
+    return join(artifactPath, artifact.localFileName);
   }
 
   String get iosSimulatorAmdPath {
     final artifact =
         debug ? Artifacts.iosSimulatorAmd.debug : Artifacts.iosSimulatorAmd;
 
-    return join(artifactPath, artifact.filename);
+    return join(artifactPath, artifact.localFileName);
   }
 
   /// Returns true if artifacts for the current patrol_cli version are present
@@ -278,21 +287,21 @@ class ArtifactsRepository {
       throw Exception('Failed to download $artifact from ${artifact.uri}');
     }
 
-    final p = join(artifactPath, artifact.remoteName);
+    final p = join(artifactPath, artifact.remoteFileName);
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
   }
 
   /// Extract the artifact and removes the archive upon completion.
   Future<void> _extractArtifact(Artifact artifact) async {
-    final archivePath = join(artifactPath, artifact.archiveName);
+    final archivePath = join(artifactPath, artifact.remoteFileName);
     final archiveFile = _fs.file(archivePath);
     final bytes = await archiveFile.readAsBytes();
     final archive = _zipDecoder.decodeBytes(bytes);
 
-    // TODO: Remove once iOS project is not needed
+    // TODO(bartekpacia): Remove once code signing for iosDevice works
     var newArtifactPath = artifactPath;
-    if (artifact.archiveName.startsWith('ios-')) {
-      newArtifactPath = join(artifactPath, artifact.filename);
+    if (artifact.remoteFileName.startsWith('ios-')) {
+      newArtifactPath = join(artifactPath, artifact.localFileName);
     }
 
     for (final archiveFile in archive) {
