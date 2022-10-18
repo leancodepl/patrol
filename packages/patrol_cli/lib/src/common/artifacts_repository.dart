@@ -281,14 +281,23 @@ class ArtifactsRepository {
     _createFileRecursively(p).writeAsBytesSync(response.bodyBytes);
   }
 
+  /// Extract the artifact and removes the archive upon completion.
   Future<void> _extractArtifact(Artifact artifact) async {
-    final archievePath = join(artifactPath, artifact.archiveName);
-    final bytes = await _fs.file(archievePath).readAsBytes();
+    final archivePath = join(artifactPath, artifact.archiveName);
+    final archiveFile = _fs.file(archivePath);
+    final bytes = await archiveFile.readAsBytes();
     final archive = _zipDecoder.decodeBytes(bytes);
+
+    // TODO: Remove once iOS project is not needed
+    var newArtifactPath = artifactPath;
+    if (artifact.archiveName.startsWith('ios-')) {
+      newArtifactPath = join(artifactPath, artifact.filename);
+      print('newArtifactPath: $newArtifactPath');
+    }
 
     for (final archiveFile in archive) {
       final filename = archiveFile.name;
-      final extractPath = join(artifactPath, filename);
+      final extractPath = join(newArtifactPath, filename);
       if (archiveFile.isFile) {
         final data = archiveFile.content as List<int>;
         final newFile = _fs.file(extractPath);
@@ -299,6 +308,8 @@ class ArtifactsRepository {
         await directory.create(recursive: true);
       }
     }
+
+    await archiveFile.delete();
   }
 
   /// Create a file at [fullPath], recursively creating non-existent
