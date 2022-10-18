@@ -193,6 +193,7 @@ class ArtifactsRepository {
     return join(artifactPath, artifact.filename);
   }
 
+  @Deprecated('Migrate to iosDevicePath once it works')
   String get iosPath {
     final artifact = debug ? Artifacts.ios.debug : Artifacts.ios;
 
@@ -292,7 +293,6 @@ class ArtifactsRepository {
     var newArtifactPath = artifactPath;
     if (artifact.archiveName.startsWith('ios-')) {
       newArtifactPath = join(artifactPath, artifact.filename);
-      print('newArtifactPath: $newArtifactPath');
     }
 
     for (final archiveFile in archive) {
@@ -320,70 +320,3 @@ class ArtifactsRepository {
     return _fs.file(fullPath)..createSync();
   }
 }
-
-/* class _ArtifactPaths {
-  const _ArtifactPaths(this._artifactPath);
-
-  final String _artifactPath;
-
-  /// Returns a URI where [artifact] can be downloaded from.
-  ///
-  /// [artifact] must be in the form of `$artifact-$version.$extension`, for
-  /// example: `server-1.0.0.apk` or `ios-4.2.0.zip`.
-  Uri getUriForArtifact(String artifact) {
-    return Uri.parse(
-      'https://github.com/leancodepl/patrol/releases/download/patrol_cli-v$version/$artifact',
-    );
-  }
-
-  String get androidServerFile => 'server-$version.apk';
-
-  String get androidInstrumentationFile => 'instrumentation-$version.apk';
-
-  String get androidServerDebugFile => 'server.apk';
-
-  String get androidInstrumentationDebugFile => 'instrumentation.apk';
-
-  String get iosProjectDir => 'ios-$version';
-
-  String get iosProjectZip => 'ios-$version.zip';
-
-  String get iosProjectDebugDir => 'ios';
-
-  String get iosAutomatorSimAmdZip {
-    return 'AutomatorServer-iphonesimulator-x86_64-$version.zip';
-  }
-
-  String get iosAutomatorSimArmZip {
-    return 'AutomatorServer-iphonesimulator-arm64-$version.zip';
-  }
-
-  String get serverArtifactPath {
-    return join(_artifactPath, androidServerFile);
-  }
-
-  String get debugServerArtifactPath {
-    return join(_artifactPath, androidServerDebugFile);
-  }
-
-  String get instrumentationArtifactPath {
-    return join(_artifactPath, androidInstrumentationFile);
-  }
-
-  String get debugInstrumentationArtifactPath {
-    return join(_artifactPath, androidInstrumentationDebugFile);
-  }
-
-  String get iosZipPath {
-    return join(_artifactPath, iosProjectZip);
-  }
-
-  String get iosDirPath {
-    return join(_artifactPath, iosProjectDir);
-  }
-
-  String get iosDirDebugPath {
-    return join(_artifactPath, iosProjectDebugDir);
-  }
-}
- */
