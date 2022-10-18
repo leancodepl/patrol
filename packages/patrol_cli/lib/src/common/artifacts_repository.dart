@@ -28,6 +28,7 @@ class Artifacts {
 
   // iOS
 
+  @Deprecated('Remove once code signing for iosDevice works')
   static const ios = Artifact.archive(
     name: 'ios',
     version: globalVersion,

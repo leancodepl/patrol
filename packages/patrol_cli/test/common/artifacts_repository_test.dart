@@ -101,7 +101,7 @@ void main() {
         );
 
         expect(
-          artifactsRepository.iosArtifactDirPath,
+          artifactsRepository.iosPath,
           equals('/home/johndoe/.cache/patrol/ios'),
         );
       });
