@@ -16,7 +16,10 @@ class Artifacts {
 
   // Android
 
-  // The dummy app under test.
+  /// The dummy app under test.
+  ///
+  /// See also:
+  ///  * https://github.com/leancodepl/patrol/pull/465
   static const androidApp = Artifact.file(
     name: 'server',
     version: globalVersion,
@@ -90,6 +93,10 @@ class Artifact with _$Artifact {
 
   /// Name of the file while hosted.
   String get remoteFileName {
+    if (version == null) {
+      throw StateError('unversioned artifacts do not have remoteFileName');
+    }
+
     return map(
       file: (artifact) => artifact.localFileName,
       archive: (archive) => '$name-$version.zip',
@@ -255,33 +262,35 @@ class ArtifactsRepository {
     }
   }
 
-  /// Downloads artifacts for the current patrol_cli version.
-  Future<void> downloadArtifacts({String? ver}) async {
-    ver ??= globalVersion;
+  /// Downloads and extracts artifacts for [version] of patrol_cli.
+  Future<void> downloadArtifacts({String? version = globalVersion}) async {
+    final androidArtifacts = [
+      Artifacts.androidApp,
+      Artifacts.androidInstrumentation,
+    ].map((artifact) => artifact.copyWith(version: version));
+
+    final iosArtifacts = [
+      Artifacts.ios,
+      Artifacts.iosDevice,
+      Artifacts.iosSimulatorArm,
+      Artifacts.iosSimulatorAmd,
+    ].map((artifact) => artifact.copyWith(version: version));
 
     await Future.wait<void>([
-      _downloadArtifact(Artifacts.androidApp.copyWith(version: ver)),
-      _downloadArtifact(
-        Artifacts.androidInstrumentation.copyWith(version: ver),
-      ),
+      ...androidArtifacts.map(_downloadArtifact),
       if (platform.isMacOS) ...[
-        _downloadArtifact(Artifacts.ios),
-        _downloadArtifact(Artifacts.iosDevice),
-        _downloadArtifact(Artifacts.iosSimulatorArm),
-        _downloadArtifact(Artifacts.iosSimulatorAmd),
+        ...iosArtifacts.map(_downloadArtifact),
       ],
     ]);
 
     if (platform.isMacOS) {
-      await _extractArtifact(Artifacts.ios);
-      await _extractArtifact(Artifacts.iosDevice);
-      await _extractArtifact(Artifacts.iosSimulatorArm);
-      await _extractArtifact(Artifacts.iosSimulatorAmd);
+      await Future.wait<void>(iosArtifacts.map(_extractArtifact));
     }
   }
 
   Future<void> _downloadArtifact(Artifact artifact) async {
     final response = await _httpClient.get(artifact.uri);
+    print('downloading ${artifact.uri.path}');
 
     if (response.statusCode != 200) {
       throw Exception('Failed to download $artifact from ${artifact.uri}');
