@@ -12,27 +12,45 @@ class TestFinder {
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
 
-  /// Checks that every element of [targets] points to a valid file
+  /// Checks that every element of [targets] is a valid target.
+  ///
+  /// A target is valid if it:
+  /// - is a path to a Dart test file, or
+  /// - is a path to a directory recursively containing at least one Dart test
+  ///   file
   List<String> findTests(List<String> targets) {
-    for (final target in targets) {
-      final hasSuffix = target.endsWith('_test.dart');
-      if (!hasSuffix) {
-        throwToolExit('target file $target has invalid suffix');
-      }
+    final testFiles = <String>[];
 
-      final isFile = _fs.isFileSync(target);
-      if (!isFile) {
-        throwToolExit('target file $target does not exist');
+    for (final target in targets) {
+      if (target.endsWith('_test.dart')) {
+        final isFile = _fs.isFileSync(target);
+        if (!isFile) {
+          throwToolExit('target file $target does not exist');
+        }
+        testFiles.add(_fs.file(target).absolute.path);
+      } else if (_fs.isDirectorySync(target)) {
+        final foundTargets = findAllTests(directory: _fs.directory(target));
+        if (foundTargets.isEmpty) {
+          throwToolExit(
+            'target directory $target does not contain any tests',
+          );
+        }
+
+        testFiles.addAll(foundTargets);
+      } else {
+        throwToolExit('target $target is invalid');
       }
     }
 
-    return targets;
+    return testFiles;
   }
 
   /// Recursively searches the `integration_test` directory and returns files
-  /// that end with `_test.dart` as absolute paths.
-  List<String> findAllTests() {
-    return _integrationTestDirectory
+  /// ending with `_test.dart` as absolute paths.
+  List<String> findAllTests({Directory? directory}) {
+    directory ??= _integrationTestDirectory;
+
+    return directory
         .listSync(recursive: true, followLinks: false)
         .where(
           (fileSystemEntity) {
