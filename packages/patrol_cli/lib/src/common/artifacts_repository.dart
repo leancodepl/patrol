@@ -76,7 +76,7 @@ class Artifact with _$Artifact {
 
   const Artifact._();
 
-  /// Nmae of the file once downloaded and extracted.
+  /// Name of the file once downloaded and extracted.
   String get localFileName {
     var result = name;
 
