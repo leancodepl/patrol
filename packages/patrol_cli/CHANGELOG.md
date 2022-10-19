@@ -1,3 +1,8 @@
+## 0.7.2
+
+- Make `--target` flag accept directories (#473)
+- Use prebuilt artifacts when running on iOS Simulator (#465)
+
 ## 0.7.1+3
 
 - Minimize iOS artifact size (#469)
