@@ -116,7 +116,13 @@ class PatrolCommandRunner extends CommandRunner<int> {
         logger: _logger,
       ),
     );
-    addCommand(UpdateCommand(pubUpdater: _pubUpdater, logger: _logger));
+    addCommand(
+      UpdateCommand(
+        pubUpdater: _pubUpdater,
+        artifactsRepository: _artifactsRepository,
+        logger: _logger,
+      ),
+    );
 
     argParser
       ..addFlag(
@@ -220,7 +226,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
-      _logger.info('patrol_cli v$version');
+      _logger.info('patrol_cli v$globalVersion');
       exitCode = 0;
     } else {
       exitCode = await super.runCommand(topLevelResults);
@@ -248,7 +254,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     }
 
     final latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
-    final isUpToDate = version == latestVersion;
+    final isUpToDate = globalVersion == latestVersion;
 
     if (isUpToDate) {
       return;
@@ -258,7 +264,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       ..info('')
       ..info(
         '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(globalVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');

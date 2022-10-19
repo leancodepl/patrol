@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:io' show Process, Platform;
+import 'dart:io' show Platform, Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -23,6 +24,8 @@ class IOSDriver {
   final ArtifactsRepository _artifactsRepository;
   final Logger _logger;
 
+  static const _bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
+
   Future<void> run({
     required String port,
     required Device device,
@@ -30,13 +33,10 @@ class IOSDriver {
   }) async {
     if (device.real) {
       await _forwardPorts(port: port, deviceId: device.id);
+      await _runServerOnDevice(device: device, port: port);
+    } else {
+      await _runServerOnSimulator(device: device, port: port);
     }
-    await _runServer(
-      deviceName: device.name,
-      deviceId: device.id,
-      simulator: !device.real,
-      port: port,
-    );
   }
 
   /// Forwards ports using iproxy.
@@ -91,17 +91,67 @@ class IOSDriver {
     progress.complete('Forwarded ports');
   }
 
-  /// Runs the server which is an infinite XCUITest.
-  Future<void> _runServer({
+  Future<void> _runServerOnSimulator({
+    required Device device,
     required String port,
-    required String deviceName,
-    required String deviceId,
-    required bool simulator,
   }) async {
-    _logger
-        .fine('Using artifact in ${_artifactsRepository.iosArtifactDirPath}');
+    final artifactPath = _artifactsRepository.iosSimulatorPath;
+    _logger.fine('Using artifact ${basename(artifactPath)}');
 
-    // This xcodebuild fails when using Dart < 2.17.
+    final installProcess = await Process.start(
+      'xcrun',
+      [
+        'simctl',
+        'install',
+        device.id,
+        artifactPath,
+      ],
+      runInShell: true,
+    )
+      ..listenStdOut(_logger.info).disposedBy(_disposeScope)
+      ..listenStdErr(_logger.info).disposedBy(_disposeScope);
+
+    _disposeScope.addDispose(() async {
+      await Process.run(
+        'xcrun',
+        [
+          'simctl',
+          'uninstall',
+          device.id,
+          _bundleId,
+        ],
+        runInShell: true,
+      );
+
+      _logger.fine('Uninstalled $_bundleId');
+    });
+
+    await installProcess.exitCode;
+
+    final runProcess = await Process.start(
+      'xcrun',
+      [
+        'simctl',
+        'launch',
+        device.id,
+        _bundleId,
+      ],
+      runInShell: true,
+    )
+      ..listenStdOut(_logger.info).disposedBy(_disposeScope)
+      ..listenStdErr(_logger.info).disposedBy(_disposeScope);
+
+    await runProcess.exitCode;
+  }
+
+  /// Runs the server which is an infinite XCUITest.
+  Future<void> _runServerOnDevice({
+    required Device device,
+    required String port,
+  }) async {
+    final artifactPath = _artifactsRepository.iosPath;
+    _logger.fine('Using artifact ${basename(artifactPath)}');
+
     final process = await Process.start(
       'xcodebuild',
       [
@@ -111,12 +161,12 @@ class IOSDriver {
         '-scheme',
         'AutomatorServer',
         '-sdk',
-        if (simulator) 'iphonesimulator' else 'iphoneos',
+        'iphoneos',
         '-destination',
-        'platform=iOS${simulator ? " Simulator" : ""},name=$deviceName',
+        'platform=iOS,name=${device.name}',
       ],
       runInShell: true,
-      workingDirectory: _artifactsRepository.iosArtifactDirPath,
+      workingDirectory: artifactPath,
       environment: {
         ...Platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
@@ -128,17 +178,11 @@ class IOSDriver {
       // Uninstall AutomatorServer
       ..addDispose(() async {
         const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
-        final process = simulator
-            ? await Process.run(
-                'xcrun',
-                ['simctl', 'uninstall', deviceId, bundleId],
-                runInShell: true,
-              )
-            : await Process.run(
-                'ideviceinstaller',
-                ['--uninstall', bundleId, '--udid', deviceId],
-                runInShell: true,
-              );
+        final process = await Process.run(
+          'ideviceinstaller',
+          ['--uninstall', bundleId, '--udid', device.id],
+          runInShell: true,
+        );
 
         final exitCode = process.exitCode;
         final msg = exitCode == 0
