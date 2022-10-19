@@ -19,10 +19,12 @@ Future<void> main() async {
     'counter state is the same after switching apps',
     config: patrolConfig,
     nativeAutomation: true,
+    binding: Binding.integrationTest,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       expect($(#counterText).text, '0');
+      await $(FloatingActionButton).tap();
 
       await $(FloatingActionButton).tap();
 

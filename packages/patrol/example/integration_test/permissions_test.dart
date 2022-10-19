@@ -51,6 +51,7 @@ void main() {
     'grants various permissions',
     config: patrolConfig,
     nativeAutomation: true,
+    binding: Binding.integrationTest,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
