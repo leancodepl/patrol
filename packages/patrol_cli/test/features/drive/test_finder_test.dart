@@ -55,18 +55,17 @@ void main() {
     test(
       'throws exception when target directory does not contain any tests',
       () {
-        fs
-            .directory('integration_test/features/login')
-            .createSync(recursive: true);
+        const target = 'integration_test/features/login';
+        fs.directory(target).createSync(recursive: true);
 
         expect(
-          () => testFinder.findTests(['integration_test/features/login']),
+          () => testFinder.findTests([target]),
           throwsA(
             isA<ToolExit>().having(
               (exception) => exception.message,
               'message',
               equals(
-                'target directory integration_test/features/login does not contain any tests',
+                'target directory $target does not contain any tests',
               ),
             ),
           ),
@@ -75,11 +74,12 @@ void main() {
     );
 
     test('finds test when target is file', () {
-      fs.file('integration_test/app_test.dart').createSync(recursive: true);
+      const target = 'integration_test/app_test.dart';
+      fs.file(target).createSync(recursive: true);
 
       expect(
-        testFinder.findTests(['integration_test/app_test.dart']),
-        equals([join(wd.path, 'integration_test/app_test.dart')]),
+        testFinder.findTests([target]),
+        equals([join(wd.path, target)]),
       );
     });
 
