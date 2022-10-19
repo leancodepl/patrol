@@ -2,6 +2,7 @@
 
 - Make `--target` flag accept directories (#473)
 - Use prebuilt artifacts when running on iOS Simulator (#465)
+- Automatically download new artifacts during `patrol update` (#465)
 
 ## 0.7.1+3
 
