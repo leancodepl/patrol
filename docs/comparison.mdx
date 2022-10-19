@@ -37,13 +37,15 @@ framework.
 1. Maestro workflows are defined in YAML
 
    They look simple and powerful, and even let you express control flow
-   constructs such as if statements and for loops. Trying to build a
-   Turing-complete language for testing on top of YAML is definitely
-   interesting, but it doesn't sound like an exceptionally good idea to us.
+   constructs such as if statements and for loops. Build a Turing-complete
+   language for testing on top of YAML is certainly an idea that lowers the
+   entry barrier to writing tests for newcomers.
 
    When you use Patrol, you write normal Dart code in normal Dart files. Thanks
    to that, you can express any logic because you're using a real programming
    language with a mature toolchain.
+
+   Both approaches have their advantages and disadvantages.
 
 1. Running Maestro workflows doesn't require a rebuild
 
@@ -55,8 +57,10 @@ framework.
 
 ### How is it different from Fluttium?
 
-[Fluttium][fluttium] has a very similar approach to Maestro, sharing the same
-pros and cons.
+[Fluttium][fluttium] has a very similar approach to Maestro, sharing most of the
+same pros and cons.
+
+It has a few differences:
 
 1. It cannot interact with native UI components (unlike Patrol and Maestro),
    because it uses Flutter's accessibility tree.
@@ -65,6 +69,8 @@ pros and cons.
 
 [Honey][honey] also has a very similar approach to Maestro and Fluttium, sharing most of
 the same pros and cons.
+
+It has a few differences:
 
 1. It cannot interact with native UI components (unlike Patrol and Maestro),
    because it uses Flutter's accessibility tree.
