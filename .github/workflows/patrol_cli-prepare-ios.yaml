@@ -1,0 +1,73 @@
+name: patrol_cli prepare ios
+
+on:
+  push:
+
+jobs:
+  main:
+    name: Build iphoneos artifact
+    runs-on: macos-12
+
+    defaults:
+      run:
+        working-directory: AutomatorServer/ios
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.2
+          bundler-cache: true
+
+      - name: Install fastlane
+        run: |
+          gem install bundler
+          cd android && bundle install
+          cd ..
+          cd ios && bundle install
+
+      - name: Download mobile-tools
+        uses: actions/checkout@v3
+        with:
+          repository: leancodepl/mobile-tools
+          path: mobile-tools
+
+      - name: Add mobile-tools to PATH
+        run: |
+          echo $GITHUB_WORKSPACE/mobile-tools/bin >> $GITHUB_PATH
+
+      - name: Set version data
+        run: |
+          tag=${{ github.ref_name }}
+          echo "RELEASE_NOTES=$(link_changelog $tag)" >> $GITHUB_ENV
+          echo "IS_PRERELEASE=$(is_prerelease $tag)" >> $GITHUB_ENV
+
+      - name: Set artifact names
+        run: |
+          tag=${{ github.ref_name }}
+          prefix=patrol_cli-v
+          version=${tag#"$prefix"} # version without the prefix
+          echo "version: $version"
+          server_file="server-$version.apk"
+          instrumentation_file="instrumentation-$version.apk"
+          ios_zip_directory="ios-$version.zip"
+          ios_server_file="AutomatorServerUITests-Runner-$version.app"
+          echo "server file: $server_file"
+          echo "instrumentation file: $instrumentation_file"
+          echo "ios zip directory: $ios_zip_directory"
+          echo "ios server file: $ios_server_file"
+          # exporting
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "SERVER_FILE=$server_file" >> $GITHUB_ENV
+          echo "INSTRUMENTATION_FILE=$instrumentation_file" >> $GITHUB_ENV
+          echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
+          echo "IOS_SERVER_FILE=$ios_server_file" >> $GITHUB_ENV
+
+      - name: fastlane match
+        run: bundle exec fastlane match
+
+      - name: make_artifacts
+        run: ./make_artifacts iphoneos arm64 "$VERSION"

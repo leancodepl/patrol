@@ -16,7 +16,7 @@ fi
 
 args=(
     -project AutomatorServer.xcodeproj
-    -scheme AutomatorServer
+    -scheme AutomatorServerUITests
     -derivedDataPath ./DerivedData
     -sdk "$sdk"
     -arch "$arch"
@@ -28,6 +28,9 @@ if [ "$sdk" == "iphonesimulator" ]; then
     args+=(CODE_SIGN_ENTITLEMENTS="")
     args+=(CODE_SIGNING_ALLOWED="NO")
 fi
+# else
+#     args+=(PROVISIONING_PROFILE="a3fa47d1-b647-4a95-b66d-7f54d0bcb975")
+# fi
 
 echo "arguments to xcodebuild build-for-testing:"
 for arg in "${args[@]}"; do
