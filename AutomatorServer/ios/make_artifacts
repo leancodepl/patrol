@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+IFS=$'\n\t'
 
 cd "$(dirname "$0")"
 
@@ -13,19 +14,29 @@ if [ -z "$sdk" ] || [ -z "$arch" ] || [ -z "$version" ]; then
 fi
 
 
+args=(
+    -project AutomatorServer.xcodeproj
+    -scheme AutomatorServer
+    -derivedDataPath ./DerivedData
+    -sdk "$sdk"
+    -arch "$arch"
+)
+
+if [ "$sdk" == "iphonesimulator" ]; then
+    args+=(CODE_SIGN_IDENTITY="")
+    args+=(CODE_SIGNING_REQUIRED="NO")
+    args+=(CODE_SIGN_ENTITLEMENTS="")
+    args+=(CODE_SIGNING_ALLOWED="NO")
+fi
+
+echo "arguments to xcodebuild build-for-testing:"
+for arg in "${args[@]}"; do
+    echo "arg: $arg"
+done
+
 mkdir -p ./artifacts
 
-xcodebuild \
-    build-for-testing \
-    -project AutomatorServer.xcodeproj \
-    -scheme AutomatorServer \
-    -derivedDataPath ./DerivedData \
-    -sdk "$sdk" \
-    -arch "$arch" \
-    CODE_SIGN_IDENTITY="" \
-    CODE_SIGNING_REQUIRED="NO" \
-    CODE_SIGN_ENTITLEMENTS="" \
-    CODE_SIGNING_ALLOWED="NO"
+xcodebuild build-for-testing "${args[@]}"
 
 cp -r \
     "./DerivedData/Build/Products/Debug-$sdk/AutomatorServerUITests-Runner.app" \
