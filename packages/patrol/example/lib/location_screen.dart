@@ -58,20 +58,20 @@ class _LocationScreenState extends State<LocationScreen> {
                 children: [
                   Text(
                     'No location',
-                    style: Theme.of(context).textTheme.headline3?.copyWith(
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
                           color: Theme.of(context).colorScheme.error,
                         ),
                   ),
                   Text(
                     'Permission not granted',
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: _requestPermission,
                     child: Text(
                       'Grant permission',
-                      style: Theme.of(context).textTheme.headline6?.copyWith(
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             color: Theme.of(context).colorScheme.onPrimary,
                           ),
                     ),
@@ -95,7 +95,7 @@ class _LocationScreenState extends State<LocationScreen> {
                       SizedBox(height: 24),
                       Text(
                         'Waiting for location...',
-                        style: Theme.of(context).textTheme.headline4,
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                     ],
                   );
@@ -114,17 +114,17 @@ class _LocationScreenState extends State<LocationScreen> {
                   children: [
                     Text(
                       'Your location',
-                      style: Theme.of(context).textTheme.headline3?.copyWith(
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
                     Text(
                       'lat: $lat',
-                      style: Theme.of(context).textTheme.headline3,
+                      style: Theme.of(context).textTheme.displaySmall,
                     ),
                     Text(
                       'lng: $lng',
-                      style: Theme.of(context).textTheme.headline3,
+                      style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ],
                 );
