@@ -193,6 +193,11 @@ class Automator {
   func enableCellular() async throws {
     try await runControlCenterAction("enabling cellular") {
       let toggle = self.springboard.switches["cellular-data-button"]
+      let exists = toggle.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("cellular-data-button")
+      }
+
       if toggle.value! as! String == "0" {
         toggle.tap()
       } else {
@@ -204,6 +209,11 @@ class Automator {
   func disableCellular() async throws {
     try await runControlCenterAction("disabling cellular") {
       let toggle = self.springboard.switches["cellular-data-button"]
+      let exists = toggle.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("cellular-data-button")
+      }
+
       if toggle.value! as! String == "1" {
         toggle.tap()
       } else {
@@ -215,6 +225,11 @@ class Automator {
   func enableWiFi() async throws {
     try await runControlCenterAction("enabling wifi") {
       let toggle = self.springboard.switches["wifi-button"]
+      let exists = toggle.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("wifi-button")
+      }
+
       if toggle.value! as! String == "0" {
         toggle.tap()
       } else {
@@ -226,6 +241,11 @@ class Automator {
   func disableWiFi() async throws {
     try await runControlCenterAction("disabling wifi") {
       let toggle = self.springboard.switches["wifi-button"]
+      let exists = toggle.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("wifi-button")
+      }
+
       if toggle.value! as! String == "1" {
         toggle.tap()
       } else {
@@ -237,6 +257,11 @@ class Automator {
   func enableBluetooth() async throws {
     try await runControlCenterAction("enabling bluetooth") {
       let toggle = self.springboard.switches["bluetooth-button"]
+      let exists = toggle.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("bluetooth-button")
+      }
+
       if toggle.value! as! String == "0" {
         toggle.tap()
       } else {
@@ -248,6 +273,11 @@ class Automator {
   func disableBluetooth() async throws {
     try await runControlCenterAction("disabling bluetooth") {
       let toggle = self.springboard.switches["bluetooth-button"]
+      let exists = toggle.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("bluetooth-button")
+      }
+
       if toggle.value! as! String == "1" {
         toggle.tap()
       } else {
@@ -498,16 +528,18 @@ class Automator {
     start.press(forDuration: 0.1, thenDragTo: end)
   }
 
-  private func runControlCenterAction(_ log: String, block: @escaping () -> Void) async throws {
+  private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void)
+    async throws
+  {
     #if targetEnvironment(simulator)
       throw PatrolError.internal("Control Center is not available on Simulator")
     #endif
 
-    await runAction(log) {
+    try await runAction(log) {
       self.swipeToOpenControlCenter()
 
       // perform the action
-      block()
+      try block()
 
       // hide control center
       let empty = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.1))
