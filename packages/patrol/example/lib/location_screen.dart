@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class LocationScreen extends StatelessWidget {
+class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
 
-  Future<Position> get _determinePosition async {
+  @override
+  State<LocationScreen> createState() => _LocationScreenState();
+}
+
+class _LocationScreenState extends State<LocationScreen> {
+  var _permissionGranted = false;
+
+  Future<Position> _getPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -15,10 +23,7 @@ class LocationScreen extends StatelessWidget {
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
+      return Future.error('Location permissions are denied');
     }
 
     if (permission == LocationPermission.deniedForever) {
@@ -30,6 +35,13 @@ class LocationScreen extends StatelessWidget {
     return Geolocator.getCurrentPosition();
   }
 
+  Future<void> _requestPermission() async {
+    final status = await Permission.location.request();
+    setState(() {
+      _permissionGranted = status == PermissionStatus.granted;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,25 +49,86 @@ class LocationScreen extends StatelessWidget {
         title: const Text('Location'),
       ),
       body: Center(
-        child: FutureBuilder<Position>(
-          future: _determinePosition,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Text('no location');
+        child: Builder(
+          builder: (context) {
+            if (!_permissionGranted) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'No location',
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                  ),
+                  Text(
+                    'Permission not granted',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: _requestPermission,
+                    child: Text(
+                      'Grant permission',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                    ),
+                  ),
+                ],
+              );
             }
 
-            final lat = snapshot.data?.latitude;
-            final lng = snapshot.data?.longitude;
+            return FutureBuilder<Position>(
+              future: Future.delayed(Duration(seconds: 3), _getPosition),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CircularProgressIndicator(),
+                      ),
+                      SizedBox(height: 24),
+                      Text(
+                        'Waiting for location...',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ],
+                  );
+                }
 
-            if (lat == null || lng == null) {
-              return const Text('failed to get location');
-            }
+                final lat = snapshot.data?.latitude;
+                final lng = snapshot.data?.longitude;
 
-            return Column(
-              children: [
-                Text('lat: $lat'),
-                Text('lng: $lng'),
-              ],
+                if (lat == null || lng == null) {
+                  return const Text('failed to get location');
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Your location',
+                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                    Text(
+                      'lat: $lat',
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                    Text(
+                      'lng: $lng',
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),

@@ -14,6 +14,8 @@ void main() {
 
       await $('Open location screen').tap();
 
+      await $('Grant permission').tap();
+
       await $.native.selectCoarseLocation();
       await $.native.selectFineLocation();
       await $.native.grantPermissionOnlyThisTime();
