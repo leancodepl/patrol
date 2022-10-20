@@ -41,7 +41,13 @@ class LocationScreen extends StatelessWidget {
           future: _determinePosition,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return const Text('no location');
+              return Text(
+                'No location',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline3
+                    ?.copyWith(color: Theme.of(context).colorScheme.error),
+              );
             }
 
             final lat = snapshot.data?.latitude;
@@ -52,9 +58,24 @@ class LocationScreen extends StatelessWidget {
             }
 
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('lat: $lat'),
-                Text('lng: $lng'),
+                Text(
+                  'Your location',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline3
+                      ?.copyWith(color: Theme.of(context).colorScheme.primary),
+                ),
+                Text(
+                  'lat: $lat',
+                  style: Theme.of(context).textTheme.headline3,
+                ),
+                Text(
+                  'lng: $lng',
+                  style: Theme.of(context).textTheme.headline3,
+                ),
               ],
             );
           },
