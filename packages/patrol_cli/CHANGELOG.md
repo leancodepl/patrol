@@ -1,3 +1,7 @@
+## 0.7.2+1
+
+- Fix too aggressive logging when downloading artifacts (#484)
+
 ## 0.7.2
 
 - Make `--target` flag accept directories (#473)

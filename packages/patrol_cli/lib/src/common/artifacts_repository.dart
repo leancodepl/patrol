@@ -290,7 +290,6 @@ class ArtifactsRepository {
 
   Future<void> _downloadArtifact(Artifact artifact) async {
     final response = await _httpClient.get(artifact.uri);
-    print('downloading ${artifact.uri.path}');
 
     if (response.statusCode != 200) {
       throw Exception('Failed to download $artifact from ${artifact.uri}');
