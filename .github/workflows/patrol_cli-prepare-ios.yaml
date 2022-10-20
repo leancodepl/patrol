@@ -66,6 +66,9 @@ jobs:
           echo "IOS_ZIP_DIRECTORY=$ios_zip_directory" >> $GITHUB_ENV
           echo "IOS_SERVER_FILE=$ios_server_file" >> $GITHUB_ENV
 
+      - name: Set up secrets
+        run: echo "APPLE_DEVELOPER_TEAM_ID=${{ secrets.APPLE_DEVELOPER_TEAM_ID }}" >> $GITHUB_ENV
+
       - name: fastlane match
         run: bundle exec fastlane match
 
