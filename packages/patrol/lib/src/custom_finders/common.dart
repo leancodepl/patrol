@@ -40,6 +40,7 @@ void patrolTest(
       ? NativeAutomator(
           packageName: config.packageName,
           bundleId: config.bundleId,
+          binding: binding,
         )
       : null;
 

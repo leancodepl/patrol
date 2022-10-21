@@ -4,6 +4,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:patrol/src/native/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
 typedef _LoggerCallback = void Function(String);
@@ -26,7 +27,6 @@ class PatrolActionException implements Exception {
 /// Bindings available to use with [NativeAutomator].
 enum Binding {
   /// Initialize [PatrolBinding].
-  @Deprecated('Not needed')
   patrol,
 
   /// Initializes [IntegrationTestWidgetsFlutterBinding]
@@ -49,6 +49,7 @@ class NativeAutomator {
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
+    Binding binding = Binding.patrol,
   })  : assert(
           connectionTimeout > findTimeout,
           'find timeout is longer than connection timeout',
@@ -89,8 +90,19 @@ class NativeAutomator {
       options: CallOptions(timeout: connectionTimeout),
     );
 
-    IntegrationTestWidgetsFlutterBinding.ensureInitialized()
-        .shouldPropagateDevicePointerEvents = true;
+    switch (binding) {
+      case Binding.patrol:
+        _logger('Initializing PatrolBinding...');
+        PatrolBinding.ensureInitialized();
+        break;
+      case Binding.integrationTest:
+        _logger('Initializing IntegrationTestWidgetsFlutterBinding...');
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        break;
+      case Binding.none:
+        _logger('No bindings will be initialized');
+        break;
+    }
   }
 
   final _LoggerCallback _logger;
