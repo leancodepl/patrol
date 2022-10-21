@@ -63,7 +63,5 @@
 	<!-- Permission options for the `contacts` group -->
 	<key>NSContactsUsageDescription</key>
 	<string>contacts</string>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>
