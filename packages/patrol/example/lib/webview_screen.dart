@@ -15,12 +15,8 @@ class WebViewScreen extends StatelessWidget {
         debuggingEnabled: true,
         initialUrl: url,
         javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (controller) => print('WebView created'),
-        onPageStarted: (url) => print('Page started loading: $url'),
-        onProgress: (progress) {
-          print('WebView is loading (progress : $progress%)');
-        },
-        onPageFinished: (url) => print('Page finished loading: $url'),
+        onWebViewCreated: (controller) => print('WebView created for $url'),
+        onPageFinished: (url) => print('WebView finished loading for $url'),
       ),
     );
   }
