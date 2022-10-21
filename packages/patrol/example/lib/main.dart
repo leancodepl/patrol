@@ -189,8 +189,8 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const WebViewScreen(
-                  title: 'WebView A',
-                  url: 'https://leancode.co',
+                  title: 'WebView B',
+                  url: 'https://news.ycombinator.com',
                 ),
               ),
             ),
