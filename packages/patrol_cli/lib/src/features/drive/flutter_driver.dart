@@ -96,6 +96,11 @@ class FlutterDriver {
           .toList()
         ..removeWhere((element) => element.isEmpty);
 
+      // TODO(bartekpacia): Parse JSON input here and send it to
+      // * stdout (parse the JSON, extract the message, and print it – we want
+      //   to be pretty, and not print JSON to stdout)
+      // * a .jsonl file which will later be used to create a .xml file with
+      //   Junit-formatted tests
       for (final line in lines) {
         _logger.info(line);
       }
