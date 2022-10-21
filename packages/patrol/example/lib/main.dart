@@ -4,8 +4,7 @@ import 'package:example/notifications_screen.dart';
 import 'package:example/overlay_screen.dart';
 import 'package:example/permissions_screen.dart';
 import 'package:example/scrolling_screen.dart';
-import 'package:example/webview_screen_a.dart';
-import 'package:example/webview_screen_b.dart';
+import 'package:example/webview_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -178,7 +177,10 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreenA(),
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView A',
+                  url: 'https://leancode.co',
+                ),
               ),
             ),
             child: const Text('Open webview screen A'),
@@ -186,10 +188,24 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreenB(),
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView A',
+                  url: 'https://leancode.co',
+                ),
               ),
             ),
             child: const Text('Open webview screen B'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView C',
+                  url: 'https://stackoverflow.com',
+                ),
+              ),
+            ),
+            child: const Text('Open webview screen C'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(
