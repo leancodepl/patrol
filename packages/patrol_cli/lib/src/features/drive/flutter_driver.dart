@@ -29,6 +29,7 @@ class FlutterDriver {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
+  late String driver;
   String? host;
   String? port;
   String? flavor;
@@ -38,11 +39,13 @@ class FlutterDriver {
   final Logger _logger;
 
   void init({
+    required String driver,
     required String? host,
     required String? port,
     required String? flavor,
     required Map<String, String> dartDefines,
   }) {
+    this.driver = driver;
     this.host = host;
     this.port = port;
     this.flavor = flavor;
@@ -68,7 +71,8 @@ class FlutterDriver {
       'flutter',
       [
         '--no-version-check',
-        ..._flutterTestArguments(
+        ..._flutterDriveArguments(
+          driver: driver,
           target: target,
           device: device.id,
           flavor: flavor,
@@ -133,7 +137,8 @@ class FlutterDriver {
     }
   }
 
-  List<String> _flutterTestArguments({
+  List<String> _flutterDriveArguments({
+    required String driver,
     required String target,
     required String? device,
     required String? flavor,
@@ -157,7 +162,10 @@ class FlutterDriver {
     }
 
     return [
-      'test',
+      'drive',
+      '--driver',
+      driver,
+      '--target',
       target,
       if (device != null) ...[
         '--device-id',

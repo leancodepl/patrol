@@ -210,6 +210,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     _flutterDriver.init(
+      driver: config.driver,
       host: config.host,
       port: config.port,
       flavor: config.flavor,
