@@ -25,6 +25,7 @@ class PatrolActionException implements Exception {
 }
 
 /// Bindings available to use with [NativeAutomator].
+@Deprecated('Will be removed')
 enum Binding {
   /// Initialize [PatrolBinding].
   patrol,
@@ -49,7 +50,7 @@ class NativeAutomator {
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
-    Binding binding = Binding.patrol,
+    @Deprecated('Will be removed') Binding binding = Binding.patrol,
   })  : assert(
           connectionTimeout > findTimeout,
           'find timeout is longer than connection timeout',
@@ -92,12 +93,15 @@ class NativeAutomator {
 
     switch (binding) {
       case Binding.patrol:
-        _logger('Initializing PatrolBinding...');
-        PatrolBinding.ensureInitialized();
+        _logger('PatrolBinding is deprecated');
+        _logger('Initializing IntegrationTestWidgetsFlutterBinding...');
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized()
+            .shouldPropagateDevicePointerEvents = true;
         break;
       case Binding.integrationTest:
         _logger('Initializing IntegrationTestWidgetsFlutterBinding...');
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized()
+            .shouldPropagateDevicePointerEvents = true;
         break;
       case Binding.none:
         _logger('No bindings will be initialized');
