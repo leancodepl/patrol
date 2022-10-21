@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite errors="0" failures="0" tests="1" skipped="0" name=".Users.bartek.dev.leancode.patrol.packages.patrol.example.integration_test.webview_b" timestamp="2022-10-21T17:09:06">
+    <properties>
+      <property name="platform" value="vm"/>
+    </properties>
+    <testcase classname=".Users.bartek.dev.leancode.patrol.packages.patrol.example.integration_test.webview_b" name="interacts with the orange website in a webview" time="8.988">
+      <system-out>Patrol: configure() started
+Patrol: configure() succeeded
+WebView created
+WebView is loading (progress : 10%)
+Patrol: tap() started
+Page started loading: https://hackernews.com/
+WebView is loading (progress : 30%)
+WebView is loading (progress : 32%)
+WebView is loading (progress : 32%)
+WebView is loading (progress : 100%)
+Page finished loading: https://news.ycombinator.com/
+WebView is loading (progress : 10%)
+Page started loading: https://news.ycombinator.com/login?goto=news
+Patrol: tap() succeeded
+Patrol: enterTextByIndex() started
+WebView is loading (progress : 50%)
+WebView is loading (progress : 100%)
+Page finished loading: https://news.ycombinator.com/login?goto=news
+Patrol: enterTextByIndex() succeeded
+Patrol: enterTextByIndex() started
+Patrol: enterTextByIndex() succeeded</system-out>
+    </testcase>
+    <system-out>Patrol: creating NativeAutomator
+	host: localhost
+	port: 8081
+	packageName: pl.leancode.patrol.example
+	bundleId: pl.leancode.patrol.Example
+</system-out>
+  </testsuite>
+</testsuites>
