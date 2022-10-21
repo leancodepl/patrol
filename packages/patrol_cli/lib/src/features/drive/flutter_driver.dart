@@ -17,7 +17,7 @@ class FlutterDriverFailedException implements Exception {
   final int code;
 
   @override
-  String toString() => 'flutter_driver exited with code $code';
+  String toString() => 'flutter test exited with code $code';
 }
 
 class FlutterDriver {
@@ -84,8 +84,8 @@ class FlutterDriver {
     );
     String kill() {
       return process.kill()
-          ? 'Killed flutter_driver'
-          : 'Failed to kill flutter_driver';
+          ? 'Killed flutter test'
+          : 'Failed to kill flutter test';
     }
 
     process.stdout.listen((msg) {
@@ -97,18 +97,7 @@ class FlutterDriver {
         ..removeWhere((element) => element.isEmpty);
 
       for (final line in lines) {
-        // On iOS, "flutter" is not prefixed
-        final flutterPrefix = RegExp('flutter: ');
-
-        // On Android, "flutter" is prefixed with "I\"
-        final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
-        if (line.startsWith(flutterWithPortPrefix)) {
-          _logger.info(line.replaceFirst(flutterWithPortPrefix, ''));
-        } else if (line.startsWith(flutterPrefix)) {
-          _logger.info(line.replaceFirst(flutterPrefix, ''));
-        } else {
-          _logger.fine(line);
-        }
+        _logger.info(line);
       }
     }).disposedBy(_disposeScope);
 
@@ -162,10 +151,7 @@ class FlutterDriver {
     }
 
     return [
-      'drive',
-      '--driver',
-      driver,
-      '--target',
+      'test',
       target,
       if (device != null) ...[
         '--device-id',
