@@ -76,11 +76,14 @@ jobs:
       # - name: Create Personal Access Token used to access leancodepl/certificates
       #   run: echo "MATCH_GIT_BASIC_AUTHORIZATION=${{ secrets.PERSONAL_ACCESS_TOKEN_BASE64 }}" >> $GITHUB_ENV
 
+      # - name: Create MATCH_GIT_PRIVATE_KEY
+      #   run: echo "MATCH_GIT_PRIVATE_KEY=${{ secrets.MATCH_GIT_PRIVATE_KEY }} >> $GITHUB_ENV"
+
       - name: Create MATCH_PASSWORD
         run: echo "MATCH_PASSWORD=${{ secrets.MATCH_PASSWORD }}" >> $GITHUB_ENV
 
       - name: fastlane match
-        run: bundle exec fastlane match
+        run: bundle exec fastlane match --skip_certificate_matching true
 
       - name: make_artifacts
         run: ./make_artifacts iphoneos arm64 "$VERSION"
