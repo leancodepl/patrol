@@ -27,3 +27,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+dependency_overrides:
+  flutter_driver:
+    git: https://github.com/mateuszwojtczak/flutter_driver.git
