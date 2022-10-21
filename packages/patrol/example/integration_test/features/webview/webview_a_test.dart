@@ -1,9 +1,13 @@
 import 'package:example/main.dart';
 import 'package:patrol/patrol.dart';
 
-import 'config.dart';
+import '../../config.dart';
 
 Future<void> main() async {
+  testWebViewA();
+}
+
+void testWebViewA() {
   patrolTest(
     'interacts with the LeanCode website in a webview',
     config: patrolConfig,

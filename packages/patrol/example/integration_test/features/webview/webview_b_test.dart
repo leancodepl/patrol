@@ -1,9 +1,13 @@
 import 'package:example/main.dart';
 import 'package:patrol/patrol.dart';
 
-import 'config.dart';
+import '../../config.dart';
 
 Future<void> main() async {
+  testWebViewB();
+}
+
+void testWebViewB() {
   patrolTest(
     'interacts with the orange website in a webview',
     config: patrolConfig,
