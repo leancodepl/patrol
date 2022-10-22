@@ -378,6 +378,8 @@ class PatrolTester {
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
+      // TODO: check if hit testable
+
       await _performPump(
         andSettle: andSettle,
         settleTimeout: config.settleTimeout,
