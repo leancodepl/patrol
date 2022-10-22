@@ -376,7 +376,12 @@ class PatrolTester {
         await tester.pump(duration);
         iterationsLeft -= 1;
       }
+
+      print('before Scrollable.ensureVisible()');
+      await Future<void>.delayed(Duration(seconds: 3));
       await Scrollable.ensureVisible(tester.firstElement(finder));
+      await Future<void>.delayed(Duration(seconds: 3));
+      print('after Scrollable.ensureVisible()');
 
       // TODO: check if hit testable
 
