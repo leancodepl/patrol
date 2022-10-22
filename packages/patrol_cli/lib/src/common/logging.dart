@@ -6,12 +6,39 @@ import 'package:ansi_styles/ansi_styles.dart';
 import 'package:logging/logging.dart';
 import 'package:mason_logger/mason_logger.dart' as mason_logger;
 
-extension LoggerX on Logger {
-  static final _logger = mason_logger.Logger();
+// Workaround for https://github.com/felangel/mason/issues/527.
+class Progress implements mason_logger.Progress {
+  Progress._({required this.logger, required String firstMessage}) {
+    logger.info('$firstMessage...');
+  }
 
+  final Logger logger;
+
+  @override
+  void cancel() {
+    throw UnimplementedError();
+  }
+
+  @override
+  void complete([String? update]) {
+    logger.info(update);
+  }
+
+  @override
+  void fail([String? update]) {
+    logger.severe(update);
+  }
+
+  @override
+  void update(String update) {
+    logger.info(update);
+  }
+}
+
+extension LoggerX on Logger {
   /// Writes progress message to stdout.
-  mason_logger.Progress progress(String message) {
-    return _logger.progress(message);
+  Progress progress(String message) {
+    return Progress._(firstMessage: message, logger: this);
   }
 
   set verbose(bool newValue) => _verbose = newValue;
