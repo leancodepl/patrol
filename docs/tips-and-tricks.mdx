@@ -100,5 +100,39 @@ Please note that the UI of the Settings app differs across operating systems,
 their versions, and OEM flavors (in case of Android). You'll have to handle all
 edge cases yourself.
 
+## Ignoring exceptions
+
+If an exception is thrown during a test, it is marked as failed. This is
+Flutter's default behavior and it's usually good – after all, it's better to fix
+the cause of a problem instead of ignoring it.
+
+That said, sometimes you do have a legitimate reason to ignore an exception.
+This can be accomplished with the help of the
+[WidgetTester.takeException()][takeexception] method, which returns the last
+exception that occured and removes it from the internal list of uncaught
+exceptions, so that it won't mark the test as failed. To use it, just call it
+once:
+
+```dart
+final widgetTester = $.tester;
+widgetTester.takeException();
+```
+
+If more than a single exception is thrown during the test and you want to ignore
+all of them, the below snippet should come in handy:
+
+```dart
+var exceptionCount = 0;
+dynamic exception = $.tester.takeException();
+while (exception != null) {
+  exceptionCount++;
+  exception = $.tester.takeException();
+}
+if (exceptionCount != 0) {
+  $.log('Warning: $exceptionCount exceptions were ignored');
+}
+```
+
 [idb]: https://github.com/facebook/idb
 [settings_screenshot]: https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png
+[take_exception]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/takeException.html
