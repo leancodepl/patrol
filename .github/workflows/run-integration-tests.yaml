@@ -81,4 +81,4 @@ jobs:
           disable-animations: false
           working-directory: "${{ github.workspace }}/packages/patrol/example"
           script: |
-            patrol drive --target integration_test/permissions_test.dart --verbose
+            patrol drive --verbose
