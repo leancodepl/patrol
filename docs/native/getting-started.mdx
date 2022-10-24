@@ -65,13 +65,18 @@ void main() {
 
 **Manually**
 
-This is useful if, for any reason, you have to use `testWidgets`.
+This is useful if, for any reason, you have to use Flutter's default
+[testWidgets()][test_widgets] function rather than Patrol's
+[patrolTest()][patrol_test].
 
 ```dart
 // integration_test/app_test.dart
 
 void main() {
-  final automator = NativeAutomator.forTest();
+  final automator = NativeAutomator(
+    packageName: 'your.app.id.on.android',
+    packageName: 'your.app.id.on.ios',
+  );
 
   testWidgets(
     'test description',
@@ -137,4 +142,6 @@ You might also want to take a look at the [integration tests of our example
 app][example_app_tests].
 
 [nativeautomator]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator-class.html
+[test_widgets]: https://api.flutter.dev/flutter/flutter_test/testWidgets.html
+[patrol_test]: https://pub.dev/documentation/patrol/latest/patrol/patrolTest.html
 [example_app_tests]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example/integration_test
