@@ -257,6 +257,7 @@ class PatrolFinder extends MatchFinder {
     double step = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    bool? andSettle,
   }) {
     return tester.scrollUntilVisible(
       finder: finder,
@@ -264,6 +265,7 @@ class PatrolFinder extends MatchFinder {
       delta: step,
       maxScrolls: maxScrolls,
       duration: duration,
+      andSettle: andSettle,
     );
   }
 
