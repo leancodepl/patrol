@@ -401,6 +401,7 @@ class PatrolTester {
     double delta = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    bool? andSettle,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
@@ -433,6 +434,7 @@ class PatrolTester {
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
+        andSettle: andSettle,
       );
 
       return resolvedFinder;
@@ -453,6 +455,7 @@ class PatrolTester {
     double delta = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    bool? andSettle,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
@@ -485,6 +488,7 @@ class PatrolTester {
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
+        andSettle: andSettle,
       );
 
       return resolvedFinder;
