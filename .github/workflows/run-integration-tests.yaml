@@ -9,13 +9,13 @@ jobs:
   main:
     name: Run integration tests on Android api-${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     strategy:
       fail-fast: false
       matrix:
         flutter-channel: [stable]
-        api-level: [28, 29, 30, 31, 32, 33]
+        api-level: [28, 29, 30, 31, 33]
         target: [google_apis]
         arch: [x86_64]
 
@@ -80,5 +80,4 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           working-directory: "${{ github.workspace }}/packages/patrol/example"
-          script: |
-            patrol drive --verbose
+          script: patrol drive

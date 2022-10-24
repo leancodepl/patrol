@@ -44,7 +44,7 @@ enum Binding {
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
   NativeAutomator({
-    this.connectionTimeout = const Duration(seconds: 20),
+    this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
     _LoggerCallback logger = _defaultPrintLogger,
     String? packageName,
