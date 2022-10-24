@@ -1,3 +1,7 @@
+## 0.7.3+1
+
+- Disable terminal animations to fix logs on the CI (#498)
+
 ## 0.7.3
 
 - AutomatorServer:
