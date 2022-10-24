@@ -1,3 +1,5 @@
+@Tags(['android', 'ios'])
+
 import 'dart:io' show Platform;
 
 import 'package:example/main.dart';
