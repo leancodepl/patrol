@@ -1,3 +1,8 @@
+## 0.7.1
+
+- Add `andSettle` param to `PatrolFinder.scrollTo()` (#501)
+- Add more integration tests to the example app (#491)
+
 ## 0.7.0
 
 In this release, we've focused on stability, reliability, and reducing
