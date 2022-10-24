@@ -1,3 +1,9 @@
+## 0.7.3
+
+- AutomatorServer:
+  - Improve reliability of native interactions on iOS (#489)
+  - Set minimum iOS version to 14.0 (#496)
+
 ## 0.7.2+1
 
 - Fix too aggressive logging when downloading artifacts (#484)
