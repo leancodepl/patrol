@@ -12,7 +12,7 @@ class ScrollingScreenBug extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            height: 100,
+            height: 10,
             color: Colors.orangeAccent,
             child: ListView(
               key: Key('listView1'),

@@ -6,44 +6,32 @@ import 'package:patrol/patrol.dart';
 void main() {
   group('scrollTo()', () {
     patrolTest(
-      'fails',
+      'fails when the default Scrollable is wrong',
       ($) async {
         await $.pumpWidgetAndSettle(ExampleApp());
-        await $('Open scrolling screen bug').tap();
+        await $('Open scrolling screen bug').scrollTo().tap();
 
-        expect(await $('index: 1').waitUntilVisible(), findsOneWidget);
-
+        expect($('index: 1'), findsOneWidget);
         expect($('index: 100').hitTestable(), findsNothing);
 
-        await $('index: 100').scrollTo(); // spins here
-        $.log('After scrollTo()');
-
-        await Future<void>.delayed(Duration(seconds: 3));
-
-        await $('index: 100').tap();
-        $.log('After tap()');
-
-        expect($('index: 100').hitTestable(), findsOneWidget);
+        await expectLater(
+          $('index: 100').scrollTo,
+          throwsA(isA<StateError>()),
+        );
+        expect($('index: 100').hitTestable(), findsNothing);
       },
     );
 
     patrolTest(
-      'succeeds',
+      'succeeds when the right Scrollable is explicitly specified',
       ($) async {
         await $.pumpWidgetAndSettle(ExampleApp());
-        await $('Open scrolling screen bug').tap();
+        await $('Open scrolling screen bug').scrollTo().tap();
 
-        expect(await $('index: 1').waitUntilVisible(), findsOneWidget);
-
+        expect($('index: 1'), findsOneWidget);
         expect($('index: 100').hitTestable(), findsNothing);
 
         await $('index: 100').scrollTo(scrollable: $(#listView2).$(Scrollable));
-        $.log('After scrollTo()');
-
-        await Future<void>.delayed(Duration(seconds: 3));
-
-        await $('index: 100').tap();
-        $.log('After tap()');
 
         expect($('index: 100').hitTestable(), findsOneWidget);
       },
