@@ -80,4 +80,13 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           working-directory: "${{ github.workspace }}/packages/patrol/example"
-          script: patrol drive
+          script: |
+            patrol drive --target integration_test/example_test.dart
+            # features
+            patrol drive --target integration_test/features/get_native_widgets_test.dart
+            patrol drive --target integration_test/features/open_app_test.dart
+            patrol drive --target integration_test/features/quick_settings_test.dart
+            patrol drive --target integration_test/features/permissions_test.dart
+            # services
+            patrol drive --target integration_test/services/dark_mode_test.dart
+            patrol drive --target integration_test/services/wifi_test.dart
