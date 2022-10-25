@@ -30,4 +30,7 @@ flutter:
 
 dependency_overrides:
   flutter_driver:
-    git: https://github.com/jakubfijalkowski/flutter_driver
+    git:
+      url: https://github.com/jakubfijalkowski/flutter.git
+      ref: flutter-driver-flakiness-fix-stable
+      path: packages/flutter_driver
