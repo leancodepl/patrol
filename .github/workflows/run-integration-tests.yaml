@@ -86,7 +86,7 @@ jobs:
             patrol drive --target integration_test/features/get_native_widgets_test.dart
             patrol drive --target integration_test/features/open_app_test.dart
             patrol drive --target integration_test/features/quick_settings_test.dart
-            patrol drive --target integration_test/features/permissions_test.dart
+            patrol drive --target integration_test/features/permissions/permissions_test.dart
             # services
             patrol drive --target integration_test/services/dark_mode_test.dart
             patrol drive --target integration_test/services/wifi_test.dart
