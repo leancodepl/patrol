@@ -21,6 +21,7 @@ void main() {
 
       await $.native.tap(Selector(text: 'download.jpeg'));
       await $.pumpAndSettle();
+      await $.pumpAndSettle();
 
       expect($(#image_0), findsOneWidget);
     },
