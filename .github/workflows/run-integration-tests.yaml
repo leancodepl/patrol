@@ -3,7 +3,7 @@ name: run integration tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 */4 * * *"
 
 jobs:
   main:
@@ -86,7 +86,8 @@ jobs:
             patrol drive --target integration_test/features/get_native_widgets_test.dart
             patrol drive --target integration_test/features/open_app_test.dart
             patrol drive --target integration_test/features/quick_settings_test.dart
-            patrol drive --target integration_test/features/permissions/permissions_test.dart
+            # patrol drive --target integration_test/features/permissions/location_test.dart # flaky
+            # patrol drive --target integration_test/features/permissions/permissions_test.dart # flaky
             # services
             patrol drive --target integration_test/services/dark_mode_test.dart
             patrol drive --target integration_test/services/wifi_test.dart
