@@ -4,7 +4,6 @@ import 'package:example/notifications_screen.dart';
 import 'package:example/overlay_screen.dart';
 import 'package:example/permissions_screen.dart';
 import 'package:example/scrolling_screen.dart';
-import 'package:example/scrolling_screen_bug.dart';
 import 'package:example/webview_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -166,14 +165,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               ),
             ),
             child: const Text('Open overlay screen'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const ScrollingScreenBug(),
-              ),
-            ),
-            child: const Text('Open scrolling screen bug'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(
