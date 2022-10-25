@@ -7,6 +7,85 @@ import 'package:patrol/src/custom_finders/custom_finders.dart';
 
 void main() {
   group('PatrolFinder', () {
+    group('finds widget by', () {
+      final app = MaterialApp(
+        home: Row(
+          children: const [
+            Icon(Icons.front_hand, key: ValueKey({'key': 'icon'})),
+            Text('Hello', key: Key('helloText')),
+          ],
+        ),
+      );
+
+      patrolTest('type', ($) async {
+        await $.pumpWidget(app);
+        expect($(Text), findsOneWidget);
+        expect($(Icon), findsOneWidget);
+        expect($(Row), findsOneWidget);
+      });
+
+      patrolTest('key', ($) async {
+        await $.pumpWidget(app);
+
+        expect($(#helloText), findsOneWidget);
+        expect($(const Symbol('helloText')), findsOneWidget);
+        expect($(const Key('helloText')), findsOneWidget);
+
+        expect($(const ValueKey({'key': 'icon'})), findsOneWidget);
+        expect($(const ValueKey({'key': 'icon1'})), findsNothing);
+      });
+
+      patrolTest('text', ($) async {
+        await $.pumpWidget(app);
+        expect($('Hello'), findsOneWidget);
+      });
+
+      patrolTest('text it contains', ($) async {
+        await $.pumpWidget(app);
+        expect($(RegExp('Hello')), findsOneWidget);
+        expect($(RegExp('Hell.*')), findsOneWidget);
+        expect($(RegExp('.*ello')), findsOneWidget);
+        expect($(RegExp('.*ell.*')), findsOneWidget);
+      });
+
+      patrolTest('icon', ($) async {
+        await $.pumpWidget(app);
+        expect($(Icons.front_hand), findsOneWidget);
+      });
+
+      patrolTest('widget', ($) async {
+        await $.pumpWidget(app);
+        final widget = $('Hello').evaluate().first.widget;
+        expect($(widget), findsOneWidget);
+      });
+
+      patrolTest('text using PatrolFinder', ($) async {
+        await $.pumpWidget(app);
+        expect($('Hello'), findsOneWidget);
+      });
+
+      patrolTest(
+        'text using 2 nested PatrolFinders',
+        ($) async {
+          await $.pumpWidget(app);
+          expect($($('Hello')), findsOneWidget);
+        },
+      );
+
+      patrolTest(
+        'text using many nested PatrolFinders',
+        ($) async {
+          await $.pumpWidget(app);
+          expect($($($($($('Hello'))))), findsOneWidget);
+        },
+      );
+
+      patrolTest('text using Flutter Finder', ($) async {
+        await $.pumpWidget(app);
+        expect($(find.text('Hello')), findsOneWidget);
+      });
+    });
+
     group("works identically to Flutter's finders (1)", () {
       patrolTest('(simple case 1)', ($) async {
         final flutterFinder = find.byType(Text);
@@ -84,7 +163,7 @@ void main() {
       });
     });
 
-    group("works identically to Flutter's finders (1)", () {
+    group("works identically to Flutter's finders (2)", () {
       Future<void> pump(PatrolTester $) async {
         await $.pumpWidget(
           const Directionality(
@@ -179,7 +258,7 @@ void main() {
       );
     });
 
-    group('tap', () {
+    group('tap()', () {
       patrolTest(
         'throws exception when no widget to tap on is found',
         ($) async {
@@ -241,7 +320,7 @@ void main() {
       });
     });
 
-    group('enterText', () {
+    group('enterText()', () {
       patrolTest(
         'throws exception when no widget to enter text in is found',
         ($) async {
@@ -357,7 +436,7 @@ void main() {
       );
     });
 
-    group('waitUntilExists', () {
+    group('waitUntilExists()', () {
       patrolTest(
         'throws exception when no widget is found within timeout',
         ($) async {
@@ -394,7 +473,7 @@ void main() {
       });
     });
 
-    group('waitUntilVisible', () {
+    group('waitUntilVisible()', () {
       patrolTest(
         'throws exception when no visible widget is found within timeout',
         ($) async {
@@ -429,7 +508,7 @@ void main() {
       });
     });
 
-    group('scrollTo', () {
+    group('scrollTo()', () {
       patrolTest(
         'throws exception when no Scrollable is found within timeout',
         ($) async {
@@ -683,68 +762,54 @@ void main() {
         expect($('top text').visible, false);
         expect($('bottom text').visible, true);
       });
-    });
-  });
 
-  group('ActionCombiner', () {
-    group('tap', () {
-      patrolTest('can be chained with scrollTo', ($) async {
-        var count = 0;
-
-        await $.pumpWidget(
-          MaterialApp(
-            home: StatefulBuilder(
-              builder: (context, setState) {
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text('count: $count'),
-                      GestureDetector(
-                        child: const Text('Tap'),
-                        onTap: () => setState(() => count++),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-
-        await $('Tap').scrollTo().tap();
-        expect($('count: 1'), findsOneWidget);
-      });
-    });
-
-    group('enterText', () {
-      patrolTest('can be chained with scrollTo', ($) async {
-        var content = '';
-
-        await $.pumpWidgetAndSettle(
-          MaterialApp(
-            home: Scaffold(
-              body: StatefulBuilder(
-                builder: (state, setState) => SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('content: $content'),
-                      TextField(
-                        onChanged: (newValue) {
-                          setState(() => content = newValue);
-                        },
-                      ),
-                    ],
-                  ),
+      final app = MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              Expanded(child: ListView(key: const Key('listView1'))),
+              Expanded(
+                child: ListView.builder(
+                  key: const Key('listView2'),
+                  itemCount: 101,
+                  itemBuilder: (context, index) => Text('index: $index'),
                 ),
               ),
-            ),
+            ],
           ),
-        );
+        ),
+      );
 
-        await $(TextField).scrollTo().enterText('some input');
-        expect($('content: some input'), findsOneWidget);
-      });
+      patrolTest(
+        'fails when target widget is not in the first, default Scrollable',
+        ($) async {
+          await $.pumpWidget(app);
+
+          expect($('index: 1'), findsOneWidget);
+          expect($('index: 100').hitTestable(), findsNothing);
+
+          await expectLater(
+            $('index: 100').scrollTo,
+            throwsA(isA<StateError>()),
+          );
+          expect($('index: 100').hitTestable(), findsNothing);
+        },
+      );
+
+      patrolTest(
+        'succeeds when target widget is in the second, explicitly specified Scrollable',
+        ($) async {
+          await $.pumpWidget(app);
+
+          expect($('index: 1'), findsOneWidget);
+          expect($('index: 100').hitTestable(), findsNothing);
+
+          await $('index: 100')
+              .scrollTo(scrollable: $(#listView2).$(Scrollable));
+
+          expect($('index: 100').hitTestable(), findsOneWidget);
+        },
+      );
     });
   });
 }

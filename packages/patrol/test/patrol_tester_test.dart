@@ -6,7 +6,7 @@ import 'package:patrol/src/custom_finders/common.dart';
 import 'package:patrol/src/custom_finders/exceptions.dart';
 
 void main() {
-  group('tap', () {
+  group('tap()', () {
     patrolTest(
       'throws exception when no widget to tap on is found',
       (tester) async {
@@ -85,7 +85,7 @@ void main() {
     });
   });
 
-  group('enterText', () {
+  group('enterText()', () {
     patrolTest(
       'throws exception when no widget to enter text in is found',
       (tester) async {
@@ -210,7 +210,7 @@ void main() {
     });
   });
 
-  group('dragUntilExists', () {
+  group('dragUntilExists()', () {
     patrolTest(
       'throws exception when no Scrollable is found within timeout',
       (tester) async {
@@ -386,7 +386,7 @@ void main() {
     );
   });
 
-  group('dragUntilVisible', () {
+  group('dragUntilVisible()', () {
     patrolTest(
       'throws exception when no Scrollable is found within timeout',
       (tester) async {
@@ -621,7 +621,7 @@ void main() {
     );
   });
 
-  group('scrollUntilExists', () {
+  group('scrollUntilExists()', () {
     patrolTest(
       'throws exception when no Scrollable is found within timeout',
       (tester) async {
