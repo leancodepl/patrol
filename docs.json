@@ -3,6 +3,7 @@
   "twitter": "leancodepl",
   "theme": "#FFA03F",
   "favicon": "/assets/favicon.png",
+  "socialPreview": "/assets/preview.png",
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
