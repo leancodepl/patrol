@@ -62,9 +62,11 @@ To fix this, we recommend removing the hardcoded credentials from test code and
 providing them through the environment:
 
 ```dart
-await $(#nameTextField).enterText(String.fromEnvironment('USERNAME'));
-await $(#passwordTextField).enterText(String.fromEnvironment('PASSWORD'));
+await $(#nameTextField).enterText(const String.fromEnvironment('USERNAME'));
+await $(#passwordTextField).enterText(const String.fromEnvironment('PASSWORD'));
 ```
+
+> Make sure that you're using `const` here because of [issue #55870][55870].
 
 To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 
@@ -136,3 +138,4 @@ if (exceptionCount != 0) {
 [idb]: https://github.com/facebook/idb
 [settings_screenshot]: https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png
 [take_exception]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/takeException.html
+[55870]: https://github.com/flutter/flutter/issues/55870
