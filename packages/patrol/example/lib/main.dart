@@ -1,3 +1,4 @@
+import 'package:example/file_picker_screen.dart';
 import 'package:example/loading_screen.dart';
 import 'package:example/location_screen.dart';
 import 'package:example/notifications_screen.dart';
@@ -133,6 +134,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                 ),
               ],
             ),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const FilePickerScreen(),
+              ),
+            ),
+            child: const Text('Open file picker screen'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(
