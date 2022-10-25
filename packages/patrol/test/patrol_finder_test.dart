@@ -7,6 +7,91 @@ import 'package:patrol/src/custom_finders/custom_finders.dart';
 
 void main() {
   group('PatrolFinder', () {
+    group('finds widget by', () {
+      final app = MaterialApp(
+        home: Row(
+          children: const [
+            Icon(Icons.front_hand),
+            Text('Hello', key: Key('helloText')),
+          ],
+        ),
+      );
+
+      patrolTest('type', ($) async {
+        await $.pumpWidget(app);
+        expect($(Text), findsOneWidget);
+        expect($(Icon), findsOneWidget);
+        expect($(Row), findsOneWidget);
+      });
+
+      patrolTest('key', ($) async {
+        await $.pumpWidget(app);
+
+        expect($(#hello), findsOneWidget);
+        expect($(const Symbol('hello')), findsOneWidget);
+        expect($(const Key('hello')), findsOneWidget);
+
+        expect(
+          $(const Symbol('Some \n long, complex\t\ttext!')),
+          findsOneWidget,
+        );
+        expect($(const Key('Some \n long, complex\t\ttext!')), findsOneWidget);
+
+        expect($(const ValueKey({'key': 'value'})), findsOneWidget);
+        expect($(const ValueKey({'key': 'value1'})), findsNothing);
+      });
+
+      patrolTest('text', ($) async {
+        await $.pumpWidget(app);
+        expect($('Hello'), findsOneWidget);
+      });
+
+      patrolTest('text it contains', ($) async {
+        await $.pumpWidget(app);
+        expect($(RegExp('Hello')), findsOneWidget);
+        expect($(RegExp('Hell.*')), findsOneWidget);
+        expect($(RegExp('.*ello')), findsOneWidget);
+        expect($(RegExp('.*ell.*')), findsOneWidget);
+      });
+
+      patrolTest('icon', ($) async {
+        await $.pumpWidget(app);
+        expect($(Icons.front_hand), findsOneWidget);
+      });
+
+      patrolTest('widget', ($) async {
+        await $.pumpWidget(app);
+        final widget = $('Hello').evaluate().first.widget;
+        expect($(widget), findsOneWidget);
+      });
+
+      patrolTest('text using PatrolFinder', ($) async {
+        await $.pumpWidget(app);
+        expect($('Hello'), findsOneWidget);
+      });
+
+      patrolTest(
+        'text using 2 nested PatrolFinders',
+        ($) async {
+          await $.pumpWidget(app);
+          expect($($('Hello')), findsOneWidget);
+        },
+      );
+
+      patrolTest(
+        'text using many nested PatrolFinders',
+        ($) async {
+          await $.pumpWidget(app);
+          expect($($($($($('Hello'))))), findsOneWidget);
+        },
+      );
+
+      patrolTest('text using Flutter Finder', ($) async {
+        await $.pumpWidget(app);
+        expect($(find.text('Hello')), findsOneWidget);
+      });
+    });
+
     group("works identically to Flutter's finders (1)", () {
       patrolTest('(simple case 1)', ($) async {
         final flutterFinder = find.byType(Text);
@@ -84,7 +169,7 @@ void main() {
       });
     });
 
-    group("works identically to Flutter's finders (1)", () {
+    group("works identically to Flutter's finders (2)", () {
       Future<void> pump(PatrolTester $) async {
         await $.pumpWidget(
           const Directionality(
