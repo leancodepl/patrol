@@ -258,7 +258,7 @@ void main() {
       );
     });
 
-    group('tap', () {
+    group('tap()', () {
       patrolTest(
         'throws exception when no widget to tap on is found',
         ($) async {
@@ -320,7 +320,7 @@ void main() {
       });
     });
 
-    group('enterText', () {
+    group('enterText()', () {
       patrolTest(
         'throws exception when no widget to enter text in is found',
         ($) async {
@@ -436,7 +436,7 @@ void main() {
       );
     });
 
-    group('waitUntilExists', () {
+    group('waitUntilExists()', () {
       patrolTest(
         'throws exception when no widget is found within timeout',
         ($) async {
@@ -473,7 +473,7 @@ void main() {
       });
     });
 
-    group('waitUntilVisible', () {
+    group('waitUntilVisible()', () {
       patrolTest(
         'throws exception when no visible widget is found within timeout',
         ($) async {
@@ -508,7 +508,7 @@ void main() {
       });
     });
 
-    group('scrollTo', () {
+    group('scrollTo()', () {
       patrolTest(
         'throws exception when no Scrollable is found within timeout',
         ($) async {
