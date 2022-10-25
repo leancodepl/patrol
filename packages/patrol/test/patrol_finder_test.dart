@@ -762,115 +762,54 @@ void main() {
         expect($('top text').visible, false);
         expect($('bottom text').visible, true);
       });
-    });
 
-    final app = MaterialApp(
-      home: Scaffold(
-        body: Column(
-          children: [
-            Expanded(child: ListView(key: const Key('listView1'))),
-            Expanded(
-              child: ListView.builder(
-                key: const Key('listView2'),
-                itemCount: 101,
-                itemBuilder: (context, index) => Text('index: $index'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    patrolTest(
-      'fails when target widget is not in the first, default Scrollable',
-      ($) async {
-        await $.pumpWidget(app);
-
-        expect($('index: 1'), findsOneWidget);
-        expect($('index: 100').hitTestable(), findsNothing);
-
-        await expectLater(
-          $('index: 100').scrollTo,
-          throwsA(isA<StateError>()),
-        );
-        expect($('index: 100').hitTestable(), findsNothing);
-      },
-    );
-
-    patrolTest(
-      'succeeds when the target widget is in the second, explicitly specified Scrollable',
-      ($) async {
-        await $.pumpWidget(app);
-
-        expect($('index: 1'), findsOneWidget);
-        expect($('index: 100').hitTestable(), findsNothing);
-
-        await $('index: 100').scrollTo(scrollable: $(#listView2).$(Scrollable));
-
-        expect($('index: 100').hitTestable(), findsOneWidget);
-      },
-    );
-  });
-
-  group('ActionCombiner', () {
-    group('tap', () {
-      patrolTest('can be chained with scrollTo', ($) async {
-        var count = 0;
-
-        await $.pumpWidget(
-          MaterialApp(
-            home: StatefulBuilder(
-              builder: (context, setState) {
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text('count: $count'),
-                      GestureDetector(
-                        child: const Text('Tap'),
-                        onTap: () => setState(() => count++),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-
-        await $('Tap').scrollTo().tap();
-        expect($('count: 1'), findsOneWidget);
-      });
-    });
-
-    group('enterText', () {
-      patrolTest('can be chained with scrollTo', ($) async {
-        var content = '';
-
-        await $.pumpWidgetAndSettle(
-          MaterialApp(
-            home: Scaffold(
-              body: StatefulBuilder(
-                builder: (state, setState) => SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('content: $content'),
-                      TextField(
-                        onChanged: (newValue) {
-                          setState(() => content = newValue);
-                        },
-                      ),
-                    ],
-                  ),
+      final app = MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              Expanded(child: ListView(key: const Key('listView1'))),
+              Expanded(
+                child: ListView.builder(
+                  key: const Key('listView2'),
+                  itemCount: 101,
+                  itemBuilder: (context, index) => Text('index: $index'),
                 ),
               ),
-            ),
+            ],
           ),
-        );
+        ),
+      );
 
-        await $(TextField).scrollTo().enterText('some input');
-        expect($('content: some input'), findsOneWidget);
-      });
+      patrolTest(
+        'fails when target widget is not in the first, default Scrollable',
+        ($) async {
+          await $.pumpWidget(app);
+
+          expect($('index: 1'), findsOneWidget);
+          expect($('index: 100').hitTestable(), findsNothing);
+
+          await expectLater(
+            $('index: 100').scrollTo,
+            throwsA(isA<StateError>()),
+          );
+          expect($('index: 100').hitTestable(), findsNothing);
+        },
+      );
+
+      patrolTest(
+        'succeeds when target widget is in the second, explicitly specified Scrollable',
+        ($) async {
+          await $.pumpWidget(app);
+
+          expect($('index: 1'), findsOneWidget);
+          expect($('index: 100').hitTestable(), findsNothing);
+
+          await $('index: 100')
+              .scrollTo(scrollable: $(#listView2).$(Scrollable));
+
+          expect($('index: 100').hitTestable(), findsOneWidget);
+        },
+      );
     });
   });
 }
