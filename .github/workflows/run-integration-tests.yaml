@@ -98,5 +98,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: ./logcat.txt
+          name: logcat.txt
           path: ${{ github.workspace }}/packages/patrol/example
