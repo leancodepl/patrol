@@ -19,7 +19,7 @@ class UnsettlingScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: const [
                 Text('second child'),
-                //CircularProgressIndicator(),
+                CircularProgressIndicator(),
               ],
             ),
           )
