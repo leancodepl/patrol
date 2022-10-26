@@ -72,7 +72,7 @@ jobs:
       - name: Install Patrol
         run: dart pub global activate patrol_cli
 
-      - name: Run integration tests
+      - name: Start emulator and run integration tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
@@ -81,8 +81,10 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          working-directory: "${{ github.workspace }}/packages/patrol/example"
+          working-directory: ${{ github.workspace }}/packages/patrol/example
           script: |
+            adb logcat -c
+            adb logcat > logcat.txt &
             patrol drive --target integration_test/example_test.dart
             patrol drive --target integration_test/features/get_native_widgets_test.dart
             patrol drive --target integration_test/features/open_app_test.dart
@@ -91,3 +93,10 @@ jobs:
             # patrol drive --target integration_test/features/permissions/permissions_test.dart # flaky
             patrol drive --target integration_test/features/services/dark_mode_test.dart
             patrol drive --target integration_test/features/services/wifi_test.dart
+
+      - name: Upload logcat to artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: ./logcat.txt
+          path: ${{ github.workspace }}/packages/patrol/example
