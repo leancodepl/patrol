@@ -103,6 +103,33 @@ void main() {
       ),
     );
   });
+
+  patrolTest(
+    'never settles when an invisible child of InexedStack is requesting frames',
+    ($) async {
+      await expectLater(
+        () async => $.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: IndexedStack(
+                children: const [
+                  Center(child: Text('first child')),
+                  Center(child: CircularProgressIndicator()),
+                ],
+              ),
+            ),
+          ),
+        ),
+        throwsA(
+          isA<AssertionError>().having(
+            (err) => err.message,
+            'message',
+            'pumpAndSettle timed out',
+          ),
+        ),
+      );
+    },
+  );
 }
 
 Future<void> smallPump(PatrolTester $) async {
