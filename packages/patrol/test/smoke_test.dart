@@ -114,7 +114,7 @@ void main() {
               body: IndexedStack(
                 children: const [
                   Center(child: Text('first child')),
-                  Center(child: CircularProgressIndicator())
+                  Center(child: CircularProgressIndicator()),
                 ],
               ),
             ),
