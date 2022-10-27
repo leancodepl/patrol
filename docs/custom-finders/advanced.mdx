@@ -79,28 +79,34 @@ await $(#addComment).tap(findTimeout: Duration(seconds: 30));
 
 ### How does `scrollTo()` work?
 
-The `scrollTo()` method is simple to use, yet very poweful. It scrolls to the
-really handy when you _know_ that some widget will become visible if you
+The `scrollTo()` method is simple to use, yet very poweful. Here's how you'd use
+it to scroll to and tap on the first widget with the `"Delete account"` text:
 
-Here's how it works:
+```dart
+await $('Delete account').scrollTo().tap();
+```
 
-1. Waits for at least 1 Scrollable widget to become visible
-2. Scrolls that Scrollable widget in its scrolling direction until the target
+And here's how `scrollTo()` works:
+
+1. Waits for at least 1 [Scrollable] widget to become visible
+2. Scrolls that `Scrollable` widget in its scrolling direction until the target
    widget becomes visible
+3. If the target widget becomes visible withing timeout, it finishes, otherwise
+   it throws an exception
 
-`scrollTo()` is really powerful, but there's 1 important thing to keep in mind
-that can cause you problems. This thing is:
+Most of the time, you use `scrollTo()` and it just works, but there's 1
+important thing to keep in mind when using `scrollTo()`:
 
-> `scrollTo()` by default scrolls the first Scrollable widget.
+**scrollTo by default scrolls the first Scrollable widget**
 
 This default is reasonable and what you want most of the time. Unfortunately,
 this behavior can sometimes cause problems in more complicated UIs, where more
-than a single `Scrollable` widget is present in the widget tree. In such cases
-we strongly recommend explicitly specifying the `Scrollable` that `scrollTo()`
+than a single `Scrollable` widget is visible at the same time. In such cases we
+strongly recommend explicitly specifying the `Scrollable` that `scrollTo()`
 should scroll, to avoid the problem of the target widget never becoming visible
 because the wrong scrollable was scrolled.
 
-Let's consider this very simple app:
+To demonstrate this problem, let's consider this very simple app:
 
 ```dart
 class App extends StatelessWidget {
@@ -129,8 +135,8 @@ class App extends StatelessWidget {
 ```
 
 Now let's say that you're writing a test and want to scroll to and tap on the
-widget with the `index: 100` text (that is the last `Text` widget built by the
-second `ListView` widget):
+first widget with the `"index: 100"` text (that is the last `Text` widget built
+by the second `ListView` widget):
 
 There's a high chance that you'd write this:
 
@@ -141,7 +147,7 @@ await $('index: 100').scrollTo().tap();
 Unfortunately, running this test gives the `pumpAndSettle timed out` error.
 That's because the `scrollTo()` was trying to scroll the first visible
 `Scrollable` widget, which happens to be the first `ListView` (the one with
-`listView` key and no children).
+`listView1` key and no children).
 
 To fix this problem, you have to explicitly specify which `Scrollable` you want
 to use:
@@ -150,15 +156,18 @@ to use:
 await $('index: 100').scrollTo(scrollable: $(#listView2).$(Scrollable)).tap();
 ```
 
-The above line will scroll the second `Scrollable` and find the widget with
+The above snippet will scroll the second `Scrollable` and find the widget with
 `"index: 100"` text.
 
-You might be wondering why we `scrollTo(scrollable: $(#listView2))` is not
-enough? Why is it needed to look for a `Scrollable` widget inside the widget
-with the `listView2` key?
+**Why so verbose?**
 
-This is because the ListView widget doesn't extend Scrollable – instead, it
-builds a subclass of Scrollable itself. [This is a known Flutter
-problem][listview_problem].
+You might be wondering why `scrollTo(scrollable: $(#listView2))` is not enough?
+Why is it needed to look for a `Scrollable` widget inside the widget with the
+`listView2` key?
 
-[listview_problem](https://github.com/flutter/flutter/issues/88762#issuecomment-1046073880)
+This is because the [ListView] widget doesn't extend [Scrollable] – instead, it
+builds a subclass of [Scrollable] itself. [This is a known Flutter
+problem](https://github.com/flutter/flutter/issues/88762).
+
+[listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
+[scrollable]: https://api.flutter.dev/flutter/widgets/Scrollable-class.html
