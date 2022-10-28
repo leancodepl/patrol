@@ -1,5 +1,8 @@
 ## Getting started
 
+This page introduces Patrol's custom finder system. Let's get our hands dirty
+and find some widgets!
+
 ### Just finders
 
 Let's say you want to find some `Text` widget – nothing easier than that!
@@ -59,6 +62,13 @@ With our custom finders, you'd write the above as:
 expect($('Log in'), findsOneWidget);
 ```
 
+Alternatively, you could also use the `exists` getter, which returns true if the
+finder finds at least 1 widget:
+
+```dart
+expect($('Log in').exists, equals(true));
+```
+
 We can also make sure that no widget exists, or that a particular number of
 widgets exist:
 
@@ -74,17 +84,40 @@ expect($("Can't touch this"), findsNothing);
 expect($(Card), findsNWidgets(3));
 ```
 
+You could alternatively write the first line as:
+
+```dart
+expect($("Can't touch this").exists, equals(false));
+```
+
+It's important to note that Flutter's default functions, such as [findsNothing]
+and [findsOneWidget], check if the widget is present in the widget tree, not if
+it is visible to the user, which is usually what we're interested in.
+
+To check if the finder finds at least 1 _visible_ widget, use the `visible`
+getter:
+
+```dart
+expect($('Log in').visible, equals(true));
+```
+
+And to wait for at least 1 widget with the "Log in" text to become visible:
+
+```dart
+await $('Log in').waitUntilVisible();
+```
+
 ### Performing actions
 
 Finding widgets alone is cool, but what's even cooler is being able to tap on
-them! Let's tap on the first 'Subscribe' text:
+them! Let's tap on the first "Subscribe" text:
 
 ```dart
 await tester.tap(find.text('Subscribe').first);
 ```
 
-We have to use `first`, because if there were multiple "Subscribe" texts,
-`tap()` would throw an exception.
+It's usually a good practice to use `first`, because if there were multiple
+"Subscribe" texts, `tap()` would throw an exception.
 
 With Patrol, you get concise code, but you preserve the flexibility:
 
@@ -92,10 +125,24 @@ With Patrol, you get concise code, but you preserve the flexibility:
 await $('Subscribe').tap();
 ```
 
+What's very cool about Patrol's `tap()` is that it doesn't immediately fail if
+the finder finds no visible widgets – instead, it waits for some time (which you
+can specify globally in [PatrolTestConfig] or as argument to the `tap()` method)
+and taps on the first widget as soon as it becomes visible. This lets you get
+rid of fixed timeouts and test your app just like a real user would.
+
 If you wanted to tap on the third "Subscribe" text, you'd do:
 
 ```dart
 await $('Subscribe').at(2).tap();
+```
+
+And if the "Subscribe" text was in a [Scrollable] widget, such as
+[SingleChildScrollView] or [ListView], and you want to make sure that it is
+visible (so you can `tap()` on it), you can scroll to it very easily:
+
+```dart
+await $('Subscribe').scrollTo().tap();
 ```
 
 ### Going deeper
@@ -117,7 +164,7 @@ await tester.tap(
 Flutter's finders are starting to grow, while Patrol stays lean:
 
 ```dart
-$(ListView).$('Subscribe').tap();
+await $(ListView).$('Subscribe').tap();
 ```
 
 Now, we also make sure that the `Subscribe` text is in a `ListTile`:
@@ -184,3 +231,9 @@ patrolTest('adds comment', (PatrolTester $) async {
   await tester.enterText(find.byKey(Key('commentTextField')), 'Very nice!');
 });
 ```
+
+[findsnothing]: https://api.flutter.dev/flutter/flutter_test/findsNothing-constant.html
+[findsonewidget]: https://api.flutter.dev/flutter/flutter_test/findsOneWidget-constant.html
+[patroltestconfig]: https://pub.dev/documentation/patrol/latest/patrol/PatrolTestConfig-class.html
+[singlechildscrollview]: https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
+[listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
