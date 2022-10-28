@@ -14,20 +14,20 @@ await tester.pumpAndSettle();
 
 This code:
 
-1. Immediately atttempts to find the first widget with `addComment` key
-2. Immediately attempts to tap on it
+1. Immediately atttempts to find the first widget with the `addComment` key
+2. After finding the widget, it immediately attempts to tap on it
 
 This is the default behavior, but in our experience, it's often a source of
 flakiness. For example, the widget having `addComment` key might not be visible
 at the time when the finder is run. This usually doesn't means that the test
-should fail. Probably an HTTP request was made to fetch the post, and when it is
-fetched, the widget having `addComment` key will show up.
+should fail. Probably an HTTP request was made to fetch the post, and when the
+fetching is done, the widget having `addComment` key will show up.
 
 To achieve this behavior, you'd have to do:
 
 ```dart
 while (find.byKey(Key('addComment')).first.evaluate().isEmpty) {
-  await tester.pump(const Duration(milliseconds: 100));
+  await tester.pump(Duration(milliseconds: 100));
 }
 
 await tester.tap(find.byKey(Key('addComment')).first);
@@ -39,13 +39,13 @@ Our tiny example got really big, but it's still got two problems.
 1.  If something goes wrong and `addComment` never shows up, we'll keep waiting
     indefinitely.
 
-2.  The widget with `addComment` key might be out of view. This means it's not
-    possible to be tapped by a normal user, but our `tester` doesn't care. This
-    is almost never desirable.
+2.  The widget with `addComment` key might be present in the widget tree, but
+    still not be visible to the user. By default, Flutter's default
+    `WidgetTester` doesn't care. This is almost never desirable.
 
 Fortunately, you don't have to overcome these problems. Patrol already did it!
 
-Below is the same test, with all the problems fixed, written with Patrol's
+Below is the same test, with all the above problems fixed, written with Patrol's
 custom finders:
 
 ```dart
@@ -76,3 +76,98 @@ You can also change the timeout ad-hoc:
 ```dart
 await $(#addComment).tap(findTimeout: Duration(seconds: 30));
 ```
+
+### How does `scrollTo()` work?
+
+The `scrollTo()` method is simple to use, yet very poweful. Here's how you use
+it to scroll to and tap on the first widget with the `"Delete account"` text:
+
+```dart
+await $('Delete account').scrollTo().tap();
+```
+
+And here's how `scrollTo()` works:
+
+1. Waits for at least 1 [Scrollable] widget to become visible
+2. Scrolls this `Scrollable` widget in its scrolling direction until the target
+   widget becomes visible
+3. If the target widget becomes visible withing timeout, it finishes, otherwise
+   it throws an exception
+
+Most of the time, you use `scrollTo()` and it just works, but there's 1
+important thing to keep in mind when using `scrollTo()`:
+
+**scrollTo by default scrolls the first Scrollable widget**
+
+This default is reasonable and what you want most of the time. Unfortunately,
+this behavior can sometimes cause problems in more complicated UIs, where more
+than a single `Scrollable` widget is visible at the same time. In such cases we
+strongly recommend explicitly specifying the `Scrollable` that `scrollTo()`
+should scroll, to avoid the problem of the target widget never becoming visible
+because the wrong scrollable was scrolled.
+
+To demonstrate this problem, let's consider this very simple app:
+
+```dart
+class App extends StatelessWidget {
+  App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(
+          children: [
+            Expanded(child: ListView(key: Key('listView1'))),
+            Expanded(
+              child: ListView.builder(
+                key: Key('listView2'),
+                itemCount: 101,
+                itemBuilder: (context, index) => Text('index: $index'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+Now let's say that you're writing a test and want to scroll to and tap on the
+first widget with the `"index: 100"` text (that is the last `Text` widget built
+by the second `ListView` widget):
+
+There's a high chance that you'd write this:
+
+```dart
+await $('index: 100').scrollTo().tap();
+```
+
+Unfortunately, running this test gives the `pumpAndSettle timed out` error.
+That's because the `scrollTo()` was trying to scroll the first visible
+`Scrollable` widget, which happens to be the first `ListView` (the one with
+`listView1` key and no children).
+
+To fix this problem, you have to explicitly specify which `Scrollable` you want
+to use:
+
+```dart
+await $('index: 100').scrollTo(scrollable: $(#listView2).$(Scrollable)).tap();
+```
+
+The above snippet will scroll the second `Scrollable` and find the widget with
+`"index: 100"` text.
+
+**Why so verbose?**
+
+You might be wondering why `scrollTo(scrollable: $(#listView2))` is not enough?
+Why is it needed to look for a `Scrollable` widget inside the widget with the
+`listView2` key?
+
+This is because the [ListView] widget doesn't extend [Scrollable] – instead, it
+builds a subclass of [Scrollable] itself. [This is a known Flutter
+problem](https://github.com/flutter/flutter/issues/88762).
+
+[listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
+[scrollable]: https://api.flutter.dev/flutter/widgets/Scrollable-class.html
