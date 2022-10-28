@@ -79,7 +79,7 @@ await $(#addComment).tap(findTimeout: Duration(seconds: 30));
 
 ### How does `scrollTo()` work?
 
-The `scrollTo()` method is simple to use, yet very poweful. Here's how you'd use
+The `scrollTo()` method is simple to use, yet very poweful. Here's how you use
 it to scroll to and tap on the first widget with the `"Delete account"` text:
 
 ```dart
@@ -89,7 +89,7 @@ await $('Delete account').scrollTo().tap();
 And here's how `scrollTo()` works:
 
 1. Waits for at least 1 [Scrollable] widget to become visible
-2. Scrolls that `Scrollable` widget in its scrolling direction until the target
+2. Scrolls this `Scrollable` widget in its scrolling direction until the target
    widget becomes visible
 3. If the target widget becomes visible withing timeout, it finishes, otherwise
    it throws an exception
