@@ -15,7 +15,7 @@ void main() {
     deviceFinder = DeviceFinder(logger: logger);
   });
 
-  group('findDevicesToUse', () {
+  group('findDevicesToUse()', () {
     test('throws when no devices are attached', () {
       expect(
         () => deviceFinder.findDevicesToUse(
@@ -118,6 +118,42 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('finds Android device by its id', () {
+      final devicesToUse = deviceFinder.findDevicesToUse(
+        attachedDevices: [androidDevice, iosDevice],
+        wantDevices: [androidDeviceId],
+      );
+
+      expect(devicesToUse, [androidDevice]);
+    });
+
+    test('finds Android device by its name', () {
+      final devicesToUse = deviceFinder.findDevicesToUse(
+        attachedDevices: [androidDevice, iosDevice],
+        wantDevices: [androidDeviceName],
+      );
+
+      expect(devicesToUse, [androidDevice]);
+    });
+
+    test('finds iOS device by its id', () {
+      final devicesToUse = deviceFinder.findDevicesToUse(
+        attachedDevices: [androidDevice, iosDevice],
+        wantDevices: [iosDeviceId],
+      );
+
+      expect(devicesToUse, [iosDevice]);
+    });
+
+    test('finds iOS device by its name', () {
+      final devicesToUse = deviceFinder.findDevicesToUse(
+        attachedDevices: [androidDevice, iosDevice],
+        wantDevices: [iosDeviceName],
+      );
+
+      expect(devicesToUse, [iosDevice]);
     });
   });
 }

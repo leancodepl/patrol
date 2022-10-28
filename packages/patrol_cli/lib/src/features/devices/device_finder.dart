@@ -89,18 +89,25 @@ class DeviceFinder {
       return attachedDevices;
     }
 
-    final attachedDevicesSet =
-        attachedDevices.map((device) => device.resolvedName).toSet();
+    final attachedDevicesSet = attachedDevices.toSet();
 
     for (final wantDevice in wantDevices) {
-      if (!attachedDevicesSet.contains(wantDevice)) {
+      bool predicate(Device attachedDevice) {
+        return attachedDevice.id == wantDevice ||
+            attachedDevice.name == wantDevice;
+      }
+
+      if (!attachedDevicesSet.any(predicate)) {
         throwToolExit('Device $wantDevice is not attached');
       }
     }
 
-    return attachedDevices
-        .where((device) => wantDevices.contains(device.resolvedName))
-        .toList();
+    bool predicate(Device attachedDevice) {
+      return wantDevices.contains(attachedDevice.id) ||
+          wantDevices.contains(attachedDevice.name);
+    }
+
+    return attachedDevices.where(predicate).toList();
   }
 
   Future<String> _getCommandOutput() async {
