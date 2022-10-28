@@ -122,7 +122,7 @@ void main() {
 
     test('finds Android device by its id', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [androidDevice],
+        attachedDevices: [androidDevice, iosDevice],
         wantDevices: [androidDeviceId],
       );
 
@@ -131,7 +131,7 @@ void main() {
 
     test('finds Android device by its name', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [androidDevice],
+        attachedDevices: [androidDevice, iosDevice],
         wantDevices: [androidDeviceName],
       );
 
@@ -140,7 +140,7 @@ void main() {
 
     test('finds iOS device by its id', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [iosDevice],
+        attachedDevices: [androidDevice, iosDevice],
         wantDevices: [iosDeviceId],
       );
 
@@ -149,7 +149,7 @@ void main() {
 
     test('finds iOS device by its name', () {
       final devicesToUse = deviceFinder.findDevicesToUse(
-        attachedDevices: [iosDevice],
+        attachedDevices: [androidDevice, iosDevice],
         wantDevices: [iosDeviceName],
       );
 
