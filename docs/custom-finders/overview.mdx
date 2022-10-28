@@ -69,9 +69,10 @@ $ flutter pub add patrol --dev
 When using Patrol's custom finders, you use `patrolTest` function instead of
 `testWidgets`.
 
-The biggest difference between `testWidgets` and `patrolTest` is the type of
-the _tester_ you get in your callback. `patrolTest` gives you `PatrolTester`,
-which is much more powerful that the default `WidgetTester`.
+The main difference between the `testWidgets()` function and the `patrolTest()`
+function is the type of the _tester_ you get in the test callback.
+`patrolTest()` gives you a [PatrolTester], which is much more powerful that the
+default [WidgetTester].
 
 ```dart
 testWidgets('sign in', (WidgetTester tester) async {
@@ -93,3 +94,6 @@ normal widget tests.
 ```bash
 $ flutter test
 ```
+
+[widgettester]: https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html
+[patroltester]: https://pub.dev/documentation/patrol/latest/patrol/PatrolTester-class.html

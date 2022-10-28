@@ -28,8 +28,8 @@ import 'package:patrol/patrol.dart';
 
 void main() {
   patrolTest(
+    'counter state is the same after going to home and going back',
     nativeAutomation: true,
-    'counter state is the same after going to Home and going back',
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
 
@@ -67,17 +67,17 @@ void main() {
       await $(#emailInput).enterText('user@leancode.co');
       await $(#passwordInput).enterText('ny4ncat');
 
-      // Find widget with text 'Log in' which is a descendant of widget with key
-      // box1 which is a descendant of a Scaffold widget and tap on it.
+      // Finds all widgets with text 'Log in' which are descendants of widgets with key
+      // box1, which are descendants of a Scaffold widget and tap on the first one.
       await $(Scaffold).$(#box1).$('Log in').tap();
 
-      // Selects all Scrollables which have Text descendant
+      // Finds all Scrollables which have Text descendant
       $(Scrollable).containing(Text);
 
-      // Selects all Scrollables which have a Button descendant which has a Text descendant
+      // Finds all Scrollables which have a Button descendant which has a Text descendant
       $(Scrollable).containing($(Button).containing(Text));
 
-      // Selects all Scrollables which have a Button descendant and a Text descendant
+      // Finds all Scrollables which have a Button descendant and a Text descendant
       $(Scrollable).containing(Button).containing(Text);
     },
   );
