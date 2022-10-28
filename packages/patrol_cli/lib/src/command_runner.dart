@@ -58,6 +58,10 @@ class PatrolCommandRunner extends CommandRunner<int> {
     PubUpdater? pubUpdater,
     ArtifactsRepository? artifactsRepository,
     FileSystem? fs,
+    DeviceFinder? deviceFinder,
+    AndroidDriver? androidDriver,
+    IOSDriver? iosDriver,
+    FlutterDriver? flutterDriver,
   })  : _disposeScope = DisposeScope(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
         _fs = fs ?? const LocalFileSystem(),
@@ -75,25 +79,28 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(
       DriveCommand(
         parentDisposeScope: _disposeScope,
-        deviceFinder: DeviceFinder(logger: _logger),
+        deviceFinder: deviceFinder ?? DeviceFinder(logger: _logger),
         testFinder: TestFinder(
           integrationTestDir: _fs.directory('integration_test'),
           fs: _fs,
         ),
-        androidDriver: AndroidDriver(
-          parentDisposeScope: _disposeScope,
-          artifactsRepository: _artifactsRepository,
-          logger: _logger,
-        ),
-        iosDriver: IOSDriver(
-          parentDisposeScope: _disposeScope,
-          artifactsRepository: _artifactsRepository,
-          logger: _logger,
-        ),
-        flutterDriver: FlutterDriver(
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        androidDriver: androidDriver ??
+            AndroidDriver(
+              parentDisposeScope: _disposeScope,
+              artifactsRepository: _artifactsRepository,
+              logger: _logger,
+            ),
+        iosDriver: iosDriver ??
+            IOSDriver(
+              parentDisposeScope: _disposeScope,
+              artifactsRepository: _artifactsRepository,
+              logger: _logger,
+            ),
+        flutterDriver: flutterDriver ??
+            FlutterDriver(
+              parentDisposeScope: _disposeScope,
+              logger: _logger,
+            ),
         testRunner: TestRunner(),
         logger: _logger,
       ),
@@ -149,6 +156,13 @@ class PatrolCommandRunner extends CommandRunner<int> {
   final PubUpdater _pubUpdater;
   final FileSystem _fs;
   final Logger _logger;
+
+  // final DeviceFinder _deviceFinder;
+  // final TestFinder _testFinder;
+  // final TestRunner _testRunner;
+  // final AndroidDriver _androidDriver;
+  // final IOSDriver _iosDriver;
+  // final FlutterDriver _flutterDriver;
 
   Future<void> dispose() async {
     try {

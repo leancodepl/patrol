@@ -7,14 +7,14 @@ import 'package:patrol_cli/src/command_runner.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/extensions/command_runner.dart';
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
-
-class MockPubUpdater extends Mock implements PubUpdater {}
-
-class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
+import 'features/drive/fixures/devices.dart';
+import 'mocks.dart';
 
 const latestVersion = '0.0.0';
 
@@ -27,6 +27,9 @@ void main() {
     late Logger logger;
     late PubUpdater pubUpdater;
     late ArtifactsRepository artifactsRepository;
+    late DeviceFinder deviceFinder;
+    late AndroidDriver androidDriver;
+    late IOSDriver iosDriver;
 
     late PatrolCommandRunner commandRunner;
 
@@ -40,11 +43,18 @@ void main() {
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => globalVersion);
 
+      deviceFinder = MockDeviceFinder();
+      androidDriver = MockAndroidDriver();
+      iosDriver = MockIOSDriver();
+
       commandRunner = PatrolCommandRunner(
         logger: logger,
         pubUpdater: pubUpdater,
         artifactsRepository: artifactsRepository,
         fs: MemoryFileSystem.test(),
+        deviceFinder: deviceFinder,
+        androidDriver: androidDriver,
+        iosDriver: iosDriver,
       );
     });
 
@@ -138,6 +148,22 @@ void main() {
         verify(() {
           logger.info('Verbose mode enabled. More logs will be printed.');
         }).called(1);
+      });
+    });
+
+    group('drive', () {
+      test('selects Android device by id', () async {
+        when(() => deviceFinder.find(any()))
+            .thenAnswer((_) async => [androidDevice, iosDevice]);
+
+        final result = await commandRunner.run(
+          ['drive', '--device', androidDeviceId],
+        );
+
+        verify(() {
+          logger.info('Run')
+        });
+        
       });
     });
   });
