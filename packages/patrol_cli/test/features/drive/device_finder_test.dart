@@ -1,6 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:test/test.dart';
 
 import 'fixures/devices.dart';
@@ -40,7 +41,7 @@ void main() {
           wantDevices: [],
         );
 
-        expect(devicesToUse, [androidDevice]);
+        expect(devicesToUse, <Device>[androidDevice]);
       },
     );
 
@@ -53,7 +54,7 @@ void main() {
           wantDevices: [],
         );
 
-        expect(devicesToUse, [androidDevice]);
+        expect(devicesToUse, <Device>[androidDevice]);
       },
     );
 

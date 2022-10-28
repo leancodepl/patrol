@@ -3,15 +3,28 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/common/artifacts_repository.dart';
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
+import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
 import '../../fakes.dart';
-import '../../mocks.dart';
 import 'fixures/devices.dart';
+
+class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
+
+class MockDeviceFinder extends Mock implements DeviceFinder {}
+
+class MockAndroidDriver extends Mock implements AndroidDriver {}
+
+class MockIOSDriver extends Mock implements IOSDriver {}
+
+class MockFlutterDriver extends Mock implements FlutterDriver {}
 
 const _defaultConfig = DriveCommandConfig(
   targets: [],
