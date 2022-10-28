@@ -77,7 +77,7 @@ expect($(Card), findsNWidgets(3));
 ### Performing actions
 
 Finding widgets alone is cool, but what's even cooler is being able to tap on
-them! Let's tap on the first 'Subscribe' text:
+them! Let's tap on the first "Subscribe" text:
 
 ```dart
 await tester.tap(find.text('Subscribe').first);
@@ -117,7 +117,7 @@ await tester.tap(
 Flutter's finders are starting to grow, while Patrol stays lean:
 
 ```dart
-$(ListView).$('Subscribe').tap();
+await $(ListView).$('Subscribe').tap();
 ```
 
 Now, we also make sure that the `Subscribe` text is in a `ListTile`:
