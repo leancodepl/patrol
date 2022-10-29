@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Wait for the `package` service before installing apk (#539)
+
 ## 0.2.1+2
 
 - Fix broken changelog display (#294)
