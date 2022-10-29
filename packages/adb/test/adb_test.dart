@@ -6,8 +6,8 @@ import 'package:test/test.dart';
 class MockAdbInternals extends Mock implements AdbInternals {}
 
 void main() {
-  group('adb devices', () {
-    late MockAdbInternals mockAdbInternals;
+  group('devices()', () {
+    late AdbInternals mockAdbInternals;
     late Adb adb;
 
     setUp(() {
@@ -15,7 +15,7 @@ void main() {
       adb = Adb(adbInternals: mockAdbInternals);
     });
 
-    test('empty list when no devices attached', () async {
+    test('returns correct result when no devices are attached', () async {
       const output = '''
 List of devices attached
 
@@ -26,7 +26,7 @@ List of devices attached
       expect(devices, <String>[]);
     });
 
-    test('1 device attached', () async {
+    test('returns correct result when 1 device are attached', () async {
       const output = '''
 List of devices attached
 emulator-5554	device
@@ -39,7 +39,7 @@ emulator-5554	device
       expect(devices, <String>['emulator-5554']);
     });
 
-    test('3 device attached', () async {
+    test('returns correct result when  devices are attached', () async {
       const output = '''
 List of devices attached
 emulator-5554	device
