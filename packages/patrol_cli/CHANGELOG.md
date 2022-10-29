@@ -1,3 +1,10 @@
+## 0.7.4
+
+- Print more useful info in `patrol doctor` (#541)
+- Accept both device name and device ID for the `--device` argument to `patrol drive` (#537)
+- Wait for the `package` service to become active on Android before installing
+  apk (#539, #540)
+
 ## 0.7.3+1
 
 - Disable terminal animations to fix logs on the CI (#498)
