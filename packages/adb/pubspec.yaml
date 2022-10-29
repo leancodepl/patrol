@@ -1,6 +1,6 @@
 name: adb
 description: Simple Dart wrapper around Android Debug Bridge.
-version: 0.2.1+2
+version: 0.2.2
 repository: https://github.com/leancodepl/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
 
