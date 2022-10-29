@@ -3,6 +3,7 @@
   "twitter": "leancodepl",
   "theme": "#FFA03F",
   "logo": "/assets/favicon.png",
+  "favicon": "/assets/favicon.png",
   "socialPreview": "https://raw.githubusercontent.com/leancodepl/patrol/master/docs/assets/preview.jpg",
   "sidebar": [
     ["About", "/"],
