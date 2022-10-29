@@ -42,6 +42,14 @@ extension LoggerX on Logger {
   }
 
   set verbose(bool newValue) => _verbose = newValue;
+
+  void ok(String msg) {
+    info('${mason_logger.green.wrap("✓")} $msg');
+  }
+
+  void err(String msg) {
+    info('${mason_logger.red.wrap("✗")} $msg');
+  }
 }
 
 bool _verbose = false;

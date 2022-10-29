@@ -108,6 +108,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       DoctorCommand(
         logger: _logger,
         artifactsRepository: _artifactsRepository,
+        platform: const LocalPlatform(),
       ),
     );
     addCommand(
