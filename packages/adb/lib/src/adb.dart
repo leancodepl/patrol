@@ -18,7 +18,7 @@ class Adb {
   /// Initializes this [Adb] instance.
   ///
   /// If the ADB daemon is not running, it will be started.
-  Future<void> init() async => _ensureRunning();
+  Future<void> init() async => _ensureServerRunning();
 
   final AdbInternals _adbInternals;
 
@@ -27,12 +27,16 @@ class Adb {
   /// If there is more than 1 device attached, decide which one to use by
   /// passing [device].
   ///
+  /// Waits for the package service to start up before proceeding with
+  /// installation.
+  ///
   /// Throws if there are no devices attached.
   Future<io.ProcessResult> install(
     String path, {
     String? device,
   }) async {
-    await _ensureRunning();
+    await _ensureServerRunning();
+    await _ensurePackageServiceRunning();
 
     final result = await io.Process.run(
       'adb',
@@ -67,7 +71,8 @@ class Adb {
     String packageName, {
     String? device,
   }) async {
-    await _ensureRunning();
+    await _ensureServerRunning();
+    await _ensurePackageServiceRunning();
 
     final result = await io.Process.run(
       'adb',
@@ -107,7 +112,7 @@ class Adb {
     String? device,
     String protocol = 'tcp',
   }) async {
-    await _ensureRunning();
+    await _ensureServerRunning();
 
     final result = await io.Process.run(
       'adb',
@@ -168,7 +173,7 @@ class Adb {
     String? device,
     Map<String, String> arguments = const {},
   }) async {
-    await _ensureRunning();
+    await _ensureServerRunning();
 
     final process = await io.Process.start(
       'adb',
@@ -199,7 +204,7 @@ class Adb {
   /// See also:
   ///  * https://developer.android.com/studio/command-line/adb#devicestatus
   Future<List<String>> devices() async {
-    await _ensureRunning();
+    await _ensureServerRunning();
 
     final stdOut = await _adbInternals.devices();
 
@@ -221,7 +226,7 @@ class Adb {
     return devices;
   }
 
-  Future<void> _ensureRunning() async {
+  Future<void> _ensureServerRunning() async {
     while (true) {
       final result = await io.Process.run(
         'adb',
@@ -232,6 +237,23 @@ class Adb {
         await Future<void>.delayed(const Duration(milliseconds: 100));
       } else {
         break;
+      }
+    }
+  }
+
+  Future<void> _ensurePackageServiceRunning() async {
+    while (true) {
+      final result = await io.Process.run(
+        'adb',
+        ['shell', 'service', 'list'],
+        runInShell: true,
+      );
+
+      const trigger = 'package: [android.content.pm.IPackageManager]';
+      if (result.stdOut.contains(trigger)) {
+        break;
+      } else {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
       }
     }
   }
