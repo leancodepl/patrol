@@ -66,7 +66,9 @@ class DoctorCommand extends Command<int> {
   }
 
   void _checkIfInstalled(String tool, [String? hint]) {
-    final result = io.Process.runSync('which', [tool]);
+    final result = io.Platform.isWindows
+        ? io.Process.runSync('where.exe', [tool])
+        : io.Process.runSync('which', [tool]);
     if (result.exitCode == 0) {
       _logger.ok('$tool found in ${result.stdOut.trim()}');
     } else {
