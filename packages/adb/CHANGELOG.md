@@ -1,3 +1,8 @@
+## 0.2.3
+
+- Fix infinite waiting for `package` service when more than a single device
+  device is attached (#553)
+
 ## 0.2.2
 
 - Wait for the `package` service before installing apk (#539)

@@ -36,7 +36,7 @@ class Adb {
     String? device,
   }) async {
     await _ensureServerRunning();
-    await _ensurePackageServiceRunning();
+    await _ensurePackageServiceRunning(device: device);
 
     final result = await io.Process.run(
       'adb',
@@ -72,7 +72,7 @@ class Adb {
     String? device,
   }) async {
     await _ensureServerRunning();
-    await _ensurePackageServiceRunning();
+    await _ensurePackageServiceRunning(device: device);
 
     final result = await io.Process.run(
       'adb',
@@ -178,10 +178,7 @@ class Adb {
     final process = await io.Process.start(
       'adb',
       [
-        if (device != null) ...[
-          '-s',
-          device,
-        ],
+        if (device != null) ...['-s', device],
         'shell',
         'am',
         'instrument',
@@ -241,11 +238,16 @@ class Adb {
     }
   }
 
-  Future<void> _ensurePackageServiceRunning() async {
+  Future<void> _ensurePackageServiceRunning({required String? device}) async {
     while (true) {
       final result = await io.Process.run(
         'adb',
-        ['shell', 'service', 'list'],
+        [
+          if (device != null) ...['-s', device],
+          'shell',
+          'service',
+          'list',
+        ],
         runInShell: true,
       );
 
