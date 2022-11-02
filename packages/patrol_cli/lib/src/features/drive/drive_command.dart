@@ -251,24 +251,25 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           return;
         }
 
-        try {
-          await _flutterDriver.build(target, device);
+        await _flutterDriver.build(target, device);
 
-          for (var i = 0; i < config.repeat; i++) {
-            if (_disposeScope.disposed) {
-              break;
-            }
-
-            await _flutterDriver.run(target, device);
+        for (var i = 0; i < config.repeat; i++) {
+          if (_disposeScope.disposed) {
+            _logger.fine('Skipping running repeated $target ($i)...');
+            break;
           }
-        } on FlutterDriverFailedException catch (err) {
-          exitCode = 1;
-          _logger
-            ..severe(err)
-            ..severe(
-              "See the logs above to learn what happened. If the logs above aren't "
-              "useful then it's a bug – please report it.",
-            );
+
+          try {
+            await _flutterDriver.run(target, device);
+          } on FlutterDriverFailedException catch (err) {
+            exitCode = 1;
+            _logger
+              ..severe(err)
+              ..severe(
+                "See the logs above to learn what happened. If the logs above aren't "
+                "useful then it's a bug – please report it.",
+              );
+          }
         }
       });
     }
