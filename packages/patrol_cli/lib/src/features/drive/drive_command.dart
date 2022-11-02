@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -26,6 +27,7 @@ class DriveCommandConfig with _$DriveCommandConfig {
     required Map<String, String> dartDefines,
     required String? packageName,
     required String? bundleId,
+    required int repeat,
   }) = _DriveCommandConfig;
 }
 
@@ -103,6 +105,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         'wait',
         help: 'Seconds to wait after the test fails or succeeds.',
         defaultsTo: '0',
+      )
+      ..addOption(
+        'repeat',
+        abbr: 'n',
+        help: 'Repeat the test n times.',
+        defaultsTo: '1',
       );
   }
 
@@ -166,6 +174,16 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
+    final dynamic repeat = argResults?['repeat'];
+    if (repeat != null && int.tryParse(repeat as String) == null) {
+      throw const FormatException('`repeat` argument is not an int');
+    }
+    repeat as int?;
+
+    if (repeat != 1 && targets.length != 1) {
+      throwToolExit('only single test target runs can be repeated');
+    }
+
     final attachedDevices = await _deviceFinder.find(devices);
 
     return DriveCommandConfig(
@@ -183,6 +201,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }.withNullsRemoved(),
       packageName: packageName,
       bundleId: bundleId,
+      repeat: repeat ?? 1,
     );
   }
 

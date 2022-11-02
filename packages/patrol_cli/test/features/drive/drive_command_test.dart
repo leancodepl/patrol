@@ -36,6 +36,7 @@ const _defaultConfig = DriveCommandConfig(
   dartDefines: {'PATROL_WAIT': '0'},
   packageName: null,
   bundleId: null,
+  repeat: 1,
 );
 
 void main() {
