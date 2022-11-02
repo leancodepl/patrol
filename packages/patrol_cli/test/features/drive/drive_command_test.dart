@@ -77,6 +77,7 @@ void main() {
 
       final iosDriver = MockIOSDriver();
       flutterDriver = MockFlutterDriver();
+      when(() => flutterDriver.build(any(), any())).thenAnswer((_) async {});
 
       driveCommand = DriveCommand(
         parentDisposeScope: parentDisposeScope,
