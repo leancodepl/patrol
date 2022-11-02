@@ -41,8 +41,7 @@ For those wondering what is that `#` thing – it's a
 [Symbol](https://api.dart.dev/dart-core/Symbol-class.html)! Yes, we're Dart
 (ab)users.
 
-All the types that you can pass to `$` are [listed in the
-documentation][create_finder_docs].
+All the types that you can pass to `$` are [listed in the documentation][doc].
 
 ### Making assertions
 
@@ -213,9 +212,6 @@ With the help of Patrol's custom finders, it's much easier:
 await $(ListTile).containing('Activated').$(#learnMore).tap();
 ```
 
-[patrol]: https://pub.dev/packages/patrol
-[create_finder_docs]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html
-
 ### Falling back
 
 What's cool about Patrol is that it builds on top of `flutter_test` instead of
@@ -232,6 +228,7 @@ patrolTest('adds comment', (PatrolTester $) async {
 });
 ```
 
+[doc]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html
 [findsnothing]: https://api.flutter.dev/flutter/flutter_test/findsNothing-constant.html
 [findsonewidget]: https://api.flutter.dev/flutter/flutter_test/findsOneWidget-constant.html
 [patroltestconfig]: https://pub.dev/documentation/patrol/latest/patrol/PatrolTestConfig-class.html
