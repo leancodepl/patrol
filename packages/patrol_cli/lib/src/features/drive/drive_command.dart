@@ -1,6 +1,7 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
@@ -182,8 +183,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`repeat` argument is not an int');
     }
 
-    if (repeat != 1 && targets.length != 1) {
-      throwToolExit('only single test target runs can be repeated');
+    if (repeat != 1) {
+      if (targets.length != 1) {
+        throwToolExit('only single test target runs can be repeated');
+      }
+
+      _logger.info('${basename(targets.single)} will be run $repeat times');
     }
 
     final attachedDevices = await _deviceFinder.find(devices);

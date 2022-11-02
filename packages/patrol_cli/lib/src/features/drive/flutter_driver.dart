@@ -3,7 +3,7 @@ import 'dart:io' show Process, systemEncoding;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
 import 'package:mason_logger/mason_logger.dart' show green, red;
-import 'package:path/path.dart' show basename;
+import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -127,6 +127,7 @@ class FlutterDriver {
           device: device.id,
           flavor: flavor,
           dartDefines: {...dartDefines, ...env},
+          platform: device.targetPlatform,
         ),
       ],
       environment: env,
@@ -212,27 +213,27 @@ class FlutterDriver {
       }
     }
 
+    String getApplicationBinaryPath() {
+      if (platform == TargetPlatform.android) {
+        const prefix = 'build/app/outputs/flutter-apk';
+        if (flavor != null) {
+          return join(prefix, 'app-${flavor.toLowerCase()}-debug.apk');
+        } else {
+          return join(prefix, 'app-debug.apk');
+        }
+      } else {
+        return 'build/ios/iphoneos/Runner.app';
+      }
+    }
+
     return [
       'drive',
       '--no-pub',
       '--driver',
       driver,
-      '--use-application-binary',
-      if (platform == TargetPlatform.android)
-        // FIXME: flavors modify apk name
-        'build/app/outputs/flutter-apk/app-debug.apk'
-      else
-        'build/ios/iphoneos/Runner.app',
-      // '--target',
-      // target,
-      if (device != null) ...[
-        '--device-id',
-        device,
-      ],
-      if (flavor != null) ...[
-        '--flavor',
-        flavor,
-      ],
+      ...['--use-application-binary', getApplicationBinaryPath()],
+      if (device != null) ...['--device-id', device],
+      if (flavor != null) ...['--flavor', flavor],
       for (final dartDefine in dartDefines.entries) ...[
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
