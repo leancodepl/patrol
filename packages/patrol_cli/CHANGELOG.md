@@ -1,3 +1,8 @@
+## 0.7.5
+
+- Reenable terminal animations (#521)
+- Fix infinite wait when more than 2 Android devices are connected (#553)
+
 ## 0.7.4+1
 
 - Fix `patrol doctor` crashing on Windows (#546)
