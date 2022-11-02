@@ -8,6 +8,8 @@ import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
+enum BuildMode { apk, app }
+
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
   FlutterDriverFailedException(this.code)
@@ -50,6 +52,54 @@ class FlutterDriver {
     this.port = port;
     this.flavor = flavor;
     this.dartDefines = dartDefines;
+  }
+
+  Future<void> build(String target, BuildMode buildMode) async {
+    final targetName = basename(target);
+
+    _logger.info(
+      '${green.wrap(">")} Building ${buildMode.name} for $targetName...',
+    );
+
+    int? exitCode;
+    final process = await Process.start(
+      'flutter',
+      ['--no-version-check', 'build', buildMode.name, '--target', target],
+    );
+    String kill() {
+      return process.kill()
+          ? 'Killed flutter build'
+          : 'Failed to kill `flutter build`';
+    }
+
+    process.stdout.listen((rawMsg) {
+      final msg = systemEncoding.decode(rawMsg).trim();
+      _logger.fine(msg);
+    }).disposedBy(_disposeScope);
+
+    process.stderr.listen((rawMsg) {
+      final msg = systemEncoding.decode(rawMsg).trim();
+      _logger.severe(msg);
+    }).disposedBy(_disposeScope);
+
+    _disposeScope.addDispose(() async {
+      if (exitCode != null) {
+        return;
+      }
+
+      _logger.fine(kill());
+    });
+
+    exitCode = await process.exitCode;
+
+    final msg = exitCode == 0
+        ? '${green.wrap("✓")} Building ${buildMode.name} for $targetName succeeded!'
+        : '${red.wrap("✗")} Build ${buildMode.name} for $targetName failed';
+
+    _logger.severe(msg);
+    if (exitCode != 0) {
+      throw FlutterDriverFailedException(exitCode);
+    }
   }
 
   /// Runs [target] on [device] and waits until the test completes.
@@ -142,6 +192,7 @@ class FlutterDriver {
     required String target,
     required String? device,
     required String? flavor,
+    required TargetPlatform platform,
     required Map<String, String> dartDefines,
   }) {
     for (final dartDefine in dartDefines.entries) {
@@ -163,10 +214,17 @@ class FlutterDriver {
 
     return [
       'drive',
+      '--no-pub',
       '--driver',
       driver,
-      '--target',
-      target,
+      '--use-application-binary',
+      if (platform == TargetPlatform.android)
+        // FIXME: flavors modify apk name
+        'build/app/outputs/flutter-apk/app-debug.apk'
+      else
+        'build/ios/iphoneos/Runner.app',
+      // '--target',
+      // target,
       if (device != null) ...[
         '--device-id',
         device,

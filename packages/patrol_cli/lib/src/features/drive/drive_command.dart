@@ -174,11 +174,13 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final dynamic repeat = argResults?['repeat'];
-    if (repeat != null && int.tryParse(repeat as String) == null) {
+    var repeat = 1;
+    try {
+      final repeatStr = argResults?['repeat'] as String? ?? '1';
+      repeat = int.parse(repeatStr);
+    } on FormatException {
       throw const FormatException('`repeat` argument is not an int');
     }
-    repeat as int?;
 
     if (repeat != 1 && targets.length != 1) {
       throwToolExit('only single test target runs can be repeated');
@@ -201,7 +203,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }.withNullsRemoved(),
       packageName: packageName,
       bundleId: bundleId,
-      repeat: repeat ?? 1,
+      repeat: repeat,
     );
   }
 
@@ -245,7 +247,14 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         }
 
         try {
-          await _flutterDriver.run(target, device);
+          final buildMode = device.targetPlatform == TargetPlatform.iOS
+              ? BuildMode.app
+              : BuildMode.apk;
+          await _flutterDriver.build(target, buildMode);
+
+          for (var i = 0; i < config.repeat; i++) {
+            await _flutterDriver.run(target, device);
+          }
         } on FlutterDriverFailedException catch (err) {
           exitCode = 1;
           _logger
