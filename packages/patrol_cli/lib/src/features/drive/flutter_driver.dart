@@ -8,7 +8,25 @@ import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
-enum BuildMode { apk, app }
+extension TargetPlatformX on TargetPlatform {
+  String get artifactType {
+    switch (this) {
+      case TargetPlatform.android:
+        return 'apk';
+      case TargetPlatform.iOS:
+        return 'app';
+    }
+  }
+
+  String get command {
+    switch (this) {
+      case TargetPlatform.android:
+        return 'apk';
+      case TargetPlatform.iOS:
+        return 'ios';
+    }
+  }
+}
 
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
@@ -54,17 +72,27 @@ class FlutterDriver {
     this.dartDefines = dartDefines;
   }
 
-  Future<void> build(String target, BuildMode buildMode) async {
+  Future<void> build(String target, Device device) async {
     final targetName = basename(target);
+    final platform = device.targetPlatform;
 
     _logger.info(
-      '${green.wrap(">")} Building ${buildMode.name} for $targetName...',
+      '${green.wrap(">")} Building ${platform.artifactType} for $targetName...',
     );
 
     int? exitCode;
     final process = await Process.start(
       'flutter',
-      ['--no-version-check', 'build', buildMode.name, '--target', target],
+      [
+        '--no-version-check',
+        'build',
+        platform.command,
+        '--target',
+        target,
+        if (flavor != null) ...['--flavor', flavor!],
+        if (platform == TargetPlatform.iOS)
+          if (device.real) '--no-simulator' else '--simulator'
+      ],
     );
     String kill() {
       return process.kill()
@@ -93,8 +121,8 @@ class FlutterDriver {
     exitCode = await process.exitCode;
 
     final msg = exitCode == 0
-        ? '${green.wrap("✓")} Building ${buildMode.name} for $targetName succeeded!'
-        : '${red.wrap("✗")} Build ${buildMode.name} for $targetName failed';
+        ? '${green.wrap("✓")} Building ${platform.artifactType} for $targetName succeeded!'
+        : '${red.wrap("✗")} Build ${platform.artifactType} for $targetName failed';
 
     _logger.severe(msg);
     if (exitCode != 0) {
@@ -128,6 +156,7 @@ class FlutterDriver {
           flavor: flavor,
           dartDefines: {...dartDefines, ...env},
           platform: device.targetPlatform,
+          simulator: !device.real,
         ),
       ],
       environment: env,
@@ -195,6 +224,7 @@ class FlutterDriver {
     required String? flavor,
     required TargetPlatform platform,
     required Map<String, String> dartDefines,
+    required bool simulator,
   }) {
     for (final dartDefine in dartDefines.entries) {
       final key = dartDefine.key;
@@ -222,7 +252,11 @@ class FlutterDriver {
           return join(prefix, 'app-debug.apk');
         }
       } else {
-        return 'build/ios/iphoneos/Runner.app';
+        if (simulator) {
+          return 'build/ios/iphonesimulator/Runner.app';
+        } else {
+          return 'build/ios/iphoneos/Runner.app';
+        }
       }
     }
 

@@ -252,12 +252,13 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         }
 
         try {
-          final buildMode = device.targetPlatform == TargetPlatform.iOS
-              ? BuildMode.app
-              : BuildMode.apk;
-          await _flutterDriver.build(target, buildMode);
+          await _flutterDriver.build(target, device);
 
           for (var i = 0; i < config.repeat; i++) {
+            if (_disposeScope.disposed) {
+              break;
+            }
+
             await _flutterDriver.run(target, device);
           }
         } on FlutterDriverFailedException catch (err) {

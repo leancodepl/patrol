@@ -108,8 +108,8 @@ class IOSDriver {
       ],
       runInShell: true,
     )
-      ..listenStdOut(_logger.info).disposedBy(_disposeScope)
-      ..listenStdErr(_logger.info).disposedBy(_disposeScope);
+      ..listenStdOut(_logger.fine).disposedBy(_disposeScope)
+      ..listenStdErr(_logger.severe).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
       await Process.run(
@@ -138,8 +138,8 @@ class IOSDriver {
       ],
       runInShell: true,
     )
-      ..listenStdOut(_logger.info).disposedBy(_disposeScope)
-      ..listenStdErr(_logger.info).disposedBy(_disposeScope);
+      ..listenStdOut(_logger.fine).disposedBy(_disposeScope)
+      ..listenStdErr(_logger.severe).disposedBy(_disposeScope);
 
     await runProcess.exitCode;
   }
