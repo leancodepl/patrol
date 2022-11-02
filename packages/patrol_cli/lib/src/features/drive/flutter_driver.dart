@@ -54,6 +54,7 @@ class FlutterDriver {
   String? port;
   String? flavor;
   late Map<String, String> dartDefines;
+  late Map<String, String> env;
 
   final DisposeScope _disposeScope;
   final Logger _logger;
@@ -70,6 +71,12 @@ class FlutterDriver {
     this.port = port;
     this.flavor = flavor;
     this.dartDefines = dartDefines;
+    _assertDartDefines(dartDefines);
+
+    env = {
+      envHostKey: host,
+      envPortKey: port,
+    }.withNullsRemoved();
   }
 
   Future<void> build(String target, Device device) async {
@@ -85,13 +92,16 @@ class FlutterDriver {
       'flutter',
       [
         '--no-version-check',
-        'build',
-        platform.command,
-        '--target',
-        target,
+        ...['build', platform.command],
+        '--debug',
+        ...['--target', target],
         if (flavor != null) ...['--flavor', flavor!],
         if (platform == TargetPlatform.iOS)
-          if (device.real) '--no-simulator' else '--simulator'
+          if (device.real) '--no-simulator' else '--simulator',
+        for (final dartDefine in {...env, ...dartDefines}.entries) ...[
+          '--dart-define',
+          '${dartDefine.key}=${dartDefine.value}',
+        ]
       ],
     );
     String kill() {
@@ -139,11 +149,6 @@ class FlutterDriver {
 
     _logger.info('${green.wrap(">")} Running $targetName on $deviceName...');
 
-    final env = {
-      envHostKey: host,
-      envPortKey: port,
-    }.withNullsRemoved();
-
     int? exitCode;
     final process = await Process.start(
       'flutter',
@@ -154,7 +159,6 @@ class FlutterDriver {
           target: target,
           device: device.id,
           flavor: flavor,
-          dartDefines: {...dartDefines, ...env},
           platform: device.targetPlatform,
           simulator: !device.real,
         ),
@@ -223,26 +227,8 @@ class FlutterDriver {
     required String? device,
     required String? flavor,
     required TargetPlatform platform,
-    required Map<String, String> dartDefines,
     required bool simulator,
   }) {
-    for (final dartDefine in dartDefines.entries) {
-      final key = dartDefine.key;
-      final value = dartDefine.value;
-
-      if (key.contains(' ') || key.contains('=')) {
-        throw FormatException(
-          '--dart-define key "$value" contains whitespace or "="',
-        );
-      }
-
-      if (value.contains(' ') || value.contains('=')) {
-        throw FormatException(
-          '--dart-define value "$value" contains whitespace or "="',
-        );
-      }
-    }
-
     String getApplicationBinaryPath() {
       if (platform == TargetPlatform.android) {
         const prefix = 'build/app/outputs/flutter-apk';
@@ -265,13 +251,29 @@ class FlutterDriver {
       '--no-pub',
       '--driver',
       driver,
+      ...['--target', target],
       ...['--use-application-binary', getApplicationBinaryPath()],
       if (device != null) ...['--device-id', device],
       if (flavor != null) ...['--flavor', flavor],
-      for (final dartDefine in dartDefines.entries) ...[
-        '--dart-define',
-        '${dartDefine.key}=${dartDefine.value}',
-      ]
     ];
+  }
+
+  static void _assertDartDefines(Map<String, String> dartDefines) {
+    for (final dartDefine in dartDefines.entries) {
+      final key = dartDefine.key;
+      final value = dartDefine.value;
+
+      if (key.contains(' ') || key.contains('=')) {
+        throw FormatException(
+          '--dart-define key "$value" contains whitespace or "="',
+        );
+      }
+
+      if (value.contains(' ') || value.contains('=')) {
+        throw FormatException(
+          '--dart-define value "$value" contains whitespace or "="',
+        );
+      }
+    }
   }
 }
