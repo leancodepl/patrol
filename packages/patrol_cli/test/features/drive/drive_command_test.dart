@@ -6,7 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
@@ -24,7 +24,7 @@ class MockAndroidDriver extends Mock implements AndroidDriver {}
 
 class MockIOSDriver extends Mock implements IOSDriver {}
 
-class MockFlutterDriver extends Mock implements FlutterDriver {}
+class MockFlutterTool extends Mock implements FlutterTool {}
 
 const _defaultConfig = DriveCommandConfig(
   targets: [],
@@ -44,7 +44,7 @@ void main() {
 
   late DriveCommand driveCommand;
   late FileSystem fs;
-  late FlutterDriver flutterDriver;
+  late FlutterTool flutterTool;
 
   group('drive command', () {
     setUp(() {
@@ -76,8 +76,8 @@ void main() {
       ).thenAnswer((_) async {});
 
       final iosDriver = MockIOSDriver();
-      flutterDriver = MockFlutterDriver();
-      when(() => flutterDriver.build(any(), any())).thenAnswer((_) async {});
+      flutterTool = MockFlutterTool();
+      when(() => flutterTool.build(any(), any())).thenAnswer((_) async {});
 
       driveCommand = DriveCommand(
         parentDisposeScope: parentDisposeScope,
@@ -85,7 +85,7 @@ void main() {
         testFinder: testFinder,
         iosDriver: iosDriver,
         androidDriver: androidDriver,
-        flutterDriver: flutterDriver,
+        flutterTool: flutterTool,
         testRunner: TestRunner(),
         logger: Logger(''),
       );
@@ -132,7 +132,7 @@ void main() {
 
       final config = await driveCommand.parseInput();
 
-      when(() => flutterDriver.run(any(), any())).thenAnswer((_) async {});
+      when(() => flutterTool.drive(any(), any())).thenAnswer((_) async {});
 
       final exitCode = await driveCommand.execute(config);
       expect(exitCode, isZero);
@@ -144,7 +144,7 @@ void main() {
 
       final config = await driveCommand.parseInput();
 
-      when(() => flutterDriver.run(any(), any())).thenThrow(
+      when(() => flutterTool.drive(any(), any())).thenThrow(
         FlutterDriverFailedException(1),
       );
 

@@ -40,8 +40,9 @@ class FlutterDriverFailedException implements Exception {
   String toString() => 'flutter_driver exited with code $code';
 }
 
-class FlutterDriver {
-  FlutterDriver({
+/// Wrapper around the flutter tool.
+class FlutterTool {
+  FlutterTool({
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
@@ -143,7 +144,7 @@ class FlutterDriver {
   /// Runs [target] on [device] and waits until the test completes.
   ///
   /// Prints stdout and stderr of "flutter drive".
-  Future<void> run(String target, Device device) async {
+  Future<void> drive(String target, Device device) async {
     final deviceName = device.resolvedName;
     final targetName = basename(target);
 

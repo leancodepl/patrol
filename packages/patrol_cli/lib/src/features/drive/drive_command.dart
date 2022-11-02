@@ -8,7 +8,7 @@ import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
@@ -40,7 +40,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required TestRunner testRunner,
     required AndroidDriver androidDriver,
     required IOSDriver iosDriver,
-    required FlutterDriver flutterDriver,
+    required FlutterTool flutterTool,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
@@ -48,7 +48,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _testRunner = testRunner,
         _androidDriver = androidDriver,
         _iosDriver = iosDriver,
-        _flutterDriver = flutterDriver,
+        _flutterTool = flutterTool,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -122,7 +122,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   final TestRunner _testRunner;
   final AndroidDriver _androidDriver;
   final IOSDriver _iosDriver;
-  final FlutterDriver _flutterDriver;
+  final FlutterTool _flutterTool;
   final Logger _logger;
 
   @override
@@ -235,7 +235,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    _flutterDriver.init(
+    _flutterTool.init(
       driver: config.driver,
       host: config.host,
       port: config.port,
@@ -251,7 +251,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           return;
         }
 
-        await _flutterDriver.build(target, device);
+        await _flutterTool.build(target, device);
 
         for (var i = 0; i < config.repeat; i++) {
           if (_disposeScope.disposed) {
@@ -260,7 +260,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           }
 
           try {
-            await _flutterDriver.run(target, device);
+            await _flutterTool.drive(target, device);
           } on FlutterDriverFailedException catch (err) {
             exitCode = 1;
             _logger
