@@ -219,9 +219,23 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   @override
   Future<int> execute(DriveCommandConfig config) async {
+    _flutterTool.init(
+      driver: config.driver,
+      host: config.host,
+      port: config.port,
+      flavor: config.flavor,
+      dartDefines: config.dartDefines,
+    );
+
     for (final device in config.devices) {
       _testRunner.addDevice(device);
-      config.targets.forEach(_testRunner.addTarget);
+      for (final target in config.targets) {
+        _testRunner.addTarget(
+          target,
+          times: config.repeat,
+          builder: () => _flutterTool.build(target, device),
+        );
+      }
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
@@ -241,18 +255,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    _flutterTool.init(
-      driver: config.driver,
-      host: config.host,
-      port: config.port,
-      flavor: config.flavor,
-      dartDefines: config.dartDefines,
-    );
-
     var exitCode = 0;
     await _testRunner.run((target, device) async {
-      await _flutterTool.build(target, device);
-
       for (var i = 0; i < config.repeat; i++) {
         try {
           await _flutterTool.drive(target, device);

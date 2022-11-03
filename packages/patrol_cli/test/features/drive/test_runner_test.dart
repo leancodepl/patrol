@@ -19,6 +19,8 @@ final device2 = Device(
   real: false,
 );
 
+Future<void> delay() => Future.delayed(Duration(seconds: 1));
+
 void main() {
   late TestRunner testRunner;
 
@@ -29,7 +31,7 @@ void main() {
   group('TestRunner', () {
     group('run()', () {
       test('throws when no devices were added', () {
-        testRunner.addTarget('app_test.dart');
+        testRunner.addTarget('app_test.dart', builder: delay);
 
         expect(() => testRunner.run((test, device) async {}), throwsStateError);
       });
@@ -43,7 +45,7 @@ void main() {
       test('throws when called while already running', () {
         testRunner
           ..addDevice(device1)
-          ..addTarget('app_test.dart');
+          ..addTarget('app_test.dart', builder: delay);
         unawaited(testRunner.run((target, device) async {}));
 
         expect(
@@ -62,7 +64,7 @@ void main() {
       test('throws when trying to add while running', () {
         testRunner
           ..addDevice(device1)
-          ..addTarget('app_test.dart');
+          ..addTarget('app_test.dart', builder: delay);
         unawaited(
           testRunner
               .run((test, device) => Future.delayed(Duration(seconds: 1))),
@@ -74,20 +76,26 @@ void main() {
 
     group('addTarget()', () {
       test('throws when trying to add already added target', () {
-        testRunner.addTarget('app_test.dart');
-        expect(() => testRunner.addTarget('app_test.dart'), throwsStateError);
+        testRunner.addTarget('app_test.dart', builder: delay);
+        expect(
+          () => testRunner.addTarget('app_test.dart', builder: delay),
+          throwsStateError,
+        );
       });
 
       test('throws when trying to add while running', () {
         testRunner
           ..addDevice(device1)
-          ..addTarget('app_test.dart');
+          ..addTarget('app_test.dart', builder: delay);
         unawaited(
           testRunner
               .run((test, device) => Future.delayed(Duration(seconds: 1))),
         );
 
-        expect(() => testRunner.addTarget('login_test.dart'), throwsStateError);
+        expect(
+          () => testRunner.addTarget('login_test.dart', builder: delay),
+          throwsStateError,
+        );
       });
     });
   });

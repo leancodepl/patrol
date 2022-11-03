@@ -4,14 +4,30 @@ import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef TestRunCallback = Future<void> Function(String target, Device device);
 
+class _TestTarget {
+  const _TestTarget(this.target, this.times, this.builder);
+
+  final String target;
+  final int times;
+  final Future<void> Function() builder;
+
+  @override
+  bool operator ==(Object o) => o is _TestTarget && target == o.target;
+
+  @override
+  int get hashCode => target.hashCode;
+}
+
 /// Orchestrates running tests on devices.
 ///
-/// It maps running N tests on M devices, resulting in N * M test runs.
+/// It maps running T test targets on D devices, resulting in T * D test runs.
+/// Every test target can also be repeated R times, resulting in T * R * D test
+/// runs.
 class TestRunner extends Disposable {
   TestRunner({required Logger logger}) : _logger = logger;
 
   final Map<String, Device> _devices = {};
-  final Set<String> _targets = {};
+  final Set<_TestTarget> _targets = {};
   bool _running = false;
   bool _disposed = false;
 
@@ -31,16 +47,28 @@ class TestRunner extends Disposable {
   }
 
   /// Adds [target] (a Dart test file) to runner's internal list.
-  void addTarget(String target) {
+  ///
+  /// [builder] will be called before running the tests.
+  void addTarget(
+    String target, {
+    int times = 1,
+    required Future<void> Function() builder,
+  }) {
+    final testTarget = _TestTarget(target, times, builder);
+
     if (_running) {
       throw StateError('tests can only be added before run');
     }
 
-    if (_targets.contains(target)) {
+    if (times < 1) {
+      throw StateError('times must be larger than 0');
+    }
+
+    if (_targets.contains(testTarget)) {
       throw StateError('target $target is already added');
     }
 
-    _targets.add(target);
+    _targets.add(testTarget);
   }
 
   /// Runs all test targets on on all added devices.
@@ -64,13 +92,17 @@ class TestRunner extends Disposable {
     final testRunsOnAllDevices = <Future<void>>[];
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
-        for (final target in _targets) {
-          if (_disposed) {
-            _logger.fine('Skipping running $target on ${device.id}...');
-            continue;
+        for (final testTarget in _targets) {
+          await testTarget.builder();
+
+          for (var i = 0; i < testTarget.times; i++) {
+            if (_disposed) {
+              _logger.fine('Skipping running $testTarget on ${device.id}...');
+              continue;
+            }
           }
 
-          await runTest(target, device);
+          await runTest(testTarget.target, device);
         }
       }
 
