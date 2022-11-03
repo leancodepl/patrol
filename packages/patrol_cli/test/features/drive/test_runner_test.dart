@@ -30,8 +30,10 @@ void main() {
     test('devices cannot be added after run', () {
       testRunner
         ..addDevice(device1)
-        ..addTarget((device) => Future.delayed(Duration(seconds: 1)));
-      unawaited(testRunner.run());
+        ..addTarget('app_test.dart');
+      unawaited(
+        testRunner.run((test, device) => Future.delayed(Duration(seconds: 1))),
+      );
 
       expect(() => testRunner.addDevice(device1), throwsStateError);
     });
@@ -39,22 +41,24 @@ void main() {
     test('tests cannot be added after run', () {
       testRunner
         ..addDevice(device1)
-        ..addTarget((device) => Future.delayed(Duration(seconds: 1)));
-      unawaited(testRunner.run());
+        ..addTarget('app_test.dart');
+      unawaited(
+        testRunner.run((test, device) => Future.delayed(Duration(seconds: 1))),
+      );
 
-      expect(() => testRunner.addTarget((_) async {}), throwsStateError);
+      expect(() => testRunner.addTarget('login_test.dart'), throwsStateError);
     });
 
     test('cannot run with no devices', () {
-      testRunner.addTarget((device) => Future.delayed(Duration(seconds: 1)));
+      testRunner.addTarget('app_test.dart');
 
-      expect(testRunner.run, throwsStateError);
+      expect(() => testRunner.run((test, device) async {}), throwsStateError);
     });
 
     test('cannot run with no tests', () {
       testRunner.addDevice(device1);
 
-      expect(testRunner.run, throwsStateError);
+      expect(() => testRunner.run((test, device) async {}), throwsStateError);
     });
 
     test('cannot add devices with the same ID', () {
@@ -65,10 +69,10 @@ void main() {
     test('cannot run tests while they are already running', () {
       testRunner
         ..addDevice(device1)
-        ..addTarget((device) => Future.delayed(Duration(seconds: 1)));
-      unawaited(testRunner.run());
+        ..addTarget('app_test.dart');
+      unawaited(testRunner.run((target, device) async {}));
 
-      expect(testRunner.run, throwsStateError);
+      expect(() => testRunner.run((target, device) async {}), throwsStateError);
     });
 
     test('runs tests sequentially in FIFO order on a single device', () async {
@@ -77,21 +81,15 @@ void main() {
 
         testRunner
           ..addDevice(device1)
-          ..addTarget((device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
-            code = 'A';
-          })
-          ..addTarget((device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
-            code = 'B';
-          })
-          ..addTarget((device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
-            code = 'C';
-          });
+          ..addTarget('A')
+          ..addTarget('B')
+          ..addTarget('C');
 
         expect(code, equals(''));
-        testRunner.run();
+        testRunner.run((target, device) async {
+          await Future<void>.delayed(Duration(seconds: 1));
+          code = target;
+        });
 
         fakeAsync.elapse(Duration(seconds: 1));
         expect(code, equals('A'));
@@ -111,21 +109,17 @@ void main() {
         testRunner
           ..addDevice(device1)
           ..addDevice(device2)
-          ..addTarget((device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
-            code.add('${device.id} A');
-          })
-          ..addTarget((device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
-            code.add('${device.id} B');
-          })
-          ..addTarget((device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
-            code.add('${device.id} C');
-          });
+          ..addTarget('A')
+          ..addTarget('B')
+          ..addTarget('C');
 
         expect(code, equals(<String>[]));
-        unawaited(testRunner.run());
+        unawaited(
+          testRunner.run((target, device) async {
+            await Future<void>.delayed(Duration(seconds: 1));
+            code.add('${device.id} $target');
+          }),
+        );
 
         fakeAsync.elapse(Duration(seconds: 1));
         expect(code, equals(['emulator-5554 A', 'emulator-5556 A']));
