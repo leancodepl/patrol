@@ -418,16 +418,19 @@ class PatrolAutomator private constructor() {
         val file = File("/sdcard/Documents/Patrol/$appId/$filename")
         file.mkdirs()
 
+        val process = Runtime.getRuntime().exec("screencap -p ${file.absolutePath}")
+        process.waitFor()
+
 //        if (file.exists()) {
 //            file.delete()
 //        }
 
-        val success = uiDevice.takeScreenshot(file)
-        Logger.i("Screenshot creation status: $success")
-
-        if (!success) {
-            throw PatrolException("Could not take screenshot")
-        }
+//        val success = uiDevice.takeScreenshot(file)
+//        Logger.i("Screenshot creation status: $success")
+//
+//        if (!success) {
+//            throw PatrolException("Could not take screenshot")
+//        }
 
         return if (file.exists()) file.absolutePath else null
     }
