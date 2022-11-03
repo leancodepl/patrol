@@ -35,7 +35,7 @@ class TestRunner {
   /// Tests are run sequentially on a single device, but many devices can be
   /// attached at the same time, and thus many tests can be running at the same
   /// time.
-  Future<void> run(TestRunCallback cb) async {
+  Future<void> run(TestRunCallback runTest) async {
     if (_running) {
       throw StateError('tests are already running');
     }
@@ -51,8 +51,8 @@ class TestRunner {
     final testRunsOnAllDevices = <Future<void>>[];
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
-        for (final test in _targets) {
-          await cb(test, device);
+        for (final target in _targets) {
+          await runTest(target, device);
         }
       }
 
