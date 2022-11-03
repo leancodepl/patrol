@@ -105,6 +105,7 @@ class FlutterTool {
         ]
       ],
     );
+
     String kill() {
       return process.kill()
           ? 'Killed flutter build'
@@ -167,6 +168,7 @@ class FlutterTool {
       environment: env,
       runInShell: true,
     );
+
     String kill() {
       return process.kill()
           ? 'Killed flutter_driver'
