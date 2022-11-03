@@ -1,5 +1,4 @@
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
@@ -25,14 +24,12 @@ class Result {
 ///
 /// Tests targets are run sequentially, not in parallel.
 class TestRunner extends Disposable {
-  TestRunner({required Logger logger}) : _logger = logger;
+  TestRunner();
 
   final Map<String, Device> _devices = {};
   final Set<String> _targets = {};
   bool _running = false;
   bool _disposed = false;
-
-  final Logger _logger;
 
   int _repeats = 1;
   set repeats(int newValue) => _repeats = newValue;
@@ -102,7 +99,6 @@ class TestRunner extends Disposable {
       Future<void> runTestsOnDevice() async {
         for (final target in _targets) {
           if (_disposed) {
-            _logger.fine('Skipping building $target on ${device.id}...');
             continue;
           }
 
@@ -110,7 +106,6 @@ class TestRunner extends Disposable {
 
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
-              _logger.fine('Skipping running $target on ${device.id}...');
               continue;
             }
 

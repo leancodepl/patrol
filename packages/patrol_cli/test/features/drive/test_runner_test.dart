@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
@@ -28,7 +27,7 @@ void main() {
   late TestRunner testRunner;
 
   setUp(() {
-    testRunner = TestRunner(logger: Logger(''));
+    testRunner = TestRunner();
   });
 
   group('TestRunner', () {

@@ -94,7 +94,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        testRunner: TestRunner(logger: _logger),
+        testRunner: TestRunner(),
         logger: _logger,
       ),
     );
