@@ -51,6 +51,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _flutterTool = flutterTool,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
+    _testRunner.disposedBy(parentDisposeScope);
 
     argParser
       ..addMultiOption(
@@ -220,6 +221,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   Future<int> execute(DriveCommandConfig config) async {
     for (final device in config.devices) {
       _testRunner.addDevice(device);
+      config.targets.forEach(_testRunner.addTarget);
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
@@ -248,22 +250,10 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     );
 
     var exitCode = 0;
-    config.targets.forEach(_testRunner.addTarget);
-
     await _testRunner.run((target, device) async {
-      if (_disposeScope.disposed) {
-        _logger.fine('Skipping running $target...');
-        return;
-      }
-
       await _flutterTool.build(target, device);
 
       for (var i = 0; i < config.repeat; i++) {
-        if (_disposeScope.disposed) {
-          _logger.fine('Skipping running repeated $target ($i)...');
-          break;
-        }
-
         try {
           await _flutterTool.drive(target, device);
         } on FlutterDriverFailedException catch (err) {
@@ -271,8 +261,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           _logger
             ..severe(err)
             ..severe(
-              "See the logs above to learn what happened. If the logs above aren't "
-              "useful then it's a bug – please report it.",
+              'See the logs above to learn what happened. If the logs above '
+              "aren't useful then it's a bug – please report it.",
             );
         }
       }

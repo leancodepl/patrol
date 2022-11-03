@@ -1,13 +1,21 @@
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef TestRunCallback = Future<void> Function(String target, Device device);
 
 /// Orchestrates running tests on devices.
-class TestRunner {
+///
+/// It maps running N tests on M devices, resulting in N * M test runs.
+class TestRunner extends Disposable {
+  TestRunner({required Logger logger}) : _logger = logger;
+
   final Map<String, Device> _devices = {};
   final List<String> _targets = [];
-  //final List<Test> _tests = [];
   bool _running = false;
+  bool _disposed = false;
+
+  final Logger _logger;
 
   /// Adds [device] to runner's internal list.
   void addDevice(Device device) {
@@ -52,14 +60,25 @@ class TestRunner {
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
         for (final target in _targets) {
+          if (_disposed) {
+            _logger.fine('Skipping running $target on ${device.id}...');
+            continue;
+          }
+
           await runTest(target, device);
         }
       }
 
-      testRunsOnAllDevices.add(runTestsOnDevice());
+      final futures = runTestsOnDevice();
+      testRunsOnAllDevices.add(futures);
     }
 
     await Future.wait<void>(testRunsOnAllDevices);
     _running = false;
+  }
+
+  @override
+  Future<void> dispose() async {
+    _disposed = true;
   }
 }

@@ -86,7 +86,7 @@ void main() {
         iosDriver: iosDriver,
         androidDriver: androidDriver,
         flutterTool: flutterTool,
-        testRunner: TestRunner(),
+        testRunner: TestRunner(logger: Logger('')),
         logger: Logger(''),
       );
     });
