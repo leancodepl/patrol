@@ -11,7 +11,7 @@ class TestRunner extends Disposable {
   TestRunner({required Logger logger}) : _logger = logger;
 
   final Map<String, Device> _devices = {};
-  final List<String> _targets = [];
+  final Set<String> _targets = {};
   bool _running = false;
   bool _disposed = false;
 
@@ -35,6 +35,11 @@ class TestRunner extends Disposable {
     if (_running) {
       throw StateError('tests can only be added before run');
     }
+
+    if (_targets.contains(target)) {
+      throw StateError('target $target is already added');
+    }
+
     _targets.add(target);
   }
 
