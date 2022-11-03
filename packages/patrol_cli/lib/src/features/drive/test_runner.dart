@@ -3,19 +3,6 @@ import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
 
-// TODO: Use this
-class Result {
-  const Result({
-    required this.target,
-    required this.device,
-    required this.passed,
-  });
-
-  final String target;
-  final Device device;
-  final bool passed;
-}
-
 /// Orchestrates running tests on devices.
 ///
 /// It maps running T test targets on D devices, resulting in T * D test runs.
