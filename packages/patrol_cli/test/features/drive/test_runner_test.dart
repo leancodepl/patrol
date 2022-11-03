@@ -82,8 +82,11 @@ void main() {
 
     group('run()', () {
       late List<String> actualLog;
+      late List<String> expectedLog;
+
       setUp(() {
         actualLog = [];
+        expectedLog = [];
 
         testRunner
           ..builder = (target, device) async {
@@ -122,78 +125,38 @@ void main() {
 
       test('runs tests sequentially on single device', () async {
         fakeAsync((fakeAsync) {
-          final log = <String>[];
-
-          testRunner
-            ..builder = (target, device) async {
-              await Future<void>.delayed(Duration(seconds: 1));
-              log.add('build $target ${device.id}');
-            }
-            ..executor = (target, device) async {
-              await Future<void>.delayed(Duration(seconds: 1));
-              log.add('run $target ${device.id}');
-            };
-
           testRunner
             ..addDevice(device1)
             ..addTarget('A')
             ..addTarget('B')
             ..addTarget('C');
 
-          expect(log, equals(<String>[]));
+          expect(actualLog, equals(<String>[]));
           testRunner.run();
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expect(log, equals(['build A emulator-5554']));
+          expectedLog.add('build A emulator-5554');
+          expect(actualLog, equals(actualLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expect(log, equals(['build A emulator-5554', 'run A emulator-5554']));
+          expectedLog.add('run A emulator-5554');
+          expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expect(
-            log,
-            equals([
-              'build A emulator-5554',
-              'run A emulator-5554',
-              'build B emulator-5554',
-            ]),
-          );
+          expectedLog.add('build B emulator-5554');
+          expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expect(
-            log,
-            equals([
-              'build A emulator-5554',
-              'run A emulator-5554',
-              'build B emulator-5554',
-              'run B emulator-5554',
-            ]),
-          );
+          expectedLog.add('run B emulator-5554');
+          expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expect(
-            log,
-            equals([
-              'build A emulator-5554',
-              'run A emulator-5554',
-              'build B emulator-5554',
-              'run B emulator-5554',
-              'build C emulator-5554',
-            ]),
-          );
+          expectedLog.add('build C emulator-5554');
+          expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expect(
-            log,
-            equals([
-              'build A emulator-5554',
-              'run A emulator-5554',
-              'build B emulator-5554',
-              'run B emulator-5554',
-              'build C emulator-5554',
-              'run C emulator-5554',
-            ]),
-          );
+          expectedLog.add('run C emulator-5554');
+          expect(actualLog, equals(expectedLog));
         });
       });
 
@@ -201,16 +164,6 @@ void main() {
         testRunner.repeats = 3;
 
         fakeAsync((fakeAsync) {
-          testRunner
-            ..builder = (target, device) async {
-              await Future<void>.delayed(Duration(seconds: 1));
-              actualLog.add('build $target ${device.id}');
-            }
-            ..executor = (target, device) async {
-              await Future<void>.delayed(Duration(seconds: 1));
-              actualLog.add('run $target ${device.id}');
-            };
-
           testRunner
             ..addDevice(device1)
             ..addTarget('A')
@@ -310,6 +263,31 @@ void main() {
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.addAll(['run C emulator-5554', 'run C emulator-5556']);
           expect(actualLog, expectedLog);
+        });
+      });
+
+      test('handles disposal correctly', () async {
+        fakeAsync((fakeAsync) {
+          testRunner
+            ..addDevice(device1)
+            ..addTarget('A')
+            ..addTarget('B')
+            ..addTarget('C');
+
+          expect(actualLog, equals(<String>[]));
+          testRunner.run();
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build A emulator-5554');
+          expect(actualLog, equals(actualLog));
+
+          testRunner.dispose();
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run A emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 10));
+          expect(actualLog, equals(expectedLog));
         });
       });
     });

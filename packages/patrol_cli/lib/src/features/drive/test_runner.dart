@@ -22,6 +22,8 @@ class Result {
 /// It maps running T test targets on D devices, resulting in T * D test runs.
 /// Every test target can also be repeated R times, resulting in T * R * D test
 /// runs.
+///
+/// Tests targets are run sequentially, not in parallel.
 class TestRunner extends Disposable {
   TestRunner({required Logger logger}) : _logger = logger;
 
@@ -99,6 +101,11 @@ class TestRunner extends Disposable {
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
         for (final target in _targets) {
+          if (_disposed) {
+            _logger.fine('Skipping building $target on ${device.id}...');
+            continue;
+          }
+
           await builder(target, device);
 
           for (var i = 0; i < _repeats; i++) {
