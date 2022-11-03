@@ -183,6 +183,10 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`repeat` argument is not an int');
     }
 
+    if (repeat < 1) {
+      throwToolExit('repeat count must not be smaller than 1');
+    }
+
     if (repeat != 1) {
       if (targets.length != 1) {
         throwToolExit('only single test target runs can be repeated');
