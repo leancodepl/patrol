@@ -15,6 +15,7 @@ import androidx.test.uiautomator.UiSelector
 import pl.leancode.automatorserver.contracts.Contracts
 import pl.leancode.automatorserver.contracts.nativeView
 import pl.leancode.automatorserver.contracts.notification
+import java.io.File
 import kotlin.math.roundToInt
 
 private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
@@ -412,6 +413,25 @@ class PatrolAutomator private constructor() {
 
         uiObject.click()
     }
+
+    fun takeScreenshot(appId: String, filename: String): String? {
+        val file = File("/sdcard/Documents/Patrol/$appId/$filename")
+        file.mkdirs()
+
+//        if (file.exists()) {
+//            file.delete()
+//        }
+
+        val success = uiDevice.takeScreenshot(file)
+        Logger.i("Screenshot creation status: $success")
+
+        if (!success) {
+            throw PatrolException("Could not take screenshot")
+        }
+
+        return if (file.exists()) file.absolutePath else null
+    }
+
 
     // Returns true if selector found something withing timeout, false otherwise.
     private fun waitForSelector(bySelector: BySelector): Boolean {

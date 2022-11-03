@@ -1346,6 +1346,97 @@ class PermissionDialogVisibleResponse extends $pb.GeneratedMessage {
   void clearVisible() => clearField(1);
 }
 
+class TakeScreenshotRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'TakeScreenshotRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'appId',
+        protoName: 'appId')
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'filename')
+    ..hasRequiredFields = false;
+
+  TakeScreenshotRequest._() : super();
+  factory TakeScreenshotRequest({
+    $core.String? appId,
+    $core.String? filename,
+  }) {
+    final _result = create();
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    if (filename != null) {
+      _result.filename = filename;
+    }
+    return _result;
+  }
+  factory TakeScreenshotRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory TakeScreenshotRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  TakeScreenshotRequest clone() =>
+      TakeScreenshotRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  TakeScreenshotRequest copyWith(
+          void Function(TakeScreenshotRequest) updates) =>
+      super.copyWith((message) => updates(message as TakeScreenshotRequest))
+          as TakeScreenshotRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static TakeScreenshotRequest create() => TakeScreenshotRequest._();
+  TakeScreenshotRequest createEmptyInstance() => create();
+  static $pb.PbList<TakeScreenshotRequest> createRepeated() =>
+      $pb.PbList<TakeScreenshotRequest>();
+  @$core.pragma('dart2js:noInline')
+  static TakeScreenshotRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<TakeScreenshotRequest>(create);
+  static TakeScreenshotRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get appId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set appId($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasAppId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearAppId() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get filename => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set filename($core.String v) {
+    $_setString(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasFilename() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearFilename() => clearField(2);
+}
+
 class Selector extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')

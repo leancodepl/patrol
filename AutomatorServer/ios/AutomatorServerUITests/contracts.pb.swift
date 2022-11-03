@@ -419,6 +419,20 @@ public struct Patrol_PermissionDialogVisibleResponse {
   public init() {}
 }
 
+public struct Patrol_TakeScreenshotRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var appID: String = String()
+
+  public var filename: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public struct Patrol_Selector {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -631,6 +645,7 @@ extension Patrol_SetLocationAccuracyRequest: @unchecked Sendable {}
 extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: @unchecked Sendable {}
 extension Patrol_PermissionDialogVisibleRequest: @unchecked Sendable {}
 extension Patrol_PermissionDialogVisibleResponse: @unchecked Sendable {}
+extension Patrol_TakeScreenshotRequest: @unchecked Sendable {}
 extension Patrol_Selector: @unchecked Sendable {}
 extension Patrol_NativeView: @unchecked Sendable {}
 extension Patrol_Notification: @unchecked Sendable {}
@@ -1271,6 +1286,44 @@ extension Patrol_PermissionDialogVisibleResponse: SwiftProtobuf.Message, SwiftPr
 
   public static func ==(lhs: Patrol_PermissionDialogVisibleResponse, rhs: Patrol_PermissionDialogVisibleResponse) -> Bool {
     if lhs.visible != rhs.visible {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_TakeScreenshotRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TakeScreenshotRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "appId"),
+    2: .same(proto: "filename"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.appID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.filename) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 1)
+    }
+    if !self.filename.isEmpty {
+      try visitor.visitSingularStringField(value: self.filename, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_TakeScreenshotRequest, rhs: Patrol_TakeScreenshotRequest) -> Bool {
+    if lhs.appID != rhs.appID {return false}
+    if lhs.filename != rhs.filename {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -557,4 +557,19 @@ class NativeAutomator {
       ),
     );
   }
+
+  /// Takes a screenshot.
+  ///
+  /// Screenshots are copied from the emulator to Patrol's cache directory after
+  /// test target's run ends.
+  ///
+  /// Screenshot is created in the Documents/Patrol/yourAppId directory.
+  Future<void> takeScreenshot([String filename = 'screenshot.png']) async {
+    await _wrapRequest(
+      'takeScreenshot',
+      () => _client.takeScreenshot(
+        TakeScreenshotRequest(appId: resolvedAppId, filename: filename),
+      ),
+    );
+  }
 }

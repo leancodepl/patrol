@@ -195,4 +195,9 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         }
         return empty { }
     }
+
+    override suspend fun takeScreenshot(request: Contracts.TakeScreenshotRequest): Contracts.Empty {
+        automation.takeScreenshot(request.appId, request.filename)
+        return empty {}
+    }
 }

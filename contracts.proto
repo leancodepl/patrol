@@ -47,6 +47,7 @@ service NativeAutomator {
 
   // other
 
+  rpc takeScreenshot(TakeScreenshotRequest) returns (Empty) {}
   rpc debug(Empty) returns (Empty) {}
 }
 
@@ -128,6 +129,11 @@ message PermissionDialogVisibleRequest {
 
 message PermissionDialogVisibleResponse {
   bool visible = 1;
+}
+
+message TakeScreenshotRequest {
+  string appId = 1;
+  string filename = 2;
 }
 
 message Selector {

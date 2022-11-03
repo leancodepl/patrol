@@ -294,6 +294,18 @@ const PermissionDialogVisibleResponse$json = const {
 final $typed_data.Uint8List permissionDialogVisibleResponseDescriptor =
     $convert.base64Decode(
         'Ch9QZXJtaXNzaW9uRGlhbG9nVmlzaWJsZVJlc3BvbnNlEhgKB3Zpc2libGUYASABKAhSB3Zpc2libGU=');
+@$core.Deprecated('Use takeScreenshotRequestDescriptor instead')
+const TakeScreenshotRequest$json = const {
+  '1': 'TakeScreenshotRequest',
+  '2': const [
+    const {'1': 'appId', '3': 1, '4': 1, '5': 9, '10': 'appId'},
+    const {'1': 'filename', '3': 2, '4': 1, '5': 9, '10': 'filename'},
+  ],
+};
+
+/// Descriptor for `TakeScreenshotRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List takeScreenshotRequestDescriptor = $convert.base64Decode(
+    'ChVUYWtlU2NyZWVuc2hvdFJlcXVlc3QSFAoFYXBwSWQYASABKAlSBWFwcElkEhoKCGZpbGVuYW1lGAIgASgJUghmaWxlbmFtZQ==');
 @$core.Deprecated('Use selectorDescriptor instead')
 const Selector$json = const {
   '1': 'Selector',

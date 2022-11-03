@@ -148,6 +148,11 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/setLocationAccuracy',
           ($0.SetLocationAccuracyRequest value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$takeScreenshot =
+      $grpc.ClientMethod<$0.TakeScreenshotRequest, $0.Empty>(
+          '/patrol.NativeAutomator/takeScreenshot',
+          ($0.TakeScreenshotRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$debug = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/patrol.NativeAutomator/debug',
       ($0.Empty value) => value.writeToBuffer(),
@@ -316,6 +321,12 @@ class NativeAutomatorClient extends $grpc.Client {
       $0.SetLocationAccuracyRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$setLocationAccuracy, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> takeScreenshot(
+      $0.TakeScreenshotRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$takeScreenshot, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> debug($0.Empty request,
@@ -548,6 +559,14 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.SetLocationAccuracyRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.TakeScreenshotRequest, $0.Empty>(
+        'takeScreenshot',
+        takeScreenshot_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.TakeScreenshotRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'debug',
         debug_Pre,
@@ -710,6 +729,11 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return setLocationAccuracy(call, await request);
   }
 
+  $async.Future<$0.Empty> takeScreenshot_Pre($grpc.ServiceCall call,
+      $async.Future<$0.TakeScreenshotRequest> request) async {
+    return takeScreenshot(call, await request);
+  }
+
   $async.Future<$0.Empty> debug_Pre(
       $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return debug(call, await request);
@@ -770,5 +794,7 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.HandlePermissionRequest request);
   $async.Future<$0.Empty> setLocationAccuracy(
       $grpc.ServiceCall call, $0.SetLocationAccuracyRequest request);
+  $async.Future<$0.Empty> takeScreenshot(
+      $grpc.ServiceCall call, $0.TakeScreenshotRequest request);
   $async.Future<$0.Empty> debug($grpc.ServiceCall call, $0.Empty request);
 }

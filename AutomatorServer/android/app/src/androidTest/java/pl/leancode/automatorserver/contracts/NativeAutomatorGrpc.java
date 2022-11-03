@@ -945,6 +945,37 @@ public final class NativeAutomatorGrpc {
     return getSetLocationAccuracyMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getTakeScreenshotMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "takeScreenshot",
+      requestType = pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.class,
+      responseType = pl.leancode.automatorserver.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest,
+      pl.leancode.automatorserver.contracts.Contracts.Empty> getTakeScreenshotMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest, pl.leancode.automatorserver.contracts.Contracts.Empty> getTakeScreenshotMethod;
+    if ((getTakeScreenshotMethod = NativeAutomatorGrpc.getTakeScreenshotMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getTakeScreenshotMethod = NativeAutomatorGrpc.getTakeScreenshotMethod) == null) {
+          NativeAutomatorGrpc.getTakeScreenshotMethod = getTakeScreenshotMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest, pl.leancode.automatorserver.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "takeScreenshot"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  pl.leancode.automatorserver.contracts.Contracts.Empty.getDefaultInstance()))
+              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("takeScreenshot"))
+              .build();
+        }
+      }
+    }
+    return getTakeScreenshotMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<pl.leancode.automatorserver.contracts.Contracts.Empty,
       pl.leancode.automatorserver.contracts.Contracts.Empty> getDebugMethod;
 
@@ -1251,6 +1282,13 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public void takeScreenshot(pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getTakeScreenshotMethod(), responseObserver);
+    }
+
+    /**
+     */
     public void debug(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDebugMethod(), responseObserver);
@@ -1468,6 +1506,13 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest,
                 pl.leancode.automatorserver.contracts.Contracts.Empty>(
                   this, METHODID_SET_LOCATION_ACCURACY)))
+          .addMethod(
+            getTakeScreenshotMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest,
+                pl.leancode.automatorserver.contracts.Contracts.Empty>(
+                  this, METHODID_TAKE_SCREENSHOT)))
           .addMethod(
             getDebugMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1750,6 +1795,14 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public void takeScreenshot(pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getTakeScreenshotMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
     public void debug(pl.leancode.automatorserver.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
@@ -1994,6 +2047,13 @@ public final class NativeAutomatorGrpc {
     public pl.leancode.automatorserver.contracts.Contracts.Empty setLocationAccuracy(pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSetLocationAccuracyMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public pl.leancode.automatorserver.contracts.Contracts.Empty takeScreenshot(pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getTakeScreenshotMethod(), getCallOptions(), request);
     }
 
     /**
@@ -2275,6 +2335,14 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> takeScreenshot(
+        pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getTakeScreenshotMethod(), getCallOptions()), request);
+    }
+
+    /**
+     */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.automatorserver.contracts.Contracts.Empty> debug(
         pl.leancode.automatorserver.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
@@ -2312,7 +2380,8 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_IS_PERMISSION_DIALOG_VISIBLE = 27;
   private static final int METHODID_HANDLE_PERMISSION_DIALOG = 28;
   private static final int METHODID_SET_LOCATION_ACCURACY = 29;
-  private static final int METHODID_DEBUG = 30;
+  private static final int METHODID_TAKE_SCREENSHOT = 30;
+  private static final int METHODID_DEBUG = 31;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2451,6 +2520,10 @@ public final class NativeAutomatorGrpc {
           serviceImpl.setLocationAccuracy((pl.leancode.automatorserver.contracts.Contracts.SetLocationAccuracyRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
           break;
+        case METHODID_TAKE_SCREENSHOT:
+          serviceImpl.takeScreenshot((pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
+          break;
         case METHODID_DEBUG:
           serviceImpl.debug((pl.leancode.automatorserver.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.automatorserver.contracts.Contracts.Empty>) responseObserver);
@@ -2546,6 +2619,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getIsPermissionDialogVisibleMethod())
               .addMethod(getHandlePermissionDialogMethod())
               .addMethod(getSetLocationAccuracyMethod())
+              .addMethod(getTakeScreenshotMethod())
               .addMethod(getDebugMethod())
               .build();
         }

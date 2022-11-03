@@ -10527,6 +10527,704 @@ public final class Contracts {
 
   }
 
+  public interface TakeScreenshotRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.TakeScreenshotRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string appId = 1;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 1;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
+
+    /**
+     * <code>string filename = 2;</code>
+     * @return The filename.
+     */
+    java.lang.String getFilename();
+    /**
+     * <code>string filename = 2;</code>
+     * @return The bytes for filename.
+     */
+    com.google.protobuf.ByteString
+        getFilenameBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.TakeScreenshotRequest}
+   */
+  public static final class TakeScreenshotRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.TakeScreenshotRequest)
+      TakeScreenshotRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TakeScreenshotRequest.newBuilder() to construct.
+    private TakeScreenshotRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TakeScreenshotRequest() {
+      appId_ = "";
+      filename_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new TakeScreenshotRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TakeScreenshotRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TakeScreenshotRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.class, pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.Builder.class);
+    }
+
+    public static final int APPID_FIELD_NUMBER = 1;
+    private volatile java.lang.Object appId_;
+    /**
+     * <code>string appId = 1;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        appId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string appId = 1;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        appId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int FILENAME_FIELD_NUMBER = 2;
+    private volatile java.lang.Object filename_;
+    /**
+     * <code>string filename = 2;</code>
+     * @return The filename.
+     */
+    @java.lang.Override
+    public java.lang.String getFilename() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        filename_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string filename = 2;</code>
+     * @return The bytes for filename.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getFilenameBytes() {
+      java.lang.Object ref = filename_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        filename_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, appId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filename_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, filename_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, appId_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(filename_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, filename_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest other = (pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest) obj;
+
+      if (!getAppId()
+          .equals(other.getAppId())) return false;
+      if (!getFilename()
+          .equals(other.getFilename())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + APPID_FIELD_NUMBER;
+      hash = (53 * hash) + getAppId().hashCode();
+      hash = (37 * hash) + FILENAME_FIELD_NUMBER;
+      hash = (53 * hash) + getFilename().hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.TakeScreenshotRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.TakeScreenshotRequest)
+        pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TakeScreenshotRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TakeScreenshotRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.class, pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        appId_ = "";
+
+        filename_ = "";
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_TakeScreenshotRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest result = new pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest(this);
+        result.appId_ = appId_;
+        result.filename_ = filename_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest.getDefaultInstance()) return this;
+        if (!other.getAppId().isEmpty()) {
+          appId_ = other.appId_;
+          onChanged();
+        }
+        if (!other.getFilename().isEmpty()) {
+          filename_ = other.filename_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                appId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 10
+              case 18: {
+                filename_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+
+      private java.lang.Object appId_ = "";
+      /**
+       * <code>string appId = 1;</code>
+       * @return The appId.
+       */
+      public java.lang.String getAppId() {
+        java.lang.Object ref = appId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          appId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @return The bytes for appId.
+       */
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        java.lang.Object ref = appId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          appId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        
+        appId_ = getDefaultInstance().getAppId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 1;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object filename_ = "";
+      /**
+       * <code>string filename = 2;</code>
+       * @return The filename.
+       */
+      public java.lang.String getFilename() {
+        java.lang.Object ref = filename_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          filename_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string filename = 2;</code>
+       * @return The bytes for filename.
+       */
+      public com.google.protobuf.ByteString
+          getFilenameBytes() {
+        java.lang.Object ref = filename_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          filename_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string filename = 2;</code>
+       * @param value The filename to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFilename(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string filename = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFilename() {
+        
+        filename_ = getDefaultInstance().getFilename();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string filename = 2;</code>
+       * @param value The bytes for filename to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFilenameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        filename_ = value;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.TakeScreenshotRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.TakeScreenshotRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TakeScreenshotRequest>
+        PARSER = new com.google.protobuf.AbstractParser<TakeScreenshotRequest>() {
+      @java.lang.Override
+      public TakeScreenshotRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<TakeScreenshotRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TakeScreenshotRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.TakeScreenshotRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface SelectorOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.Selector)
       com.google.protobuf.MessageOrBuilder {
@@ -15699,6 +16397,11 @@ public final class Contracts {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_PermissionDialogVisibleResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_TakeScreenshotRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_TakeScreenshotRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_Selector_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -15751,75 +16454,78 @@ public final class Contracts {
       "ARSE\020\000\022\010\n\004FINE\020\001\"7\n\036PermissionDialogVisi" +
       "bleRequest\022\025\n\rtimeoutMillis\030\001 \001(\004\"2\n\037Per" +
       "missionDialogVisibleResponse\022\017\n\007visible\030" +
-      "\001 \001(\010\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n" +
-      "\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textContai" +
-      "ns\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n" +
-      "\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034conten" +
-      "tDescriptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032con" +
-      "tentDescriptionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nre" +
-      "sourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210" +
-      "\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(" +
-      "\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_te" +
-      "xtStartsWithB\017\n\r_textContainsB\014\n\n_classN" +
-      "ameB\025\n\023_contentDescriptionB\037\n\035_contentDe" +
-      "scriptionStartsWithB\035\n\033_contentDescripti" +
-      "onContainsB\r\n\013_resourceIdB\013\n\t_instanceB\n" +
-      "\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nNativ" +
-      "eView\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032" +
-      "\n\022contentDescription\030\003 \001(\t\022\017\n\007focused\030\004 " +
-      "\001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005" +
-      "\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applicationPac" +
-      "kage\030\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patrol.Na" +
-      "tiveView\"]\n\014Notification\022\024\n\007appName\030\001 \001(" +
-      "\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013" +
-      "\n\003raw\030\004 \001(\tB\n\n\010_appName2\254\016\n\017NativeAutoma" +
-      "tor\0226\n\tconfigure\022\030.patrol.ConfigureReque" +
-      "st\032\r.patrol.Empty\"\000\022+\n\tpressHome\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBack\022\r." +
-      "patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pressRe" +
-      "centApps\022\r.patrol.Empty\032\r.patrol.Empty\"\000" +
-      "\0227\n\025doublePressRecentApps\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0222\n\007openApp\022\026.patrol.Op" +
-      "enAppRequest\032\r.patrol.Empty\"\000\022F\n\021openQui" +
-      "ckSettings\022 .patrol.OpenQuickSettingsReq" +
-      "uest\032\r.patrol.Empty\"\000\022Q\n\016getNativeViews\022" +
-      "\035.patrol.GetNativeViewsRequest\032\036.patrol." +
-      "GetNativeViewsResponse\"\000\022*\n\003tap\022\022.patrol" +
-      ".TapRequest\032\r.patrol.Empty\"\000\0220\n\tdoubleTa" +
-      "p\022\022.patrol.TapRequest\032\r.patrol.Empty\"\000\0226" +
-      "\n\tenterText\022\030.patrol.EnterTextRequest\032\r." +
-      "patrol.Empty\"\000\022.\n\005swipe\022\024.patrol.SwipeRe" +
-      "quest\032\r.patrol.Empty\"\000\0224\n\022enableAirplane" +
-      "Mode\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0225\n\023" +
-      "disableAirplaneMode\022\r.patrol.Empty\032\r.pat" +
-      "rol.Empty\"\000\022,\n\nenableWiFi\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\022-\n\013disableWiFi\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\0220\n\016enableCellul" +
-      "ar\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017di" +
-      "sableCellular\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\0221\n\017enableBluetooth\022\r.patrol.Empty\032" +
-      "\r.patrol.Empty\"\000\0222\n\020disableBluetooth\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\022:\n\016enableDa" +
-      "rkMode\022\027.patrol.DarkModeRequest\032\r.patrol" +
-      ".Empty\"\000\022;\n\017disableDarkMode\022\027.patrol.Dar" +
-      "kModeRequest\032\r.patrol.Empty\"\000\0223\n\021openNot" +
-      "ifications\022\r.patrol.Empty\032\r.patrol.Empty" +
-      "\"\000\0224\n\022closeNotifications\022\r.patrol.Empty\032" +
-      "\r.patrol.Empty\"\000\022:\n\030closeHeadsUpNotifica" +
-      "tion\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022W\n\020" +
-      "getNotifications\022\037.patrol.GetNotificatio" +
-      "nsRequest\032 .patrol.GetNotificationsRespo" +
-      "nse\"\000\022F\n\021tapOnNotification\022 .patrol.TapO" +
-      "nNotificationRequest\032\r.patrol.Empty\"\000\022n\n" +
-      "\031isPermissionDialogVisible\022&.patrol.Perm" +
-      "issionDialogVisibleRequest\032\'.patrol.Perm" +
-      "issionDialogVisibleResponse\"\000\022J\n\026handleP" +
-      "ermissionDialog\022\037.patrol.HandlePermissio" +
-      "nRequest\032\r.patrol.Empty\"\000\022J\n\023setLocation" +
-      "Accuracy\022\".patrol.SetLocationAccuracyReq" +
-      "uest\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol." +
-      "Empty\032\r.patrol.Empty\"\000B\'\n%pl.leancode.au" +
-      "tomatorserver.contractsb\006proto3"
+      "\001 \001(\010\"8\n\025TakeScreenshotRequest\022\r\n\005appId\030" +
+      "\001 \001(\t\022\020\n\010filename\030\002 \001(\t\"\236\004\n\010Selector\022\021\n\004" +
+      "text\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsWith\030\002 \001(\tH" +
+      "\001\210\001\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001\001\022\026\n\tclass" +
+      "Name\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDescription\030\005 " +
+      "\001(\tH\004\210\001\001\022)\n\034contentDescriptionStartsWith" +
+      "\030\006 \001(\tH\005\210\001\001\022\'\n\032contentDescriptionContain" +
+      "s\030\007 \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n" +
+      "\010instance\030\t \001(\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210" +
+      "\001\001\022\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210" +
+      "\001\001B\007\n\005_textB\021\n\017_textStartsWithB\017\n\r_textC" +
+      "ontainsB\014\n\n_classNameB\025\n\023_contentDescrip" +
+      "tionB\037\n\035_contentDescriptionStartsWithB\035\n" +
+      "\033_contentDescriptionContainsB\r\n\013_resourc" +
+      "eIdB\013\n\t_instanceB\n\n\010_enabledB\n\n\010_focused" +
+      "B\006\n\004_pkg\"\327\001\n\nNativeView\022\021\n\tclassName\030\001 \001" +
+      "(\t\022\014\n\004text\030\002 \001(\t\022\032\n\022contentDescription\030\003" +
+      " \001(\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022" +
+      "\n\nchildCount\030\006 \001(\005\022\024\n\014resourceName\030\007 \001(\t" +
+      "\022\032\n\022applicationPackage\030\010 \001(\t\022$\n\010children" +
+      "\030\t \003(\0132\022.patrol.NativeView\"]\n\014Notificati" +
+      "on\022\024\n\007appName\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022" +
+      "\017\n\007content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appNam" +
+      "e2\356\016\n\017NativeAutomator\0226\n\tconfigure\022\030.pat" +
+      "rol.ConfigureRequest\032\r.patrol.Empty\"\000\022+\n" +
+      "\tpressHome\022\r.patrol.Empty\032\r.patrol.Empty" +
+      "\"\000\022+\n\tpressBack\022\r.patrol.Empty\032\r.patrol." +
+      "Empty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empt" +
+      "y\032\r.patrol.Empty\"\000\0227\n\025doublePressRecentA" +
+      "pps\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007o" +
+      "penApp\022\026.patrol.OpenAppRequest\032\r.patrol." +
+      "Empty\"\000\022F\n\021openQuickSettings\022 .patrol.Op" +
+      "enQuickSettingsRequest\032\r.patrol.Empty\"\000\022" +
+      "Q\n\016getNativeViews\022\035.patrol.GetNativeView" +
+      "sRequest\032\036.patrol.GetNativeViewsResponse" +
+      "\"\000\022*\n\003tap\022\022.patrol.TapRequest\032\r.patrol.E" +
+      "mpty\"\000\0220\n\tdoubleTap\022\022.patrol.TapRequest\032" +
+      "\r.patrol.Empty\"\000\0226\n\tenterText\022\030.patrol.E" +
+      "nterTextRequest\032\r.patrol.Empty\"\000\022.\n\005swip" +
+      "e\022\024.patrol.SwipeRequest\032\r.patrol.Empty\"\000" +
+      "\0224\n\022enableAirplaneMode\022\r.patrol.Empty\032\r." +
+      "patrol.Empty\"\000\0225\n\023disableAirplaneMode\022\r." +
+      "patrol.Empty\032\r.patrol.Empty\"\000\022,\n\nenableW" +
+      "iFi\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022-\n\013d" +
+      "isableWiFi\022\r.patrol.Empty\032\r.patrol.Empty" +
+      "\"\000\0220\n\016enableCellular\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\0221\n\017disableCellular\022\r.patrol" +
+      ".Empty\032\r.patrol.Empty\"\000\0221\n\017enableBluetoo" +
+      "th\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\020di" +
+      "sableBluetooth\022\r.patrol.Empty\032\r.patrol.E" +
+      "mpty\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkMo" +
+      "deRequest\032\r.patrol.Empty\"\000\022;\n\017disableDar" +
+      "kMode\022\027.patrol.DarkModeRequest\032\r.patrol." +
+      "Empty\"\000\0223\n\021openNotifications\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\0224\n\022closeNotificatio" +
+      "ns\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022:\n\030cl" +
+      "oseHeadsUpNotification\022\r.patrol.Empty\032\r." +
+      "patrol.Empty\"\000\022W\n\020getNotifications\022\037.pat" +
+      "rol.GetNotificationsRequest\032 .patrol.Get" +
+      "NotificationsResponse\"\000\022F\n\021tapOnNotifica" +
+      "tion\022 .patrol.TapOnNotificationRequest\032\r" +
+      ".patrol.Empty\"\000\022n\n\031isPermissionDialogVis" +
+      "ible\022&.patrol.PermissionDialogVisibleReq" +
+      "uest\032\'.patrol.PermissionDialogVisibleRes" +
+      "ponse\"\000\022J\n\026handlePermissionDialog\022\037.patr" +
+      "ol.HandlePermissionRequest\032\r.patrol.Empt" +
+      "y\"\000\022J\n\023setLocationAccuracy\022\".patrol.SetL" +
+      "ocationAccuracyRequest\032\r.patrol.Empty\"\000\022" +
+      "@\n\016takeScreenshot\022\035.patrol.TakeScreensho" +
+      "tRequest\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.pat" +
+      "rol.Empty\032\r.patrol.Empty\"\000B\'\n%pl.leancod" +
+      "e.automatorserver.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -15927,20 +16633,26 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_PermissionDialogVisibleResponse_descriptor,
         new java.lang.String[] { "Visible", });
-    internal_static_patrol_Selector_descriptor =
+    internal_static_patrol_TakeScreenshotRequest_descriptor =
       getDescriptor().getMessageTypes().get(17);
+    internal_static_patrol_TakeScreenshotRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_TakeScreenshotRequest_descriptor,
+        new java.lang.String[] { "AppId", "Filename", });
+    internal_static_patrol_Selector_descriptor =
+      getDescriptor().getMessageTypes().get(18);
     internal_static_patrol_Selector_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Selector_descriptor,
         new java.lang.String[] { "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", "Text", "TextStartsWith", "TextContains", "ClassName", "ContentDescription", "ContentDescriptionStartsWith", "ContentDescriptionContains", "ResourceId", "Instance", "Enabled", "Focused", "Pkg", });
     internal_static_patrol_NativeView_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_patrol_NativeView_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_NativeView_descriptor,
         new java.lang.String[] { "ClassName", "Text", "ContentDescription", "Focused", "Enabled", "ChildCount", "ResourceName", "ApplicationPackage", "Children", });
     internal_static_patrol_Notification_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_patrol_Notification_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,
