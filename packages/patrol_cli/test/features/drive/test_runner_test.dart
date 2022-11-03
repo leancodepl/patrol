@@ -89,11 +89,11 @@ void main() {
 
         testRunner
           ..builder = (target, device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
+            await delay();
             actualLog.add('build $target ${device.id}');
           }
           ..executor = (target, device) async {
-            await Future<void>.delayed(Duration(seconds: 1));
+            await delay();
             actualLog.add('run $target ${device.id}');
           };
       });
