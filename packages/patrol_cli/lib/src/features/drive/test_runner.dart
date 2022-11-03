@@ -1,13 +1,15 @@
 import 'package:patrol_cli/src/features/drive/device.dart';
 
-typedef Test = Future<void> Function(Device device);
+typedef TestRunCallback = Future<void> Function(String target, Device device);
 
 /// Orchestrates running tests on devices.
 class TestRunner {
   final Map<String, Device> _devices = {};
-  final List<Test> _tests = [];
+  final List<String> _targets = [];
+  //final List<Test> _tests = [];
   bool _running = false;
 
+  /// Adds [device] to runner's internal list.
   void addDevice(Device device) {
     if (_running) {
       throw StateError('devices can only be added before run');
@@ -20,27 +22,28 @@ class TestRunner {
     _devices[device.id] = device;
   }
 
-  void addTest(Test test) {
+  /// Adds [target] (a Dart test file) to runner's internal list.
+  void addTarget(String target) {
     if (_running) {
       throw StateError('tests can only be added before run');
     }
-    _tests.add(test);
+    _targets.add(target);
   }
 
-  /// Runs all tests on all added devices.
+  /// Runs all test targets on on all added devices.
   ///
   /// Tests are run sequentially on a single device, but many devices can be
   /// attached at the same time, and thus many tests can be running at the same
   /// time.
-  Future<void> run() async {
+  Future<void> run(TestRunCallback cb) async {
     if (_running) {
       throw StateError('tests are already running');
     }
     if (_devices.isEmpty) {
       throw StateError('no devices to run tests on');
     }
-    if (_tests.isEmpty) {
-      throw StateError('no tests to run');
+    if (_targets.isEmpty) {
+      throw StateError('no test targets to run');
     }
 
     _running = true;
@@ -48,8 +51,8 @@ class TestRunner {
     final testRunsOnAllDevices = <Future<void>>[];
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
-        for (final test in _tests) {
-          await test(device);
+        for (final test in _targets) {
+          await cb(test, device);
         }
       }
 
