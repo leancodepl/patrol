@@ -1,12 +1,14 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/map.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/flutter_driver.dart';
+import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
@@ -26,6 +28,7 @@ class DriveCommandConfig with _$DriveCommandConfig {
     required Map<String, String> dartDefines,
     required String? packageName,
     required String? bundleId,
+    required int repeat,
   }) = _DriveCommandConfig;
 }
 
@@ -37,7 +40,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required TestRunner testRunner,
     required AndroidDriver androidDriver,
     required IOSDriver iosDriver,
-    required FlutterDriver flutterDriver,
+    required FlutterTool flutterTool,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
@@ -45,7 +48,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _testRunner = testRunner,
         _androidDriver = androidDriver,
         _iosDriver = iosDriver,
-        _flutterDriver = flutterDriver,
+        _flutterTool = flutterTool,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
 
@@ -103,6 +106,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         'wait',
         help: 'Seconds to wait after the test fails or succeeds.',
         defaultsTo: '0',
+      )
+      ..addOption(
+        'repeat',
+        abbr: 'n',
+        help: 'Repeat the test n times.',
+        defaultsTo: '1',
       );
   }
 
@@ -113,7 +122,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   final TestRunner _testRunner;
   final AndroidDriver _androidDriver;
   final IOSDriver _iosDriver;
-  final FlutterDriver _flutterDriver;
+  final FlutterTool _flutterTool;
   final Logger _logger;
 
   @override
@@ -166,6 +175,26 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
+    var repeat = 1;
+    try {
+      final repeatStr = argResults?['repeat'] as String? ?? '1';
+      repeat = int.parse(repeatStr);
+    } on FormatException {
+      throw const FormatException('`repeat` argument is not an int');
+    }
+
+    if (repeat < 1) {
+      throwToolExit('repeat count must not be smaller than 1');
+    }
+
+    if (repeat != 1) {
+      if (targets.length != 1) {
+        throwToolExit('only single test target runs can be repeated');
+      }
+
+      _logger.info('${basename(targets.single)} will be run $repeat times');
+    }
+
     final attachedDevices = await _deviceFinder.find(devices);
 
     return DriveCommandConfig(
@@ -183,6 +212,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }.withNullsRemoved(),
       packageName: packageName,
       bundleId: bundleId,
+      repeat: repeat,
     );
   }
 
@@ -209,7 +239,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    _flutterDriver.init(
+    _flutterTool.init(
       driver: config.driver,
       host: config.host,
       port: config.port,
@@ -225,16 +255,25 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           return;
         }
 
-        try {
-          await _flutterDriver.run(target, device);
-        } on FlutterDriverFailedException catch (err) {
-          exitCode = 1;
-          _logger
-            ..severe(err)
-            ..severe(
-              "See the logs above to learn what happened. If the logs above aren't "
-              "useful then it's a bug – please report it.",
-            );
+        await _flutterTool.build(target, device);
+
+        for (var i = 0; i < config.repeat; i++) {
+          if (_disposeScope.disposed) {
+            _logger.fine('Skipping running repeated $target ($i)...');
+            break;
+          }
+
+          try {
+            await _flutterTool.drive(target, device);
+          } on FlutterDriverFailedException catch (err) {
+            exitCode = 1;
+            _logger
+              ..severe(err)
+              ..severe(
+                "See the logs above to learn what happened. If the logs above aren't "
+                "useful then it's a bug – please report it.",
+              );
+          }
         }
       });
     }

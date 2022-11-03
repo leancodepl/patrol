@@ -133,7 +133,7 @@ class AndroidDriver {
         arguments: {envPortKey: port},
       );
 
-      process.listenStdOut(_logger.info).disposedBy(scope);
+      process.listenStdOut(_logger.fine).disposedBy(scope);
       process.listenStdErr(_logger.severe).disposedBy(scope);
       scope.addDispose(() async {
         final msg = process.kill()
