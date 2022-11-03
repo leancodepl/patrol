@@ -1,5 +1,8 @@
+// ignore_for_file: cascade_invocations
+
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
@@ -29,33 +32,12 @@ void main() {
   });
 
   group('TestRunner', () {
-    group('run()', () {
-      test('throws when no devices were added', () {
-        testRunner.addTarget('app_test.dart', builder: delay);
-
-        expect(() => testRunner.run((test, device) async {}), throwsStateError);
-      });
-
-      test('throws when no test targets were added', () {
-        testRunner.addDevice(device1);
-
-        expect(() => testRunner.run((test, device) async {}), throwsStateError);
-      });
-
-      test('throws when called while already running', () {
-        testRunner
-          ..addDevice(device1)
-          ..addTarget('app_test.dart', builder: delay);
-        unawaited(testRunner.run((target, device) async {}));
-
-        expect(
-          () => testRunner.run((target, device) async {}),
-          throwsStateError,
-        );
-      });
-    });
-
     group('addDevice()', () {
+      setUp(() {
+        testRunner.builder = (_, __) => delay();
+        testRunner.executor = (_, __) => delay();
+      });
+
       test('throws when trying to add already added device', () {
         testRunner.addDevice(device1);
         expect(() => testRunner.addDevice(device1), throwsStateError);
@@ -64,21 +46,23 @@ void main() {
       test('throws when trying to add while running', () {
         testRunner
           ..addDevice(device1)
-          ..addTarget('app_test.dart', builder: delay);
-        unawaited(
-          testRunner
-              .run((test, device) => Future.delayed(Duration(seconds: 1))),
-        );
+          ..addTarget('app_test.dart');
+        unawaited(testRunner.run());
 
         expect(() => testRunner.addDevice(device1), throwsStateError);
       });
     });
 
     group('addTarget()', () {
+      setUp(() {
+        testRunner.builder = (_, __) => delay();
+        testRunner.executor = (_, __) => delay();
+      });
+
       test('throws when trying to add already added target', () {
-        testRunner.addTarget('app_test.dart', builder: delay);
+        testRunner.addTarget('app_test.dart');
         expect(
-          () => testRunner.addTarget('app_test.dart', builder: delay),
+          () => testRunner.addTarget('app_test.dart'),
           throwsStateError,
         );
       });
@@ -86,16 +70,247 @@ void main() {
       test('throws when trying to add while running', () {
         testRunner
           ..addDevice(device1)
-          ..addTarget('app_test.dart', builder: delay);
-        unawaited(
-          testRunner
-              .run((test, device) => Future.delayed(Duration(seconds: 1))),
-        );
+          ..addTarget('app_test.dart');
+        unawaited(testRunner.run());
 
         expect(
-          () => testRunner.addTarget('login_test.dart', builder: delay),
+          () => testRunner.addTarget('login_test.dart'),
           throwsStateError,
         );
+      });
+    });
+
+    group('run()', () {
+      late List<String> actualLog;
+      setUp(() {
+        actualLog = [];
+
+        testRunner
+          ..builder = (target, device) async {
+            await Future<void>.delayed(Duration(seconds: 1));
+            actualLog.add('build $target ${device.id}');
+          }
+          ..executor = (target, device) async {
+            await Future<void>.delayed(Duration(seconds: 1));
+            actualLog.add('run $target ${device.id}');
+          };
+      });
+
+      test('throws when no devices were added', () {
+        testRunner.addTarget('app_test.dart');
+
+        expect(() => testRunner.run(), throwsStateError);
+      });
+
+      test('throws when no test targets were added', () {
+        testRunner.addDevice(device1);
+
+        expect(() => testRunner.run(), throwsStateError);
+      });
+
+      test('throws when called while already running', () {
+        testRunner
+          ..addDevice(device1)
+          ..addTarget('app_test.dart');
+        unawaited(testRunner.run());
+
+        expect(
+          () => testRunner.run(),
+          throwsStateError,
+        );
+      });
+
+      test('runs tests sequentially on single device', () async {
+        fakeAsync((fakeAsync) {
+          final log = <String>[];
+
+          testRunner
+            ..builder = (target, device) async {
+              await Future<void>.delayed(Duration(seconds: 1));
+              log.add('build $target ${device.id}');
+            }
+            ..executor = (target, device) async {
+              await Future<void>.delayed(Duration(seconds: 1));
+              log.add('run $target ${device.id}');
+            };
+
+          testRunner
+            ..addDevice(device1)
+            ..addTarget('A')
+            ..addTarget('B')
+            ..addTarget('C');
+
+          expect(log, equals(<String>[]));
+          testRunner.run();
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expect(log, equals(['build A emulator-5554']));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expect(log, equals(['build A emulator-5554', 'run A emulator-5554']));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expect(
+            log,
+            equals([
+              'build A emulator-5554',
+              'run A emulator-5554',
+              'build B emulator-5554',
+            ]),
+          );
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expect(
+            log,
+            equals([
+              'build A emulator-5554',
+              'run A emulator-5554',
+              'build B emulator-5554',
+              'run B emulator-5554',
+            ]),
+          );
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expect(
+            log,
+            equals([
+              'build A emulator-5554',
+              'run A emulator-5554',
+              'build B emulator-5554',
+              'run B emulator-5554',
+              'build C emulator-5554',
+            ]),
+          );
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expect(
+            log,
+            equals([
+              'build A emulator-5554',
+              'run A emulator-5554',
+              'build B emulator-5554',
+              'run B emulator-5554',
+              'build C emulator-5554',
+              'run C emulator-5554',
+            ]),
+          );
+        });
+      });
+
+      test('runs repeated tests sequentially on single device', () {
+        testRunner.repeats = 3;
+
+        fakeAsync((fakeAsync) {
+          testRunner
+            ..builder = (target, device) async {
+              await Future<void>.delayed(Duration(seconds: 1));
+              actualLog.add('build $target ${device.id}');
+            }
+            ..executor = (target, device) async {
+              await Future<void>.delayed(Duration(seconds: 1));
+              actualLog.add('run $target ${device.id}');
+            };
+
+          testRunner
+            ..addDevice(device1)
+            ..addTarget('A')
+            ..addTarget('B')
+            ..addTarget('C');
+
+          final expectedLog = <String>[];
+          expect(actualLog, expectedLog);
+          unawaited(testRunner.run());
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build A emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run A emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run A emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run A emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build B emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run B emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run B emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run B emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build C emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run C emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run C emulator-5554');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('run C emulator-5554');
+          expect(actualLog, equals(expectedLog));
+        });
+      });
+
+      test('runs tests simultaneously on multiple devices', () {
+        fakeAsync((fakeAsync) {
+          testRunner
+            ..addDevice(device1)
+            ..addDevice(device2)
+            ..addTarget('A')
+            ..addTarget('B')
+            ..addTarget('C');
+
+          final expectedLog = <String>[];
+          expect(actualLog, equals(<String>[]));
+          unawaited(testRunner.run());
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog
+              .addAll(['build A emulator-5554', 'build A emulator-5556']);
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.addAll(['run A emulator-5554', 'run A emulator-5556']);
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog
+              .addAll(['build B emulator-5554', 'build B emulator-5556']);
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.addAll(['run B emulator-5554', 'run B emulator-5556']);
+          expect(actualLog, expectedLog);
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog
+              .addAll(['build C emulator-5554', 'build C emulator-5556']);
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.addAll(['run C emulator-5554', 'run C emulator-5556']);
+          expect(actualLog, expectedLog);
+        });
       });
     });
   });

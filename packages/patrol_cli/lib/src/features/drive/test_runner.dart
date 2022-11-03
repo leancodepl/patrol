@@ -2,20 +2,19 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
-typedef TestRunCallback = Future<void> Function(String target, Device device);
+typedef _Callback = Future<void> Function(String target, Device device);
 
-class _TestTarget {
-  const _TestTarget(this.target, this.times, this.builder);
+// TODO: Use this
+class Result {
+  const Result({
+    required this.target,
+    required this.device,
+    required this.passed,
+  });
 
   final String target;
-  final int times;
-  final Future<void> Function() builder;
-
-  @override
-  bool operator ==(Object o) => o is _TestTarget && target == o.target;
-
-  @override
-  int get hashCode => target.hashCode;
+  final Device device;
+  final bool passed;
 }
 
 /// Orchestrates running tests on devices.
@@ -27,11 +26,20 @@ class TestRunner extends Disposable {
   TestRunner({required Logger logger}) : _logger = logger;
 
   final Map<String, Device> _devices = {};
-  final Set<_TestTarget> _targets = {};
+  final Set<String> _targets = {};
   bool _running = false;
   bool _disposed = false;
 
   final Logger _logger;
+
+  int _repeats = 1;
+  set repeats(int newValue) => _repeats = newValue;
+
+  _Callback? _builder;
+  set builder(_Callback newValue) => _builder = newValue;
+
+  _Callback? _executor;
+  set executor(_Callback newValue) => _executor = newValue;
 
   /// Adds [device] to runner's internal list.
   void addDevice(Device device) {
@@ -47,28 +55,16 @@ class TestRunner extends Disposable {
   }
 
   /// Adds [target] (a Dart test file) to runner's internal list.
-  ///
-  /// [builder] will be called before running the tests.
-  void addTarget(
-    String target, {
-    int times = 1,
-    required Future<void> Function() builder,
-  }) {
-    final testTarget = _TestTarget(target, times, builder);
-
+  void addTarget(String target) {
     if (_running) {
       throw StateError('tests can only be added before run');
     }
 
-    if (times < 1) {
-      throw StateError('times must be larger than 0');
-    }
-
-    if (_targets.contains(testTarget)) {
+    if (_targets.contains(target)) {
       throw StateError('target $target is already added');
     }
 
-    _targets.add(testTarget);
+    _targets.add(target);
   }
 
   /// Runs all test targets on on all added devices.
@@ -76,7 +72,7 @@ class TestRunner extends Disposable {
   /// Tests are run sequentially on a single device, but many devices can be
   /// attached at the same time, and thus many tests can be running at the same
   /// time.
-  Future<void> run(TestRunCallback runTest) async {
+  Future<void> run() async {
     if (_running) {
       throw StateError('tests are already running');
     }
@@ -87,22 +83,32 @@ class TestRunner extends Disposable {
       throw StateError('no test targets to run');
     }
 
+    final builder = _builder;
+    if (builder == null) {
+      throw StateError('builder is null');
+    }
+
+    final executor = _executor;
+    if (executor == null) {
+      throw StateError('executor is null');
+    }
+
     _running = true;
 
     final testRunsOnAllDevices = <Future<void>>[];
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
-        for (final testTarget in _targets) {
-          await testTarget.builder();
+        for (final target in _targets) {
+          await builder(target, device);
 
-          for (var i = 0; i < testTarget.times; i++) {
+          for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
-              _logger.fine('Skipping running $testTarget on ${device.id}...');
+              _logger.fine('Skipping running $target on ${device.id}...');
               continue;
             }
-          }
 
-          await runTest(testTarget.target, device);
+            await executor(target, device);
+          }
         }
       }
 
