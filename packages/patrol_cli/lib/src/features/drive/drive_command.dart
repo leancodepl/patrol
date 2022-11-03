@@ -248,8 +248,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     );
 
     var exitCode = 0;
-    for (final target in config.targets) {
-      _testRunner.addTest((device) async {
+    config.targets.forEach(_testRunner.addTarget);
+
+/*       _testRunner.addTest((device) async {
         if (_disposeScope.disposed) {
           _logger.fine('Skipping running $target...');
           return;
@@ -275,10 +276,37 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
               );
           }
         }
-      });
+      }); 
     }
+    */
 
-    await _testRunner.run();
+    await _testRunner.run((target, device) async {
+      if (_disposeScope.disposed) {
+        _logger.fine('Skipping running $target...');
+        return;
+      }
+
+      await _flutterTool.build(target, device);
+
+      for (var i = 0; i < config.repeat; i++) {
+        if (_disposeScope.disposed) {
+          _logger.fine('Skipping running repeated $target ($i)...');
+          break;
+        }
+
+        try {
+          await _flutterTool.drive(target, device);
+        } on FlutterDriverFailedException catch (err) {
+          exitCode = 1;
+          _logger
+            ..severe(err)
+            ..severe(
+              "See the logs above to learn what happened. If the logs above aren't "
+              "useful then it's a bug – please report it.",
+            );
+        }
+      }
+    });
 
     return exitCode;
   }
