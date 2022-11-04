@@ -104,6 +104,7 @@ void main() {
     );
   });
 
+  // See: https://github.com/flutter/flutter/issues/114063
   patrolTest(
     'never settles when an invisible child of InexedStack is requesting frames',
     ($) async {
@@ -128,6 +129,47 @@ void main() {
           ),
         ),
       );
+    },
+  );
+
+  patrolTest(
+    'settles even though an async dialog is scheduled to show',
+    ($) async {
+      await $.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                return TextButton(
+                  onPressed: () async {
+                    await Future<void>.delayed(const Duration(seconds: 1));
+
+                    await showDialog<void>(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Dialog title'),
+                          actions: [
+                            TextButton(
+                              onPressed: Navigator.of(context).pop,
+                              child: const Text('Hide dialog'),
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Text('Open dialog'),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      await $('Open dialog').tap();
+      await $('Hide dialog').tap();
+      expect($('Dialog title'), findsNothing);
     },
   );
 }
