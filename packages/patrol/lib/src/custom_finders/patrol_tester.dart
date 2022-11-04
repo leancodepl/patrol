@@ -171,6 +171,8 @@ class PatrolTester {
     Duration? settleTimeout,
   }) {
     return TestAsyncUtils.guard(() async {
+      await pump();
+
       final resolvedFinder = await waitUntilVisible(
         finder,
         timeout: visibleTimeout,
@@ -216,6 +218,8 @@ class PatrolTester {
     Duration? settleTimeout,
   }) {
     return TestAsyncUtils.guard(() async {
+      await pump();
+
       final resolvedFinder = await waitUntilVisible(
         finder,
         timeout: visibleTimeout,
@@ -322,6 +326,8 @@ class PatrolTester {
     bool? andSettle,
   }) {
     return TestAsyncUtils.guard(() async {
+      await pump();
+
       final viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
 
@@ -367,6 +373,8 @@ class PatrolTester {
     bool? andSettle,
   }) {
     return TestAsyncUtils.guard(() async {
+      await pump();
+
       final viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
 
@@ -412,6 +420,8 @@ class PatrolTester {
     ).waitUntilVisible();
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
+      await pump();
+
       Offset moveStep;
       switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
         case AxisDirection.up:
@@ -466,6 +476,8 @@ class PatrolTester {
     ).waitUntilVisible();
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
+      await pump();
+
       Offset moveStep;
       switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
         case AxisDirection.up:
