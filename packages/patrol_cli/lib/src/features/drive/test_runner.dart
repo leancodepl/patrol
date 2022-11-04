@@ -9,7 +9,7 @@ typedef _Callback = Future<void> Function(String target, Device device);
 /// Every test target can also be repeated R times, resulting in T * R * D test
 /// runs.
 ///
-/// Tests targets are run sequentially, not in parallel.
+/// Tests targets are run sequentially in the context of a single device.
 class TestRunner extends Disposable {
   TestRunner();
 
@@ -101,8 +101,8 @@ class TestRunner extends Disposable {
         }
       }
 
-      final futures = runTestsOnDevice();
-      testRunsOnAllDevices.add(futures);
+      final future = runTestsOnDevice();
+      testRunsOnAllDevices.add(future);
     }
 
     await Future.wait<void>(testRunsOnAllDevices);
