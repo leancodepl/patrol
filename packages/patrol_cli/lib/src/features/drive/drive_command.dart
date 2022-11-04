@@ -51,6 +51,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _flutterTool = flutterTool,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
+    _testRunner.disposedBy(parentDisposeScope);
 
     argParser
       ..addMultiOption(
@@ -218,8 +219,48 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   @override
   Future<int> execute(DriveCommandConfig config) async {
+    _flutterTool.init(
+      driver: config.driver,
+      host: config.host,
+      port: config.port,
+      flavor: config.flavor,
+      dartDefines: config.dartDefines,
+    );
+
+    var exitCode = 0;
+    _testRunner
+      ..builder = (target, device) async {
+        try {
+          await _flutterTool.build(target, device);
+        } catch (err) {
+          exitCode = 1;
+          _logger
+            ..severe(err)
+            ..severe(
+                'See the logs above to learn what happened. If the logs above '
+                "aren't useful then it's a bug – please report it.");
+        }
+      }
+      ..executor = (target, device) async {
+        for (var i = 0; i < config.repeat; i++) {
+          try {
+            await _flutterTool.drive(target, device);
+          } on FlutterDriverFailedException catch (err) {
+            exitCode = 1;
+            _logger
+              ..severe(err)
+              ..severe(
+                'See the logs above to learn what happened. If the logs above '
+                "aren't useful then it's a bug – please report it.",
+              );
+          }
+        }
+      }
+      ..repeats = config.repeat;
+
     for (final device in config.devices) {
       _testRunner.addDevice(device);
+      config.targets.forEach(_testRunner.addTarget);
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
@@ -237,45 +278,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           );
           break;
       }
-    }
-
-    _flutterTool.init(
-      driver: config.driver,
-      host: config.host,
-      port: config.port,
-      flavor: config.flavor,
-      dartDefines: config.dartDefines,
-    );
-
-    var exitCode = 0;
-    for (final target in config.targets) {
-      _testRunner.addTest((device) async {
-        if (_disposeScope.disposed) {
-          _logger.fine('Skipping running $target...');
-          return;
-        }
-
-        await _flutterTool.build(target, device);
-
-        for (var i = 0; i < config.repeat; i++) {
-          if (_disposeScope.disposed) {
-            _logger.fine('Skipping running repeated $target ($i)...');
-            break;
-          }
-
-          try {
-            await _flutterTool.drive(target, device);
-          } on FlutterDriverFailedException catch (err) {
-            exitCode = 1;
-            _logger
-              ..severe(err)
-              ..severe(
-                "See the logs above to learn what happened. If the logs above aren't "
-                "useful then it's a bug – please report it.",
-              );
-          }
-        }
-      });
     }
 
     await _testRunner.run();
