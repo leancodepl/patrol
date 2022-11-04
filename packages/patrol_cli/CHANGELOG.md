@@ -1,3 +1,8 @@
+## 0.7.6
+
+- Add `--repeat` argument to `patrol drive`, which makes flake detection easier
+  (#552)
+
 ## 0.7.5
 
 - Reenable terminal animations (#521)
