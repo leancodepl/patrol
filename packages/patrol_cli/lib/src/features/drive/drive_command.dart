@@ -223,7 +223,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     );
 
     var exitCode = 0;
+
     _testRunner
+      ..repeats = config.repeat
       ..builder = (target, device) async {
         try {
           await _flutterTool.build(target, device);
@@ -237,21 +239,18 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         }
       }
       ..executor = (target, device) async {
-        for (var i = 0; i < config.repeat; i++) {
-          try {
-            await _flutterTool.drive(target, device);
-          } on FlutterDriverFailedException catch (err) {
-            exitCode = 1;
-            _logger
-              ..severe(err)
-              ..severe(
-                'See the logs above to learn what happened. If the logs above '
-                "aren't useful then it's a bug – please report it.",
-              );
-          }
+        try {
+          await _flutterTool.drive(target, device);
+        } on FlutterDriverFailedException catch (err) {
+          exitCode = 1;
+          _logger
+            ..severe(err)
+            ..severe(
+              'See the logs above to learn what happened. If the logs above '
+              "aren't useful then it's a bug – please report it.",
+            );
         }
-      }
-      ..repeats = config.repeat;
+      };
 
     for (final device in config.devices) {
       _testRunner.addDevice(device);
