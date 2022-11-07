@@ -1,5 +1,6 @@
 library custom_finders;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
@@ -288,6 +289,24 @@ class PatrolFinder extends MatchFinder {
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilVisible({Duration? timeout}) {
     return tester.waitUntilVisible(this, timeout: timeout);
+  }
+
+  /// Returns a finder matching widget of type [T] which also fulfills
+  /// [predicate].
+  ///
+  /// See also:
+  /// * [CommonFinders.byWidgetPredicate]
+  PatrolFinder which<T extends Widget>(bool Function(T widget) predicate) {
+    return PatrolFinder(
+      finder: find.byWidgetPredicate((widget) {
+        if (widget is T) {
+          return predicate(widget);
+        } else {
+          return false;
+        }
+      }),
+      tester: tester,
+    );
   }
 
   /// If the first widget found by this finder is a [Text] or [RichText] widget,

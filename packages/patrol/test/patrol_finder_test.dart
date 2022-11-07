@@ -811,5 +811,60 @@ void main() {
         },
       );
     });
+
+    group('which()', () {
+      late int count;
+
+      setUp(() => count = 0);
+
+      final app = MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    Text('count: $count'),
+                    const ElevatedButton(
+                      onPressed: null,
+                      child: Text('Button'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => count++),
+                      style: ElevatedButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: const Text('Button'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      patrolTest('finds button by its active status', ($) async {
+        await $.pumpWidget(app);
+
+        await $('Button')
+            .which<ElevatedButton>((button) => button.onPressed != null)
+            .tap();
+
+        expect($('count: 1'), findsOneWidget);
+      });
+
+      patrolTest('finds button by its font size', ($) async {
+        await $.pumpWidget(app);
+
+        await $('Button')
+            .which<ElevatedButton>(
+              (button) => button.style?.textStyle?.resolve({})?.fontSize == 20,
+            )
+            .tap();
+
+        expect($('count: 1'), findsOneWidget);
+      });
+    });
   });
 }
