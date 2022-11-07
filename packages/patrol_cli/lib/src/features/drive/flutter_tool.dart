@@ -234,7 +234,7 @@ class FlutterTool {
   }) {
     String getApplicationBinaryPath() {
       if (platform == TargetPlatform.android) {
-        const prefix = 'build/app/outputs/flutter-apk';
+        final prefix = join('build', 'app', 'outputs', 'flutter-apk');
         if (flavor != null) {
           return join(prefix, 'app-${flavor.toLowerCase()}-debug.apk');
         } else {
