@@ -14,7 +14,7 @@ It can be used on its own or with [patrol_cli].
 ### Installation
 
 ```console
-$ dart pub add patrol
+$ dart pub add patrol --dev
 ```
 
 ### Accessing native platform features
