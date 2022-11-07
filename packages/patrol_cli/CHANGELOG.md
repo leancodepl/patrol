@@ -1,3 +1,7 @@
+## 0.7.6+1
+
+- Fix crashing on Windows (#574)
+
 ## 0.7.6
 
 - Add `--repeat` argument to `patrol drive`, which makes flake detection easier
