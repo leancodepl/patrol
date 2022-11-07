@@ -14,7 +14,8 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
       await $.native.takeScreenshot();
-      await $.native.takeScreenshot('another-screenshot.png');
+      await $.native.takeScreenshot('screenshot_2.png');
+      await $.native.takeScreenshot('screenshot_3.png');
     },
   );
 }

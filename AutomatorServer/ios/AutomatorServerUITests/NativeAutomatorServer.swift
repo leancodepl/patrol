@@ -365,6 +365,16 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
+  
+  func takeScreenshot(
+    request: Patrol_TakeScreenshotRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    return try await runCatching {
+      try await automator.takeScreenshot(name: request.filename)
+      return DefaultResponse()
+    }
+  }
 
   private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
     // TODO: Use an interceptor (like on Android)

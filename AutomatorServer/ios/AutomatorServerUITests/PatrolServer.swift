@@ -20,9 +20,9 @@ class PatrolServer {
     return Int(portStr)
   }()
 
-  init() {
+  init(testCase: XCTestCase) {
     self.port = passedPort ?? 8081
-    self.automator = Automator()
+    self.automator = Automator(testCase: testCase)
   }
 
   func start() async throws {

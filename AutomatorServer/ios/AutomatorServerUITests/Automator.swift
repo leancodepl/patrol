@@ -14,6 +14,12 @@ class Automator {
   }()
 
   private var timeout: TimeInterval = 10
+  
+  private let testCase: XCTestCase
+  
+  init(testCase: XCTestCase) {
+    self.testCase = testCase
+  }
 
   func configure(timeout: TimeInterval) {
     self.timeout = timeout
@@ -491,7 +497,19 @@ class Automator {
       }
     }
   }
-
+  
+  func takeScreenshot(name: String) async throws {
+    await runAction("takeScreenshot()") {
+      let screenshot = XCUIScreen.main.screenshot()
+      Logger.shared.i("screenshot taken")
+      let fullScreenshotAttachment = XCTAttachment(screenshot: screenshot)
+      fullScreenshotAttachment.lifetime = .keepAlways
+      fullScreenshotAttachment.name = name
+      self.testCase.add(fullScreenshotAttachment)
+    }
+  }
+  
+  
   // MARK: Private stuff
 
   /// Adapted from https://stackoverflow.com/q/47880395/7009800
