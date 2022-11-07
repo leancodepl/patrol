@@ -1,3 +1,7 @@
+## 0.7.2
+
+- Add `PatrolFinder.which()` (#571)
+
 ## 0.7.1
 
 - Add `andSettle` param to `PatrolFinder.scrollTo()` (#501)
