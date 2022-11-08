@@ -104,6 +104,7 @@ class FlutterTool {
           '${dartDefine.key}=${dartDefine.value}',
         ]
       ],
+      runInShell: true,
     );
 
     String kill() {
