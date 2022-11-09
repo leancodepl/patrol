@@ -157,10 +157,10 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     final devices = argResults?['device'] as List<String>? ?? [];
 
     final dartDefines = {
+      ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(
         args: argResults?['dart-define'] as List<String>? ?? [],
       ),
-      ..._dartDefinesReader.fromFile(),
     };
 
     for (final dartDefine in dartDefines.entries) {
