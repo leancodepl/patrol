@@ -32,13 +32,15 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   void initServiceExtensions() {
     super.initServiceExtensions();
 
-    registerServiceExtension(
-      name: 'patrol',
-      callback: (args) async {
-        print('Hello! Service extension called!');
-        return <String, String>{};
-      },
-    );
+    if (!kReleaseMode) {
+      registerServiceExtension(
+        name: 'patrol',
+        callback: (args) async {
+          print('Hello! Service extension called!');
+          return <String, String>{};
+        },
+      );
+    }
   }
 
   /// The singleton instance of this object.
