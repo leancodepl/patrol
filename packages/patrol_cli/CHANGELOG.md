@@ -1,3 +1,7 @@
+## 0.7.7+1
+
+- Fix `--dart-define`s being malformed (#589)
+
 ## 0.7.7
 
 - Add support for optional `.patrol.env` file where `--dart-define`s can be
