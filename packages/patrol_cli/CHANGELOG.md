@@ -1,3 +1,8 @@
+## 0.7.6+2
+
+- Fix crashing on Windows (#586)
+- Fix bug with tests running n^2 times instead of n times (#580)
+
 ## 0.7.6+1
 
 - Fix crashing on Windows (#574)
