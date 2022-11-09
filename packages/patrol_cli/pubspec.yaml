@@ -1,7 +1,7 @@
 name: patrol_cli
 description: >
   Command-line tool for Patrol, a powerful Flutter-native UI testing framework.
-version: 0.7.7
+version: 0.7.7+1
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
