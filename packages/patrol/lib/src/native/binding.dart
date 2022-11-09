@@ -28,6 +28,19 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     _instance = this;
   }
 
+  @override
+  void initServiceExtensions() {
+    super.initServiceExtensions();
+
+    registerServiceExtension(
+      name: 'patrol',
+      callback: (args) async {
+        print('Hello! Service extension called!');
+        return <String, String>{};
+      },
+    );
+  }
+
   /// The singleton instance of this object.
   ///
   /// Provides access to the features exposed by this class. The binding must be
