@@ -15,6 +15,7 @@ import 'package:patrol_cli/src/features/clean/clean_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
+import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
@@ -80,6 +81,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           integrationTestDir: _fs.directory('integration_test'),
           fs: _fs,
         ),
+        testRunner: TestRunner(),
         androidDriver: AndroidDriver(
           parentDisposeScope: _disposeScope,
           artifactsRepository: _artifactsRepository,
@@ -94,7 +96,10 @@ class PatrolCommandRunner extends CommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        testRunner: TestRunner(),
+        dartDefinesReader: DartDefinesReader(
+          projectRoot: _fs.currentDirectory,
+          fs: _fs,
+        ),
         logger: _logger,
       ),
     );

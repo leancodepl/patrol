@@ -3,7 +3,7 @@ import 'package:file/file.dart';
 import '../../common/tool_exit.dart';
 
 class TestFinder {
-  TestFinder({
+  const TestFinder({
     required Directory integrationTestDir,
     required FileSystem fs,
   })  : _integrationTestDirectory = integrationTestDir,

@@ -2,8 +2,15 @@
 
 ## Running a test many times
 
-Sometimes, you might want to run a test many times. In such case, we've got
-these one-liners for you:
+Sometimes, you might want to run a test many times. Patrol makes this easy:
+
+```bash
+$ patrol drive --target integration_test/my_test.dart --repeat 10
+```
+
+You can also use the one-liners below, but keep in mind that they build
+and test the app 10 times, while `patrol drive --repeat 10` would build every
+test target only once and run it 10 times.
 
 **Bash**
 
@@ -72,6 +79,16 @@ To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 
 ```bash
 $ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
+```
+
+Alternatively you can create a `.patrol.env` file in your project's root. Here's
+an example:
+
+```
+$ cat .patrol.env
+EMAIL=user@example.com
+PASSWORD=ny4ncat
+DISABLE_ANALYTICS=true
 ```
 
 ## Granting sensitive permission through the Settings app
