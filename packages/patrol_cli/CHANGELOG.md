@@ -1,3 +1,8 @@
+## 0.7.7
+
+- Add support for optional `.patrol.env` file where `--dart-define`s can be
+  stored to avoid typing them manually in `patrol drive` invocations (#585)
+
 ## 0.7.6+2
 
 - Fix crashing on Windows (#586)
