@@ -72,7 +72,6 @@ class FlutterTool {
     this.port = port;
     this.flavor = flavor;
     this.dartDefines = dartDefines;
-    _assertDartDefines(dartDefines);
 
     env = {
       envHostKey: host,
@@ -260,22 +259,5 @@ class FlutterTool {
       if (device != null) ...['--device-id', device],
       if (flavor != null) ...['--flavor', flavor],
     ];
-  }
-
-  static void _assertDartDefines(Map<String, String> dartDefines) {
-    for (final dartDefine in dartDefines.entries) {
-      final key = dartDefine.key;
-      final value = dartDefine.value;
-
-      if (key.contains(' ') || key.contains('=')) {
-        throw FormatException('--dart-define key "$value" contains whitespace');
-      }
-
-      if (value.contains(' ') || value.contains('=')) {
-        throw FormatException(
-          '--dart-define value "$value" contains whitespace or "="',
-        );
-      }
-    }
   }
 }
