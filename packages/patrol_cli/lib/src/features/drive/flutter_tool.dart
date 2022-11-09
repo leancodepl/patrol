@@ -100,7 +100,7 @@ class FlutterTool {
           if (device.real) '--no-simulator' else '--simulator',
         for (final dartDefine in {...env, ...dartDefines}.entries) ...[
           '--dart-define',
-          "${dartDefine.key}='${dartDefine.value}'",
+          '${dartDefine.key}=${dartDefine.value}',
         ]
       ],
       runInShell: true,
