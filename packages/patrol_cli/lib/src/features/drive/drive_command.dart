@@ -1,11 +1,12 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:logging/logging.dart';
-import 'package:patrol_cli/src/common/extensions/map.dart';
+import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
+import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
@@ -40,6 +41,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required AndroidDriver androidDriver,
     required IOSDriver iosDriver,
     required FlutterTool flutterTool,
+    required DartDefinesReader dartDefinesReader,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
@@ -48,6 +50,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _androidDriver = androidDriver,
         _iosDriver = iosDriver,
         _flutterTool = flutterTool,
+        _dartDefinesReader = dartDefinesReader,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
     _testRunner.disposedBy(parentDisposeScope);
@@ -123,6 +126,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   final AndroidDriver _androidDriver;
   final IOSDriver _iosDriver;
   final FlutterTool _flutterTool;
+  final DartDefinesReader _dartDefinesReader;
+
   final Logger _logger;
 
   @override
@@ -151,20 +156,15 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
     final devices = argResults?['device'] as List<String>? ?? [];
 
-    final cliDartDefines = argResults?['dart-define'] as List<String>? ?? [];
-
-    final dartDefines = <String, String>{};
-    for (final entry in cliDartDefines) {
-      final split = entry.split('=');
-      if (split.length != 2) {
-        throw FormatException('`dart-define` value $split is not valid');
-      }
-      dartDefines[split[0]] = split[1];
-    }
+    final dartDefines = {
+      ..._dartDefinesReader.fromCli(
+        args: argResults?['dart-define'] as List<String>? ?? [],
+      ),
+      ..._dartDefinesReader.fromFile(),
+    };
 
     for (final dartDefine in dartDefines.entries) {
-      _logger
-          .info('Passed --dart-define: ${dartDefine.key}=${dartDefine.value}');
+      _logger.info('Got --dart-define: ${dartDefine.key}=${dartDefine.value}');
     }
 
     final dynamic packageName = argResults?['package-name'];

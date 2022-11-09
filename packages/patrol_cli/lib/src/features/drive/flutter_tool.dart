@@ -4,7 +4,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
 import 'package:mason_logger/mason_logger.dart' show green, red;
 import 'package:path/path.dart' show absolute, basename, join;
-import 'package:patrol_cli/src/common/extensions/map.dart';
+import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 

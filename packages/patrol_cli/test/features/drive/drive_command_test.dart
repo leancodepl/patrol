@@ -5,6 +5,7 @@ import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
@@ -87,6 +88,10 @@ void main() {
         androidDriver: androidDriver,
         flutterTool: flutterTool,
         testRunner: TestRunner(),
+        dartDefinesReader: DartDefinesReader(
+          fs: fs,
+          projectRoot: fs.currentDirectory,
+        ),
         logger: Logger(''),
       );
     });
