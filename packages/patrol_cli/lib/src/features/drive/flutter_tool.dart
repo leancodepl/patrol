@@ -101,7 +101,7 @@ class FlutterTool {
           if (device.real) '--no-simulator' else '--simulator',
         for (final dartDefine in {...env, ...dartDefines}.entries) ...[
           '--dart-define',
-          '${dartDefine.key}=${dartDefine.value}',
+          "${dartDefine.key}='${dartDefine.value}'",
         ]
       ],
       runInShell: true,
@@ -268,9 +268,7 @@ class FlutterTool {
       final value = dartDefine.value;
 
       if (key.contains(' ') || key.contains('=')) {
-        throw FormatException(
-          '--dart-define key "$value" contains whitespace or "="',
-        );
+        throw FormatException('--dart-define key "$value" contains whitespace');
       }
 
       if (value.contains(' ') || value.contains('=')) {

@@ -12,17 +12,7 @@ class DartDefinesReader {
   final Directory _projectRoot;
   final FileSystem _fs;
 
-  Map<String, String> fromCli({required List<String> args}) {
-    final map = <String, String>{};
-    for (final arg in args) {
-      final parts = arg.splitFirst('=');
-      final key = parts.first;
-      final value = parts.elementAt(1);
-      map[key] = value;
-    }
-
-    return map;
-  }
+  Map<String, String> fromCli({required List<String> args}) => _parse(args);
 
   Map<String, String> fromFile() {
     final filePath = join(_projectRoot.path, '.patrol.env');
@@ -32,10 +22,20 @@ class DartDefinesReader {
       return {};
     }
 
+    final lines = file.readAsLinesSync()
+      ..removeWhere((line) => line.trim().isEmpty);
+    return _parse(lines);
+  }
+
+  Map<String, String> _parse(List<String> args) {
     final map = <String, String>{};
-    for (final line in file.readAsLinesSync()) {
-      final parts = line.splitFirst('=');
+    for (final arg in args) {
+      final parts = arg.splitFirst('=');
       final key = parts.first;
+      if (key.contains(' ')) {
+        throw FormatException('key "$key" contains whitespace');
+      }
+
       final value = parts.elementAt(1);
       map[key] = value;
     }
