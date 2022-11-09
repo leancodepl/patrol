@@ -74,6 +74,16 @@ To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 $ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
 ```
 
+Alternatively you can create a `.patrol.env` file in your project's root. Here's
+an example:
+
+```
+$ cat .patrol.env
+EMAIL=user@example.com
+PASSWORD=ny4ncat
+DISABLE_ANALYTICS=true
+```
+
 ## Granting sensitive permission through the Settings app
 
 Some particularly sensitive permissions (such as access to background location
