@@ -215,6 +215,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
             child: const Text('Open permissions screen'),
           ),
+          Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
