@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:vm_service/vm_service_io.dart' as vmsio;
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
@@ -41,6 +42,18 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         },
       );
     }
+  }
+
+  Future<void> pingDriver() async {
+    // TODO: We'll need the ID of its main isolate. We should be able to obtain
+    // it by making the driver call our service extension and give us isolate ID.
+
+    const driverVMServiceUri = 'TODO';
+
+    final vmService = await vmsio.vmServiceConnectUri(driverVMServiceUri);
+
+    // Call an extension that is registered in the driver
+    await vmService.callServiceExtension('pl.leancode.patrol.hello');
   }
 
   /// The singleton instance of this object.

@@ -11,14 +11,17 @@ Future<void> main() async {
   final vmServiceUrl = Platform.environment['VM_SERVICE_URL']!;
   print('vmServiceUrl: $vmServiceUrl');
 
+  // Call extension
   final vmService = driver.serviceClient;
-
   print('before callServiceExtension()');
   await vmService.callServiceExtension(
     'ext.flutter.patrol',
     isolateId: driver.appIsolate.id,
   );
   print('after callServiceExtension()');
+
+  // Register our extension
+  await vmService.registerService('ext.leancode.patrol.hello', 'Patrol');
 
   final jsonResult = await driver.requestData(
     null,
