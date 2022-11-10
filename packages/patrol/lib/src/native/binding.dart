@@ -18,6 +18,13 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     return _instance!;
   }
 
+  /// ID of the Isolate which the host driver script is running in.
+  ///
+  /// Has the form of e.g "isolates/1566121372315359".
+  late String driverIsolateId;
+
+  late String driverVMServiceWsUri;
+
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
   // available on the stable channel
   @override
@@ -37,23 +44,24 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       registerServiceExtension(
         name: 'patrol',
         callback: (args) async {
-          print('Hello! Service extension called!');
-          return <String, String>{};
+          print('Hello! Service extension called with args $args');
+          driverIsolateId = args['DRIVER_ISOLATE_ID']!;
+          driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
+          return <String, String>{'status': 'ok'};
         },
       );
     }
   }
 
   Future<void> pingDriver() async {
-    // TODO: We'll need the ID of its main isolate. We should be able to obtain
-    // it by making the driver call our service extension and give us isolate ID.
-
-    const driverVMServiceUri = 'TODO';
-
-    final vmService = await vmsio.vmServiceConnectUri(driverVMServiceUri);
+    final vmService = await vmsio.vmServiceConnectUri(driverVMServiceWsUri);
 
     // Call an extension that is registered in the driver
-    await vmService.callServiceExtension('pl.leancode.patrol.hello');
+    await vmService.callServiceExtension(
+      'pl.leancode.patrol.hello',
+      isolateId: driverIsolateId,
+      args: <String, String>{'MESSAGE': 'YOLO'},
+    );
   }
 
   /// The singleton instance of this object.

@@ -33,6 +33,12 @@ Future<void> main() async {
       await $.native.pressHome();
       await $.native.openApp();
 
+      print('WAIT STARTED');
+      await Future<void>.delayed(Duration(seconds: 60));
+      print('WAIT ENDED');
+
+      await PatrolBinding.ensureInitialized().pingDriver();
+
       expect($(#counterText).text, '1');
     },
   );

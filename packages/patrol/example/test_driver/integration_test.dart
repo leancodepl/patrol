@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter_driver/flutter_driver.dart';
 import 'package:integration_test/common.dart';
@@ -8,20 +10,41 @@ import 'package:integration_test/integration_test_driver.dart';
 /// Copied from [integrationDriver].
 Future<void> main() async {
   final driver = await FlutterDriver.connect();
-  final vmServiceUrl = Platform.environment['VM_SERVICE_URL']!;
-  print('vmServiceUrl: $vmServiceUrl');
 
-  // Call extension
-  final vmService = driver.serviceClient;
-  print('before callServiceExtension()');
-  await vmService.callServiceExtension(
-    'ext.flutter.patrol',
-    isolateId: driver.appIsolate.id,
-  );
-  print('after callServiceExtension()');
+  {
+    print('vmServiceUrl: ${Platform.environment['VM_SERVICE_URL']}');
 
-  // Register our extension
-  await vmService.registerService('ext.leancode.patrol.hello', 'Patrol');
+    // Call extension
+    final vmService = driver.serviceClient;
+    print('before callServiceExtension()');
+    final currentIsolateId = Service.getIsolateID(Isolate.current)!;
+    final serviceProtocolInfo = await Service.controlWebServer(enable: true);
+    final serverHttpUri = serviceProtocolInfo.serverUri!;
+    final serverWsUri = serviceProtocolInfo.serverWebSocketUri!;
+
+    print('currentIsolateId: $currentIsolateId');
+    print('serverUri: $serverHttpUri');
+    print('serverWebSocketUri: ${serviceProtocolInfo.serverWebSocketUri}');
+    await vmService.callServiceExtension(
+      'ext.flutter.patrol',
+      isolateId: driver.appIsolate.id,
+      args: <String, String>{
+        'DRIVER_ISOLATE_ID': currentIsolateId,
+        'DRIVER_VM_SERVICE_WS_URI': serverWsUri.toString(),
+        'DRIVER_VM_SERVICE_HTTP_URI': serverHttpUri.toString(),
+      },
+    );
+    print('after callServiceExtension()');
+
+    // Register our extension
+    await vmService.registerService('ext.leancode.patrol.hello', 'Patrol');
+    vmService.registerServiceCallback(
+      'ext.leancode.patrol.hello',
+      (args) async {
+        return <String, String>{'MSG': 'Hello from driver!'};
+      },
+    );
+  }
 
   final jsonResult = await driver.requestData(
     null,
