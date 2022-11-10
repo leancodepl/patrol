@@ -15,6 +15,8 @@ dependencies:
   fixnum: ^1.0.1
   flutter:
     sdk: flutter
+  flutter_driver:
+    sdk: flutter
   flutter_test:
     sdk: flutter
   freezed_annotation: ^2.1.0
