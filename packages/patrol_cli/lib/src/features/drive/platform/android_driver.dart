@@ -32,7 +32,6 @@ class AndroidDriver {
     required Device device,
     required String? flavor,
   }) async {
-    await _forwardPorts(port, device: device.id);
     await _installServer(device: device.id);
     await _installInstrumentation(device: device.id);
     await _runServer(device: device.id, port: port);
@@ -93,30 +92,6 @@ class AndroidDriver {
       }
 
       progress.complete('Installed instrumentation');
-    });
-  }
-
-  Future<void> _forwardPorts(String port, {String? device}) async {
-    await _disposeScope.run((scope) async {
-      final progress = _logger.progress('Forwarding ports');
-
-      try {
-        final cancel = await _adb.forwardPorts(
-          fromHost: int.parse(port),
-          toDevice: int.parse(port),
-          device: device,
-        );
-
-        scope.addDispose(() async {
-          await cancel();
-          _logger.fine('Stopped port forwarding');
-        });
-      } catch (err) {
-        progress.fail('Failed to forward ports');
-        rethrow;
-      }
-
-      progress.complete('Forwarded ports');
     });
   }
 

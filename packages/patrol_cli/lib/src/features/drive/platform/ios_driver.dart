@@ -32,63 +32,10 @@ class IOSDriver {
     required String? flavor,
   }) async {
     if (device.real) {
-      await _forwardPorts(port: port, deviceId: device.id);
       await _runServerOnDevice(device: device, port: port);
     } else {
       await _runServerOnSimulator(device: device, port: port);
     }
-  }
-
-  /// Forwards ports using iproxy.
-  Future<void> _forwardPorts({
-    required String port,
-    required String deviceId,
-  }) async {
-    final progress = _logger.progress('Forwarding ports');
-
-    try {
-      // See https://github.com/libimobiledevice/libusbmuxd/issues/103
-      final process = await Process.start(
-        'stdbuf',
-        [
-          '-i0',
-          '-o0',
-          '-e0',
-          'iproxy',
-          '$port:$port',
-          '--udid',
-          deviceId,
-        ],
-        runInShell: true,
-      );
-
-      _disposeScope.addDispose(() async {
-        process.kill();
-        _logger.fine('Killed iproxy');
-      });
-
-      final completer = Completer<void>();
-
-      process.listenStdOut(
-        (line) {
-          const trigger = 'waiting for connection';
-          if (line.contains(trigger) && !completer.isCompleted) {
-            completer.complete();
-          }
-        },
-      ).disposedBy(_disposeScope);
-
-      process
-          .listenStdErr((line) => _logger.warning('iproxy: $line'))
-          .disposedBy(_disposeScope);
-
-      await completer.future;
-    } catch (err) {
-      progress.fail('Failed to forward ports');
-      rethrow;
-    }
-
-    progress.complete('Forwarded ports');
   }
 
   Future<void> _runServerOnSimulator({
