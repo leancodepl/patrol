@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
-import '../config.dart';
+import 'config.dart';
 
 Future<void> main() async {
   late String mapsId;
@@ -18,10 +18,12 @@ Future<void> main() async {
   }
 
   patrolTest(
-    'counter state is the same after switching apps',
+    'takes a few screenshots',
     config: patrolConfig,
     nativeAutomation: true,
     ($) async {
+      await $.host.takeScreenshot(name: '1_before_run');
+
       await $.pumpWidgetAndSettle(ExampleApp());
 
       expect($(#counterText).text, '0');
@@ -29,9 +31,16 @@ Future<void> main() async {
       await $(FloatingActionButton).tap();
 
       await $.native.pressHome();
+      await $.host.takeScreenshot(name: '2_after_press_home_1');
+
       await $.native.openApp(appId: mapsId);
+      await $.host.takeScreenshot(name: '3_after_open_app_1');
+
       await $.native.pressHome();
+      await $.host.takeScreenshot(name: '4_after_press_home_2');
+
       await $.native.openApp();
+      await $.host.takeScreenshot(name: '5_after_open_app_2');
 
       expect($(#counterText).text, '1');
     },

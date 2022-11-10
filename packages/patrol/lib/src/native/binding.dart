@@ -71,8 +71,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   ///
   /// The screenshot is placed in [path], named [name], and has .png extension.
   Future<void> takeFlutterScreenshot({
-    String name = 'screenshot_1',
-    String path = 'screenshots',
+    required String name,
+    required String path,
   }) async {
     await vmService.callServiceExtension(
       'ext.leancode.patrol.screenshot',
