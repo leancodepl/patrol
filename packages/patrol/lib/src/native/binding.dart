@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:vm_service/vm_service_io.dart' as vmsio;
+import 'package:vm_service/vm_service.dart' as vm;
+import 'package:vm_service/vm_service_io.dart' as vmio;
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
@@ -23,8 +24,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Has the form of e.g "isolates/1566121372315359".
   late String driverIsolateId;
 
-  /// Address where the driver VM service lives.
-  late String driverVMServiceWsUri;
+  /// Dart Virtual Machine service (aka Dart Observatory server) where
+
+  late vm.VmService vmService;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
   // available on the stable channel
@@ -47,7 +49,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         callback: (args) async {
           print('Hello! Service extension called with args $args');
           driverIsolateId = args['DRIVER_ISOLATE_ID']!;
-          driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
+          final driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
+
+          vmService = await vmio.vmServiceConnectUri(driverVMServiceWsUri);
 
           return <String, String>{'status': 'ok'};
         },
@@ -56,13 +60,24 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   }
 
   Future<void> pingDriver() async {
-    final vmService = await vmsio.vmServiceConnectUri(driverVMServiceWsUri);
-
-    // Call an extension that is registered in the driver
     await vmService.callServiceExtension(
       'ext.leancode.patrol.hello',
       isolateId: driverIsolateId,
       args: <String, String>{'message': 'Hello from inside of the test!'},
+    );
+  }
+
+  /// Takes a screenshot using the `flutter screenshot` command.
+  ///
+  /// The screenshot is placed in [path], named [name], and has .png extension.
+  Future<void> takeFlutterScreenshot({
+    String name = 'screenshot_1',
+    String path = 'screenshots',
+  }) async {
+    await vmService.callServiceExtension(
+      'ext.leancode.patrol.screenshot',
+      isolateId: driverIsolateId,
+      args: <String, String>{'name': name, 'path': path},
     );
   }
 
