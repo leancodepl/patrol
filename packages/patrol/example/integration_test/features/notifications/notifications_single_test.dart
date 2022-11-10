@@ -17,9 +17,12 @@ void main() {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
-      await $.native.grantPermissionWhenInUse();
-
       await $(RegExp('someone liked')).tap();
+
+      if (await $.native.isPermissionDialogVisible()) {
+        print('Dialog is visible');
+        await $.native.grantPermissionWhenInUse();
+      }
 
       if (Platform.isIOS) {
         await $.native.closeHeadsUpNotification();
