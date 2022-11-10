@@ -46,18 +46,21 @@ Future<void> _initCommunication(FlutterDriver driver) async {
     final info = await developer.Service.controlWebServer(enable: true);
     final serverWsUri = info.serverWebSocketUri!;
 
+    // TODO: Forward with adb only if running on Android
     io.Process.runSync(
       'adb',
-      ['reverse', 'tcp:2137', 'tcp:${serverWsUri.port}'],
+      // TODO: What's the chance of host port being taken?
+      ['reverse', 'tcp:${serverWsUri.port}', 'tcp:${serverWsUri.port}'],
       runInShell: true,
     );
+    // TODO: forward with iproxy if running on physical iOS device
 
     await driver.serviceClient.callServiceExtension(
       'ext.flutter.patrol',
       isolateId: driver.appIsolate.id,
       args: <String, String>{
         'DRIVER_ISOLATE_ID': developer.Service.getIsolateID(Isolate.current)!,
-        'DRIVER_VM_SERVICE_WS_URI': serverWsUri.replace(port: 2137).toString(),
+        'DRIVER_VM_SERVICE_WS_URI': serverWsUri.toString(),
       },
     );
 
