@@ -1,3 +1,7 @@
+## Unreleased
+
+- Remove port forwarding, which wasn't needed for some time (#597)
+
 ## 0.7.7+1
 
 - Fix `--dart-define`s being malformed (#589)
