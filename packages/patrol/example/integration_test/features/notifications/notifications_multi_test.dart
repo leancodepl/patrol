@@ -17,9 +17,13 @@ void main() {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
-      await $.native.grantPermissionWhenInUse();
-
       await $(RegExp('someone liked')).tap(); // appears on top
+
+      if (await $.native.isPermissionDialogVisible()) {
+        print('Dialog is visible');
+        await $.native.grantPermissionWhenInUse();
+      }
+
       await $(RegExp('special offer')).tap(); // also appears on top
 
       if (Platform.isIOS) {
@@ -32,7 +36,7 @@ void main() {
       notifications.forEach($.log);
 
       expect(notifications.length, isNonZero);
-      await $.native.tapOnNotificationByIndex(notifications.length - 1);
+      await $.native.tapOnNotificationByIndex(1);
 
       await $.native.openNotifications();
       await $.native.tapOnNotificationBySelector(
