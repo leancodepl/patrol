@@ -28,14 +28,10 @@ Future<void> main() async {
 
       await $(FloatingActionButton).tap();
 
-      await $.native.pressHome();
-      await $.native.openApp(appId: mapsId);
-      await $.native.pressHome();
-      await $.native.openApp();
-
-      print('WAIT STARTED');
-      await Future<void>.delayed(Duration(seconds: 60));
-      print('WAIT ENDED');
+      // await $.native.pressHome();
+      // await $.native.openApp(appId: mapsId);
+      // await $.native.pressHome();
+      // await $.native.openApp();
 
       await PatrolBinding.ensureInitialized().pingDriver();
 

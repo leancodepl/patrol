@@ -47,6 +47,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           print('Hello! Service extension called with args $args');
           driverIsolateId = args['DRIVER_ISOLATE_ID']!;
           driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
+
           return <String, String>{'status': 'ok'};
         },
       );
@@ -58,7 +59,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
     // Call an extension that is registered in the driver
     await vmService.callServiceExtension(
-      'pl.leancode.patrol.hello',
+      'ext.leancode.patrol.hello',
       isolateId: driverIsolateId,
       args: <String, String>{'MESSAGE': 'YOLO'},
     );
