@@ -23,6 +23,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Has the form of e.g "isolates/1566121372315359".
   late String driverIsolateId;
 
+  /// Address where the driver VM service lives.
   late String driverVMServiceWsUri;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
@@ -61,7 +62,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     await vmService.callServiceExtension(
       'ext.leancode.patrol.hello',
       isolateId: driverIsolateId,
-      args: <String, String>{'MESSAGE': 'YOLO'},
+      args: <String, String>{'message': 'Hello from inside of the test!'},
     );
   }
 
