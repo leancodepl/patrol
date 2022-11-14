@@ -26,6 +26,9 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 ///    },
 /// );
 /// ```
+///
+/// [bindingType] specifies the binding to use. [bindingType] is ignored if
+/// [nativeAutomation] is false.
 @isTest
 void patrolTest(
   String description,
@@ -40,18 +43,17 @@ void patrolTest(
   BindingType bindingType = BindingType.patrol,
 }) {
   TestWidgetsFlutterBinding? binding;
-  switch (bindingType) {
-    case BindingType.patrol:
-      print('Initializing PatrolBinding...');
-      binding = PatrolBinding.ensureInitialized();
-      break;
-    case BindingType.integrationTest:
-      print('Initializing IntegrationTestWidgetsFlutterBinding...');
-      binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-      break;
-    case BindingType.none:
-      print('No bindings will be initialized');
-      break;
+  if (nativeAutomation) {
+    switch (bindingType) {
+      case BindingType.patrol:
+        binding = PatrolBinding.ensureInitialized();
+        break;
+      case BindingType.integrationTest:
+        binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        break;
+      case BindingType.none:
+        break;
+    }
   }
 
   HostAutomator? hostAutomator;
