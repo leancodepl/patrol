@@ -12,13 +12,29 @@ import 'package:integration_test/integration_test_driver.dart';
 import 'package:path/path.dart' show join;
 
 /// Adaptation of [integrationDriver] for Patrol's host-side capabilities.
+///
+/// Depends on `DRIVER_DEVICE_ID` and `DRIVER_DEVICE_OS` env variables to be
+/// set. They're automatically set by `patrol drive`, but can also be set
+/// manually.
 Future<void> patrolIntegrationDriver({
   Duration timeout = const Duration(minutes: 20),
   ResponseDataCallback? responseDataCallback = writeResponseData,
 }) async {
   final driver = await FlutterDriver.connect();
 
-  await _initCommunication(driver);
+  const deviceId = String.fromEnvironment('DRIVER_DEVICE_ID');
+  if (deviceId.isEmpty) {
+    print('Error: DRIVER_DEVICE_ID is not set');
+    io.exit(1);
+  }
+
+  const deviceOs = String.fromEnvironment('DRIVER_DEVICE_OS');
+  if (deviceOs.isEmpty) {
+    print('Error: DRIVER_DEVICE_OS is not set');
+    io.exit(1);
+  }
+
+  await _initCommunication(driver, deviceId: deviceId, deviceOs: deviceOs);
 
   final jsonResult = await driver.requestData(null, timeout: timeout);
   final response = Response.fromJson(jsonResult);
@@ -40,20 +56,36 @@ Future<void> patrolIntegrationDriver({
 /// Performs Patrol-specific setup to enable bidirectional communication between
 /// this test driver file (running on host) and the test target file (running on
 /// device).
-Future<void> _initCommunication(FlutterDriver driver) async {
+Future<void> _initCommunication(
+  FlutterDriver driver, {
+  required String deviceId,
+  required String deviceOs,
+}) async {
   {
     // Call extension
     final info = await developer.Service.controlWebServer(enable: true);
     final serverWsUri = info.serverWebSocketUri!;
 
-    // TODO: Forward with adb only if running on Android
-    io.Process.runSync(
-      'adb',
-      // TODO: What's the chance of host port being taken?
-      ['reverse', 'tcp:${serverWsUri.port}', 'tcp:${serverWsUri.port}'],
-      runInShell: true,
-    );
-    // TODO: forward with iproxy if running on physical iOS device
+    // TODO: What's the chance of host port being taken?
+    if (deviceOs == 'android') {
+      io.Process.runSync(
+        'adb',
+        [
+          ...['-s', deviceId],
+          ...['reverse', 'tcp:${serverWsUri.port}', 'tcp:${serverWsUri.port}'],
+        ],
+        runInShell: true,
+      );
+    } else if (deviceOs == 'ios') {
+      io.Process.runSync(
+        'iproxy',
+        [
+          ...['--udid', deviceId],
+          ...[serverWsUri.port.toString(), serverWsUri.port.toString()],
+        ],
+        runInShell: true,
+      );
+    }
 
     await driver.serviceClient.callServiceExtension(
       'ext.flutter.patrol',
@@ -100,7 +132,11 @@ Future<void> _initCommunication(FlutterDriver driver) async {
 
         final proccessResult = await io.Process.run(
           'flutter',
-          ['screenshot', '--out', join(screenshotPath, '$screenshotName.png')],
+          [
+            ...['--device', deviceId],
+            'screenshot',
+            ...['--out', join(screenshotPath, '$screenshotName.png')],
+          ],
           runInShell: true,
         );
 
