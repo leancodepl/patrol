@@ -10,7 +10,7 @@ import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 typedef _LoggerCallback = void Function(String);
 
 // ignore: avoid_print
-void _defaultPrintLogger(String message) => print('Patrol: $message');
+void _defaultPrintLogger(String message) => print('Patrol (native): $message');
 
 /// Thrown when a native action fails.
 class PatrolActionException implements Exception {
@@ -46,7 +46,7 @@ class NativeAutomator {
   NativeAutomator({
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
-    _LoggerCallback logger = _defaultPrintLogger,
+    void Function(String) logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
   })  : assert(

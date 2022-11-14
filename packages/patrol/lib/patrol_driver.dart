@@ -22,17 +22,19 @@ Future<void> patrolIntegrationDriver({
 }) async {
   final driver = await FlutterDriver.connect();
 
-  const deviceId = String.fromEnvironment('DRIVER_DEVICE_ID');
-  if (deviceId.isEmpty) {
+  final deviceId = io.Platform.environment['DRIVER_DEVICE_ID'];
+  if (deviceId == null || deviceId.isEmpty) {
     print('Error: DRIVER_DEVICE_ID is not set');
     io.exit(1);
   }
+  print('DRIVER_DEVICE_ID: $deviceId');
 
-  const deviceOs = String.fromEnvironment('DRIVER_DEVICE_OS');
-  if (deviceOs.isEmpty) {
+  final deviceOs = io.Platform.environment['DRIVER_DEVICE_OS'];
+  if (deviceOs == null || deviceOs.isEmpty) {
     print('Error: DRIVER_DEVICE_OS is not set');
     io.exit(1);
   }
+  print('DRIVER_DEVICE_OS: $deviceOs');
 
   await _initCommunication(driver, deviceId: deviceId, deviceOs: deviceOs);
 
@@ -85,6 +87,8 @@ Future<void> _initCommunication(
         ],
         runInShell: true,
       );
+    } else {
+      throw StateError('unknown device OS: $deviceOs');
     }
 
     await driver.serviceClient.callServiceExtension(
@@ -133,7 +137,7 @@ Future<void> _initCommunication(
         final proccessResult = await io.Process.run(
           'flutter',
           [
-            ...['--device', deviceId],
+            ...['--device-id', deviceId],
             'screenshot',
             ...['--out', join(screenshotPath, '$screenshotName.png')],
           ],
