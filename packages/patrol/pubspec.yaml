@@ -26,6 +26,7 @@ dependencies:
     sdk: flutter
   json_annotation: ^4.6.0
   meta: ^1.7.0
+  path: ^1.8.2
   protobuf: ^2.1.0
   vm_service: ^9.0.0
 
