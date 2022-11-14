@@ -10,6 +10,7 @@ import 'package:flutter_driver/flutter_driver.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test_driver.dart';
 import 'package:path/path.dart' show join;
+import 'package:vm_service/vm_service.dart' as vm;
 
 /// Adaptation of [integrationDriver] for Patrol's host-side capabilities.
 ///
@@ -36,7 +37,12 @@ Future<void> patrolIntegrationDriver({
   }
   print('DRIVER_DEVICE_OS: $deviceOs');
 
-  await _initCommunication(driver, deviceId: deviceId, deviceOs: deviceOs);
+  await _initCommunication(
+    vmService: driver.serviceClient,
+    appIsolateId: driver.appIsolate.id!,
+    deviceId: deviceId,
+    deviceOs: deviceOs,
+  );
 
   final jsonResult = await driver.requestData(null, timeout: timeout);
   final response = Response.fromJson(jsonResult);
@@ -58,8 +64,9 @@ Future<void> patrolIntegrationDriver({
 /// Performs Patrol-specific setup to enable bidirectional communication between
 /// this test driver file (running on host) and the test target file (running on
 /// device).
-Future<void> _initCommunication(
-  FlutterDriver driver, {
+Future<void> _initCommunication({
+  required vm.VmService vmService,
+  required String appIsolateId,
   required String deviceId,
   required String deviceOs,
 }) async {
@@ -68,7 +75,8 @@ Future<void> _initCommunication(
     final info = await developer.Service.controlWebServer(enable: true);
     final serverWsUri = info.serverWebSocketUri!;
 
-    // TODO: What's the chance of host port being taken?
+    // TODO(bartekpacia): What's the chance of host port being taken?
+    // TODO(bartekpacia): Improve error handling
     if (deviceOs == 'android') {
       io.Process.runSync(
         'adb',
@@ -79,21 +87,26 @@ Future<void> _initCommunication(
         runInShell: true,
       );
     } else if (deviceOs == 'ios') {
-      io.Process.runSync(
-        'iproxy',
-        [
-          ...['--udid', deviceId],
-          ...[serverWsUri.port.toString(), serverWsUri.port.toString()],
-        ],
-        runInShell: true,
-      );
+      // final process = await io.Process.start('iproxy',
+      //   [
+      //     ...['--udid', deviceId],
+      //     ...[serverWsUri.port.toString(), serverWsUri.port.toString()],
+      //   ],
+      //   runInShell: true,
+      // );
+      // process.stdout.listen( (event) => print('iproxy:
+      //   ${io.systemEncoding.decode(event)}'),
+      // );
+      // process.stderr.listen( (event) => print('iproxy:
+      //   ${io.systemEncoding.decode(event)}'),
+      // );
     } else {
       throw StateError('unknown device OS: $deviceOs');
     }
 
-    await driver.serviceClient.callServiceExtension(
+    await vmService.callServiceExtension(
       'ext.flutter.patrol',
-      isolateId: driver.appIsolate.id,
+      isolateId: appIsolateId,
       args: <String, String>{
         'DRIVER_ISOLATE_ID': developer.Service.getIsolateID(Isolate.current)!,
         'DRIVER_VM_SERVICE_WS_URI': serverWsUri.toString(),
