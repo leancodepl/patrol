@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -47,7 +49,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       registerServiceExtension(
         name: 'patrol',
         callback: (args) async {
-          print('Hello! Service extension called with args $args');
+          print('Service extension called with args $args');
           driverIsolateId = args['DRIVER_ISOLATE_ID']!;
           final driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
 
@@ -56,14 +58,16 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           return <String, String>{'status': 'ok'};
         },
       );
+      print('Registered service extension ext.flutter.patrol');
     }
   }
 
-  Future<void> pingDriver() async {
+  /// Sends [message] to the driver. Useful for debugging, otherwise useless.
+  Future<void> pingDriver(String message) async {
     await vmService.callServiceExtension(
       'ext.leancode.patrol.hello',
       isolateId: driverIsolateId,
-      args: <String, String>{'message': 'Hello from inside of the test!'},
+      args: <String, String>{'message': message},
     );
   }
 

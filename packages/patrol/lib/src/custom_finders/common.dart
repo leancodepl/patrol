@@ -14,6 +14,7 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 /// To customize the Patrol-specific configuration, set [config].
 ///
 /// ### Using the default [WidgetTester]
+///
 /// If you need to do something using Flutter's [WidgetTester], you can access
 /// it like this:
 ///
