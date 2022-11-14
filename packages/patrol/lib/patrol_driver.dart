@@ -87,6 +87,7 @@ Future<void> _initCommunication({
         runInShell: true,
       );
     } else if (deviceOs == 'ios') {
+      // FIXME: no way to do reverse port forwarding on real iOS devices
       // final process = await io.Process.start('iproxy',
       //   [
       //     ...['--udid', deviceId],
@@ -104,14 +105,23 @@ Future<void> _initCommunication({
       throw StateError('unknown device OS: $deviceOs');
     }
 
-    await vmService.callServiceExtension(
-      'ext.flutter.patrol',
-      isolateId: appIsolateId,
-      args: <String, String>{
-        'DRIVER_ISOLATE_ID': developer.Service.getIsolateID(Isolate.current)!,
-        'DRIVER_VM_SERVICE_WS_URI': serverWsUri.toString(),
-      },
-    );
+    try {
+      await vmService.callServiceExtension(
+        'ext.flutter.patrol',
+        isolateId: appIsolateId,
+        args: <String, String>{
+          'DRIVER_ISOLATE_ID': developer.Service.getIsolateID(Isolate.current)!,
+          'DRIVER_VM_SERVICE_WS_URI': serverWsUri.toString(),
+        },
+      );
+    } on vm.RPCError catch (err) {
+      print(
+        'Calling service extension ext.flutter.patrol failed with code ${err.code} and message ${err.message}',
+      );
+
+      print('Exception: ${jsonDecode(err.details!)['exception']}');
+      io.exit(1);
+    }
 
     developer.registerExtension(
       'ext.leancode.patrol.status',

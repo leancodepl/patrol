@@ -1,10 +1,11 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:vm_service/vm_service.dart' as vm;
 import 'package:vm_service/vm_service_io.dart' as vmio;
+
+// ignore: avoid_print
+void _defaultPrintLogger(String message) => print('PatrolBinding: $message');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
@@ -21,13 +22,15 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     return _instance!;
   }
 
+  final _logger = _defaultPrintLogger;
+
   /// ID of the Isolate which the host driver script is running in.
   ///
   /// Has the form of e.g "isolates/1566121372315359".
   late String driverIsolateId;
 
-  /// Dart Virtual Machine service (aka Dart Observatory server) where
-
+  /// Dart VM service (aka Dart Observatory server) running in the main isolate
+  /// of the Dart VM which is running the test driver script.
   late vm.VmService vmService;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
@@ -49,16 +52,19 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       registerServiceExtension(
         name: 'patrol',
         callback: (args) async {
-          print('Service extension called with args $args');
+          _logger('ext.flutter.patrol called');
           driverIsolateId = args['DRIVER_ISOLATE_ID']!;
           final driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
+          _logger('driver isolate ID: $driverIsolateId');
+          _logger('driver VM service URI: $driverVMServiceWsUri');
 
           vmService = await vmio.vmServiceConnectUri(driverVMServiceWsUri);
 
+          _logger('PatrolBinding: ext.flutter.patrol succeeded');
           return <String, String>{'status': 'ok'};
         },
       );
-      print('Registered service extension ext.flutter.patrol');
+      _logger('registered service extension ext.flutter.patrol');
     }
   }
 
