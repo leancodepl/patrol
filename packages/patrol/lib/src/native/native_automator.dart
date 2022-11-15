@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:fixnum/fixnum.dart';
@@ -75,6 +76,13 @@ class NativeAutomator {
       '\tpackageName: $packageName\n'
       '\tbundleId: $bundleId\n',
     );
+
+    if (packageName == null && io.Platform.isAndroid) {
+      log("packageName is not set. It's recommended to set it.");
+    }
+    if (bundleId == null && io.Platform.isIOS) {
+      log("bundleId is not set. It's recommended to set it.");
+    }
 
     final channel = ClientChannel(
       host,
