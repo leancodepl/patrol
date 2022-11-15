@@ -1,6 +1,7 @@
-## Unreleased
+## 0.7.8
 
-- Remove port forwarding, which wasn't needed for some time (#597)
+- Add support for `patrolIntegrationDriver` (#593)
+- Remove port forwarding, which wasn't needed for some time (#597, #603)
 
 ## 0.7.7+1
 
