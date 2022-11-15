@@ -1,9 +1,23 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:vm_service/vm_service.dart' as vm;
+
+class _Response {
+  factory _Response.fromJson(Map<String, dynamic> json) {
+    return _Response._(
+      int.parse(json['request_id'] as String),
+      json['status'] == 'true',
+    );
+  }
+
+  const _Response._(this.id, this.ok);
+
+  final int id;
+  final bool ok;
+}
 
 // ignore: avoid_print
 void _defaultPrintLogger(String message) => print('PatrolBinding: $message');
@@ -25,14 +39,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   final _logger = _defaultPrintLogger;
 
-  /// ID of the Isolate which the host driver script is running in.
-  ///
-  /// Has the form of e.g "isolates/1566121372315359".
-  late String driverIsolateId;
+  int _latestEventId = 0;
 
-  /// Dart VM service (aka Dart Observatory server) running in the main isolate
-  /// of the Dart VM which is running the test driver script.
-  late vm.VmService vmService;
+  final _controller = StreamController<_Response>.broadcast();
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
   // available on the stable channel
@@ -49,6 +58,22 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     }
   }
 
+  @override
+  void initServiceExtensions() {
+    super.initServiceExtensions();
+
+    if (!kReleaseMode) {
+      registerServiceExtension(
+        name: 'patrol',
+        callback: (args) async {
+          _controller.add(_Response.fromJson(args));
+          return <String, String>{};
+        },
+      );
+      _logger('registered service extension ext.flutter.patrol');
+    }
+  }
+
   /// Takes a screenshot using the `flutter screenshot` command.
   ///
   /// The screenshot is placed in [path], named [name], and has .png extension.
@@ -56,10 +81,18 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     required String name,
     required String path,
   }) async {
+    final eventId = ++_latestEventId;
+
     postEvent('patrol', <String, dynamic>{
       'method': 'take_screenshot',
+      'request_id': eventId,
       'args': {'name': name, 'path': path}
     });
+
+    final resp = await _controller.stream.firstWhere((r) => r.id == eventId);
+    if (!resp.ok) {
+      throw StateError('event with request_id $eventId failed');
+    }
   }
 
   /// The singleton instance of this object.

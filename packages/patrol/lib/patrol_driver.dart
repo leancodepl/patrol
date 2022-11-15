@@ -53,13 +53,24 @@ Future<void> _initCommunication({
     }
 
     final method = event.extensionData!.data['method'] as String;
+    final requestId = event.extensionData!.data['request_id'] as int;
     switch (method) {
       case 'take_screenshot':
-        _takeScreenshot(
-          event.extensionData!.data['args'] as Map<String, dynamic>,
-        );
+        bool status;
+        try {
+          _takeScreenshot(
+            event.extensionData!.data['args'] as Map<String, dynamic>,
+          );
+          status = true;
+        } catch (err) {
+          status = false;
+        }
 
-        vmService.callServiceExtension('patrol', isolateId: isolateId);
+        vmService.callServiceExtension(
+          'ext.flutter.patrol',
+          isolateId: isolateId,
+          args: <String, dynamic>{'request_id': requestId, 'status': status},
+        );
         break;
       default:
         throw StateError('unknown method $method');
@@ -73,14 +84,12 @@ void _takeScreenshot(Map<String, dynamic> args) {
     print('Error: DRIVER_DEVICE_ID is not set');
     io.exit(1);
   }
-  print('DRIVER_DEVICE_ID: $deviceId');
 
   final deviceOs = io.Platform.environment['DRIVER_DEVICE_OS'];
   if (deviceOs == null || deviceOs.isEmpty) {
     print('Error: DRIVER_DEVICE_OS is not set');
     io.exit(1);
   }
-  print('DRIVER_DEVICE_OS: $deviceOs');
 
   final screenshotName = args['name'] as String?;
   if (screenshotName == null) {
