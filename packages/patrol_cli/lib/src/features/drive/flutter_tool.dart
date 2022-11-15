@@ -165,7 +165,14 @@ class FlutterTool {
           simulator: !device.real,
         ),
       ],
-      environment: env,
+      environment: {
+        ...env,
+        // below must be synced with the patrol driver from package:patrol
+        ...{
+          'DRIVER_DEVICE_ID': device.id,
+          'DRIVER_DEVICE_OS': device.targetPlatform.name.toLowerCase(),
+        }
+      },
       runInShell: true,
     );
 

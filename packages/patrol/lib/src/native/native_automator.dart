@@ -11,7 +11,7 @@ import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 typedef _LoggerCallback = void Function(String);
 
 // ignore: avoid_print
-void _defaultPrintLogger(String message) => print('Patrol: $message');
+void _defaultPrintLogger(String message) => print('Patrol (native): $message');
 
 /// Thrown when a native action fails.
 class PatrolActionException implements Exception {
@@ -26,7 +26,7 @@ class PatrolActionException implements Exception {
 }
 
 /// Bindings available to use with [NativeAutomator].
-enum Binding {
+enum BindingType {
   /// Initialize [PatrolBinding].
   patrol,
 
@@ -37,7 +37,7 @@ enum Binding {
   none,
 }
 
-/// Provides functionality to interact with the host OS that the app under test
+/// Provides functionality to interact with the OS that the app under test
 /// is running on.
 ///
 /// Communicates over gRPC with the native automation server running on the
@@ -47,10 +47,9 @@ class NativeAutomator {
   NativeAutomator({
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
-    _LoggerCallback logger = _defaultPrintLogger,
+    void Function(String) logger = _defaultPrintLogger,
     String? packageName,
     String? bundleId,
-    Binding binding = Binding.patrol,
   })  : assert(
           connectionTimeout > findTimeout,
           'find timeout is longer than connection timeout',
@@ -97,20 +96,6 @@ class NativeAutomator {
       channel,
       options: CallOptions(timeout: connectionTimeout),
     );
-
-    switch (binding) {
-      case Binding.patrol:
-        _logger('Initializing PatrolBinding...');
-        PatrolBinding.ensureInitialized();
-        break;
-      case Binding.integrationTest:
-        _logger('Initializing IntegrationTestWidgetsFlutterBinding...');
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-        break;
-      case Binding.none:
-        _logger('No bindings will be initialized');
-        break;
-    }
   }
 
   final _LoggerCallback _logger;

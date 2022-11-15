@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/host/host_automator.dart';
 
 /// Default amount to drag by when scrolling.
 const defaultScrollDelta = 64.0;
@@ -54,6 +55,7 @@ class PatrolTester {
   const PatrolTester({
     required this.tester,
     required this.nativeAutomator,
+    required this.hostAutomator,
     required this.config,
   });
 
@@ -63,13 +65,25 @@ class PatrolTester {
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
 
-  /// Native automator that allows for interaction with the host OS.
+  /// Native automator that allows for interaction with OS the app is running
+  /// on.
   final NativeAutomator? nativeAutomator;
 
-  /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null.
+  /// Provides functionality to run actions as the host system (your computer).
+  final HostAutomator? hostAutomator;
+
+  /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null,
+  /// which is the case if it wasn't initialized.
   NativeAutomator get native {
     assert(nativeAutomator != null, 'native automator is null');
     return nativeAutomator!;
+  }
+
+  /// Shorthand for [hostAutomator]. Throws if [hostAutomator] is null, which is
+  /// the case if it wasn't initialized.
+  HostAutomator get host {
+    assert(hostAutomator != null, 'host automator is null');
+    return hostAutomator!;
   }
 
   /// Makes it simple to log. No need to use `print` or depend on

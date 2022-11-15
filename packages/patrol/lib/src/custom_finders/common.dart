@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/custom_finders/patrol_test_config.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
+import 'package:patrol/src/host/host_automator.dart';
 import 'package:patrol/src/native/native.dart';
 
 /// Signature for callback to [patrolTest].
@@ -12,6 +14,7 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 /// To customize the Patrol-specific configuration, set [config].
 ///
 /// ### Using the default [WidgetTester]
+///
 /// If you need to do something using Flutter's [WidgetTester], you can access
 /// it like this:
 ///
@@ -23,6 +26,9 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 ///    },
 /// );
 /// ```
+///
+/// [bindingType] specifies the binding to use. [bindingType] is ignored if
+/// [nativeAutomation] is false.
 @isTest
 void patrolTest(
   String description,
@@ -34,15 +40,34 @@ void patrolTest(
   dynamic tags,
   PatrolTestConfig config = const PatrolTestConfig(),
   bool nativeAutomation = false,
-  Binding binding = Binding.patrol,
+  BindingType bindingType = BindingType.patrol,
 }) {
-  final automator = nativeAutomation
-      ? NativeAutomator(
-          packageName: config.packageName,
-          bundleId: config.bundleId,
-          binding: binding,
-        )
-      : null;
+  TestWidgetsFlutterBinding? binding;
+  if (nativeAutomation) {
+    switch (bindingType) {
+      case BindingType.patrol:
+        binding = PatrolBinding.ensureInitialized();
+        break;
+      case BindingType.integrationTest:
+        binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        break;
+      case BindingType.none:
+        break;
+    }
+  }
+
+  HostAutomator? hostAutomator;
+  NativeAutomator? nativeAutomator;
+  if (nativeAutomation) {
+    if (binding is PatrolBinding) {
+      hostAutomator = HostAutomator(binding: binding);
+    }
+
+    nativeAutomator = NativeAutomator(
+      packageName: config.packageName,
+      bundleId: config.bundleId,
+    );
+  }
 
   testWidgets(
     description,
@@ -52,11 +77,12 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      await automator?.configure();
+      await nativeAutomator?.configure();
 
       final patrolTester = PatrolTester(
         tester: widgetTester,
-        nativeAutomator: automator,
+        nativeAutomator: nativeAutomator,
+        hostAutomator: hostAutomator,
         config: config,
       );
       await callback(patrolTester);
