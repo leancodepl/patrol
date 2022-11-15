@@ -1,3 +1,11 @@
+## 0.7.3
+
+- Add `patrolIntegrationDriver`, which extends the default `integrationDriver`
+  with cool features like taking screenshots. More features enabled by
+  `patrolIntegrationDriver` are coming soon! (#593)
+- Warn when package name and bundle identifier is not set in `PatrolTestConfig`
+  (#591)
+
 ## 0.7.2
 
 - Add `PatrolFinder.which()` (#571)
