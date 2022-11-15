@@ -24,9 +24,6 @@ void main() {
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '2');
-
-      await $.native.openNotifications();
-      await $.native.pressBack();
     },
   );
 }
