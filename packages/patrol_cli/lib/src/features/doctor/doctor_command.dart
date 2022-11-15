@@ -60,8 +60,6 @@ class DoctorCommand extends Command<int> {
 
   void _printIosSpecifics() {
     _checkIfInstalled('xcodebuild');
-    _checkIfInstalled('iproxy', 'brew install libusbmuxd');
-    _checkIfInstalled('stdbuf', 'brew install coreutils');
     _checkIfInstalled('ideviceinstaller', 'brew install ideviceinstaller');
   }
 
