@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:vm_service/vm_service.dart' as vm;
-import 'package:vm_service/vm_service_io.dart' as vmio;
 
 // ignore: avoid_print
 void _defaultPrintLogger(String message) => print('PatrolBinding: $message');
@@ -42,39 +43,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   void initInstances() {
     super.initInstances();
     _instance = this;
-  }
 
-  @override
-  void initServiceExtensions() {
-    super.initServiceExtensions();
-
-    if (!kReleaseMode) {
-      registerServiceExtension(
-        name: 'patrol',
-        callback: (args) async {
-          _logger('ext.flutter.patrol called');
-          driverIsolateId = args['DRIVER_ISOLATE_ID']!;
-          final driverVMServiceWsUri = args['DRIVER_VM_SERVICE_WS_URI']!;
-          _logger('driver isolate ID: $driverIsolateId');
-          _logger('driver VM service URI: $driverVMServiceWsUri');
-
-          vmService = await vmio.vmServiceConnectUri(driverVMServiceWsUri);
-
-          _logger('PatrolBinding: ext.flutter.patrol succeeded');
-          return <String, String>{'status': 'ok'};
-        },
-      );
-      _logger('registered service extension ext.flutter.patrol');
+    if (!extensionStreamHasListener) {
+      _logger("Extension stream has no listeners, so host features won't work");
     }
-  }
-
-  /// Sends [message] to the driver. Useful for debugging, otherwise useless.
-  Future<void> pingDriver(String message) async {
-    await vmService.callServiceExtension(
-      'ext.leancode.patrol.hello',
-      isolateId: driverIsolateId,
-      args: <String, String>{'message': message},
-    );
   }
 
   /// Takes a screenshot using the `flutter screenshot` command.
@@ -84,11 +56,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     required String name,
     required String path,
   }) async {
-    await vmService.callServiceExtension(
-      'ext.leancode.patrol.screenshot',
-      isolateId: driverIsolateId,
-      args: <String, String>{'name': name, 'path': path},
-    );
+    postEvent('patrol', <String, dynamic>{
+      'method': 'take_screenshot',
+      'args': {'name': name, 'path': path}
+    });
   }
 
   /// The singleton instance of this object.
