@@ -10,7 +10,7 @@
 
 ## 0.2.2
 
-- Wait for the `package` sservice before installing, uninstalling, and
+- Wait for the `package` service before installing, uninstalling, and
   instrumenting (#539)
 
 ## 0.2.1+2
