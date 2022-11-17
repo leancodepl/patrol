@@ -236,6 +236,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
             ..severe(
                 'See the logs above to learn what happened. If the logs above '
                 "aren't useful then it's a bug – please report it.");
+          rethrow;
         }
       }
       ..executor = (target, device) async {
@@ -249,6 +250,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
               'See the logs above to learn what happened. If the logs above '
               "aren't useful then it's a bug – please report it.",
             );
+          rethrow;
         }
       };
 
