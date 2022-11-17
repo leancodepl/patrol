@@ -6,6 +6,8 @@ import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 import 'package:adb/src/internals.dart';
 
+const _interval = Duration(milliseconds: 100);
+
 /// Provides Dart interface for common Android Debug Bridge features.
 ///
 /// See also:
@@ -37,6 +39,7 @@ class Adb {
   }) async {
     await _ensureServerRunning();
     await _ensurePackageServiceRunning(device: device);
+    await _ensureActivityServiceRunning(device: device);
 
     final result = await io.Process.run(
       'adb',
@@ -73,6 +76,7 @@ class Adb {
   }) async {
     await _ensureServerRunning();
     await _ensurePackageServiceRunning(device: device);
+    await _ensureActivityServiceRunning(device: device);
 
     final result = await io.Process.run(
       'adb',
@@ -174,6 +178,8 @@ class Adb {
     Map<String, String> arguments = const {},
   }) async {
     await _ensureServerRunning();
+    await _ensurePackageServiceRunning(device: device);
+    await _ensureActivityServiceRunning(device: device);
 
     final process = await io.Process.start(
       'adb',
@@ -231,9 +237,31 @@ class Adb {
         runInShell: true,
       );
       if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(_interval);
       } else {
         break;
+      }
+    }
+  }
+
+  Future<void> _ensureActivityServiceRunning({required String? device}) async {
+    while (true) {
+      final result = await io.Process.run(
+        'adb',
+        [
+          if (device != null) ...['-s', device],
+          'shell',
+          'service',
+          'list',
+        ],
+        runInShell: true,
+      );
+
+      const trigger = 'activity: [android.app.IActivityManager]';
+      if (result.stdOut.contains(trigger)) {
+        break;
+      } else {
+        await Future<void>.delayed(_interval);
       }
     }
   }
@@ -255,7 +283,7 @@ class Adb {
       if (result.stdOut.contains(trigger)) {
         break;
       } else {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(_interval);
       }
     }
   }
