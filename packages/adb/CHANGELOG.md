@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.4
 
 - Wait for the `activity` service before installing, uninstalling, and
   instrumenting (#616)
