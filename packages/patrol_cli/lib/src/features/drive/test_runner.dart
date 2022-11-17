@@ -19,13 +19,33 @@ class TestRunner extends Disposable {
   bool _disposed = false;
 
   int _repeats = 1;
-  set repeats(int newValue) => _repeats = newValue;
+  set repeats(int newValue) {
+    if (_running) {
+      throw StateError('repeats cannot be changed while running');
+    }
+
+    _repeats = newValue;
+  }
 
   _Callback? _builder;
-  set builder(_Callback newValue) => _builder = newValue;
+
+  /// Sets the builder callback that is called once for every test target.
+  ///
+  /// The builder callback must build the artifacts necessary for the
+  /// [_executor] callback to run a test, or throw if it's not possible to build
+  /// the artifacts.
+  ///
+  /// Error reporting is the callback's responsibility.
+  set builder(_Callback callback) => _builder = callback;
 
   _Callback? _executor;
-  set executor(_Callback newValue) => _executor = newValue;
+
+  /// Sets the executor callback that can is called 1 or more times for every
+  /// test target, except if the [_builder] callback threw, in which case the
+  /// executor callback isn't called.
+  ///
+  /// Error reporting is the callback's responsibility.
+  set executor(_Callback callback) => _executor = callback;
 
   /// Adds [device] to runner's internal list.
   void addDevice(Device device) {
@@ -89,14 +109,22 @@ class TestRunner extends Disposable {
             continue;
           }
 
-          await builder(target, device);
+          try {
+            await builder(target, device);
+          } catch (_) {
+            continue;
+          }
 
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
               continue;
             }
 
-            await executor(target, device);
+            try {
+              await executor(target, device);
+            } catch (_) {
+              continue;
+            }
           }
         }
       }
