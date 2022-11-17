@@ -1,3 +1,9 @@
+## 0.7.9
+
+- Fix running tests that failed to build (#615)
+- Fix rare crashes on slower machines caused by `activity` service not running
+  on Android emulator (#615)
+
 ## 0.7.8
 
 - Add support for `patrolIntegrationDriver` (#593)
