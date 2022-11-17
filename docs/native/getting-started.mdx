@@ -130,12 +130,14 @@ await $.native.selectFineLocation();
 await $.native.selectCoarseLocation();
 ```
 
-Please note that the test will crash if the permission prompt is not visible.
+The test will fail if the permission prompt is not visible.
 
-You might also want to take a look at the [integration tests of our example
-app][example_app_tests].
+### More resources
+
+To see more integration tests demonstrating Patrol's various features, check out
+our [example app][example_app_tests].
 
 [nativeautomator]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator-class.html
 [test_widgets]: https://api.flutter.dev/flutter/flutter_test/testWidgets.html
 [patrol_test]: https://pub.dev/documentation/patrol/latest/patrol/patrolTest.html
-[example_app_tests]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example/integration_test
+[example_app_tests]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
