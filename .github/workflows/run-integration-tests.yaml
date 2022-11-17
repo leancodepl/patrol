@@ -58,7 +58,7 @@ jobs:
           heap-size: 2048M
           disk-size: 3072M
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -delay-adb
           script: echo "Generated AVD snapshot for caching"
 
       - name: Install Flutter
