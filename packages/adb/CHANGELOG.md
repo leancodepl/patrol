@@ -1,3 +1,8 @@
+## Unreleased
+
+- Wait for the `activity` service before installing, uninstalling, and
+  instrumenting (#616)
+
 ## 0.2.3
 
 - Fix infinite waiting for `package` service when more than a single device
@@ -5,7 +10,8 @@
 
 ## 0.2.2
 
-- Wait for the `package` service before installing apk (#539)
+- Wait for the `package` service before installing, uninstalling, and
+  instrumenting (#539)
 
 ## 0.2.1+2
 
