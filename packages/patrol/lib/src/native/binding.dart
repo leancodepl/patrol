@@ -10,13 +10,15 @@ class _Response {
     return _Response._(
       int.parse(json['request_id'] as String),
       json['status'] == 'true',
+      json['error'] as String?,
     );
   }
 
-  const _Response._(this.id, this.ok);
+  const _Response._(this.id, this.ok, this.error);
 
   final int id;
   final bool ok;
+  final String? error;
 }
 
 // ignore: avoid_print
@@ -91,7 +93,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
     final resp = await _controller.stream.firstWhere((r) => r.id == eventId);
     if (!resp.ok) {
-      throw StateError('event with request_id $eventId failed');
+      throw StateError('event with request_id $eventId failed: ${resp.error}');
     }
   }
 
