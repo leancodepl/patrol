@@ -1,7 +1,8 @@
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart' show lightCyan, lightYellow;
+import 'package:mason_logger/mason_logger.dart'
+    show Progress, lightCyan, lightYellow;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
@@ -13,6 +14,8 @@ import 'package:test/test.dart';
 class MockLogger extends Mock implements Logger {}
 
 class MockPubUpdater extends Mock implements PubUpdater {}
+
+class MockProgress extends Mock implements Progress {}
 
 class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
 
