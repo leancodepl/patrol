@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -31,7 +31,9 @@ class UpdateCommand extends Command<int> {
       latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
     } catch (err, st) {
       progress.fail('Failed to check for updates');
-      _logger.severe(null, err, st);
+      _logger
+        ..err('$err')
+        ..err('$st');
       return 1;
     }
     progress.complete('New version is available ($latestVersion)');
@@ -54,10 +56,12 @@ class UpdateCommand extends Command<int> {
     } catch (err, st) {
       progress
           .fail('Failed to update $patrolCliPackage to version $latestVersion');
-      _logger.severe(null, err, st);
+      _logger
+        ..err('$err')
+        ..err('$st');
       return 1;
     }
-    progress.complete('Updated $patrolCliPackage to $latestVersion');
+    progress.complete('Updated $patrolCliPackage to version $latestVersion');
 
     // Update artifacts
 
@@ -68,8 +72,10 @@ class UpdateCommand extends Command<int> {
       progress.complete('Downloaded artifacts for version $latestVersion');
     } catch (err, st) {
       progress.fail('Failed to download artifacts for version $latestVersion');
-      _logger.severe(null, err, st);
-      rethrow;
+      _logger
+        ..err('$err')
+        ..err('$st');
+      return 1;
     }
 
     return 0;

@@ -296,7 +296,7 @@ packages:
     source: hosted
     version: "2.0.0"
   logging:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: logging
       url: "https://pub.dartlang.org"
@@ -308,7 +308,7 @@ packages:
       name: mason_logger
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2"
+    version: "0.2.3"
   matcher:
     dependency: transitive
     description:
@@ -392,7 +392,7 @@ packages:
       name: pub_updater
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.2"
+    version: "0.2.3"
   pubspec_parse:
     dependency: transitive
     description:

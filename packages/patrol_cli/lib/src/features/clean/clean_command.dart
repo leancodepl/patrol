@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
 
 class CleanCommand extends Command<int> {
   CleanCommand({

@@ -1,6 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
@@ -232,8 +232,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         } catch (err) {
           exitCode = 1;
           _logger
-            ..severe(err)
-            ..severe(
+            ..err('$err')
+            ..err(
                 'See the logs above to learn what happened. If the logs above '
                 "aren't useful then it's a bug – please report it.");
           rethrow;
@@ -245,8 +245,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         } on FlutterDriverFailedException catch (err) {
           exitCode = 1;
           _logger
-            ..severe(err)
-            ..severe(
+            ..err('$err')
+            ..err(
               'See the logs above to learn what happened. If the logs above '
               "aren't useful then it's a bug – please report it.",
             );

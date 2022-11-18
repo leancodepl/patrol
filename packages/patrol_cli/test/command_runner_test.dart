@@ -1,8 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
-import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart'
-    show Progress, lightCyan, lightYellow;
+import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
@@ -72,7 +70,7 @@ void main() {
       });
       final result = await commandRunner.run(['--version']);
       expect(result, equals(1));
-      verify(() => logger.severe(exception.message)).called(1);
+      verify(() => logger.err(exception.message)).called(1);
       verify(() => logger.info(commandRunner.usage)).called(1);
     });
 
@@ -87,7 +85,7 @@ void main() {
       });
       final result = await commandRunner.run(['--version']);
       expect(result, equals(1));
-      verify(() => logger.severe(exception.message)).called(1);
+      verify(() => logger.err(exception.message)).called(1);
       verify(() => logger.info(exception.usage)).called(1);
     });
 
@@ -103,7 +101,7 @@ void main() {
         final result = await commandRunner.run(['foo']);
         expect(result, equals(1));
         verify(
-          () => logger.severe('Could not find a command named "foo".'),
+          () => logger.err('Could not find a command named "foo".'),
         ).called(1);
         verify(
           () => logger.info(commandRunner.usageWithoutDescription),
@@ -117,7 +115,7 @@ void main() {
         final result = await commandRunner.run(['--bar']);
         expect(result, equals(1));
         verify(
-          () => logger.severe('Could not find an option named "bar".'),
+          () => logger.err('Could not find an option named "bar".'),
         ).called(1);
         verify(
           () => logger.info(commandRunner.usageWithoutDescription),

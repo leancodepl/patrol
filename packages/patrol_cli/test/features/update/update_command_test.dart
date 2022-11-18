@@ -1,4 +1,4 @@
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
@@ -14,15 +14,15 @@ void main() {
 
   group('update', () {
     late Logger logger;
+    late Progress progress;
     late PubUpdater pubUpdater;
     late ArtifactsRepository artifactsRepository;
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
       logger = MockLogger();
-      //setUpLogger();
+      progress = MockProgress();
       pubUpdater = MockPubUpdater();
-      // when(() => pubUpdater.getLatestVersion(patrolCliPackage)).thenAnswer((invocation) async => )
       artifactsRepository = MockArtifactsRepository();
 
       commandRunner = PatrolCommandRunner(
@@ -38,7 +38,7 @@ void main() {
         when(() => pubUpdater.getLatestVersion(any()))
             .thenAnswer((_) async => latestVersion);
 
-        when(() => pubUpdater.update(packageName: patrolCliPackage))
+        when(() => pubUpdater.update(packageName: 'patrol_cli'))
             .thenAnswer((_) async => FakeProcessResult());
 
         when(
@@ -47,15 +47,44 @@ void main() {
           ),
         ).thenAnswer((_) async {});
 
-        // when(() => logger.progress(any())).thenReturn(MockProgress());
+        when(() => logger.progress(any())).thenReturn(progress);
 
         final result = await commandRunner.run(['update']);
-
         expect(result, equals(0));
 
-        //verify(() => logger.progress('Checking for updates')).called(1);
-        //verify(() => logger.progress('Updating to $latestVersion')).called(1);
-        //verify(() => pubUpdater.update(packageName: packageName)).called(1);
+        verify(() => logger.progress('Checking for updates')).called(1);
+        verify(
+          () => progress.complete('New version is available ($latestVersion)'),
+        ).called(1);
+
+        verify(
+          () => logger.progress(
+            'Updating patrol_cli to version $latestVersion',
+          ),
+        ).called(1);
+        verify(
+          () => progress.complete(
+            'Updated patrol_cli to version $latestVersion',
+          ),
+        ).called(1);
+
+        verify(
+          () => logger.progress(
+            'Downloading artifacts for version $latestVersion',
+          ),
+        ).called(1);
+        verify(
+          () => progress.complete(
+            'Downloaded artifacts for version $latestVersion',
+          ),
+        ).called(1);
+
+        verify(() => pubUpdater.update(packageName: 'patrol_cli')).called(1);
+        verify(
+          () => artifactsRepository.downloadArtifacts(
+            version: any(named: 'version', that: equals(latestVersion)),
+          ),
+        );
       },
     );
 
@@ -64,7 +93,7 @@ void main() {
       () async {
         when(() => pubUpdater.getLatestVersion(any()))
             .thenAnswer((_) async => globalVersion);
-        //when(() => logger.progress(any())).thenReturn(MockProgress());
+        when(() => logger.progress(any())).thenReturn(MockProgress());
 
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
@@ -75,7 +104,7 @@ void main() {
         ).called(1);
 
         //verifyNever(() => logger.progress(any()));
-        verifyNever(() => pubUpdater.update(packageName: patrolCliPackage));
+        verifyNever(() => pubUpdater.update(packageName: 'patrol_cli'));
       },
     );
   });

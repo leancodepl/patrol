@@ -1,10 +1,9 @@
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/extensions/process.dart';
-import 'package:patrol_cli/src/common/logging.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends Command<int> {
@@ -52,9 +51,9 @@ class DoctorCommand extends Command<int> {
 
     final androidHome = _platform.environment['ANDROID_HOME'];
     if (androidHome?.isNotEmpty ?? false) {
-      _logger.ok('\$ANDROID_HOME env var set to $androidHome');
+      _logger.err('\$ANDROID_HOME env var set to $androidHome');
     } else {
-      _logger.ok(r'$ANDROID_HOME env var is not set');
+      _logger.err(r'$ANDROID_HOME env var is not set');
     }
   }
 
@@ -68,7 +67,7 @@ class DoctorCommand extends Command<int> {
         ? io.Process.runSync('where.exe', [tool])
         : io.Process.runSync('which', [tool]);
     if (result.exitCode == 0) {
-      _logger.ok('$tool found in ${result.stdOut.trim()}');
+      _logger.success('$tool found in ${result.stdOut.trim()}');
     } else {
       _logger.err(
         '$tool not found ${hint != null ? "(install with `$hint`)" : ""}',

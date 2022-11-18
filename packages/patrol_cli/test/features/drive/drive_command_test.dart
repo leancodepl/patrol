@@ -1,7 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:logging/logging.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -14,6 +13,7 @@ import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
+import '../../command_runner_test.dart';
 import '../../fakes.dart';
 import 'fixures/devices.dart';
 
@@ -92,7 +92,7 @@ void main() {
           fs: fs,
           projectRoot: fs.currentDirectory,
         ),
-        logger: Logger(''),
+        logger: MockLogger(),
       );
     });
 

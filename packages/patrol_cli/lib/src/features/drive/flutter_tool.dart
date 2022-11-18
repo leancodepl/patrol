@@ -1,8 +1,7 @@
 import 'dart:io' show Process, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart' show green, red;
+import 'package:mason_logger/mason_logger.dart' show Logger, green, red;
 import 'package:path/path.dart' show absolute, basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -114,12 +113,12 @@ class FlutterTool {
 
     process.stdout.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.fine(msg);
+      _logger.detail(msg);
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.severe(msg);
+      _logger.err(msg);
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -127,7 +126,7 @@ class FlutterTool {
         return;
       }
 
-      _logger.fine(kill());
+      _logger.detail(kill());
     });
 
     exitCode = await process.exitCode;
@@ -136,7 +135,7 @@ class FlutterTool {
         ? '${green.wrap("✓")} Building ${platform.artifactType} for $targetName succeeded!'
         : '${red.wrap("✗")} Build ${platform.artifactType} for $targetName failed';
 
-    _logger.severe(msg);
+    _logger.err(msg);
     if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
     }
@@ -201,14 +200,14 @@ class FlutterTool {
         } else if (line.startsWith(flutterPrefix)) {
           _logger.info(line.replaceFirst(flutterPrefix, ''));
         } else {
-          _logger.fine(line);
+          _logger.detail(line);
         }
       }
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.severe(msg);
+      _logger.err(msg);
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -216,7 +215,7 @@ class FlutterTool {
         return;
       }
 
-      _logger.fine(kill());
+      _logger.detail(kill());
     });
 
     exitCode = await process.exitCode;
@@ -225,7 +224,7 @@ class FlutterTool {
         ? '${green.wrap("✓")} $targetName passed!'
         : '${red.wrap("✗")} $targetName failed';
 
-    _logger.severe(msg);
+    _logger.err(msg);
     if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
     }

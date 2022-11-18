@@ -19,12 +19,11 @@ dependencies:
   file: ^6.1.4
   freezed_annotation: ^2.1.0
   http: ^0.13.5
-  logging: ^1.1.0
-  mason_logger: ^0.2.2
+  mason_logger: ^0.2.3
   meta: ^1.8.0
   path: ^1.8.2
   platform: ^3.1.0
-  pub_updater: ^0.2.2
+  pub_updater: ^0.2.3
   tuple: ^2.0.1
   yaml: ^3.1.1
 dev_dependencies:
