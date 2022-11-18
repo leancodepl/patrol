@@ -222,15 +222,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       dartDefines: config.dartDefines,
     );
 
-    var exitCode = 0;
-
     _testRunner
       ..repeats = config.repeat
       ..builder = (target, device) async {
         try {
           await _flutterTool.build(target, device);
         } catch (err) {
-          exitCode = 1;
           _logger
             ..err('$err')
             ..err(
@@ -242,8 +239,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       ..executor = (target, device) async {
         try {
           await _flutterTool.drive(target, device);
-        } on FlutterDriverFailedException catch (err) {
-          exitCode = 1;
+        } catch (err) {
           _logger
             ..err('$err')
             ..err(
@@ -276,8 +272,10 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    await _testRunner.run();
+    final results = await _testRunner.run();
+    // TODO: present test results
 
+    final exitCode = results.allSuccessful ? 0 : 1;
     return exitCode;
   }
 }
