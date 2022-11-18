@@ -57,6 +57,7 @@ Future<void> _initCommunication({
     switch (method) {
       case 'take_screenshot':
         bool status;
+        String? error;
         try {
           _takeScreenshot(
             event.extensionData!.data['args'] as Map<String, dynamic>,
@@ -64,12 +65,17 @@ Future<void> _initCommunication({
           status = true;
         } catch (err) {
           status = false;
+          error = err.toString();
         }
 
         vmService.callServiceExtension(
           'ext.flutter.patrol',
           isolateId: isolateId,
-          args: <String, dynamic>{'request_id': requestId, 'status': status},
+          args: <String, dynamic>{
+            'request_id': requestId,
+            'status': status,
+            'error': error,
+          },
         );
         break;
       default:
