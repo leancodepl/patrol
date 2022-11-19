@@ -10,8 +10,8 @@ import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
 import '../../fakes.dart';
+import '../../fixtures.dart';
 import '../../mocks.dart';
-import 'fixures/devices.dart';
 
 const _defaultConfig = DriveCommandConfig(
   targets: [],

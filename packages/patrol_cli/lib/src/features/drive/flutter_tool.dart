@@ -1,7 +1,7 @@
 import 'dart:io' show Process, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:mason_logger/mason_logger.dart' show Logger, green, red;
+import 'package:mason_logger/mason_logger.dart';
 import 'package:path/path.dart' show absolute, basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -28,6 +28,18 @@ extension TargetPlatformX on TargetPlatform {
 }
 
 /// Thrown when `flutter drive` exits with non-zero exit code.
+class FlutterBuildFailedException implements Exception {
+  FlutterBuildFailedException(this.code)
+      : assert(code != 0, 'exit code is 0, which means success'),
+        super();
+
+  final int code;
+
+  @override
+  String toString() => '`flutter build` exited with code $code';
+}
+
+/// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
   FlutterDriverFailedException(this.code)
       : assert(code != 0, 'exit code is 0, which means success'),
@@ -36,7 +48,7 @@ class FlutterDriverFailedException implements Exception {
   final int code;
 
   @override
-  String toString() => 'flutter_driver exited with code $code';
+  String toString() => '`flutter drive` exited with code $code';
 }
 
 /// Wrapper around the flutter tool.
@@ -133,7 +145,7 @@ class FlutterTool {
 
     _logger.err(msg);
     if (exitCode != 0) {
-      throw FlutterDriverFailedException(exitCode);
+      throw FlutterBuildFailedException(exitCode);
     }
   }
 
