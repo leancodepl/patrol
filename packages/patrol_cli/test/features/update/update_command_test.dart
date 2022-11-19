@@ -52,9 +52,12 @@ void main() {
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
 
-        verify(() => logger.progress('Checking for updates')).called(1);
+        verify(() => logger.progress('Checking for patrol_cli updates'))
+            .called(1);
         verify(
-          () => progress.complete('New version is available ($latestVersion)'),
+          () => progress.complete(
+            'New patrol_cli version is available ($latestVersion)',
+          ),
         ).called(1);
 
         verify(
@@ -93,13 +96,14 @@ void main() {
       () async {
         when(() => pubUpdater.getLatestVersion(any()))
             .thenAnswer((_) async => globalVersion);
-        when(() => logger.progress(any())).thenReturn(MockProgress());
+
+        when(() => logger.progress(any())).thenReturn(progress);
 
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
         verify(
-          () => logger.info(
-            'You already have the newest version of patrol_cli ($globalVersion)',
+          () => progress.complete(
+            "You're already using the latest patrol_cli version ($globalVersion)",
           ),
         ).called(1);
 

@@ -25,26 +25,27 @@ class UpdateCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    var progress = _logger.progress('Checking for updates');
+    var progress = _logger.progress('Checking for patrol_cli updates');
     late final String latestVersion;
     try {
       latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
     } catch (err, st) {
-      progress.fail('Failed to check for updates');
+      progress.fail('Failed to check for patrol_cli updates');
       _logger
         ..err('$err')
         ..err('$st');
       return 1;
     }
-    progress.complete('New version is available ($latestVersion)');
 
     final isUpToDate = globalVersion == latestVersion;
     if (isUpToDate) {
-      _logger.info(
-        'You already have the newest version of $patrolCliPackage ($globalVersion)',
+      progress.complete(
+        "You're already using the latest patrol_cli version ($globalVersion)",
       );
       return 0;
     }
+
+    progress.complete('New patrol_cli version is available ($latestVersion)');
 
     // Update CLI
 
