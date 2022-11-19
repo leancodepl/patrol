@@ -49,12 +49,10 @@ class FlutterTool {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
-  late String driver;
-  String? host;
-  String? port;
-  String? flavor;
-  late Map<String, String> dartDefines;
-  late Map<String, String> env;
+  late String _driver;
+  String? _flavor;
+  late Map<String, String> _dartDefines;
+  late Map<String, String> _env;
 
   final DisposeScope _disposeScope;
   final Logger _logger;
@@ -66,13 +64,11 @@ class FlutterTool {
     required String? flavor,
     required Map<String, String> dartDefines,
   }) {
-    this.driver = driver;
-    this.host = host;
-    this.port = port;
-    this.flavor = flavor;
-    this.dartDefines = dartDefines;
+    _driver = driver;
+    _flavor = flavor;
+    _dartDefines = dartDefines;
 
-    env = {
+    _env = {
       envHostKey: host,
       envPortKey: port,
     }.withNullsRemoved();
@@ -94,10 +90,10 @@ class FlutterTool {
         ...['build', platform.command],
         '--debug',
         ...['--target', target],
-        if (flavor != null) ...['--flavor', flavor!],
+        if (_flavor != null) ...['--flavor', _flavor!],
         if (platform == TargetPlatform.iOS)
           if (device.real) '--no-simulator' else '--simulator',
-        for (final dartDefine in {...env, ...dartDefines}.entries) ...[
+        for (final dartDefine in {..._env, ..._dartDefines}.entries) ...[
           '--dart-define',
           '${dartDefine.key}=${dartDefine.value}',
         ]
@@ -156,16 +152,16 @@ class FlutterTool {
       [
         '--no-version-check',
         ..._flutterDriveArguments(
-          driver: driver,
+          driver: _driver,
           target: target,
           device: device.id,
-          flavor: flavor,
+          flavor: _flavor,
           platform: device.targetPlatform,
           simulator: !device.real,
         ),
       ],
       environment: {
-        ...env,
+        ..._env,
         // below must be synced with the patrol driver from package:patrol
         ...{
           'DRIVER_DEVICE_ID': device.id,
