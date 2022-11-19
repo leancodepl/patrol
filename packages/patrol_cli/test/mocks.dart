@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'package:archive/archive.dart' as archive;
 import 'package:http/http.dart' as http;
 import 'package:mason_logger/mason_logger.dart' as mason_logger;
@@ -19,6 +21,8 @@ class MockLogger extends Mock implements mason_logger.Logger {}
 class MockProgress extends Mock implements mason_logger.Progress {}
 
 class MockPubUpdater extends Mock implements pub.PubUpdater {}
+
+class MockProcess extends Mock implements io.Process {}
 
 class MockProcessManager extends Mock implements process.ProcessManager {}
 

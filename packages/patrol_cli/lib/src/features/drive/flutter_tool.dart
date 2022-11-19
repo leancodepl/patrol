@@ -8,6 +8,8 @@ import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:process/process.dart';
 
+final dot = '${green.wrap("•")}';
+
 extension TargetPlatformX on TargetPlatform {
   String get artifactType {
     switch (this) {
@@ -28,7 +30,7 @@ extension TargetPlatformX on TargetPlatform {
   }
 }
 
-/// Thrown when `flutter drive` exits with non-zero exit code.
+/// Thrown when `flutter build` exits with non-zero exit code.
 class FlutterBuildFailedException implements Exception {
   FlutterBuildFailedException(this.code)
       : assert(code != 0, 'exit code is 0, which means success'),
@@ -94,9 +96,7 @@ class FlutterTool {
     final targetName = basename(target);
     final platform = device.targetPlatform;
 
-    _logger.info(
-      '${green.wrap(">")} Building ${platform.artifactType} for $targetName...',
-    );
+    _logger.info('$dot Building ${platform.artifactType} for $targetName...');
 
     int? exitCode;
     final process = await _processManager.start(
@@ -143,11 +143,14 @@ class FlutterTool {
 
     exitCode = await process.exitCode;
 
-    final msg = exitCode == 0
-        ? '${green.wrap("✓")} Building ${platform.artifactType} for $targetName succeeded!'
-        : '${red.wrap("✗")} Build ${platform.artifactType} for $targetName failed';
+    if (exitCode == 0) {
+      _logger.success(
+        '✓ Building ${platform.artifactType} for $targetName succeeded!',
+      );
+    } else {
+      _logger.err('✗ Building ${platform.artifactType} for $targetName failed');
+    }
 
-    _logger.err(msg);
     if (exitCode != 0) {
       throw FlutterBuildFailedException(exitCode);
     }
@@ -160,7 +163,7 @@ class FlutterTool {
     final deviceName = device.resolvedName;
     final targetName = basename(target);
 
-    _logger.info('${green.wrap(">")} Running $targetName on $deviceName...');
+    _logger.info('$dot Running $targetName on $deviceName...');
 
     int? exitCode;
     final process = await _processManager.start(
@@ -232,11 +235,12 @@ class FlutterTool {
 
     exitCode = await process.exitCode;
 
-    final msg = exitCode == 0
-        ? '${green.wrap("✓")} $targetName passed!'
-        : '${red.wrap("✗")} $targetName failed';
+    if (exitCode == 0) {
+      _logger.success('✓ $targetName passed!');
+    } else {
+      _logger.err('✗ $targetName failed');
+    }
 
-    _logger.err(msg);
     if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
     }
