@@ -25,12 +25,16 @@ class UpdateCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    var progress = _logger.progress('Checking for patrol_cli updates');
+    var progress =
+        _logger.progress('Checking if newer patrol_cli version is available');
+
     late final String latestVersion;
     try {
       latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
     } catch (err, st) {
-      progress.fail('Failed to check for patrol_cli updates');
+      progress.fail(
+        'Failed to check if newer patrol_cli version is available',
+      );
       _logger
         ..err('$err')
         ..err('$st');

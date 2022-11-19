@@ -22,6 +22,8 @@ void main() {
     setUp(() {
       logger = MockLogger();
       progress = MockProgress();
+      when(() => logger.progress(any())).thenReturn(progress);
+
       pubUpdater = MockPubUpdater();
       artifactsRepository = MockArtifactsRepository();
 
@@ -35,7 +37,7 @@ void main() {
     test(
       'updates when newer version exists',
       () async {
-        when(() => pubUpdater.getLatestVersion(any()))
+        when(() => pubUpdater.getLatestVersion('patrol_cli'))
             .thenAnswer((_) async => latestVersion);
 
         when(() => pubUpdater.update(packageName: 'patrol_cli'))
@@ -47,13 +49,14 @@ void main() {
           ),
         ).thenAnswer((_) async {});
 
-        when(() => logger.progress(any())).thenReturn(progress);
-
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
 
-        verify(() => logger.progress('Checking for patrol_cli updates'))
-            .called(1);
+        verify(
+          () => logger.progress(
+            'Checking if newer patrol_cli version is available',
+          ),
+        ).called(1);
         verify(
           () => progress.complete(
             'New patrol_cli version is available ($latestVersion)',
@@ -94,10 +97,8 @@ void main() {
     test(
       'does not update when already on latest version',
       () async {
-        when(() => pubUpdater.getLatestVersion(any()))
+        when(() => pubUpdater.getLatestVersion('patrol_cli'))
             .thenAnswer((_) async => globalVersion);
-
-        when(() => logger.progress(any())).thenReturn(progress);
 
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
@@ -107,8 +108,37 @@ void main() {
           ),
         ).called(1);
 
-        //verifyNever(() => logger.progress(any()));
         verifyNever(() => pubUpdater.update(packageName: 'patrol_cli'));
+        verifyNever(
+          () => artifactsRepository.downloadArtifacts(
+            version: any(named: 'version'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'gracefully exits when latest version cannot be checked',
+      () async {
+        when(() => pubUpdater.getLatestVersion('patrol_cli'))
+            .thenThrow(Exception('Failed to update package'));
+
+        final result = await commandRunner.run(['update']);
+        expect(result, equals(1));
+
+        verify(
+          () => logger.progress(
+            'Checking if newer patrol_cli version is available',
+          ),
+        ).called(1);
+
+        verify(
+          () => progress.fail(
+            'Failed to check if newer patrol_cli version is available',
+          ),
+        );
+
+        verify(() => pubUpdater.getLatestVersion('patrol_cli')).called(1);
       },
     );
   });
