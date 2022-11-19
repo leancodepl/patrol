@@ -97,6 +97,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ),
         flutterTool: FlutterTool(
           processManager: const LocalProcessManager(),
+          fs: _fs,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),

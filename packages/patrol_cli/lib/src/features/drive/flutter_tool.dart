@@ -1,8 +1,9 @@
 import 'dart:io' show systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:file/file.dart';
 import 'package:mason_logger/mason_logger.dart';
-import 'package:path/path.dart' show absolute, basename, join;
+import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
@@ -58,9 +59,11 @@ class FlutterDriverFailedException implements Exception {
 class FlutterTool {
   FlutterTool({
     required ProcessManager processManager,
+    required FileSystem fs,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
+        _fs = fs,
         _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -72,6 +75,7 @@ class FlutterTool {
   late Map<String, String> _env;
 
   final ProcessManager _processManager;
+  final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -256,7 +260,13 @@ class FlutterTool {
   }) {
     String getApplicationBinaryPath() {
       if (platform == TargetPlatform.android) {
-        final prefix = absolute(join('build', 'app', 'outputs', 'flutter-apk'));
+        final prefix = join(
+          _fs.currentDirectory.path,
+          'build',
+          'app',
+          'outputs',
+          'flutter-apk',
+        );
         if (flavor != null) {
           return join(prefix, 'app-${flavor.toLowerCase()}-debug.apk');
         } else {
