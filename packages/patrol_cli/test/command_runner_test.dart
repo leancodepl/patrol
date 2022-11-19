@@ -9,13 +9,7 @@ import 'package:patrol_cli/src/common/extensions/command_runner.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-class MockLogger extends Mock implements Logger {}
-
-class MockPubUpdater extends Mock implements PubUpdater {}
-
-class MockProgress extends Mock implements Progress {}
-
-class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
+import 'mocks.dart';
 
 const latestVersion = '0.0.0';
 

@@ -2,30 +2,16 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
-import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
-import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
-import '../../command_runner_test.dart';
 import '../../fakes.dart';
+import '../../mocks.dart';
 import 'fixures/devices.dart';
-
-class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
-
-class MockDeviceFinder extends Mock implements DeviceFinder {}
-
-class MockAndroidDriver extends Mock implements AndroidDriver {}
-
-class MockIOSDriver extends Mock implements IOSDriver {}
-
-class MockFlutterTool extends Mock implements FlutterTool {}
 
 const _defaultConfig = DriveCommandConfig(
   targets: [],
