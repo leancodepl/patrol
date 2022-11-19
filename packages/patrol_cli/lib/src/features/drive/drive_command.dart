@@ -34,7 +34,6 @@ class DriveCommandConfig with _$DriveCommandConfig {
 
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
-    required DisposeScope parentDisposeScope,
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
@@ -42,6 +41,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required IOSDriver iosDriver,
     required FlutterTool flutterTool,
     required DartDefinesReader dartDefinesReader,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,

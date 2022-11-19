@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' show Platform, Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -8,20 +7,29 @@ import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 
 class IOSDriver {
   IOSDriver({
-    required DisposeScope parentDisposeScope,
+    required ProcessManager processManager,
+    required Platform platform,
     required ArtifactsRepository artifactsRepository,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _disposeScope = DisposeScope(),
+  })  : _processManager = processManager,
+        _platform = platform,
+        _disposeScope = DisposeScope(),
         _artifactsRepository = artifactsRepository,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
-  final DisposeScope _disposeScope;
+  final ProcessManager _processManager;
+  final Platform _platform;
   final ArtifactsRepository _artifactsRepository;
+
+  final DisposeScope _disposeScope;
   final Logger _logger;
 
   static const _bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
@@ -45,9 +53,9 @@ class IOSDriver {
     final artifactPath = _artifactsRepository.iosSimulatorPath;
     _logger.detail('Using artifact ${basename(artifactPath)}');
 
-    final installProcess = await Process.start(
-      'xcrun',
+    final installProcess = await _processManager.start(
       [
+        'xcrun',
         'simctl',
         'install',
         device.id,
@@ -59,9 +67,9 @@ class IOSDriver {
       ..listenStdErr(_logger.err).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
-      await Process.run(
-        'xcrun',
+      await _processManager.run(
         [
+          'xcrun',
           'simctl',
           'uninstall',
           device.id,
@@ -75,9 +83,9 @@ class IOSDriver {
 
     await installProcess.exitCode;
 
-    final runProcess = await Process.start(
-      'xcrun',
+    final runProcess = await _processManager.start(
       [
+        'xcrun',
         'simctl',
         'launch',
         device.id,
@@ -99,9 +107,9 @@ class IOSDriver {
     final artifactPath = _artifactsRepository.iosPath;
     _logger.detail('Using artifact ${basename(artifactPath)}');
 
-    final process = await Process.start(
-      'xcodebuild',
+    final process = await _processManager.start(
       [
+        'xcodebuild',
         'test',
         '-project',
         'AutomatorServer.xcodeproj',
@@ -115,7 +123,7 @@ class IOSDriver {
       runInShell: true,
       workingDirectory: artifactPath,
       environment: {
-        ...Platform.environment,
+        ..._platform.environment,
         // See https://stackoverflow.com/a/69237460/7009800
         'TEST_RUNNER_$envPortKey': port,
       },
@@ -125,9 +133,12 @@ class IOSDriver {
       // Uninstall AutomatorServer
       ..addDispose(() async {
         const bundleId = 'pl.leancode.AutomatorServerUITests.xctrunner';
-        final process = await Process.run(
-          'ideviceinstaller',
-          ['--uninstall', bundleId, '--udid', device.id],
+        final process = await _processManager.run(
+          [
+            'ideviceinstaller',
+            ...['--uninstall', bundleId],
+            ...['--udid', device.id],
+          ],
           runInShell: true,
         );
 

@@ -2,22 +2,26 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
+import 'package:process/process.dart';
 import 'package:test/test.dart';
 
 import '../../fixtures.dart';
 import '../../mocks.dart';
 
 void main() {
+  late ProcessManager processManager;
   late Logger logger;
   late DisposeScope disposeScope;
   late FlutterTool flutterTool;
 
   group('FlutterTool', () {
     setUp(() {
+      processManager = MockProcessManager();
       logger = MockLogger();
       disposeScope = DisposeScope();
 
       flutterTool = FlutterTool(
+        processManager: processManager,
         parentDisposeScope: disposeScope,
         logger: logger,
       )..init(

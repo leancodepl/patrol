@@ -23,6 +23,7 @@ dependencies:
   meta: ^1.8.0
   path: ^1.8.2
   platform: ^3.1.0
+  process: ^4.2.4
   pub_updater: ^0.2.3
   tuple: ^2.0.1
   yaml: ^3.1.1

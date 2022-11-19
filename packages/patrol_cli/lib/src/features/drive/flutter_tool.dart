@@ -1,4 +1,4 @@
-import 'dart:io' show Process, systemEncoding;
+import 'dart:io' show systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -6,6 +6,7 @@ import 'package:path/path.dart' show absolute, basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:process/process.dart';
 
 extension TargetPlatformX on TargetPlatform {
   String get artifactType {
@@ -54,9 +55,11 @@ class FlutterDriverFailedException implements Exception {
 /// Wrapper around the flutter tool.
 class FlutterTool {
   FlutterTool({
+    required ProcessManager processManager,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _disposeScope = DisposeScope(),
+  })  : _processManager = processManager,
+        _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
@@ -66,6 +69,7 @@ class FlutterTool {
   late Map<String, String> _dartDefines;
   late Map<String, String> _env;
 
+  final ProcessManager _processManager;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -95,9 +99,9 @@ class FlutterTool {
     );
 
     int? exitCode;
-    final process = await Process.start(
-      'flutter',
+    final process = await _processManager.start(
       [
+        'flutter',
         '--no-version-check',
         ...['build', platform.command],
         '--debug',
@@ -159,9 +163,9 @@ class FlutterTool {
     _logger.info('${green.wrap(">")} Running $targetName on $deviceName...');
 
     int? exitCode;
-    final process = await Process.start(
-      'flutter',
+    final process = await _processManager.start(
       [
+        'flutter',
         '--no-version-check',
         ..._flutterDriveArguments(
           driver: _driver,

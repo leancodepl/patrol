@@ -8,9 +8,9 @@ import 'package:patrol_cli/src/features/drive/device.dart';
 
 class AndroidDriver {
   AndroidDriver({
-    required DisposeScope parentDisposeScope,
     required ArtifactsRepository artifactsRepository,
     Adb? adb,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _artifactsRepository = artifactsRepository,

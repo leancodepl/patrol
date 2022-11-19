@@ -67,7 +67,6 @@ void main() {
       when(() => flutterTool.build(any(), any())).thenAnswer((_) async {});
 
       driveCommand = DriveCommand(
-        parentDisposeScope: parentDisposeScope,
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         iosDriver: iosDriver,
@@ -78,6 +77,7 @@ void main() {
           fs: fs,
           projectRoot: fs.currentDirectory,
         ),
+        parentDisposeScope: parentDisposeScope,
         logger: MockLogger(),
       );
     });

@@ -23,6 +23,7 @@ import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
@@ -76,7 +77,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     addCommand(
       DriveCommand(
-        parentDisposeScope: _disposeScope,
         deviceFinder: DeviceFinder(logger: _logger),
         testFinder: TestFinder(
           integrationTestDir: _fs.directory('integration_test'),
@@ -84,16 +84,19 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ),
         testRunner: TestRunner(),
         androidDriver: AndroidDriver(
-          parentDisposeScope: _disposeScope,
           artifactsRepository: _artifactsRepository,
+          parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
         iosDriver: IOSDriver(
-          parentDisposeScope: _disposeScope,
+          processManager: const LocalProcessManager(),
+          platform: const LocalPlatform(),
           artifactsRepository: _artifactsRepository,
+          parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
         flutterTool: FlutterTool(
+          processManager: const LocalProcessManager(),
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
@@ -101,6 +104,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           projectRoot: _fs.currentDirectory,
           fs: _fs,
         ),
+        parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
     );
