@@ -3,23 +3,10 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:test/test.dart';
 
-final device1 = Device(
-  name: 'sdk gphone64 arm64',
-  id: 'emulator-5554',
-  targetPlatform: TargetPlatform.android,
-  real: false,
-);
-
-final device2 = Device(
-  name: 'sdk gphone64 arm64',
-  id: 'emulator-5556',
-  targetPlatform: TargetPlatform.android,
-  real: false,
-);
+import '../../fixtures.dart';
 
 Future<void> delay() => Future.delayed(Duration(seconds: 1));
 
@@ -39,7 +26,7 @@ void main() {
     group('set repeats', () {
       test('throws when called while running', () {
         testRunner
-          ..addDevice(device1)
+          ..addDevice(androidDevice)
           ..addTarget('app_test.dart');
 
         testRunner.run();
@@ -49,17 +36,17 @@ void main() {
 
     group('addDevice()', () {
       test('throws when trying to add already added device', () {
-        testRunner.addDevice(device1);
-        expect(() => testRunner.addDevice(device1), throwsStateError);
+        testRunner.addDevice(androidDevice);
+        expect(() => testRunner.addDevice(androidDevice), throwsStateError);
       });
 
       test('throws when trying to add while running', () {
         testRunner
-          ..addDevice(device1)
+          ..addDevice(androidDevice)
           ..addTarget('app_test.dart');
         unawaited(testRunner.run());
 
-        expect(() => testRunner.addDevice(device1), throwsStateError);
+        expect(() => testRunner.addDevice(androidDevice), throwsStateError);
       });
     });
 
@@ -74,7 +61,7 @@ void main() {
 
       test('throws when trying to add while running', () {
         testRunner
-          ..addDevice(device1)
+          ..addDevice(androidDevice)
           ..addTarget('app_test.dart');
         unawaited(testRunner.run());
 
@@ -111,14 +98,14 @@ void main() {
       });
 
       test('throws when no test targets were added', () {
-        testRunner.addDevice(device1);
+        testRunner.addDevice(androidDevice);
 
         expect(() => testRunner.run(), throwsStateError);
       });
 
       test('throws when called while already running', () {
         testRunner
-          ..addDevice(device1)
+          ..addDevice(androidDevice)
           ..addTarget('app_test.dart');
         unawaited(testRunner.run());
 
@@ -133,7 +120,7 @@ void main() {
         () async {
           fakeAsync((fakeAsync) {
             testRunner
-              ..addDevice(device1)
+              ..addDevice(androidDevice)
               ..addTarget('A')
               ..addTarget('B')
               ..addTarget('C');
@@ -142,27 +129,27 @@ void main() {
             testRunner.run();
 
             fakeAsync.elapse(Duration(seconds: 1));
-            expectedLog.add('build A emulator-5554');
+            expectedLog.add('build A ${androidDevice.id}');
             expect(actualLog, equals(actualLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
-            expectedLog.add('execute A emulator-5554');
+            expectedLog.add('execute A ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
-            expectedLog.add('build B emulator-5554');
+            expectedLog.add('build B ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
-            expectedLog.add('execute B emulator-5554');
+            expectedLog.add('execute B ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
-            expectedLog.add('build C emulator-5554');
+            expectedLog.add('build C ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
-            expectedLog.add('execute C emulator-5554');
+            expectedLog.add('execute C ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
           });
         },
@@ -173,7 +160,7 @@ void main() {
 
         fakeAsync((fakeAsync) {
           testRunner
-            ..addDevice(device1)
+            ..addDevice(androidDevice)
             ..addTarget('A')
             ..addTarget('B')
             ..addTarget('C');
@@ -183,51 +170,51 @@ void main() {
           unawaited(testRunner.run());
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('build A emulator-5554');
+          expectedLog.add('build A ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute A emulator-5554');
+          expectedLog.add('execute A ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute A emulator-5554');
+          expectedLog.add('execute A ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute A emulator-5554');
+          expectedLog.add('execute A ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('build B emulator-5554');
+          expectedLog.add('build B ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute B emulator-5554');
+          expectedLog.add('execute B ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute B emulator-5554');
+          expectedLog.add('execute B ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute B emulator-5554');
+          expectedLog.add('execute B ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('build C emulator-5554');
+          expectedLog.add('build C ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute C emulator-5554');
+          expectedLog.add('execute C ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute C emulator-5554');
+          expectedLog.add('execute C ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute C emulator-5554');
+          expectedLog.add('execute C ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
         });
       });
@@ -235,8 +222,8 @@ void main() {
       test('runs tests simultaneously on multiple devices', () {
         fakeAsync((fakeAsync) {
           testRunner
-            ..addDevice(device1)
-            ..addDevice(device2)
+            ..addDevice(androidDevice)
+            ..addDevice(iosDevice)
             ..addTarget('A')
             ..addTarget('B')
             ..addTarget('C');
@@ -246,33 +233,39 @@ void main() {
           unawaited(testRunner.run());
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog
-              .addAll(['build A emulator-5554', 'build A emulator-5556']);
+          expectedLog.addAll(
+            ['build A ${androidDevice.id}', 'build A ${iosDevice.id}'],
+          );
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog
-              .addAll(['execute A emulator-5554', 'execute A emulator-5556']);
+          expectedLog.addAll(
+            ['execute A ${androidDevice.id}', 'execute A ${iosDevice.id}'],
+          );
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog
-              .addAll(['build B emulator-5554', 'build B emulator-5556']);
+          expectedLog.addAll(
+            ['build B ${androidDevice.id}', 'build B ${iosDevice.id}'],
+          );
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog
-              .addAll(['execute B emulator-5554', 'execute B emulator-5556']);
+          expectedLog.addAll(
+            ['execute B ${androidDevice.id}', 'execute B ${iosDevice.id}'],
+          );
           expect(actualLog, expectedLog);
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog
-              .addAll(['build C emulator-5554', 'build C emulator-5556']);
+          expectedLog.addAll(
+            ['build C ${androidDevice.id}', 'build C ${iosDevice.id}'],
+          );
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog
-              .addAll(['execute C emulator-5554', 'execute C emulator-5556']);
+          expectedLog.addAll(
+            ['execute C ${androidDevice.id}', 'execute C ${iosDevice.id}'],
+          );
           expect(actualLog, expectedLog);
         });
       });
@@ -280,7 +273,7 @@ void main() {
       test('handles disposal correctly', () async {
         fakeAsync((fakeAsync) {
           testRunner
-            ..addDevice(device1)
+            ..addDevice(androidDevice)
             ..addTarget('A')
             ..addTarget('B')
             ..addTarget('C');
@@ -289,12 +282,12 @@ void main() {
           testRunner.run();
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('build A emulator-5554');
+          expectedLog.add('build A ${androidDevice.id}');
           expect(actualLog, equals(actualLog));
 
           testRunner.dispose();
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute A emulator-5554');
+          expectedLog.add('execute A ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 10));
@@ -307,7 +300,7 @@ void main() {
 
         final testRunner = TestRunner();
         testRunner
-          ..addDevice(device1)
+          ..addDevice(androidDevice)
           ..addTarget('A')
           ..addTarget('B')
           ..addTarget('C');
@@ -326,15 +319,15 @@ void main() {
 
         await testRunner.run();
         expect(actualLog, [
-          'start build A emulator-5554',
-          'end build A emulator-5554',
-          'start execute A emulator-5554',
-          'end execute A emulator-5554',
-          'start build B emulator-5554',
-          'start build C emulator-5554',
-          'end build C emulator-5554',
-          'start execute C emulator-5554',
-          'end execute C emulator-5554',
+          'start build A ${androidDevice.id}',
+          'end build A ${androidDevice.id}',
+          'start execute A ${androidDevice.id}',
+          'end execute A ${androidDevice.id}',
+          'start build B ${androidDevice.id}',
+          'start build C ${androidDevice.id}',
+          'end build C ${androidDevice.id}',
+          'start execute C ${androidDevice.id}',
+          'end execute C ${androidDevice.id}',
         ]);
       });
 
@@ -345,7 +338,7 @@ void main() {
 
           final testRunner = TestRunner();
           testRunner
-            ..addDevice(device1)
+            ..addDevice(androidDevice)
             ..addTarget('A')
             ..addTarget('B')
             ..addTarget('C');
@@ -364,17 +357,17 @@ void main() {
 
           await testRunner.run();
           expect(actualLog, [
-            'start build A emulator-5554',
-            'end build A emulator-5554',
-            'start execute A emulator-5554',
-            'end execute A emulator-5554',
-            'start build B emulator-5554',
-            'end build B emulator-5554',
-            'start execute B emulator-5554',
-            'start build C emulator-5554',
-            'end build C emulator-5554',
-            'start execute C emulator-5554',
-            'end execute C emulator-5554',
+            'start build A ${androidDevice.id}',
+            'end build A ${androidDevice.id}',
+            'start execute A ${androidDevice.id}',
+            'end execute A ${androidDevice.id}',
+            'start build B ${androidDevice.id}',
+            'end build B ${androidDevice.id}',
+            'start execute B ${androidDevice.id}',
+            'start build C ${androidDevice.id}',
+            'end build C ${androidDevice.id}',
+            'start execute C ${androidDevice.id}',
+            'end execute C ${androidDevice.id}',
           ]);
         },
       );

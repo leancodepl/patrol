@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 
 class DevicesCommand extends Command<int> {
@@ -21,7 +21,7 @@ class DevicesCommand extends Command<int> {
     final devices = await _deviceFinder.getAttachedDevices();
 
     if (devices.isEmpty) {
-      _logger.warning('No devices attached');
+      _logger.err('No devices attached');
       return 1;
     }
 

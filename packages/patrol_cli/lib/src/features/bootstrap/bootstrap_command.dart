@@ -2,7 +2,7 @@ import 'dart:io' show Process;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/bootstrap/file_contents.dart';
 import 'package:patrol_cli/src/features/bootstrap/pubspec.dart' as pubspec;
@@ -79,7 +79,7 @@ class BootstrapCommand extends Command<int> {
         progress.complete('$package is already in dev_dependencies');
       } else {
         progress.fail('Failed to add $package to dev_dependencies');
-        _logger.severe(result.stderr);
+        _logger.err(result.stdErr);
       }
     } else {
       progress.complete('Added $package to dev_dependencies');
@@ -110,7 +110,7 @@ class BootstrapCommand extends Command<int> {
         progress.complete('$package is already in dev_dependencies');
       } else {
         progress.fail('Failed to add $package to dev_dependencies');
-        _logger.severe(result.stderr);
+        _logger.err(result.stdErr);
       }
     } else {
       progress.complete('Added $package to dev_dependencies');
@@ -125,7 +125,9 @@ class BootstrapCommand extends Command<int> {
       await file.writeAsString(driverFileContent);
     } catch (err, st) {
       progress.fail('Failed to create default $driverFilePath');
-      _logger.severe(null, err, st);
+      _logger
+        ..err('$err')
+        ..err('$st');
       return;
     }
 
@@ -147,7 +149,9 @@ class BootstrapCommand extends Command<int> {
       await file.writeAsString(template.generateCode());
     } catch (err, st) {
       progress.fail('Failed to create default $testFilePath');
-      _logger.severe(null, err, st);
+      _logger
+        ..err('$err')
+        ..err('$st');
       return;
     }
 
@@ -162,7 +166,9 @@ class BootstrapCommand extends Command<int> {
       await file.writeAsString(configFileContent);
     } catch (err, st) {
       progress.fail('Failed to create default $configFilePath');
-      _logger.severe(null, err, st);
+      _logger
+        ..err('$err')
+        ..err('$st');
       return;
     }
 

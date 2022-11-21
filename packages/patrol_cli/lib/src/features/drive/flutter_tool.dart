@@ -1,12 +1,15 @@
-import 'dart:io' show Process, systemEncoding;
+import 'dart:io' show systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart' show green, red;
-import 'package:path/path.dart' show absolute, basename, join;
+import 'package:file/file.dart';
+import 'package:mason_logger/mason_logger.dart';
+import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:process/process.dart';
+
+final dot = '${green.wrap("•")}';
 
 extension TargetPlatformX on TargetPlatform {
   String get artifactType {
@@ -28,6 +31,18 @@ extension TargetPlatformX on TargetPlatform {
   }
 }
 
+/// Thrown when `flutter build` exits with non-zero exit code.
+class FlutterBuildFailedException implements Exception {
+  FlutterBuildFailedException(this.code)
+      : assert(code != 0, 'exit code is 0, which means success'),
+        super();
+
+  final int code;
+
+  @override
+  String toString() => '`flutter build` exited with code $code';
+}
+
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
   FlutterDriverFailedException(this.code)
@@ -37,26 +52,30 @@ class FlutterDriverFailedException implements Exception {
   final int code;
 
   @override
-  String toString() => 'flutter_driver exited with code $code';
+  String toString() => '`flutter drive` exited with code $code';
 }
 
 /// Wrapper around the flutter tool.
 class FlutterTool {
   FlutterTool({
+    required ProcessManager processManager,
+    required FileSystem fs,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _disposeScope = DisposeScope(),
+  })  : _processManager = processManager,
+        _fs = fs,
+        _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
-  late String driver;
-  String? host;
-  String? port;
-  String? flavor;
-  late Map<String, String> dartDefines;
-  late Map<String, String> env;
+  late String _driver;
+  String? _flavor;
+  late Map<String, String> _dartDefines;
+  late Map<String, String> _env;
 
+  final ProcessManager _processManager;
+  final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -67,13 +86,11 @@ class FlutterTool {
     required String? flavor,
     required Map<String, String> dartDefines,
   }) {
-    this.driver = driver;
-    this.host = host;
-    this.port = port;
-    this.flavor = flavor;
-    this.dartDefines = dartDefines;
+    _driver = driver;
+    _flavor = flavor;
+    _dartDefines = dartDefines;
 
-    env = {
+    _env = {
       envHostKey: host,
       envPortKey: port,
     }.withNullsRemoved();
@@ -83,22 +100,20 @@ class FlutterTool {
     final targetName = basename(target);
     final platform = device.targetPlatform;
 
-    _logger.info(
-      '${green.wrap(">")} Building ${platform.artifactType} for $targetName...',
-    );
+    _logger.info('$dot Building ${platform.artifactType} for $targetName...');
 
     int? exitCode;
-    final process = await Process.start(
-      'flutter',
+    final process = await _processManager.start(
       [
+        'flutter',
         '--no-version-check',
         ...['build', platform.command],
         '--debug',
         ...['--target', target],
-        if (flavor != null) ...['--flavor', flavor!],
+        if (_flavor != null) ...['--flavor', _flavor!],
         if (platform == TargetPlatform.iOS)
           if (device.real) '--no-simulator' else '--simulator',
-        for (final dartDefine in {...env, ...dartDefines}.entries) ...[
+        for (final dartDefine in {..._env, ..._dartDefines}.entries) ...[
           '--dart-define',
           '${dartDefine.key}=${dartDefine.value}',
         ]
@@ -114,12 +129,12 @@ class FlutterTool {
 
     process.stdout.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.fine(msg);
+      _logger.detail(msg);
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.severe(msg);
+      _logger.err(msg);
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -127,18 +142,21 @@ class FlutterTool {
         return;
       }
 
-      _logger.fine(kill());
+      _logger.detail(kill());
     });
 
     exitCode = await process.exitCode;
 
-    final msg = exitCode == 0
-        ? '${green.wrap("✓")} Building ${platform.artifactType} for $targetName succeeded!'
-        : '${red.wrap("✗")} Build ${platform.artifactType} for $targetName failed';
+    if (exitCode == 0) {
+      _logger.success(
+        '✓ Building ${platform.artifactType} for $targetName succeeded!',
+      );
+    } else {
+      _logger.err('✗ Building ${platform.artifactType} for $targetName failed');
+    }
 
-    _logger.severe(msg);
     if (exitCode != 0) {
-      throw FlutterDriverFailedException(exitCode);
+      throw FlutterBuildFailedException(exitCode);
     }
   }
 
@@ -149,24 +167,24 @@ class FlutterTool {
     final deviceName = device.resolvedName;
     final targetName = basename(target);
 
-    _logger.info('${green.wrap(">")} Running $targetName on $deviceName...');
+    _logger.info('$dot Running $targetName on $deviceName...');
 
     int? exitCode;
-    final process = await Process.start(
-      'flutter',
+    final process = await _processManager.start(
       [
+        'flutter',
         '--no-version-check',
         ..._flutterDriveArguments(
-          driver: driver,
+          driver: _driver,
           target: target,
           device: device.id,
-          flavor: flavor,
+          flavor: _flavor,
           platform: device.targetPlatform,
           simulator: !device.real,
         ),
       ],
       environment: {
-        ...env,
+        ..._env,
         // below must be synced with the patrol driver from package:patrol
         ...{
           'DRIVER_DEVICE_ID': device.id,
@@ -201,14 +219,14 @@ class FlutterTool {
         } else if (line.startsWith(flutterPrefix)) {
           _logger.info(line.replaceFirst(flutterPrefix, ''));
         } else {
-          _logger.fine(line);
+          _logger.detail(line);
         }
       }
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.severe(msg);
+      _logger.err(msg);
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -216,16 +234,17 @@ class FlutterTool {
         return;
       }
 
-      _logger.fine(kill());
+      _logger.detail(kill());
     });
 
     exitCode = await process.exitCode;
 
-    final msg = exitCode == 0
-        ? '${green.wrap("✓")} $targetName passed!'
-        : '${red.wrap("✗")} $targetName failed';
+    if (exitCode == 0) {
+      _logger.success('✓ $targetName passed!');
+    } else {
+      _logger.err('✗ $targetName failed');
+    }
 
-    _logger.severe(msg);
     if (exitCode != 0) {
       throw FlutterDriverFailedException(exitCode);
     }
@@ -241,7 +260,13 @@ class FlutterTool {
   }) {
     String getApplicationBinaryPath() {
       if (platform == TargetPlatform.android) {
-        final prefix = absolute(join('build', 'app', 'outputs', 'flutter-apk'));
+        final prefix = join(
+          _fs.currentDirectory.path,
+          'build',
+          'app',
+          'outputs',
+          'flutter-apk',
+        );
         if (flavor != null) {
           return join(prefix, 'app-${flavor.toLowerCase()}-debug.apk');
         } else {

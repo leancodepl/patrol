@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -25,47 +25,64 @@ class UpdateCommand extends Command<int> {
 
   @override
   Future<int> run() async {
-    final isLatestVersion = await _pubUpdater.isUpToDate(
-      packageName: patrolCliPackage,
-      currentVersion: globalVersion,
-    );
+    var progress =
+        _logger.progress('Checking if newer patrol_cli version is available');
 
-    if (!isLatestVersion) {
-      final latestVersion =
-          await _pubUpdater.getLatestVersion(patrolCliPackage);
-      await _updateTool(latestVersion);
-      await _downloadArtifacts(latestVersion);
-    } else {
-      _logger.info(
-        'You already have the newest version of $patrolCliPackage ($globalVersion)',
+    late final String latestVersion;
+    try {
+      latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
+    } catch (err, st) {
+      progress.fail(
+        'Failed to check if newer patrol_cli version is available',
       );
+      _logger
+        ..err('$err')
+        ..err('$st');
+      return 1;
+    }
+
+    final isUpToDate = globalVersion == latestVersion;
+    if (isUpToDate) {
+      progress.complete(
+        "You're already using the latest patrol_cli version ($globalVersion)",
+      );
+      return 0;
+    }
+
+    progress.complete('New patrol_cli version is available ($latestVersion)');
+
+    // Update CLI
+
+    progress = _logger.progress(
+      'Updating $patrolCliPackage to version $latestVersion',
+    );
+    try {
+      await _pubUpdater.update(packageName: patrolCliPackage);
+    } catch (err, st) {
+      progress
+          .fail('Failed to update $patrolCliPackage to version $latestVersion');
+      _logger
+        ..err('$err')
+        ..err('$st');
+      return 1;
+    }
+    progress.complete('Updated $patrolCliPackage to version $latestVersion');
+
+    // Update artifacts
+
+    progress =
+        _logger.progress('Downloading artifacts for version $latestVersion');
+    try {
+      await _artifactsRepository.downloadArtifacts(version: latestVersion);
+      progress.complete('Downloaded artifacts for version $latestVersion');
+    } catch (err, st) {
+      progress.fail('Failed to download artifacts for version $latestVersion');
+      _logger
+        ..err('$err')
+        ..err('$st');
+      return 1;
     }
 
     return 0;
-  }
-
-  Future<void> _updateTool(String ver) async {
-    final progress = _logger.progress(
-      'Updating $patrolCliPackage to version $ver',
-    );
-
-    try {
-      await _pubUpdater.update(packageName: patrolCliPackage);
-      progress.complete('Updated $patrolCliPackage to version $ver');
-    } catch (err) {
-      progress.fail('Failed to update $patrolCliPackage to version $ver');
-      rethrow;
-    }
-  }
-
-  Future<void> _downloadArtifacts(String ver) async {
-    final progress = _logger.progress('Downloading artifacts for version $ver');
-    try {
-      await _artifactsRepository.downloadArtifacts(version: ver);
-      progress.complete('Downloaded artifacts for version $ver');
-    } catch (err) {
-      progress.fail('Failed to download artifacts for version $ver');
-      rethrow;
-    }
   }
 }

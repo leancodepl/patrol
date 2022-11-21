@@ -10,6 +10,7 @@ import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import '../fakes.dart';
+import '../mocks.dart';
 
 final _macos = FakePlatform(
   pathSeparator: '/',
@@ -24,10 +25,6 @@ final _linux = FakePlatform(
 );
 
 const _artifactPath = '/home/johndoe/.cache/patrol';
-
-class MockHttpClient extends Mock implements http.Client {}
-
-class MockZipDecoder extends Mock implements ZipDecoder {}
 
 extension _FileSystemX on FileSystem {
   void _createAndroidArtifacts() {

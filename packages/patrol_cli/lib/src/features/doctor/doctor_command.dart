@@ -1,10 +1,10 @@
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
+import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/extensions/process.dart';
-import 'package:patrol_cli/src/common/logging.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends Command<int> {
@@ -28,6 +28,7 @@ class DoctorCommand extends Command<int> {
 
   @override
   Future<int> run() async {
+    _printVersion();
     _printCachePath();
     _printAndroidSpecifics();
 
@@ -38,40 +39,44 @@ class DoctorCommand extends Command<int> {
     return 0;
   }
 
+  void _printVersion() {
+    _logger.info('Patrol CLI version: $globalVersion');
+  }
+
   void _printCachePath() {
     final artifactPath = _artifactsRepository.artifactPath;
     final extra = _artifactsRepository.artifactPathSetFromEnv
         ? '(set from ${ArtifactsRepository.artifactPathEnv})'
         : '(default)';
 
-    _logger.info('artifact path: $artifactPath $extra');
+    _logger.info('Artifact path: $artifactPath $extra');
   }
 
   void _printAndroidSpecifics() {
-    _checkIfInstalled('adb');
+    _checkIfToolInstalled('adb');
 
     final androidHome = _platform.environment['ANDROID_HOME'];
     if (androidHome?.isNotEmpty ?? false) {
-      _logger.ok('\$ANDROID_HOME env var set to $androidHome');
+      _logger.success('Env var \$ANDROID_HOME env var set to $androidHome');
     } else {
-      _logger.ok(r'$ANDROID_HOME env var is not set');
+      _logger.err(r'Env var $ANDROID_HOME is not set');
     }
   }
 
   void _printIosSpecifics() {
-    _checkIfInstalled('xcodebuild');
-    _checkIfInstalled('ideviceinstaller', 'brew install ideviceinstaller');
+    _checkIfToolInstalled('xcodebuild');
+    _checkIfToolInstalled('ideviceinstaller', 'brew install ideviceinstaller');
   }
 
-  void _checkIfInstalled(String tool, [String? hint]) {
+  void _checkIfToolInstalled(String tool, [String? hint]) {
     final result = io.Platform.isWindows
         ? io.Process.runSync('where.exe', [tool])
         : io.Process.runSync('which', [tool]);
     if (result.exitCode == 0) {
-      _logger.ok('$tool found in ${result.stdOut.trim()}');
+      _logger.success('Program $tool found in ${result.stdOut.trim()}');
     } else {
       _logger.err(
-        '$tool not found ${hint != null ? "(install with `$hint`)" : ""}',
+        'Program $tool not found ${hint != null ? "(install with `$hint`)" : ""}',
       );
     }
   }

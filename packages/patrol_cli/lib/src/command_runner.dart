@@ -5,8 +5,7 @@ import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:logging/logging.dart';
-import 'package:mason_logger/mason_logger.dart' show lightCyan, lightYellow;
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
@@ -24,10 +23,11 @@ import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
-  final logger = Logger('');
+  final logger = Logger();
   await setUpLogger();
 
   final runner = PatrolCommandRunner(logger: logger);
@@ -36,11 +36,13 @@ Future<int> patrolCommandRunner(List<String> args) async {
   Future<Never>? interruption;
 
   ProcessSignal.sigint.watch().listen((signal) async {
-    logger.fine('Caught SIGINT, exiting...');
-    interruption = runner
-        .dispose()
-        .onError((err, st) => logger.severe('error while disposing', err, st))
-        .then((_) => exit(130));
+    logger.detail('Caught SIGINT, exiting...');
+    interruption = runner.dispose().onError((err, st) {
+      logger
+        ..err('error while disposing')
+        ..err('$err')
+        ..err('$st');
+    }).then((_) => exit(130));
   });
 
   exitCode = await runner.run(args) ?? 0;
@@ -75,7 +77,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     addCommand(
       DriveCommand(
-        parentDisposeScope: _disposeScope,
         deviceFinder: DeviceFinder(logger: _logger),
         testFinder: TestFinder(
           integrationTestDir: _fs.directory('integration_test'),
@@ -83,16 +84,20 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ),
         testRunner: TestRunner(),
         androidDriver: AndroidDriver(
-          parentDisposeScope: _disposeScope,
           artifactsRepository: _artifactsRepository,
+          parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
         iosDriver: IOSDriver(
-          parentDisposeScope: _disposeScope,
+          processManager: const LocalProcessManager(),
+          platform: const LocalPlatform(),
           artifactsRepository: _artifactsRepository,
+          parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
         flutterTool: FlutterTool(
+          processManager: const LocalProcessManager(),
+          fs: _fs,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
@@ -100,6 +105,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           projectRoot: _fs.currentDirectory,
           fs: _fs,
         ),
+        parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
     );
@@ -160,7 +166,10 @@ class PatrolCommandRunner extends CommandRunner<int> {
     try {
       await _disposeScope.dispose();
     } catch (err, st) {
-      _logger.severe('error while disposing', err, st);
+      _logger
+        ..err('error while disposing')
+        ..err('$err')
+        ..err('$st');
     }
   }
 
@@ -177,7 +186,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
       if (verbose) {
         _logger
-          ..verbose = true
+          ..level = Level.verbose
           ..info('Verbose mode enabled. More logs will be printed.');
       }
 
@@ -189,29 +198,36 @@ class PatrolCommandRunner extends CommandRunner<int> {
       exitCode = await runCommand(topLevelResults) ?? 0;
     } on ToolExit catch (err, st) {
       if (verbose) {
-        _logger.severe(null, err, st);
+        _logger
+          ..err('$err')
+          ..err('$st');
       } else {
-        _logger.severe(err);
+        _logger.err('$err');
       }
       exitCode = 1;
     } on FormatException catch (err, st) {
       _logger
-        ..severe(err.message)
-        ..severe('$st')
+        ..err(err.message)
+        ..err('$st')
         ..info('')
         ..info(usage);
       exitCode = 1;
     } on UsageException catch (err) {
       _logger
-        ..severe(err.message)
+        ..err(err.message)
         ..info('')
         ..info(err.usage);
       exitCode = 1;
     } on FileSystemException catch (err, st) {
-      _logger.severe('${err.message}: ${err.path}', err, st);
+      _logger
+        ..err('${err.message}: ${err.path}')
+        ..err('$err')
+        ..err('$st');
       exitCode = 1;
     } catch (err, st) {
-      _logger.severe(null, err, st);
+      _logger
+        ..err('$err')
+        ..err('$st');
       exitCode = 1;
     }
 

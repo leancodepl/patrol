@@ -1,6 +1,6 @@
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:logging/logging.dart';
+import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
@@ -8,9 +8,9 @@ import 'package:patrol_cli/src/features/drive/device.dart';
 
 class AndroidDriver {
   AndroidDriver({
-    required DisposeScope parentDisposeScope,
     required ArtifactsRepository artifactsRepository,
     Adb? adb,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _artifactsRepository = artifactsRepository,
@@ -47,7 +47,7 @@ class AndroidDriver {
               ? 'Uninstalled server package $_serverPackage'
               : 'Failed to uninstall server package $_serverPackage '
                   '(code ${result.exitCode})';
-          _logger.fine(msg);
+          _logger.detail(msg);
         });
 
         await _forceInstallApk(
@@ -78,7 +78,7 @@ class AndroidDriver {
               ? 'Uninstalled instrumentation package $_instrumentationPackage'
               : 'Failed to uninstall instrumentation package $_instrumentationPackage '
                   '(code ${result.exitCode})';
-          _logger.fine(msg);
+          _logger.detail(msg);
         });
 
         await _forceInstallApk(
@@ -100,7 +100,7 @@ class AndroidDriver {
     required String port,
   }) async {
     await _disposeScope.run((scope) async {
-      _logger.fine('Started native Android instrumentation');
+      _logger.detail('Started native Android instrumentation');
       final process = await _adb.instrument(
         packageName: _instrumentationPackage,
         intentClass: 'androidx.test.runner.AndroidJUnitRunner',
@@ -108,13 +108,13 @@ class AndroidDriver {
         arguments: {envPortKey: port},
       );
 
-      process.listenStdOut(_logger.fine).disposedBy(scope);
-      process.listenStdErr(_logger.severe).disposedBy(scope);
+      process.listenStdOut(_logger.detail).disposedBy(scope);
+      process.listenStdErr(_logger.err).disposedBy(scope);
       scope.addDispose(() async {
         final msg = process.kill()
             ? 'Killed native Android instrumentation'
             : 'Failed to kill native Android instrumentation';
-        _logger.fine(msg);
+        _logger.detail(msg);
       });
     });
   }
