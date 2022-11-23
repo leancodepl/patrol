@@ -28,7 +28,6 @@ import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
-  await setUpLogger();
 
   final runner = PatrolCommandRunner(logger: logger);
   int exitCode;
