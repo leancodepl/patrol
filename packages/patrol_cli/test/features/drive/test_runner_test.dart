@@ -277,32 +277,32 @@ void main() {
               targetRunResults: [
                 TargetRunResult(
                   target: 'A',
-                  device: device1,
+                  device: androidDevice,
                   runs: [TargetRunStatus.passed],
                 ),
                 TargetRunResult(
                   target: 'A',
-                  device: device2,
+                  device: iosDevice,
                   runs: [TargetRunStatus.passed],
                 ),
                 TargetRunResult(
                   target: 'B',
-                  device: device1,
+                  device: androidDevice,
                   runs: [TargetRunStatus.passed],
                 ),
                 TargetRunResult(
                   target: 'B',
-                  device: device2,
+                  device: iosDevice,
                   runs: [TargetRunStatus.passed],
                 ),
                 TargetRunResult(
                   target: 'C',
-                  device: device1,
+                  device: androidDevice,
                   runs: [TargetRunStatus.passed],
                 ),
                 TargetRunResult(
                   target: 'C',
-                  device: device2,
+                  device: iosDevice,
                   runs: [TargetRunStatus.passed],
                 ),
               ],
@@ -377,17 +377,17 @@ void main() {
             targetRunResults: [
               TargetRunResult(
                 target: 'A',
-                device: device1,
+                device: androidDevice,
                 runs: [TargetRunStatus.passed],
               ),
               TargetRunResult(
                 target: 'B',
-                device: device1,
+                device: androidDevice,
                 runs: [TargetRunStatus.failedToBuild],
               ),
               TargetRunResult(
                 target: 'C',
-                device: device1,
+                device: androidDevice,
                 runs: [TargetRunStatus.passed],
               ),
             ],
@@ -440,17 +440,17 @@ void main() {
               targetRunResults: [
                 TargetRunResult(
                   target: 'A',
-                  device: device1,
+                  device: androidDevice,
                   runs: [TargetRunStatus.passed],
                 ),
                 TargetRunResult(
                   target: 'B',
-                  device: device1,
+                  device: androidDevice,
                   runs: [TargetRunStatus.failedToExecute],
                 ),
                 TargetRunResult(
                   target: 'C',
-                  device: device1,
+                  device: androidDevice,
                   runs: [TargetRunStatus.passed],
                 ),
               ],
