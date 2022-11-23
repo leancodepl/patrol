@@ -282,9 +282,13 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _logger.write(
           '${' PASS '.bgGreen.black.bold} ${res.targetName} on ${res.device.id}\n',
         );
-      } else if (res.allTestFailed) {
+      } else if (res.allRunsFailed) {
         _logger.write(
           '${' FAIL '.bgRed.white.bold} ${res.targetName} on ${res.device.id}\n',
+        );
+      } else if (res.canceled) {
+        _logger.write(
+          '${' CANC '.bgGray.white.bold} ${res.targetName} on ${res.device.id}\n',
         );
       } else {
         _logger.write(

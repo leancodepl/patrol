@@ -33,7 +33,14 @@ class TargetRunResult with EquatableMixin {
 
   bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
 
-  bool get allTestFailed => runs.every((run) => run != TargetRunStatus.passed);
+  bool get allRunsFailed => runs.every(
+        (run) =>
+            run == TargetRunStatus.failedToBuild ||
+            run == TargetRunStatus.failedToExecute,
+      );
+
+  /// True if at least 1 test run was canceled.
+  bool get canceled => runs.any((run) => run == TargetRunStatus.canceled);
 
   int get passedRuns {
     return runs.where((run) => run == TargetRunStatus.passed).length;
@@ -51,7 +58,7 @@ class TargetRunResult with EquatableMixin {
   List<Object?> get props => [target, device, runs];
 }
 
-enum TargetRunStatus { failedToBuild, failedToExecute, passed }
+enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
 
 /// Orchestrates running tests on devices.
 ///
@@ -163,6 +170,9 @@ class TestRunner extends Disposable {
           );
 
           if (_disposed) {
+            for (var i = 0; i < _repeats; i++) {
+              targetRuns.add(TargetRunStatus.canceled);
+            }
             continue;
           }
 
@@ -175,7 +185,7 @@ class TestRunner extends Disposable {
 
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
-              // TODO: add canceled
+              targetRuns.add(TargetRunStatus.canceled);
               continue;
             }
 
