@@ -47,34 +47,63 @@ Future<void> _initCommunication({
   required String isolateId,
 }) async {
   await vmService.streamListen('Extension');
-  vmService.onEvent('Extension').listen((event) {
+  vmService.onEvent('Extension').listen((event) async {
     if (event.extensionKind != 'patrol') {
       return;
     }
 
     final method = event.extensionData!.data['method'] as String;
     final requestId = event.extensionData!.data['request_id'] as int;
+    final args = event.extensionData!.data['args'] as Map<String, dynamic>;
     switch (method) {
       case 'take_screenshot':
         bool status;
         String? error;
         try {
-          _takeScreenshot(
-            event.extensionData!.data['args'] as Map<String, dynamic>,
-          );
+          _takeScreenshot(args);
           status = true;
         } catch (err) {
           status = false;
           error = err.toString();
         }
 
-        vmService.callServiceExtension(
+        await vmService.callServiceExtension(
           'ext.flutter.patrol',
           isolateId: isolateId,
           args: <String, dynamic>{
             'request_id': requestId,
             'status': status,
             'error': error,
+          },
+        );
+        break;
+      case 'run_process':
+        bool status;
+        String? error;
+        Map<String, dynamic>? data;
+        try {
+          data = await _runProcess(
+            args['executable'] as String,
+            (args['arguments'] as List<dynamic>)
+                .map((dynamic e) => e.toString())
+                .toList(),
+            args['runInShell'] as bool,
+          );
+
+          status = true;
+        } catch (err) {
+          status = false;
+          error = err.toString();
+        }
+
+        await vmService.callServiceExtension(
+          'ext.flutter.patrol',
+          isolateId: isolateId,
+          args: <String, dynamic>{
+            'request_id': requestId,
+            'status': status,
+            'error': error,
+            if (data != null) ...data,
           },
         );
         break;
@@ -126,4 +155,25 @@ void _takeScreenshot(Map<String, dynamic> args) {
   if (exitCode != 0) {
     throw StateError('flutter screenshot exited with code $exitCode');
   }
+}
+
+Future<Map<String, dynamic>> _runProcess(
+  String executable,
+  List<String> arguments,
+  bool runInShell,
+) async {
+  final result = await io.Process.run(
+    executable,
+    arguments,
+    runInShell: runInShell,
+  );
+
+  final response = <String, dynamic>{
+    'stdout': result.stdout as String,
+    'stderr': result.stderr as String,
+    'exitCode': result.exitCode,
+    'pid': result.pid,
+  };
+
+  return response;
 }

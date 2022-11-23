@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'package:patrol/patrol.dart';
 
 typedef _LoggerCallback = void Function(String);
@@ -25,5 +27,30 @@ class HostAutomator {
   }) async {
     _logger('takeScreenshot(name: $name, path: $path)');
     await _binding.takeFlutterScreenshot(name: name, path: path);
+  }
+
+  /// Shortcut for [PatrolBinding.takeFlutterScreenshot].
+  Future<io.ProcessResult> runProcess(
+    String executable, {
+    List<String> arguments = const [],
+    bool runInShell = false,
+  }) async {
+    _logger(
+      'runProcess(executable: $executable, arguments: $arguments, runInShell: $runInShell)',
+    );
+    final result = await _binding.runProcess(
+      executable: executable,
+      arguments: arguments,
+      runInShell: runInShell,
+    );
+
+    if (result.exitCode != 0) {
+      _logger('WARNING: process "$executable" failed');
+      _logger('WARNING:  exit code: ${result.exitCode}');
+      _logger('WARNING:  pid:       ${result.pid}');
+      _logger('WARNING:  stdout:    ${result.stdout}');
+      _logger('WARNING:  stderr:    ${result.stderr}');
+    }
+    return result;
   }
 }
