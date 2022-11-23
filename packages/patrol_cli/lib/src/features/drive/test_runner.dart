@@ -10,8 +10,7 @@ class TestRunnerResult with EquatableMixin {
 
   final List<TargetRunResult> targetRunResults;
 
-  bool get allSuccessful => targetRunResults
-      .every((e) => e.runs.every((run) => run == TargetRunStatus.passed));
+  bool get allSuccessful => targetRunResults.every((e) => e.allRunsPassed);
 
   @override
   List<Object?> get props => [targetRunResults];
