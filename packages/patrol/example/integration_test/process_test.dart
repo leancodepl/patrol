@@ -44,7 +44,7 @@ Future<void> main() async {
 
       result = await $.host.runProcess(
         'bash',
-        arguments: ['-c', '"this command will fail"'],
+        arguments: ['-c', '"non-existent-program"'],
       );
       expect(result.exitCode, 127);
 

@@ -46,10 +46,10 @@ class HostAutomator {
 
     if (result.exitCode != 0) {
       _logger('WARNING: process "$executable" failed');
-      _logger('WARNING:  exit code: ${result.exitCode}');
-      _logger('WARNING:  pid:       ${result.pid}');
-      _logger('WARNING:  stdout:    ${result.stdout}');
-      _logger('WARNING:  stderr:    ${result.stderr}');
+      _logger('WARNING:   exit code: ${result.exitCode}');
+      _logger('WARNING:   pid:       ${result.pid}');
+      _logger('WARNING:   stdout:    ${result.stdout}');
+      _logger('WARNING:   stderr:    ${result.stderr}');
     }
     return result;
   }
