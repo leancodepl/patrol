@@ -29,7 +29,7 @@ class HostAutomator {
     await _binding.takeFlutterScreenshot(name: name, path: path);
   }
 
-  /// Shortcut for [PatrolBinding.takeFlutterScreenshot].
+  /// Shortcut for [PatrolBinding.runProcess].
   Future<io.ProcessResult> runProcess(
     String executable, {
     List<String> arguments = const [],
