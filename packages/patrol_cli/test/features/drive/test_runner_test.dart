@@ -230,46 +230,10 @@ void main() {
 
           final expectedLog = <String>[];
           expect(actualLog, equals(<String>[]));
-
-          expectLater(
-            () async => testRunner.run(),
-            equals(
-              TestRunnerResult(
-                targetRunResults: [
-                  TargetRunResult(
-                    target: 'A',
-                    device: androidDevice,
-                    runs: [TargetRunStatus.passed],
-                  ),
-                  TargetRunResult(
-                    target: 'A',
-                    device: iosDevice,
-                    runs: [TargetRunStatus.passed],
-                  ),
-                  TargetRunResult(
-                    target: 'B',
-                    device: androidDevice,
-                    runs: [TargetRunStatus.passed],
-                  ),
-                  TargetRunResult(
-                    target: 'B',
-                    device: iosDevice,
-                    runs: [TargetRunStatus.passed],
-                  ),
-                  TargetRunResult(
-                    target: 'C',
-                    device: androidDevice,
-                    runs: [TargetRunStatus.passed],
-                  ),
-                  TargetRunResult(
-                    target: 'C',
-                    device: iosDevice,
-                    runs: [TargetRunStatus.passed],
-                  ),
-                ],
-              ),
-            ),
-          );
+          late TestRunnerResult result;
+          unawaited(() async {
+            result = await testRunner.run();
+          }());
 
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.addAll(
@@ -307,10 +271,43 @@ void main() {
           );
           expect(actualLog, expectedLog);
 
-          // expect(
-          //   result,
-          //   ,
-          // );
+          expect(
+            result,
+            TestRunnerResult(
+              targetRunResults: [
+                TargetRunResult(
+                  target: 'A',
+                  device: androidDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+                TargetRunResult(
+                  target: 'A',
+                  device: iosDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+                TargetRunResult(
+                  target: 'B',
+                  device: androidDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+                TargetRunResult(
+                  target: 'B',
+                  device: iosDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+                TargetRunResult(
+                  target: 'C',
+                  device: androidDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+                TargetRunResult(
+                  target: 'C',
+                  device: iosDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+              ],
+            ),
+          );
         });
       });
 
