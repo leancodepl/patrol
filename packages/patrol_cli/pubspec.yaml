@@ -16,6 +16,7 @@ dependencies:
   args: ^2.3.1
   collection: ^1.16.0
   dispose_scope: ^2.0.1
+  equatable: ^2.0.5
   file: ^6.1.4
   freezed_annotation: ^2.1.0
   http: ^0.13.5

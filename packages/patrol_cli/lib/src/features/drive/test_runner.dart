@@ -1,7 +1,63 @@
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:equatable/equatable.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
+
+class TestRunnerResult with EquatableMixin {
+  const TestRunnerResult({required this.targetRunResults});
+
+  final List<TargetRunResult> targetRunResults;
+
+  bool get allSuccessful => targetRunResults.every((e) => e.allRunsPassed);
+
+  @override
+  List<Object?> get props => [targetRunResults];
+}
+
+class TargetRunResult with EquatableMixin {
+  TargetRunResult({
+    required this.target,
+    required this.device,
+    required this.runs,
+  });
+
+  final String target;
+  final Device device;
+
+  final List<TargetRunStatus> runs;
+
+  String get targetName => basename(target);
+
+  bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
+
+  bool get allRunsFailed => runs.every(
+        (run) =>
+            run == TargetRunStatus.failedToBuild ||
+            run == TargetRunStatus.failedToExecute,
+      );
+
+  /// True if at least 1 test run was canceled.
+  bool get canceled => runs.any((run) => run == TargetRunStatus.canceled);
+
+  int get passedRuns {
+    return runs.where((run) => run == TargetRunStatus.passed).length;
+  }
+
+  int get runsFailedToBuild {
+    return runs.where((run) => run == TargetRunStatus.failedToBuild).length;
+  }
+
+  int get runsFailedToExecute {
+    return runs.where((run) => run == TargetRunStatus.failedToExecute).length;
+  }
+
+  @override
+  List<Object?> get props => [target, device, runs];
+}
+
+enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
 
 /// Orchestrates running tests on devices.
 ///
@@ -78,7 +134,7 @@ class TestRunner extends Disposable {
   /// Tests are run sequentially on a single device, but many devices can be
   /// attached at the same time, and thus many tests can be running at the same
   /// time.
-  Future<void> run() async {
+  Future<TestRunnerResult> run() async {
     if (_running) {
       throw StateError('tests are already running');
     }
@@ -101,30 +157,45 @@ class TestRunner extends Disposable {
 
     _running = true;
 
+    final targetRunResults = <TargetRunResult>[];
+
     final testRunsOnAllDevices = <Future<void>>[];
     for (final device in _devices.values) {
       Future<void> runTestsOnDevice() async {
         for (final target in _targets) {
+          final targetRuns = <TargetRunStatus>[];
+          targetRunResults.add(
+            TargetRunResult(target: target, device: device, runs: targetRuns),
+          );
+
           if (_disposed) {
+            for (var i = 0; i < _repeats; i++) {
+              targetRuns.add(TargetRunStatus.canceled);
+            }
             continue;
           }
 
           try {
             await builder(target, device);
           } catch (_) {
+            targetRuns.add(TargetRunStatus.failedToBuild);
             continue;
           }
 
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
+              targetRuns.add(TargetRunStatus.canceled);
               continue;
             }
 
             try {
               await executor(target, device);
             } catch (_) {
+              targetRuns.add(TargetRunStatus.failedToExecute);
               continue;
             }
+
+            targetRuns.add(TargetRunStatus.passed);
           }
         }
       }
@@ -135,6 +206,8 @@ class TestRunner extends Disposable {
 
     await Future.wait<void>(testRunsOnAllDevices);
     _running = false;
+
+    return TestRunnerResult(targetRunResults: targetRunResults);
   }
 
   @override

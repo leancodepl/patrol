@@ -1,3 +1,4 @@
+import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mason_logger/mason_logger.dart';
@@ -31,6 +32,8 @@ class DriveCommandConfig with _$DriveCommandConfig {
     required int repeat,
   }) = _DriveCommandConfig;
 }
+
+const _defaultRepeats = 1;
 
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
@@ -114,7 +117,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         'repeat',
         abbr: 'n',
         help: 'Repeat the test n times.',
-        defaultsTo: '1',
+        defaultsTo: '$_defaultRepeats',
       );
   }
 
@@ -175,9 +178,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    var repeat = 1;
+    final int repeat;
     try {
-      final repeatStr = argResults?['repeat'] as String? ?? '1';
+      final repeatStr = argResults?['repeat'] as String? ?? '$_defaultRepeats';
       repeat = int.parse(repeatStr);
     } on FormatException {
       throw const FormatException('`repeat` argument is not an int');
@@ -222,15 +225,12 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       dartDefines: config.dartDefines,
     );
 
-    var exitCode = 0;
-
     _testRunner
       ..repeats = config.repeat
       ..builder = (target, device) async {
         try {
           await _flutterTool.build(target, device);
         } catch (err) {
-          exitCode = 1;
           _logger
             ..err('$err')
             ..err(
@@ -242,8 +242,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       ..executor = (target, device) async {
         try {
           await _flutterTool.drive(target, device);
-        } on FlutterDriverFailedException catch (err) {
-          exitCode = 1;
+        } catch (err) {
           _logger
             ..err('$err')
             ..err(
@@ -276,8 +275,29 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
     }
 
-    await _testRunner.run();
+    final results = await _testRunner.run();
 
+    for (final res in results.targetRunResults) {
+      if (res.allRunsPassed) {
+        _logger.write(
+          '${' PASS '.bgGreen.black.bold} ${res.targetName} on ${res.device.id}\n',
+        );
+      } else if (res.allRunsFailed) {
+        _logger.write(
+          '${' FAIL '.bgRed.white.bold} ${res.targetName} on ${res.device.id}\n',
+        );
+      } else if (res.canceled) {
+        _logger.write(
+          '${' CANC '.bgGray.white.bold} ${res.targetName} on ${res.device.id}\n',
+        );
+      } else {
+        _logger.write(
+          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on ${res.device.id}\n',
+        );
+      }
+    }
+
+    final exitCode = results.allSuccessful ? 0 : 1;
     return exitCode;
   }
 }
