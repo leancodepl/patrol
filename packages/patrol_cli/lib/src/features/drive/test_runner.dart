@@ -1,5 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:equatable/equatable.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/features/drive/device.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
@@ -28,14 +29,26 @@ class TargetRunResult with EquatableMixin {
 
   final List<TargetRunStatus> runs;
 
+  String get targetName => basename(target);
+
+  bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
+
+  bool get allTestFailed => runs.every((run) => run != TargetRunStatus.passed);
+
+  int get passedRuns {
+    return runs.where((run) => run == TargetRunStatus.passed).length;
+  }
+
+  int get runsFailedToBuild {
+    return runs.where((run) => run == TargetRunStatus.failedToBuild).length;
+  }
+
+  int get runsFailedToExecute {
+    return runs.where((run) => run == TargetRunStatus.failedToExecute).length;
+  }
+
   @override
   List<Object?> get props => [target, device, runs];
-
-  // required this.scheduledTargetRuns,
-  // required this.builtTargetRuns
-  // required this.executedRuns,
-  // required this.failedRuns,
-
 }
 
 enum TargetRunStatus { failedToBuild, failedToExecute, passed }
