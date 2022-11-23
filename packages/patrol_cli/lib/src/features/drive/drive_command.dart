@@ -178,7 +178,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    int repeat;
+    final int repeat;
     try {
       final repeatStr = argResults?['repeat'] as String? ?? '$_defaultRepeats';
       repeat = int.parse(repeatStr);
