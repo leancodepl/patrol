@@ -1,3 +1,7 @@
+## 0.7.4
+
+- Fix minor bug with custom binding initialization (#636)
+
 ## 0.7.3
 
 - Add `patrolIntegrationDriver`, which extends the default `integrationDriver`
