@@ -61,12 +61,12 @@ void patrolTest(
   if (nativeAutomation) {
     if (binding is PatrolBinding) {
       hostAutomator = HostAutomator(binding: binding);
-    }
 
-    nativeAutomator = NativeAutomator(
-      packageName: config.packageName,
-      bundleId: config.bundleId,
-    );
+      nativeAutomator = NativeAutomator(
+        packageName: config.packageName,
+        bundleId: config.bundleId,
+      );
+    }
   }
 
   testWidgets(
