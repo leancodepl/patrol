@@ -1,6 +1,9 @@
 ## Unreleased
 
-- Rename `PatrolTestConfig` to `PatrolTesterConfig`
+- Revamp configuration of testers, letting for more granural setup (#640):
+  - Rename `PatrolTestConfig` to `PatrolTesterConfig`
+  - Introduce `NativeAutomatorConfig`
+  - Introduce `HostAutomatorConfig`
 
 ## 0.7.4
 

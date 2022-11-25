@@ -38,8 +38,8 @@ class PatrolTesterConfig {
   /// Used in [PatrolTester.log].
   final String? appName;
 
-  /// Creates a copy of this config but with the given fields replaced with
-  /// the new values.
+  /// Creates a copy of this config but with the given fields replaced with the
+  /// new values.
   PatrolTesterConfig copyWith({
     Duration? existsTimeout,
     Duration? visibleTimeout,
@@ -302,7 +302,7 @@ class PatrolTester {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
-  /// Timeout is globally set by [PatrolTester._config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilExists(
     PatrolFinder finder, {
@@ -333,7 +333,7 @@ class PatrolTester {
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// the timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester._config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
@@ -381,7 +381,7 @@ class PatrolTester {
   ///    situations when [finder] finds more than 1 visible widget
   ///
   /// See also:
-  ///  * [PatrolTester._config.andSettle], which controls the default behavior if
+  ///  * [PatrolTester.config.andSettle], which controls the default behavior if
   ///    [andSettle] is null
   Future<PatrolFinder> dragUntilExists({
     required Finder finder,
