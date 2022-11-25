@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/custom_finders/common.dart';
+import 'package:patrol/src/common.dart';
 import 'package:patrol/src/custom_finders/exceptions.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/extensions.dart';
