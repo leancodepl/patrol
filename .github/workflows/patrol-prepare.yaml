@@ -20,9 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - version: 3.0.0
           - channel: stable
-          - channel: beta
+          #- version: 3.0.0
+          #- channel: beta
 
     defaults:
       run:
