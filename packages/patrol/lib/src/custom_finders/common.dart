@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/custom_finders/patrol_test_config.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/host/host_automator.dart';
 import 'package:patrol/src/native/native.dart';
@@ -38,7 +37,7 @@ void patrolTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
-  PatrolTestConfig config = const PatrolTestConfig(),
+  PatrolTesterConfig config = const PatrolTesterConfig(),
   bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
 }) {

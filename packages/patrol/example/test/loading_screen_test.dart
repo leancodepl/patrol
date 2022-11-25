@@ -26,6 +26,6 @@ void main() {
         );
       });
     },
-    config: PatrolTestConfig(visibleTimeout: Duration(milliseconds: 100)),
+    config: PatrolTesterConfig(visibleTimeout: Duration(milliseconds: 100)),
   );
 }

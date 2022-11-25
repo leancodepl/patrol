@@ -52,7 +52,7 @@ void main() {
         throwsA(isA<WaitUntilVisibleTimeoutException>()),
       );
     },
-    config: const PatrolTestConfig(
+    config: const PatrolTesterConfig(
       visibleTimeout: Duration(milliseconds: 300),
     ),
   );
