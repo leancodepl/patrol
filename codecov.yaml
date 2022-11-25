@@ -1,0 +1,24 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+      patrol:
+        target: auto
+        flags:
+          - patrol
+      patrol_cli:
+        target: auto
+        flags:
+          - patrol_cli
+
+comment:
+  branches: null
+
+flags:
+  patrol:
+    paths: ["packages/patrol"]
+    carryforward: true
+  patrol_cli:
+    paths: ["packages/patrol_cli"]
+    carryforward: true

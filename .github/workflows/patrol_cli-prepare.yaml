@@ -38,20 +38,13 @@ jobs:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
 
-      # - name: Install Java
-      #   uses: actions/setup-java@v3
-      #   with:
-      #     distribution: "temurin"
-      #     java-version: "11"
-
-      # - name: Setup Android SDK
-      #   uses: android-actions/setup-android@v2
-
       - name: dart pub get
         run: dart pub get
 
       - name: dart test
-        run: dart test
+        run: |
+          dart test --coverage coverage
+          dart run coverage:format_coverage --lcov --in coverage --out coverage/lcov.info --report-on lib
 
       - name: dart analyze
         run: dart analyze
@@ -77,3 +70,8 @@ jobs:
           cd example
           patrol bootstrap --template counter
           flutter analyze
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: patrol_cli

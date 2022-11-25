@@ -42,7 +42,7 @@ jobs:
         run: flutter pub get
 
       - name: flutter test
-        run: flutter test
+        run: flutter test --coverage
 
       - name: flutter analyze
         run: flutter analyze
@@ -65,3 +65,8 @@ jobs:
       - name: flutter test (example app)
         working-directory: ./packages/patrol/example
         run: flutter test
+
+      - name: Upload code coverage
+        uses: codecov/codecov-action@v3
+        with:
+          flags: patrol
