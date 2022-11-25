@@ -1,9 +1,11 @@
-## Unreleased
+## 0.7.5
 
 - Revamp configuration of testers, letting for more granural setup (#640):
   - Rename `PatrolTestConfig` to `PatrolTesterConfig`
   - Introduce `NativeAutomatorConfig`
   - Introduce `HostAutomatorConfig`
+- Introduce `HostAutomator.run()` method, which lets you run programs on your
+  computer from within your Flutter integration tests (#630)
 
 ## 0.7.4
 
