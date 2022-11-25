@@ -13,7 +13,11 @@ coverage:
           - patrol_cli
 
 comment:
-  branches: null
+  layout: "reach, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
 
 flags:
   patrol:
