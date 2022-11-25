@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol/src/host/host_automator.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
 class PatrolTesterConfig {
@@ -12,8 +11,6 @@ class PatrolTesterConfig {
     this.settleTimeout = const Duration(seconds: 10),
     this.andSettle = true,
     this.appName,
-    this.packageName,
-    this.bundleId,
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't finds
@@ -41,16 +38,6 @@ class PatrolTesterConfig {
   /// Used in [PatrolTester.log].
   final String? appName;
 
-  /// Package name of the application under test.
-  ///
-  /// Android only.
-  final String? packageName;
-
-  /// Bundle identifier name of the application under test.
-  ///
-  /// iOS only.
-  final String? bundleId;
-
   /// Creates a copy of this config but with the given fields replaced with
   /// the new values.
   PatrolTesterConfig copyWith({
@@ -68,8 +55,6 @@ class PatrolTesterConfig {
       settleTimeout: settleTimeout ?? this.settleTimeout,
       andSettle: andSettle ?? this.andSettle,
       appName: appName ?? this.appName,
-      packageName: packageName ?? this.packageName,
-      bundleId: bundleId ?? this.bundleId,
     );
   }
 }
@@ -317,7 +302,7 @@ class PatrolTester {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTester._config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilExists(
     PatrolFinder finder, {
@@ -348,7 +333,7 @@ class PatrolTester {
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// the timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTester._config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
@@ -396,7 +381,7 @@ class PatrolTester {
   ///    situations when [finder] finds more than 1 visible widget
   ///
   /// See also:
-  ///  * [PatrolTester.config.andSettle], which controls the default behavior if
+  ///  * [PatrolTester._config.andSettle], which controls the default behavior if
   ///    [andSettle] is null
   Future<PatrolFinder> dragUntilExists({
     required Finder finder,

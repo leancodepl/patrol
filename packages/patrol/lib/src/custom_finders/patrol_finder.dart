@@ -274,7 +274,7 @@ class PatrolFinder extends MatchFinder {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTester._config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilExists({Duration? timeout}) {
     return tester.waitUntilExists(this, timeout: timeout);
@@ -285,7 +285,7 @@ class PatrolFinder extends MatchFinder {
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTester._config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilVisible({Duration? timeout}) {
     return tester.waitUntilVisible(this, timeout: timeout);

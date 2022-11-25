@@ -1,3 +1,7 @@
+## Unreleased
+
+- Rename `PatrolTestConfig` to `PatrolTesterConfig`
+
 ## 0.7.4
 
 - Fix minor bug with custom binding initialization (#636)
