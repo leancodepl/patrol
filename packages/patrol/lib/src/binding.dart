@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,14 +12,16 @@ class _Response {
       int.parse(json['request_id'] as String),
       json['status'] == 'true',
       json['error'] as String?,
+      json,
     );
   }
 
-  const _Response._(this.id, this.ok, this.error);
+  const _Response._(this.id, this.ok, this.error, this.raw);
 
   final int id;
   final bool ok;
   final String? error;
+  final Map<String, dynamic> raw;
 }
 
 // ignore: avoid_print
@@ -95,6 +98,37 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     if (!resp.ok) {
       throw StateError('event with request_id $eventId failed: ${resp.error}');
     }
+  }
+
+  /// Runs a process using [io.Process.run].
+  Future<io.ProcessResult> runProcess({
+    required String executable,
+    required List<String> arguments,
+    required bool runInShell,
+  }) async {
+    final eventId = ++_latestEventId;
+
+    postEvent('patrol', <String, dynamic>{
+      'method': 'run_process',
+      'request_id': eventId,
+      'args': {
+        'executable': executable,
+        'arguments': arguments,
+        'runInShell': runInShell,
+      },
+    });
+
+    final resp = await _controller.stream.firstWhere((r) => r.id == eventId);
+    if (!resp.ok) {
+      throw StateError('event with request_id $eventId failed: ${resp.error}');
+    }
+
+    return io.ProcessResult(
+      int.parse(resp.raw['pid'] as String),
+      int.parse(resp.raw['exitCode'] as String),
+      resp.raw['stdout'], // String
+      resp.raw['stderr'], // String
+    );
   }
 
   /// The singleton instance of this object.
