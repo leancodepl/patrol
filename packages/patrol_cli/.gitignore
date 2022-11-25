@@ -6,3 +6,4 @@
 build/
 
 *.exe
+/coverage
