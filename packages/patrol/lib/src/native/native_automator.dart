@@ -5,13 +5,8 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:patrol/src/native/binding.dart';
+import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
-
-typedef _LoggerCallback = void Function(String);
-
-// ignore: avoid_print
-void _defaultPrintLogger(String message) => print('Patrol (native): $message');
 
 /// Thrown when a native action fails.
 class PatrolActionException implements Exception {
@@ -37,68 +32,27 @@ enum BindingType {
   none,
 }
 
-/// Provides functionality to interact with the OS that the app under test
-/// is running on.
-///
-/// Communicates over gRPC with the native automation server running on the
-/// target device.
-class NativeAutomator {
-  /// Creates a new [NativeAutomator].
-  NativeAutomator({
+// ignore: avoid_print
+void _defaultPrintLogger(String message) => print('Patrol (native): $message');
+
+/// Configuration for [NativeAutomator].
+class NativeAutomatorConfig {
+  /// Creates a new [NativeAutomatorConfig].
+  const NativeAutomatorConfig({
+    this.host = const String.fromEnvironment(
+      'PATROL_HOST',
+      defaultValue: 'localhost',
+    ),
+    this.port = const String.fromEnvironment(
+      'PATROL_PORT',
+      defaultValue: '8081',
+    ),
+    this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
+    this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
-    void Function(String) logger = _defaultPrintLogger,
-    String? packageName,
-    String? bundleId,
-  })  : assert(
-          connectionTimeout > findTimeout,
-          'find timeout is longer than connection timeout',
-        ),
-        _logger = logger,
-        host = const String.fromEnvironment(
-          'PATROL_HOST',
-          defaultValue: 'localhost',
-        ),
-        port = const String.fromEnvironment(
-          'PATROL_PORT',
-          defaultValue: '8081',
-        ) {
-    this.packageName =
-        packageName ?? const String.fromEnvironment('PATROL_APP_PACKAGE_NAME');
-
-    this.bundleId =
-        bundleId ?? const String.fromEnvironment('PATROL_APP_BUNDLE_ID');
-
-    _logger(
-      'creating NativeAutomator\n'
-      '\thost: $host\n'
-      '\tport: $port\n'
-      '\tpackageName: $packageName\n'
-      '\tbundleId: $bundleId\n',
-    );
-
-    if (packageName == null && io.Platform.isAndroid) {
-      log("packageName is not set. It's recommended to set it.");
-    }
-    if (bundleId == null && io.Platform.isIOS) {
-      log("bundleId is not set. It's recommended to set it.");
-    }
-
-    final channel = ClientChannel(
-      host,
-      port: int.parse(port),
-      options: const ChannelOptions(
-        credentials: ChannelCredentials.insecure(),
-      ),
-    );
-
-    _client = NativeAutomatorClient(
-      channel,
-      options: CallOptions(timeout: connectionTimeout),
-    );
-  }
-
-  final _LoggerCallback _logger;
+    this.logger = _defaultPrintLogger,
+  });
 
   /// Host on which Patrol server instrumentation is running.
   final String host;
@@ -106,44 +60,119 @@ class NativeAutomator {
   /// Port on [host] on which Patrol server instrumentation is running.
   final String port;
 
-  /// Timeout for requests to Patrol automation server. It must be bigger than
-  /// [findTimeout].
+  /// Time after which the connection with the native automator will fail.
+  ///
+  /// It must be longer than [findTimeout].
   final Duration connectionTimeout;
 
   /// Time to wait for native views to appear.
   final Duration findTimeout;
 
-  /// Unique identifier of the app under test on Android.
-  late final String packageName;
+  /// Package name of the application under test.
+  ///
+  /// Android only.
+  final String packageName;
 
-  /// Unique identifier of the app under test on iOS.
-  late final String bundleId;
+  /// Bundle identifier name of the application under test.
+  ///
+  /// iOS only.
+  final String bundleId;
+
+  /// Called when a native action is performed.
+  final void Function(String) logger;
+
+  /// Creates a copy of this config but with the given fields replaced with the
+  /// new values.
+  NativeAutomatorConfig copyWith({
+    String? host,
+    String? port,
+    String? packageName,
+    String? bundleId,
+    Duration? connectionTimeout,
+    Duration? findTimeout,
+    void Function(String)? logger,
+  }) {
+    return NativeAutomatorConfig(
+      host: host ?? this.host,
+      port: port ?? this.port,
+      packageName: packageName ?? this.packageName,
+      bundleId: bundleId ?? this.bundleId,
+      connectionTimeout: connectionTimeout ?? this.connectionTimeout,
+      findTimeout: findTimeout ?? this.findTimeout,
+      logger: logger ?? this.logger,
+    );
+  }
+}
+
+/// Provides functionality to interact with the OS that the app under test is
+/// running on.
+///
+/// Communicates over gRPC with the native automation server running on the
+/// target device.
+class NativeAutomator {
+  /// Creates a new [NativeAutomator].
+  NativeAutomator({required NativeAutomatorConfig config})
+      : assert(
+          config.connectionTimeout > config.findTimeout,
+          'find timeout is longer than connection timeout',
+        ),
+        _config = config {
+    config.logger(
+      'creating NativeAutomator\n'
+      '\thost: ${config.host}\n'
+      '\tport: ${config.port}\n'
+      '\tpackageName: ${_config.packageName}\n'
+      '\tbundleId: ${_config.bundleId}\n',
+    );
+
+    if (_config.packageName.isEmpty && io.Platform.isAndroid) {
+      log("packageName is not set. It's recommended to set it.");
+    }
+    if (_config.bundleId.isEmpty && io.Platform.isIOS) {
+      log("bundleId is not set. It's recommended to set it.");
+    }
+
+    final channel = ClientChannel(
+      config.host,
+      port: int.parse(config.port),
+      options: const ChannelOptions(
+        credentials: ChannelCredentials.insecure(),
+      ),
+    );
+
+    _client = NativeAutomatorClient(
+      channel,
+      options: CallOptions(timeout: _config.connectionTimeout),
+    );
+  }
+
+  final NativeAutomatorConfig _config;
 
   late final NativeAutomatorClient _client;
 
   /// Returns the platform-dependent unique identifier of the app under test.
   String get resolvedAppId {
     if (io.Platform.isAndroid) {
-      return packageName;
+      return _config.packageName;
     } else if (io.Platform.isIOS) {
-      return bundleId;
+      return _config.bundleId;
     }
 
     throw StateError('unsupported platform');
   }
 
   Future<T> _wrapRequest<T>(String name, Future<T> Function() request) async {
-    _logger('$name() started');
+    _config.logger('$name() started');
     try {
       final result = await request();
-      _logger('$name() succeeded');
+      _config.logger('$name() succeeded');
       return result;
     } on GrpcError catch (err) {
-      _logger('$name() failed');
+      _config.logger('$name() failed');
       final log = '$name() failed with code ${err.codeName} (${err.message})';
       throw PatrolActionException(log);
     } catch (err) {
-      _logger('$name() failed');
+      _config.logger('$name() failed');
       rethrow;
     }
   }
@@ -155,7 +184,9 @@ class NativeAutomator {
     await _wrapRequest(
       'configure',
       () => _client.configure(
-        ConfigureRequest(findTimeoutMillis: Int64(findTimeout.inMilliseconds)),
+        ConfigureRequest(
+          findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
+        ),
       ),
     );
   }
