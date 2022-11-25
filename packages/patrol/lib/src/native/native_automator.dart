@@ -60,7 +60,7 @@ class NativeAutomatorConfig {
   /// Port on [host] on which Patrol server instrumentation is running.
   final String port;
 
-  /// Time after which the connection the native method call will fail.
+  /// Time after which the connection with the native automator will fail.
   ///
   /// It must be longer than [findTimeout].
   final Duration connectionTimeout;
