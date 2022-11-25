@@ -1,3 +1,8 @@
+## 0.7.12
+
+- AutomatorServer:
+  - Migrate gRPC server from Netty to OkHttp (#642)
+
 ## 0.7.11
 
 - Print status of test runs after `patrol drive` finishes (#624)
