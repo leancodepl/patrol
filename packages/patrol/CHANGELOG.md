@@ -1,3 +1,14 @@
+## Unreleased
+
+- Revamp configuration of testers, letting for more granural setup (#640):
+  - Rename `PatrolTestConfig` to `PatrolTesterConfig`
+  - Introduce `NativeAutomatorConfig`
+  - Introduce `HostAutomatorConfig`
+
+## 0.7.4
+
+- Fix minor bug with custom binding initialization (#636)
+
 ## 0.7.3
 
 - Add `patrolIntegrationDriver`, which extends the default `integrationDriver`

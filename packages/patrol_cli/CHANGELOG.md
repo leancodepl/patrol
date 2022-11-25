@@ -1,3 +1,12 @@
+## 0.7.11
+
+- Print status of test runs after `patrol drive` finishes (#624)
+
+## 0.7.10
+
+- Print error message when screenshot fails on host side (#625)
+- Perform internal refactoring to make testing the CLI easier (#626)
+
 ## 0.7.9
 
 - Fix running tests that failed to build (#615)

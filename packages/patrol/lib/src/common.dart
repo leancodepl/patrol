@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/custom_finders/patrol_test_config.dart';
+import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/host/host_automator.dart';
 import 'package:patrol/src/native/native.dart';
@@ -38,35 +38,33 @@ void patrolTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
-  PatrolTestConfig config = const PatrolTestConfig(),
+  PatrolTesterConfig config = const PatrolTesterConfig(),
+  NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
+  HostAutomatorConfig hostAutomatorConfig = const HostAutomatorConfig(),
   bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
 }) {
-  TestWidgetsFlutterBinding? binding;
+  HostAutomator? hostAutomator;
+  NativeAutomator? nativeAutomator;
+
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
-        binding = PatrolBinding.ensureInitialized();
+        final binding = PatrolBinding.ensureInitialized();
+
+        hostAutomator = HostAutomator(
+          config: hostAutomatorConfig,
+          binding: binding,
+        );
+
+        nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
         break;
       case BindingType.integrationTest:
-        binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
         break;
       case BindingType.none:
         break;
     }
-  }
-
-  HostAutomator? hostAutomator;
-  NativeAutomator? nativeAutomator;
-  if (nativeAutomation) {
-    if (binding is PatrolBinding) {
-      hostAutomator = HostAutomator(binding: binding);
-    }
-
-    nativeAutomator = NativeAutomator(
-      packageName: config.packageName,
-      bundleId: config.bundleId,
-    );
   }
 
   testWidgets(

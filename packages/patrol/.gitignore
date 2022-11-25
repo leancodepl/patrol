@@ -10,4 +10,4 @@ build/
 pubspec.lock
 
 .vscode
-coverage
+/coverage
