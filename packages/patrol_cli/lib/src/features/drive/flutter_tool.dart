@@ -9,7 +9,7 @@ import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:process/process.dart';
 
-final dot = '${green.wrap("•")}';
+final dot = '${lightGreen.wrap("•")}';
 
 extension TargetPlatformX on TargetPlatform {
   String get artifactType {
