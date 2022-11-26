@@ -117,14 +117,6 @@ class NativeAutomator {
           'find timeout is longer than connection timeout',
         ),
         _config = config {
-    config.logger(
-      'creating NativeAutomator\n'
-      '\thost: ${config.host}\n'
-      '\tport: ${config.port}\n'
-      '\tpackageName: ${_config.packageName}\n'
-      '\tbundleId: ${_config.bundleId}\n',
-    );
-
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       log("packageName is not set. It's recommended to set it.");
     }
