@@ -84,6 +84,11 @@ void main() {
         await $.pumpWidget(app);
         expect($(find.text('Hello')), findsOneWidget);
       });
+
+      patrolTest('invalid type and throws error', ($) async {
+        await $.pumpWidget(app);
+        expect(() => $(<String, dynamic>{}), throwsArgumentError);
+      });
     });
 
     group("works identically to Flutter's finders (1)", () {
