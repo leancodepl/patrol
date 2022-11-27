@@ -129,12 +129,12 @@ class FlutterTool {
 
     process.stdout.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.detail(msg);
+      _logger.detail('\t$msg');
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err(msg);
+      _logger.err('\t$msg');
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -223,18 +223,26 @@ class FlutterTool {
         // On Android, "flutter" is prefixed with "I\"
         final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
         if (line.startsWith(flutterWithPortPrefix)) {
-          _logger.info(line.replaceFirst(flutterWithPortPrefix, ''));
+          _logger.info('\t${line.replaceFirst(flutterWithPortPrefix, '')}');
         } else if (line.startsWith(flutterPrefix)) {
-          _logger.info(line.replaceFirst(flutterPrefix, ''));
+          _logger.info('\t${line.replaceFirst(flutterPrefix, '')}');
         } else {
-          _logger.detail(line);
+          _logger.detail('\t$line');
         }
       }
     }).disposedBy(_disposeScope);
 
-    process.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.info(msg);
+    process.stderr.listen((msg) {
+      final lines = systemEncoding
+          .decode(msg)
+          .split('\n')
+          .map((str) => str.trim())
+          .toList()
+        ..removeWhere((element) => element.isEmpty);
+
+      for (final line in lines) {
+        _logger.info('\t$line');
+      }
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
