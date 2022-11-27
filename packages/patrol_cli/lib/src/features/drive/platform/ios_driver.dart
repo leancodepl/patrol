@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:platform/platform.dart';

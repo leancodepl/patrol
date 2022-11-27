@@ -3,8 +3,8 @@ import 'dart:io' show Process;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
@@ -19,6 +19,7 @@ void main() {
 
   late DisposeScope disposeScope;
   late Logger logger;
+  late Progress progress;
 
   late FlutterTool flutterTool;
 
@@ -36,6 +37,10 @@ void main() {
       fs.currentDirectory = wd;
 
       logger = MockLogger();
+      progress = MockProgress();
+      when(() => logger.progress(any())).thenReturn(progress);
+      when(() => logger.task(any())).thenReturn(progress);
+
       disposeScope = DisposeScope();
 
       flutterTool = FlutterTool(
@@ -76,12 +81,9 @@ void main() {
           androidDevice,
         );
 
+        verify(() => logger.task('Building apk for app_test.dart')).called(1);
         verify(
-          () => logger.info('$dot Building apk for app_test.dart...'),
-        ).called(1);
-
-        verify(
-          () => logger.success('✓ Building apk for app_test.dart succeeded!'),
+          () => progress.complete('Building apk for app_test.dart succeeded'),
         ).called(1);
       });
 
@@ -99,13 +101,9 @@ void main() {
           ),
         );
 
-        verify(
-          () => logger.info('$dot Building apk for app_test.dart...'),
-        ).called(1);
-
-        verify(
-          () => logger.err('✗ Building apk for app_test.dart failed'),
-        ).called(1);
+        verify(() => logger.task('Building apk for app_test.dart')).called(1);
+        verify(() => progress.fail('Building apk for app_test.dart failed'))
+            .called(1);
       });
     });
 
@@ -144,11 +142,9 @@ void main() {
           androidDevice,
         );
 
-        verify(
-          () => logger.info('$dot Running app_test.dart on emulator-5554...'),
-        ).called(1);
-
-        verify(() => logger.success('✓ app_test.dart passed!')).called(1);
+        verify(() => logger.task('Running app_test.dart on emulator-5554'))
+            .called(1);
+        verify(() => progress.complete('app_test.dart passed')).called(1);
       });
 
       test('throws when `flutter drive` fails', () async {
@@ -165,11 +161,9 @@ void main() {
           ),
         );
 
-        verify(
-          () => logger.info('$dot Running app_test.dart on emulator-5554...'),
-        ).called(1);
-
-        verify(() => logger.err('✗ app_test.dart failed')).called(1);
+        verify(() => logger.task('Running app_test.dart on emulator-5554'))
+            .called(1);
+        verify(() => progress.fail('app_test.dart failed')).called(1);
       });
     });
   });
