@@ -1,3 +1,8 @@
+## 0.7.6
+
+- Make it possible to configure loggers of `NativeAutomator` and `HostAutomator` (#644)
+- Throw `PatrolFinderException` when `PatrolFinder.text` fails (#644)
+
 ## 0.7.5
 
 - Revamp configuration of testers, letting for more granural setup (#640):
