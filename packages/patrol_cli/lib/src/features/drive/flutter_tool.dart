@@ -2,14 +2,12 @@ import 'dart:io' show systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:process/process.dart';
-
-final dot = '${green.wrap("•")}';
 
 extension TargetPlatformX on TargetPlatform {
   String get artifactType {
@@ -100,7 +98,9 @@ class FlutterTool {
     final targetName = basename(target);
     final platform = device.targetPlatform;
 
-    _logger.info('$dot Building ${platform.artifactType} for $targetName...');
+    final task = _logger.task(
+      'Building ${platform.artifactType} for $targetName',
+    );
 
     int? exitCode;
     final process = await _processManager.start(
@@ -129,12 +129,12 @@ class FlutterTool {
 
     process.stdout.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.detail(msg);
+      _logger.detail('\t$msg');
     }).disposedBy(_disposeScope);
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err(msg);
+      _logger.err('\t$msg');
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -148,11 +148,9 @@ class FlutterTool {
     exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      _logger.success(
-        '✓ Building ${platform.artifactType} for $targetName succeeded!',
-      );
+      task.complete('Built ${platform.artifactType} for $targetName');
     } else {
-      _logger.err('✗ Building ${platform.artifactType} for $targetName failed');
+      task.fail('Failed to build ${platform.artifactType} for $targetName');
     }
 
     if (exitCode != 0) {
@@ -167,7 +165,7 @@ class FlutterTool {
     final deviceName = device.resolvedName;
     final targetName = basename(target);
 
-    _logger.info('$dot Running $targetName on $deviceName...');
+    final task = _logger.task('Running $targetName on $deviceName');
 
     int? exitCode;
     final process = await _processManager.start(
@@ -215,18 +213,26 @@ class FlutterTool {
         // On Android, "flutter" is prefixed with "I\"
         final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
         if (line.startsWith(flutterWithPortPrefix)) {
-          _logger.info(line.replaceFirst(flutterWithPortPrefix, ''));
+          _logger.info('\t${line.replaceFirst(flutterWithPortPrefix, '')}');
         } else if (line.startsWith(flutterPrefix)) {
-          _logger.info(line.replaceFirst(flutterPrefix, ''));
+          _logger.info('\t${line.replaceFirst(flutterPrefix, '')}');
         } else {
-          _logger.detail(line);
+          _logger.detail('\t$line');
         }
       }
     }).disposedBy(_disposeScope);
 
-    process.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err(msg);
+    process.stderr.listen((msg) {
+      final lines = systemEncoding
+          .decode(msg)
+          .split('\n')
+          .map((str) => str.trim())
+          .toList()
+        ..removeWhere((element) => element.isEmpty);
+
+      for (final line in lines) {
+        _logger.info('\t$line');
+      }
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -240,9 +246,9 @@ class FlutterTool {
     exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      _logger.success('✓ $targetName passed!');
+      task.complete('$targetName passed');
     } else {
-      _logger.err('✗ $targetName failed');
+      task.fail('$targetName failed');
     }
 
     if (exitCode != 0) {

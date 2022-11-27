@@ -20,7 +20,7 @@ const _defaultConfig = DriveCommandConfig(
   port: '8081',
   driver: 'test_driver/integration_test.dart',
   flavor: null,
-  dartDefines: {'PATROL_WAIT': '0'},
+  dartDefines: {'PATROL_WAIT': '0', 'PATROL_VERBOSE': 'false'},
   packageName: null,
   bundleId: null,
   repeat: 1,

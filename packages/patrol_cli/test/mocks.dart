@@ -2,9 +2,9 @@ import 'dart:io' as io;
 
 import 'package:archive/archive.dart' as archive;
 import 'package:http/http.dart' as http;
-import 'package:mason_logger/mason_logger.dart' as mason_logger;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
+import 'package:patrol_cli/src/common/logger.dart' as logger;
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
@@ -16,15 +16,17 @@ class MockHttpClient extends Mock implements http.Client {}
 
 class MockZipDecoder extends Mock implements archive.ZipDecoder {}
 
-class MockLogger extends Mock implements mason_logger.Logger {}
-
-class MockProgress extends Mock implements mason_logger.Progress {}
-
 class MockPubUpdater extends Mock implements pub.PubUpdater {}
 
 class MockProcess extends Mock implements io.Process {}
 
 class MockProcessManager extends Mock implements process.ProcessManager {}
+
+class MockProgress extends Mock implements logger.Progress {}
+
+class MockTask extends Mock implements logger.ProgressTask {}
+
+class MockLogger extends Mock implements logger.Logger {}
 
 class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
 

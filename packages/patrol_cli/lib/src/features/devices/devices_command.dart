@@ -1,5 +1,5 @@
 import 'package:args/command_runner.dart';
-import 'package:mason_logger/mason_logger.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 
 class DevicesCommand extends Command<int> {

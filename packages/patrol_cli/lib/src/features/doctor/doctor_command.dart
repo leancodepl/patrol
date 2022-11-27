@@ -1,10 +1,10 @@
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/extensions/process.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends Command<int> {

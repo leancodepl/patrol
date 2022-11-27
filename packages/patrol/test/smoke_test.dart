@@ -95,10 +95,10 @@ void main() {
     expect(
       () => $(#someWrongKey).text,
       throwsA(
-        isA<StateError>().having(
+        isA<PatrolFinderException>().having(
           (error) => error.message,
           'message',
-          'No element',
+          "Finder \"zero widgets with key [<'someWrongKey'>] (ignoring offstage widgets)\" found no widgets",
         ),
       ),
     );

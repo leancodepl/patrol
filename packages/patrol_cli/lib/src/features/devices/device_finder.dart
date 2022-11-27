@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io' show Process;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 

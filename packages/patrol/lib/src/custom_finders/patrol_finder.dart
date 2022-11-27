@@ -4,10 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/common.dart';
-import 'package:patrol/src/custom_finders/exceptions.dart';
-import 'package:patrol/src/custom_finders/patrol_tester.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/extensions.dart';
+
+/// Thrown when some [PatrolFinder]'s method fails.
+class PatrolFinderException implements Exception {
+  /// Creates a new [PatrolFinderException].
+  const PatrolFinderException(this.message);
+
+  /// Cause of the exception.
+  final String message;
+
+  @override
+  String toString() => message;
+}
 
 /// Creates a [Finder] from [matching].
 ///
@@ -272,7 +282,7 @@ class PatrolFinder extends MatchFinder {
 
   /// Waits until this finder finds at least one widget.
   ///
-  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
+  /// Throws a [WaitUntilVisibleTimeoutException] if no widgets found.
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
@@ -319,11 +329,15 @@ class PatrolFinder extends MatchFinder {
   /// expect(await $(Key('Sign in Button')).waitUntilVisible().text, 'Sign in');
   /// ```
   ///
-  /// Otherwise it throws an exception.
+  /// Otherwise it throws a [PatrolFinderException].
   String? get text {
     final elements = finder.evaluate();
-    // TODO: Throw a better error than "StateError, Bad state: No element" if no
-    // element is found
+
+    if (elements.isEmpty) {
+      throw PatrolFinderException(
+        'Finder "${toString()}" found no widgets',
+      );
+    }
 
     final firstWidget = elements.first.widget;
 
@@ -335,7 +349,7 @@ class PatrolFinder extends MatchFinder {
       return (firstWidget.text as TextSpan).toPlainText();
     }
 
-    throw Exception(
+    throw PatrolFinderException(
       'The first ${firstWidget.runtimeType} widget resolved by this finder '
       'is not a Text or RichText widget',
     );

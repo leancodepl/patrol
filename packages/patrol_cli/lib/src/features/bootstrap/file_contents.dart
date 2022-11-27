@@ -47,6 +47,7 @@ void main() {
   patrolTest(
     'counter state is the same after going to Home and switching apps',
     config: patrolConfig,
+    nativeAutomatorConfig: nativeAutomatorConfig,
     nativeAutomation: true,
     (\$) async {
       /// Find the first Text widget whose content is a String which represents
@@ -123,6 +124,7 @@ void main() {
   patrolTest(
     'counter state is the same after going to home and switching apps',
     config: patrolConfig,
+    nativeAutomatorConfig: nativeAutomatorConfig,
     nativeAutomation: true,
     ($) async {
       // Replace with your own app widget.
@@ -164,8 +166,10 @@ const configFileContent = '''
 import 'package:patrol/patrol.dart';
 
 // TODO: Replace with values specific to your app.
-const patrolConfig = PatrolTestConfig(
-  appName: 'Example App',
+
+const patrolConfig = PatrolTesterConfig(appName: 'Example App');
+
+const nativeAutomatorConfig = NativeAutomatorConfig(
   packageName: 'pl.leancode.patrol.example',
   bundleId: 'pl.leancode.patrol.Example',
 );

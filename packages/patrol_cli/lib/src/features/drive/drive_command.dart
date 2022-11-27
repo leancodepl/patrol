@@ -1,8 +1,8 @@
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -133,6 +133,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   final Logger _logger;
 
+  bool verbose = false;
+
   @override
   String get name => 'drive';
 
@@ -208,6 +210,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         envWaitKey: wait as String? ?? '0',
         envPackageNameKey: packageName as String?,
         envBundleIdKey: bundleId as String?,
+        envVerbose: '$verbose',
       }.withNullsRemoved(),
       packageName: packageName,
       bundleId: bundleId,

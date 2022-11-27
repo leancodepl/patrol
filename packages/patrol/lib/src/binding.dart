@@ -25,7 +25,12 @@ class _Response {
 }
 
 // ignore: avoid_print
-void _defaultPrintLogger(String message) => print('PatrolBinding: $message');
+void _defaultPrintLogger(String message) {
+  if (const bool.fromEnvironment('PATROL_VERBOSE')) {
+    // ignore: avoid_print
+    print('PatrolBinding: $message');
+  }
+}
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.

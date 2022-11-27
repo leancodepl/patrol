@@ -2,8 +2,12 @@ import 'dart:io' as io;
 
 import 'package:patrol/patrol.dart';
 
-// ignore: avoid_print
-void _defaultPrintLogger(String message) => print('Patrol (host): $message');
+void _defaultPrintLogger(String message) {
+  if (const bool.fromEnvironment('PATROL_VERBOSE')) {
+    // ignore: avoid_print
+    print('Patrol (host): $message');
+  }
+}
 
 /// Configuration for [HostAutomator].
 class HostAutomatorConfig {

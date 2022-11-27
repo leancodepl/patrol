@@ -32,8 +32,12 @@ enum BindingType {
   none,
 }
 
-// ignore: avoid_print
-void _defaultPrintLogger(String message) => print('Patrol (native): $message');
+void _defaultPrintLogger(String message) {
+  if (const bool.fromEnvironment('PATROL_VERBOSE')) {
+    // ignore: avoid_print
+    print('Patrol (native): $message');
+  }
+}
 
 /// Configuration for [NativeAutomator].
 class NativeAutomatorConfig {
@@ -117,14 +121,6 @@ class NativeAutomator {
           'find timeout is longer than connection timeout',
         ),
         _config = config {
-    config.logger(
-      'creating NativeAutomator\n'
-      '\thost: ${config.host}\n'
-      '\tport: ${config.port}\n'
-      '\tpackageName: ${_config.packageName}\n'
-      '\tbundleId: ${_config.bundleId}\n',
-    );
-
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       log("packageName is not set. It's recommended to set it.");
     }

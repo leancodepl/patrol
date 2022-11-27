@@ -84,6 +84,11 @@ void main() {
         await $.pumpWidget(app);
         expect($(find.text('Hello')), findsOneWidget);
       });
+
+      patrolTest('invalid type and throws error', ($) async {
+        await $.pumpWidget(app);
+        expect(() => $(<String, dynamic>{}), throwsArgumentError);
+      });
     });
 
     group("works identically to Flutter's finders (1)", () {
@@ -163,52 +168,20 @@ void main() {
       });
     });
 
-    group("works identically to Flutter's finders (2)", () {
-      Future<void> pump(PatrolTester $) async {
-        await $.pumpWidget(
-          const Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text('data'),
-          ),
-        );
-      }
-
-      patrolTest('first', ($) async {
-        await pump($);
-        expect($(Text).first.toString(), find.byType(Text).first.toString());
-        expect(
-          $('data').first.toString(),
-          find.text('data', findRichText: true).first.toString(),
-        );
-      });
-
-      patrolTest('last', ($) async {
-        await pump($);
-        expect($(Text).last.toString(), find.byType(Text).last.toString());
-        expect(
-          $('data').last.toString(),
-          find.text('data', findRichText: true).last.toString(),
-        );
-      });
-
-      patrolTest('at index', ($) async {
-        await pump($);
-        expect($(Text).at(0).toString(), find.byType(Text).at(0).toString());
-        expect(
-          $('data').at(0).toString(),
-          find.text('data', findRichText: true).at(0).toString(),
-        );
-      });
-    });
-
     group('text', () {
-      patrolTest('throws StateError if no widget is found', ($) async {
-        await $.pumpWidget(const MaterialApp());
-        expect(() => $('some text').text, throwsStateError);
-      });
+      patrolTest(
+        'throws PatrolFinderException when no widgets are found',
+        ($) async {
+          await $.pumpWidget(const MaterialApp());
+          expect(
+            () => $('some text').text,
+            throwsA(isA<PatrolFinderException>()),
+          );
+        },
+      );
 
       patrolTest(
-        'throws Exception if the first found widget is not Text or RichText',
+        'throws PatrolFinderException if the first widget found is not Text or RichText',
         ($) async {
           await $.pumpWidget(
             const MaterialApp(
@@ -216,7 +189,7 @@ void main() {
             ),
           );
 
-          expect(() => $(#someKey).text, throwsException);
+          expect(() => $(#someKey).text, throwsA(isA<PatrolFinderException>()));
         },
       );
 
@@ -865,6 +838,126 @@ void main() {
 
         expect($('count: 1'), findsOneWidget);
       });
+    });
+
+    group('at()', () {
+      patrolTest('finds single widget at index', ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: Column(
+              children: const [Text('text'), Text('text'), Text('text')],
+            ),
+          ),
+        );
+
+        expect($('text').at(0), findsOneWidget);
+        expect($('text').at(1), findsOneWidget);
+        expect($('text').at(2), findsOneWidget);
+      });
+
+      patrolTest("works identically to Flutter's finders", ($) async {
+        await $.pumpWidget(
+          MaterialApp(home: Column(children: const [Text('text')])),
+        );
+
+        expect($(Text).at(0).toString(), find.byType(Text).at(0).toString());
+        expect(
+          $('text').at(0).toString(),
+          find.text('text', findRichText: true).at(0).toString(),
+        );
+      });
+
+      patrolTest(
+        'throws IndexError when widget at index does not exist',
+        ($) async {
+          await $.pumpWidget(const MaterialApp(home: Text('some text')));
+
+          expect(
+            () => $('some text').at(1),
+            throwsA(isA<IndexError>()),
+          );
+        },
+      );
+    });
+
+    group('first', () {
+      patrolTest('finds first widget', ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: Column(children: const [Text('text'), Text('text')]),
+          ),
+        );
+
+        expect($('text').first, findsOneWidget);
+      });
+
+      patrolTest("works identically to Flutter's finders", ($) async {
+        await $.pumpWidget(const MaterialApp(home: Text('text')));
+
+        expect($(Text).first.toString(), find.byType(Text).first.toString());
+        expect(
+          $('text').first.toString(),
+          find.text('text', findRichText: true).first.toString(),
+        );
+      });
+
+      patrolTest(
+        'throws StateError when widget at index does not exist',
+        ($) async {
+          await $.pumpWidget(const MaterialApp());
+
+          expect(
+            () => $('some text').last,
+            throwsA(
+              isA<StateError>().having(
+                (err) => err.message,
+                'message',
+                'No element',
+              ),
+            ),
+          );
+        },
+      );
+    });
+
+    group('last', () {
+      patrolTest('finds last widget', ($) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: Column(children: const [Text('text'), Text('text')]),
+          ),
+        );
+
+        expect($('text').last, findsOneWidget);
+      });
+
+      patrolTest("works identically to Flutter's finders", ($) async {
+        await $.pumpWidget(const MaterialApp(home: Text('text')));
+
+        expect($(Text).last.toString(), find.byType(Text).last.toString());
+        expect(
+          $('text').last.toString(),
+          find.text('text', findRichText: true).last.toString(),
+        );
+      });
+
+      patrolTest(
+        'throws StateError when widget at index does not exist',
+        ($) async {
+          await $.pumpWidget(const MaterialApp());
+
+          expect(
+            () => $('some text').last,
+            throwsA(
+              isA<StateError>().having(
+                (err) => err.message,
+                'message',
+                'No element',
+              ),
+            ),
+          );
+        },
+      );
     });
   });
 }

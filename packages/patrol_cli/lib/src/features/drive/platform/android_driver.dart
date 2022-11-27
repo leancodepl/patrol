@@ -1,8 +1,8 @@
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:mason_logger/mason_logger.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 
@@ -39,7 +39,7 @@ class AndroidDriver {
 
   Future<void> _installServer({required String device}) async {
     await _disposeScope.run((scope) async {
-      final progress = _logger.progress('Installing server');
+      _logger.detail('Installing server');
       try {
         scope.addDispose(() async {
           final result = await _adb.uninstall(_serverPackage, device: device);
@@ -56,17 +56,17 @@ class AndroidDriver {
           packageName: _serverPackage,
         );
       } catch (err) {
-        progress.fail('Failed to install server');
+        _logger.err('Failed to install server');
         rethrow;
       }
 
-      progress.complete('Installed server');
+      _logger.detail('Installed server');
     });
   }
 
   Future<void> _installInstrumentation({String? device}) async {
     await _disposeScope.run((scope) async {
-      final progress = _logger.progress('Installing instrumentation');
+      _logger.detail('Installing instrumentation');
 
       try {
         scope.addDispose(() async {
@@ -87,11 +87,11 @@ class AndroidDriver {
           packageName: _instrumentationPackage,
         );
       } catch (err) {
-        progress.fail('Failed to install instrumentation');
+        _logger.err('Failed to install instrumentation');
         rethrow;
       }
 
-      progress.complete('Installed instrumentation');
+      _logger.detail('Installed instrumentation');
     });
   }
 
