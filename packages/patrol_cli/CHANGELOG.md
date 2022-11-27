@@ -1,3 +1,7 @@
+## 0.7.13
+
+- Improve output (#644)
+
 ## 0.7.12
 
 - AutomatorServer:
