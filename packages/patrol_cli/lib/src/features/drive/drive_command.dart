@@ -133,6 +133,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   final Logger _logger;
 
+  bool verbose = false;
+
   @override
   String get name => 'drive';
 
@@ -208,6 +210,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         envWaitKey: wait as String? ?? '0',
         envPackageNameKey: packageName as String?,
         envBundleIdKey: bundleId as String?,
+        envVerbose: '$verbose',
       }.withNullsRemoved(),
       packageName: packageName,
       bundleId: bundleId,

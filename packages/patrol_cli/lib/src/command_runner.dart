@@ -74,40 +74,40 @@ class PatrolCommandRunner extends CommandRunner<int> {
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
-    addCommand(
-      DriveCommand(
-        deviceFinder: DeviceFinder(logger: _logger),
-        testFinder: TestFinder(
-          integrationTestDir: _fs.directory('integration_test'),
-          fs: _fs,
-        ),
-        testRunner: TestRunner(),
-        androidDriver: AndroidDriver(
-          artifactsRepository: _artifactsRepository,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        iosDriver: IOSDriver(
-          processManager: const LocalProcessManager(),
-          platform: const LocalPlatform(),
-          artifactsRepository: _artifactsRepository,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        flutterTool: FlutterTool(
-          processManager: const LocalProcessManager(),
-          fs: _fs,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        dartDefinesReader: DartDefinesReader(
-          projectRoot: _fs.currentDirectory,
-          fs: _fs,
-        ),
+    driveCommand = DriveCommand(
+      deviceFinder: DeviceFinder(logger: _logger),
+      testFinder: TestFinder(
+        integrationTestDir: _fs.directory('integration_test'),
+        fs: _fs,
+      ),
+      testRunner: TestRunner(),
+      androidDriver: AndroidDriver(
+        artifactsRepository: _artifactsRepository,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
+      iosDriver: IOSDriver(
+        processManager: const LocalProcessManager(),
+        platform: const LocalPlatform(),
+        artifactsRepository: _artifactsRepository,
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      flutterTool: FlutterTool(
+        processManager: const LocalProcessManager(),
+        fs: _fs,
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      dartDefinesReader: DartDefinesReader(
+        projectRoot: _fs.currentDirectory,
+        fs: _fs,
+      ),
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
     );
+    addCommand(driveCommand);
+
     addCommand(
       DevicesCommand(
         deviceFinder: DeviceFinder(logger: _logger),
@@ -161,6 +161,8 @@ class PatrolCommandRunner extends CommandRunner<int> {
   final FileSystem _fs;
   final Logger _logger;
 
+  late DriveCommand driveCommand;
+
   Future<void> dispose() async {
     try {
       await _disposeScope.dispose();
@@ -182,6 +184,8 @@ class PatrolCommandRunner extends CommandRunner<int> {
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
       debug = topLevelResults['debug'] == true;
+
+      driveCommand.verbose = verbose;
 
       if (verbose) {
         _logger

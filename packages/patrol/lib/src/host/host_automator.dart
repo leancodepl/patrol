@@ -5,7 +5,6 @@ import 'package:patrol/patrol.dart';
 void _defaultPrintLogger(String message) {
   if (const bool.fromEnvironment('PATROL_VERBOSE')) {
     // ignore: avoid_print
-
     print('Patrol (host): $message');
   }
 }

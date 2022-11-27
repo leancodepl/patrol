@@ -5,6 +5,7 @@ import 'package:file/file.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/common/extensions/stopwatch.dart';
 import 'package:patrol_cli/src/features/drive/constants.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:process/process.dart';
@@ -100,6 +101,7 @@ class FlutterTool {
     final targetName = basename(target);
     final platform = device.targetPlatform;
 
+    final stopwatch = Stopwatch()..start();
     _logger.info('$dot Building ${platform.artifactType} for $targetName...');
 
     int? exitCode;
@@ -147,12 +149,17 @@ class FlutterTool {
 
     exitCode = await process.exitCode;
 
+    final elapsed = stopwatch.timeElapsed;
     if (exitCode == 0) {
-      _logger.success(
-        '✓ Building ${platform.artifactType} for $targetName succeeded!',
+      _logger.write(
+        '${lightGreen.wrap('✓ Building ${platform.artifactType} for $targetName succeeded!')} '
+        '${darkGray.wrap("($elapsed)")}\n',
       );
     } else {
-      _logger.err('✗ Building ${platform.artifactType} for $targetName failed');
+      _logger.write(
+        '${lightRed.wrap('✗ Building ${platform.artifactType} for $targetName failed')} '
+        '${darkGray.wrap("($elapsed)")}\n',
+      );
     }
 
     if (exitCode != 0) {
@@ -167,6 +174,7 @@ class FlutterTool {
     final deviceName = device.resolvedName;
     final targetName = basename(target);
 
+    final stopwatch = Stopwatch()..start();
     _logger.info('$dot Running $targetName on $deviceName...');
 
     int? exitCode;
@@ -226,7 +234,7 @@ class FlutterTool {
 
     process.stderr.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err(msg);
+      _logger.info(msg);
     }).disposedBy(_disposeScope);
 
     _disposeScope.addDispose(() async {
@@ -239,10 +247,17 @@ class FlutterTool {
 
     exitCode = await process.exitCode;
 
+    final elapsed = stopwatch.timeElapsed;
     if (exitCode == 0) {
-      _logger.success('✓ $targetName passed!');
+      _logger.write(
+        '${lightGreen.wrap('✓ $targetName passed!')} '
+        '${darkGray.wrap("($elapsed)")}\n',
+      );
     } else {
-      _logger.err('✗ $targetName failed');
+      _logger.write(
+        '${lightRed.wrap('✗ $targetName failed!')} '
+        '${darkGray.wrap("($elapsed)")}\n',
+      );
     }
 
     if (exitCode != 0) {
