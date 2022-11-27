@@ -83,7 +83,7 @@ void main() {
 
         verify(() => logger.task('Building apk for app_test.dart')).called(1);
         verify(
-          () => progress.complete('Building apk for app_test.dart succeeded'),
+          () => progress.complete('Built apk for app_test.dart'),
         ).called(1);
       });
 
@@ -102,7 +102,7 @@ void main() {
         );
 
         verify(() => logger.task('Building apk for app_test.dart')).called(1);
-        verify(() => progress.fail('Building apk for app_test.dart failed'))
+        verify(() => progress.fail('Failed to build apk for app_test.dart'))
             .called(1);
       });
     });

@@ -148,19 +148,9 @@ class FlutterTool {
     exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      task.complete(
-        'Building ${platform.artifactType} for $targetName succeeded',
-      );
-      // _logger.write(
-      //   '${lightGreen.wrap('✓ ')} '
-      //   '${darkGray.wrap("($elapsed)")}\n',
-      // );
+      task.complete('Built ${platform.artifactType} for $targetName');
     } else {
-      task.fail('Building ${platform.artifactType} for $targetName failed');
-      // _logger.write(
-      //   '${lightRed.wrap('✗ Building ${platform.artifactType} for $targetName failed')} '
-      //   '${darkGray.wrap("($elapsed)")}\n',
-      // );
+      task.fail('Failed to build ${platform.artifactType} for $targetName');
     }
 
     if (exitCode != 0) {
