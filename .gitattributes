@@ -4,4 +4,4 @@
 *.grpc.swift linguist-generated=true
 AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts/**/* linguist-generated=true
 packages/patrol/lib/src/native/contracts/**/* linguist-generated=true
-packages/patrol/example/android/app/src/androidTest/java/pl/leancode/patrol/example/contaracts/**/*
+packages/patrol/example/android/app/src/androidTest/java/pl/leancode/patrol/example/contracts/**/*

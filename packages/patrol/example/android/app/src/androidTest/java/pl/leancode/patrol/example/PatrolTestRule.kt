@@ -21,7 +21,6 @@ open class PatrolTestRule : ActivityTestRule<MainActivity>(MainActivity::class.j
             patrolServer.blockUntilShutdown()
         }
 
-
         return super.launchActivity(startIntent)
     }
 }

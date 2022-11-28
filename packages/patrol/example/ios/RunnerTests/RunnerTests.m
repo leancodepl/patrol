@@ -1,15 +1,23 @@
 @import XCTest;
 @import integration_test;
+#import "RunnerTests-Swift.h"
 
-// INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
+//INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
 
 @interface RunnerTests : XCTestCase
 @end
 
-                                                                                          
 @implementation RunnerTests
-                                                                                          
 + (NSArray<NSInvocation *> *)testInvocations {
+  [[Logger shared] i:@"START"];
+
+  [[Logger shared] i:@"Starting server loop..."];
+  PatrolServer *server = [[PatrolServer alloc] init];
+  [server startWithCompletionHandler:^(NSError* err) {
+    [[Logger shared] i:@"Server loop done"];
+  }];
+
+
   FLTIntegrationTestRunner *integrationTestRunner = [[FLTIntegrationTestRunner alloc] init];
   NSMutableArray<NSInvocation *> *testInvocations = [[NSMutableArray alloc] init];
   [integrationTestRunner testIntegrationTestWithResults:^(SEL testSelector, BOOL success, NSString *failureMessage) {
@@ -43,5 +51,5 @@
   }
   return testInvocations;
 }
-                                                                                          
+
 @end

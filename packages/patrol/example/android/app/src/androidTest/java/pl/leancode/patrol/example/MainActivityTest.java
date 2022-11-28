@@ -12,4 +12,3 @@ public class MainActivityTest {
     @Rule
     public TestRule rule = new PatrolTestRule();
 }
-
