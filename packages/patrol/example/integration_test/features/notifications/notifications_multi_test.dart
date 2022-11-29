@@ -2,17 +2,11 @@
 
 import 'dart:io';
 
-import 'package:example/main.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-import '../../config.dart';
+import '../../common.dart';
 
 void main() {
-  patrolTest(
+  patrol(
     'send 2 notifications, verifies that they are visible and taps on them',
-    config: patrolConfig,
-    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 

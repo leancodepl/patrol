@@ -1,31 +1,20 @@
-@Tags(['android', 'ios'])
-
-import 'package:example/main.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-import '../../config.dart';
+import '../../common.dart';
 
 void main() {
-  patrolTest(
-    'accepts location permission',
-    config: patrolConfig,
-    nativeAutomation: true,
-    ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+  patrol('accepts location permission', ($) async {
+    await $.pumpWidgetAndSettle(ExampleApp());
 
-      await $('Open location screen').tap();
+    await $('Open location screen').tap();
 
-      await $('Grant permission').tap();
+    await $('Grant permission').tap();
 
-      await $.native.selectCoarseLocation();
-      await $.native.selectFineLocation();
-      await $.native.grantPermissionOnlyThisTime();
+    await $.native.selectCoarseLocation();
+    await $.native.selectFineLocation();
+    await $.native.grantPermissionOnlyThisTime();
 
-      await $.pump();
+    await $.pump();
 
-      expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
-      expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
-    },
-  );
+    expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
+    expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
+  });
 }
