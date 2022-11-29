@@ -1,20 +1,12 @@
-@Tags(['ios'])
-
-import 'package:example/main.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-import '../../config.dart';
+import '../../common.dart';
 
 Future<void> main() async {
   testWebViewC();
 }
 
 void testWebViewC() {
-  patrolTest(
+  patrol(
     'interacts with the StackOverflow website in a webview',
-    config: patrolConfig,
-    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 

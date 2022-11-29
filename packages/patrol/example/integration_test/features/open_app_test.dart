@@ -2,12 +2,9 @@
 
 import 'dart:io' show Platform;
 
-import 'package:example/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
 
-import '../config.dart';
+import '../common.dart';
 
 Future<void> main() async {
   late String mapsId;
@@ -17,23 +14,18 @@ Future<void> main() async {
     mapsId = 'com.google.android.apps.maps';
   }
 
-  patrolTest(
-    'counter state is the same after switching apps',
-    config: patrolConfig,
-    nativeAutomation: true,
-    ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+  patrol('counter state is the same after switching apps', ($) async {
+    await $.pumpWidgetAndSettle(ExampleApp());
 
-      expect($(#counterText).text, '0');
+    expect($(#counterText).text, '0');
 
-      await $(FloatingActionButton).tap();
+    await $(FloatingActionButton).tap();
 
-      await $.native.pressHome();
-      await $.native.openApp(appId: mapsId);
-      await $.native.pressHome();
-      await $.native.openApp();
+    await $.native.pressHome();
+    await $.native.openApp(appId: mapsId);
+    await $.native.pressHome();
+    await $.native.openApp();
 
-      expect($(#counterText).text, '1');
-    },
-  );
+    expect($(#counterText).text, '1');
+  });
 }

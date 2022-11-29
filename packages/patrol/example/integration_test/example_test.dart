@@ -1,17 +1,10 @@
-@Tags(['android'])
-
-import 'package:example/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
 
-import 'config.dart';
+import 'common.dart';
 
 void main() {
-  patrolTest(
+  patrol(
     'counter state is the same after going to Home and switching apps',
-    config: patrolConfig,
-    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 

@@ -1,36 +1,26 @@
-@Tags(['android'])
-
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-import 'config.dart';
+import 'common.dart';
 
 void main() {
-  patrolTest(
-    'taps around',
-    config: patrolConfig,
-    nativeAutomation: true,
-    ($) async {
-      await $.native.openQuickSettings();
-      await $.native.tap(Selector(text: 'Bluetooth'));
-      await $.native.tap(Selector(text: 'Bluetooth'));
-      await $.native.pressBack();
+  patrol('taps around', ($) async {
+    await $.pumpWidgetAndSettle(ExampleApp());
 
-      await $.native.openNotifications();
+    await $.native.pressHome();
+    await $.native.pressDoubleRecentApps();
 
-      await $.native.enableWifi();
-      await $.native.disableWifi();
-      await $.native.enableWifi();
+    await $.native.openNotifications();
 
-      await $.native.enableCellular();
-      await $.native.disableCellular();
-      await $.native.enableCellular();
+    await $.native.enableWifi();
+    await $.native.disableWifi();
+    await $.native.enableWifi();
 
-      await $.native.enableDarkMode();
-      await $.native.disableDarkMode();
-      await $.native.enableDarkMode();
+    await $.native.enableCellular();
+    await $.native.disableCellular();
+    await $.native.enableCellular();
 
-      await $.native.pressBack();
-    },
-  );
+    await $.native.enableDarkMode();
+    await $.native.disableDarkMode();
+    await $.native.enableDarkMode();
+
+    await $.native.pressBack();
+  });
 }

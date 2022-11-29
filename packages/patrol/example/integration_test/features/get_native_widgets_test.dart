@@ -1,21 +1,10 @@
-@Tags(['android'])
-
-import 'package:example/main.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-import '../config.dart';
+import '../common.dart';
 
 void main() {
-  patrolTest(
-    'prints native widgets',
-    config: patrolConfig,
-    nativeAutomation: true,
-    ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+  patrol('prints native widgets', ($) async {
+    await $.pumpWidgetAndSettle(ExampleApp());
 
-      await $.native.pressHome();
-      await $.native.getNativeViews(Selector(textContains: 'a'));
-    },
-  );
+    await $.native.pressHome();
+    await $.native.getNativeViews(Selector(textContains: 'a'));
+  });
 }
