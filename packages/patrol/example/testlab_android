@@ -17,8 +17,6 @@ target_path="$(realpath "$target")"
 flutter build apk --debug
 
 pushd android
-# flutter build generates files in android/ for building the app
-
 ./gradlew app:assembleDebugAndroidTest
 ./gradlew app:assembleDebug -Ptarget="$target_path"
 popd
