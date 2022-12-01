@@ -2,8 +2,9 @@ import Flutter
 import UIKit
 import eDistantObject
 import Pods_RunnerUITests
+// import RunnerUITests
 
-let kMethodSubmitTestResults = "submitTestResults"
+let kMethodSubmitTestResults = "allTestsFinished"
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -17,12 +18,22 @@ let kMethodSubmitTestResults = "submitTestResults"
     NSLog("Starting")
     patrolChannel.setMethodCallHandler() { call, result  in
       NSLog("call on patrolChannel: %@", call.method)
+      let arguments = (call.arguments ?? [:]) as! [String: Any]
+      let results = arguments["results"] as! [String: String]
+      
       // return
+      sleep(1)
       
       if call.method == kMethodSubmitTestResults {
         let patrolObject = EDOClientService<PatrolSharedObject>.rootObject(withPort: UInt16(9091))
-        patrolObject.submitTestResults("This is app under test speaking")
+        patrolObject.submitTestResults(
+          "This is app under test speaking",
+          results: NSKeyedArchiver.archivedData(withRootObject: results)
+        )
+        result(nil)
       }
+      
+      result(FlutterMethodNotImplemented)
     }
     
     GeneratedPluginRegistrant.register(with: self)

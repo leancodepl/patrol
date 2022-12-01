@@ -32,7 +32,7 @@ flutter_ios_podfile_setup
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
-  # pod 'gRPC-Swift', '~> 1.8.0'
+  pod 'gRPC-Swift', '~> 1.8.0'
   pod 'eDistantObject', '~> 1.0.2'
   
   target 'RunnerUITests' do

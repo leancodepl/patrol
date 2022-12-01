@@ -6,6 +6,10 @@ import Foundation
   @objc static let shared = Logger()
 
   private override init() {}
+  
+  @objc func d(_ msg: String) {
+    NSLog("\(TAG): DEBUG: \(msg)")
+  }
 
   @objc func i(_ msg: String) {
     NSLog("\(TAG): INFO: \(msg)")

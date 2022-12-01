@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:fixnum/fixnum.dart';
@@ -33,9 +32,9 @@ enum BindingType {
 }
 
 void _defaultPrintLogger(String message) {
+  print('Patrol (native): $message');
   if (const bool.fromEnvironment('PATROL_VERBOSE')) {
     // ignore: avoid_print
-    print('Patrol (native): $message');
   }
 }
 
@@ -122,10 +121,10 @@ class NativeAutomator {
         ),
         _config = config {
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
-      log("packageName is not set. It's recommended to set it.");
+      config.logger("packageName is not set. It's recommended to set it.");
     }
     if (_config.bundleId.isEmpty && io.Platform.isIOS) {
-      log("bundleId is not set. It's recommended to set it.");
+      config.logger("bundleId is not set. It's recommended to set it.");
     }
 
     final channel = ClientChannel(
@@ -134,6 +133,9 @@ class NativeAutomator {
       options: const ChannelOptions(
         credentials: ChannelCredentials.insecure(),
       ),
+    );
+    config.logger(
+      'creating NativeAutomator with host: ${config.host} and port ${config.port}',
     );
 
     _client = NativeAutomatorClient(

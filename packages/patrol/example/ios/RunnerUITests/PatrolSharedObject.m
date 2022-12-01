@@ -16,8 +16,14 @@
   return self;
 }
 
-- (void)submitTestResults:(NSString*)message {
+- (void)submitTestResults:(NSString*)message results:(NSData*) results {
   NSLog(@"Test results submitted, message: %@", message);
+  
+  NSDictionary *dict = [NSKeyedUnarchiver unarchiveObjectWithData:results];
+  
+  [dict enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+    NSLog(@"key %@, value: %@", key, value);
+  }];
   
   if (completion != (id)[NSNull null]) {
     NSLog(@"calling completion!");

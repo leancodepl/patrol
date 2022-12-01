@@ -15,27 +15,21 @@
 @implementation RunnerTests
 
 - (void)testRunPatrolServer {
-  [[Logger shared] i:@"START"];
-  
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
   
-  [[Logger shared] i:@"APP STARTED"];
-  
-  [[Logger shared] i:@"Starting server loop..."];
-  //  PatrolServer *server = [[PatrolServer alloc] init];
-  //  [server startWithCompletionHandler:^(NSError* err) {
-  //    [[Logger shared] i:@"Server loop done"];
-  //  }];
+  PatrolServer *server = [[PatrolServer alloc] init];
+  [server startWithCompletionHandler:^(NSError* err) {
+    [[Logger shared] i:[NSString stringWithFormat:@"Server loop done, error: %@", err]];
+  }];
   
   UInt16 portNumber = 9091;
   
   dispatch_group_t group = dispatch_group_create();
   dispatch_group_enter(group);
   
-  // PatrolSharedObject *sharedObject = [[PatrolSharedObject alloc] init];
   PatrolSharedObject *sharedObject = [[PatrolSharedObject alloc] initWithCompletion:^{
-    NSLog(@"leaving dispatch group");
+    [[Logger shared] d:@"leaving dispatch group"];
     dispatch_group_leave(group);
   }];
   self.executionQueue = dispatch_queue_create("MyQueue", DISPATCH_QUEUE_SERIAL);
@@ -45,9 +39,9 @@
   
 
   
-  [[Logger shared] i:@"Wait start"];
+  [[Logger shared] d:@"Wait start"];
   dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-  [[Logger shared] i:@"Wait end"];
+  [[Logger shared] d:@"Wait end"];
   
 }
 
