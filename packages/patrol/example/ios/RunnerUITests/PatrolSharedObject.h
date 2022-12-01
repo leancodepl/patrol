@@ -1,9 +1,12 @@
-#ifndef PatrolSharedObject_h
-#define PatrolSharedObject_h
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^CallCompletion)(void);
 
 @interface PatrolSharedObject : NSObject
+
+- (id)init;
+- (id)initWithCompletion:(CallCompletion)completion;
 - (void)submitTestResults:(NSString*)message;
 @end
 
-
-#endif
+NS_ASSUME_NONNULL_END

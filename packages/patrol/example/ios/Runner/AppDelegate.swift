@@ -14,9 +14,13 @@ let kMethodSubmitTestResults = "submitTestResults"
     let controller = window?.rootViewController as! FlutterViewController
     let patrolChannel = FlutterMethodChannel(name: "pl.leancode.patrol/main", binaryMessenger: controller.binaryMessenger)
     
+    NSLog("Starting")
     patrolChannel.setMethodCallHandler() { call, result  in
+      NSLog("call on patrolChannel: %@", call.method)
+      // return
+      
       if call.method == kMethodSubmitTestResults {
-        let patrolObject = EDOClientService<PatrolSharedObject>.rootObject(withPort: UInt16(8081))
+        let patrolObject = EDOClientService<PatrolSharedObject>.rootObject(withPort: UInt16(9091))
         patrolObject.submitTestResults("This is app under test speaking")
       }
     }
