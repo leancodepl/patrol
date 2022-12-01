@@ -4,7 +4,7 @@ import GRPC
 typealias Empty = Patrol_Empty
 typealias DefaultResponse = Patrol_Empty
 
-final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
+final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   private let automator: Automator
 
   init(automator: Automator) {
