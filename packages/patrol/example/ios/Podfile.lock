@@ -9,6 +9,7 @@ PODS:
   - CNIOHTTPParser (2.40.0)
   - CNIOLinux (2.40.0)
   - CNIOWindows (2.40.0)
+  - eDistantObject (1.0.2)
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
@@ -163,6 +164,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - eDistantObject (~> 1.0.2)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
@@ -182,6 +184,7 @@ SPEC REPOS:
     - CNIOHTTPParser
     - CNIOLinux
     - CNIOWindows
+    - eDistantObject
     - gRPC-Swift
     - Logging
     - SwiftNIO
@@ -223,6 +226,7 @@ SPEC CHECKSUMS:
   CNIOHTTPParser: 8ce395236fa1d09ac3b4f4bcfba79b849b2ac684
   CNIOLinux: 62e3505f50de558c393dc2f273dde71dcce518da
   CNIOWindows: 3047f2d8165848a3936a0a755fee27c6b5ee479b
+  eDistantObject: dab9b2c26f14684e32a4e0dc86759a77ea7a7026
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
@@ -246,6 +250,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: a832d3976ff5fc07a8d4d35822021cb606b554fc
+PODFILE CHECKSUM: 95bd85b899e9fa17bdc95c72e8de556e21416332
 
 COCOAPODS: 1.11.3

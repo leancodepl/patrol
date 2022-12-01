@@ -14,9 +14,9 @@ void patrol(
     nativeAutomatorConfig: nativeAutomatorConfig,
     nativeAutomation: true,
     ($) async {
-      addTearDown(() async {
-        await $.host.takeScreenshot(name: 'TEARDOWN_$description');
-      });
+      // addTearDown(() async {
+      //   await $.host.takeScreenshot(name: 'TEARDOWN_$description');
+      // });
       await callback($);
     },
   );

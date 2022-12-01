@@ -4,7 +4,7 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'counter state is the same after going to Home and switching apps',
+    'counter state is the same after going to Home and switching apps', 
     ($) async {
       await $.pumpWidget(ExampleApp());
 
