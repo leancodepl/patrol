@@ -188,12 +188,16 @@ class PatrolTester {
   }
 
   /// See [WidgetTester.pumpAndSettle].
-  Future<void> pumpAndSettle([
+  Future<void> pumpAndSettle({
     Duration duration = const Duration(milliseconds: 100),
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-    Duration timeout = const Duration(minutes: 10),
-  ]) async {
-    await tester.pumpAndSettle(duration, phase, timeout);
+    Duration? timeout,
+  }) async {
+    await tester.pumpAndSettle(
+      duration,
+      phase,
+      timeout ?? config.settleTimeout,
+    );
   }
 
   /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- **Breaking:** Change signature of `PatrolTester.pumpAndSettle()` method to use
+  named arguments (#657)
 - Fix `PatrolTester.dragUntilVisible()` not calling `first` on its `Finder view`
   parameter (#656)
 
