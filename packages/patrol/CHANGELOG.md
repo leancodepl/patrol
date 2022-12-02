@@ -1,4 +1,4 @@
-## Unreleased
+## 0.8.0
 
 - **Breaking:** Change signature of `PatrolTester.pumpAndSettle()` method to use
   named arguments (#657)
