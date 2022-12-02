@@ -1,4 +1,4 @@
-## Unreleased
+## 0.7.14
 
 - AutomatorServer:
   - Add 1 second delay after performing permission action on Android (#647)
