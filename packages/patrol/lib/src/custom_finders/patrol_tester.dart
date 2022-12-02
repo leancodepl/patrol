@@ -193,7 +193,8 @@ class PatrolTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
   }) async {
-    await tester.pumpAndSettle(duration, phase, config.settleTimeout);
+    await tester.pumpAndSettle(
+        duration, phase, timeout ?? config.settleTimeout);
   }
 
   /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].
