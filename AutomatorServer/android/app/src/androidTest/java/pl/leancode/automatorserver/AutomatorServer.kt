@@ -16,8 +16,8 @@ import pl.leancode.automatorserver.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
-class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-    private val automation = PatrolAutomator.instance
+class AutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
+    private val automation = Automator.instance
 
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
