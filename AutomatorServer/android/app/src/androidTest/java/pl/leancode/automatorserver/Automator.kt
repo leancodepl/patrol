@@ -368,6 +368,7 @@ class Automator private constructor() {
             ?: throw UiObjectNotFoundException("button to allow permission while using")
 
         uiObject.click()
+        delay()
     }
 
     fun allowPermissionOnce() {
@@ -381,6 +382,7 @@ class Automator private constructor() {
             ?: throw UiObjectNotFoundException("button to allow permission once")
 
         uiObject.click()
+        delay()
     }
 
     fun denyPermission() {
@@ -393,6 +395,7 @@ class Automator private constructor() {
             ?: throw UiObjectNotFoundException("button to deny permission")
 
         uiObject.click()
+        delay()
     }
 
     fun selectFineLocation() {
@@ -402,6 +405,7 @@ class Automator private constructor() {
             ?: throw UiObjectNotFoundException("button to select fine location")
 
         uiObject.click()
+        delay()
     }
 
     fun selectCoarseLocation() {
@@ -411,6 +415,7 @@ class Automator private constructor() {
             ?: throw UiObjectNotFoundException("button to select coarse location")
 
         uiObject.click()
+        delay()
     }
 
     // Returns true if selector found something withing timeout, false otherwise.

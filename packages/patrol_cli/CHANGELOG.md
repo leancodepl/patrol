@@ -1,3 +1,8 @@
+## Unreleased
+
+- AutomatorServer:
+  - Add 1 second delay after performing permission action on Android (#647)
+
 ## 0.7.13
 
 - Improve output (#644)
@@ -62,7 +67,8 @@
 ## 0.7.4
 
 - Print more useful info in `patrol doctor` (#541)
-- Accept both device name and device ID for the `--device` argument to `patrol drive` (#537)
+- Accept both device name and device ID for the `--device` argument to `patrol
+drive` (#537)
 - Wait for the `package` service to become active on Android before installing
   apk (#539, #540)
 
