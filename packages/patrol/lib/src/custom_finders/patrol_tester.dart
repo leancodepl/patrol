@@ -194,7 +194,10 @@ class PatrolTester {
     Duration? timeout,
   }) async {
     await tester.pumpAndSettle(
-        duration, phase, timeout ?? config.settleTimeout);
+      duration,
+      phase,
+      timeout ?? config.settleTimeout,
+    );
   }
 
   /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].
@@ -426,6 +429,9 @@ class PatrolTester {
   ///
   ///  * waits until [view] is visible
   ///
+  ///  * if the [view] finder finds more than 1 view, it scrolls the first one
+  ///    instead of throwing a [StateError]
+  ///
   ///  * uses [WidgetController.firstElement] instead of
   ///    [WidgetController.element], which avoids [StateError] being thrown in
   ///    situations when [finder] finds more than 1 visible widget
@@ -438,12 +444,13 @@ class PatrolTester {
     bool? andSettle,
   }) {
     return TestAsyncUtils.guard(() async {
-      final viewPatrolFinder = PatrolFinder(finder: view, tester: this);
+      var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
+      viewPatrolFinder = viewPatrolFinder.first;
 
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-        await tester.drag(view, moveStep);
+        await tester.drag(viewPatrolFinder, moveStep);
         await tester.pump(duration);
         iterationsLeft -= 1;
       }

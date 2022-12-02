@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9816533F28DDF4BA00C2BB4C /* GRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 9816533E28DDF4BA00C2BB4C /* GRPC */; };
-		9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */; };
+		9816534328DE35D800C2BB4C /* AutomatorServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9816534228DE35D800C2BB4C /* AutomatorServer.swift */; };
 		98245C1728E8C9FA000501D5 /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98245C1528E8C9FA000501D5 /* contracts.grpc.swift */; };
 		98245C1828E8C9FA000501D5 /* contracts.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98245C1628E8C9FA000501D5 /* contracts.pb.swift */; };
 		983049FA2899206400C87527 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983049F92899206400C87527 /* Logger.swift */; };
@@ -36,7 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAutomatorServer.swift; sourceTree = "<group>"; };
+		9816534228DE35D800C2BB4C /* AutomatorServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomatorServer.swift; sourceTree = "<group>"; };
 		98245C1528E8C9FA000501D5 /* contracts.grpc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contracts.grpc.swift; sourceTree = "<group>"; };
 		98245C1628E8C9FA000501D5 /* contracts.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contracts.pb.swift; sourceTree = "<group>"; };
 		983049F92899206400C87527 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -78,14 +78,14 @@
 		98B3653A28903325008B5B8B /* AutomatorServerUITests */ = {
 			isa = PBXGroup;
 			children = (
+				98B3654828903360008B5B8B /* Automator.swift */,
+				9816534228DE35D800C2BB4C /* AutomatorServer.swift */,
 				98245C1528E8C9FA000501D5 /* contracts.grpc.swift */,
 				98245C1628E8C9FA000501D5 /* contracts.pb.swift */,
-				98B365442890333D008B5B8B /* ServerLoop.swift */,
 				98B3654628903353008B5B8B /* PatrolServer.swift */,
-				98B3654828903360008B5B8B /* Automator.swift */,
+				98B365442890333D008B5B8B /* ServerLoop.swift */,
 				983049F92899206400C87527 /* Logger.swift */,
 				988FE74B28A5138800EA2141 /* Errors.swift */,
-				9816534228DE35D800C2BB4C /* NativeAutomatorServer.swift */,
 			);
 			path = AutomatorServerUITests;
 			sourceTree = "<group>";
@@ -238,7 +238,7 @@
 				98B3654728903353008B5B8B /* PatrolServer.swift in Sources */,
 				98245C1728E8C9FA000501D5 /* contracts.grpc.swift in Sources */,
 				98B365452890333D008B5B8B /* ServerLoop.swift in Sources */,
-				9816534328DE35D800C2BB4C /* NativeAutomatorServer.swift in Sources */,
+				9816534328DE35D800C2BB4C /* AutomatorServer.swift in Sources */,
 				983049FA2899206400C87527 /* Logger.swift in Sources */,
 				98245C1828E8C9FA000501D5 /* contracts.pb.swift in Sources */,
 				988FE74C28A5138800EA2141 /* Errors.swift in Sources */,

@@ -28,7 +28,7 @@ class PatrolServer {
   func start() async throws {
     let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 
-    let provider = NativeAutomatorServer(automator: automator)
+    let provider = AutomatorServer(automator: automator)
 
     let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(
       host: "0.0.0.0", port: port
