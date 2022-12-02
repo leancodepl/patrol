@@ -161,7 +161,7 @@ Sometimes your app may need to request system permissions before calling
 /// the permissions
 final permission = await Geolocator.requestPermission();
 final position = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.medium,
+  desiredAccuracy: LocationAccuracy.medium,
 );
 await $.pumpWidgetAndSettle(MyApp(position: position));
 ```
@@ -176,7 +176,7 @@ await $.native.grantPermissionWhenInUse();
 final permissionRequestResult = await permissionRequestFuture;
 expect(permissionRequestResult, equals(LocationPermission.whileInUse));
 final position = await Geolocator.getCurrentPosition(
-    desiredAccuracy: LocationAccuracy.medium,
+  desiredAccuracy: LocationAccuracy.medium,
 );
 await $.pumpWidgetAndSettle(MyApp(position: position));
 ```
