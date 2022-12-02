@@ -1,6 +1,12 @@
+## Unreleased
+
+- Fix `PatrolTester.dragUntilVisible()` not calling `first` on its `Finder view`
+  parameter (#656)
+
 ## 0.7.6
 
-- Make it possible to configure loggers of `NativeAutomator` and `HostAutomator` (#644)
+- Make it possible to configure loggers of `NativeAutomator` and `HostAutomator`
+  (#644)
 - Throw `PatrolFinderException` when `PatrolFinder.text` fails (#644)
 
 ## 0.7.5
@@ -239,7 +245,8 @@ Native:
 - Improve selector engine:
 
   - Make it possible to pass a `Key` as `matching` to
-    `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic matching)`
+    `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic
+matching)`
 
 - Add `sleep` parameter for `maestroTest` method
 - Make `WidgetTester`'s forwarded methods in `MaestroTester` accept less
@@ -251,7 +258,8 @@ Native:
 - Improve selector engine:
 
   - Make it possible to pass a `MaestroFinder` as `matching` to
-    `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic matching)`
+    `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic
+matching)`
   - Fix a bug which caused chaining `MaestroFinder`s (e.g
     `$(Scaffold).$(Container).$(#someText)`) to not work.
 
