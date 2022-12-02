@@ -562,7 +562,7 @@ void main() {
     );
 
     patrolTest(
-      'drags to non-existent and visible widget in the first Scrollable',
+      'drags to non-existent and non-visible widget in the first Scrollable',
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
@@ -574,11 +574,13 @@ void main() {
                 }
 
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Column(
                         children: const [
+                          SizedBox(width: 2000),
                           Text('text 1'),
                           Text('text 1'),
                         ],
@@ -587,7 +589,10 @@ void main() {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Column(
-                        children: const [Text('text 2')],
+                        children: const [
+                          SizedBox(width: 2000),
+                          Text('text 2'),
+                        ],
                       ),
                     ),
                   ],
@@ -600,6 +605,7 @@ void main() {
         expect(find.text('text 1').hitTestable(), findsNothing);
         expect(find.text('text 2').hitTestable(), findsNothing);
 
+        // scroll the first scrollable
         await tester.dragUntilVisible(
           finder: find.text('text 1'),
           view: find.byType(Scrollable),
@@ -607,11 +613,15 @@ void main() {
         );
 
         expect(find.text('text 1').hitTestable(), findsNWidgets(2));
-        expect(find.text('text 2').hitTestable(), findsOneWidget);
+        expect(
+          find.text('text 2').hitTestable(),
+          findsNothing, // not scrolled yet
+        );
 
+        // scroll the second scrollable
         await tester.dragUntilVisible(
           finder: find.text('text 2'),
-          view: find.byType(Scrollable),
+          view: find.byType(Scrollable).at(1),
           moveStep: const Offset(0, 16),
         );
 
