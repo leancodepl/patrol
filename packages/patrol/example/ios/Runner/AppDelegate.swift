@@ -1,8 +1,6 @@
 import Flutter
 import UIKit
 import eDistantObject
-import Pods_RunnerUITests
-// import RunnerUITests
 
 let kMethodSubmitTestResults = "allTestsFinished"
 
