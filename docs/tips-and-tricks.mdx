@@ -152,42 +152,37 @@ if (exceptionCount != 0) {
 }
 ```
 
-## Granting permissions when starting the app
+## Handling permission dialogs before the main app widget is pumped
 
-Sometimes your app may need to request system permissions before calling
-`pumpWidgetAndSettle`:
+Sometimes you might want to manually request permissions in the test before the
+main app widget is pumped. Let's say that you're using the [geolocator] package:
+
 ```dart
-/// the test will stuck at first line, because it will wait for granting
-/// the permissions
 final permission = await Geolocator.requestPermission();
-final position = await Geolocator.getCurrentPosition(
-  desiredAccuracy: LocationAccuracy.medium,
-);
+final position = await Geolocator.getCurrentPosition();
 await $.pumpWidgetAndSettle(MyApp(position: position));
 ```
-In such case, call the request method first without awaiting it at first
-and grant the permissions, then await the request:
+
+In such case, first call the `requestPermission()` method, but instead of
+awaiting it, assign the `Future` it returns to some `final`. Then, use Patrol to
+grant the permissions, and finally, await the `Future` from the first step:
+
 ```dart
 // 1. request the permission
 final permissionRequestFuture = Geolocator.requestPermission();
-// 2. grant the permission
+// 2. grant the permission using Patrol
 await $.native.grantPermissionWhenInUse();
 // 3. wait for permission being granted
 final permissionRequestResult = await permissionRequestFuture;
 expect(permissionRequestResult, equals(LocationPermission.whileInUse));
-final position = await Geolocator.getCurrentPosition(
-  desiredAccuracy: LocationAccuracy.medium,
-);
+final position = await Geolocator.getCurrentPosition();
 await $.pumpWidgetAndSettle(MyApp(position: position));
 ```
-The same can be achieved if you request your permissions in app's `main()` method:
-```dart
-app.main();
-await $.pumpAndSettle();
-await $.native.grantPermissionWhenInUse();
-await $.pumpAndSettle(Duration(seconds: 30));
-```
 
+Related issue: [#628]
+
+[#628]: https://github.com/leancodepl/patrol/issues/628
+[geolocator]: https://pub.dev/packages/geolocator
 [idb]: https://github.com/facebook/idb
 [settings_screenshot]: https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png
 [take_exception]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/takeException.html
