@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+target="${1:-}"
+
+if [ -z "$target" ]; then
+    printf "usage: ./testlab_android <target>\n"
+    printf "\tfor example:\n"
+    printf "\t\$ ./testlab_android integration_test/app_test.dart\n"
+    exit 1
+fi
+
+target_path="$(realpath "$target")"
+
+flutter build apk --debug
+
+pushd android
+./gradlew app:assembleDebugAndroidTest
+./gradlew app:assembleDebug -Ptarget="$target_path"
+popd
+
+
+gcloud firebase test android run --type instrumentation \
+  --app build/app/outputs/apk/debug/app-debug.apk \
+  --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+  --timeout 1m \
+  --results-bucket=patrol_runs \
+  --results-dir=runs

@@ -5,3 +5,4 @@
 AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts/**/* linguist-generated=true
 packages/patrol/lib/src/native/contracts/**/* linguist-generated=true
 packages/patrol/example/android/app/src/androidTest/java/pl/leancode/patrol/example/contracts/**/* linguist-generated=true
+packages/patrol_next/android/src/main/kotlin/pl/leancode/patrol_next/contracts/**/* linguist-generated=true
