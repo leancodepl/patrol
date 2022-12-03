@@ -1,4 +1,9 @@
-include: package:flutter_lints/flutter.yaml
+include: package:leancode_lint/analysis_options_package.yaml
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+analyzer:
+  exclude:
+    - lib/**/*.pb.dart
+    - lib/**/*.pbenum.dart
+    - lib/**/*.pbjson.dart
+    - lib/**/*.pbserver.dart
+    - lib/**/*.pbgrpc.dart
