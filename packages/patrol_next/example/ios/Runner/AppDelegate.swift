@@ -34,7 +34,7 @@ let kMethodSubmitTestResults = "allTestsFinished"
       result(FlutterMethodNotImplemented)
     }
     
-    GeneratedPluginRegistrant.register(with: self)
+    GeneratedPluginRegistrant.register(withRegistry: self)
     UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

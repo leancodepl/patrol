@@ -27,6 +27,9 @@ PODS:
   - integration_test (0.0.1):
     - Flutter
   - Logging (1.4.0)
+  - patrol_next (0.0.1):
+    - eDistantObject (~> 1.0.2)
+    - Flutter
   - permission_handler_apple (9.0.4):
     - Flutter
   - SwiftNIO (2.40.0):
@@ -170,6 +173,7 @@ DEPENDENCIES:
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - gRPC-Swift (~> 1.8.0)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - patrol_next (from `.symlinks/plugins/patrol_next/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
@@ -211,6 +215,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/geolocator_apple/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
+  patrol_next:
+    :path: ".symlinks/plugins/patrol_next/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   webview_flutter_wkwebview:
@@ -233,6 +239,7 @@ SPEC CHECKSUMS:
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
+  patrol_next: 6092eddebb196820884931ada587f35658243bc3
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e

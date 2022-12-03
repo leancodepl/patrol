@@ -14,8 +14,6 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		98C60B3D2938D8FB00008678 /* RunnerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C60B342938D8FB00008678 /* RunnerTests.m */; };
-		98C60B442938DBA400008678 /* PatrolSharedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C60B432938DBA400008678 /* PatrolSharedObject.m */; };
-		98C60B452938ED0300008678 /* PatrolSharedObject.h in Sources */ = {isa = PBXBuildFile; fileRef = 98C60B422938DB5B00008678 /* PatrolSharedObject.h */; };
 		98C60B492938FA0800008678 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C60B482938FA0800008678 /* Logger.swift */; };
 		98C60B5029395ADD00008678 /* Automator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C60B4A29395ADC00008678 /* Automator.swift */; };
 		98C60B5129395ADD00008678 /* contracts.grpc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98C60B4B29395ADC00008678 /* contracts.grpc.swift */; };
@@ -71,8 +69,6 @@
 		98C60B242938D8CD00008678 /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		98C60B302938D8FB00008678 /* RunnerUITests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RunnerUITests-Bridging-Header.h"; sourceTree = "<group>"; };
 		98C60B342938D8FB00008678 /* RunnerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RunnerTests.m; sourceTree = "<group>"; };
-		98C60B422938DB5B00008678 /* PatrolSharedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PatrolSharedObject.h; sourceTree = "<group>"; };
-		98C60B432938DBA400008678 /* PatrolSharedObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PatrolSharedObject.m; sourceTree = "<group>"; };
 		98C60B482938FA0800008678 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		98C60B4A29395ADC00008678 /* Automator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Automator.swift; sourceTree = "<group>"; };
 		98C60B4B29395ADC00008678 /* contracts.grpc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = contracts.grpc.swift; sourceTree = "<group>"; };
@@ -189,8 +185,6 @@
 				98C60B482938FA0800008678 /* Logger.swift */,
 				98C60B342938D8FB00008678 /* RunnerTests.m */,
 				98C60B302938D8FB00008678 /* RunnerUITests-Bridging-Header.h */,
-				98C60B422938DB5B00008678 /* PatrolSharedObject.h */,
-				98C60B432938DBA400008678 /* PatrolSharedObject.m */,
 			);
 			path = RunnerUITests;
 			sourceTree = "<group>";
@@ -415,7 +409,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98C60B452938ED0300008678 /* PatrolSharedObject.h in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
@@ -432,7 +425,6 @@
 				98C60B5229395ADD00008678 /* contracts.pb.swift in Sources */,
 				98C60B5129395ADD00008678 /* contracts.grpc.swift in Sources */,
 				98C60B5029395ADD00008678 /* Automator.swift in Sources */,
-				98C60B442938DBA400008678 /* PatrolSharedObject.m in Sources */,
 				98C60B5329395ADD00008678 /* Errors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -532,7 +524,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol_next.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -662,7 +654,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol_next.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -686,7 +678,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol_next.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -719,7 +711,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.Example.RunnerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol_next.Example.RunnerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -758,7 +750,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.Example.RunnerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol_next.Example.RunnerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -795,7 +787,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.Example.RunnerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol_next.Example.RunnerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

@@ -1,10 +1,12 @@
 @import XCTest;
 @import integration_test;
+@import patrol_next;
 #import "RunnerUITests-Swift.h"
-#import "PatrolSharedObject.h"
 #import <eDistantObject/EDOHostService.h>
 
 // INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
+
+static NSInteger const kTestResultsServicePort = 9091;
 
 @interface RunnerTests : XCTestCase
 
@@ -22,27 +24,22 @@
   [server startWithCompletionHandler:^(NSError* err) {
     [[Logger shared] i:[NSString stringWithFormat:@"Server loop done, error: %@", err]];
   }];
+
+  ActualTestResultsService *testResultsService = [[ActualTestResultsService alloc] init];
   
-  UInt16 portNumber = 9091;
-  
-  dispatch_group_t group = dispatch_group_create();
-  dispatch_group_enter(group);
-  
-  PatrolSharedObject *sharedObject = [[PatrolSharedObject alloc] initWithCompletion:^{
-    [[Logger shared] d:@"leaving dispatch group"];
-    dispatch_group_leave(group);
-  }];
   self.executionQueue = dispatch_queue_create("MyQueue", DISPATCH_QUEUE_SERIAL);
-  [EDOHostService serviceWithPort:portNumber
-                       rootObject:sharedObject
+  [EDOHostService serviceWithPort:kTestResultsServicePort // FIXME: this might be a bug (it needs Uint16)
+                       rootObject:testResultsService
                             queue:self.executionQueue];
   
-
-  
   [[Logger shared] d:@"Wait start"];
-  dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-  [[Logger shared] d:@"Wait end"];
   
+  // Spin the runloop.
+  while (!testResultsService.testResults) {
+    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
+  
+  [[Logger shared] d:@"Wait end"];
 }
 
 
