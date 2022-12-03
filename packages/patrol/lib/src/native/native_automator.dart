@@ -32,9 +32,9 @@ enum BindingType {
 }
 
 void _defaultPrintLogger(String message) {
-  print('Patrol (native): $message');
   if (const bool.fromEnvironment('PATROL_VERBOSE')) {
     // ignore: avoid_print
+    print('Patrol (native): $message');
   }
 }
 
@@ -133,9 +133,6 @@ class NativeAutomator {
       options: const ChannelOptions(
         credentials: ChannelCredentials.insecure(),
       ),
-    );
-    config.logger(
-      'creating NativeAutomator with host: ${config.host} and port ${config.port}',
     );
 
     _client = NativeAutomatorClient(
