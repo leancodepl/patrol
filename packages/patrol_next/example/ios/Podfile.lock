@@ -30,6 +30,7 @@ PODS:
   - patrol_next (0.0.1):
     - eDistantObject (~> 1.0.2)
     - Flutter
+    - gRPC-Swift (~> 1.8.0)
   - permission_handler_apple (9.0.4):
     - Flutter
   - SwiftNIO (2.40.0):
@@ -167,11 +168,9 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - eDistantObject (~> 1.0.2)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
-  - gRPC-Swift (~> 1.8.0)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - patrol_next (from `.symlinks/plugins/patrol_next/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -239,7 +238,7 @@ SPEC CHECKSUMS:
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  patrol_next: 6092eddebb196820884931ada587f35658243bc3
+  patrol_next: 9b3c0ed3786ee7493012fe851f42e417731d5535
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
@@ -257,6 +256,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: ab6d249fa3d1de9fff83b2be322d1b83c40ca59e
+PODFILE CHECKSUM: f01e5c314920d97fb4ae7a150ad5a0853f5e4688
 
 COCOAPODS: 1.11.3

@@ -75,7 +75,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         );
       } on MissingPluginException {
         debugPrint('''
-Warning: integration_test plugin was not detected.
+Warning: Patrol plugin was not detected.
 
 Thrown by PatrolBinding.
 ''');

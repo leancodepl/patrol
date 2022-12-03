@@ -1,7 +1,6 @@
 @import XCTest;
 @import integration_test;
 @import patrol_next;
-#import "RunnerUITests-Swift.h"
 #import <eDistantObject/EDOHostService.h>
 
 // INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
