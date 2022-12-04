@@ -16,29 +16,27 @@ static NSInteger const kTestResultsServicePort = 9091;
 @implementation RunnerTests
 
 - (void)testRunPatrolServer {
-  XCUIApplication *app = [[XCUIApplication alloc] init];
-  [app launch];
-  
+
+  // Start native automation gRPC server
   PatrolServer *server = [[PatrolServer alloc] init];
   [server startWithCompletionHandler:^(NSError* err) {
     [[Logger shared] i:[NSString stringWithFormat:@"Server loop done, error: %@", err]];
   }];
 
+  // Start RPC server for receiving Dart test results
   ActualTestResultsService *testResultsService = [[ActualTestResultsService alloc] init];
-  
   self.executionQueue = dispatch_queue_create("MyQueue", DISPATCH_QUEUE_SERIAL);
   [EDOHostService serviceWithPort:kTestResultsServicePort // FIXME: this might be a bug (it needs Uint16)
                        rootObject:testResultsService
                             queue:self.executionQueue];
   
-  [[Logger shared] d:@"Wait start"];
-  
+  XCUIApplication *app = [[XCUIApplication alloc] init];
+  [app launch];
+
   // Spin the runloop.
   while (!testResultsService.testResults) {
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
-  
-  [[Logger shared] d:@"Wait end"];
 }
 
 

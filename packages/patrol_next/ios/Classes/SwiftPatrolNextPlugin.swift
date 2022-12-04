@@ -7,14 +7,14 @@ let kMethodAllTestsFinished = "allTestsFinished"
 
 /// A Flutter plugin that's responsible for communicating the test results back
 /// to iOS XCUITest.
-public class PatrolNextPlugin: NSObject, FlutterPlugin {
+public class SwiftPatrolNextPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
       name: kChannelName,
       binaryMessenger: registrar.messenger()
     )
     
-    let instance = PatrolNextPlugin()
+    let instance = SwiftPatrolNextPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
   

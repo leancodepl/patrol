@@ -36,7 +36,7 @@ target 'Runner' do
   # pod 'eDistantObject', '~> 1.0.2'
   
   target 'RunnerUITests' do
-    inherit! :search_paths # :complete
+    inherit! :complete # :complete
     # pod 'eDistantObject', '~> 1.0.2'
   end
 

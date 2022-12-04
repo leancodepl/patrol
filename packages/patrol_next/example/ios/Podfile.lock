@@ -238,7 +238,7 @@ SPEC CHECKSUMS:
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  patrol_next: 9b3c0ed3786ee7493012fe851f42e417731d5535
+  patrol_next: 7a23068707d45695e579d86bb2fc1fe500b00a50
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
@@ -256,6 +256,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
 
-PODFILE CHECKSUM: f01e5c314920d97fb4ae7a150ad5a0853f5e4688
+PODFILE CHECKSUM: dea08f088b80292a851e43cdce07a8bede4d21e5
 
 COCOAPODS: 1.11.3

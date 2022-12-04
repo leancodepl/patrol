@@ -2,7 +2,6 @@ import Foundation
 import GRPC
 import NIOCore
 import NIOPosix
-import XCTest
 
 class PatrolServer {
   private static let envPortKey = "PATROL_PORT"
