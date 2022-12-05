@@ -5,7 +5,7 @@
 
 // INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
 
-static NSInteger const kTestResultsServicePort = 9091;
+static UInt16 const kTestResultsServicePort = 9091;
 
 @interface RunnerTests : XCTestCase
 
@@ -20,13 +20,13 @@ static NSInteger const kTestResultsServicePort = 9091;
   // Start native automation gRPC server
   PatrolServer *server = [[PatrolServer alloc] init];
   [server startWithCompletionHandler:^(NSError* err) {
-    [[Logger shared] i:[NSString stringWithFormat:@"Server loop done, error: %@", err]];
+    NSLog(@"Server loop done, error: %@", err);
   }];
 
   // Start RPC server for receiving Dart test results
   ActualTestResultsService *testResultsService = [[ActualTestResultsService alloc] init];
   self.executionQueue = dispatch_queue_create("MyQueue", DISPATCH_QUEUE_SERIAL);
-  [EDOHostService serviceWithPort:kTestResultsServicePort // FIXME: this might be a bug (it needs Uint16)
+  [EDOHostService serviceWithPort:kTestResultsServicePort
                        rootObject:testResultsService
                             queue:self.executionQueue];
   
@@ -41,14 +41,6 @@ static NSInteger const kTestResultsServicePort = 9091;
 
 
 //+ (NSArray<NSInvocation *> *)testInvocations {
-//  [[Logger shared] i:@"START"];
-//
-//  [[Logger shared] i:@"Starting server loop..."];
-//  PatrolServer *server = [[PatrolServer alloc] init];
-//  [server startWithCompletionHandler:^(NSError* err) {
-//    [[Logger shared] i:@"Server loop done"];
-//  }];
-//
 //
 //  FLTIntegrationTestRunner *integrationTestRunner = [[FLTIntegrationTestRunner alloc] init];
 //  NSMutableArray<NSInvocation *> *testInvocations = [[NSMutableArray alloc] init];

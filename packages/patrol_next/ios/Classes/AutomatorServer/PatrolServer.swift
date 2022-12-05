@@ -14,12 +14,12 @@ import NIOPosix
 
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-      Logger.shared.i("\(envPortKey) is null, falling back to default: \(defaultPort)")
+      Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
       return defaultPort
     }
 
     guard let portInt = Int(portStr) else {
-      Logger.shared.i("\(envPortKey) with value \(portStr) is not valid, falling back to default: \(defaultPort)")
+      Logger.shared.i("\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))")
       return defaultPort
     }
     
