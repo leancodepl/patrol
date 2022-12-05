@@ -33,7 +33,7 @@ static NSInteger const kTestResultsServicePort = 9091;
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
 
-  // Spin the runloop.
+  // Spin the runloop
   while (!testResultsService.testResults) {
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }

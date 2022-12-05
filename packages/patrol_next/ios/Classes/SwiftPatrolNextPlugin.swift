@@ -5,6 +5,9 @@ import eDistantObject
 let kChannelName = "pl.leancode.patrol/main"
 let kMethodAllTestsFinished = "allTestsFinished"
 
+let kErrorArchiveFailed = "archive_failed"
+let kErrorArchiveFailedMsg = "Failed to archive test results"
+
 /// A Flutter plugin that's responsible for communicating the test results back
 /// to iOS XCUITest.
 public class SwiftPatrolNextPlugin: NSObject, FlutterPlugin {
@@ -26,12 +29,17 @@ public class SwiftPatrolNextPlugin: NSObject, FlutterPlugin {
       let arguments = (call.arguments ?? [:]) as! [String: Any]
       let results = arguments["results"] as! [String: String]
       
-      let patrolObject = EDOClientService<TestResultsService>.rootObject(withPort: UInt16(9091))
-      patrolObject.submitTestResults(
-        dummyMessage: "This is app under test speaking",
-        encodedResults: NSKeyedArchiver.archivedData(withRootObject: results)
-      )
+      let testResultsService = EDOClientService<TestResultsService>.rootObject(withPort: UInt16(9091))
       
+      guard let encodedResults = try? NSKeyedArchiver.archivedData(
+          withRootObject: results,
+          requiringSecureCoding: true
+      ) else {
+        result(FlutterError(code: kErrorArchiveFailed, message: kErrorArchiveFailed, details: nil))
+        return
+      }
+
+      testResultsService.submitTestResults(encodedResults)
     default:
       result(FlutterMethodNotImplemented)
     }
