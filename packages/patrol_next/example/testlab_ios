@@ -20,3 +20,12 @@ popd
 pushd "$product"
 zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
 popd
+
+xcodebuild test-without-building \
+	-xctestrun "build/ios_integ/Build/Products/Runner_iphoneos$dev_target-arm64.xctestrun" \
+	-destination id="$(idevice_id -l)"
+
+
+# gcloud firebase test ios run \
+#	--test "build/ios_integ/Build/Products/ios_tests.zip" \
+#	--device model=iphone13pro,version="$dev_target",locale=en_US,orientation=portrait
