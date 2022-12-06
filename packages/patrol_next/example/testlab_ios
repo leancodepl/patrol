@@ -29,9 +29,6 @@ fi
 
 target_path="$(realpath "$target")"
 
-output="../build/ios_integ"
-product="build/ios_integ/Build/Products"
-
 if [ "$mode" = "local" ]; then
 	dev_target="16.1"
 elif [ "$mode" = "testlab" ]; then
@@ -47,9 +44,11 @@ xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
 	-config Flutter/Release.xcconfig \
-	-derivedDataPath "$output" \
+	-derivedDataPath ../build/ios_integ \
 	-sdk iphoneos
 popd
+
+product="build/ios_integ/Build/Products"
 
 pushd "$product"
 zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"

@@ -22,7 +22,7 @@ void patrol(
   );
 }
 
-const patrolTesterConfig = PatrolTesterConfig();
+final patrolTesterConfig = PatrolTesterConfig();
 
 final nativeAutomatorConfig = NativeAutomatorConfig(
   packageName: 'pl.leancode.patrol.example',
