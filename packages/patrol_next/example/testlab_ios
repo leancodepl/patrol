@@ -1,18 +1,52 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cd "$(dirname "$0")"
+
+target="${1:-}"
+mode="${2:-}"
+
+if [ -z "$target" ]; then
+    printf "usage: ./testlab_android <target> <mode>\n"
+    printf "\tfor example:\n"
+    printf "\t\$ ./testlab_android integration_test/app_test.dart <local>\n"
+    exit 1
+fi
+
+if [ -z "$mode" ]; then
+	printf "usage: ./testlab_android <target> <mode>\n"
+	printf "\tfor example:\n"
+	printf "\t\$ ./testlab_android integration_test/app_test.dart local\n"
+	exit 1
+elif [ "$mode" = "local" ]; then
+	printf "Running tests locally\n"
+elif [ "$mode" = "testlab" ]; then
+	printf "Running tests on Firebase Test Lab\n"
+else
+	printf "invalid mode"
+	exit 1
+fi
+
+target_path="$(realpath "$target")"
+
 output="../build/ios_integ"
 product="build/ios_integ/Build/Products"
-dev_target="16.1"
+
+if [ "$mode" = "local" ]; then
+	dev_target="16.1"
+elif [ "$mode" = "testlab" ]; then
+	dev_target="15.7"
+fi
+
 
 # Pass --simulator if building for the simulator.
-flutter build ios integration_test/example_test.dart --release
+flutter build ios "$target_path" --debug
 
 pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-config Flutter/Release.xcconfig \
+	-config Flutter/Debug.xcconfig \
 	-derivedDataPath "$output" \
 	-sdk iphoneos
 popd
@@ -21,11 +55,12 @@ pushd "$product"
 zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
 popd
 
-xcodebuild test-without-building \
-	-xctestrun "build/ios_integ/Build/Products/Runner_iphoneos$dev_target-arm64.xctestrun" \
-	-destination id="$(idevice_id -l)"
-
-
-# gcloud firebase test ios run \
-#	--test "build/ios_integ/Build/Products/ios_tests.zip" \
-#	--device model=iphone13pro,version="$dev_target",locale=en_US,orientation=portrait
+if [ "$mode" = "local" ]; then
+	xcodebuild test-without-building \
+		-xctestrun "build/ios_integ/Build/Products/Runner_iphoneos$dev_target-arm64.xctestrun" \
+		-destination id="$(idevice_id -l)"
+elif [ "$mode" = "testlab" ]; then
+	gcloud firebase test ios run \
+		--test "build/ios_integ/Build/Products/ios_tests.zip" \
+		--device model=iphone8,version="$dev_target",locale=en_US,orientation=portrait
+fi

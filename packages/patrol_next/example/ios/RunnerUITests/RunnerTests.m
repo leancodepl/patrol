@@ -5,7 +5,7 @@
 
 // INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
 
-static UInt16 const kTestResultsServicePort = 9091;
+static UInt16 const kTestResultsServicePort = 11237; // eDistantObject's default port
 
 @interface RunnerTests : XCTestCase
 
@@ -14,11 +14,15 @@ static UInt16 const kTestResultsServicePort = 9091;
 @implementation RunnerTests
 
 + (NSArray<NSInvocation *> *)testInvocations {
+  NSLog(@"PATROL_DEBUG testInvocations called!");
+  
   // Start native automation gRPC server
   PatrolServer *server = [[PatrolServer alloc] init];
   [server startWithCompletionHandler:^(NSError* err) {
-    NSLog(@"Server loop done, error: %@", err);
+    NSLog(@"PATROL_DEBUG Server loop done, error: %@", err);
   }];
+  
+  NSLog(@"PATROL_DEBUG kTestResultsServicePort: %hu", kTestResultsServicePort);
 
   // Start RPC server for receiving Dart test results
   ActualTestResultsService *testResultsService = [[ActualTestResultsService alloc] init];
@@ -26,6 +30,8 @@ static UInt16 const kTestResultsServicePort = 9091;
   [EDOHostService serviceWithPort:kTestResultsServicePort
                        rootObject:testResultsService
                             queue:executionQueue];
+  
+  NSLog(@"PATROL_DEBUG after serviceWithPort");
   
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
@@ -70,6 +76,9 @@ static UInt16 const kTestResultsServicePort = 9091;
     attachmentInvocation.selector = attachmentSelector;
     [testInvocations addObject:attachmentInvocation];
   }
+  
+  NSLog(@"PATROL_DEBUG testInvocations returning!");
+  
   return testInvocations;
 }
 
