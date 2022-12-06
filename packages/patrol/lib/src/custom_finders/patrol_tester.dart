@@ -142,22 +142,6 @@ class PatrolTester {
     return hostAutomator!;
   }
 
-  /// Makes it simple to log. No need to use `print` or depend on
-  /// `package:logging`.
-  void log(Object? object, {String? name}) {
-    final log = StringBuffer();
-
-    final tag = name ?? config.appName;
-    if (tag != null) {
-      log.write('$tag: ');
-    }
-
-    log.write(object);
-
-    // ignore: avoid_print
-    print(log);
-  }
-
   /// Returns a [PatrolFinder] that matches [matching].
   ///
   /// See also:
