@@ -26,8 +26,8 @@ void main() {
 
       await $.native.openNotifications();
       final notifications = await $.native.getNotifications();
-      $.log('Found ${notifications.length} notifications');
-      notifications.forEach($.log);
+      print('Found ${notifications.length} notifications');
+      notifications.forEach(print);
 
       expect(notifications.length, isNonZero);
       await $.native.tapOnNotificationByIndex(1);

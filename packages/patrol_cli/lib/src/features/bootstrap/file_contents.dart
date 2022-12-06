@@ -165,10 +165,9 @@ Future<void> main() => integrationDriver();
 const configFileContent = '''
 import 'package:patrol/patrol.dart';
 
+const patrolConfig = PatrolTesterConfig();
+
 // TODO: Replace with values specific to your app.
-
-const patrolConfig = PatrolTesterConfig(appName: 'Example App');
-
 const nativeAutomatorConfig = NativeAutomatorConfig(
   packageName: 'pl.leancode.patrol.example',
   bundleId: 'pl.leancode.patrol.Example',

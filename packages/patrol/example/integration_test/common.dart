@@ -11,7 +11,6 @@ void patrol(
 ) {
   patrolTest(
     description,
-    config: patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig,
     nativeAutomation: true,
     ($) async {
@@ -23,7 +22,7 @@ void patrol(
   );
 }
 
-const patrolTesterConfig = PatrolTesterConfig(appName: 'Example App');
+const patrolTesterConfig = PatrolTesterConfig();
 
 final nativeAutomatorConfig = NativeAutomatorConfig(
   packageName: 'pl.leancode.patrol.example',

@@ -10,7 +10,6 @@ class PatrolTesterConfig {
     this.visibleTimeout = const Duration(seconds: 10),
     this.settleTimeout = const Duration(seconds: 10),
     this.andSettle = true,
-    this.appName,
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't finds
@@ -33,11 +32,6 @@ class PatrolTesterConfig {
   /// is called.
   final bool andSettle;
 
-  /// Name of the application under test.
-  ///
-  /// Used in [PatrolTester.log].
-  final String? appName;
-
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   PatrolTesterConfig copyWith({
@@ -54,7 +48,6 @@ class PatrolTesterConfig {
       visibleTimeout: visibleTimeout ?? this.visibleTimeout,
       settleTimeout: settleTimeout ?? this.settleTimeout,
       andSettle: andSettle ?? this.andSettle,
-      appName: appName ?? this.appName,
     );
   }
 }
@@ -140,22 +133,6 @@ class PatrolTester {
   HostAutomator get host {
     assert(hostAutomator != null, 'host automator is null');
     return hostAutomator!;
-  }
-
-  /// Makes it simple to log. No need to use `print` or depend on
-  /// `package:logging`.
-  void log(Object? object, {String? name}) {
-    final log = StringBuffer();
-
-    final tag = name ?? config.appName;
-    if (tag != null) {
-      log.write('$tag: ');
-    }
-
-    log.write(object);
-
-    // ignore: avoid_print
-    print(log);
   }
 
   /// Returns a [PatrolFinder] that matches [matching].
