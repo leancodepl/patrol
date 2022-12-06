@@ -46,8 +46,10 @@ service NativeAutomator {
   rpc setLocationAccuracy(SetLocationAccuracyRequest) returns (Empty) {}
 
   // other
-
   rpc debug(Empty) returns (Empty) {}
+
+  // iOS 
+  rpc submitTestResults(SubmitTestResultsRequest) returns (Empty) {}
 }
 
 message ConfigureRequest {
@@ -167,4 +169,8 @@ message Notification {
   string title = 2;
   string content = 3;
   string raw = 4;
+}
+
+message SubmitTestResultsRequest {
+  map<string, string> results = 1;
 }

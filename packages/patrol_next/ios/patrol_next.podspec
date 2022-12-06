@@ -24,7 +24,6 @@ Runs tests that use flutter_test and patrol APIs as native iOS integration tests
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
   
-  s.dependency 'eDistantObject', '0.9.0'
   s.dependency 'gRPC-Swift', '~> 1.8.0' # This is the last version published on CocoaPods.
                                         # Newer ones are only available on SPM.
 end

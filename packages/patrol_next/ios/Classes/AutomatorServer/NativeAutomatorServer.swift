@@ -6,9 +6,12 @@ typealias DefaultResponse = Patrol_Empty
 
 final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   private let automator: Automator
+  
+  private let onTestResultsSubmitted: ([String: String]) -> Void
 
-  init(automator: Automator) {
+  init(automator: Automator, onTestResultsSubmitted: @escaping ([String: String]) -> Void) {
     self.automator = automator
+    self.onTestResultsSubmitted = onTestResultsSubmitted
   }
 
   func configure(
@@ -362,6 +365,17 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   ) async throws -> DefaultResponse {
     return try await runCatching {
       try await automator.debug()
+      return DefaultResponse()
+    }
+  }
+  
+  func submitTestResults(
+    request: Patrol_SubmitTestResultsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Empty {
+    return try await runCatching {
+      NSLog("here here submitTestResults was called!")
+      onTestResultsSubmitted(request.results)
       return DefaultResponse()
     }
   }

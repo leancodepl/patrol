@@ -1,11 +1,8 @@
 @import XCTest;
 @import patrol_next;
 @import ObjectiveC.runtime;
-#import <eDistantObject/EDOHostService.h>
 
 // INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
-
-static UInt16 const kTestResultsServicePort = 11237; // eDistantObject's default port
 
 @interface RunnerTests : XCTestCase
 
@@ -14,30 +11,22 @@ static UInt16 const kTestResultsServicePort = 11237; // eDistantObject's default
 @implementation RunnerTests
 
 + (NSArray<NSInvocation *> *)testInvocations {
-  NSLog(@"PATROL_DEBUG testInvocations called!");
+  NSLog(@"here here 1");
   
   // Start native automation gRPC server
   PatrolServer *server = [[PatrolServer alloc] init];
   [server startWithCompletionHandler:^(NSError* err) {
-    NSLog(@"PATROL_DEBUG Server loop done, error: %@", err);
+    NSLog(@"Server loop done, error: %@", err);
   }];
-  
-  NSLog(@"PATROL_DEBUG kTestResultsServicePort: %hu", kTestResultsServicePort);
-
-  // Start RPC server for receiving Dart test results
-  ActualTestResultsService *testResultsService = [[ActualTestResultsService alloc] init];
-  dispatch_queue_t executionQueue = dispatch_queue_create("MyQueue", DISPATCH_QUEUE_SERIAL);
-  [EDOHostService serviceWithPort:kTestResultsServicePort
-                       rootObject:testResultsService
-                            queue:executionQueue];
-  
-  NSLog(@"PATROL_DEBUG after serviceWithPort");
   
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
+  
+  NSLog(@"here here 2 after app launch");
 
   // Spin the runloop waiting for test results
-  while (!testResultsService.testResults) {
+  while (!server.dartTestResults) {
+    NSLog(@"here here waiting for dart test results");
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
 
@@ -45,7 +34,7 @@ static UInt16 const kTestResultsServicePort = 11237; // eDistantObject's default
   NSMutableArray<NSInvocation *> *testInvocations = [[NSMutableArray alloc] init];
   
   // Dynamically create test case methods from Dart results
-  [testRunner iterateOverTestResults:testResultsService.testResults withSelector:^(SEL testSelector, BOOL success, NSString *failureMessage) {
+  [testRunner iterateOverTestResults:server.dartTestResults withSelector:^(SEL testSelector, BOOL success, NSString *failureMessage) {
     IMP assertImplementation = imp_implementationWithBlock(^(id _self) {
       XCTAssertTrue(success, @"%@", failureMessage);
     });
@@ -76,8 +65,6 @@ static UInt16 const kTestResultsServicePort = 11237; // eDistantObject's default
     attachmentInvocation.selector = attachmentSelector;
     [testInvocations addObject:attachmentInvocation];
   }
-  
-  NSLog(@"PATROL_DEBUG testInvocations returning!");
   
   return testInvocations;
 }

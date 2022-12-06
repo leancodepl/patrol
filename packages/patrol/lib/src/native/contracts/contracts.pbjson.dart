@@ -490,3 +490,33 @@ const Notification$json = const {
 /// Descriptor for `Notification`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List notificationDescriptor = $convert.base64Decode(
     'CgxOb3RpZmljYXRpb24SHQoHYXBwTmFtZRgBIAEoCUgAUgdhcHBOYW1liAEBEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIYCgdjb250ZW50GAMgASgJUgdjb250ZW50EhAKA3JhdxgEIAEoCVIDcmF3QgoKCF9hcHBOYW1l');
+@$core.Deprecated('Use submitTestResultsRequestDescriptor instead')
+const SubmitTestResultsRequest$json = const {
+  '1': 'SubmitTestResultsRequest',
+  '2': const [
+    const {
+      '1': 'results',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.patrol.SubmitTestResultsRequest.ResultsEntry',
+      '10': 'results'
+    },
+  ],
+  '3': const [SubmitTestResultsRequest_ResultsEntry$json],
+};
+
+@$core.Deprecated('Use submitTestResultsRequestDescriptor instead')
+const SubmitTestResultsRequest_ResultsEntry$json = const {
+  '1': 'ResultsEntry',
+  '2': const [
+    const {'1': 'key', '3': 1, '4': 1, '5': 9, '10': 'key'},
+    const {'1': 'value', '3': 2, '4': 1, '5': 9, '10': 'value'},
+  ],
+  '7': const {'7': true},
+};
+
+/// Descriptor for `SubmitTestResultsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List submitTestResultsRequestDescriptor =
+    $convert.base64Decode(
+        'ChhTdWJtaXRUZXN0UmVzdWx0c1JlcXVlc3QSRwoHcmVzdWx0cxgBIAMoCzItLnBhdHJvbC5TdWJtaXRUZXN0UmVzdWx0c1JlcXVlc3QuUmVzdWx0c0VudHJ5UgdyZXN1bHRzGjoKDFJlc3VsdHNFbnRyeRIQCgNrZXkYASABKAlSA2tleRIUCgV2YWx1ZRgCIAEoCVIFdmFsdWU6AjgB');

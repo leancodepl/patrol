@@ -282,6 +282,8 @@ public struct Patrol_SwipeRequest {
 
   public var steps: UInt32 = 0
 
+  public var appID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -609,6 +611,18 @@ public struct Patrol_Notification {
   fileprivate var _appName: String? = nil
 }
 
+public struct Patrol_SubmitTestResultsRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var results: Dictionary<String,String> = [:]
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Patrol_ConfigureRequest: @unchecked Sendable {}
 extension Patrol_OpenAppRequest: @unchecked Sendable {}
@@ -634,6 +648,7 @@ extension Patrol_PermissionDialogVisibleResponse: @unchecked Sendable {}
 extension Patrol_Selector: @unchecked Sendable {}
 extension Patrol_NativeView: @unchecked Sendable {}
 extension Patrol_Notification: @unchecked Sendable {}
+extension Patrol_SubmitTestResultsRequest: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -1085,6 +1100,7 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     3: .same(proto: "endX"),
     4: .same(proto: "endY"),
     5: .same(proto: "steps"),
+    6: .same(proto: "appId"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1098,6 +1114,7 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 3: try { try decoder.decodeSingularFloatField(value: &self.endX) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self.endY) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.steps) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.appID) }()
       default: break
       }
     }
@@ -1119,6 +1136,9 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if self.steps != 0 {
       try visitor.visitSingularUInt32Field(value: self.steps, fieldNumber: 5)
     }
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1128,6 +1148,7 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs.endX != rhs.endX {return false}
     if lhs.endY != rhs.endY {return false}
     if lhs.steps != rhs.steps {return false}
+    if lhs.appID != rhs.appID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1507,6 +1528,38 @@ extension Patrol_Notification: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs.title != rhs.title {return false}
     if lhs.content != rhs.content {return false}
     if lhs.raw != rhs.raw {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_SubmitTestResultsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SubmitTestResultsRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "results"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufString>.self, value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.results.isEmpty {
+      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufString>.self, value: self.results, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_SubmitTestResultsRequest, rhs: Patrol_SubmitTestResultsRequest) -> Bool {
+    if lhs.results != rhs.results {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

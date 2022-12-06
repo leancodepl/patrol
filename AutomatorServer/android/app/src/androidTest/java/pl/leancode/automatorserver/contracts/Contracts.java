@@ -15762,6 +15762,725 @@ public final class Contracts {
 
   }
 
+  public interface SubmitTestResultsRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.SubmitTestResultsRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+    int getResultsCount();
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+    boolean containsResults(
+        java.lang.String key);
+    /**
+     * Use {@link #getResultsMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String>
+    getResults();
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String>
+    getResultsMap();
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+
+    /* nullable */
+java.lang.String getResultsOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue);
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+
+    java.lang.String getResultsOrThrow(
+        java.lang.String key);
+  }
+  /**
+   * Protobuf type {@code patrol.SubmitTestResultsRequest}
+   */
+  public static final class SubmitTestResultsRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:patrol.SubmitTestResultsRequest)
+      SubmitTestResultsRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SubmitTestResultsRequest.newBuilder() to construct.
+    private SubmitTestResultsRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SubmitTestResultsRequest() {
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new SubmitTestResultsRequest();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SubmitTestResultsRequest_descriptor;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @java.lang.Override
+    protected com.google.protobuf.MapField internalGetMapField(
+        int number) {
+      switch (number) {
+        case 1:
+          return internalGetResults();
+        default:
+          throw new RuntimeException(
+              "Invalid map field number: " + number);
+      }
+    }
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SubmitTestResultsRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.class, pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.Builder.class);
+    }
+
+    public static final int RESULTS_FIELD_NUMBER = 1;
+    private static final class ResultsDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, java.lang.String> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, java.lang.String>newDefaultInstance(
+                  pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SubmitTestResultsRequest_ResultsEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "");
+    }
+    private com.google.protobuf.MapField<
+        java.lang.String, java.lang.String> results_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+    internalGetResults() {
+      if (results_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            ResultsDefaultEntryHolder.defaultEntry);
+      }
+      return results_;
+    }
+
+    public int getResultsCount() {
+      return internalGetResults().getMap().size();
+    }
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+
+    @java.lang.Override
+    public boolean containsResults(
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      return internalGetResults().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getResultsMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getResults() {
+      return getResultsMap();
+    }
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+    @java.lang.Override
+
+    public java.util.Map<java.lang.String, java.lang.String> getResultsMap() {
+      return internalGetResults().getMap();
+    }
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getResultsOrDefault(
+        java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
+          internalGetResults().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;string, string&gt; results = 1;</code>
+     */
+    @java.lang.Override
+
+    public java.lang.String getResultsOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
+          internalGetResults().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetResults(),
+          ResultsDefaultEntryHolder.defaultEntry,
+          1);
+      getUnknownFields().writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
+           : internalGetResults().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+        results__ = ResultsDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(1, results__);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest)) {
+        return super.equals(obj);
+      }
+      pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest other = (pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest) obj;
+
+      if (!internalGetResults().equals(
+          other.internalGetResults())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (!internalGetResults().getMap().isEmpty()) {
+        hash = (37 * hash) + RESULTS_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetResults().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code patrol.SubmitTestResultsRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.SubmitTestResultsRequest)
+        pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SubmitTestResultsRequest_descriptor;
+      }
+
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMapField(
+          int number) {
+        switch (number) {
+          case 1:
+            return internalGetResults();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @SuppressWarnings({"rawtypes"})
+      protected com.google.protobuf.MapField internalGetMutableMapField(
+          int number) {
+        switch (number) {
+          case 1:
+            return internalGetMutableResults();
+          default:
+            throw new RuntimeException(
+                "Invalid map field number: " + number);
+        }
+      }
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SubmitTestResultsRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.class, pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.Builder.class);
+      }
+
+      // Construct using pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.newBuilder()
+      private Builder() {
+
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        internalGetMutableResults().clear();
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.internal_static_patrol_SubmitTestResultsRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest getDefaultInstanceForType() {
+        return pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest build() {
+        pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest buildPartial() {
+        pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest result = new pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest(this);
+        int from_bitField0_ = bitField0_;
+        result.results_ = internalGetResults();
+        result.results_.makeImmutable();
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest) {
+          return mergeFrom((pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest other) {
+        if (other == pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest.getDefaultInstance()) return this;
+        internalGetMutableResults().mergeFrom(
+            other.internalGetResults());
+        this.mergeUnknownFields(other.getUnknownFields());
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
+        try {
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                results__ = input.readMessage(
+                    ResultsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableResults().getMutableMap().put(
+                    results__.getKey(), results__.getValue());
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.unwrapIOException();
+        } finally {
+          onChanged();
+        } // finally
+        return this;
+      }
+      private int bitField0_;
+
+      private com.google.protobuf.MapField<
+          java.lang.String, java.lang.String> results_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetResults() {
+        if (results_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              ResultsDefaultEntryHolder.defaultEntry);
+        }
+        return results_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetMutableResults() {
+        onChanged();;
+        if (results_ == null) {
+          results_ = com.google.protobuf.MapField.newMapField(
+              ResultsDefaultEntryHolder.defaultEntry);
+        }
+        if (!results_.isMutable()) {
+          results_ = results_.copy();
+        }
+        return results_;
+      }
+
+      public int getResultsCount() {
+        return internalGetResults().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+
+      @java.lang.Override
+      public boolean containsResults(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        return internalGetResults().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getResultsMap()} instead.
+       */
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getResults() {
+        return getResultsMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+      @java.lang.Override
+
+      public java.util.Map<java.lang.String, java.lang.String> getResultsMap() {
+        return internalGetResults().getMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getResultsOrDefault(
+          java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetResults().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+      @java.lang.Override
+
+      public java.lang.String getResultsOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetResults().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearResults() {
+        internalGetMutableResults().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+
+      public Builder removeResults(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        internalGetMutableResults().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String>
+      getMutableResults() {
+        return internalGetMutableResults().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+      public Builder putResults(
+          java.lang.String key,
+          java.lang.String value) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) {
+  throw new NullPointerException("map value");
+}
+
+        internalGetMutableResults().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; results = 1;</code>
+       */
+
+      public Builder putAllResults(
+          java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableResults().getMutableMap()
+            .putAll(values);
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:patrol.SubmitTestResultsRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:patrol.SubmitTestResultsRequest)
+    private static final pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest();
+    }
+
+    public static pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SubmitTestResultsRequest>
+        PARSER = new com.google.protobuf.AbstractParser<SubmitTestResultsRequest>() {
+      @java.lang.Override
+      public SubmitTestResultsRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
+      }
+    };
+
+    public static com.google.protobuf.Parser<SubmitTestResultsRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SubmitTestResultsRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public pl.leancode.automatorserver.contracts.Contracts.SubmitTestResultsRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_patrol_ConfigureRequest_descriptor;
   private static final 
@@ -15862,6 +16581,16 @@ public final class Contracts {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_patrol_Notification_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_SubmitTestResultsRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_SubmitTestResultsRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_patrol_SubmitTestResultsRequest_ResultsEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_patrol_SubmitTestResultsRequest_ResultsEntry_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -15921,55 +16650,60 @@ public final class Contracts {
       "\022applicationPackage\030\010 \001(\t\022$\n\010children\030\t " +
       "\003(\0132\022.patrol.NativeView\"]\n\014Notification\022" +
       "\024\n\007appName\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007" +
-      "content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName2\254" +
-      "\016\n\017NativeAutomator\0226\n\tconfigure\022\030.patrol" +
-      ".ConfigureRequest\032\r.patrol.Empty\"\000\022+\n\tpr" +
-      "essHome\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
-      "+\n\tpressBack\022\r.patrol.Empty\032\r.patrol.Emp" +
-      "ty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empty\032\r" +
-      ".patrol.Empty\"\000\0227\n\025doublePressRecentApps" +
-      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007open" +
-      "App\022\026.patrol.OpenAppRequest\032\r.patrol.Emp" +
-      "ty\"\000\022F\n\021openQuickSettings\022 .patrol.OpenQ" +
-      "uickSettingsRequest\032\r.patrol.Empty\"\000\022Q\n\016" +
-      "getNativeViews\022\035.patrol.GetNativeViewsRe" +
-      "quest\032\036.patrol.GetNativeViewsResponse\"\000\022" +
-      "*\n\003tap\022\022.patrol.TapRequest\032\r.patrol.Empt" +
-      "y\"\000\0220\n\tdoubleTap\022\022.patrol.TapRequest\032\r.p" +
-      "atrol.Empty\"\000\0226\n\tenterText\022\030.patrol.Ente" +
-      "rTextRequest\032\r.patrol.Empty\"\000\022.\n\005swipe\022\024" +
-      ".patrol.SwipeRequest\032\r.patrol.Empty\"\000\0224\n" +
-      "\022enableAirplaneMode\022\r.patrol.Empty\032\r.pat" +
-      "rol.Empty\"\000\0225\n\023disableAirplaneMode\022\r.pat" +
-      "rol.Empty\032\r.patrol.Empty\"\000\022,\n\nenableWiFi" +
-      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022-\n\013disa" +
-      "bleWiFi\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
-      "0\n\016enableCellular\022\r.patrol.Empty\032\r.patro" +
-      "l.Empty\"\000\0221\n\017disableCellular\022\r.patrol.Em" +
-      "pty\032\r.patrol.Empty\"\000\0221\n\017enableBluetooth\022" +
-      "\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\020disab" +
-      "leBluetooth\022\r.patrol.Empty\032\r.patrol.Empt" +
-      "y\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkModeR" +
-      "equest\032\r.patrol.Empty\"\000\022;\n\017disableDarkMo" +
+      "content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName\"\212" +
+      "\001\n\030SubmitTestResultsRequest\022>\n\007results\030\001" +
+      " \003(\0132-.patrol.SubmitTestResultsRequest.R" +
+      "esultsEntry\032.\n\014ResultsEntry\022\013\n\003key\030\001 \001(\t" +
+      "\022\r\n\005value\030\002 \001(\t:\0028\0012\364\016\n\017NativeAutomator\022" +
+      "6\n\tconfigure\022\030.patrol.ConfigureRequest\032\r" +
+      ".patrol.Empty\"\000\022+\n\tpressHome\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\022+\n\tpressBack\022\r.patr" +
+      "ol.Empty\032\r.patrol.Empty\"\000\0221\n\017pressRecent" +
+      "Apps\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0227\n\025" +
+      "doublePressRecentApps\022\r.patrol.Empty\032\r.p" +
+      "atrol.Empty\"\000\0222\n\007openApp\022\026.patrol.OpenAp" +
+      "pRequest\032\r.patrol.Empty\"\000\022F\n\021openQuickSe" +
+      "ttings\022 .patrol.OpenQuickSettingsRequest" +
+      "\032\r.patrol.Empty\"\000\022Q\n\016getNativeViews\022\035.pa" +
+      "trol.GetNativeViewsRequest\032\036.patrol.GetN" +
+      "ativeViewsResponse\"\000\022*\n\003tap\022\022.patrol.Tap" +
+      "Request\032\r.patrol.Empty\"\000\0220\n\tdoubleTap\022\022." +
+      "patrol.TapRequest\032\r.patrol.Empty\"\000\0226\n\ten" +
+      "terText\022\030.patrol.EnterTextRequest\032\r.patr" +
+      "ol.Empty\"\000\022.\n\005swipe\022\024.patrol.SwipeReques" +
+      "t\032\r.patrol.Empty\"\000\0224\n\022enableAirplaneMode" +
+      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0225\n\023disa" +
+      "bleAirplaneMode\022\r.patrol.Empty\032\r.patrol." +
+      "Empty\"\000\022,\n\nenableWiFi\022\r.patrol.Empty\032\r.p" +
+      "atrol.Empty\"\000\022-\n\013disableWiFi\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\0220\n\016enableCellular\022\r" +
+      ".patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017disabl" +
+      "eCellular\022\r.patrol.Empty\032\r.patrol.Empty\"" +
+      "\000\0221\n\017enableBluetooth\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\0222\n\020disableBluetooth\022\r.patro" +
+      "l.Empty\032\r.patrol.Empty\"\000\022:\n\016enableDarkMo" +
       "de\022\027.patrol.DarkModeRequest\032\r.patrol.Emp" +
-      "ty\"\000\0223\n\021openNotifications\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0224\n\022closeNotifications\022" +
-      "\r.patrol.Empty\032\r.patrol.Empty\"\000\022:\n\030close" +
-      "HeadsUpNotification\022\r.patrol.Empty\032\r.pat" +
-      "rol.Empty\"\000\022W\n\020getNotifications\022\037.patrol" +
-      ".GetNotificationsRequest\032 .patrol.GetNot" +
-      "ificationsResponse\"\000\022F\n\021tapOnNotificatio" +
-      "n\022 .patrol.TapOnNotificationRequest\032\r.pa" +
-      "trol.Empty\"\000\022n\n\031isPermissionDialogVisibl" +
-      "e\022&.patrol.PermissionDialogVisibleReques" +
-      "t\032\'.patrol.PermissionDialogVisibleRespon" +
-      "se\"\000\022J\n\026handlePermissionDialog\022\037.patrol." +
-      "HandlePermissionRequest\032\r.patrol.Empty\"\000" +
-      "\022J\n\023setLocationAccuracy\022\".patrol.SetLoca" +
-      "tionAccuracyRequest\032\r.patrol.Empty\"\000\022\'\n\005" +
-      "debug\022\r.patrol.Empty\032\r.patrol.Empty\"\000B\'\n" +
-      "%pl.leancode.automatorserver.contractsb\006" +
-      "proto3"
+      "ty\"\000\022;\n\017disableDarkMode\022\027.patrol.DarkMod" +
+      "eRequest\032\r.patrol.Empty\"\000\0223\n\021openNotific" +
+      "ations\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0224" +
+      "\n\022closeNotifications\022\r.patrol.Empty\032\r.pa" +
+      "trol.Empty\"\000\022:\n\030closeHeadsUpNotification" +
+      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022W\n\020getN" +
+      "otifications\022\037.patrol.GetNotificationsRe" +
+      "quest\032 .patrol.GetNotificationsResponse\"" +
+      "\000\022F\n\021tapOnNotification\022 .patrol.TapOnNot" +
+      "ificationRequest\032\r.patrol.Empty\"\000\022n\n\031isP" +
+      "ermissionDialogVisible\022&.patrol.Permissi" +
+      "onDialogVisibleRequest\032\'.patrol.Permissi" +
+      "onDialogVisibleResponse\"\000\022J\n\026handlePermi" +
+      "ssionDialog\022\037.patrol.HandlePermissionReq" +
+      "uest\032\r.patrol.Empty\"\000\022J\n\023setLocationAccu" +
+      "racy\022\".patrol.SetLocationAccuracyRequest" +
+      "\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol.Empt" +
+      "y\032\r.patrol.Empty\"\000\022F\n\021submitTestResults\022" +
+      " .patrol.SubmitTestResultsRequest\032\r.patr" +
+      "ol.Empty\"\000B\'\n%pl.leancode.automatorserve" +
+      "r.contractsb\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -16095,6 +16829,18 @@ public final class Contracts {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_Notification_descriptor,
         new java.lang.String[] { "AppName", "Title", "Content", "Raw", "AppName", });
+    internal_static_patrol_SubmitTestResultsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(20);
+    internal_static_patrol_SubmitTestResultsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_SubmitTestResultsRequest_descriptor,
+        new java.lang.String[] { "Results", });
+    internal_static_patrol_SubmitTestResultsRequest_ResultsEntry_descriptor =
+      internal_static_patrol_SubmitTestResultsRequest_descriptor.getNestedTypes().get(0);
+    internal_static_patrol_SubmitTestResultsRequest_ResultsEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_patrol_SubmitTestResultsRequest_ResultsEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

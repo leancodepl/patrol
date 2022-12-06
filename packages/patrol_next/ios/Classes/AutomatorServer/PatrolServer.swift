@@ -11,6 +11,9 @@ import NIOPosix
   private let port: Int
 
   private let automator: Automator
+  
+  @objc
+  public private(set) var dartTestResults: [String: String]?
 
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -34,7 +37,10 @@ import NIOPosix
   @objc public func start() async throws {
     let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 
-    let provider = NativeAutomatorServer(automator: automator)
+    let provider = NativeAutomatorServer(automator: automator) { testResults in
+      Logger.shared.i("Got \(testResults.count) dart test results")
+      self.dartTestResults = testResults
+    }
 
     let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(
       host: "0.0.0.0", port: port
