@@ -1,3 +1,10 @@
+## 0.7.15
+
+- Update `bootstrap` command to generate code working with `patrol` v0.9.0
+  (#665)
+- Display short name instead of UUID in test results when running on iPhone
+  (#664)
+
 ## 0.7.14
 
 - AutomatorServer:
