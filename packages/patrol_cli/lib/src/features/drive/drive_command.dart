@@ -281,21 +281,22 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     final results = await _testRunner.run();
 
     for (final res in results.targetRunResults) {
+      final device = res.device.resolvedName;
       if (res.allRunsPassed) {
         _logger.write(
-          '${' PASS '.bgGreen.black.bold} ${res.targetName} on ${res.device.id}\n',
+          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
         );
       } else if (res.allRunsFailed) {
         _logger.write(
-          '${' FAIL '.bgRed.white.bold} ${res.targetName} on ${res.device.id}\n',
+          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
         );
       } else if (res.canceled) {
         _logger.write(
-          '${' CANC '.bgGray.white.bold} ${res.targetName} on ${res.device.id}\n',
+          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
         );
       } else {
         _logger.write(
-          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on ${res.device.id}\n',
+          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
         );
       }
     }
