@@ -63,5 +63,8 @@
 	<!-- Permission options for the `contacts` group -->
 	<key>NSContactsUsageDescription</key>
 	<string>contacts</string>
+	<!-- Permission options for the `photos` group -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>photos</string>
 </dict>
 </plist>

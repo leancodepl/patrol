@@ -14,6 +14,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   bool _cameraPermissionGranted = false;
   bool _microphonePermissionGranted = false;
   bool _contactsPermissionGranted = false;
+  bool _photosPermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));
@@ -35,6 +36,13 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     final status = await Permission.contacts.request();
     setState(() {
       _contactsPermissionGranted = status == PermissionStatus.granted;
+    });
+  }
+
+  Future<void> _requestPhotosPermission() async {
+    final status = await Permission.photos.request();
+    setState(() {
+      _photosPermissionGranted = status == PermissionStatus.granted;
     });
   }
 
@@ -89,6 +97,12 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               icon: Icons.people,
               granted: _contactsPermissionGranted,
               onTap: _requestContactsPermission,
+            ),
+            _PermissionTile(
+              name: 'Photos',
+              icon: Icons.photo,
+              granted: _photosPermissionGranted,
+              onTap: _requestPhotosPermission,
             ),
           ],
         ),

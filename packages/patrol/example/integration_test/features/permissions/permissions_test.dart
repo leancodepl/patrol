@@ -9,6 +9,7 @@ void main() {
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
     await _requestAndDenyContactsPermission($);
+    await _requestAndAcceptPhotosPermission($);
   });
 }
 
@@ -52,4 +53,20 @@ Future<void> _requestAndDenyContactsPermission(PatrolTester $) async {
 
   await $.pump();
   expect($(#contacts).$(#statusText).text, 'Not granted');
+}
+
+Future<void> _requestAndAcceptPhotosPermission(PatrolTester $) async {
+  expect($(#photos).$(#statusText).text, 'Not granted');
+
+  await $('Request photos permission').tap();
+
+  if (await $.native.isPermissionDialogVisible()) {
+    await $.native.tap(
+      Selector(text: 'Allow Access to All Photos'),
+      appId: 'com.apple.springboard',
+    );
+  }
+
+  await $.pump();
+  expect($(#photos).$(#statusText).text, 'Granted');
 }
