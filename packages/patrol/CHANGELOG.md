@@ -1,3 +1,11 @@
+## 0.9.0
+
+- **Breaking:** Remove `PatrolTester.log()` - it did not fit in there and was
+  rarely used (#665)
+- **Breaking:** Remove `PatrolTesterConfig.appName` - it's only usage was in
+  `PatrolTester.log()`, and since it was removed, this field is removed as well
+  (#665)
+
 ## 0.8.0
 
 - **Breaking:** Change signature of `PatrolTester.pumpAndSettle()` method to use
