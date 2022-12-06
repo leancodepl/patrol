@@ -29,7 +29,7 @@ public class SwiftPatrolNextPlugin: NSObject, FlutterPlugin {
       let arguments = (call.arguments ?? [:]) as! [String: Any]
       let results = arguments["results"] as! [String: String]
       
-      let testResultsService = EDOClientService<TestResultsService>.rootObject(withPort: UInt16(11237))
+      let testResultsService = EDOClientService.rootObject(withPort: UInt16(11237)) as! TestResultsService
       
       guard let encodedResults = try? NSKeyedArchiver.archivedData(
           withRootObject: results,

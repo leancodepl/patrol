@@ -40,13 +40,13 @@ fi
 
 
 # Pass --simulator if building for the simulator.
-flutter build ios "$target_path" --debug
+flutter build ios "$target_path" --release
 
 pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-config Flutter/Debug.xcconfig \
+	-config Flutter/Release.xcconfig \
 	-derivedDataPath "$output" \
 	-sdk iphoneos
 popd

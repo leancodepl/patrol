@@ -9,7 +9,7 @@ PODS:
   - CNIOHTTPParser (2.40.0)
   - CNIOLinux (2.40.0)
   - CNIOWindows (2.40.0)
-  - eDistantObject (1.0.2)
+  - eDistantObject (0.9.0)
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
@@ -28,7 +28,7 @@ PODS:
     - Flutter
   - Logging (1.4.0)
   - patrol_next (0.0.1):
-    - eDistantObject (~> 1.0.2)
+    - eDistantObject (= 0.9.0)
     - Flutter
     - gRPC-Swift (~> 1.8.0)
   - permission_handler_apple (9.0.4):
@@ -231,14 +231,14 @@ SPEC CHECKSUMS:
   CNIOHTTPParser: 8ce395236fa1d09ac3b4f4bcfba79b849b2ac684
   CNIOLinux: 62e3505f50de558c393dc2f273dde71dcce518da
   CNIOWindows: 3047f2d8165848a3936a0a755fee27c6b5ee479b
-  eDistantObject: dab9b2c26f14684e32a4e0dc86759a77ea7a7026
+  eDistantObject: 53a19cc9247f8351836a115c6f05308775dd878d
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  patrol_next: 7a23068707d45695e579d86bb2fc1fe500b00a50
+  patrol_next: d0cb35335c2182b0b96a766e9cd2b61eafac23aa
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
