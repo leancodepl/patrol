@@ -10,7 +10,6 @@ class PatrolTesterConfig {
     this.visibleTimeout = const Duration(seconds: 10),
     this.settleTimeout = const Duration(seconds: 10),
     this.andSettle = true,
-    this.appName,
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't finds
@@ -33,11 +32,6 @@ class PatrolTesterConfig {
   /// is called.
   final bool andSettle;
 
-  /// Name of the application under test.
-  ///
-  /// Used in [PatrolTester.log].
-  final String? appName;
-
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   PatrolTesterConfig copyWith({
@@ -54,7 +48,6 @@ class PatrolTesterConfig {
       visibleTimeout: visibleTimeout ?? this.visibleTimeout,
       settleTimeout: settleTimeout ?? this.settleTimeout,
       andSettle: andSettle ?? this.andSettle,
-      appName: appName ?? this.appName,
     );
   }
 }
