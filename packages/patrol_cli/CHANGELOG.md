@@ -1,3 +1,7 @@
+## 0.7.16
+
+- Add support for `--use-application-binary` argument for `patrol drive` (#667)
+
 ## 0.7.15
 
 - Update `bootstrap` command to generate code working with `patrol` v0.9.0
