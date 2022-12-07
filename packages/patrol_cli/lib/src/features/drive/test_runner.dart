@@ -83,6 +83,15 @@ class TestRunner extends Disposable {
     _repeats = newValue;
   }
 
+  String? _useApplicationBinary;
+  set useApplicationBinary(String? newValue) {
+    if (_running) {
+      throw StateError('application binary cannot be changed while running');
+    }
+
+    _useApplicationBinary = newValue;
+  }
+
   _Callback? _builder;
 
   /// Sets the builder callback that is called once for every test target.
@@ -175,11 +184,13 @@ class TestRunner extends Disposable {
             continue;
           }
 
-          try {
-            await builder(target, device);
-          } catch (_) {
-            targetRuns.add(TargetRunStatus.failedToBuild);
-            continue;
+          if (_useApplicationBinary == null) {
+            try {
+              await builder(target, device);
+            } catch (_) {
+              targetRuns.add(TargetRunStatus.failedToBuild);
+              continue;
+            }
           }
 
           for (var i = 0; i < _repeats; i++) {

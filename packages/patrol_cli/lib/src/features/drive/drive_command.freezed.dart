@@ -26,6 +26,7 @@ mixin _$DriveCommandConfig {
   String? get packageName => throw _privateConstructorUsedError;
   String? get bundleId => throw _privateConstructorUsedError;
   int get repeat => throw _privateConstructorUsedError;
+  String? get useApplicationBinary => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $DriveCommandConfigCopyWith<DriveCommandConfig> get copyWith =>
@@ -47,7 +48,8 @@ abstract class $DriveCommandConfigCopyWith<$Res> {
       Map<String, String> dartDefines,
       String? packageName,
       String? bundleId,
-      int repeat});
+      int repeat,
+      String? useApplicationBinary});
 }
 
 /// @nodoc
@@ -71,6 +73,7 @@ class _$DriveCommandConfigCopyWithImpl<$Res>
     Object? packageName = freezed,
     Object? bundleId = freezed,
     Object? repeat = freezed,
+    Object? useApplicationBinary = freezed,
   }) {
     return _then(_value.copyWith(
       devices: devices == freezed
@@ -113,6 +116,10 @@ class _$DriveCommandConfigCopyWithImpl<$Res>
           ? _value.repeat
           : repeat // ignore: cast_nullable_to_non_nullable
               as int,
+      useApplicationBinary: useApplicationBinary == freezed
+          ? _value.useApplicationBinary
+          : useApplicationBinary // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -134,7 +141,8 @@ abstract class _$$_DriveCommandConfigCopyWith<$Res>
       Map<String, String> dartDefines,
       String? packageName,
       String? bundleId,
-      int repeat});
+      int repeat,
+      String? useApplicationBinary});
 }
 
 /// @nodoc
@@ -160,6 +168,7 @@ class __$$_DriveCommandConfigCopyWithImpl<$Res>
     Object? packageName = freezed,
     Object? bundleId = freezed,
     Object? repeat = freezed,
+    Object? useApplicationBinary = freezed,
   }) {
     return _then(_$_DriveCommandConfig(
       devices: devices == freezed
@@ -202,6 +211,10 @@ class __$$_DriveCommandConfigCopyWithImpl<$Res>
           ? _value.repeat
           : repeat // ignore: cast_nullable_to_non_nullable
               as int,
+      useApplicationBinary: useApplicationBinary == freezed
+          ? _value.useApplicationBinary
+          : useApplicationBinary // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -219,7 +232,8 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
       required final Map<String, String> dartDefines,
       required this.packageName,
       required this.bundleId,
-      required this.repeat})
+      required this.repeat,
+      required this.useApplicationBinary})
       : _devices = devices,
         _targets = targets,
         _dartDefines = dartDefines;
@@ -259,10 +273,12 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
   final String? bundleId;
   @override
   final int repeat;
+  @override
+  final String? useApplicationBinary;
 
   @override
   String toString() {
-    return 'DriveCommandConfig(devices: $devices, targets: $targets, host: $host, port: $port, driver: $driver, flavor: $flavor, dartDefines: $dartDefines, packageName: $packageName, bundleId: $bundleId, repeat: $repeat)';
+    return 'DriveCommandConfig(devices: $devices, targets: $targets, host: $host, port: $port, driver: $driver, flavor: $flavor, dartDefines: $dartDefines, packageName: $packageName, bundleId: $bundleId, repeat: $repeat, useApplicationBinary: $useApplicationBinary)';
   }
 
   @override
@@ -281,7 +297,9 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
             const DeepCollectionEquality()
                 .equals(other.packageName, packageName) &&
             const DeepCollectionEquality().equals(other.bundleId, bundleId) &&
-            const DeepCollectionEquality().equals(other.repeat, repeat));
+            const DeepCollectionEquality().equals(other.repeat, repeat) &&
+            const DeepCollectionEquality()
+                .equals(other.useApplicationBinary, useApplicationBinary));
   }
 
   @override
@@ -296,7 +314,8 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
       const DeepCollectionEquality().hash(_dartDefines),
       const DeepCollectionEquality().hash(packageName),
       const DeepCollectionEquality().hash(bundleId),
-      const DeepCollectionEquality().hash(repeat));
+      const DeepCollectionEquality().hash(repeat),
+      const DeepCollectionEquality().hash(useApplicationBinary));
 
   @JsonKey(ignore: true)
   @override
@@ -316,7 +335,8 @@ abstract class _DriveCommandConfig implements DriveCommandConfig {
       required final Map<String, String> dartDefines,
       required final String? packageName,
       required final String? bundleId,
-      required final int repeat}) = _$_DriveCommandConfig;
+      required final int repeat,
+      required final String? useApplicationBinary}) = _$_DriveCommandConfig;
 
   @override
   List<Device> get devices;
@@ -338,6 +358,8 @@ abstract class _DriveCommandConfig implements DriveCommandConfig {
   String? get bundleId;
   @override
   int get repeat;
+  @override
+  String? get useApplicationBinary;
   @override
   @JsonKey(ignore: true)
   _$$_DriveCommandConfigCopyWith<_$_DriveCommandConfig> get copyWith =>
