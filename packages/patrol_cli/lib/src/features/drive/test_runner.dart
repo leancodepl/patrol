@@ -86,7 +86,7 @@ class TestRunner extends Disposable {
   String? _useApplicationBinary;
   set useApplicationBinary(String? newValue) {
     if (_running) {
-      throw StateError('repeats cannot be changed while running');
+      throw StateError('application binary cannot be changed while running');
     }
 
     _useApplicationBinary = newValue;
