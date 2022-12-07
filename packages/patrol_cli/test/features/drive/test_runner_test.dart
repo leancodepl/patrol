@@ -75,13 +75,16 @@ void main() {
     group('run()', () {
       late List<String> actualLog;
       late List<String> expectedLog;
+      var buildCalled = false;
 
       setUp(() {
         actualLog = [];
         expectedLog = [];
+        buildCalled = false;
 
         testRunner
           ..builder = (target, device) async {
+            buildCalled = true;
             await delay();
             actualLog.add('build $target ${device.id}');
           }
@@ -109,6 +112,20 @@ void main() {
           ..addTarget('app_test.dart');
         unawaited(testRunner.run());
 
+        expect(
+          () => testRunner.run(),
+          throwsStateError,
+        );
+      });
+
+      test('build not called when userApplicationBinary is not null', () {
+        testRunner
+          ..addDevice(androidDevice)
+          ..addTarget('app_test.dart')
+          ..useApplicationBinary = '/some/path/app-debug.apk';
+        unawaited(testRunner.run());
+
+        expect(buildCalled, false);
         expect(
           () => testRunner.run(),
           throwsStateError,
@@ -151,6 +168,8 @@ void main() {
             fakeAsync.elapse(Duration(seconds: 1));
             expectedLog.add('execute C ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
+
+            expect(buildCalled, true);
           });
         },
       );

@@ -24,6 +24,7 @@ const _defaultConfig = DriveCommandConfig(
   packageName: null,
   bundleId: null,
   repeat: 1,
+  useApplicationBinary: null,
 );
 
 void main() {
@@ -123,7 +124,8 @@ void main() {
 
       final config = await driveCommand.parseInput();
 
-      when(() => flutterTool.drive(any(), any())).thenAnswer((_) async {});
+      when(() => flutterTool.drive(any(), any(), null))
+          .thenAnswer((_) async {});
 
       final exitCode = await driveCommand.execute(config);
       expect(exitCode, isZero);
@@ -135,7 +137,7 @@ void main() {
 
       final config = await driveCommand.parseInput();
 
-      when(() => flutterTool.drive(any(), any())).thenThrow(
+      when(() => flutterTool.drive(any(), any(), null)).thenThrow(
         FlutterDriverFailedException(1),
       );
 

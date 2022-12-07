@@ -30,6 +30,7 @@ class DriveCommandConfig with _$DriveCommandConfig {
     required String? packageName,
     required String? bundleId,
     required int repeat,
+    required String? useApplicationBinary,
   }) = _DriveCommandConfig;
 }
 
@@ -118,6 +119,14 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         abbr: 'n',
         help: 'Repeat the test n times.',
         defaultsTo: '$_defaultRepeats',
+      )
+      ..addOption(
+        'use-application-binary',
+        help:
+            'Specify a pre-built application binary to use when running. For Android applications, '
+            'this must be the path to an APK. For iOS applications, the path to an IPA. Other device types '
+            'do not yet support prebuilt application binaries.',
+        valueHelp: 'path/to/app.apk',
       );
   }
 
@@ -188,6 +197,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`repeat` argument is not an int');
     }
 
+    final useApplicationBinary =
+        argResults?['use-application-binary'] as String?;
+
     if (repeat < 1) {
       throwToolExit('repeat count must not be smaller than 1');
     }
@@ -215,6 +227,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       packageName: packageName,
       bundleId: bundleId,
       repeat: repeat,
+      useApplicationBinary: useApplicationBinary,
     );
   }
 
@@ -230,6 +243,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
     _testRunner
       ..repeats = config.repeat
+      ..useApplicationBinary = config.useApplicationBinary
       ..builder = (target, device) async {
         try {
           await _flutterTool.build(target, device);
@@ -244,7 +258,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       }
       ..executor = (target, device) async {
         try {
-          await _flutterTool.drive(target, device);
+          await _flutterTool.drive(target, device, config.useApplicationBinary);
         } catch (err) {
           _logger
             ..err('$err')

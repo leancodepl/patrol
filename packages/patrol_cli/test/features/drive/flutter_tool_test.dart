@@ -140,6 +140,7 @@ void main() {
         await flutterTool.drive(
           'integration_test/app_test.dart',
           androidDevice,
+          null,
         );
 
         verify(() => logger.task('Running app_test.dart on emulator-5554'))
@@ -154,6 +155,7 @@ void main() {
           () async => flutterTool.drive(
             'integration_test/app_test.dart',
             androidDevice,
+            null,
           ),
           throwsA(
             isA<FlutterDriverFailedException>()

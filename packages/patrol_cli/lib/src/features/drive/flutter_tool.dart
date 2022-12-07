@@ -161,7 +161,11 @@ class FlutterTool {
   /// Runs [target] on [device] and waits until the test completes.
   ///
   /// Prints stdout and stderr of "flutter drive".
-  Future<void> drive(String target, Device device) async {
+  Future<void> drive(
+    String target,
+    Device device,
+    String? useApplicationBinary,
+  ) async {
     final deviceName = device.resolvedName;
     final targetName = basename(target);
 
@@ -179,6 +183,7 @@ class FlutterTool {
           flavor: _flavor,
           platform: device.targetPlatform,
           simulator: !device.real,
+          useApplicationBinary: useApplicationBinary,
         ),
       ],
       environment: {
@@ -263,8 +268,12 @@ class FlutterTool {
     required String? flavor,
     required TargetPlatform platform,
     required bool simulator,
+    required String? useApplicationBinary,
   }) {
     String getApplicationBinaryPath() {
+      if (useApplicationBinary != null) {
+        return useApplicationBinary;
+      }
       if (platform == TargetPlatform.android) {
         final prefix = join(
           _fs.currentDirectory.path,
