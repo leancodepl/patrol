@@ -397,7 +397,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"RunnerUITests build\"\nexport FLUTTER_ROOT=/Users/bartek/fvm/versions/stable\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+			shellScript = "echo \"RunnerUITests build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		98783F35293F479200A64A4E /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -415,7 +415,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"RunnerUITests thin binary\"\nexport FLUTTER_ROOT=/Users/bartek/fvm/versions/stable\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
+			shellScript = "echo \"RunnerUITests thin binary\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -696,7 +696,7 @@
 		};
 		98C60B2D2938D8CD00008678 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 38216E534AB283518F9DEB34 /* Pods-Runner-RunnerUITests.debug.xcconfig */;
+			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -736,7 +736,7 @@
 		};
 		98C60B2E2938D8CD00008678 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DFEE48F6738D65EAF8E3FCF4 /* Pods-Runner-RunnerUITests.release.xcconfig */;
+			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -773,7 +773,7 @@
 		};
 		98C60B2F2938D8CD00008678 /* Profile */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E9606F1BD8384437E575C793 /* Pods-Runner-RunnerUITests.profile.xcconfig */;
+			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
