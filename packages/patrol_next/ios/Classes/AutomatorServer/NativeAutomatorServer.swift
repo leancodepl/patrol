@@ -374,7 +374,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> Empty {
     return try await runCatching {
-      NSLog("here here submitTestResults was called!")
+      Logger.shared.i("submitted \(request.results.count) dart test results")
       onTestResultsSubmitted(request.results)
       return DefaultResponse()
     }

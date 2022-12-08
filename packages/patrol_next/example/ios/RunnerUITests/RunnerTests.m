@@ -11,8 +11,7 @@
 @implementation RunnerTests
 
 + (NSArray<NSInvocation *> *)testInvocations {
-  NSLog(@"here here 1");
-  
+
   // Start native automation gRPC server
   PatrolServer *server = [[PatrolServer alloc] init];
   [server startWithCompletionHandler:^(NSError* err) {
@@ -21,12 +20,9 @@
   
   XCUIApplication *app = [[XCUIApplication alloc] init];
   [app launch];
-  
-  NSLog(@"here here 2 after app launch");
 
   // Spin the runloop waiting for test results
   while (!server.dartTestResults) {
-    NSLog(@"here here waiting for dart test results");
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
 
