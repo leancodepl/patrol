@@ -1,5 +1,5 @@
-#import "PatrolNextPlugin.h"
 #import "PatrolIntegrationTestRunner.h"
+#import "PatrolNextPlugin.h"
 
 @import ObjectiveC.runtime;
 @import UIKit;
@@ -11,7 +11,8 @@
   return self;
 }
 
-- (void)iterateOverTestResults:(NSDictionary<NSString *,NSString *> *)tests withSelector:(NS_NOESCAPE PatrolIntegrationTestResults)testResult {
+- (void)iterateOverTestResults:(NSDictionary<NSString *, NSString *> *)tests
+                  withSelector:(NS_NOESCAPE PatrolIntegrationTestResults)testResult {
   NSMutableSet<NSString *> *testCaseNames = [[NSMutableSet alloc] init];
 
   [tests enumerateKeysAndObjectsUsingBlock:^(NSString *test, NSString *result, BOOL *stop) {
@@ -19,7 +20,8 @@
 
     // Make sure that Objective-C test method names are unique after sanitization
     if ([testCaseNames containsObject:testSelectorName]) {
-      NSString *reason = [NSString stringWithFormat:@"Cannot test \"%@\", duplicate XCTestCase tests named %@", test, testSelectorName];
+      NSString *reason = [NSString
+          stringWithFormat:@"Cannot test \"%@\", duplicate XCTestCase tests named %@", test, testSelectorName];
       testResult(NSSelectorFromString(@"testDuplicateTestNames"), NO, reason);
       *stop = YES;
       return;
@@ -35,19 +37,20 @@
   }];
 }
 
-- (NSDictionary<NSString *,UIImage *> *)capturedScreenshotsByName {
+- (NSDictionary<NSString *, UIImage *> *)capturedScreenshotsByName {
   // TODO: Implement
   return [[NSDictionary alloc] init];
 }
 
 + (NSString *)testCaseNameFromDartTestName:(NSString *)dartTestName {
   NSString *capitalizedString = dartTestName.localizedCapitalizedString;
-  
+
   // Objective-C method names must be alphanumeric
   NSCharacterSet *disallowedCharacters = NSCharacterSet.alphanumericCharacterSet.invertedSet;
-  
+
   // Remove disallowed characters
-  NSString *upperCamelTestName = [[capitalizedString componentsSeparatedByCharactersInSet:disallowedCharacters] componentsJoinedByString:@""];
+  NSString *upperCamelTestName =
+      [[capitalizedString componentsSeparatedByCharactersInSet:disallowedCharacters] componentsJoinedByString:@""];
   return [NSString stringWithFormat:@"test%@", upperCamelTestName];
 }
 

@@ -1,4 +1,4 @@
 #import <Flutter/Flutter.h>
 
-@interface PatrolNextPlugin : NSObject<FlutterPlugin>
+@interface PatrolNextPlugin : NSObject <FlutterPlugin>
 @end
