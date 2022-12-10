@@ -1,5 +1,7 @@
 plugins {
-    id "com.google.protobuf" version "0.8.19"
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.google.protobuf' version '0.8.19'
 }
 
 def localProperties = new Properties()
@@ -25,19 +27,12 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
 
     namespace 'pl.leancode.patrol_next.example'
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 
     kotlinOptions {
         jvmTarget = '1.8'
@@ -81,8 +76,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    testImplementation 'junit:junit:4.12'
-
-//    androidTestImplementation 'androidx.test:runner:1.2.0'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13.2'
 }
