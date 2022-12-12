@@ -1,9 +1,0 @@
-include: package:leancode_lint/analysis_options_package.yaml
-
-analyzer:
-  exclude:
-    - lib/**/*.pb.dart
-    - lib/**/*.pbenum.dart
-    - lib/**/*.pbjson.dart
-    - lib/**/*.pbserver.dart
-    - lib/**/*.pbgrpc.dart
