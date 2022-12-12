@@ -106,6 +106,23 @@ object SwipeRequestKt {
     fun clearSteps() {
       _builder.clearSteps()
     }
+
+    /**
+     * <code>string appId = 6;</code>
+     */
+    var appId: kotlin.String
+      @JvmName("getAppId")
+      get() = _builder.getAppId()
+      @JvmName("setAppId")
+      set(value) {
+        _builder.setAppId(value)
+      }
+    /**
+     * <code>string appId = 6;</code>
+     */
+    fun clearAppId() {
+      _builder.clearAppId()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

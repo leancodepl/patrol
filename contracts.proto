@@ -101,6 +101,7 @@ message SwipeRequest {
   float endX = 3;
   float endY = 4;
   uint32 steps = 5;
+  string appId = 6;
 }
 
 message HandlePermissionRequest {

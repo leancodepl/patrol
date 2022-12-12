@@ -205,12 +205,13 @@ const SwipeRequest$json = const {
     const {'1': 'endX', '3': 3, '4': 1, '5': 2, '10': 'endX'},
     const {'1': 'endY', '3': 4, '4': 1, '5': 2, '10': 'endY'},
     const {'1': 'steps', '3': 5, '4': 1, '5': 13, '10': 'steps'},
+    const {'1': 'appId', '3': 6, '4': 1, '5': 9, '10': 'appId'},
   ],
 };
 
 /// Descriptor for `SwipeRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List swipeRequestDescriptor = $convert.base64Decode(
-    'CgxTd2lwZVJlcXVlc3QSFgoGc3RhcnRYGAEgASgCUgZzdGFydFgSFgoGc3RhcnRZGAIgASgCUgZzdGFydFkSEgoEZW5kWBgDIAEoAlIEZW5kWBISCgRlbmRZGAQgASgCUgRlbmRZEhQKBXN0ZXBzGAUgASgNUgVzdGVwcw==');
+    'CgxTd2lwZVJlcXVlc3QSFgoGc3RhcnRYGAEgASgCUgZzdGFydFgSFgoGc3RhcnRZGAIgASgCUgZzdGFydFkSEgoEZW5kWBgDIAEoAlIEZW5kWBISCgRlbmRZGAQgASgCUgRlbmRZEhQKBXN0ZXBzGAUgASgNUgVzdGVwcxIUCgVhcHBJZBgGIAEoCVIFYXBwSWQ=');
 @$core.Deprecated('Use handlePermissionRequestDescriptor instead')
 const HandlePermissionRequest$json = const {
   '1': 'HandlePermissionRequest',

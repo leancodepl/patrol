@@ -476,6 +476,26 @@ class NativeAutomator {
     );
   }
 
+  /// Swipes from [from] to [to].
+  Future<void> swipe({
+    required Offset from,
+    required Offset to,
+    int steps = 2,
+  }) async {
+    await _wrapRequest(
+      'swipe',
+      () => _client.swipe(
+        SwipeRequest(
+          startX: from.dx,
+          startY: from.dy,
+          endX: to.dx,
+          endY: to.dy,
+          steps: steps,
+        ),
+      ),
+    );
+  }
+
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeView>> getNativeViews(Selector selector) async {
