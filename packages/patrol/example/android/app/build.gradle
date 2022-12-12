@@ -28,6 +28,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdkVersion 33
 
+    namespace 'pl.leancode.patrol.example'
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -43,7 +45,7 @@ android {
 
     defaultConfig {
         applicationId "pl.leancode.patrol.example"
-        minSdkVersion 21
+        minSdkVersion 26
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -56,7 +58,6 @@ android {
             signingConfig signingConfigs.debug
         }
     }
-    namespace 'pl.leancode.patrol.example'
 }
 
 flutter {
@@ -64,5 +65,5 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

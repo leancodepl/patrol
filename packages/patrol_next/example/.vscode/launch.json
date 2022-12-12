@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "run app",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "run integration test",
+      "request": "launch",
+      "type": "dart",
+      "runTestsOnDevice": true,
+      "program": "integration_test/example_test.dart"
+    }
+  ]
+}

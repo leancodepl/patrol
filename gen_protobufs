@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # gen_protobufs generates Protocol Buffers classes for every used language
 # (Dart, Swift, Kotlin/Java) in the appropriate directory.
@@ -47,3 +48,7 @@ protoc \
 	--grpc-swift_out="$swift_out" \
 	--swift_opt=Visibility=Public \
 	"$PROTO_PATH"
+
+# copy contracts to patrol_next
+cp "$swift_out/contracts.grpc.swift" ./packages/patrol_next/ios/Classes/AutomatorServer
+cp "$swift_out/contracts.pb.swift" ./packages/patrol_next/ios/Classes/AutomatorServer

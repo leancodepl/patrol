@@ -2036,3 +2036,67 @@ class Notification extends $pb.GeneratedMessage {
   @$pb.TagNumber(4)
   void clearRaw() => clearField(4);
 }
+
+class SubmitTestResultsRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'SubmitTestResultsRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..m<$core.String, $core.String>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'results',
+        entryClassName: 'SubmitTestResultsRequest.ResultsEntry',
+        keyFieldType: $pb.PbFieldType.OS,
+        valueFieldType: $pb.PbFieldType.OS,
+        packageName: const $pb.PackageName('patrol'))
+    ..hasRequiredFields = false;
+
+  SubmitTestResultsRequest._() : super();
+  factory SubmitTestResultsRequest({
+    $core.Map<$core.String, $core.String>? results,
+  }) {
+    final _result = create();
+    if (results != null) {
+      _result.results.addAll(results);
+    }
+    return _result;
+  }
+  factory SubmitTestResultsRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory SubmitTestResultsRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  SubmitTestResultsRequest clone() =>
+      SubmitTestResultsRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  SubmitTestResultsRequest copyWith(
+          void Function(SubmitTestResultsRequest) updates) =>
+      super.copyWith((message) => updates(message as SubmitTestResultsRequest))
+          as SubmitTestResultsRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static SubmitTestResultsRequest create() => SubmitTestResultsRequest._();
+  SubmitTestResultsRequest createEmptyInstance() => create();
+  static $pb.PbList<SubmitTestResultsRequest> createRepeated() =>
+      $pb.PbList<SubmitTestResultsRequest>();
+  @$core.pragma('dart2js:noInline')
+  static SubmitTestResultsRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SubmitTestResultsRequest>(create);
+  static SubmitTestResultsRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.Map<$core.String, $core.String> get results => $_getMap(0);
+}

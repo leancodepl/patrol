@@ -1,0 +1,69 @@
+buildscript {
+    ext.kotlin_version = '1.6.10'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+plugins {
+    id "com.google.protobuf" version "0.8.19"
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+group 'pl.leancode.patrol_next'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 31
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    dependencies {
+        // TODO: These dependencies should not be added to release builds.
+        api 'junit:junit:4.12'
+
+        api 'androidx.test:runner:1.2.0'
+        api 'androidx.test.espresso:espresso-core:3.2.0'
+
+        api "com.google.protobuf:protobuf-kotlin:3.21.7"
+        api "com.google.protobuf:protobuf-java-util:3.21.7"
+        api "io.grpc:grpc-protobuf:1.49.2"
+        api "io.grpc:grpc-stub:1.49.2"
+        api "io.grpc:grpc-kotlin-stub:1.3.0"
+        api "io.grpc:grpc-okhttp:1.49.2"
+        api "javax.annotation:javax.annotation-api:1.3.2"
+
+        api "androidx.test.uiautomator:uiautomator:2.2.0"
+    }
+}
