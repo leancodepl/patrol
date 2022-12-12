@@ -282,6 +282,8 @@ public struct Patrol_SwipeRequest {
 
   public var steps: UInt32 = 0
 
+  public var appID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1085,6 +1087,7 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     3: .same(proto: "endX"),
     4: .same(proto: "endY"),
     5: .same(proto: "steps"),
+    6: .same(proto: "appId"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1098,6 +1101,7 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 3: try { try decoder.decodeSingularFloatField(value: &self.endX) }()
       case 4: try { try decoder.decodeSingularFloatField(value: &self.endY) }()
       case 5: try { try decoder.decodeSingularUInt32Field(value: &self.steps) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.appID) }()
       default: break
       }
     }
@@ -1119,6 +1123,9 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if self.steps != 0 {
       try visitor.visitSingularUInt32Field(value: self.steps, fieldNumber: 5)
     }
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1128,6 +1135,7 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs.endX != rhs.endX {return false}
     if lhs.endY != rhs.endY {return false}
     if lhs.steps != rhs.steps {return false}
+    if lhs.appID != rhs.appID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

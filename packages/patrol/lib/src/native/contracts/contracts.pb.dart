@@ -936,6 +936,12 @@ class SwipeRequest extends $pb.GeneratedMessage {
             ? ''
             : 'steps',
         $pb.PbFieldType.OU3)
+    ..aOS(
+        6,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'appId',
+        protoName: 'appId')
     ..hasRequiredFields = false;
 
   SwipeRequest._() : super();
@@ -945,6 +951,7 @@ class SwipeRequest extends $pb.GeneratedMessage {
     $core.double? endX,
     $core.double? endY,
     $core.int? steps,
+    $core.String? appId,
   }) {
     final _result = create();
     if (startX != null) {
@@ -961,6 +968,9 @@ class SwipeRequest extends $pb.GeneratedMessage {
     }
     if (steps != null) {
       _result.steps = steps;
+    }
+    if (appId != null) {
+      _result.appId = appId;
     }
     return _result;
   }
@@ -1050,6 +1060,18 @@ class SwipeRequest extends $pb.GeneratedMessage {
   $core.bool hasSteps() => $_has(4);
   @$pb.TagNumber(5)
   void clearSteps() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get appId => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set appId($core.String v) {
+    $_setString(5, v);
+  }
+
+  @$pb.TagNumber(6)
+  $core.bool hasAppId() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAppId() => clearField(6);
 }
 
 class HandlePermissionRequest extends $pb.GeneratedMessage {

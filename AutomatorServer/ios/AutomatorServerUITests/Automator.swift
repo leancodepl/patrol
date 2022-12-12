@@ -130,6 +130,15 @@ class Automator {
     }
   }
 
+  func swipe(startX: Double, startY: Double, endX: Double, endY: Double) async throws {
+    await runAction("selecting fine location") {
+      let start = self.springboard.coordinate(
+        withNormalizedOffset: CGVector(dx: startX, dy: startY))
+      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: endX, dy: endY))
+      start.press(forDuration: 0.1, thenDragTo: end)
+    }
+  }
+
   // MARK: Services
 
   func enableDarkMode(_ bundleId: String) async throws {

@@ -133,7 +133,13 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      throw PatrolError.methodNotImplemented("swipe")
+      try await automator.swipe(
+        startX: Double(request.startX),
+        startY: Double(request.startY),
+        endX: Double(request.endX),
+        endY: Double(request.endY)
+      )
+      return DefaultResponse()
     }
   }
 

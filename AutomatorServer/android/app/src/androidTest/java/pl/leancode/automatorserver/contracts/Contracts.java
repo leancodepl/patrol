@@ -7623,6 +7623,18 @@ public final class Contracts {
      * @return The steps.
      */
     int getSteps();
+
+    /**
+     * <code>string appId = 6;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 6;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
   }
   /**
    * Protobuf type {@code patrol.SwipeRequest}
@@ -7637,6 +7649,7 @@ public final class Contracts {
       super(builder);
     }
     private SwipeRequest() {
+      appId_ = "";
     }
 
     @java.lang.Override
@@ -7719,6 +7732,44 @@ public final class Contracts {
       return steps_;
     }
 
+    public static final int APPID_FIELD_NUMBER = 6;
+    private volatile java.lang.Object appId_;
+    /**
+     * <code>string appId = 6;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        appId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string appId = 6;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      java.lang.Object ref = appId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        appId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -7747,6 +7798,9 @@ public final class Contracts {
       }
       if (steps_ != 0) {
         output.writeUInt32(5, steps_);
+      }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 6, appId_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -7777,6 +7831,9 @@ public final class Contracts {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(5, steps_);
       }
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(appId_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, appId_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
@@ -7806,6 +7863,8 @@ public final class Contracts {
               other.getEndY())) return false;
       if (getSteps()
           != other.getSteps()) return false;
+      if (!getAppId()
+          .equals(other.getAppId())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -7831,6 +7890,8 @@ public final class Contracts {
           getEndY());
       hash = (37 * hash) + STEPS_FIELD_NUMBER;
       hash = (53 * hash) + getSteps();
+      hash = (37 * hash) + APPID_FIELD_NUMBER;
+      hash = (53 * hash) + getAppId().hashCode();
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -7969,6 +8030,8 @@ public final class Contracts {
 
         steps_ = 0;
 
+        appId_ = "";
+
         return this;
       }
 
@@ -8000,6 +8063,7 @@ public final class Contracts {
         result.endX_ = endX_;
         result.endY_ = endY_;
         result.steps_ = steps_;
+        result.appId_ = appId_;
         onBuilt();
         return result;
       }
@@ -8063,6 +8127,10 @@ public final class Contracts {
         if (other.getSteps() != 0) {
           setSteps(other.getSteps());
         }
+        if (!other.getAppId().isEmpty()) {
+          appId_ = other.appId_;
+          onChanged();
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -8114,6 +8182,11 @@ public final class Contracts {
 
                 break;
               } // case 40
+              case 50: {
+                appId_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 50
               default: {
                 if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                   done = true; // was an endgroup tag
@@ -8281,6 +8354,82 @@ public final class Contracts {
       public Builder clearSteps() {
         
         steps_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object appId_ = "";
+      /**
+       * <code>string appId = 6;</code>
+       * @return The appId.
+       */
+      public java.lang.String getAppId() {
+        java.lang.Object ref = appId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          appId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string appId = 6;</code>
+       * @return The bytes for appId.
+       */
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        java.lang.Object ref = appId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          appId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string appId = 6;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        appId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 6;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        
+        appId_ = getDefaultInstance().getAppId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string appId = 6;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        appId_ = value;
         onChanged();
         return this;
       }
@@ -15738,88 +15887,89 @@ public final class Contracts {
       "tor\030\001 \001(\0132\020.patrol.Selector\022\r\n\005appId\030\002 \001" +
       "(\t\"p\n\020EnterTextRequest\022\014\n\004data\030\001 \001(\t\022\r\n\005" +
       "appId\030\002 \001(\t\022\017\n\005index\030\003 \001(\rH\000\022$\n\010selector" +
-      "\030\004 \001(\0132\020.patrol.SelectorH\000B\010\n\006findBy\"Y\n\014" +
+      "\030\004 \001(\0132\020.patrol.SelectorH\000B\010\n\006findBy\"h\n\014" +
       "SwipeRequest\022\016\n\006startX\030\001 \001(\002\022\016\n\006startY\030\002" +
       " \001(\002\022\014\n\004endX\030\003 \001(\002\022\014\n\004endY\030\004 \001(\002\022\r\n\005step" +
-      "s\030\005 \001(\r\"\206\001\n\027HandlePermissionRequest\0222\n\004c" +
-      "ode\030\001 \001(\0162$.patrol.HandlePermissionReque" +
-      "st.Code\"7\n\004Code\022\017\n\013WHILE_USING\020\000\022\022\n\016ONLY" +
-      "_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"\225\001\n\032SetLocation" +
-      "AccuracyRequest\022M\n\020locationAccuracy\030\001 \001(" +
-      "\01623.patrol.SetLocationAccuracyRequest.Lo" +
-      "cationAccuracy\"(\n\020LocationAccuracy\022\n\n\006CO" +
-      "ARSE\020\000\022\010\n\004FINE\020\001\"7\n\036PermissionDialogVisi" +
-      "bleRequest\022\025\n\rtimeoutMillis\030\001 \001(\004\"2\n\037Per" +
-      "missionDialogVisibleResponse\022\017\n\007visible\030" +
-      "\001 \001(\010\"\236\004\n\010Selector\022\021\n\004text\030\001 \001(\tH\000\210\001\001\022\033\n" +
-      "\016textStartsWith\030\002 \001(\tH\001\210\001\001\022\031\n\014textContai" +
-      "ns\030\003 \001(\tH\002\210\001\001\022\026\n\tclassName\030\004 \001(\tH\003\210\001\001\022\037\n" +
-      "\022contentDescription\030\005 \001(\tH\004\210\001\001\022)\n\034conten" +
-      "tDescriptionStartsWith\030\006 \001(\tH\005\210\001\001\022\'\n\032con" +
-      "tentDescriptionContains\030\007 \001(\tH\006\210\001\001\022\027\n\nre" +
-      "sourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010instance\030\t \001(\rH\010\210" +
-      "\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022\024\n\007focused\030\013 \001(" +
-      "\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B\007\n\005_textB\021\n\017_te" +
-      "xtStartsWithB\017\n\r_textContainsB\014\n\n_classN" +
-      "ameB\025\n\023_contentDescriptionB\037\n\035_contentDe" +
-      "scriptionStartsWithB\035\n\033_contentDescripti" +
-      "onContainsB\r\n\013_resourceIdB\013\n\t_instanceB\n" +
-      "\n\010_enabledB\n\n\010_focusedB\006\n\004_pkg\"\327\001\n\nNativ" +
-      "eView\022\021\n\tclassName\030\001 \001(\t\022\014\n\004text\030\002 \001(\t\022\032" +
-      "\n\022contentDescription\030\003 \001(\t\022\017\n\007focused\030\004 " +
-      "\001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nchildCount\030\006 \001(\005" +
-      "\022\024\n\014resourceName\030\007 \001(\t\022\032\n\022applicationPac" +
-      "kage\030\010 \001(\t\022$\n\010children\030\t \003(\0132\022.patrol.Na" +
-      "tiveView\"]\n\014Notification\022\024\n\007appName\030\001 \001(" +
-      "\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007content\030\003 \001(\t\022\013" +
-      "\n\003raw\030\004 \001(\tB\n\n\010_appName2\254\016\n\017NativeAutoma" +
-      "tor\0226\n\tconfigure\022\030.patrol.ConfigureReque" +
-      "st\032\r.patrol.Empty\"\000\022+\n\tpressHome\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\022+\n\tpressBack\022\r." +
-      "patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017pressRe" +
-      "centApps\022\r.patrol.Empty\032\r.patrol.Empty\"\000" +
-      "\0227\n\025doublePressRecentApps\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\0222\n\007openApp\022\026.patrol.Op" +
-      "enAppRequest\032\r.patrol.Empty\"\000\022F\n\021openQui" +
-      "ckSettings\022 .patrol.OpenQuickSettingsReq" +
-      "uest\032\r.patrol.Empty\"\000\022Q\n\016getNativeViews\022" +
-      "\035.patrol.GetNativeViewsRequest\032\036.patrol." +
-      "GetNativeViewsResponse\"\000\022*\n\003tap\022\022.patrol" +
-      ".TapRequest\032\r.patrol.Empty\"\000\0220\n\tdoubleTa" +
-      "p\022\022.patrol.TapRequest\032\r.patrol.Empty\"\000\0226" +
-      "\n\tenterText\022\030.patrol.EnterTextRequest\032\r." +
-      "patrol.Empty\"\000\022.\n\005swipe\022\024.patrol.SwipeRe" +
-      "quest\032\r.patrol.Empty\"\000\0224\n\022enableAirplane" +
-      "Mode\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0225\n\023" +
-      "disableAirplaneMode\022\r.patrol.Empty\032\r.pat" +
-      "rol.Empty\"\000\022,\n\nenableWiFi\022\r.patrol.Empty" +
-      "\032\r.patrol.Empty\"\000\022-\n\013disableWiFi\022\r.patro" +
-      "l.Empty\032\r.patrol.Empty\"\000\0220\n\016enableCellul" +
-      "ar\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0221\n\017di" +
-      "sableCellular\022\r.patrol.Empty\032\r.patrol.Em" +
-      "pty\"\000\0221\n\017enableBluetooth\022\r.patrol.Empty\032" +
-      "\r.patrol.Empty\"\000\0222\n\020disableBluetooth\022\r.p" +
-      "atrol.Empty\032\r.patrol.Empty\"\000\022:\n\016enableDa" +
-      "rkMode\022\027.patrol.DarkModeRequest\032\r.patrol" +
-      ".Empty\"\000\022;\n\017disableDarkMode\022\027.patrol.Dar" +
-      "kModeRequest\032\r.patrol.Empty\"\000\0223\n\021openNot" +
-      "ifications\022\r.patrol.Empty\032\r.patrol.Empty" +
-      "\"\000\0224\n\022closeNotifications\022\r.patrol.Empty\032" +
-      "\r.patrol.Empty\"\000\022:\n\030closeHeadsUpNotifica" +
-      "tion\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022W\n\020" +
-      "getNotifications\022\037.patrol.GetNotificatio" +
-      "nsRequest\032 .patrol.GetNotificationsRespo" +
-      "nse\"\000\022F\n\021tapOnNotification\022 .patrol.TapO" +
-      "nNotificationRequest\032\r.patrol.Empty\"\000\022n\n" +
-      "\031isPermissionDialogVisible\022&.patrol.Perm" +
-      "issionDialogVisibleRequest\032\'.patrol.Perm" +
-      "issionDialogVisibleResponse\"\000\022J\n\026handleP" +
-      "ermissionDialog\022\037.patrol.HandlePermissio" +
-      "nRequest\032\r.patrol.Empty\"\000\022J\n\023setLocation" +
-      "Accuracy\022\".patrol.SetLocationAccuracyReq" +
-      "uest\032\r.patrol.Empty\"\000\022\'\n\005debug\022\r.patrol." +
-      "Empty\032\r.patrol.Empty\"\000B\'\n%pl.leancode.au" +
-      "tomatorserver.contractsb\006proto3"
+      "s\030\005 \001(\r\022\r\n\005appId\030\006 \001(\t\"\206\001\n\027HandlePermiss" +
+      "ionRequest\0222\n\004code\030\001 \001(\0162$.patrol.Handle" +
+      "PermissionRequest.Code\"7\n\004Code\022\017\n\013WHILE_" +
+      "USING\020\000\022\022\n\016ONLY_THIS_TIME\020\001\022\n\n\006DENIED\020\002\"" +
+      "\225\001\n\032SetLocationAccuracyRequest\022M\n\020locati" +
+      "onAccuracy\030\001 \001(\01623.patrol.SetLocationAcc" +
+      "uracyRequest.LocationAccuracy\"(\n\020Locatio" +
+      "nAccuracy\022\n\n\006COARSE\020\000\022\010\n\004FINE\020\001\"7\n\036Permi" +
+      "ssionDialogVisibleRequest\022\025\n\rtimeoutMill" +
+      "is\030\001 \001(\004\"2\n\037PermissionDialogVisibleRespo" +
+      "nse\022\017\n\007visible\030\001 \001(\010\"\236\004\n\010Selector\022\021\n\004tex" +
+      "t\030\001 \001(\tH\000\210\001\001\022\033\n\016textStartsWith\030\002 \001(\tH\001\210\001" +
+      "\001\022\031\n\014textContains\030\003 \001(\tH\002\210\001\001\022\026\n\tclassNam" +
+      "e\030\004 \001(\tH\003\210\001\001\022\037\n\022contentDescription\030\005 \001(\t" +
+      "H\004\210\001\001\022)\n\034contentDescriptionStartsWith\030\006 " +
+      "\001(\tH\005\210\001\001\022\'\n\032contentDescriptionContains\030\007" +
+      " \001(\tH\006\210\001\001\022\027\n\nresourceId\030\010 \001(\tH\007\210\001\001\022\025\n\010in" +
+      "stance\030\t \001(\rH\010\210\001\001\022\024\n\007enabled\030\n \001(\010H\t\210\001\001\022" +
+      "\024\n\007focused\030\013 \001(\010H\n\210\001\001\022\020\n\003pkg\030\014 \001(\tH\013\210\001\001B" +
+      "\007\n\005_textB\021\n\017_textStartsWithB\017\n\r_textCont" +
+      "ainsB\014\n\n_classNameB\025\n\023_contentDescriptio" +
+      "nB\037\n\035_contentDescriptionStartsWithB\035\n\033_c" +
+      "ontentDescriptionContainsB\r\n\013_resourceId" +
+      "B\013\n\t_instanceB\n\n\010_enabledB\n\n\010_focusedB\006\n" +
+      "\004_pkg\"\327\001\n\nNativeView\022\021\n\tclassName\030\001 \001(\t\022" +
+      "\014\n\004text\030\002 \001(\t\022\032\n\022contentDescription\030\003 \001(" +
+      "\t\022\017\n\007focused\030\004 \001(\010\022\017\n\007enabled\030\005 \001(\010\022\022\n\nc" +
+      "hildCount\030\006 \001(\005\022\024\n\014resourceName\030\007 \001(\t\022\032\n" +
+      "\022applicationPackage\030\010 \001(\t\022$\n\010children\030\t " +
+      "\003(\0132\022.patrol.NativeView\"]\n\014Notification\022" +
+      "\024\n\007appName\030\001 \001(\tH\000\210\001\001\022\r\n\005title\030\002 \001(\t\022\017\n\007" +
+      "content\030\003 \001(\t\022\013\n\003raw\030\004 \001(\tB\n\n\010_appName2\254" +
+      "\016\n\017NativeAutomator\0226\n\tconfigure\022\030.patrol" +
+      ".ConfigureRequest\032\r.patrol.Empty\"\000\022+\n\tpr" +
+      "essHome\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
+      "+\n\tpressBack\022\r.patrol.Empty\032\r.patrol.Emp" +
+      "ty\"\000\0221\n\017pressRecentApps\022\r.patrol.Empty\032\r" +
+      ".patrol.Empty\"\000\0227\n\025doublePressRecentApps" +
+      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\007open" +
+      "App\022\026.patrol.OpenAppRequest\032\r.patrol.Emp" +
+      "ty\"\000\022F\n\021openQuickSettings\022 .patrol.OpenQ" +
+      "uickSettingsRequest\032\r.patrol.Empty\"\000\022Q\n\016" +
+      "getNativeViews\022\035.patrol.GetNativeViewsRe" +
+      "quest\032\036.patrol.GetNativeViewsResponse\"\000\022" +
+      "*\n\003tap\022\022.patrol.TapRequest\032\r.patrol.Empt" +
+      "y\"\000\0220\n\tdoubleTap\022\022.patrol.TapRequest\032\r.p" +
+      "atrol.Empty\"\000\0226\n\tenterText\022\030.patrol.Ente" +
+      "rTextRequest\032\r.patrol.Empty\"\000\022.\n\005swipe\022\024" +
+      ".patrol.SwipeRequest\032\r.patrol.Empty\"\000\0224\n" +
+      "\022enableAirplaneMode\022\r.patrol.Empty\032\r.pat" +
+      "rol.Empty\"\000\0225\n\023disableAirplaneMode\022\r.pat" +
+      "rol.Empty\032\r.patrol.Empty\"\000\022,\n\nenableWiFi" +
+      "\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022-\n\013disa" +
+      "bleWiFi\022\r.patrol.Empty\032\r.patrol.Empty\"\000\022" +
+      "0\n\016enableCellular\022\r.patrol.Empty\032\r.patro" +
+      "l.Empty\"\000\0221\n\017disableCellular\022\r.patrol.Em" +
+      "pty\032\r.patrol.Empty\"\000\0221\n\017enableBluetooth\022" +
+      "\r.patrol.Empty\032\r.patrol.Empty\"\000\0222\n\020disab" +
+      "leBluetooth\022\r.patrol.Empty\032\r.patrol.Empt" +
+      "y\"\000\022:\n\016enableDarkMode\022\027.patrol.DarkModeR" +
+      "equest\032\r.patrol.Empty\"\000\022;\n\017disableDarkMo" +
+      "de\022\027.patrol.DarkModeRequest\032\r.patrol.Emp" +
+      "ty\"\000\0223\n\021openNotifications\022\r.patrol.Empty" +
+      "\032\r.patrol.Empty\"\000\0224\n\022closeNotifications\022" +
+      "\r.patrol.Empty\032\r.patrol.Empty\"\000\022:\n\030close" +
+      "HeadsUpNotification\022\r.patrol.Empty\032\r.pat" +
+      "rol.Empty\"\000\022W\n\020getNotifications\022\037.patrol" +
+      ".GetNotificationsRequest\032 .patrol.GetNot" +
+      "ificationsResponse\"\000\022F\n\021tapOnNotificatio" +
+      "n\022 .patrol.TapOnNotificationRequest\032\r.pa" +
+      "trol.Empty\"\000\022n\n\031isPermissionDialogVisibl" +
+      "e\022&.patrol.PermissionDialogVisibleReques" +
+      "t\032\'.patrol.PermissionDialogVisibleRespon" +
+      "se\"\000\022J\n\026handlePermissionDialog\022\037.patrol." +
+      "HandlePermissionRequest\032\r.patrol.Empty\"\000" +
+      "\022J\n\023setLocationAccuracy\022\".patrol.SetLoca" +
+      "tionAccuracyRequest\032\r.patrol.Empty\"\000\022\'\n\005" +
+      "debug\022\r.patrol.Empty\032\r.patrol.Empty\"\000B\'\n" +
+      "%pl.leancode.automatorserver.contractsb\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -15902,7 +16052,7 @@ public final class Contracts {
     internal_static_patrol_SwipeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_patrol_SwipeRequest_descriptor,
-        new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", });
+        new java.lang.String[] { "StartX", "StartY", "EndX", "EndY", "Steps", "AppId", });
     internal_static_patrol_HandlePermissionRequest_descriptor =
       getDescriptor().getMessageTypes().get(13);
     internal_static_patrol_HandlePermissionRequest_fieldAccessorTable = new
