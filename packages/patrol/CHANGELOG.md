@@ -1,3 +1,7 @@
+## 0.9.1
+
+- Add `NativeAutomator.swipe()` to enable simple swiping (#669)
+
 ## 0.9.0
 
 - **Breaking:** Remove `PatrolTester.log()` - it did not fit in there and was
