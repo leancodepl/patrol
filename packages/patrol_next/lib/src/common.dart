@@ -89,12 +89,7 @@ void patrolTest(
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
       final waitDuration = Duration(seconds: waitSeconds);
       if (waitDuration > Duration.zero) {
-        patrolTester.log(
-          'sleeping for $waitSeconds seconds',
-          name: 'patrolTest',
-        );
         await Future<void>.delayed(waitDuration);
-        patrolTester.log('done sleeping', name: 'patrolTest');
       }
     },
   );

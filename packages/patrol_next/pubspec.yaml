@@ -33,7 +33,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: pl.leancode.patrol_next
-        pluginClass: PatrolNextPlugin
+        package: pl.leancode.patrol
+        pluginClass: PatrolPlugin
       ios:
-        pluginClass: PatrolNextPlugin
+        pluginClass: PatrolPlugin

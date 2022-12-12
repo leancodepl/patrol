@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 
 class _Response {
@@ -32,11 +34,54 @@ void _defaultPrintLogger(String message) {
   }
 }
 
+// copied from package:integration_test/lib/integration_test.dart
+const bool _shouldReportResultsToNative = bool.fromEnvironment(
+  'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
+  defaultValue: true,
+);
+
+/// The method channel used to report the result of the tests to the platform.
+/// On Android, this is relevant when running instrumented tests.
+const patrolChannel = MethodChannel('pl.leancode.patrol/main');
+
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
-  PatrolBinding() : super();
+  PatrolBinding() {
+    final oldTestExceptionReporter = reportTestException;
+    reportTestException = (details, testDescription) {
+      results[testDescription] = Failure(testDescription, details.toString());
+      oldTestExceptionReporter(details, testDescription);
+    };
+
+    tearDownAll(() async {
+      if (!_shouldReportResultsToNative) {
+        return;
+      }
+
+      try {
+        await patrolChannel.invokeMethod<void>(
+          'allTestsFinished',
+          <String, dynamic>{
+            'results': results.map<String, dynamic>((name, result) {
+              if (result is Failure) {
+                return MapEntry<String, dynamic>(name, result.details);
+              }
+
+              return MapEntry<String, Object>(name, result);
+            }),
+          },
+        );
+      } on MissingPluginException {
+        debugPrint('''
+Warning: Patrol plugin was not detected.
+
+Thrown by PatrolBinding.
+''');
+      }
+    });
+  }
 
   /// Returns an instance of the [PatrolBinding], creating and initializing it
   /// if necessary.
