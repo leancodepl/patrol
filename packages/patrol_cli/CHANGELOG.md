@@ -1,3 +1,7 @@
+## 0.7.17
+
+- Add support for `NativeAutomator.swipe()` (#669)
+
 ## 0.7.16
 
 - Add support for `--use-application-binary` argument for `patrol drive` (#667)
