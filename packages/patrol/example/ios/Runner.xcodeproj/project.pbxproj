@@ -381,7 +381,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Runner xcode_backend build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+			shellScript = "export VERBOSE_SCRIPT_LOGGING=true\necho \"Runner xcode_backend build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		98BFC25F294794D10043000E /* xcode_backend build */ = {
 			isa = PBXShellScriptBuildPhase;
