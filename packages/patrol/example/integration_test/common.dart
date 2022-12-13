@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -15,7 +16,8 @@ void patrol(
     nativeAutomation: true,
     ($) async {
       addTearDown(() async {
-        await $.host.takeScreenshot(name: 'TEARDOWN_$description');
+        debugPrint("Taking screenshot for test '$description'");
+        // await $.host.takeScreenshot(name: 'TEARDOWN_$description');
       });
       await callback($);
     },

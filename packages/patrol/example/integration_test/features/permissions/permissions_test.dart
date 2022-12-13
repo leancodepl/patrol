@@ -9,6 +9,7 @@ void main() {
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
     await _requestAndDenyContactsPermission($);
+    print('here 1');
   });
 }
 

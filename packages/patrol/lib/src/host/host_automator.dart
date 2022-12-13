@@ -35,6 +35,7 @@ class HostAutomator {
     String name = 'screenshot_1',
     String path = 'screenshots',
   }) async {
+    // TODO: Add timeout after 10 sec
     _config.logger('takeScreenshot(name: $name, path: $path)');
     await _binding.takeFlutterScreenshot(name: name, path: path);
   }
@@ -45,6 +46,7 @@ class HostAutomator {
     List<String> arguments = const [],
     bool runInShell = false,
   }) async {
+    // TODO: Add timeout after 10 sec
     _config.logger(
       'runProcess(executable: $executable, arguments: $arguments, runInShell: $runInShell)',
     );
