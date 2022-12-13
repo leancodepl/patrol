@@ -66,10 +66,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
     tearDownAll(() async {
       try {
-        final channel = Platform.isAndroid
-            ? const MethodChannel('plugins.flutter.io/integration_test')
-            : const MethodChannel('pl.leancode.patrol/main');
+        if (!Platform.isIOS) {
+          return;
+        }
 
+        const channel = MethodChannel('pl.leancode.patrol/main');
         debugPrint('Sending Dart test results to the native side');
         await channel.invokeMethod<void>(
           'allTestsFinished',

@@ -1,8 +1,6 @@
 import Flutter
 import UIKit
 
-let kMethodSubmitTestResults = "allTestsFinished"
-
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
