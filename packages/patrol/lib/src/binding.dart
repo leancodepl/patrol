@@ -75,6 +75,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         await channel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
+            // ignore: invalid_use_of_visible_for_testing_member
             'results': results.map<String, dynamic>((name, result) {
               if (result is Failure) {
                 return MapEntry<String, dynamic>(name, result.details);
