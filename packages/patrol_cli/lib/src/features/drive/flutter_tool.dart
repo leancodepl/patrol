@@ -116,7 +116,11 @@ class FlutterTool {
         for (final dartDefine in {..._env, ..._dartDefines}.entries) ...[
           '--dart-define',
           '${dartDefine.key}=${dartDefine.value}',
-        ]
+        ],
+        ...[
+          '--dart-define',
+          'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false'
+        ],
       ],
       runInShell: true,
     );
