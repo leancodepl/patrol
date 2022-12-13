@@ -55,11 +55,14 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       oldTestExceptionReporter(details, testDescription);
     };
 
-    tearDownAll(() async {
-      if (!_shouldReportResultsToNative) {
-        return;
-      }
+    if (!_shouldReportResultsToNative) {
+      print('Tests results will not be reported natively');
+      return;
+    } else {
+      print('Tests results will be reported natively');
+    }
 
+    tearDownAll(() async {
       try {
         await patrolChannel.invokeMethod<void>(
           'allTestsFinished',

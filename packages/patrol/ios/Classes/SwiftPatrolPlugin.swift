@@ -11,14 +11,14 @@ let kErrorCreateChannelFailedMsg = "Failed to create GRPC channel"
 
 /// A Flutter plugin that's responsible for communicating the test results back
 /// to iOS XCUITest.
-public class SwiftPatrolNextPlugin: NSObject, FlutterPlugin {
+public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
       name: kChannelName,
       binaryMessenger: registrar.messenger()
     )
     
-    let instance = SwiftPatrolNextPlugin()
+    let instance = SwiftPatrolPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
   

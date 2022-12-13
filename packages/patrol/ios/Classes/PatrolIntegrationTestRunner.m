@@ -1,5 +1,5 @@
 #import "PatrolIntegrationTestRunner.h"
-#import "PatrolNextPlugin.h"
+#import "PatrolPlugin.h"
 
 @import ObjectiveC.runtime;
 @import UIKit;

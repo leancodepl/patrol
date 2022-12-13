@@ -22,7 +22,7 @@ allprojects {
     }
 }
 
-group 'pl.leancode.patrol_next'
+group 'pl.leancode.patrol'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'com.android.library'
