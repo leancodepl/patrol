@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -42,7 +43,7 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
 
 /// The method channel used to report the result of the tests to the platform.
 /// On Android, this is relevant when running instrumented tests.
-const patrolChannel = MethodChannel('pl.leancode.patrol/main');
+// const patrolChannel = ;
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
@@ -51,20 +52,26 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
+      // ignore: invalid_use_of_visible_for_testing_member
       results[testDescription] = Failure(testDescription, details.toString());
       oldTestExceptionReporter(details, testDescription);
     };
 
     if (!_shouldReportResultsToNative) {
-      print('Tests results will not be reported natively');
+      debugPrint('Tests results will not be reported natively');
       return;
     } else {
-      print('Tests results will be reported natively');
+      debugPrint('Tests results will be reported natively');
     }
 
     tearDownAll(() async {
       try {
-        await patrolChannel.invokeMethod<void>(
+        final channel = Platform.isAndroid
+            ? const MethodChannel('plugins.flutter.io/integration_test')
+            : const MethodChannel('pl.leancode.patrol/main');
+
+        debugPrint('Sending Dart test results to the native side');
+        await channel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
             'results': results.map<String, dynamic>((name, result) {
