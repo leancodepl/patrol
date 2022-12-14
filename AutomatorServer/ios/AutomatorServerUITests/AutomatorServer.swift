@@ -5,6 +5,7 @@ typealias Empty = Patrol_Empty
 typealias DefaultResponse = Patrol_Empty
 
 final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
+  
   private let automator: Automator
 
   init(automator: Automator) {
@@ -370,6 +371,14 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       try await automator.debug()
       return DefaultResponse()
     }
+  }
+  
+  func submitTestResults(
+    request: Patrol_SubmitTestResultsRequest,
+    context: GRPC.GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty {
+    // Not implemented in standalone AutomatorServer
+    return DefaultResponse()
   }
 
   private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
