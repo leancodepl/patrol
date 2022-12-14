@@ -1,3 +1,8 @@
+## 0.10.2
+
+- Fix breaking iOS builds by migrating off `CGVectorMake()`, which is
+  unavailable in Swift (#676)
+
 ## 0.10.1
 
 - Fix breaking iOS builds by setting minimum iOS version to 13.0 (#674)
