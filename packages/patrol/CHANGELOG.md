@@ -1,3 +1,7 @@
+## 0.10.1
+
+- Fix breaking iOS builds by setting minimum iOS version to 13.0 (#674)
+
 ## 0.10.0
 
 - Allow for running as native Android/iOS instrumented test (Patrol Next) (#646,
