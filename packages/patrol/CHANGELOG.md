@@ -1,3 +1,8 @@
+## 0.10.0
+
+- Allow for running as native Android/iOS instrumented test (Patrol Next) (#646,
+  #671)
+
 ## 0.9.1
 
 - Add `NativeAutomator.swipe()` to enable simple swiping (#669)
