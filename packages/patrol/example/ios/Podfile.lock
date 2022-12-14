@@ -234,7 +234,7 @@ SPEC CHECKSUMS:
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  patrol: 7caadccd0335bf05401df9030b19f2327c6200dc
+  patrol: a7622350c42b3a944962fbfe052d07e3691789e5
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
