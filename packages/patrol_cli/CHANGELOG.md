@@ -1,3 +1,7 @@
+## 0.8.0
+
+- Add support for Patrol Next (#646, #671)
+
 ## 0.7.17
 
 - Add support for `NativeAutomator.swipe()` (#669)
