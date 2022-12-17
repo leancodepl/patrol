@@ -6,7 +6,7 @@ typealias DefaultResponse = Patrol_Empty
 
 final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
   private let automator: Automator
-  
+
   private let onTestResultsSubmitted: ([String: String]) -> Void
 
   init(automator: Automator, onTestResultsSubmitted: @escaping ([String: String]) -> Void) {
@@ -368,7 +368,7 @@ final class NativeAutomatorServer: Patrol_NativeAutomatorAsyncProvider {
       return DefaultResponse()
     }
   }
-  
+
   func submitTestResults(
     request: Patrol_SubmitTestResultsRequest,
     context: GRPCAsyncServerCallContext

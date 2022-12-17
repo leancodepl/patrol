@@ -1,6 +1,5 @@
 import XCTest
 
-
 class Automator {
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
