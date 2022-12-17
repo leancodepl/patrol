@@ -8,6 +8,10 @@ limitations of `flutter_test`, `integration_test`, and `flutter_driver`.
 [![code style][leancode_lint_badge]][leancode_lint_link]
 [![powered by][docs_page_badge]][docs_page_link]
 
+## Documentation
+
+[Here it is!][patrol_docs]
+
 ## CLI
 
 See [packages/patrol_cli][github_patrol_cli].
@@ -36,3 +40,4 @@ See [packages/patrol][github_patrol].
 [leancode_lint_link]: https://pub.dev/packages/leancode_lint
 [docs_page_badge]: https://img.shields.io/badge/documentation-docs.page-34C4AC.svg?style
 [docs_page_link]: https://docs.page
+[patrol_docs]: https://patrol.leancode.co
