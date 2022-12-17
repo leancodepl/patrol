@@ -1,3 +1,7 @@
+## 0.10.3
+
+- Fix Android dependencies leaking into dependent apps (#683)
+
 ## 0.10.2
 
 - Fix breaking iOS builds by migrating off `CGVectorMake()`, which is
