@@ -1,6 +1,5 @@
 import GRPC
 
-
 enum PatrolError: Error {
   case viewNotExists(_ elementDescription: String)
   case appNotInstalled(_ bundleId: String)

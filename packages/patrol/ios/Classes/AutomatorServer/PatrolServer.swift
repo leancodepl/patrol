@@ -3,15 +3,15 @@ import GRPC
 import NIOCore
 import NIOPosix
 
-@objc public class PatrolServer : NSObject {
+@objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
-  
+
   private static let defaultPort = 8081
 
   private let port: Int
 
   private let automator: Automator
-  
+
   @objc
   public private(set) var dartTestResults: [String: String]?
 
@@ -22,10 +22,12 @@ import NIOPosix
     }
 
     guard let portInt = Int(portStr) else {
-      Logger.shared.i("\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))")
+      Logger.shared.i(
+        "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
+      )
       return defaultPort
     }
-    
+
     return portInt
   }()
 
