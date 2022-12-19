@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializetapOnNotificationRequest")
-inline fun tapOnNotificationRequest(block: pl.leancode.patrol.contracts.TapOnNotificationRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest =
+public inline fun tapOnNotificationRequest(block: pl.leancode.patrol.contracts.TapOnNotificationRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest =
   pl.leancode.patrol.contracts.TapOnNotificationRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.newBuilder()).apply { block() }._build()
-object TapOnNotificationRequestKt {
+public object TapOnNotificationRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object TapOnNotificationRequestKt {
     /**
      * <code>uint32 index = 1;</code>
      */
-    var index: kotlin.Int
+    public var index: kotlin.Int
       @JvmName("getIndex")
       get() = _builder.getIndex()
       @JvmName("setIndex")
@@ -35,21 +35,21 @@ object TapOnNotificationRequestKt {
     /**
      * <code>uint32 index = 1;</code>
      */
-    fun clearIndex() {
+    public fun clearIndex() {
       _builder.clearIndex()
     }
     /**
      * <code>uint32 index = 1;</code>
      * @return Whether the index field is set.
      */
-    fun hasIndex(): kotlin.Boolean {
+    public fun hasIndex(): kotlin.Boolean {
       return _builder.hasIndex()
     }
 
     /**
      * <code>.patrol.Selector selector = 2;</code>
      */
-    var selector: pl.leancode.patrol.contracts.Contracts.Selector
+    public var selector: pl.leancode.patrol.contracts.Contracts.Selector
       @JvmName("getSelector")
       get() = _builder.getSelector()
       @JvmName("setSelector")
@@ -59,28 +59,28 @@ object TapOnNotificationRequestKt {
     /**
      * <code>.patrol.Selector selector = 2;</code>
      */
-    fun clearSelector() {
+    public fun clearSelector() {
       _builder.clearSelector()
     }
     /**
      * <code>.patrol.Selector selector = 2;</code>
      * @return Whether the selector field is set.
      */
-    fun hasSelector(): kotlin.Boolean {
+    public fun hasSelector(): kotlin.Boolean {
       return _builder.hasSelector()
     }
-    val findByCase: pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.FindByCase
+    public val findByCase: pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.FindByCase
       @JvmName("getFindByCase")
       get() = _builder.getFindByCase()
 
-    fun clearFindBy() {
+    public fun clearFindBy() {
       _builder.clearFindBy()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.copy(block: pl.leancode.patrol.contracts.TapOnNotificationRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.copy(block: pl.leancode.patrol.contracts.TapOnNotificationRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest =
   pl.leancode.patrol.contracts.TapOnNotificationRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
-val pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequestOrBuilder.selectorOrNull: pl.leancode.patrol.contracts.Contracts.Selector?
+public val pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequestOrBuilder.selectorOrNull: pl.leancode.patrol.contracts.Contracts.Selector?
   get() = if (hasSelector()) getSelector() else null
+

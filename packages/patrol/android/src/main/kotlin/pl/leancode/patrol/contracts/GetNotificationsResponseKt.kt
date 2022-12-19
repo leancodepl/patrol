@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializegetNotificationsResponse")
-inline fun getNotificationsResponse(block: pl.leancode.patrol.contracts.GetNotificationsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse =
+public inline fun getNotificationsResponse(block: pl.leancode.patrol.contracts.GetNotificationsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse =
   pl.leancode.patrol.contracts.GetNotificationsResponseKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse.newBuilder()).apply { block() }._build()
-object GetNotificationsResponseKt {
+public object GetNotificationsResponseKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse.Builder): Dsl = Dsl(builder)
@@ -27,11 +27,11 @@ object GetNotificationsResponseKt {
      * generics.
      */
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
-    class NotificationsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
+    public class NotificationsProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
      * <code>repeated .patrol.Notification notifications = 2;</code>
      */
-     val notifications: com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>
+     public val notifications: com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>
       @kotlin.jvm.JvmSynthetic
       get() = com.google.protobuf.kotlin.DslList(
         _builder.getNotificationsList()
@@ -42,7 +42,7 @@ object GetNotificationsResponseKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("addNotifications")
-    fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.add(value: pl.leancode.patrol.contracts.Contracts.Notification) {
+    public fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.add(value: pl.leancode.patrol.contracts.Contracts.Notification) {
       _builder.addNotifications(value)
     }
     /**
@@ -52,7 +52,7 @@ object GetNotificationsResponseKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("plusAssignNotifications")
     @Suppress("NOTHING_TO_INLINE")
-    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.plusAssign(value: pl.leancode.patrol.contracts.Contracts.Notification) {
+    public inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.plusAssign(value: pl.leancode.patrol.contracts.Contracts.Notification) {
       add(value)
     }
     /**
@@ -61,7 +61,7 @@ object GetNotificationsResponseKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("addAllNotifications")
-    fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.addAll(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.Notification>) {
+    public fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.addAll(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.Notification>) {
       _builder.addAllNotifications(values)
     }
     /**
@@ -71,7 +71,7 @@ object GetNotificationsResponseKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("plusAssignAllNotifications")
     @Suppress("NOTHING_TO_INLINE")
-    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.plusAssign(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.Notification>) {
+    public inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.plusAssign(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.Notification>) {
       addAll(values)
     }
     /**
@@ -81,7 +81,7 @@ object GetNotificationsResponseKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("setNotifications")
-    operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.set(index: kotlin.Int, value: pl.leancode.patrol.contracts.Contracts.Notification) {
+    public operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.set(index: kotlin.Int, value: pl.leancode.patrol.contracts.Contracts.Notification) {
       _builder.setNotifications(index, value)
     }
     /**
@@ -89,12 +89,11 @@ object GetNotificationsResponseKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearNotifications")
-    fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.clear() {
+    public fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.Notification, NotificationsProxy>.clear() {
       _builder.clearNotifications()
     }
-
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse.copy(block: pl.leancode.patrol.contracts.GetNotificationsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse =
+public inline fun pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse.copy(block: pl.leancode.patrol.contracts.GetNotificationsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse =
   pl.leancode.patrol.contracts.GetNotificationsResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

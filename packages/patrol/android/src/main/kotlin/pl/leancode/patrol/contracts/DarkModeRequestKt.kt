@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializedarkModeRequest")
-inline fun darkModeRequest(block: pl.leancode.patrol.contracts.DarkModeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.DarkModeRequest =
+public inline fun darkModeRequest(block: pl.leancode.patrol.contracts.DarkModeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.DarkModeRequest =
   pl.leancode.patrol.contracts.DarkModeRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.DarkModeRequest.newBuilder()).apply { block() }._build()
-object DarkModeRequestKt {
+public object DarkModeRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.DarkModeRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.DarkModeRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object DarkModeRequestKt {
     /**
      * <code>string appId = 1;</code>
      */
-    var appId: kotlin.String
+    public var appId: kotlin.String
       @JvmName("getAppId")
       get() = _builder.getAppId()
       @JvmName("setAppId")
@@ -35,11 +35,11 @@ object DarkModeRequestKt {
     /**
      * <code>string appId = 1;</code>
      */
-    fun clearAppId() {
+    public fun clearAppId() {
       _builder.clearAppId()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.DarkModeRequest.copy(block: pl.leancode.patrol.contracts.DarkModeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.DarkModeRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.DarkModeRequest.copy(block: pl.leancode.patrol.contracts.DarkModeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.DarkModeRequest =
   pl.leancode.patrol.contracts.DarkModeRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializesetLocationAccuracyRequest")
-inline fun setLocationAccuracyRequest(block: pl.leancode.patrol.contracts.SetLocationAccuracyRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest =
+public inline fun setLocationAccuracyRequest(block: pl.leancode.patrol.contracts.SetLocationAccuracyRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest =
   pl.leancode.patrol.contracts.SetLocationAccuracyRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.newBuilder()).apply { block() }._build()
-object SetLocationAccuracyRequestKt {
+public object SetLocationAccuracyRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object SetLocationAccuracyRequestKt {
     /**
      * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
      */
-     var locationAccuracy: pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy
+    public var locationAccuracy: pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy
       @JvmName("getLocationAccuracy")
       get() = _builder.getLocationAccuracy()
       @JvmName("setLocationAccuracy")
@@ -35,11 +35,11 @@ object SetLocationAccuracyRequestKt {
     /**
      * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
      */
-    fun clearLocationAccuracy() {
+    public fun clearLocationAccuracy() {
       _builder.clearLocationAccuracy()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.copy(block: pl.leancode.patrol.contracts.SetLocationAccuracyRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.copy(block: pl.leancode.patrol.contracts.SetLocationAccuracyRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest =
   pl.leancode.patrol.contracts.SetLocationAccuracyRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

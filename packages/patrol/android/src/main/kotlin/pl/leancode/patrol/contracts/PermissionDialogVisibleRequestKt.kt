@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializepermissionDialogVisibleRequest")
-inline fun permissionDialogVisibleRequest(block: pl.leancode.patrol.contracts.PermissionDialogVisibleRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest =
+public inline fun permissionDialogVisibleRequest(block: pl.leancode.patrol.contracts.PermissionDialogVisibleRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest =
   pl.leancode.patrol.contracts.PermissionDialogVisibleRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest.newBuilder()).apply { block() }._build()
-object PermissionDialogVisibleRequestKt {
+public object PermissionDialogVisibleRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object PermissionDialogVisibleRequestKt {
     /**
      * <code>uint64 timeoutMillis = 1;</code>
      */
-    var timeoutMillis: kotlin.Long
+    public var timeoutMillis: kotlin.Long
       @JvmName("getTimeoutMillis")
       get() = _builder.getTimeoutMillis()
       @JvmName("setTimeoutMillis")
@@ -35,11 +35,11 @@ object PermissionDialogVisibleRequestKt {
     /**
      * <code>uint64 timeoutMillis = 1;</code>
      */
-    fun clearTimeoutMillis() {
+    public fun clearTimeoutMillis() {
       _builder.clearTimeoutMillis()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest.copy(block: pl.leancode.patrol.contracts.PermissionDialogVisibleRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest.copy(block: pl.leancode.patrol.contracts.PermissionDialogVisibleRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest =
   pl.leancode.patrol.contracts.PermissionDialogVisibleRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

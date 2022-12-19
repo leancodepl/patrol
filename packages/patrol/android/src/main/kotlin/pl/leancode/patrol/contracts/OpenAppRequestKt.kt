@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializeopenAppRequest")
-inline fun openAppRequest(block: pl.leancode.patrol.contracts.OpenAppRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.OpenAppRequest =
+public inline fun openAppRequest(block: pl.leancode.patrol.contracts.OpenAppRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.OpenAppRequest =
   pl.leancode.patrol.contracts.OpenAppRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.OpenAppRequest.newBuilder()).apply { block() }._build()
-object OpenAppRequestKt {
+public object OpenAppRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.OpenAppRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.OpenAppRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object OpenAppRequestKt {
     /**
      * <code>string appId = 1;</code>
      */
-    var appId: kotlin.String
+    public var appId: kotlin.String
       @JvmName("getAppId")
       get() = _builder.getAppId()
       @JvmName("setAppId")
@@ -35,11 +35,11 @@ object OpenAppRequestKt {
     /**
      * <code>string appId = 1;</code>
      */
-    fun clearAppId() {
+    public fun clearAppId() {
       _builder.clearAppId()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.OpenAppRequest.copy(block: pl.leancode.patrol.contracts.OpenAppRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.OpenAppRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.OpenAppRequest.copy(block: pl.leancode.patrol.contracts.OpenAppRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.OpenAppRequest =
   pl.leancode.patrol.contracts.OpenAppRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
