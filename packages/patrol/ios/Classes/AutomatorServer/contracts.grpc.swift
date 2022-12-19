@@ -25,6 +25,7 @@ import NIO
 import NIOConcurrencyHelpers
 import SwiftProtobuf
 
+
 /// Usage: instantiate `Patrol_NativeAutomatorClient`, then call methods of this protocol to make API calls.
 internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
   var serviceName: String { get }
@@ -754,7 +755,7 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// iOS
+  /// iOS 
   ///
   /// - Parameters:
   ///   - request: Request to send to submitTestResults.
@@ -774,9 +775,9 @@ extension Patrol_NativeAutomatorClientProtocol {
 }
 
 #if compiler(>=5.6)
-  @available(*, deprecated)
-  extension Patrol_NativeAutomatorClient: @unchecked Sendable {}
-#endif  // compiler(>=5.6)
+@available(*, deprecated)
+extension Patrol_NativeAutomatorClient: @unchecked Sendable {}
+#endif // compiler(>=5.6)
 
 @available(*, deprecated, renamed: "Patrol_NativeAutomatorNIOClient")
 internal final class Patrol_NativeAutomatorClient: Patrol_NativeAutomatorClientProtocol {
@@ -833,976 +834,972 @@ internal struct Patrol_NativeAutomatorNIOClient: Patrol_NativeAutomatorClientPro
 }
 
 #if compiler(>=5.6)
-  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-  internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
-    static var serviceDescriptor: GRPCServiceDescriptor { get }
-    var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? { get }
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
+  static var serviceDescriptor: GRPCServiceDescriptor { get }
+  var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? { get }
 
-    func makeConfigureCall(
-      _ request: Patrol_ConfigureRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_ConfigureRequest, Patrol_Empty>
+  func makeConfigureCall(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_ConfigureRequest, Patrol_Empty>
 
-    func makePressHomeCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makePressHomeCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makePressBackCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makePressBackCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makePressRecentAppsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makePressRecentAppsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeDoublePressRecentAppsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeDoublePressRecentAppsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeOpenAppCall(
-      _ request: Patrol_OpenAppRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_OpenAppRequest, Patrol_Empty>
+  func makeOpenAppCall(
+    _ request: Patrol_OpenAppRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_OpenAppRequest, Patrol_Empty>
 
-    func makeOpenQuickSettingsCall(
-      _ request: Patrol_OpenQuickSettingsRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
+  func makeOpenQuickSettingsCall(
+    _ request: Patrol_OpenQuickSettingsRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty>
 
-    func makeGetNativeViewsCall(
-      _ request: Patrol_GetNativeViewsRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>
+  func makeGetNativeViewsCall(
+    _ request: Patrol_GetNativeViewsRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>
 
-    func makeTapCall(
-      _ request: Patrol_TapRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
+  func makeTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
 
-    func makeDoubleTapCall(
-      _ request: Patrol_TapRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
+  func makeDoubleTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty>
 
-    func makeEnterTextCall(
-      _ request: Patrol_EnterTextRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty>
+  func makeEnterTextCall(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty>
 
-    func makeSwipeCall(
-      _ request: Patrol_SwipeRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty>
+  func makeSwipeCall(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
-    func makeEnableAirplaneModeCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeEnableAirplaneModeCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeDisableAirplaneModeCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeDisableAirplaneModeCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeEnableWiFiCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeEnableWiFiCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeDisableWiFiCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeDisableWiFiCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeEnableCellularCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeEnableCellularCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeDisableCellularCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeDisableCellularCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeEnableBluetoothCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeEnableBluetoothCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeDisableBluetoothCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeDisableBluetoothCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeEnableDarkModeCall(
-      _ request: Patrol_DarkModeRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+  func makeEnableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
 
-    func makeDisableDarkModeCall(
-      _ request: Patrol_DarkModeRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
+  func makeDisableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty>
 
-    func makeOpenNotificationsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeOpenNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeCloseNotificationsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeCloseHeadsUpNotificationCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeCloseHeadsUpNotificationCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeGetNotificationsCall(
-      _ request: Patrol_GetNotificationsRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>
+  func makeGetNotificationsCall(
+    _ request: Patrol_GetNotificationsRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>
 
-    func makeTapOnNotificationCall(
-      _ request: Patrol_TapOnNotificationRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
+  func makeTapOnNotificationCall(
+    _ request: Patrol_TapOnNotificationRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty>
 
-    func makeIsPermissionDialogVisibleCall(
-      _ request: Patrol_PermissionDialogVisibleRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<
-      Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse
-    >
+  func makeIsPermissionDialogVisibleCall(
+    _ request: Patrol_PermissionDialogVisibleRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse>
 
-    func makeHandlePermissionDialogCall(
-      _ request: Patrol_HandlePermissionRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_HandlePermissionRequest, Patrol_Empty>
+  func makeHandlePermissionDialogCall(
+    _ request: Patrol_HandlePermissionRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_HandlePermissionRequest, Patrol_Empty>
 
-    func makeSetLocationAccuracyCall(
-      _ request: Patrol_SetLocationAccuracyRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty>
+  func makeSetLocationAccuracyCall(
+    _ request: Patrol_SetLocationAccuracyRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty>
 
-    func makeDebugCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+  func makeDebugCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeSubmitTestResultsCall(
-      _ request: Patrol_SubmitTestResultsRequest,
-      callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty>
+  func makeSubmitTestResultsCall(
+    _ request: Patrol_SubmitTestResultsRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty>
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Patrol_NativeAutomatorAsyncClientProtocol {
+  internal static var serviceDescriptor: GRPCServiceDescriptor {
+    return Patrol_NativeAutomatorClientMetadata.serviceDescriptor
   }
 
-  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-  extension Patrol_NativeAutomatorAsyncClientProtocol {
-    internal static var serviceDescriptor: GRPCServiceDescriptor {
-      return Patrol_NativeAutomatorClientMetadata.serviceDescriptor
-    }
-
-    internal var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? {
-      return nil
-    }
-
-    internal func makeConfigureCall(
-      _ request: Patrol_ConfigureRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_ConfigureRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
-      )
-    }
-
-    internal func makePressHomeCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.pressHome.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makepressHomeInterceptors() ?? []
-      )
-    }
-
-    internal func makePressBackCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.pressBack.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makepressBackInterceptors() ?? []
-      )
-    }
-
-    internal func makePressRecentAppsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.pressRecentApps.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makepressRecentAppsInterceptors() ?? []
-      )
-    }
-
-    internal func makeDoublePressRecentAppsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedoublePressRecentAppsInterceptors() ?? []
-      )
-    }
-
-    internal func makeOpenAppCall(
-      _ request: Patrol_OpenAppRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_OpenAppRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.openApp.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeopenAppInterceptors() ?? []
-      )
-    }
-
-    internal func makeOpenQuickSettingsCall(
-      _ request: Patrol_OpenQuickSettingsRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
-      )
-    }
-
-    internal func makeGetNativeViewsCall(
-      _ request: Patrol_GetNativeViewsRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
-      )
-    }
-
-    internal func makeTapCall(
-      _ request: Patrol_TapRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.maketapInterceptors() ?? []
-      )
-    }
-
-    internal func makeDoubleTapCall(
-      _ request: Patrol_TapRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
-      )
-    }
-
-    internal func makeEnterTextCall(
-      _ request: Patrol_EnterTextRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
-      )
-    }
-
-    internal func makeSwipeCall(
-      _ request: Patrol_SwipeRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeswipeInterceptors() ?? []
-      )
-    }
-
-    internal func makeEnableAirplaneModeCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
-      )
-    }
-
-    internal func makeDisableAirplaneModeCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
-      )
-    }
-
-    internal func makeEnableWiFiCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? []
-      )
-    }
-
-    internal func makeDisableWiFiCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? []
-      )
-    }
-
-    internal func makeEnableCellularCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableCellular.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableCellularInterceptors() ?? []
-      )
-    }
-
-    internal func makeDisableCellularCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableCellular.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
-      )
-    }
-
-    internal func makeEnableBluetoothCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
-      )
-    }
-
-    internal func makeDisableBluetoothCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
-      )
-    }
-
-    internal func makeEnableDarkModeCall(
-      _ request: Patrol_DarkModeRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
-      )
-    }
-
-    internal func makeDisableDarkModeCall(
-      _ request: Patrol_DarkModeRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
-      )
-    }
-
-    internal func makeOpenNotificationsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
-      )
-    }
-
-    internal func makeCloseNotificationsCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
-      )
-    }
-
-    internal func makeCloseHeadsUpNotificationCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
-      )
-    }
-
-    internal func makeGetNotificationsCall(
-      _ request: Patrol_GetNotificationsRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.getNotifications.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makegetNotificationsInterceptors() ?? []
-      )
-    }
-
-    internal func makeTapOnNotificationCall(
-      _ request: Patrol_TapOnNotificationRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
-      )
-    }
-
-    internal func makeIsPermissionDialogVisibleCall(
-      _ request: Patrol_PermissionDialogVisibleRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<
-      Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse
-    > {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
-      )
-    }
-
-    internal func makeHandlePermissionDialogCall(
-      _ request: Patrol_HandlePermissionRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_HandlePermissionRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makehandlePermissionDialogInterceptors() ?? []
-      )
-    }
-
-    internal func makeSetLocationAccuracyCall(
-      _ request: Patrol_SetLocationAccuracyRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
-      )
-    }
-
-    internal func makeDebugCall(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.debug.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedebugInterceptors() ?? []
-      )
-    }
-
-    internal func makeSubmitTestResultsCall(
-      _ request: Patrol_SubmitTestResultsRequest,
-      callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty> {
-      return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
-      )
-    }
+  internal var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? {
+    return nil
   }
 
-  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-  extension Patrol_NativeAutomatorAsyncClientProtocol {
-    internal func configure(
-      _ request: Patrol_ConfigureRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
-      )
-    }
-
-    internal func pressHome(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.pressHome.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makepressHomeInterceptors() ?? []
-      )
-    }
-
-    internal func pressBack(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.pressBack.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makepressBackInterceptors() ?? []
-      )
-    }
-
-    internal func pressRecentApps(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.pressRecentApps.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makepressRecentAppsInterceptors() ?? []
-      )
-    }
-
-    internal func doublePressRecentApps(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedoublePressRecentAppsInterceptors() ?? []
-      )
-    }
-
-    internal func openApp(
-      _ request: Patrol_OpenAppRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.openApp.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeopenAppInterceptors() ?? []
-      )
-    }
-
-    internal func openQuickSettings(
-      _ request: Patrol_OpenQuickSettingsRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
-      )
-    }
-
-    internal func getNativeViews(
-      _ request: Patrol_GetNativeViewsRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_GetNativeViewsResponse {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
-      )
-    }
-
-    internal func tap(
-      _ request: Patrol_TapRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.maketapInterceptors() ?? []
-      )
-    }
-
-    internal func doubleTap(
-      _ request: Patrol_TapRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
-      )
-    }
-
-    internal func enterText(
-      _ request: Patrol_EnterTextRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
-      )
-    }
-
-    internal func swipe(
-      _ request: Patrol_SwipeRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeswipeInterceptors() ?? []
-      )
-    }
-
-    internal func enableAirplaneMode(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
-      )
-    }
-
-    internal func disableAirplaneMode(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
-      )
-    }
-
-    internal func enableWiFi(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? []
-      )
-    }
-
-    internal func disableWiFi(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? []
-      )
-    }
-
-    internal func enableCellular(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableCellular.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableCellularInterceptors() ?? []
-      )
-    }
-
-    internal func disableCellular(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableCellular.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
-      )
-    }
-
-    internal func enableBluetooth(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
-      )
-    }
-
-    internal func disableBluetooth(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
-      )
-    }
-
-    internal func enableDarkMode(
-      _ request: Patrol_DarkModeRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
-      )
-    }
-
-    internal func disableDarkMode(
-      _ request: Patrol_DarkModeRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
-      )
-    }
-
-    internal func openNotifications(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
-      )
-    }
-
-    internal func closeNotifications(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
-      )
-    }
-
-    internal func closeHeadsUpNotification(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
-      )
-    }
-
-    internal func getNotifications(
-      _ request: Patrol_GetNotificationsRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_GetNotificationsResponse {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.getNotifications.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makegetNotificationsInterceptors() ?? []
-      )
-    }
-
-    internal func tapOnNotification(
-      _ request: Patrol_TapOnNotificationRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
-      )
-    }
-
-    internal func isPermissionDialogVisible(
-      _ request: Patrol_PermissionDialogVisibleRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_PermissionDialogVisibleResponse {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
-      )
-    }
-
-    internal func handlePermissionDialog(
-      _ request: Patrol_HandlePermissionRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makehandlePermissionDialogInterceptors() ?? []
-      )
-    }
-
-    internal func setLocationAccuracy(
-      _ request: Patrol_SetLocationAccuracyRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
-      )
-    }
-
-    internal func debug(
-      _ request: Patrol_Empty,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.debug.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makedebugInterceptors() ?? []
-      )
-    }
-
-    internal func submitTestResults(
-      _ request: Patrol_SubmitTestResultsRequest,
-      callOptions: CallOptions? = nil
-    ) async throws -> Patrol_Empty {
-      return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
-        request: request,
-        callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
-      )
-    }
+  internal func makeConfigureCall(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_ConfigureRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
+    )
   }
 
-  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-  internal struct Patrol_NativeAutomatorAsyncClient: Patrol_NativeAutomatorAsyncClientProtocol {
-    internal var channel: GRPCChannel
-    internal var defaultCallOptions: CallOptions
-    internal var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol?
-
-    internal init(
-      channel: GRPCChannel,
-      defaultCallOptions: CallOptions = CallOptions(),
-      interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? = nil
-    ) {
-      self.channel = channel
-      self.defaultCallOptions = defaultCallOptions
-      self.interceptors = interceptors
-    }
+  internal func makePressHomeCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.pressHome.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makepressHomeInterceptors() ?? []
+    )
   }
 
-#endif  // compiler(>=5.6)
+  internal func makePressBackCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.pressBack.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makepressBackInterceptors() ?? []
+    )
+  }
+
+  internal func makePressRecentAppsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.pressRecentApps.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makepressRecentAppsInterceptors() ?? []
+    )
+  }
+
+  internal func makeDoublePressRecentAppsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoublePressRecentAppsInterceptors() ?? []
+    )
+  }
+
+  internal func makeOpenAppCall(
+    _ request: Patrol_OpenAppRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_OpenAppRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openApp.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeopenAppInterceptors() ?? []
+    )
+  }
+
+  internal func makeOpenQuickSettingsCall(
+    _ request: Patrol_OpenQuickSettingsRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_OpenQuickSettingsRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
+    )
+  }
+
+  internal func makeGetNativeViewsCall(
+    _ request: Patrol_GetNativeViewsRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
+    )
+  }
+
+  internal func makeTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapInterceptors() ?? []
+    )
+  }
+
+  internal func makeDoubleTapCall(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_TapRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnterTextCall(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_EnterTextRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
+    )
+  }
+
+  internal func makeSwipeCall(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableAirplaneModeCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableAirplaneModeCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableWiFiCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableWiFiCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableCellularCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableCellular.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableCellularInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableCellularCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableCellular.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableBluetoothCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableBluetoothCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func makeEnableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+    )
+  }
+
+  internal func makeDisableDarkModeCall(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_DarkModeRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
+    )
+  }
+
+  internal func makeOpenNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeCloseNotificationsCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeCloseHeadsUpNotificationCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
+    )
+  }
+
+  internal func makeGetNotificationsCall(
+    _ request: Patrol_GetNotificationsRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func makeTapOnNotificationCall(
+    _ request: Patrol_TapOnNotificationRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_TapOnNotificationRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
+    )
+  }
+
+  internal func makeIsPermissionDialogVisibleCall(
+    _ request: Patrol_PermissionDialogVisibleRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
+    )
+  }
+
+  internal func makeHandlePermissionDialogCall(
+    _ request: Patrol_HandlePermissionRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_HandlePermissionRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makehandlePermissionDialogInterceptors() ?? []
+    )
+  }
+
+  internal func makeSetLocationAccuracyCall(
+    _ request: Patrol_SetLocationAccuracyRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
+    )
+  }
+
+  internal func makeDebugCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.debug.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedebugInterceptors() ?? []
+    )
+  }
+
+  internal func makeSubmitTestResultsCall(
+    _ request: Patrol_SubmitTestResultsRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
+    )
+  }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Patrol_NativeAutomatorAsyncClientProtocol {
+  internal func configure(
+    _ request: Patrol_ConfigureRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.configure.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeconfigureInterceptors() ?? []
+    )
+  }
+
+  internal func pressHome(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.pressHome.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makepressHomeInterceptors() ?? []
+    )
+  }
+
+  internal func pressBack(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.pressBack.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makepressBackInterceptors() ?? []
+    )
+  }
+
+  internal func pressRecentApps(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.pressRecentApps.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makepressRecentAppsInterceptors() ?? []
+    )
+  }
+
+  internal func doublePressRecentApps(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doublePressRecentApps.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoublePressRecentAppsInterceptors() ?? []
+    )
+  }
+
+  internal func openApp(
+    _ request: Patrol_OpenAppRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openApp.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeopenAppInterceptors() ?? []
+    )
+  }
+
+  internal func openQuickSettings(
+    _ request: Patrol_OpenQuickSettingsRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openQuickSettings.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? []
+    )
+  }
+
+  internal func getNativeViews(
+    _ request: Patrol_GetNativeViewsRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_GetNativeViewsResponse {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNativeViews.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? []
+    )
+  }
+
+  internal func tap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapInterceptors() ?? []
+    )
+  }
+
+  internal func doubleTap(
+    _ request: Patrol_TapRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.doubleTap.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedoubleTapInterceptors() ?? []
+    )
+  }
+
+  internal func enterText(
+    _ request: Patrol_EnterTextRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enterText.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenterTextInterceptors() ?? []
+    )
+  }
+
+  internal func swipe(
+    _ request: Patrol_SwipeRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.swipe.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeswipeInterceptors() ?? []
+    )
+  }
+
+  internal func enableAirplaneMode(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? []
+    )
+  }
+
+  internal func disableAirplaneMode(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? []
+    )
+  }
+
+  internal func enableWiFi(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? []
+    )
+  }
+
+  internal func disableWiFi(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableWiFi.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? []
+    )
+  }
+
+  internal func enableCellular(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableCellular.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableCellularInterceptors() ?? []
+    )
+  }
+
+  internal func disableCellular(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableCellular.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableCellularInterceptors() ?? []
+    )
+  }
+
+  internal func enableBluetooth(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func disableBluetooth(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableBluetooth.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? []
+    )
+  }
+
+  internal func enableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.enableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? []
+    )
+  }
+
+  internal func disableDarkMode(
+    _ request: Patrol_DarkModeRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.disableDarkMode.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? []
+    )
+  }
+
+  internal func openNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.openNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func closeNotifications(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func closeHeadsUpNotification(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.closeHeadsUpNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? []
+    )
+  }
+
+  internal func getNotifications(
+    _ request: Patrol_GetNotificationsRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_GetNotificationsResponse {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.getNotifications.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makegetNotificationsInterceptors() ?? []
+    )
+  }
+
+  internal func tapOnNotification(
+    _ request: Patrol_TapOnNotificationRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.tapOnNotification.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? []
+    )
+  }
+
+  internal func isPermissionDialogVisible(
+    _ request: Patrol_PermissionDialogVisibleRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_PermissionDialogVisibleResponse {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.isPermissionDialogVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? []
+    )
+  }
+
+  internal func handlePermissionDialog(
+    _ request: Patrol_HandlePermissionRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makehandlePermissionDialogInterceptors() ?? []
+    )
+  }
+
+  internal func setLocationAccuracy(
+    _ request: Patrol_SetLocationAccuracyRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? []
+    )
+  }
+
+  internal func debug(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.debug.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makedebugInterceptors() ?? []
+    )
+  }
+
+  internal func submitTestResults(
+    _ request: Patrol_SubmitTestResultsRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
+    )
+  }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+internal struct Patrol_NativeAutomatorAsyncClient: Patrol_NativeAutomatorAsyncClientProtocol {
+  internal var channel: GRPCChannel
+  internal var defaultCallOptions: CallOptions
+  internal var interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol?
+
+  internal init(
+    channel: GRPCChannel,
+    defaultCallOptions: CallOptions = CallOptions(),
+    interceptors: Patrol_NativeAutomatorClientInterceptorFactoryProtocol? = nil
+  ) {
+    self.channel = channel
+    self.defaultCallOptions = defaultCallOptions
+    self.interceptors = interceptors
+  }
+}
+
+#endif // compiler(>=5.6)
 
 internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSendable {
 
@@ -1825,14 +1822,10 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   func makeopenAppInterceptors() -> [ClientInterceptor<Patrol_OpenAppRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'openQuickSettings'.
-  func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<
-    Patrol_OpenQuickSettingsRequest, Patrol_Empty
-  >]
+  func makeopenQuickSettingsInterceptors() -> [ClientInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'getNativeViews'.
-  func makegetNativeViewsInterceptors() -> [ClientInterceptor<
-    Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse
-  >]
+  func makegetNativeViewsInterceptors() -> [ClientInterceptor<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>]
 
   /// - Returns: Interceptors to use when invoking 'tap'.
   func maketapInterceptors() -> [ClientInterceptor<Patrol_TapRequest, Patrol_Empty>]
@@ -1874,9 +1867,7 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   func makeenableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'disableDarkMode'.
-  func makedisableDarkModeInterceptors() -> [ClientInterceptor<
-    Patrol_DarkModeRequest, Patrol_Empty
-  >]
+  func makedisableDarkModeInterceptors() -> [ClientInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'openNotifications'.
   func makeopenNotificationsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
@@ -1888,37 +1879,25 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   func makecloseHeadsUpNotificationInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'getNotifications'.
-  func makegetNotificationsInterceptors() -> [ClientInterceptor<
-    Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse
-  >]
+  func makegetNotificationsInterceptors() -> [ClientInterceptor<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>]
 
   /// - Returns: Interceptors to use when invoking 'tapOnNotification'.
-  func maketapOnNotificationInterceptors() -> [ClientInterceptor<
-    Patrol_TapOnNotificationRequest, Patrol_Empty
-  >]
+  func maketapOnNotificationInterceptors() -> [ClientInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'isPermissionDialogVisible'.
-  func makeisPermissionDialogVisibleInterceptors() -> [ClientInterceptor<
-    Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse
-  >]
+  func makeisPermissionDialogVisibleInterceptors() -> [ClientInterceptor<Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse>]
 
   /// - Returns: Interceptors to use when invoking 'handlePermissionDialog'.
-  func makehandlePermissionDialogInterceptors() -> [ClientInterceptor<
-    Patrol_HandlePermissionRequest, Patrol_Empty
-  >]
+  func makehandlePermissionDialogInterceptors() -> [ClientInterceptor<Patrol_HandlePermissionRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'setLocationAccuracy'.
-  func makesetLocationAccuracyInterceptors() -> [ClientInterceptor<
-    Patrol_SetLocationAccuracyRequest, Patrol_Empty
-  >]
+  func makesetLocationAccuracyInterceptors() -> [ClientInterceptor<Patrol_SetLocationAccuracyRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'debug'.
   func makedebugInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when invoking 'submitTestResults'.
-  func makesubmitTestResultsInterceptors() -> [ClientInterceptor<
-    Patrol_SubmitTestResultsRequest, Patrol_Empty
-  >]
+  func makesubmitTestResultsInterceptors() -> [ClientInterceptor<Patrol_SubmitTestResultsRequest, Patrol_Empty>]
 }
 
 internal enum Patrol_NativeAutomatorClientMetadata {
@@ -2160,126 +2139,76 @@ internal enum Patrol_NativeAutomatorClientMetadata {
 internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? { get }
 
-  func configure(request: Patrol_ConfigureRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func configure(request: Patrol_ConfigureRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// general
-  func pressHome(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func pressHome(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func pressBack(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func pressBack(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func pressRecentApps(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func pressRecentApps(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func doublePressRecentApps(request: Patrol_Empty, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func doublePressRecentApps(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func openApp(request: Patrol_OpenAppRequest, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func openApp(request: Patrol_OpenAppRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func openQuickSettings(request: Patrol_OpenQuickSettingsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// general UI interaction
-  func getNativeViews(request: Patrol_GetNativeViewsRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_GetNativeViewsResponse>
+  func getNativeViews(request: Patrol_GetNativeViewsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNativeViewsResponse>
 
-  func tap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func tap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func doubleTap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func doubleTap(request: Patrol_TapRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enterText(request: Patrol_EnterTextRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func enterText(request: Patrol_EnterTextRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func swipe(request: Patrol_SwipeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func swipe(request: Patrol_SwipeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// services
-  func enableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func enableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func disableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableWiFi(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func enableWiFi(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableWiFi(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func disableWiFi(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableCellular(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func enableCellular(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableCellular(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func disableCellular(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableBluetooth(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func enableBluetooth(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableBluetooth(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func disableBluetooth(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func enableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func enableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func disableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func disableDarkMode(request: Patrol_DarkModeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// notifications
-  func openNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func openNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func closeNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
-    Patrol_Empty
-  >
+  func closeNotifications(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func closeHeadsUpNotification(request: Patrol_Empty, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func closeHeadsUpNotification(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func getNotifications(request: Patrol_GetNotificationsRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_GetNotificationsResponse>
+  func getNotifications(request: Patrol_GetNotificationsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_GetNotificationsResponse>
 
-  func tapOnNotification(request: Patrol_TapOnNotificationRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  func tapOnNotification(request: Patrol_TapOnNotificationRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// permissions
-  func isPermissionDialogVisible(
-    request: Patrol_PermissionDialogVisibleRequest, context: StatusOnlyCallContext
-  ) -> EventLoopFuture<Patrol_PermissionDialogVisibleResponse>
+  func isPermissionDialogVisible(request: Patrol_PermissionDialogVisibleRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_PermissionDialogVisibleResponse>
 
-  func handlePermissionDialog(
-    request: Patrol_HandlePermissionRequest, context: StatusOnlyCallContext
-  ) -> EventLoopFuture<Patrol_Empty>
+  func handlePermissionDialog(request: Patrol_HandlePermissionRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  func setLocationAccuracy(
-    request: Patrol_SetLocationAccuracyRequest, context: StatusOnlyCallContext
-  ) -> EventLoopFuture<Patrol_Empty>
+  func setLocationAccuracy(request: Patrol_SetLocationAccuracyRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// other
   func debug(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  /// iOS
-  func submitTestResults(request: Patrol_SubmitTestResultsRequest, context: StatusOnlyCallContext)
-    -> EventLoopFuture<Patrol_Empty>
+  /// iOS 
+  func submitTestResults(request: Patrol_SubmitTestResultsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 }
 
 extension Patrol_NativeAutomatorProvider {
@@ -2590,494 +2519,494 @@ extension Patrol_NativeAutomatorProvider {
 
 #if compiler(>=5.6)
 
-  /// To implement a server, implement an object which conforms to this protocol.
-  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-  internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
-    static var serviceDescriptor: GRPCServiceDescriptor { get }
-    var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? { get }
+/// To implement a server, implement an object which conforms to this protocol.
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
+  static var serviceDescriptor: GRPCServiceDescriptor { get }
+  var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? { get }
 
-    @Sendable func configure(
-      request: Patrol_ConfigureRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func configure(
+    request: Patrol_ConfigureRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// general
-    @Sendable func pressHome(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  /// general
+  @Sendable func pressHome(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func pressBack(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func pressBack(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func pressRecentApps(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func pressRecentApps(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func doublePressRecentApps(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func doublePressRecentApps(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func openApp(
-      request: Patrol_OpenAppRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func openApp(
+    request: Patrol_OpenAppRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func openQuickSettings(
-      request: Patrol_OpenQuickSettingsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func openQuickSettings(
+    request: Patrol_OpenQuickSettingsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// general UI interaction
-    @Sendable func getNativeViews(
-      request: Patrol_GetNativeViewsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_GetNativeViewsResponse
+  /// general UI interaction
+  @Sendable func getNativeViews(
+    request: Patrol_GetNativeViewsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_GetNativeViewsResponse
 
-    @Sendable func tap(
-      request: Patrol_TapRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func tap(
+    request: Patrol_TapRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func doubleTap(
-      request: Patrol_TapRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func doubleTap(
+    request: Patrol_TapRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func enterText(
-      request: Patrol_EnterTextRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func enterText(
+    request: Patrol_EnterTextRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func swipe(
-      request: Patrol_SwipeRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func swipe(
+    request: Patrol_SwipeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// services
-    @Sendable func enableAirplaneMode(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  /// services
+  @Sendable func enableAirplaneMode(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func disableAirplaneMode(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func disableAirplaneMode(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func enableWiFi(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func enableWiFi(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func disableWiFi(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func disableWiFi(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func enableCellular(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func enableCellular(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func disableCellular(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func disableCellular(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func enableBluetooth(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func enableBluetooth(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func disableBluetooth(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func disableBluetooth(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func enableDarkMode(
-      request: Patrol_DarkModeRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func enableDarkMode(
+    request: Patrol_DarkModeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func disableDarkMode(
-      request: Patrol_DarkModeRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func disableDarkMode(
+    request: Patrol_DarkModeRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// notifications
-    @Sendable func openNotifications(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  /// notifications
+  @Sendable func openNotifications(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func closeNotifications(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func closeNotifications(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func closeHeadsUpNotification(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func closeHeadsUpNotification(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func getNotifications(
-      request: Patrol_GetNotificationsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_GetNotificationsResponse
+  @Sendable func getNotifications(
+    request: Patrol_GetNotificationsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_GetNotificationsResponse
 
-    @Sendable func tapOnNotification(
-      request: Patrol_TapOnNotificationRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func tapOnNotification(
+    request: Patrol_TapOnNotificationRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// permissions
-    @Sendable func isPermissionDialogVisible(
-      request: Patrol_PermissionDialogVisibleRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_PermissionDialogVisibleResponse
+  /// permissions
+  @Sendable func isPermissionDialogVisible(
+    request: Patrol_PermissionDialogVisibleRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_PermissionDialogVisibleResponse
 
-    @Sendable func handlePermissionDialog(
-      request: Patrol_HandlePermissionRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func handlePermissionDialog(
+    request: Patrol_HandlePermissionRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    @Sendable func setLocationAccuracy(
-      request: Patrol_SetLocationAccuracyRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  @Sendable func setLocationAccuracy(
+    request: Patrol_SetLocationAccuracyRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// other
-    @Sendable func debug(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  /// other
+  @Sendable func debug(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
 
-    /// iOS
-    @Sendable func submitTestResults(
-      request: Patrol_SubmitTestResultsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty
+  /// iOS 
+  @Sendable func submitTestResults(
+    request: Patrol_SubmitTestResultsRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Patrol_NativeAutomatorAsyncProvider {
+  internal static var serviceDescriptor: GRPCServiceDescriptor {
+    return Patrol_NativeAutomatorServerMetadata.serviceDescriptor
   }
 
-  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-  extension Patrol_NativeAutomatorAsyncProvider {
-    internal static var serviceDescriptor: GRPCServiceDescriptor {
-      return Patrol_NativeAutomatorServerMetadata.serviceDescriptor
-    }
+  internal var serviceName: Substring {
+    return Patrol_NativeAutomatorServerMetadata.serviceDescriptor.fullName[...]
+  }
 
-    internal var serviceName: Substring {
-      return Patrol_NativeAutomatorServerMetadata.serviceDescriptor.fullName[...]
-    }
+  internal var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? {
+    return nil
+  }
 
-    internal var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? {
+  internal func handle(
+    method name: Substring,
+    context: CallHandlerContext
+  ) -> GRPCServerHandlerProtocol? {
+    switch name {
+    case "configure":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_ConfigureRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeconfigureInterceptors() ?? [],
+        wrapping: self.configure(request:context:)
+      )
+
+    case "pressHome":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makepressHomeInterceptors() ?? [],
+        wrapping: self.pressHome(request:context:)
+      )
+
+    case "pressBack":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makepressBackInterceptors() ?? [],
+        wrapping: self.pressBack(request:context:)
+      )
+
+    case "pressRecentApps":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makepressRecentAppsInterceptors() ?? [],
+        wrapping: self.pressRecentApps(request:context:)
+      )
+
+    case "doublePressRecentApps":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedoublePressRecentAppsInterceptors() ?? [],
+        wrapping: self.doublePressRecentApps(request:context:)
+      )
+
+    case "openApp":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_OpenAppRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeopenAppInterceptors() ?? [],
+        wrapping: self.openApp(request:context:)
+      )
+
+    case "openQuickSettings":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_OpenQuickSettingsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? [],
+        wrapping: self.openQuickSettings(request:context:)
+      )
+
+    case "getNativeViews":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_GetNativeViewsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_GetNativeViewsResponse>(),
+        interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? [],
+        wrapping: self.getNativeViews(request:context:)
+      )
+
+    case "tap":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.maketapInterceptors() ?? [],
+        wrapping: self.tap(request:context:)
+      )
+
+    case "doubleTap":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedoubleTapInterceptors() ?? [],
+        wrapping: self.doubleTap(request:context:)
+      )
+
+    case "enterText":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_EnterTextRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenterTextInterceptors() ?? [],
+        wrapping: self.enterText(request:context:)
+      )
+
+    case "swipe":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_SwipeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
+        wrapping: self.swipe(request:context:)
+      )
+
+    case "enableAirplaneMode":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? [],
+        wrapping: self.enableAirplaneMode(request:context:)
+      )
+
+    case "disableAirplaneMode":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? [],
+        wrapping: self.disableAirplaneMode(request:context:)
+      )
+
+    case "enableWiFi":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? [],
+        wrapping: self.enableWiFi(request:context:)
+      )
+
+    case "disableWiFi":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? [],
+        wrapping: self.disableWiFi(request:context:)
+      )
+
+    case "enableCellular":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableCellularInterceptors() ?? [],
+        wrapping: self.enableCellular(request:context:)
+      )
+
+    case "disableCellular":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableCellularInterceptors() ?? [],
+        wrapping: self.disableCellular(request:context:)
+      )
+
+    case "enableBluetooth":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? [],
+        wrapping: self.enableBluetooth(request:context:)
+      )
+
+    case "disableBluetooth":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? [],
+        wrapping: self.disableBluetooth(request:context:)
+      )
+
+    case "enableDarkMode":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? [],
+        wrapping: self.enableDarkMode(request:context:)
+      )
+
+    case "disableDarkMode":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? [],
+        wrapping: self.disableDarkMode(request:context:)
+      )
+
+    case "openNotifications":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
+        wrapping: self.openNotifications(request:context:)
+      )
+
+    case "closeNotifications":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
+        wrapping: self.closeNotifications(request:context:)
+      )
+
+    case "closeHeadsUpNotification":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? [],
+        wrapping: self.closeHeadsUpNotification(request:context:)
+      )
+
+    case "getNotifications":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_GetNotificationsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_GetNotificationsResponse>(),
+        interceptors: self.interceptors?.makegetNotificationsInterceptors() ?? [],
+        wrapping: self.getNotifications(request:context:)
+      )
+
+    case "tapOnNotification":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_TapOnNotificationRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? [],
+        wrapping: self.tapOnNotification(request:context:)
+      )
+
+    case "isPermissionDialogVisible":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_PermissionDialogVisibleRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_PermissionDialogVisibleResponse>(),
+        interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? [],
+        wrapping: self.isPermissionDialogVisible(request:context:)
+      )
+
+    case "handlePermissionDialog":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_HandlePermissionRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makehandlePermissionDialogInterceptors() ?? [],
+        wrapping: self.handlePermissionDialog(request:context:)
+      )
+
+    case "setLocationAccuracy":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_SetLocationAccuracyRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? [],
+        wrapping: self.setLocationAccuracy(request:context:)
+      )
+
+    case "debug":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makedebugInterceptors() ?? [],
+        wrapping: self.debug(request:context:)
+      )
+
+    case "submitTestResults":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_SubmitTestResultsRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? [],
+        wrapping: self.submitTestResults(request:context:)
+      )
+
+    default:
       return nil
     }
-
-    internal func handle(
-      method name: Substring,
-      context: CallHandlerContext
-    ) -> GRPCServerHandlerProtocol? {
-      switch name {
-      case "configure":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_ConfigureRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeconfigureInterceptors() ?? [],
-          wrapping: self.configure(request:context:)
-        )
-
-      case "pressHome":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makepressHomeInterceptors() ?? [],
-          wrapping: self.pressHome(request:context:)
-        )
-
-      case "pressBack":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makepressBackInterceptors() ?? [],
-          wrapping: self.pressBack(request:context:)
-        )
-
-      case "pressRecentApps":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makepressRecentAppsInterceptors() ?? [],
-          wrapping: self.pressRecentApps(request:context:)
-        )
-
-      case "doublePressRecentApps":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedoublePressRecentAppsInterceptors() ?? [],
-          wrapping: self.doublePressRecentApps(request:context:)
-        )
-
-      case "openApp":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_OpenAppRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeopenAppInterceptors() ?? [],
-          wrapping: self.openApp(request:context:)
-        )
-
-      case "openQuickSettings":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_OpenQuickSettingsRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeopenQuickSettingsInterceptors() ?? [],
-          wrapping: self.openQuickSettings(request:context:)
-        )
-
-      case "getNativeViews":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_GetNativeViewsRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_GetNativeViewsResponse>(),
-          interceptors: self.interceptors?.makegetNativeViewsInterceptors() ?? [],
-          wrapping: self.getNativeViews(request:context:)
-        )
-
-      case "tap":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.maketapInterceptors() ?? [],
-          wrapping: self.tap(request:context:)
-        )
-
-      case "doubleTap":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_TapRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedoubleTapInterceptors() ?? [],
-          wrapping: self.doubleTap(request:context:)
-        )
-
-      case "enterText":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_EnterTextRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeenterTextInterceptors() ?? [],
-          wrapping: self.enterText(request:context:)
-        )
-
-      case "swipe":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_SwipeRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
-          wrapping: self.swipe(request:context:)
-        )
-
-      case "enableAirplaneMode":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeenableAirplaneModeInterceptors() ?? [],
-          wrapping: self.enableAirplaneMode(request:context:)
-        )
-
-      case "disableAirplaneMode":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedisableAirplaneModeInterceptors() ?? [],
-          wrapping: self.disableAirplaneMode(request:context:)
-        )
-
-      case "enableWiFi":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeenableWiFiInterceptors() ?? [],
-          wrapping: self.enableWiFi(request:context:)
-        )
-
-      case "disableWiFi":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedisableWiFiInterceptors() ?? [],
-          wrapping: self.disableWiFi(request:context:)
-        )
-
-      case "enableCellular":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeenableCellularInterceptors() ?? [],
-          wrapping: self.enableCellular(request:context:)
-        )
-
-      case "disableCellular":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedisableCellularInterceptors() ?? [],
-          wrapping: self.disableCellular(request:context:)
-        )
-
-      case "enableBluetooth":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeenableBluetoothInterceptors() ?? [],
-          wrapping: self.enableBluetooth(request:context:)
-        )
-
-      case "disableBluetooth":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedisableBluetoothInterceptors() ?? [],
-          wrapping: self.disableBluetooth(request:context:)
-        )
-
-      case "enableDarkMode":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeenableDarkModeInterceptors() ?? [],
-          wrapping: self.enableDarkMode(request:context:)
-        )
-
-      case "disableDarkMode":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_DarkModeRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedisableDarkModeInterceptors() ?? [],
-          wrapping: self.disableDarkMode(request:context:)
-        )
-
-      case "openNotifications":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makeopenNotificationsInterceptors() ?? [],
-          wrapping: self.openNotifications(request:context:)
-        )
-
-      case "closeNotifications":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makecloseNotificationsInterceptors() ?? [],
-          wrapping: self.closeNotifications(request:context:)
-        )
-
-      case "closeHeadsUpNotification":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makecloseHeadsUpNotificationInterceptors() ?? [],
-          wrapping: self.closeHeadsUpNotification(request:context:)
-        )
-
-      case "getNotifications":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_GetNotificationsRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_GetNotificationsResponse>(),
-          interceptors: self.interceptors?.makegetNotificationsInterceptors() ?? [],
-          wrapping: self.getNotifications(request:context:)
-        )
-
-      case "tapOnNotification":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_TapOnNotificationRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.maketapOnNotificationInterceptors() ?? [],
-          wrapping: self.tapOnNotification(request:context:)
-        )
-
-      case "isPermissionDialogVisible":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_PermissionDialogVisibleRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_PermissionDialogVisibleResponse>(),
-          interceptors: self.interceptors?.makeisPermissionDialogVisibleInterceptors() ?? [],
-          wrapping: self.isPermissionDialogVisible(request:context:)
-        )
-
-      case "handlePermissionDialog":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_HandlePermissionRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makehandlePermissionDialogInterceptors() ?? [],
-          wrapping: self.handlePermissionDialog(request:context:)
-        )
-
-      case "setLocationAccuracy":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_SetLocationAccuracyRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makesetLocationAccuracyInterceptors() ?? [],
-          wrapping: self.setLocationAccuracy(request:context:)
-        )
-
-      case "debug":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makedebugInterceptors() ?? [],
-          wrapping: self.debug(request:context:)
-        )
-
-      case "submitTestResults":
-        return GRPCAsyncServerHandler(
-          context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_SubmitTestResultsRequest>(),
-          responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? [],
-          wrapping: self.submitTestResults(request:context:)
-        )
-
-      default:
-        return nil
-      }
-    }
   }
+}
 
-#endif  // compiler(>=5.6)
+#endif // compiler(>=5.6)
 
 internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
@@ -3107,15 +3036,11 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'openQuickSettings'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<
-    Patrol_OpenQuickSettingsRequest, Patrol_Empty
-  >]
+  func makeopenQuickSettingsInterceptors() -> [ServerInterceptor<Patrol_OpenQuickSettingsRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'getNativeViews'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makegetNativeViewsInterceptors() -> [ServerInterceptor<
-    Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse
-  >]
+  func makegetNativeViewsInterceptors() -> [ServerInterceptor<Patrol_GetNativeViewsRequest, Patrol_GetNativeViewsResponse>]
 
   /// - Returns: Interceptors to use when handling 'tap'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -3171,9 +3096,7 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'disableDarkMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makedisableDarkModeInterceptors() -> [ServerInterceptor<
-    Patrol_DarkModeRequest, Patrol_Empty
-  >]
+  func makedisableDarkModeInterceptors() -> [ServerInterceptor<Patrol_DarkModeRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'openNotifications'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -3189,33 +3112,23 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'getNotifications'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makegetNotificationsInterceptors() -> [ServerInterceptor<
-    Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse
-  >]
+  func makegetNotificationsInterceptors() -> [ServerInterceptor<Patrol_GetNotificationsRequest, Patrol_GetNotificationsResponse>]
 
   /// - Returns: Interceptors to use when handling 'tapOnNotification'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func maketapOnNotificationInterceptors() -> [ServerInterceptor<
-    Patrol_TapOnNotificationRequest, Patrol_Empty
-  >]
+  func maketapOnNotificationInterceptors() -> [ServerInterceptor<Patrol_TapOnNotificationRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'isPermissionDialogVisible'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makeisPermissionDialogVisibleInterceptors() -> [ServerInterceptor<
-    Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse
-  >]
+  func makeisPermissionDialogVisibleInterceptors() -> [ServerInterceptor<Patrol_PermissionDialogVisibleRequest, Patrol_PermissionDialogVisibleResponse>]
 
   /// - Returns: Interceptors to use when handling 'handlePermissionDialog'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makehandlePermissionDialogInterceptors() -> [ServerInterceptor<
-    Patrol_HandlePermissionRequest, Patrol_Empty
-  >]
+  func makehandlePermissionDialogInterceptors() -> [ServerInterceptor<Patrol_HandlePermissionRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'setLocationAccuracy'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makesetLocationAccuracyInterceptors() -> [ServerInterceptor<
-    Patrol_SetLocationAccuracyRequest, Patrol_Empty
-  >]
+  func makesetLocationAccuracyInterceptors() -> [ServerInterceptor<Patrol_SetLocationAccuracyRequest, Patrol_Empty>]
 
   /// - Returns: Interceptors to use when handling 'debug'.
   ///   Defaults to calling `self.makeInterceptors()`.
@@ -3223,9 +3136,7 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'submitTestResults'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makesubmitTestResultsInterceptors() -> [ServerInterceptor<
-    Patrol_SubmitTestResultsRequest, Patrol_Empty
-  >]
+  func makesubmitTestResultsInterceptors() -> [ServerInterceptor<Patrol_SubmitTestResultsRequest, Patrol_Empty>]
 }
 
 internal enum Patrol_NativeAutomatorServerMetadata {

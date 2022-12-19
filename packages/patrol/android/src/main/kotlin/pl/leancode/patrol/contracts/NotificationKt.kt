@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializenotification")
-inline fun notification(block: pl.leancode.patrol.contracts.NotificationKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Notification =
+public inline fun notification(block: pl.leancode.patrol.contracts.NotificationKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Notification =
   pl.leancode.patrol.contracts.NotificationKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.Notification.newBuilder()).apply { block() }._build()
-object NotificationKt {
+public object NotificationKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.Notification.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.Notification.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object NotificationKt {
     /**
      * <code>optional string appName = 1;</code>
      */
-    var appName: kotlin.String
+    public var appName: kotlin.String
       @JvmName("getAppName")
       get() = _builder.getAppName()
       @JvmName("setAppName")
@@ -35,21 +35,21 @@ object NotificationKt {
     /**
      * <code>optional string appName = 1;</code>
      */
-    fun clearAppName() {
+    public fun clearAppName() {
       _builder.clearAppName()
     }
     /**
      * <code>optional string appName = 1;</code>
      * @return Whether the appName field is set.
      */
-    fun hasAppName(): kotlin.Boolean {
+    public fun hasAppName(): kotlin.Boolean {
       return _builder.hasAppName()
     }
 
     /**
      * <code>string title = 2;</code>
      */
-    var title: kotlin.String
+    public var title: kotlin.String
       @JvmName("getTitle")
       get() = _builder.getTitle()
       @JvmName("setTitle")
@@ -59,14 +59,14 @@ object NotificationKt {
     /**
      * <code>string title = 2;</code>
      */
-    fun clearTitle() {
+    public fun clearTitle() {
       _builder.clearTitle()
     }
 
     /**
      * <code>string content = 3;</code>
      */
-    var content: kotlin.String
+    public var content: kotlin.String
       @JvmName("getContent")
       get() = _builder.getContent()
       @JvmName("setContent")
@@ -76,14 +76,14 @@ object NotificationKt {
     /**
      * <code>string content = 3;</code>
      */
-    fun clearContent() {
+    public fun clearContent() {
       _builder.clearContent()
     }
 
     /**
      * <code>string raw = 4;</code>
      */
-    var raw: kotlin.String
+    public var raw: kotlin.String
       @JvmName("getRaw")
       get() = _builder.getRaw()
       @JvmName("setRaw")
@@ -93,11 +93,11 @@ object NotificationKt {
     /**
      * <code>string raw = 4;</code>
      */
-    fun clearRaw() {
+    public fun clearRaw() {
       _builder.clearRaw()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.Notification.copy(block: pl.leancode.patrol.contracts.NotificationKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Notification =
+public inline fun pl.leancode.patrol.contracts.Contracts.Notification.copy(block: pl.leancode.patrol.contracts.NotificationKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Notification =
   pl.leancode.patrol.contracts.NotificationKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

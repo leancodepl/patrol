@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializehandlePermissionRequest")
-inline fun handlePermissionRequest(block: pl.leancode.patrol.contracts.HandlePermissionRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest =
+public inline fun handlePermissionRequest(block: pl.leancode.patrol.contracts.HandlePermissionRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest =
   pl.leancode.patrol.contracts.HandlePermissionRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.newBuilder()).apply { block() }._build()
-object HandlePermissionRequestKt {
+public object HandlePermissionRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object HandlePermissionRequestKt {
     /**
      * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
      */
-     var code: pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code
+    public var code: pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code
       @JvmName("getCode")
       get() = _builder.getCode()
       @JvmName("setCode")
@@ -35,11 +35,11 @@ object HandlePermissionRequestKt {
     /**
      * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
      */
-    fun clearCode() {
+    public fun clearCode() {
       _builder.clearCode()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.copy(block: pl.leancode.patrol.contracts.HandlePermissionRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.copy(block: pl.leancode.patrol.contracts.HandlePermissionRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest =
   pl.leancode.patrol.contracts.HandlePermissionRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

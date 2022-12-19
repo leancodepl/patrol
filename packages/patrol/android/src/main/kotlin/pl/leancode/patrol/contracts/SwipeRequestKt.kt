@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializeswipeRequest")
-inline fun swipeRequest(block: pl.leancode.patrol.contracts.SwipeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SwipeRequest =
+public inline fun swipeRequest(block: pl.leancode.patrol.contracts.SwipeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SwipeRequest =
   pl.leancode.patrol.contracts.SwipeRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.SwipeRequest.newBuilder()).apply { block() }._build()
-object SwipeRequestKt {
+public object SwipeRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.SwipeRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.SwipeRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object SwipeRequestKt {
     /**
      * <code>float startX = 1;</code>
      */
-    var startX: kotlin.Float
+    public var startX: kotlin.Float
       @JvmName("getStartX")
       get() = _builder.getStartX()
       @JvmName("setStartX")
@@ -35,14 +35,14 @@ object SwipeRequestKt {
     /**
      * <code>float startX = 1;</code>
      */
-    fun clearStartX() {
+    public fun clearStartX() {
       _builder.clearStartX()
     }
 
     /**
      * <code>float startY = 2;</code>
      */
-    var startY: kotlin.Float
+    public var startY: kotlin.Float
       @JvmName("getStartY")
       get() = _builder.getStartY()
       @JvmName("setStartY")
@@ -52,14 +52,14 @@ object SwipeRequestKt {
     /**
      * <code>float startY = 2;</code>
      */
-    fun clearStartY() {
+    public fun clearStartY() {
       _builder.clearStartY()
     }
 
     /**
      * <code>float endX = 3;</code>
      */
-    var endX: kotlin.Float
+    public var endX: kotlin.Float
       @JvmName("getEndX")
       get() = _builder.getEndX()
       @JvmName("setEndX")
@@ -69,14 +69,14 @@ object SwipeRequestKt {
     /**
      * <code>float endX = 3;</code>
      */
-    fun clearEndX() {
+    public fun clearEndX() {
       _builder.clearEndX()
     }
 
     /**
      * <code>float endY = 4;</code>
      */
-    var endY: kotlin.Float
+    public var endY: kotlin.Float
       @JvmName("getEndY")
       get() = _builder.getEndY()
       @JvmName("setEndY")
@@ -86,14 +86,14 @@ object SwipeRequestKt {
     /**
      * <code>float endY = 4;</code>
      */
-    fun clearEndY() {
+    public fun clearEndY() {
       _builder.clearEndY()
     }
 
     /**
      * <code>uint32 steps = 5;</code>
      */
-    var steps: kotlin.Int
+    public var steps: kotlin.Int
       @JvmName("getSteps")
       get() = _builder.getSteps()
       @JvmName("setSteps")
@@ -103,11 +103,28 @@ object SwipeRequestKt {
     /**
      * <code>uint32 steps = 5;</code>
      */
-    fun clearSteps() {
+    public fun clearSteps() {
       _builder.clearSteps()
+    }
+
+    /**
+     * <code>string appId = 6;</code>
+     */
+    public var appId: kotlin.String
+      @JvmName("getAppId")
+      get() = _builder.getAppId()
+      @JvmName("setAppId")
+      set(value) {
+        _builder.setAppId(value)
+      }
+    /**
+     * <code>string appId = 6;</code>
+     */
+    public fun clearAppId() {
+      _builder.clearAppId()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.SwipeRequest.copy(block: pl.leancode.patrol.contracts.SwipeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SwipeRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.SwipeRequest.copy(block: pl.leancode.patrol.contracts.SwipeRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.SwipeRequest =
   pl.leancode.patrol.contracts.SwipeRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

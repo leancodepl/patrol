@@ -1,7 +1,7 @@
 syntax = "proto3";
 package patrol;
 
-option java_package = "pl.leancode.automatorserver.contracts";
+option java_package = "pl.leancode.patrol.contracts";
 
 service NativeAutomator {
   rpc configure(ConfigureRequest) returns (Empty) {}

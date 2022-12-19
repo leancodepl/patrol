@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializetapRequest")
-inline fun tapRequest(block: pl.leancode.patrol.contracts.TapRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapRequest =
+public inline fun tapRequest(block: pl.leancode.patrol.contracts.TapRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapRequest =
   pl.leancode.patrol.contracts.TapRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.TapRequest.newBuilder()).apply { block() }._build()
-object TapRequestKt {
+public object TapRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.TapRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.TapRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object TapRequestKt {
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
-    var selector: pl.leancode.patrol.contracts.Contracts.Selector
+    public var selector: pl.leancode.patrol.contracts.Contracts.Selector
       @JvmName("getSelector")
       get() = _builder.getSelector()
       @JvmName("setSelector")
@@ -35,21 +35,21 @@ object TapRequestKt {
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
-    fun clearSelector() {
+    public fun clearSelector() {
       _builder.clearSelector()
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      * @return Whether the selector field is set.
      */
-    fun hasSelector(): kotlin.Boolean {
+    public fun hasSelector(): kotlin.Boolean {
       return _builder.hasSelector()
     }
 
     /**
      * <code>string appId = 2;</code>
      */
-    var appId: kotlin.String
+    public var appId: kotlin.String
       @JvmName("getAppId")
       get() = _builder.getAppId()
       @JvmName("setAppId")
@@ -59,14 +59,14 @@ object TapRequestKt {
     /**
      * <code>string appId = 2;</code>
      */
-    fun clearAppId() {
+    public fun clearAppId() {
       _builder.clearAppId()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.TapRequest.copy(block: pl.leancode.patrol.contracts.TapRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.TapRequest.copy(block: pl.leancode.patrol.contracts.TapRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.TapRequest =
   pl.leancode.patrol.contracts.TapRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
-val pl.leancode.patrol.contracts.Contracts.TapRequestOrBuilder.selectorOrNull: pl.leancode.patrol.contracts.Contracts.Selector?
+public val pl.leancode.patrol.contracts.Contracts.TapRequestOrBuilder.selectorOrNull: pl.leancode.patrol.contracts.Contracts.Selector?
   get() = if (hasSelector()) getSelector() else null
+

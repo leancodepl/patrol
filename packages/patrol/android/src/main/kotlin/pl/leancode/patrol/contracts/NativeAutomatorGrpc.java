@@ -34,11 +34,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "configure"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.ConfigureRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("configure"))
               .build();
         }
       }
@@ -65,11 +64,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pressHome"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("pressHome"))
               .build();
         }
       }
@@ -96,11 +94,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pressBack"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("pressBack"))
               .build();
         }
       }
@@ -127,11 +124,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "pressRecentApps"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("pressRecentApps"))
               .build();
         }
       }
@@ -158,11 +154,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "doublePressRecentApps"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("doublePressRecentApps"))
               .build();
         }
       }
@@ -189,11 +184,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "openApp"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.OpenAppRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("openApp"))
               .build();
         }
       }
@@ -220,11 +214,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "openQuickSettings"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("openQuickSettings"))
               .build();
         }
       }
@@ -251,11 +244,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNativeViews"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("getNativeViews"))
               .build();
         }
       }
@@ -282,11 +274,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "tap"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.TapRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("tap"))
               .build();
         }
       }
@@ -313,11 +304,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "doubleTap"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.TapRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("doubleTap"))
               .build();
         }
       }
@@ -344,11 +334,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enterText"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.EnterTextRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enterText"))
               .build();
         }
       }
@@ -375,11 +364,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "swipe"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.SwipeRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("swipe"))
               .build();
         }
       }
@@ -406,11 +394,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableAirplaneMode"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableAirplaneMode"))
               .build();
         }
       }
@@ -437,11 +424,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableAirplaneMode"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableAirplaneMode"))
               .build();
         }
       }
@@ -468,11 +454,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableWiFi"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableWiFi"))
               .build();
         }
       }
@@ -499,11 +484,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableWiFi"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableWiFi"))
               .build();
         }
       }
@@ -530,11 +514,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableCellular"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableCellular"))
               .build();
         }
       }
@@ -561,11 +544,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableCellular"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableCellular"))
               .build();
         }
       }
@@ -592,11 +574,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableBluetooth"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableBluetooth"))
               .build();
         }
       }
@@ -623,11 +604,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableBluetooth"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableBluetooth"))
               .build();
         }
       }
@@ -654,11 +634,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "enableDarkMode"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.DarkModeRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("enableDarkMode"))
               .build();
         }
       }
@@ -685,11 +664,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "disableDarkMode"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.DarkModeRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("disableDarkMode"))
               .build();
         }
       }
@@ -716,11 +694,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "openNotifications"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("openNotifications"))
               .build();
         }
       }
@@ -747,11 +724,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "closeNotifications"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("closeNotifications"))
               .build();
         }
       }
@@ -778,11 +754,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "closeHeadsUpNotification"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("closeHeadsUpNotification"))
               .build();
         }
       }
@@ -809,11 +784,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "getNotifications"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("getNotifications"))
               .build();
         }
       }
@@ -840,11 +814,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "tapOnNotification"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("tapOnNotification"))
               .build();
         }
       }
@@ -871,11 +844,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "isPermissionDialogVisible"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("isPermissionDialogVisible"))
               .build();
         }
       }
@@ -902,11 +874,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "handlePermissionDialog"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("handlePermissionDialog"))
               .build();
         }
       }
@@ -933,11 +904,10 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "setLocationAccuracy"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("setLocationAccuracy"))
               .build();
         }
       }
@@ -964,16 +934,45 @@ public final class NativeAutomatorGrpc {
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "debug"))
               .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setSchemaDescriptor(new NativeAutomatorMethodDescriptorSupplier("debug"))
               .build();
         }
       }
     }
     return getDebugMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
+      pl.leancode.patrol.contracts.Contracts.Empty> getSubmitTestResultsMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "submitTestResults",
+      requestType = pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest.class,
+      responseType = pl.leancode.patrol.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
+      pl.leancode.patrol.contracts.Contracts.Empty> getSubmitTestResultsMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest, pl.leancode.patrol.contracts.Contracts.Empty> getSubmitTestResultsMethod;
+    if ((getSubmitTestResultsMethod = NativeAutomatorGrpc.getSubmitTestResultsMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getSubmitTestResultsMethod = NativeAutomatorGrpc.getSubmitTestResultsMethod) == null) {
+          NativeAutomatorGrpc.getSubmitTestResultsMethod = getSubmitTestResultsMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest, pl.leancode.patrol.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "submitTestResults"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
+                  pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
+                  pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
+              .build();
+        }
+      }
+    }
+    return getSubmitTestResultsMethod;
   }
 
   /**
@@ -982,7 +981,7 @@ public final class NativeAutomatorGrpc {
   public static NativeAutomatorStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<NativeAutomatorStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<NativeAutomatorStub>() {
-        @Override
+        @java.lang.Override
         public NativeAutomatorStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new NativeAutomatorStub(channel, callOptions);
         }
@@ -997,7 +996,7 @@ public final class NativeAutomatorGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<NativeAutomatorBlockingStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<NativeAutomatorBlockingStub>() {
-        @Override
+        @java.lang.Override
         public NativeAutomatorBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new NativeAutomatorBlockingStub(channel, callOptions);
         }
@@ -1012,7 +1011,7 @@ public final class NativeAutomatorGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<NativeAutomatorFutureStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<NativeAutomatorFutureStub>() {
-        @Override
+        @java.lang.Override
         public NativeAutomatorFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new NativeAutomatorFutureStub(channel, callOptions);
         }
@@ -1250,13 +1249,26 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * other
+     * </pre>
      */
     public void debug(pl.leancode.patrol.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getDebugMethod(), responseObserver);
     }
 
-    @Override public final io.grpc.ServerServiceDefinition bindService() {
+    /**
+     * <pre>
+     * iOS 
+     * </pre>
+     */
+    public void submitTestResults(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSubmitTestResultsMethod(), responseObserver);
+    }
+
+    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
             getConfigureMethod(),
@@ -1475,6 +1487,13 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.patrol.contracts.Contracts.Empty,
                 pl.leancode.patrol.contracts.Contracts.Empty>(
                   this, METHODID_DEBUG)))
+          .addMethod(
+            getSubmitTestResultsMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
+                pl.leancode.patrol.contracts.Contracts.Empty>(
+                  this, METHODID_SUBMIT_TEST_RESULTS)))
           .build();
     }
   }
@@ -1487,7 +1506,7 @@ public final class NativeAutomatorGrpc {
       super(channel, callOptions);
     }
 
-    @Override
+    @java.lang.Override
     protected NativeAutomatorStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NativeAutomatorStub(channel, callOptions);
@@ -1749,11 +1768,25 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * other
+     * </pre>
      */
     public void debug(pl.leancode.patrol.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getDebugMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * iOS 
+     * </pre>
+     */
+    public void submitTestResults(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getSubmitTestResultsMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -1765,7 +1798,7 @@ public final class NativeAutomatorGrpc {
       super(channel, callOptions);
     }
 
-    @Override
+    @java.lang.Override
     protected NativeAutomatorBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NativeAutomatorBlockingStub(channel, callOptions);
@@ -1997,10 +2030,23 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * other
+     * </pre>
      */
     public pl.leancode.patrol.contracts.Contracts.Empty debug(pl.leancode.patrol.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getDebugMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * iOS 
+     * </pre>
+     */
+    public pl.leancode.patrol.contracts.Contracts.Empty submitTestResults(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSubmitTestResultsMethod(), getCallOptions(), request);
     }
   }
 
@@ -2012,7 +2058,7 @@ public final class NativeAutomatorGrpc {
       super(channel, callOptions);
     }
 
-    @Override
+    @java.lang.Override
     protected NativeAutomatorFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NativeAutomatorFutureStub(channel, callOptions);
@@ -2274,11 +2320,25 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     * <pre>
+     * other
+     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> debug(
         pl.leancode.patrol.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getDebugMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * iOS 
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> submitTestResults(
+        pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getSubmitTestResultsMethod(), getCallOptions()), request);
     }
   }
 
@@ -2313,6 +2373,7 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_HANDLE_PERMISSION_DIALOG = 28;
   private static final int METHODID_SET_LOCATION_ACCURACY = 29;
   private static final int METHODID_DEBUG = 30;
+  private static final int METHODID_SUBMIT_TEST_RESULTS = 31;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2327,8 +2388,8 @@ public final class NativeAutomatorGrpc {
       this.methodId = methodId;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
+    @java.lang.Override
+    @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_CONFIGURE:
@@ -2455,54 +2516,23 @@ public final class NativeAutomatorGrpc {
           serviceImpl.debug((pl.leancode.patrol.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
           break;
+        case METHODID_SUBMIT_TEST_RESULTS:
+          serviceImpl.submitTestResults((pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
+    @java.lang.Override
+    @java.lang.SuppressWarnings("unchecked")
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         default:
           throw new AssertionError();
       }
-    }
-  }
-
-  private static abstract class NativeAutomatorBaseDescriptorSupplier
-      implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
-    NativeAutomatorBaseDescriptorSupplier() {}
-
-    @Override
-    public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return pl.leancode.patrol.contracts.Contracts.getDescriptor();
-    }
-
-    @Override
-    public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
-      return getFileDescriptor().findServiceByName("NativeAutomator");
-    }
-  }
-
-  private static final class NativeAutomatorFileDescriptorSupplier
-      extends NativeAutomatorBaseDescriptorSupplier {
-    NativeAutomatorFileDescriptorSupplier() {}
-  }
-
-  private static final class NativeAutomatorMethodDescriptorSupplier
-      extends NativeAutomatorBaseDescriptorSupplier
-      implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
-    private final String methodName;
-
-    NativeAutomatorMethodDescriptorSupplier(String methodName) {
-      this.methodName = methodName;
-    }
-
-    @Override
-    public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
-      return getServiceDescriptor().findMethodByName(methodName);
     }
   }
 
@@ -2515,7 +2545,6 @@ public final class NativeAutomatorGrpc {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .setSchemaDescriptor(new NativeAutomatorFileDescriptorSupplier())
               .addMethod(getConfigureMethod())
               .addMethod(getPressHomeMethod())
               .addMethod(getPressBackMethod())
@@ -2547,6 +2576,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getHandlePermissionDialogMethod())
               .addMethod(getSetLocationAccuracyMethod())
               .addMethod(getDebugMethod())
+              .addMethod(getSubmitTestResultsMethod())
               .build();
         }
       }

@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializegetNativeViewsRequest")
-inline fun getNativeViewsRequest(block: pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest =
+public inline fun getNativeViewsRequest(block: pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest =
   pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.newBuilder()).apply { block() }._build()
-object GetNativeViewsRequestKt {
+public object GetNativeViewsRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object GetNativeViewsRequestKt {
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
-    var selector: pl.leancode.patrol.contracts.Contracts.Selector
+    public var selector: pl.leancode.patrol.contracts.Contracts.Selector
       @JvmName("getSelector")
       get() = _builder.getSelector()
       @JvmName("setSelector")
@@ -35,21 +35,21 @@ object GetNativeViewsRequestKt {
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
-    fun clearSelector() {
+    public fun clearSelector() {
       _builder.clearSelector()
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      * @return Whether the selector field is set.
      */
-    fun hasSelector(): kotlin.Boolean {
+    public fun hasSelector(): kotlin.Boolean {
       return _builder.hasSelector()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.copy(block: pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.copy(block: pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest =
   pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
-val pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequestOrBuilder.selectorOrNull: pl.leancode.patrol.contracts.Contracts.Selector?
+public val pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequestOrBuilder.selectorOrNull: pl.leancode.patrol.contracts.Contracts.Selector?
   get() = if (hasSelector()) getSelector() else null
+

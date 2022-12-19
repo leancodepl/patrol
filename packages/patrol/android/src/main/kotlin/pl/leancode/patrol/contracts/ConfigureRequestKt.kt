@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializeconfigureRequest")
-inline fun configureRequest(block: pl.leancode.patrol.contracts.ConfigureRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.ConfigureRequest =
+public inline fun configureRequest(block: pl.leancode.patrol.contracts.ConfigureRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.ConfigureRequest =
   pl.leancode.patrol.contracts.ConfigureRequestKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.ConfigureRequest.newBuilder()).apply { block() }._build()
-object ConfigureRequestKt {
+public object ConfigureRequestKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.ConfigureRequest.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.ConfigureRequest.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object ConfigureRequestKt {
     /**
      * <code>uint64 findTimeoutMillis = 1;</code>
      */
-    var findTimeoutMillis: kotlin.Long
+    public var findTimeoutMillis: kotlin.Long
       @JvmName("getFindTimeoutMillis")
       get() = _builder.getFindTimeoutMillis()
       @JvmName("setFindTimeoutMillis")
@@ -35,11 +35,11 @@ object ConfigureRequestKt {
     /**
      * <code>uint64 findTimeoutMillis = 1;</code>
      */
-    fun clearFindTimeoutMillis() {
+    public fun clearFindTimeoutMillis() {
       _builder.clearFindTimeoutMillis()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.ConfigureRequest.copy(block: pl.leancode.patrol.contracts.ConfigureRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.ConfigureRequest =
+public inline fun pl.leancode.patrol.contracts.Contracts.ConfigureRequest.copy(block: pl.leancode.patrol.contracts.ConfigureRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.ConfigureRequest =
   pl.leancode.patrol.contracts.ConfigureRequestKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
