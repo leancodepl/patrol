@@ -31,10 +31,6 @@ kotlin_out="$java_out"
 #kotlin_out="patrol/packages/patrol/android/src/main/kotlin"
 swift_out="./packages/patrol/ios/Classes/AutomatorServer"
 
-rm -rf "$java_out" && mkdir -p "$java_out"
-rm -rf "$java_out" && mkdir -p "$kotlin_out"
-rm -rf "$dart_out" && mkdir -p "$dart_out"
-
 protoc \
 	--dart_out="grpc:$dart_out" \
 	-I="$SRC_DIR" \
