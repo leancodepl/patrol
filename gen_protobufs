@@ -25,20 +25,14 @@ mkdir -p ./patrol/packages/patrol/android/src/main/kotlin
 mkdir -p ./packages/patrol/ios/Classes/AutomatorServer
 
 dart_out="./packages/patrol/lib/src/native/contracts"
-# java_out="patrol/packages/patrol/android/src/main/kotlin"
 java_out="packages/patrol/android/src/main/kotlin"
 kotlin_out="$java_out"
-#kotlin_out="patrol/packages/patrol/android/src/main/kotlin"
 swift_out="./packages/patrol/ios/Classes/AutomatorServer"
 
 protoc \
 	--dart_out="grpc:$dart_out" \
 	-I="$SRC_DIR" \
 	"$PROTO_PATH"
-
-# Remove the server, which causes problems with pub.dev score and is not needed.
-# rm "$dart_out/contracts.pbserver.dart"
-# rm -rf "./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts"
 
 protoc \
 	--java_out="lite:$java_out" \
