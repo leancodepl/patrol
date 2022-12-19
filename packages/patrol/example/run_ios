@@ -1,22 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-output="../build/ios_integ"
-product="build/ios_integ/Build/Products"
-dev_target="16.1"
+_usage() {
+    printf "usage: ./run_ios <target>\n"
+    printf "\tfor example:\n"
+    printf "\t\$ ./run_ios integration_test/app_test.dart --simulator\n"
+}
 
-# Pass --simulator if building for the simulator.
-flutter build ios integration_test/example_test.dart --release
+cd "$(dirname "$0")"
+
+target="${1:-}"
+simulator="${2:-}"
+
+if [ -z "$target" ]; then
+    _usage
+    exit 1
+fi
+
+target_path="$(realpath "$target")"
+dev_target="16.2"
+
+run_mode="Release"
+flag="--debug"
+sdk="iphoneos"
+if [ -n "$simulator" ]; then
+    echo "Running tests on iOS Simulator"
+    run_mode="Debug"
+    sdk="iphonesimulator"
+    flag="--simulator"
+else
+    echo "Running tests on iOS Device"
+fi
+
+flutter build ios "$target_path" "$flag"
 
 pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-config Flutter/Release.xcconfig \
-	-derivedDataPath "$output" \
-	-sdk iphoneos
+	-config Flutter/"$run_mode.xcconfig" \
+	-derivedDataPath ../build/ios_integ \
+	-sdk "$sdk"
 popd
 
-pushd "$product"
-zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
-popd
+xcodebuild test-without-building \
+    -xctestrun "build/ios_integ/Build/Products/Runner_iphoneos$dev_target-arm64.xctestrun" \
+    -destination id="$(idevice_id -l)"
