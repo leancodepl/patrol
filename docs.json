@@ -37,6 +37,7 @@
         ["update", "/cli-commands/update"]
       ]
     ],
+    ["Patrol and CI", "/ci"],
     ["Effective Patrol", "/effective-patrol"],
     ["Tips and tricks", "/tips-and-tricks"]
   ]
