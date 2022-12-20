@@ -1,6 +1,6 @@
 # Continuous integration
 
-Having test doesn't bring you any benefits if you don't automatically verify
+Having tests doesn't bring you any benefits if you don't automatically verify
 that they pass. We know this too well, so we've put a lot of work into making it
 easy to run Patrol tests in a multitude of ways, so you can choose whatever
 suits you best.
@@ -30,7 +30,6 @@ maintaining the convenience of writing the tests in pure Dart.
 
 That's exactly what Patrol does (and what the default [integration_test] package
 does at well, but at a bit smaller scale).
-
 
 Take a look at this simple Patrol test:
 
@@ -95,7 +94,7 @@ different tools, platforms, and IDEs:
   </TabItem>
   <TabItem value="gradle">
     You don't have to use the bulky Android Studio to view your test results,
-    because Gradle 🐘 automatically generate a nice HTML summary!
+    because Gradle 🐘 automatically generates a nice HTML summary!
 
     You can find it in `build/app/reports/androidTests/connected/index.html`.
 
@@ -116,7 +115,20 @@ This is so awesome!
 
 ## Setup
 
-Android is a bit easier to set up, so we recommend starting with it!
+Add a dependency on the `integration_test` and `flutter_test` package in the
+`dev_dependencies` section of `pubspec.yaml`. For plugins, do this in the
+`pubspec.yaml` of the example app:
+
+```yaml
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  patrol: ^0.10.4
+```
+
+That first step of setup is common across platforms. The rest is platform-specific.
+
+Psst... Android is a bit easier to set up, so we recommend starting with it!
 
 <Tabs 
   defaultValue="android" 
@@ -172,6 +184,8 @@ Android is a bit easier to set up, so we recommend starting with it!
   </TabItem>
   <TabItem value="ios">
 
+    ⚠️ Work in progress
+
     Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
     do not already have one via `File > New > Target...` and select `UI Testing Bundle`.
     Change the `Product Name` to `RunnerUITests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
@@ -191,20 +205,53 @@ Android is a bit easier to set up, so we recommend starting with it!
     end
     ```
 
-    To build `integration_test/example_test.dart` from the command line, run:
-
-    ```bash
-    $ flutter build ios --config-only integration_test/example_test.dart
-    ```
-
-    In Xcode, add a test file called `RunnerTests.m` (or any name of your choice) to the new target and
-    replace the file:
+    In Xcode, add a test file called `RunnerTests.m` (or any name of your choice)
+    to the new target and replace the file with the following:
 
     ```objective-c
     @import XCTest;
     @import integration_test;
 
     PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
+    ```
+
+    To build `integration_test/example_test.dart` from the command line, run:
+
+    ```bash
+    $ flutter build ios --config-only integration_test/example_test.dart
+    ```
+
+    Now, go to your `ios` directory and set up the new target:
+
+    ```
+    $ pod install --repo-update
+    ```
+
+    Open your Xcode project and select make every target have correct base
+    Build Configurations:
+
+    ```
+    $ open Runner.xcworkspace
+    ```
+
+    ![Xcode config setup](/assets/ios_runner_configs.png)
+
+    RunnerUITests depends on Patrol, which depens on Flutter, so we need to
+    tell Xcode to embed Flutter in the RunnerUITests target. To do this, add
+    2 new Build Phases to the `RunnerUITests` target:
+
+    ![Xcode config setup](/assets/ios_runner_build_phases.png)
+
+    Paste this code into the first `xcode_backend build` Build Phase:
+
+    ```bash
+    /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
+    ```
+
+    Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
+
+    ```bash
+    /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
     ```
 
     To run the test on a local iOS device (simulated or physical):
@@ -230,11 +277,102 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     { label: "iOS", value: "ios" },
   ]}
 >
-  <TabItem value="android">Coming very soon</TabItem>
-  <TabItem value="ios">Coming very soon</TabItem>
+  <TabItem value="android">
+    To run the integration tests on Android, you need 2 apps:
+
+    - the normal apk (often called the "app under test"). To build it, run:
+
+      ```bash
+      $ ./gradlew app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
+      ```
+
+    - the intrumentation apk. To build it, run:
+
+      ```bash
+      $ ./gradlew app:assembleDebugAndroidTest
+      ```
+
+    You need to run the above commands from the `android` directory of your
+    Flutter project.
+
+    Once you have built the apks, use the [gcloud] tool to run them on Firebase
+    Test Lab:
+
+    ```bash
+    $ gcloud firebase test android run --type instrumentation \
+        --app build/app/outputs/apk/debug/app-debug.apk \
+        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
+        --timeout 1m \
+        --results-bucket=<RESULTS_BUCKET> \
+        --results-dir=<RESULTS_DIRECTORY>
+    ```
+
+    It can be convenient to write a utility shell script to automate this process
+    instead of having to enter these long commands every time you want to run
+    tests. In such case, you might want to take a look at Patrol example app's
+    [run_android_testlab script][example_android_script].
+
+  </TabItem>
+  <TabItem value="ios">
+
+    First, build your Flutter app, choosing the integration test file as target:
+
+    ```bash
+    $ flutter build ios --target integration_test/example_test.dart --debug # or --release
+    ```
+
+    Then, build the UI testing target by running `xcodebuild` in the `ios`
+    directory:
+
+    ```bash
+    xcodebuild build-for-testing \
+      -workspace Runner.xcworkspace \
+      -scheme Runner \
+      -config Flutter/Release.xcconfig \
+      -derivedDataPath ../build/ios_integ \
+      -sdk iphoneos
+    ```
+
+    Go to your project's root directory, and from there go to the build
+    outputs:
+
+    ```bash
+    $ cd build/ios_integ/Build/Products
+    ```
+
+    Create a zip archive named `ios_test.zip`. It will contain both your app
+    under test (`Runner` target) and UI test runner (`RunnerUITests` target).
+
+    ```bash
+    $ zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos15.7-arm64.xctestrun"
+    ```
+
+    And finally, upload the `ios_test.zip` to Firebase Test Lab for execution:
+
+
+    ```bash
+    exec gcloud firebase test ios run \
+      --test "build/ios_integ/Build/Products/ios_tests.zip" \
+      --device model=iphone8,version=15.7,locale=en_US,orientation=portrait
+
+    ```
+
+    If your `.xctestrun` file has different iOS version in its name than the
+    device you're running on, simply rename the `.xctestrun` so that the version
+    will match.
+
+    It can be convenient to write a utility shell script to automate this process
+    instead of having to enter these long commands every time you want to run
+    tests. In such case, you might want to take a look at Patrol example app's
+    [run_ios_testlab script][example_ios_script].
+
+  </TabItem>
 </Tabs>
 
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[gcloud]: https://cloud.google.com/sdk/gcloud
+[example_android_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_android_testlab
+[example_iod_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_ios_testlab
 [fastlane scan]: https://docs.fastlane.tools/actions/scan
 [firebase test lab]: https://firebase.google.com/products/test-lab
 [aws_device_farm]: https://aws.amazon.com/device-farm
