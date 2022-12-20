@@ -14,8 +14,6 @@ fi
 
 target_path="$(realpath "$target")"
 
-flutter build apk --debug
-
 pushd android
 ./gradlew app:assembleDebugAndroidTest
 ./gradlew app:assembleDebug -Ptarget="$target_path"
