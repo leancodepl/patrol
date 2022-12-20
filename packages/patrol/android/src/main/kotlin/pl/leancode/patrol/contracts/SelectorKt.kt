@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializeselector")
-inline fun selector(block: pl.leancode.patrol.contracts.SelectorKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Selector =
+public inline fun selector(block: pl.leancode.patrol.contracts.SelectorKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Selector =
   pl.leancode.patrol.contracts.SelectorKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.Selector.newBuilder()).apply { block() }._build()
-object SelectorKt {
+public object SelectorKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.Selector.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.Selector.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object SelectorKt {
     /**
      * <code>optional string text = 1;</code>
      */
-    var text: kotlin.String
+    public var text: kotlin.String
       @JvmName("getText")
       get() = _builder.getText()
       @JvmName("setText")
@@ -35,21 +35,21 @@ object SelectorKt {
     /**
      * <code>optional string text = 1;</code>
      */
-    fun clearText() {
+    public fun clearText() {
       _builder.clearText()
     }
     /**
      * <code>optional string text = 1;</code>
      * @return Whether the text field is set.
      */
-    fun hasText(): kotlin.Boolean {
+    public fun hasText(): kotlin.Boolean {
       return _builder.hasText()
     }
 
     /**
      * <code>optional string textStartsWith = 2;</code>
      */
-    var textStartsWith: kotlin.String
+    public var textStartsWith: kotlin.String
       @JvmName("getTextStartsWith")
       get() = _builder.getTextStartsWith()
       @JvmName("setTextStartsWith")
@@ -59,21 +59,21 @@ object SelectorKt {
     /**
      * <code>optional string textStartsWith = 2;</code>
      */
-    fun clearTextStartsWith() {
+    public fun clearTextStartsWith() {
       _builder.clearTextStartsWith()
     }
     /**
      * <code>optional string textStartsWith = 2;</code>
      * @return Whether the textStartsWith field is set.
      */
-    fun hasTextStartsWith(): kotlin.Boolean {
+    public fun hasTextStartsWith(): kotlin.Boolean {
       return _builder.hasTextStartsWith()
     }
 
     /**
      * <code>optional string textContains = 3;</code>
      */
-    var textContains: kotlin.String
+    public var textContains: kotlin.String
       @JvmName("getTextContains")
       get() = _builder.getTextContains()
       @JvmName("setTextContains")
@@ -83,21 +83,21 @@ object SelectorKt {
     /**
      * <code>optional string textContains = 3;</code>
      */
-    fun clearTextContains() {
+    public fun clearTextContains() {
       _builder.clearTextContains()
     }
     /**
      * <code>optional string textContains = 3;</code>
      * @return Whether the textContains field is set.
      */
-    fun hasTextContains(): kotlin.Boolean {
+    public fun hasTextContains(): kotlin.Boolean {
       return _builder.hasTextContains()
     }
 
     /**
      * <code>optional string className = 4;</code>
      */
-    var className: kotlin.String
+    public var className: kotlin.String
       @JvmName("getClassName")
       get() = _builder.getClassName()
       @JvmName("setClassName")
@@ -107,21 +107,21 @@ object SelectorKt {
     /**
      * <code>optional string className = 4;</code>
      */
-    fun clearClassName() {
+    public fun clearClassName() {
       _builder.clearClassName()
     }
     /**
      * <code>optional string className = 4;</code>
      * @return Whether the className field is set.
      */
-    fun hasClassName(): kotlin.Boolean {
+    public fun hasClassName(): kotlin.Boolean {
       return _builder.hasClassName()
     }
 
     /**
      * <code>optional string contentDescription = 5;</code>
      */
-    var contentDescription: kotlin.String
+    public var contentDescription: kotlin.String
       @JvmName("getContentDescription")
       get() = _builder.getContentDescription()
       @JvmName("setContentDescription")
@@ -131,21 +131,21 @@ object SelectorKt {
     /**
      * <code>optional string contentDescription = 5;</code>
      */
-    fun clearContentDescription() {
+    public fun clearContentDescription() {
       _builder.clearContentDescription()
     }
     /**
      * <code>optional string contentDescription = 5;</code>
      * @return Whether the contentDescription field is set.
      */
-    fun hasContentDescription(): kotlin.Boolean {
+    public fun hasContentDescription(): kotlin.Boolean {
       return _builder.hasContentDescription()
     }
 
     /**
      * <code>optional string contentDescriptionStartsWith = 6;</code>
      */
-    var contentDescriptionStartsWith: kotlin.String
+    public var contentDescriptionStartsWith: kotlin.String
       @JvmName("getContentDescriptionStartsWith")
       get() = _builder.getContentDescriptionStartsWith()
       @JvmName("setContentDescriptionStartsWith")
@@ -155,21 +155,21 @@ object SelectorKt {
     /**
      * <code>optional string contentDescriptionStartsWith = 6;</code>
      */
-    fun clearContentDescriptionStartsWith() {
+    public fun clearContentDescriptionStartsWith() {
       _builder.clearContentDescriptionStartsWith()
     }
     /**
      * <code>optional string contentDescriptionStartsWith = 6;</code>
      * @return Whether the contentDescriptionStartsWith field is set.
      */
-    fun hasContentDescriptionStartsWith(): kotlin.Boolean {
+    public fun hasContentDescriptionStartsWith(): kotlin.Boolean {
       return _builder.hasContentDescriptionStartsWith()
     }
 
     /**
      * <code>optional string contentDescriptionContains = 7;</code>
      */
-    var contentDescriptionContains: kotlin.String
+    public var contentDescriptionContains: kotlin.String
       @JvmName("getContentDescriptionContains")
       get() = _builder.getContentDescriptionContains()
       @JvmName("setContentDescriptionContains")
@@ -179,21 +179,21 @@ object SelectorKt {
     /**
      * <code>optional string contentDescriptionContains = 7;</code>
      */
-    fun clearContentDescriptionContains() {
+    public fun clearContentDescriptionContains() {
       _builder.clearContentDescriptionContains()
     }
     /**
      * <code>optional string contentDescriptionContains = 7;</code>
      * @return Whether the contentDescriptionContains field is set.
      */
-    fun hasContentDescriptionContains(): kotlin.Boolean {
+    public fun hasContentDescriptionContains(): kotlin.Boolean {
       return _builder.hasContentDescriptionContains()
     }
 
     /**
      * <code>optional string resourceId = 8;</code>
      */
-    var resourceId: kotlin.String
+    public var resourceId: kotlin.String
       @JvmName("getResourceId")
       get() = _builder.getResourceId()
       @JvmName("setResourceId")
@@ -203,21 +203,21 @@ object SelectorKt {
     /**
      * <code>optional string resourceId = 8;</code>
      */
-    fun clearResourceId() {
+    public fun clearResourceId() {
       _builder.clearResourceId()
     }
     /**
      * <code>optional string resourceId = 8;</code>
      * @return Whether the resourceId field is set.
      */
-    fun hasResourceId(): kotlin.Boolean {
+    public fun hasResourceId(): kotlin.Boolean {
       return _builder.hasResourceId()
     }
 
     /**
      * <code>optional uint32 instance = 9;</code>
      */
-    var instance: kotlin.Int
+    public var instance: kotlin.Int
       @JvmName("getInstance")
       get() = _builder.getInstance()
       @JvmName("setInstance")
@@ -227,21 +227,21 @@ object SelectorKt {
     /**
      * <code>optional uint32 instance = 9;</code>
      */
-    fun clearInstance() {
+    public fun clearInstance() {
       _builder.clearInstance()
     }
     /**
      * <code>optional uint32 instance = 9;</code>
      * @return Whether the instance field is set.
      */
-    fun hasInstance(): kotlin.Boolean {
+    public fun hasInstance(): kotlin.Boolean {
       return _builder.hasInstance()
     }
 
     /**
      * <code>optional bool enabled = 10;</code>
      */
-    var enabled: kotlin.Boolean
+    public var enabled: kotlin.Boolean
       @JvmName("getEnabled")
       get() = _builder.getEnabled()
       @JvmName("setEnabled")
@@ -251,21 +251,21 @@ object SelectorKt {
     /**
      * <code>optional bool enabled = 10;</code>
      */
-    fun clearEnabled() {
+    public fun clearEnabled() {
       _builder.clearEnabled()
     }
     /**
      * <code>optional bool enabled = 10;</code>
      * @return Whether the enabled field is set.
      */
-    fun hasEnabled(): kotlin.Boolean {
+    public fun hasEnabled(): kotlin.Boolean {
       return _builder.hasEnabled()
     }
 
     /**
      * <code>optional bool focused = 11;</code>
      */
-    var focused: kotlin.Boolean
+    public var focused: kotlin.Boolean
       @JvmName("getFocused")
       get() = _builder.getFocused()
       @JvmName("setFocused")
@@ -275,21 +275,21 @@ object SelectorKt {
     /**
      * <code>optional bool focused = 11;</code>
      */
-    fun clearFocused() {
+    public fun clearFocused() {
       _builder.clearFocused()
     }
     /**
      * <code>optional bool focused = 11;</code>
      * @return Whether the focused field is set.
      */
-    fun hasFocused(): kotlin.Boolean {
+    public fun hasFocused(): kotlin.Boolean {
       return _builder.hasFocused()
     }
 
     /**
      * <code>optional string pkg = 12;</code>
      */
-    var pkg: kotlin.String
+    public var pkg: kotlin.String
       @JvmName("getPkg")
       get() = _builder.getPkg()
       @JvmName("setPkg")
@@ -299,18 +299,18 @@ object SelectorKt {
     /**
      * <code>optional string pkg = 12;</code>
      */
-    fun clearPkg() {
+    public fun clearPkg() {
       _builder.clearPkg()
     }
     /**
      * <code>optional string pkg = 12;</code>
      * @return Whether the pkg field is set.
      */
-    fun hasPkg(): kotlin.Boolean {
+    public fun hasPkg(): kotlin.Boolean {
       return _builder.hasPkg()
     }
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.Selector.copy(block: pl.leancode.patrol.contracts.SelectorKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Selector =
+public inline fun pl.leancode.patrol.contracts.Contracts.Selector.copy(block: pl.leancode.patrol.contracts.SelectorKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.Selector =
   pl.leancode.patrol.contracts.SelectorKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+

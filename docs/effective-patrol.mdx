@@ -1,12 +1,10 @@
-## Effective Patrol
+# Effective Patrol
 
 Over the past months, we've written many Patrol tests and often learned the hard
 way what works well and what doesn't. We're sharing our findings hoping that
 they'll help you write robust tests.
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
-interpreted as described in [RFC 2119][rfc2119].
+> This document follows [RFC 2119][rfc2119].
 
 ### PREFER using keys to find widgets
 
@@ -105,7 +103,7 @@ Then you can use it in your app's and tests' code:
 ```dart
 // somehwere in app
 TextField(
-  key: Keys.usernameTextField,
+  key: K.usernameTextField,
   // more properties
 )
 ```
@@ -167,8 +165,8 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-    await $(#phoneNumber).enterText(555-2137)
-    await $(#loginButton).tap();
+      await $(#phoneNumber).enterText("800-555-0199");
+      await $(#loginButton).tap();
 
       // lots of lines
     },

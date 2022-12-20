@@ -1,3 +1,8 @@
+## 0.10.4
+
+- Migrate to lite Protocol Buffers and gRPC to avoid conflicts with Firebase on
+  Android (#688)
+
 ## 0.10.3
 
 - Fix Android dependencies leaking into dependent apps (#683)

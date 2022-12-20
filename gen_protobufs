@@ -21,26 +21,24 @@ cd "$(dirname "$0")" || exit
 SRC_DIR="."
 PROTO_PATH="./contracts.proto"
 
-dart_out="./packages/patrol/lib/src/native/contracts"
-java_out="./AutomatorServer/android/app/src/androidTest/java"
-kotlin_out="./AutomatorServer/android/app/src/androidTest/java"
-swift_out="./AutomatorServer/ios/AutomatorServerUITests"
+mkdir -p ./patrol/packages/patrol/android/src/main/kotlin
+mkdir -p ./packages/patrol/ios/Classes/AutomatorServer
 
-mkdir -p "$dart_out"
+dart_out="./packages/patrol/lib/src/native/contracts"
+java_out="packages/patrol/android/src/main/kotlin"
+kotlin_out="$java_out"
+swift_out="./packages/patrol/ios/Classes/AutomatorServer"
+
 protoc \
 	--dart_out="grpc:$dart_out" \
 	-I="$SRC_DIR" \
 	"$PROTO_PATH"
 
-# Remove the server, which causes problems with pub.dev score and is not needed.
-# rm "$dart_out/contracts.pbserver.dart"
-rm -rf "./AutomatorServer/android/app/src/androidTest/java/pl/leancode/automatorserver/contracts"
-
 protoc \
-	--java_out="$java_out" \
-	--kotlin_out="$kotlin_out" \
-	--grpc-java_out="$java_out" \
-	--grpckt_out="$kotlin_out" \
+	--java_out="lite:$java_out" \
+	--kotlin_out="lite:$kotlin_out" \
+	--grpc-java_out="lite:$java_out" \
+	--grpckt_out="lite:$kotlin_out" \
 	"$PROTO_PATH"
 
 protoc \
@@ -48,7 +46,3 @@ protoc \
 	--grpc-swift_out="$swift_out" \
 	--swift_opt=Visibility=Public \
 	"$PROTO_PATH"
-
-# copy contracts to patrol_next
-cp "$swift_out/contracts.grpc.swift" ./packages/patrol_next/ios/Classes/AutomatorServer
-cp "$swift_out/contracts.pb.swift" ./packages/patrol_next/ios/Classes/AutomatorServer

@@ -4,15 +4,15 @@
 package pl.leancode.patrol.contracts;
 
 @kotlin.jvm.JvmName("-initializenativeView")
-inline fun nativeView(block: pl.leancode.patrol.contracts.NativeViewKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.NativeView =
+public inline fun nativeView(block: pl.leancode.patrol.contracts.NativeViewKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.NativeView =
   pl.leancode.patrol.contracts.NativeViewKt.Dsl._create(pl.leancode.patrol.contracts.Contracts.NativeView.newBuilder()).apply { block() }._build()
-object NativeViewKt {
+public object NativeViewKt {
   @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
   @com.google.protobuf.kotlin.ProtoDslMarker
-  class Dsl private constructor(
+  public class Dsl private constructor(
     private val _builder: pl.leancode.patrol.contracts.Contracts.NativeView.Builder
   ) {
-    companion object {
+    public companion object {
       @kotlin.jvm.JvmSynthetic
       @kotlin.PublishedApi
       internal fun _create(builder: pl.leancode.patrol.contracts.Contracts.NativeView.Builder): Dsl = Dsl(builder)
@@ -25,7 +25,7 @@ object NativeViewKt {
     /**
      * <code>string className = 1;</code>
      */
-    var className: kotlin.String
+    public var className: kotlin.String
       @JvmName("getClassName")
       get() = _builder.getClassName()
       @JvmName("setClassName")
@@ -35,14 +35,14 @@ object NativeViewKt {
     /**
      * <code>string className = 1;</code>
      */
-    fun clearClassName() {
+    public fun clearClassName() {
       _builder.clearClassName()
     }
 
     /**
      * <code>string text = 2;</code>
      */
-    var text: kotlin.String
+    public var text: kotlin.String
       @JvmName("getText")
       get() = _builder.getText()
       @JvmName("setText")
@@ -52,14 +52,14 @@ object NativeViewKt {
     /**
      * <code>string text = 2;</code>
      */
-    fun clearText() {
+    public fun clearText() {
       _builder.clearText()
     }
 
     /**
      * <code>string contentDescription = 3;</code>
      */
-    var contentDescription: kotlin.String
+    public var contentDescription: kotlin.String
       @JvmName("getContentDescription")
       get() = _builder.getContentDescription()
       @JvmName("setContentDescription")
@@ -69,14 +69,14 @@ object NativeViewKt {
     /**
      * <code>string contentDescription = 3;</code>
      */
-    fun clearContentDescription() {
+    public fun clearContentDescription() {
       _builder.clearContentDescription()
     }
 
     /**
      * <code>bool focused = 4;</code>
      */
-    var focused: kotlin.Boolean
+    public var focused: kotlin.Boolean
       @JvmName("getFocused")
       get() = _builder.getFocused()
       @JvmName("setFocused")
@@ -86,14 +86,14 @@ object NativeViewKt {
     /**
      * <code>bool focused = 4;</code>
      */
-    fun clearFocused() {
+    public fun clearFocused() {
       _builder.clearFocused()
     }
 
     /**
      * <code>bool enabled = 5;</code>
      */
-    var enabled: kotlin.Boolean
+    public var enabled: kotlin.Boolean
       @JvmName("getEnabled")
       get() = _builder.getEnabled()
       @JvmName("setEnabled")
@@ -103,14 +103,14 @@ object NativeViewKt {
     /**
      * <code>bool enabled = 5;</code>
      */
-    fun clearEnabled() {
+    public fun clearEnabled() {
       _builder.clearEnabled()
     }
 
     /**
      * <code>int32 childCount = 6;</code>
      */
-    var childCount: kotlin.Int
+    public var childCount: kotlin.Int
       @JvmName("getChildCount")
       get() = _builder.getChildCount()
       @JvmName("setChildCount")
@@ -120,14 +120,14 @@ object NativeViewKt {
     /**
      * <code>int32 childCount = 6;</code>
      */
-    fun clearChildCount() {
+    public fun clearChildCount() {
       _builder.clearChildCount()
     }
 
     /**
      * <code>string resourceName = 7;</code>
      */
-    var resourceName: kotlin.String
+    public var resourceName: kotlin.String
       @JvmName("getResourceName")
       get() = _builder.getResourceName()
       @JvmName("setResourceName")
@@ -137,14 +137,14 @@ object NativeViewKt {
     /**
      * <code>string resourceName = 7;</code>
      */
-    fun clearResourceName() {
+    public fun clearResourceName() {
       _builder.clearResourceName()
     }
 
     /**
      * <code>string applicationPackage = 8;</code>
      */
-    var applicationPackage: kotlin.String
+    public var applicationPackage: kotlin.String
       @JvmName("getApplicationPackage")
       get() = _builder.getApplicationPackage()
       @JvmName("setApplicationPackage")
@@ -154,7 +154,7 @@ object NativeViewKt {
     /**
      * <code>string applicationPackage = 8;</code>
      */
-    fun clearApplicationPackage() {
+    public fun clearApplicationPackage() {
       _builder.clearApplicationPackage()
     }
 
@@ -163,11 +163,11 @@ object NativeViewKt {
      * generics.
      */
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
-    class ChildrenProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
+    public class ChildrenProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
      * <code>repeated .patrol.NativeView children = 9;</code>
      */
-     val children: com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>
+     public val children: com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>
       @kotlin.jvm.JvmSynthetic
       get() = com.google.protobuf.kotlin.DslList(
         _builder.getChildrenList()
@@ -178,7 +178,7 @@ object NativeViewKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("addChildren")
-    fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.add(value: pl.leancode.patrol.contracts.Contracts.NativeView) {
+    public fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.add(value: pl.leancode.patrol.contracts.Contracts.NativeView) {
       _builder.addChildren(value)
     }
     /**
@@ -188,7 +188,7 @@ object NativeViewKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("plusAssignChildren")
     @Suppress("NOTHING_TO_INLINE")
-    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.plusAssign(value: pl.leancode.patrol.contracts.Contracts.NativeView) {
+    public inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.plusAssign(value: pl.leancode.patrol.contracts.Contracts.NativeView) {
       add(value)
     }
     /**
@@ -197,7 +197,7 @@ object NativeViewKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("addAllChildren")
-    fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.addAll(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.NativeView>) {
+    public fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.addAll(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.NativeView>) {
       _builder.addAllChildren(values)
     }
     /**
@@ -207,7 +207,7 @@ object NativeViewKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("plusAssignAllChildren")
     @Suppress("NOTHING_TO_INLINE")
-    inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.plusAssign(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.NativeView>) {
+    public inline operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.plusAssign(values: kotlin.collections.Iterable<pl.leancode.patrol.contracts.Contracts.NativeView>) {
       addAll(values)
     }
     /**
@@ -217,7 +217,7 @@ object NativeViewKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("setChildren")
-    operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.set(index: kotlin.Int, value: pl.leancode.patrol.contracts.Contracts.NativeView) {
+    public operator fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.set(index: kotlin.Int, value: pl.leancode.patrol.contracts.Contracts.NativeView) {
       _builder.setChildren(index, value)
     }
     /**
@@ -225,12 +225,11 @@ object NativeViewKt {
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearChildren")
-    fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.clear() {
+    public fun com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.NativeView, ChildrenProxy>.clear() {
       _builder.clearChildren()
     }
-
   }
 }
-@kotlin.jvm.JvmSynthetic
-inline fun pl.leancode.patrol.contracts.Contracts.NativeView.copy(block: pl.leancode.patrol.contracts.NativeViewKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.NativeView =
+public inline fun pl.leancode.patrol.contracts.Contracts.NativeView.copy(block: pl.leancode.patrol.contracts.NativeViewKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.NativeView =
   pl.leancode.patrol.contracts.NativeViewKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
