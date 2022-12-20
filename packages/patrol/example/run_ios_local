@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
+cd "$(dirname "$0")"
 
 _usage() {
-    printf "usage: ./run_ios <target>\n"
+    printf "usage: ./run_ios_local <target>\n"
     printf "\tfor example:\n"
-    printf "\t\$ ./run_ios integration_test/app_test.dart --simulator\n"
+    printf "\t\$ ./run_ios_local integration_test/app_test.dart --simulator\n"
 }
-
-cd "$(dirname "$0")"
 
 target="${1:-}"
 simulator="${2:-}"
@@ -24,12 +23,12 @@ run_mode="Release"
 flag="--debug"
 sdk="iphoneos"
 if [ -n "$simulator" ]; then
-    echo "Running tests on iOS Simulator"
+    echo "Running tests in debug mode on iOS Simulator"
     run_mode="Debug"
     sdk="iphonesimulator"
     flag="--simulator"
 else
-    echo "Running tests on iOS Device"
+    echo "Running tests in release mode on iOS device"
 fi
 
 flutter build ios "$target_path" "$flag"
@@ -43,6 +42,6 @@ xcodebuild build-for-testing \
 	-sdk "$sdk"
 popd
 
-xcodebuild test-without-building \
+exec xcodebuild test-without-building \
     -xctestrun "build/ios_integ/Build/Products/Runner_iphoneos$dev_target-arm64.xctestrun" \
     -destination id="$(idevice_id -l)"
