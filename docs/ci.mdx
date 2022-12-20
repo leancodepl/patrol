@@ -2,25 +2,34 @@
 
 Having test doesn't bring you any benefits if you don't automatically verify
 that they pass. We know this too well, so we've put a lot of work into making it
-easy to run Patrol tests on device farm platforms like Firebase Test Lab.
-
-## What is native instrumentation?
-
-iOS and Android have existed for more than 15 years, and during that time a lot
-of tooling was built around them.
-
-iOS has XCUITest, and Android has UIAutomator.
+easy to run Patrol tests in a multitude of ways, so you can choose whatever
+suits you best.
 
 Patrol tests can be run as _native instrumentation tests_ on both iOS and
 Android. What does it mean and what's cool about it?
 
-It means that many existing native testing solutions that work for iOS and
-Android work with Patrol!
+## What are native tests good for, anyway?
 
-For example, you can run your Patrol tests directly from Xcode. Xcode knows
-nothing about Flutter, Dart and Patrol – it only launches your test app. Flutter
-tests are then run inside the test app and the results are reported back to
-Xcode.
+iOS and Android have existed for more than 15 years, and during that time many
+of awesome testing-related things were built around them – open-source test
+runners, device farms, HTML report generators. Developers who create native
+mobile apps can easily reap benefits from this huge, mature ecosystem.
+
+Meanwhile we, Flutter developers, don't have as much at our disposal. Our
+framework is much younger and less mature.
+
+What if we could masquarade our Flutter tests so that from the outside they
+would be truly native? This way we leverage many existing tools while
+maintaining the convenience of writing the tests in pure Dart.
+
+> For example, you can run your Patrol tests directly from Xcode. Xcode knows
+> nothing about Flutter, Dart and Patrol – it only launches your test app.
+> Flutter tests are then run inside the test app and the results are reported
+> back to Xcode. This way you get the best of both worlds – the maturity of
+> native iOS development and the produtivity of Flutter and Dart.
+
+That's exactly what Patrol does (and what the default [integration_test] package
+does at well, but at a bit smaller scale).
 
 Take a look at this simple Patrol test:
 
@@ -51,8 +60,8 @@ void main() {
 }
 ```
 
-You can run this test and view the results in all sorts of different tools and
-IDEs:
+You can run this test and view its results in many ways, using all sorts of
+different tools, platforms, and IDEs:
 
 <Tabs
   defaultValue="studio"
@@ -161,7 +170,6 @@ Android is a bit easier to set up, so we recommend starting with it!
 
   </TabItem>
   <TabItem value="ios">
-
     Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
     do not already have one via `File > New > Target...` and select `UI Testing Bundle`.
     Change the `Product Name` to `RunnerUITests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
@@ -224,6 +232,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
   <TabItem value="ios">Coming very soon</TabItem>
 </Tabs>
 
+[integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
 [fastlane scan]: https://docs.fastlane.tools/actions/scan
 [firebase test lab]: https://firebase.google.com/products/test-lab
 [aws_device_farm]: https://aws.amazon.com/device-farm
