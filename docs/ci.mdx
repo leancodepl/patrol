@@ -31,7 +31,6 @@ maintaining the convenience of writing the tests in pure Dart.
 That's exactly what Patrol does (and what the default [integration_test] package
 does at well, but at a bit smaller scale).
 
-
 Take a look at this simple Patrol test:
 
 ```dart
@@ -230,11 +229,46 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     { label: "iOS", value: "ios" },
   ]}
 >
-  <TabItem value="android">Coming very soon</TabItem>
+  <TabItem value="android">
+    To run the integration tests on Android, you need 2 apps:
+
+    - the normal apk (often called the "app under test"). To build it, run:
+
+      ```bash
+      $ ./gradlew app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
+      ```
+
+    - the intrumentation apk. To build it, run:
+
+      ```bash
+      $ ./gradlew app:assembleDebugAndroidTest
+      ```
+
+    You need to run the above commands from the `android` directory of your
+    Flutter project.
+
+    Once you have built the apks, use the [gcloud] tool to run them on Firebase
+    Test Lab:
+
+    ```bash
+    $ gcloud firebase test android run --type instrumentation \
+        --app build/app/outputs/apk/debug/app-debug.apk \
+        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
+        --timeout 1m \
+        --results-bucket=<RESULTS_BUCKET> \
+        --results-dir=<RESULTS_DIRECTORY>
+    ```
+
+    You might also want to take a look at Patrol example app's
+    [run_android_testlab script][example_android_script].
+
+  </TabItem>
   <TabItem value="ios">Coming very soon</TabItem>
 </Tabs>
 
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[gcloud]: https://cloud.google.com/sdk/gcloud
+[example_android_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_android_testlab
 [fastlane scan]: https://docs.fastlane.tools/actions/scan
 [firebase test lab]: https://firebase.google.com/products/test-lab
 [aws_device_farm]: https://aws.amazon.com/device-farm
