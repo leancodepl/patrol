@@ -205,6 +205,22 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
     end
     ```
 
+    In Xcode, add a test file called `RunnerTests.m` (or any name of your choice)
+    to the new target and replace the file with the following:
+
+    ```objective-c
+    @import XCTest;
+    @import integration_test;
+
+    PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
+    ```
+
+    To build `integration_test/example_test.dart` from the command line, run:
+
+    ```bash
+    $ flutter build ios --config-only integration_test/example_test.dart
+    ```
+
     Now, go to your `ios` directory and set up the new target:
 
     ```
@@ -222,24 +238,20 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
     RunnerUITests depends on Patrol, which depens on Flutter, so we need to
     tell Xcode to embed Flutter in the RunnerUITests target. To do this, add
-    2 build phases to the `RunnerUITests` target:
+    2 new Build Phases to the `RunnerUITests` target:
 
     ![Xcode config setup](/assets/ios_runner_build_phases.png)
 
-    To build `integration_test/example_test.dart` from the command line, run:
+    Paste this code into the first `xcode_backend build` Build Phase:
 
     ```bash
-    $ flutter build ios --config-only integration_test/example_test.dart
+    /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
     ```
 
-    In Xcode, add a test file called `RunnerTests.m` (or any name of your choice) to the new target and
-    replace the file:
+    Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
 
-    ```objective-c
-    @import XCTest;
-    @import integration_test;
-
-    PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
+    ```bash
+    /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
     ```
 
     To run the test on a local iOS device (simulated or physical):
