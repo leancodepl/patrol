@@ -41,9 +41,13 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
   defaultValue: true,
 );
 
-/// The method channel used to report the result of the tests to the platform.
-/// On Android, this is relevant when running instrumented tests.
-// const patrolChannel = ;
+/// The method channel used to report the results of the tests to the
+/// underlying platform's testing framework.
+///
+/// On Android, this is relevant when running instrumented tests with UIAutomator.
+///
+/// On iOS, this is relevant when running UI tests with XCUITest.
+const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
@@ -70,9 +74,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           return;
         }
 
-        const channel = MethodChannel('pl.leancode.patrol/main');
         debugPrint('Sending Dart test results to the native side');
-        await channel.invokeMethod<void>(
+        await patrolChannel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
             // ignore: invalid_use_of_visible_for_testing_member
