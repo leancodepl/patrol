@@ -103,7 +103,7 @@ Then you can use it in your app's and tests' code:
 ```dart
 // somehwere in app
 TextField(
-  key: Keys.usernameTextField,
+  key: K.usernameTextField,
   // more properties
 )
 ```
@@ -165,8 +165,8 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-    await $(#phoneNumber).enterText(555-2137)
-    await $(#loginButton).tap();
+      await $(#phoneNumber).enterText("800-555-0199");
+      await $(#loginButton).tap();
 
       // lots of lines
     },
