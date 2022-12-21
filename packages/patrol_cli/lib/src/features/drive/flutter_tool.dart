@@ -119,7 +119,11 @@ class FlutterTool {
         ],
         ...[
           '--dart-define',
-          'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false'
+          'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false',
+        ],
+        ...[
+          '--dart-define',
+          'PATROL_TEST_LABEL=$targetName',
         ],
       ],
       runInShell: true,
