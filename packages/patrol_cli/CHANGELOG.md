@@ -1,3 +1,9 @@
+## 0.8.1
+
+- Add `--label/--no-label` flag to `patrol drive`, that displays the test name
+  over the running app, making it easier to identify which test is currently
+  running (#701)
+
 ## 0.8.0
 
 - Add support for Patrol Next (#646, #671)
