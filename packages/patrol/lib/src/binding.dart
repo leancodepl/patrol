@@ -41,10 +41,11 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
   defaultValue: true,
 );
 
-/// The method channel used to report the results of the tests to the
-/// underlying platform's testing framework.
+/// The method channel used to report the results of the tests to the underlying
+/// platform's testing framework.
 ///
-/// On Android, this is relevant when running instrumented tests with UIAutomator.
+/// On Android, this is relevant when running instrumented tests with
+/// UIAutomator.
 ///
 /// On iOS, this is relevant when running UI tests with XCUITest.
 const patrolChannel = MethodChannel('pl.leancode.patrol/main');
