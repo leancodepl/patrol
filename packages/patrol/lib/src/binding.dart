@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
@@ -41,10 +42,11 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
   defaultValue: true,
 );
 
-/// The method channel used to report the results of the tests to the
-/// underlying platform's testing framework.
+/// The method channel used to report the results of the tests to the underlying
+/// platform's testing framework.
 ///
-/// On Android, this is relevant when running instrumented tests with UIAutomator.
+/// On Android, this is relevant when running instrumented tests with
+/// UIAutomator.
 ///
 /// On iOS, this is relevant when running UI tests with XCUITest.
 const patrolChannel = MethodChannel('pl.leancode.patrol/main');
@@ -62,10 +64,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     if (!_shouldReportResultsToNative) {
-      debugPrint('Tests results will not be reported natively');
       return;
-    } else {
-      debugPrint('Tests results will be reported natively');
     }
 
     tearDownAll(() async {
@@ -203,4 +202,33 @@ Thrown by PatrolBinding.
   /// [PatrolBinding.ensureInitialized].
   static PatrolBinding get instance => BindingBase.checkInstance(_instance);
   static PatrolBinding? _instance;
+
+  @override
+  void attachRootWidget(Widget rootWidget) {
+    const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
+
+    if (testLabel.isEmpty) {
+      super.attachRootWidget(RepaintBoundary(child: rootWidget));
+    }
+
+    super.attachRootWidget(
+      Stack(
+        textDirection: TextDirection.ltr,
+        children: [
+          RepaintBoundary(child: rootWidget),
+          Padding(
+            padding: EdgeInsets.only(
+              top: MediaQueryData.fromWindow(window).padding.top + 4,
+              left: 4,
+            ),
+            child: const Text(
+              testLabel,
+              textDirection: TextDirection.ltr,
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -54,6 +54,7 @@ void main() {
           port: '8081',
           flavor: null,
           dartDefines: const {},
+          displayLabel: true,
         );
     });
 
@@ -69,6 +70,11 @@ void main() {
               ...['--target', 'integration_test/app_test.dart'],
               ...['--dart-define', 'PATROL_HOST=localhost'],
               ...['--dart-define', 'PATROL_PORT=8081'],
+              ...[
+                '--dart-define',
+                'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false',
+              ],
+              ...['--dart-define', 'PATROL_TEST_LABEL=app_test.dart'],
             ],
             runInShell: any(named: 'runInShell', that: equals(true)),
           ),

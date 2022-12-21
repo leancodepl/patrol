@@ -25,6 +25,7 @@ const _defaultConfig = DriveCommandConfig(
   bundleId: null,
   repeat: 1,
   useApplicationBinary: null,
+  displayLabel: true,
 );
 
 void main() {
