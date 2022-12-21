@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
@@ -204,4 +205,30 @@ Thrown by PatrolBinding.
   /// [PatrolBinding.ensureInitialized].
   static PatrolBinding get instance => BindingBase.checkInstance(_instance);
   static PatrolBinding? _instance;
+
+  @override
+  void attachRootWidget(Widget rootWidget) {
+    const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
+
+    super.attachRootWidget(
+      Stack(
+        textDirection: TextDirection.ltr,
+        children: [
+          RepaintBoundary(child: rootWidget),
+          if (testLabel.isNotEmpty)
+            Padding(
+              padding: EdgeInsets.only(
+                top: MediaQueryData.fromWindow(window).padding.top + 4,
+                left: 4,
+              ),
+              child: const Text(
+                testLabel,
+                textDirection: TextDirection.ltr,
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
