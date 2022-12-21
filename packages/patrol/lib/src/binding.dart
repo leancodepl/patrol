@@ -64,10 +64,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     if (!_shouldReportResultsToNative) {
-      debugPrint('Tests results will not be reported natively');
       return;
-    } else {
-      debugPrint('Tests results will be reported natively');
     }
 
     tearDownAll(() async {
