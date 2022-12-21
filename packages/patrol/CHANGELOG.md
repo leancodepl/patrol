@@ -1,3 +1,7 @@
+## 0.10.5
+
+- Add support for test label overlay in PatrolBinding (#701)
+
 ## 0.10.4
 
 - Migrate to lite Protocol Buffers and gRPC to avoid conflicts with Firebase on
