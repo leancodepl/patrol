@@ -207,23 +207,26 @@ Thrown by PatrolBinding.
   void attachRootWidget(Widget rootWidget) {
     const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
 
+    if (testLabel.isEmpty) {
+      super.attachRootWidget(RepaintBoundary(child: rootWidget));
+    }
+
     super.attachRootWidget(
       Stack(
         textDirection: TextDirection.ltr,
         children: [
           RepaintBoundary(child: rootWidget),
-          if (testLabel.isNotEmpty)
-            Padding(
-              padding: EdgeInsets.only(
-                top: MediaQueryData.fromWindow(window).padding.top + 4,
-                left: 4,
-              ),
-              child: const Text(
-                testLabel,
-                textDirection: TextDirection.ltr,
-                style: TextStyle(color: Colors.red),
-              ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: MediaQueryData.fromWindow(window).padding.top + 4,
+              left: 4,
             ),
+            child: const Text(
+              testLabel,
+              textDirection: TextDirection.ltr,
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
         ],
       ),
     );

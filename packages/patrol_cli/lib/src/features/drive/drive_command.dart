@@ -31,6 +31,7 @@ class DriveCommandConfig with _$DriveCommandConfig {
     required String? bundleId,
     required int repeat,
     required String? useApplicationBinary,
+    required bool displayLabel,
   }) = _DriveCommandConfig;
 }
 
@@ -128,6 +129,11 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
             'Other device types do not yet support prebuilt application binaries. '
             'See `flutter drive --help` on for more information.',
         valueHelp: 'path/to/app.apk|path/to/iphonesimulator/app.app',
+      )
+      ..addFlag(
+        'label',
+        help: 'Display the label over the application under test.',
+        defaultsTo: true,
       );
   }
 
@@ -201,6 +207,8 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     final useApplicationBinary =
         argResults?['use-application-binary'] as String?;
 
+    final displayLabel = argResults?['label'] as bool?;
+
     if (repeat < 1) {
       throwToolExit('repeat count must not be smaller than 1');
     }
@@ -229,6 +237,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       bundleId: bundleId,
       repeat: repeat,
       useApplicationBinary: useApplicationBinary,
+      displayLabel: displayLabel ?? true,
     );
   }
 
@@ -240,6 +249,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       port: config.port,
       flavor: config.flavor,
       dartDefines: config.dartDefines,
+      displayLabel: config.displayLabel,
     );
 
     _testRunner

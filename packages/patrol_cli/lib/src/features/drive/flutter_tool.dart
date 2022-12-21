@@ -71,6 +71,7 @@ class FlutterTool {
   String? _flavor;
   late Map<String, String> _dartDefines;
   late Map<String, String> _env;
+  late bool _displayLabel;
 
   final ProcessManager _processManager;
   final FileSystem _fs;
@@ -83,10 +84,12 @@ class FlutterTool {
     required String? port,
     required String? flavor,
     required Map<String, String> dartDefines,
+    required bool displayLabel,
   }) {
     _driver = driver;
     _flavor = flavor;
     _dartDefines = dartDefines;
+    _displayLabel = displayLabel;
 
     _env = {
       envHostKey: host,
@@ -121,7 +124,7 @@ class FlutterTool {
           '--dart-define',
           'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE=false',
         ],
-        ...[
+        if (_displayLabel) ...[
           '--dart-define',
           'PATROL_TEST_LABEL=$targetName',
         ],

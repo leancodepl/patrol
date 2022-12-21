@@ -27,6 +27,7 @@ mixin _$DriveCommandConfig {
   String? get bundleId => throw _privateConstructorUsedError;
   int get repeat => throw _privateConstructorUsedError;
   String? get useApplicationBinary => throw _privateConstructorUsedError;
+  bool get displayLabel => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $DriveCommandConfigCopyWith<DriveCommandConfig> get copyWith =>
@@ -49,7 +50,8 @@ abstract class $DriveCommandConfigCopyWith<$Res> {
       String? packageName,
       String? bundleId,
       int repeat,
-      String? useApplicationBinary});
+      String? useApplicationBinary,
+      bool displayLabel});
 }
 
 /// @nodoc
@@ -74,6 +76,7 @@ class _$DriveCommandConfigCopyWithImpl<$Res>
     Object? bundleId = freezed,
     Object? repeat = freezed,
     Object? useApplicationBinary = freezed,
+    Object? displayLabel = freezed,
   }) {
     return _then(_value.copyWith(
       devices: devices == freezed
@@ -120,6 +123,10 @@ class _$DriveCommandConfigCopyWithImpl<$Res>
           ? _value.useApplicationBinary
           : useApplicationBinary // ignore: cast_nullable_to_non_nullable
               as String?,
+      displayLabel: displayLabel == freezed
+          ? _value.displayLabel
+          : displayLabel // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -142,7 +149,8 @@ abstract class _$$_DriveCommandConfigCopyWith<$Res>
       String? packageName,
       String? bundleId,
       int repeat,
-      String? useApplicationBinary});
+      String? useApplicationBinary,
+      bool displayLabel});
 }
 
 /// @nodoc
@@ -169,6 +177,7 @@ class __$$_DriveCommandConfigCopyWithImpl<$Res>
     Object? bundleId = freezed,
     Object? repeat = freezed,
     Object? useApplicationBinary = freezed,
+    Object? displayLabel = freezed,
   }) {
     return _then(_$_DriveCommandConfig(
       devices: devices == freezed
@@ -215,6 +224,10 @@ class __$$_DriveCommandConfigCopyWithImpl<$Res>
           ? _value.useApplicationBinary
           : useApplicationBinary // ignore: cast_nullable_to_non_nullable
               as String?,
+      displayLabel: displayLabel == freezed
+          ? _value.displayLabel
+          : displayLabel // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -233,7 +246,8 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
       required this.packageName,
       required this.bundleId,
       required this.repeat,
-      required this.useApplicationBinary})
+      required this.useApplicationBinary,
+      required this.displayLabel})
       : _devices = devices,
         _targets = targets,
         _dartDefines = dartDefines;
@@ -275,10 +289,12 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
   final int repeat;
   @override
   final String? useApplicationBinary;
+  @override
+  final bool displayLabel;
 
   @override
   String toString() {
-    return 'DriveCommandConfig(devices: $devices, targets: $targets, host: $host, port: $port, driver: $driver, flavor: $flavor, dartDefines: $dartDefines, packageName: $packageName, bundleId: $bundleId, repeat: $repeat, useApplicationBinary: $useApplicationBinary)';
+    return 'DriveCommandConfig(devices: $devices, targets: $targets, host: $host, port: $port, driver: $driver, flavor: $flavor, dartDefines: $dartDefines, packageName: $packageName, bundleId: $bundleId, repeat: $repeat, useApplicationBinary: $useApplicationBinary, displayLabel: $displayLabel)';
   }
 
   @override
@@ -299,7 +315,9 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
             const DeepCollectionEquality().equals(other.bundleId, bundleId) &&
             const DeepCollectionEquality().equals(other.repeat, repeat) &&
             const DeepCollectionEquality()
-                .equals(other.useApplicationBinary, useApplicationBinary));
+                .equals(other.useApplicationBinary, useApplicationBinary) &&
+            const DeepCollectionEquality()
+                .equals(other.displayLabel, displayLabel));
   }
 
   @override
@@ -315,7 +333,8 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
       const DeepCollectionEquality().hash(packageName),
       const DeepCollectionEquality().hash(bundleId),
       const DeepCollectionEquality().hash(repeat),
-      const DeepCollectionEquality().hash(useApplicationBinary));
+      const DeepCollectionEquality().hash(useApplicationBinary),
+      const DeepCollectionEquality().hash(displayLabel));
 
   @JsonKey(ignore: true)
   @override
@@ -336,7 +355,8 @@ abstract class _DriveCommandConfig implements DriveCommandConfig {
       required final String? packageName,
       required final String? bundleId,
       required final int repeat,
-      required final String? useApplicationBinary}) = _$_DriveCommandConfig;
+      required final String? useApplicationBinary,
+      required final bool displayLabel}) = _$_DriveCommandConfig;
 
   @override
   List<Device> get devices;
@@ -360,6 +380,8 @@ abstract class _DriveCommandConfig implements DriveCommandConfig {
   int get repeat;
   @override
   String? get useApplicationBinary;
+  @override
+  bool get displayLabel;
   @override
   @JsonKey(ignore: true)
   _$$_DriveCommandConfigCopyWith<_$_DriveCommandConfig> get copyWith =>
