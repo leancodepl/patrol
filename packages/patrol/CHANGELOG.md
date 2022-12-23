@@ -1,3 +1,8 @@
+## 0.10.6
+
+- Make it possible to change `LiveTestWidgetsFlutterBindingFramePolicy` in
+  `patrolTest()` (#716)
+
 ## 0.10.5
 
 - Add support for test label overlay in PatrolBinding (#701)
