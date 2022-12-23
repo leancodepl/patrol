@@ -63,4 +63,5 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "com.github.leancodepl.patrol:automator:0.10.6"
 }
