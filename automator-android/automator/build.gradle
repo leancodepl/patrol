@@ -58,7 +58,7 @@ afterEvaluate {
 
                 groupId = 'com.github.leancodepl'
                 artifactId = 'automator'
-                version = '1.0.0'
+                version = '0.10.6'
             }
         }
     }
