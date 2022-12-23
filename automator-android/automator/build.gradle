@@ -1,20 +1,18 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    namespace 'pl.leancode.patrol.automator.example'
+    namespace 'pl.leancode.patrol.automator'
     compileSdk 32
 
     defaultConfig {
-        applicationId "pl.leancode.patrol.automator.example"
         minSdk 18
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
