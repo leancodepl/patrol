@@ -43,6 +43,8 @@ void patrolTest(
   HostAutomatorConfig hostAutomatorConfig = const HostAutomatorConfig(),
   bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
+  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
+      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   HostAutomator? hostAutomator;
   NativeAutomator? nativeAutomator;
@@ -51,6 +53,7 @@ void patrolTest(
     switch (bindingType) {
       case BindingType.patrol:
         final binding = PatrolBinding.ensureInitialized();
+        binding.framePolicy = framePolicy;
 
         hostAutomator = HostAutomator(
           config: hostAutomatorConfig,
@@ -60,7 +63,9 @@ void patrolTest(
         nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
         break;
       case BindingType.integrationTest:
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
+            framePolicy;
+
         break;
       case BindingType.none:
         break;
