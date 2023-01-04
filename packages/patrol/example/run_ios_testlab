@@ -24,7 +24,8 @@ pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-config Flutter/Release.xcconfig \
+	-xcconfig Flutter/Release.xcconfig \
+	-configuration Release \
 	-derivedDataPath ../build/ios_integ \
 	-sdk iphoneos
 popd
