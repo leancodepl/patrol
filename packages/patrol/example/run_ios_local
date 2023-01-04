@@ -37,7 +37,8 @@ pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-config Flutter/"$run_mode.xcconfig" \
+	-xcconfig Flutter/"$run_mode.xcconfig" \
+    -configuration "$run_mode" \
 	-derivedDataPath ../build/ios_integ \
 	-sdk "$sdk"
 popd
