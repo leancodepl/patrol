@@ -328,12 +328,26 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     xcodebuild build-for-testing \
       -workspace Runner.xcworkspace \
       -scheme Runner \
-      -config Flutter/Release.xcconfig \
+      -xcconfig Flutter/Release.xcconfig \
+      -configuration Release \
       -derivedDataPath ../build/ios_integ \
       -sdk iphoneos
     ```
 
-    Go to your project's root directory, and from there go to the build
+    If you want to test a debug version of your app, replace `xcconfig` and 
+    `configuration`:
+
+    ```bash
+    xcodebuild build-for-testing \
+      -workspace Runner.xcworkspace \
+      -scheme Runner \
+      -xcconfig Flutter/Debug.xcconfig \
+      -configuration Debug \
+      -derivedDataPath ../build/ios_integ \
+      -sdk iphoneos
+    ```
+
+    Now, go to your project's root directory, and from there go to the build
     outputs:
 
     ```bash
