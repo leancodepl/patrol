@@ -97,15 +97,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         help: 'Repeat the test n times.',
         defaultsTo: '$_defaultRepeats',
       )
-      ..addOption(
-        'use-application-binary',
-        help:
-            'Specify a pre-built application binary to use when running. For Android applications, '
-            'this must be the path to an APK. For iOS applications, the path to a .app or an IPA. '
-            'Other device types do not yet support prebuilt application binaries. '
-            'See `flutter drive --help` on for more information.',
-        valueHelp: 'path/to/app.apk|path/to/iphonesimulator/app.app',
-      )
       ..addFlag(
         'label',
         help: 'Display the label over the application under test.',
