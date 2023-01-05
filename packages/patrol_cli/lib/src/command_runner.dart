@@ -21,6 +21,9 @@ import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
+import 'package:patrol_cli/src/features/test/android_test_driver.dart';
+import 'package:patrol_cli/src/features/test/ios_test_driver.dart';
+import 'package:patrol_cli/src/features/test/test_command.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
@@ -107,6 +110,24 @@ class PatrolCommandRunner extends CommandRunner<int> {
       logger: _logger,
     );
     addCommand(driveCommand);
+
+    addCommand(
+      TestCommand(
+        deviceFinder: DeviceFinder(logger: _logger),
+        testFinder: TestFinder(
+          integrationTestDir: _fs.directory('integration_test'),
+          fs: _fs,
+        ),
+        androidTestDriver: AndroidTestDriver(),
+        iosTestDriver: IOSTestDriver(),
+        dartDefinesReader: DartDefinesReader(
+          projectRoot: _fs.currentDirectory,
+          fs: _fs,
+        ),
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+    );
 
     addCommand(
       DevicesCommand(
