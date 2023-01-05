@@ -8,6 +8,7 @@ import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_runner.dart';
 import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
+import 'package:patrol_cli/src/features/test/test_runner.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
@@ -43,7 +44,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
-        _androidDriver = androidTestDriver,
+        _androidTestDriver = androidTestDriver,
         _iosTestDriver = iosTestDriver,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
@@ -108,7 +109,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
-  final AndroidTestRunner _androidDriver;
+  final AndroidTestRunner _androidTestDriver;
   final IOSTestRunner _iosTestDriver;
   final DartDefinesReader _dartDefinesReader;
 
@@ -193,15 +194,22 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   @override
   Future<int> execute(TestCommandConfig config) async {
     for (final device in config.devices) {
-      // config.targets.forEach(_testRunner.addTarget);
+      for (final target in config.targets) {
+        final appOptions = AppOptions(
+          target: target,
+          flavor: config.flavor,
+          dartDefines: config.dartDefines,
+          platform: Platform.android,
+        );
 
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          _logger.info('Running `:app:connectedDebugAndroidTest` on Android');
-          break;
-        case TargetPlatform.iOS:
-          _logger.info('Running `xcodebuild test` on Android');
-          break;
+        switch (device.targetPlatform) {
+          case TargetPlatform.android:
+            await _androidTestDriver.run(appOptions);
+            break;
+          case TargetPlatform.iOS:
+            // _iosTestDriver.run(appOptions);
+            break;
+        }
       }
     }
 

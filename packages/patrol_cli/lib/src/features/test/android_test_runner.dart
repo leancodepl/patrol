@@ -32,11 +32,12 @@ class AndroidTestRunner extends TestRunner {
     final targetName = basename(options.target);
     final task = _logger.task('Building apk for $targetName');
 
-    _fs.currentDirectory = './android';
+    print('current dir: ${_fs.currentDirectory}');
 
     final process = await _processManager.start(
       translate(options),
       runInShell: true,
+      workingDirectory: _fs.currentDirectory.childDirectory('android').path,
     );
 
     process.stdout.listen((rawMsg) {
