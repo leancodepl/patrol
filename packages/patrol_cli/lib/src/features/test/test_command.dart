@@ -6,8 +6,8 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/test_finder.dart';
-import 'package:patrol_cli/src/features/test/android_test_driver.dart';
-import 'package:patrol_cli/src/features/test/ios_test_driver.dart';
+import 'package:patrol_cli/src/features/test/android_test_runner.dart';
+import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
@@ -37,8 +37,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     required TestFinder testFinder,
     required DartDefinesReader dartDefinesReader,
     required DisposeScope parentDisposeScope,
-    required AndroidTestDriver androidTestDriver,
-    required IOSTestDriver iosTestDriver,
+    required AndroidTestRunner androidTestDriver,
+    required IOSTestRunner iosTestDriver,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
@@ -108,8 +108,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
-  final AndroidTestDriver _androidDriver;
-  final IOSTestDriver _iosTestDriver;
+  final AndroidTestRunner _androidDriver;
+  final IOSTestRunner _iosTestDriver;
   final DartDefinesReader _dartDefinesReader;
 
   final Logger _logger;

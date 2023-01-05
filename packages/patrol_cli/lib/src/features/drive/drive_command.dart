@@ -171,6 +171,10 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         ? _testFinder.findTests(target)
         : _testFinder.findAllTests();
 
+    for (final t in targets) {
+      _logger.detail('Found test $t');
+    }
+
     final driver = argResults?['driver'] as String?;
 
     final flavor = argResults?['flavor'] as String?;
