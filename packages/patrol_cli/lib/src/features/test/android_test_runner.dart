@@ -32,8 +32,6 @@ class AndroidTestRunner extends TestRunner {
     final targetName = basename(options.target);
     final task = _logger.task('Building apk for $targetName');
 
-    print('current dir: ${_fs.currentDirectory}');
-
     final process = await _processManager.start(
       translate(options),
       runInShell: true,
@@ -87,7 +85,7 @@ class AndroidTestRunner extends TestRunner {
     }
 
     final dartDefines = utf8.encode(dartDefinesString.toString());
-    cmd.add('-Pdart-defines="${base64Encode(dartDefines)}"');
+    cmd.add('-Pdart-defines=${base64Encode(dartDefines)}');
 
     return cmd;
   }
