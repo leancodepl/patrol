@@ -35,6 +35,10 @@ class AndroidTestRunner extends TestRunner {
     final process = await _processManager.start(
       translate(options),
       runInShell: true,
+      environment: {
+        // TODO: restart here
+        // 'ANDROID_SERIAL': options.
+      },
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
     );
 
