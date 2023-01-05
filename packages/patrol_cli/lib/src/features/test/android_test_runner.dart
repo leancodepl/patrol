@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/test_runner.dart';
 import 'package:process/process.dart';
 
@@ -28,16 +29,16 @@ class AndroidTestRunner extends TestRunner {
   final Logger _logger;
 
   @override
-  Future<void> run(AppOptions options) async {
+  Future<void> run(AppOptions options, Device device) async {
     final targetName = basename(options.target);
-    final task = _logger.task('Building apk for $targetName');
+    final task = _logger
+        .task('Building apk for $targetName and running it on ${device.id}');
 
     final process = await _processManager.start(
       translate(options),
       runInShell: true,
       environment: {
-        // TODO: restart here
-        // 'ANDROID_SERIAL': options.
+        'ANDROID_SERIAL': device.id,
       },
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
     );
@@ -55,9 +56,9 @@ class AndroidTestRunner extends TestRunner {
     final exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      task.complete('Built apk for $targetName');
+      task.complete('Built and ran apk for $targetName on ${device.id}');
     } else {
-      task.fail('Failed to build apk for $targetName');
+      task.fail('Failed to build apk for $targetName and run ');
     }
   }
 
@@ -79,17 +80,19 @@ class AndroidTestRunner extends TestRunner {
     cmd.add(target);
 
     // Add Dart defines encoded in base64
-    final dartDefinesString = StringBuffer();
-    for (var i = 0; i < appOptions.dartDefines.length; i++) {
-      final entry = appOptions.dartDefines.entries.toList()[i];
-      dartDefinesString.write('${entry.key}=${entry.value}');
-      if (i != appOptions.dartDefines.length - 1) {
-        dartDefinesString.write(',');
+    if (appOptions.dartDefines.isNotEmpty) {
+      final dartDefinesString = StringBuffer();
+      for (var i = 0; i < appOptions.dartDefines.length; i++) {
+        final entry = appOptions.dartDefines.entries.toList()[i];
+        dartDefinesString.write('${entry.key}=${entry.value}');
+        if (i != appOptions.dartDefines.length - 1) {
+          dartDefinesString.write(',');
+        }
       }
-    }
 
-    final dartDefines = utf8.encode(dartDefinesString.toString());
-    cmd.add('-Pdart-defines=${base64Encode(dartDefines)}');
+      final dartDefines = utf8.encode(dartDefinesString.toString());
+      cmd.add('-Pdart-defines=${base64Encode(dartDefines)}');
+    }
 
     return cmd;
   }

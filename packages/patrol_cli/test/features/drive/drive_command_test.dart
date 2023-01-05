@@ -2,11 +2,11 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
-import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
+import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
+import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:test/test.dart';
 
 import '../../fakes.dart';

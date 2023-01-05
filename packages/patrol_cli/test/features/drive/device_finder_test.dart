@@ -1,6 +1,6 @@
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:test/test.dart';
 
 import '../../fixtures.dart';

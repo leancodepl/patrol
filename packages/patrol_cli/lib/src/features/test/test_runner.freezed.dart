@@ -19,7 +19,6 @@ mixin _$AppOptions {
   String get target => throw _privateConstructorUsedError;
   String? get flavor => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
-  Platform get platform => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppOptionsCopyWith<AppOptions> get copyWith =>
@@ -31,11 +30,7 @@ abstract class $AppOptionsCopyWith<$Res> {
   factory $AppOptionsCopyWith(
           AppOptions value, $Res Function(AppOptions) then) =
       _$AppOptionsCopyWithImpl<$Res>;
-  $Res call(
-      {String target,
-      String? flavor,
-      Map<String, String> dartDefines,
-      Platform platform});
+  $Res call({String target, String? flavor, Map<String, String> dartDefines});
 }
 
 /// @nodoc
@@ -51,7 +46,6 @@ class _$AppOptionsCopyWithImpl<$Res> implements $AppOptionsCopyWith<$Res> {
     Object? target = freezed,
     Object? flavor = freezed,
     Object? dartDefines = freezed,
-    Object? platform = freezed,
   }) {
     return _then(_value.copyWith(
       target: target == freezed
@@ -66,10 +60,6 @@ class _$AppOptionsCopyWithImpl<$Res> implements $AppOptionsCopyWith<$Res> {
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      platform: platform == freezed
-          ? _value.platform
-          : platform // ignore: cast_nullable_to_non_nullable
-              as Platform,
     ));
   }
 }
@@ -81,11 +71,7 @@ abstract class _$$_AppOptionsCopyWith<$Res>
           _$_AppOptions value, $Res Function(_$_AppOptions) then) =
       __$$_AppOptionsCopyWithImpl<$Res>;
   @override
-  $Res call(
-      {String target,
-      String? flavor,
-      Map<String, String> dartDefines,
-      Platform platform});
+  $Res call({String target, String? flavor, Map<String, String> dartDefines});
 }
 
 /// @nodoc
@@ -103,7 +89,6 @@ class __$$_AppOptionsCopyWithImpl<$Res> extends _$AppOptionsCopyWithImpl<$Res>
     Object? target = freezed,
     Object? flavor = freezed,
     Object? dartDefines = freezed,
-    Object? platform = freezed,
   }) {
     return _then(_$_AppOptions(
       target: target == freezed
@@ -118,10 +103,6 @@ class __$$_AppOptionsCopyWithImpl<$Res> extends _$AppOptionsCopyWithImpl<$Res>
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      platform: platform == freezed
-          ? _value.platform
-          : platform // ignore: cast_nullable_to_non_nullable
-              as Platform,
     ));
   }
 }
@@ -132,8 +113,7 @@ class _$_AppOptions implements _AppOptions {
   const _$_AppOptions(
       {required this.target,
       required this.flavor,
-      required final Map<String, String> dartDefines,
-      required this.platform})
+      required final Map<String, String> dartDefines})
       : _dartDefines = dartDefines;
 
   @override
@@ -148,11 +128,8 @@ class _$_AppOptions implements _AppOptions {
   }
 
   @override
-  final Platform platform;
-
-  @override
   String toString() {
-    return 'AppOptions(target: $target, flavor: $flavor, dartDefines: $dartDefines, platform: $platform)';
+    return 'AppOptions(target: $target, flavor: $flavor, dartDefines: $dartDefines)';
   }
 
   @override
@@ -163,8 +140,7 @@ class _$_AppOptions implements _AppOptions {
             const DeepCollectionEquality().equals(other.target, target) &&
             const DeepCollectionEquality().equals(other.flavor, flavor) &&
             const DeepCollectionEquality()
-                .equals(other._dartDefines, _dartDefines) &&
-            const DeepCollectionEquality().equals(other.platform, platform));
+                .equals(other._dartDefines, _dartDefines));
   }
 
   @override
@@ -172,8 +148,7 @@ class _$_AppOptions implements _AppOptions {
       runtimeType,
       const DeepCollectionEquality().hash(target),
       const DeepCollectionEquality().hash(flavor),
-      const DeepCollectionEquality().hash(_dartDefines),
-      const DeepCollectionEquality().hash(platform));
+      const DeepCollectionEquality().hash(_dartDefines));
 
   @JsonKey(ignore: true)
   @override
@@ -185,8 +160,7 @@ abstract class _AppOptions implements AppOptions {
   const factory _AppOptions(
       {required final String target,
       required final String? flavor,
-      required final Map<String, String> dartDefines,
-      required final Platform platform}) = _$_AppOptions;
+      required final Map<String, String> dartDefines}) = _$_AppOptions;
 
   @override
   String get target;
@@ -194,8 +168,6 @@ abstract class _AppOptions implements AppOptions {
   String? get flavor;
   @override
   Map<String, String> get dartDefines;
-  @override
-  Platform get platform;
   @override
   @JsonKey(ignore: true)
   _$$_AppOptionsCopyWith<_$_AppOptions> get copyWith =>

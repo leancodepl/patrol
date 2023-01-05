@@ -10,7 +10,6 @@ void main() {
           target: '/home/john/flutterapp/integration_test/app_test.dart',
           flavor: null,
           dartDefines: {},
-          platform: Platform.android,
         );
 
         final invocation = AndroidTestRunner.translate(options);
@@ -20,7 +19,6 @@ void main() {
             './gradlew',
             ':app:connectedDebugAndroidTest',
             '-Ptarget=/home/john/flutterapp/integration_test/app_test.dart',
-            '-Pdart-defines=""'
           ]),
         );
       });
@@ -34,7 +32,6 @@ void main() {
             'PASSWORD': 'ny4ncat',
             'foo': 'bar',
           },
-          platform: Platform.android,
         );
 
         final invocation = AndroidTestRunner.translate(options);
@@ -44,7 +41,7 @@ void main() {
             './gradlew',
             ':app:connectedDevDebugAndroidTest',
             '-Ptarget=/home/john/flutterapp/integration_test/app_test.dart',
-            '-Pdart-defines="RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI="'
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
           ]),
         );
       });

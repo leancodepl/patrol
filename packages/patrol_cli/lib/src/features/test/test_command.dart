@@ -3,16 +3,16 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
-import 'package:patrol_cli/src/features/drive/device.dart';
-import 'package:patrol_cli/src/features/drive/test_finder.dart';
+import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
+import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_runner.dart';
 import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
 import 'package:patrol_cli/src/features/test/test_runner.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
-import '../drive/constants.dart';
+import '../run_commons/constants.dart';
 
 part 'test_command.freezed.dart';
 
@@ -199,12 +199,11 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           target: target,
           flavor: config.flavor,
           dartDefines: config.dartDefines,
-          platform: Platform.android,
         );
 
         switch (device.targetPlatform) {
           case TargetPlatform.android:
-            await _androidTestDriver.run(appOptions);
+            await _androidTestDriver.run(appOptions, device);
             break;
           case TargetPlatform.iOS:
             // _iosTestDriver.run(appOptions);

@@ -5,8 +5,8 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
-import 'package:patrol_cli/src/features/drive/constants.dart';
-import 'package:patrol_cli/src/features/drive/device.dart';
+import 'package:patrol_cli/src/features/run_commons/constants.dart';
+import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:process/process.dart';
 
 extension TargetPlatformX on TargetPlatform {

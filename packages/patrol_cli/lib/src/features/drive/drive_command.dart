@@ -6,14 +6,14 @@ import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/drive/constants.dart';
-import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
-import 'package:patrol_cli/src/features/drive/device.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
-import 'package:patrol_cli/src/features/drive/test_finder.dart';
 import 'package:patrol_cli/src/features/drive/test_runner.dart';
+import 'package:patrol_cli/src/features/run_commons/constants.dart';
+import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
+import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 
 part 'drive_command.freezed.dart';
 
