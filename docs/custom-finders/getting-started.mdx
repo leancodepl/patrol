@@ -127,9 +127,9 @@ await $('Subscribe').tap();
 
 What's very cool about Patrol's `tap()` is that it doesn't immediately fail if
 the finder finds no visible widgets – instead, it waits for some time (which you
-can specify globally in [PatrolTestConfig] or as argument to the `tap()` method)
-and taps on the first widget as soon as it becomes visible. This lets you get
-rid of fixed timeouts and test your app just like a real user would.
+can specify globally in [PatrolTesterConfig] or as argument to the `tap()`
+method) and taps on the first widget as soon as it becomes visible. This lets
+you get rid of fixed timeouts and test your app just like a real user would.
 
 If you wanted to tap on the third "Subscribe" text, you'd do:
 
