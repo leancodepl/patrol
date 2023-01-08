@@ -89,9 +89,10 @@ You could alternatively write the first line as:
 expect($("Can't touch this").exists, equals(false));
 ```
 
-It's important to note that Flutter's default functions, such as [findsNothing]
-and [findsOneWidget], check if the widget is present in the widget tree, not if
-it is visible to the user, which is usually what we're interested in.
+It's important to note that Flutter's default finder functions, such as
+[findsNothing] and [findsOneWidget], check if the widget is present in the
+widget tree, not if it is visible to the user, which is usually not what we're
+interested in.
 
 To check if the finder finds at least 1 _visible_ widget, use the `visible`
 getter:
