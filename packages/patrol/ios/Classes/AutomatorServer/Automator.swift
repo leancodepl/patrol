@@ -564,7 +564,7 @@ class Automator {
       #if PATROL_ENABLED
         self.preferences.terminate()
       #else
-      Logger.shared.e("tried to call XCUIApplication.terminate, but PATROL_ENABLED is not defined. This is an error.")
+        throw PatrolError.internal("tried to call XCUIApplication.terminate, but PATROL_ENABLED is not defined. This is an error.")
       #endif
 
       // go back to the app under test
