@@ -1,3 +1,8 @@
+## 0.10.7
+
+- Strip out code that App Store is angry about by defaul in release iOS builds
+  (#727)
+
 ## 0.10.6
 
 - Make it possible to change `LiveTestWidgetsFlutterBindingFramePolicy` in
