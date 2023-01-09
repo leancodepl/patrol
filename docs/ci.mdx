@@ -184,13 +184,13 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
   </TabItem>
   <TabItem value="ios">
 
-    ⚠️ Work in progress
+    ⚠️ We're working on making this process easier and improving its documentation.
 
     Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
     do not already have one via `File > New > Target...` and select `UI Testing Bundle`.
     Change the `Product Name` to `RunnerUITests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
     Select `Finish`.
-    Make sure that the **iOS Deployment Target** of `RunnerTests` within the **Build Settings** section is the same as `Runner`.
+    Make sure that the **iOS Deployment Target** of `RunnerUITests` within the **Build Settings** section is the same as `Runner`.
 
     Add the new test target to `ios/Podfile` by embedding in the existing `Runner` target.
 
@@ -205,14 +205,14 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
     end
     ```
 
-    In Xcode, add a test file called `RunnerTests.m` (or any name of your choice)
+    In Xcode, add a test file called `RunnerUITests.m` (or any name of your choice)
     to the new target and replace the file with the following:
 
     ```objective-c
     @import XCTest;
     @import patrol;
 
-    PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
+    PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
     ```
 
     To build `integration_test/example_test.dart` from the command line, run:
@@ -331,10 +331,11 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
       -xcconfig Flutter/Release.xcconfig \
       -configuration Release \
       -derivedDataPath ../build/ios_integ \
-      -sdk iphoneos
+      -sdk iphoneos \
+      OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
     ```
 
-    If you want to test a debug version of your app, replace `xcconfig` and 
+    If you want to test a debug version of your app, replace `xcconfig` and
     `configuration`:
 
     ```bash
@@ -344,7 +345,8 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
       -xcconfig Flutter/Debug.xcconfig \
       -configuration Debug \
       -derivedDataPath ../build/ios_integ \
-      -sdk iphoneos
+      -sdk iphoneos \
+      OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
     ```
 
     Now, go to your project's root directory, and from there go to the build

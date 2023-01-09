@@ -32,6 +32,14 @@ import NIOPosix
   }()
 
   @objc public override init() {
+    Logger.shared.i("PatrolServer constructor called")
+
+    #if PATROL_ENABLED
+      Logger.shared.i("PATROL_ENABLED flag is defined")
+    #else
+      Logger.shared.i("PATROL_ENABLED flag is not defined")
+    #endif
+
     self.port = passedPort
     self.automator = Automator()
   }
