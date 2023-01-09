@@ -332,7 +332,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
       -configuration Release \
       -derivedDataPath ../build/ios_integ \
       -sdk iphoneos \
-      OTHER_SWIFT_FLAGS="-D PATROL_ENABLED"
+      OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
     ```
 
     If you want to test a debug version of your app, replace `xcconfig` and
@@ -346,7 +346,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
       -configuration Debug \
       -derivedDataPath ../build/ios_integ \
       -sdk iphoneos \
-      OTHER_SWIFT_FLAGS="-D PATROL_ENABLED"
+      OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
     ```
 
     Now, go to your project's root directory, and from there go to the build
