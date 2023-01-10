@@ -206,7 +206,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             await _androidTestDriver.run(appOptions, device);
             break;
           case TargetPlatform.iOS:
-            // _iosTestDriver.run(appOptions);
+            await _iosTestDriver.run(appOptions, device);
             break;
         }
       }

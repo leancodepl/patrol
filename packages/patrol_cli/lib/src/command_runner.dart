@@ -125,7 +125,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        iosTestDriver: IOSTestRunner(),
+        iosTestDriver: IOSTestRunner(
+          processManager: LoggingLocalProcessManager(logger: _logger),
+          fs: _fs,
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
         dartDefinesReader: DartDefinesReader(
           projectRoot: _fs.currentDirectory,
           fs: _fs,
