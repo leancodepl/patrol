@@ -2,6 +2,7 @@
   "name": "Patrol",
   "twitter": "leancodepl",
   "theme": "#FFA03F",
+  "favicon": "/assets/favicon-light.png",
   "logo": "/assets/favicon-light.png",
   "logoDark": "/assets/favicon-dark.png",
   "socialPreview": "https://raw.githubusercontent.com/leancodepl/patrol/master/docs/assets/preview.jpg",
