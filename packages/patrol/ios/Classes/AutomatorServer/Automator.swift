@@ -87,7 +87,6 @@ class Automator {
   func enterText(_ data: String, by text: String, inApp bundleId: String) async throws {
     try await runAction("entering text \(format: data) into text field with text \(text)") {
       let app = try self.getApp(withBundleId: bundleId)
-      let element = app.textFields[text]
 
       guard
         let element = self.waitForAnyElement(
