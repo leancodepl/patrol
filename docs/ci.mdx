@@ -178,7 +178,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       physical):
 
       ```bash
-      $ ./gradlew app:connectedDebugAndroidTest -Ptarget=$(pwd)/../integration_test/example_test.dart
+      $ ./gradlew :app:connectedDebugAndroidTest -Ptarget=$(pwd)/../integration_test/example_test.dart
       ```
 
   </TabItem>
@@ -283,13 +283,13 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     - the normal apk (often called the "app under test"). To build it, run:
 
       ```bash
-      $ ./gradlew app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
+      $ ./gradlew :app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
       ```
 
     - the intrumentation apk. To build it, run:
 
       ```bash
-      $ ./gradlew app:assembleDebugAndroidTest
+      $ ./gradlew :app:assembleDebugAndroidTest
       ```
 
     You need to run the above commands from the `android` directory of your
