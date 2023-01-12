@@ -21,7 +21,6 @@ class PatrolTestRule<T : Activity>(activityClass: Class<T>) :
             Logger.e("Failure while running the server: ", e)
         }
 
-
         GlobalScope.launch {
             patrolServer.blockUntilShutdown()
         }
