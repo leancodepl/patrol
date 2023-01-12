@@ -6,14 +6,8 @@ import androidx.test.rule.ActivityTestRule
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-
-class PatrolTestRule<T : Activity> : ActivityTestRule<T> {
-
-    private val activityClass: Class<T>
-
-    constructor(activityClass: Class<T>) : super(activityClass, true, false) {
-        this.activityClass = activityClass
-    }
+class PatrolTestRule<T : Activity>(activityClass: Class<T>) :
+    ActivityTestRule<T>(activityClass, true, false) {
 
     override fun launchActivity(startIntent: Intent?): T {
         Logger.i("Starting server loop...")
