@@ -44,8 +44,9 @@ jobs:
         with:
           path: |
             ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
+            ~/.android/adbkey
+            ~/.android/adbkey.pub
+          key: avd-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
 
       - name: Create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
