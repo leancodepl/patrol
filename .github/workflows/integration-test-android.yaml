@@ -105,4 +105,4 @@ jobs:
           path: |
             ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
             ${{ github.workspace }}/packages/patrol/example/build/app/outputs/androidTest-results/connected/test-result.pb
-            ${{ github.workspace }}/packages/patrol/example/build/app/reports/androidTests/connected/index.html
+            ${{ github.workspace }}/packages/patrol/example/build/app/reports/androidTests/connected
