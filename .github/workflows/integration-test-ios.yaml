@@ -43,7 +43,6 @@ jobs:
           model: ${{ matrix.device }}
           os: ${{ matrix.os }}
           os_version: ${{ matrix.os_version }}
-          udid: "ABCD-EFGH"
           erase_before_boot: true
           shutdown_after_job: true
 
