@@ -7,7 +7,7 @@ on:
 
 jobs:
   main:
-    name: Run integration tests on Android api-${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}
+    name: Run integration tests on Android (api-${{ matrix.api-level }}, target-${{ matrix.target}}, arch-${{matrix.arch}})
     runs-on: macos-latest
     timeout-minutes: 60
 
@@ -36,7 +36,7 @@ jobs:
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
         with:
-          generate-job-summary: true
+          generate-job-summary: false
 
       - name: AVD cache
         uses: actions/cache@v3
@@ -86,7 +86,6 @@ jobs:
           disable-animations: false
           working-directory: ${{ github.workspace }}/packages/patrol/example/android
           script: |
-            echo "pwd: $(pwd)"
             adb logcat -c
             adb logcat > logcat.txt &
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/example_test.dart"
@@ -102,5 +101,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: logcat_api-${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
-          path: ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
+          name: Results for ${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
+          path: |
+            ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
+            ${{ github.workspace }}/packages/patrol/example/build/app/outputs/androidTest-results/connected/test-result.pb
+            ${{ github.workspace }}/packages/patrol/example/build/app/reports/androidTests/connected/index.html
