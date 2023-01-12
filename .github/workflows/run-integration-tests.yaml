@@ -36,7 +36,7 @@ jobs:
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
         with:
-          generate-job-summary: false
+          generate-job-summary: true
 
       - name: AVD cache
         uses: actions/cache@v3
@@ -90,13 +90,13 @@ jobs:
             adb logcat -c
             adb logcat > logcat.txt &
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/example_test.dart"
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/get_native_widgets_test.dart
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/open_app_test.dart
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/quick_settings_test.dart
-            # patrol drive --target integration_test/features/permissions/location_test.dart # flaky
-            # patrol drive --target integration_test/features/permissions/permissions_test.dart # flaky
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/dark_mode_test.dart
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/wifi_test.dart
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/get_native_widgets_test.dart"
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/open_app_test.dart"
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/quick_settings_test.dart"
+            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/location_test.dart"
+            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/permissions_test.dart"
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/dark_mode_test.dart"
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/wifi_test.dart"
 
       - name: Upload logcat to artifacts
         if: always()
