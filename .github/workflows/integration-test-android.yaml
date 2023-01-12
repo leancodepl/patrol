@@ -1,4 +1,4 @@
-name: run integration tests
+name: integration test android
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   main:
-    name: Run integration tests on Android (api-${{ matrix.api-level }}, target-${{ matrix.target}}, arch-${{matrix.arch}})
+    name: "Run tests on Android (api: ${{ matrix.api-level }}, target: ${{ matrix.target}}, arch: ${{matrix.arch}})"
     runs-on: macos-latest
     timeout-minutes: 60
 
