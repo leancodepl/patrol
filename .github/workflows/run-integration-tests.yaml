@@ -81,18 +81,18 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          working-directory: ${{ github.workspace }}/packages/patrol/example
+          working-directory: ${{ github.workspace }}/packages/patrol/example/android
           script: |
             adb logcat -c
             adb logcat > logcat.txt &
-            patrol drive --target integration_test/example_test.dart
-            patrol drive --target integration_test/features/get_native_widgets_test.dart
-            patrol drive --target integration_test/features/open_app_test.dart
-            patrol drive --target integration_test/features/quick_settings_test.dart
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/example_test.dart"
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/get_native_widgets_test.dart
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/open_app_test.dart
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/quick_settings_test.dart
             # patrol drive --target integration_test/features/permissions/location_test.dart # flaky
             # patrol drive --target integration_test/features/permissions/permissions_test.dart # flaky
-            patrol drive --target integration_test/features/services/dark_mode_test.dart
-            patrol drive --target integration_test/features/services/wifi_test.dart
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/dark_mode_test.dart
+            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/wifi_test.dart
 
       - name: Upload logcat to artifacts
         if: always()
