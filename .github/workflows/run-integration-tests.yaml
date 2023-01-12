@@ -83,6 +83,7 @@ jobs:
           disable-animations: false
           working-directory: ${{ github.workspace }}/packages/patrol/example/android
           script: |
+            echo "pwd: $(pwd)"
             adb logcat -c
             adb logcat > logcat.txt &
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/example_test.dart"
@@ -99,4 +100,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: logcat_api-${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
-          path: ${{ github.workspace }}/packages/patrol/example/logcat.txt
+          path: ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
