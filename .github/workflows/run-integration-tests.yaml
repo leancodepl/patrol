@@ -72,6 +72,9 @@ jobs:
       - name: Install Patrol
         run: dart pub global activate patrol_cli
 
+      - name: Generate Gradle wrapper
+        run: flutter build apk --debug --flavor=does-not-exist || true
+
       - name: Start emulator and run integration tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
