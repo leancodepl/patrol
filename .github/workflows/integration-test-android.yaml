@@ -91,12 +91,14 @@ jobs:
             adb logcat > logcat.txt &
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/example_test.dart"
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/get_native_widgets_test.dart"
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/open_app_test.dart"
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/quick_settings_test.dart"
-            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/location_test.dart"
-            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/permissions_test.dart"
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/dark_mode_test.dart"
             ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/wifi_test.dart"
+
+            # DISABLED
+            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/location_test.dart"
+            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/permissions_test.dart"
+            # NOT ON ATD # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/open_app_test.dart"
 
       - name: Upload logcat to artifacts
         if: always()
