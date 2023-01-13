@@ -1,4 +1,4 @@
-name: testlab android
+name: testlab ios
 
 on:
   workflow_dispatch:
@@ -7,8 +7,8 @@ on:
 
 jobs:
   main:
-    name: "Test on Android on Firebase Test Lab"
-    runs-on: ubuntu-latest
+    name: "Test on iOS on Firebase Test Lab"
+    runs-on: macos-latest
     timeout-minutes: 60
 
     defaults:
@@ -50,20 +50,24 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: Generate Gradle wrapper
-        run: flutter build apk --debug --flavor=does-not-exist || true
+      - name: "Configure Flutter build options"
+        run: flutter build ios --target integration_test/example_test.dart" --release
 
-      - name: "Build instrumentation app"
-        run: cd android && ./gradlew app:assembleDebugAndroidTest
+      - name: "Build app and create zip archive"
+        run: |
+          cd ios
+          xcodebuild build-for-testing \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -xcconfig Flutter/Release.xcconfig \
+            -configuration Release \
+            -derivedDataPath ../build/ios_integ \
+            -sdk iphoneos
 
-      - name: "Build app under test for example_test.dart"
-        run: cd android && ./gradlew app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
+          zip -r "ios_tests.zip" Release-iphoneos Runner_iphoneos*
 
       - name: "Upload and test on Firebase Test Lab"
         run: |
-          gcloud firebase test android run --type instrumentation \
-            --app build/app/outputs/apk/debug/app-debug.apk \
-            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --timeout 1m \
-            --results-bucket=patrol_runs \
-            --results-dir=runs
+          gcloud firebase test ios run \
+            --test "build/ios_integ/Build/Products/ios_tests.zip" \
+            --device model=iphone8,version="$dev_target",locale=en_US,orientation=portrait
