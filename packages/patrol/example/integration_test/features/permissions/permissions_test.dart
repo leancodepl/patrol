@@ -1,5 +1,7 @@
 import '../../common.dart';
 
+const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
+
 void main() {
   patrol('grants various permissions', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
@@ -18,9 +20,7 @@ Future<void> _requestAndGrantCameraPermission(PatrolTester $) async {
 
   await $('Request camera permission').tap();
 
-  final request = await $.native.isPermissionDialogVisible(
-    timeout: Duration(seconds: 2),
-  );
+  final request = await $.native.isPermissionDialogVisible(timeout: _timeout);
   if (request) {
     await $.native.grantPermissionWhenInUse();
   }
@@ -34,7 +34,7 @@ Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
 
   await $('Request microphone permission').tap();
 
-  if (await $.native.isPermissionDialogVisible()) {
+  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
   }
 
@@ -47,7 +47,7 @@ Future<void> _requestAndDenyContactsPermission(PatrolTester $) async {
 
   await $('Request contacts permission').tap();
 
-  if (await $.native.isPermissionDialogVisible()) {
+  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.denyPermission();
   }
 
