@@ -25,17 +25,13 @@ jobs:
           distribution: "temurin"
           java-version: "11"
 
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
         with:
           credentials_json: "${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}"
 
-      - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v1"
-
-      - name: "Use gcloud CLI"
-        run: "gcloud info"
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
