@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter-channel: [stable]
-        device: ["iPhone 14"]
+        device: ["iPhone 14", "iPad (9th generation)"]
         os: ["iOS"]
         os_version: ["16.0"]
 
