@@ -70,7 +70,7 @@ class IOSTestRunner extends TestRunner {
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],
-      // TODO: Display test label
+      // TODO: Add support for test label
     ];
 
     return cmd;
@@ -82,17 +82,12 @@ class IOSTestRunner extends TestRunner {
     AppOptions appOptions,
     Device device,
   ) {
-    // var flavor = appOptions.flavor ?? '';
-    // if (flavor.isNotEmpty) {
-    //   flavor = flavor[0].toUpperCase() + flavor.substring(1);
-    // }
-
     final cmd = [
       ...['xcodebuild', 'test'],
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', 'Runner'],
-      // FIXME: Add support for flavors
-      ...['-xcconfig', 'Flutter/Debug.xcconfig'], // FIXME: this is bad
+      // TODO: Add support for flavors
+      ...['-xcconfig', 'Flutter/Debug.xcconfig'],
       ...['-configuration', 'Debug'],
       ...['-sdk', if (device.real) 'iphoneos' else 'iphonesimulator'],
       ...[
