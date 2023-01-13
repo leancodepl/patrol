@@ -105,6 +105,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       );
   }
 
+  @override
+  bool get hidden => true;
+
   final DisposeScope _disposeScope;
 
   final DeviceFinder _deviceFinder;
