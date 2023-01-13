@@ -105,5 +105,5 @@ jobs:
           name: Results for ${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
           path: |
             ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
-            ${{ github.workspace }}/packages/patrol/example/build/app/outputs/androidTest-results/connected/test-result.pb
-            ${{ github.workspace }}/packages/patrol/example/build/app/reports/androidTests/connected
+            ${{ github.workspace }}/packages/patrol/example/android/test-results
+            ${{ github.workspace }}/packages/patrol/example/android/test-reports

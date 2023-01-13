@@ -53,6 +53,11 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    testOptions {
+        reportDir "$rootDir/test-reports"
+        resultsDir = "$rootDir/test-results"
+    }
 }
 
 flutter {
