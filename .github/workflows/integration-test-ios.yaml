@@ -77,11 +77,11 @@ jobs:
             -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
             OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
 
-          # flutter build ios --config-only integration_test/features/notifications/notifications_single_test.dart --debug --simulator
-          # xcodebuild test \
-          #   -workspace Runner.xcworkspace \
-          #   -scheme Runner \
-          #   -xcconfig Flutter/Debug.xcconfig \
-          #   -configuration Debug \
-          #   -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
-          #   OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
+          flutter build ios --config-only integration_test/features/notifications/notifications_single_test.dart --debug --simulator
+          xcodebuild test \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -xcconfig Flutter/Debug.xcconfig \
+            -configuration Debug \
+            -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
+            OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
