@@ -348,8 +348,8 @@ class Automator {
         throw PatrolError.viewNotExists("notification at index \(index)")
       }
 
-      cells[index].tap()
-      self.springboard.staticTexts.matching(identifier: "Open").firstMatch.tap()
+      cells[index].doubleTap()
+      self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
     }
   }
 
@@ -360,8 +360,8 @@ class Automator {
       for (i, cell) in cells.enumerated() {
         if cell.label.contains(text) {
           Logger.shared.i("tapping on notification at index \(i) which contains text \(text)")
-          cell.tap()
-          self.springboard.staticTexts.matching(identifier: "Open").firstMatch.tap()
+          cell.doubleTap()
+          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
           return
         }
       }
