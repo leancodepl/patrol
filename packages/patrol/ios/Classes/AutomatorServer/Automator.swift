@@ -577,6 +577,7 @@ class Automator {
       Logger.shared.i("\(log)...")
       let result = try block()
       Logger.shared.i("done \(log)")
+      Logger.shared.i("result: \(result)")
       return result
     }
   }
