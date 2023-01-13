@@ -31,7 +31,8 @@ class LoggerInterceptor : ServerInterceptor {
                 else -> {
                     Status
                         .UNKNOWN
-                        .withDescription("unknown error: $exception")
+                        .withDescription("unknown error has occurred")
+                        .augmentDescription(exception?.stackTraceToString())
                 }
             }
 
