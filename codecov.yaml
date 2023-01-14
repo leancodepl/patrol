@@ -13,7 +13,7 @@ coverage:
           - patrol_cli
 
 comment:
-  layout: "header, flags, files, footer"
+  layout: "flags, files"
   behavior: default
   require_changes: false
   require_base: no
