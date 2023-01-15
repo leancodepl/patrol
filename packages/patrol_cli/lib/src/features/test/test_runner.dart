@@ -12,8 +12,6 @@ class AppOptions with _$AppOptions {
   }) = _AppOptions;
 }
 
-class TestRunner {
-  Future<void> run(AppOptions options, Device device) async {
-    throw UnimplementedError('`run()` must be implemented');
-  }
+abstract class TestRunner {
+  Future<void> run(AppOptions options, Device device);
 }
