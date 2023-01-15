@@ -94,7 +94,7 @@ class IOSTestRunner extends TestRunner {
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
-      (r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED')
+      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
 
     return cmd;
