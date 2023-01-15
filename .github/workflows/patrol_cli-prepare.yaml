@@ -70,8 +70,3 @@ jobs:
           cd example
           patrol bootstrap --template counter
           flutter analyze
-
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v3
-        with:
-          flags: patrol_cli
