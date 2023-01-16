@@ -3,62 +3,56 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
-import 'package:patrol_cli/src/common/staged_command.dart';
-import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/drive/flutter_test_runner.dart';
-import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
-import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
-import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
-import 'package:patrol_cli/src/features/run_commons/constants.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
+import 'package:patrol_cli/src/features/test/android_test_runner.dart';
+import 'package:patrol_cli/src/features/test/app_options.dart';
+import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
+import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 
-part 'drive_command.freezed.dart';
+import '../../common/staged_command.dart';
+import '../../common/tool_exit.dart';
+import '../run_commons/constants.dart';
+
+part 'test_command.freezed.dart';
 
 @freezed
-class DriveCommandConfig with _$DriveCommandConfig {
-  const factory DriveCommandConfig({
+class TestCommandConfig with _$TestCommandConfig {
+  const factory TestCommandConfig({
     required List<Device> devices,
     required List<String> targets,
-    required String host,
-    required String port,
-    required String driver,
     required String? flavor,
     required Map<String, String> dartDefines,
     required String? packageName,
     required String? bundleId,
     required int repeat,
-    required String? useApplicationBinary,
     required bool displayLabel,
-  }) = _DriveCommandConfig;
+  }) = _TestCommandConfig;
 }
 
 const _defaultRepeats = 1;
 
-class DriveCommand extends StagedCommand<DriveCommandConfig> {
-  DriveCommand({
+class TestCommand extends StagedCommand<TestCommandConfig> {
+  TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
-    required FlutterTestRunner testRunner,
-    required AndroidDriver androidDriver,
-    required IOSDriver iosDriver,
-    required FlutterTool flutterTool,
+    required NativeTestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required DisposeScope parentDisposeScope,
+    required AndroidTestRunner androidTestDriver,
+    required IOSTestRunner iosTestDriver,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
-        _androidDriver = androidDriver,
-        _iosDriver = iosDriver,
-        _flutterTool = flutterTool,
+        _androidTestDriver = androidTestDriver,
+        _iosTestDriver = iosTestDriver,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
-    _testRunner.disposedBy(parentDisposeScope);
 
     argParser
       ..addMultiOption(
@@ -75,19 +69,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         help:
             'Devices to run the tests on. If empty, the first device is used.',
         valueHelp: "all, emulator-5554, 'iPhone 14'",
-      )
-      ..addOption(
-        'host',
-        help: 'Host on which the automator server app is listening.',
-      )
-      ..addOption(
-        'port',
-        help: 'Port on host on which the automator server app is listening.',
-      )
-      ..addOption(
-        'driver',
-        help: 'Dart file which starts flutter_driver.',
-        defaultsTo: 'test_driver/integration_test.dart',
       )
       ..addOption(
         'flavor',
@@ -121,15 +102,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         help: 'Repeat the test n times.',
         defaultsTo: '$_defaultRepeats',
       )
-      ..addOption(
-        'use-application-binary',
-        help:
-            'Specify a pre-built application binary to use when running. For Android applications, '
-            'this must be the path to an APK. For iOS applications, the path to a .app or an IPA. '
-            'Other device types do not yet support prebuilt application binaries. '
-            'See `flutter drive --help` on for more information.',
-        valueHelp: 'path/to/app.apk|path/to/iphonesimulator/app.app',
-      )
       ..addFlag(
         'label',
         help: 'Display the label over the application under test.',
@@ -137,14 +109,16 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       );
   }
 
+  @override
+  bool get hidden => true;
+
   final DisposeScope _disposeScope;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
-  final FlutterTestRunner _testRunner;
-  final AndroidDriver _androidDriver;
-  final IOSDriver _iosDriver;
-  final FlutterTool _flutterTool;
+  final NativeTestRunner _testRunner;
+  final AndroidTestRunner _androidTestDriver;
+  final IOSTestRunner _iosTestDriver;
   final DartDefinesReader _dartDefinesReader;
 
   final Logger _logger;
@@ -152,30 +126,17 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   bool verbose = false;
 
   @override
-  String get name => 'drive';
+  String get name => 'test';
 
   @override
-  String get description => 'Drive the app using flutter_driver.';
+  String get description => 'Test the app using native instrumentation.';
 
   @override
-  Future<DriveCommandConfig> parseInput() async {
-    final host = argResults?['host'] as String?;
-
-    final port = argResults?['port'] as String?;
-    if (port is String && int.tryParse(port) == null) {
-      throw const FormatException('`port` is not an int');
-    }
-
+  Future<TestCommandConfig> parseInput() async {
     final target = argResults?['target'] as List<String>? ?? [];
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
         : _testFinder.findAllTests();
-
-    for (final t in targets) {
-      _logger.detail('Found test $t');
-    }
-
-    final driver = argResults?['driver'] as String?;
 
     final flavor = argResults?['flavor'] as String?;
 
@@ -208,9 +169,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       throw const FormatException('`repeat` argument is not an int');
     }
 
-    final useApplicationBinary =
-        argResults?['use-application-binary'] as String?;
-
     final displayLabel = argResults?['label'] as bool?;
 
     if (repeat < 1) {
@@ -223,12 +181,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
     final attachedDevices = await _deviceFinder.find(devices);
 
-    return DriveCommandConfig(
+    return TestCommandConfig(
       devices: attachedDevices,
       targets: targets,
-      host: host ?? envHostDefaultValue,
-      port: port ?? envPortDefaultValue,
-      driver: driver ?? 'test_driver/integration_test.dart',
       flavor: flavor,
       dartDefines: <String, String?>{
         ...dartDefines,
@@ -240,43 +195,35 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       packageName: packageName,
       bundleId: bundleId,
       repeat: repeat,
-      useApplicationBinary: useApplicationBinary,
       displayLabel: displayLabel ?? true,
     );
   }
 
   @override
-  Future<int> execute(DriveCommandConfig config) async {
-    _flutterTool.init(
-      driver: config.driver,
-      host: config.host,
-      port: config.port,
-      flavor: config.flavor,
-      dartDefines: config.dartDefines,
-      displayLabel: config.displayLabel,
-    );
-
+  Future<int> execute(TestCommandConfig config) async {
     config.targets.forEach(_testRunner.addTarget);
     config.devices.forEach(_testRunner.addDevice);
-
     _testRunner
       ..repeats = config.repeat
-      ..useApplicationBinary = config.useApplicationBinary
-      ..builder = (target, device) async {
-        try {
-          await _flutterTool.build(target, device);
-        } catch (err) {
-          _logger
-            ..err('$err')
-            ..err(
-                'See the logs above to learn what happened. If the logs above '
-                "aren't useful then it's a bug – please report it.");
-          rethrow;
-        }
-      }
       ..executor = (target, device) async {
+        final appOptions = AppOptions(
+          target: target,
+          flavor: config.flavor,
+          dartDefines: config.dartDefines,
+        );
+
+        Future<void> Function() callback;
+        switch (device.targetPlatform) {
+          case TargetPlatform.android:
+            callback = () => _androidTestDriver.run(appOptions, device);
+            break;
+          case TargetPlatform.iOS:
+            callback = () => _iosTestDriver.run(appOptions, device);
+            break;
+        }
+
         try {
-          await _flutterTool.drive(target, device, config.useApplicationBinary);
+          await callback();
         } catch (err) {
           _logger
             ..err('$err')
@@ -287,25 +234,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
           rethrow;
         }
       };
-
-    for (final device in config.devices) {
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          await _androidDriver.run(
-            port: config.port,
-            device: device,
-            flavor: config.flavor,
-          );
-          break;
-        case TargetPlatform.iOS:
-          await _iosDriver.run(
-            port: config.port,
-            device: device,
-            flavor: config.flavor,
-          );
-          break;
-      }
-    }
 
     final results = await _testRunner.run();
 
@@ -331,6 +259,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     }
 
     final exitCode = results.allSuccessful ? 0 : 1;
+
     return exitCode;
   }
 }

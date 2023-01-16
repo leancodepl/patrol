@@ -1,6 +1,6 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:patrol_cli/src/features/drive/dart_defines_reader.dart';
+import 'package:patrol_cli/src/features/run_commons//dart_defines_reader.dart';
 import 'package:test/test.dart';
 
 void main() {

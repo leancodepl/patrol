@@ -2,7 +2,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/drive/test_finder.dart';
+import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:test/test.dart';
 
 void main() {
