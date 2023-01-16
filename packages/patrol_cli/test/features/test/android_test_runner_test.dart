@@ -1,5 +1,5 @@
 import 'package:patrol_cli/src/features/test/android_test_runner.dart';
-import 'package:patrol_cli/src/features/test/test_runner.dart';
+import 'package:patrol_cli/src/features/test/app_options.dart';
 import 'package:test/test.dart';
 
 void main() {

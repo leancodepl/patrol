@@ -6,10 +6,10 @@ import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/features/drive/flutter_test_runner.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
-import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/run_commons/constants.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
@@ -41,7 +41,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   DriveCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
-    required TestRunner testRunner,
+    required FlutterTestRunner testRunner,
     required AndroidDriver androidDriver,
     required IOSDriver iosDriver,
     required FlutterTool flutterTool,
@@ -141,7 +141,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
-  final TestRunner _testRunner;
+  final FlutterTestRunner _testRunner;
   final AndroidDriver _androidDriver;
   final IOSDriver _iosDriver;
   final FlutterTool _flutterTool;
@@ -256,6 +256,9 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       displayLabel: config.displayLabel,
     );
 
+    config.targets.forEach(_testRunner.addTarget);
+    config.devices.forEach(_testRunner.addDevice);
+
     _testRunner
       ..repeats = config.repeat
       ..useApplicationBinary = config.useApplicationBinary
@@ -286,9 +289,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       };
 
     for (final device in config.devices) {
-      _testRunner.addDevice(device);
-      config.targets.forEach(_testRunner.addTarget);
-
       switch (device.targetPlatform) {
         case TargetPlatform.android:
           await _androidDriver.run(

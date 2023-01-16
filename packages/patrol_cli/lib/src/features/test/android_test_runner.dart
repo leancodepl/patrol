@@ -1,16 +1,16 @@
 import 'dart:convert' show base64Encode, utf8;
-import 'dart:io' show systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
-import 'package:patrol_cli/src/features/test/test_runner.dart';
+import 'package:patrol_cli/src/features/test/app_options.dart';
 import 'package:process/process.dart';
 
-class AndroidTestRunner extends TestRunner {
+class AndroidTestRunner {
   AndroidTestRunner({
     required ProcessManager processManager,
     required FileSystem fs,
@@ -28,7 +28,6 @@ class AndroidTestRunner extends TestRunner {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  @override
   Future<void> run(AppOptions options, Device device) async {
     final targetName = basename(options.target);
     final task = _logger
@@ -43,22 +42,22 @@ class AndroidTestRunner extends TestRunner {
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
     );
 
-    process.stdout.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.detail('\t$msg');
-    }).disposedBy(_disposeScope);
-
-    process.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err('\t$msg');
-    }).disposedBy(_disposeScope);
+    process
+        .listenStdOut((line) => _logger.detail('\t: $line'))
+        .disposedBy(_disposeScope);
+    process
+        .listenStdErr((line) => _logger.err('\t$line'))
+        .disposedBy(_disposeScope);
 
     final exitCode = await process.exitCode;
 
     if (exitCode == 0) {
       task.complete('Built and ran apk for $targetName on ${device.id}');
     } else {
-      task.fail('Failed to build apk for $targetName and run ');
+      task.fail(
+        'Failed to build and run apk for $targetName and run ${device.id}',
+      );
+      throw Exception('Gradle exited with code $exitCode');
     }
   }
 

@@ -16,14 +16,15 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
 import 'package:patrol_cli/src/features/drive/drive_command.dart';
+import 'package:patrol_cli/src/features/drive/flutter_test_runner.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
-import 'package:patrol_cli/src/features/drive/test_runner.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_runner.dart';
 import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
+import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
@@ -84,7 +85,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         integrationTestDir: _fs.directory('integration_test'),
         fs: _fs,
       ),
-      testRunner: TestRunner(),
+      testRunner: FlutterTestRunner(),
       androidDriver: AndroidDriver(
         artifactsRepository: _artifactsRepository,
         parentDisposeScope: _disposeScope,
@@ -119,6 +120,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           integrationTestDir: _fs.directory('integration_test'),
           fs: _fs,
         ),
+        testRunner: NativeTestRunner(),
         androidTestDriver: AndroidTestRunner(
           processManager: LoggingLocalProcessManager(logger: _logger),
           fs: _fs,

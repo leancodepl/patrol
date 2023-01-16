@@ -6,10 +6,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
-import 'package:patrol_cli/src/features/test/test_runner.dart';
+import 'package:patrol_cli/src/features/test/app_options.dart';
 import 'package:process/process.dart';
 
-class IOSTestRunner extends TestRunner {
+class IOSTestRunner {
   IOSTestRunner({
     required ProcessManager processManager,
     required FileSystem fs,
@@ -27,7 +27,6 @@ class IOSTestRunner extends TestRunner {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  @override
   Future<void> run(AppOptions options, Device device) async {
     final targetName = basename(options.target);
     final task = _logger

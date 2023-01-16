@@ -1,63 +1,9 @@
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:equatable/equatable.dart';
-import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/run_commons/result.dart';
+import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
-
-class TestRunnerResult with EquatableMixin {
-  const TestRunnerResult({required this.targetRunResults});
-
-  final List<TargetRunResult> targetRunResults;
-
-  bool get allSuccessful => targetRunResults.every((e) => e.allRunsPassed);
-
-  @override
-  List<Object?> get props => [targetRunResults];
-}
-
-class TargetRunResult with EquatableMixin {
-  TargetRunResult({
-    required this.target,
-    required this.device,
-    required this.runs,
-  });
-
-  final String target;
-  final Device device;
-
-  final List<TargetRunStatus> runs;
-
-  String get targetName => basename(target);
-
-  bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
-
-  bool get allRunsFailed => runs.every(
-        (run) =>
-            run == TargetRunStatus.failedToBuild ||
-            run == TargetRunStatus.failedToExecute,
-      );
-
-  /// True if at least 1 test run was canceled.
-  bool get canceled => runs.any((run) => run == TargetRunStatus.canceled);
-
-  int get passedRuns {
-    return runs.where((run) => run == TargetRunStatus.passed).length;
-  }
-
-  int get runsFailedToBuild {
-    return runs.where((run) => run == TargetRunStatus.failedToBuild).length;
-  }
-
-  int get runsFailedToExecute {
-    return runs.where((run) => run == TargetRunStatus.failedToExecute).length;
-  }
-
-  @override
-  List<Object?> get props => [target, device, runs];
-}
-
-enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
 
 /// Orchestrates running tests on devices.
 ///
@@ -66,15 +12,19 @@ enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
 /// runs.
 ///
 /// Tests targets are run sequentially in the context of a single device.
-class TestRunner extends Disposable {
-  TestRunner();
-
+///
+/// This class requires a separate builder and executor callbacks. This
+/// decouples the building of a test from running the test. It also maps nicely
+/// to `flutter build` and `flutter drive`.
+class FlutterTestRunner extends TestRunner implements Disposable {
   final Map<String, Device> _devices = {};
   final Set<String> _targets = {};
   bool _running = false;
   bool _disposed = false;
 
   int _repeats = 1;
+
+  @override
   set repeats(int newValue) {
     if (_running) {
       throw StateError('repeats cannot be changed while running');
@@ -112,7 +62,7 @@ class TestRunner extends Disposable {
   /// Error reporting is the callback's responsibility.
   set executor(_Callback callback) => _executor = callback;
 
-  /// Adds [device] to runner's internal list.
+  @override
   void addDevice(Device device) {
     if (_running) {
       throw StateError('devices can only be added before run');
@@ -125,7 +75,7 @@ class TestRunner extends Disposable {
     _devices[device.id] = device;
   }
 
-  /// Adds [target] (a Dart test file) to runner's internal list.
+  @override
   void addTarget(String target) {
     if (_running) {
       throw StateError('tests can only be added before run');
@@ -138,12 +88,13 @@ class TestRunner extends Disposable {
     _targets.add(target);
   }
 
-  /// Runs all test targets on on all added devices.
+  /// Runs all added test targets on on all added devices.
   ///
   /// Tests are run sequentially on a single device, but many devices can be
   /// attached at the same time, and thus many tests can be running at the same
   /// time.
-  Future<TestRunnerResult> run() async {
+  @override
+  Future<RunResults> run() async {
     if (_running) {
       throw StateError('tests are already running');
     }
@@ -218,11 +169,16 @@ class TestRunner extends Disposable {
     await Future.wait<void>(testRunsOnAllDevices);
     _running = false;
 
-    return TestRunnerResult(targetRunResults: targetRunResults);
+    return RunResults(targetRunResults: targetRunResults);
   }
 
   @override
   Future<void> dispose() async {
     _disposed = true;
+  }
+
+  @override
+  void disposedBy(DisposeScope disposeScope) {
+    disposeScope.addDispose(dispose);
   }
 }

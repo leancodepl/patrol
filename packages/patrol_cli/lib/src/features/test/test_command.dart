@@ -1,3 +1,4 @@
+import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
@@ -7,8 +8,9 @@ import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_runner.dart';
+import 'package:patrol_cli/src/features/test/app_options.dart';
 import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
-import 'package:patrol_cli/src/features/test/test_runner.dart';
+import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
@@ -36,6 +38,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
+    required NativeTestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required DisposeScope parentDisposeScope,
     required AndroidTestRunner androidTestDriver,
@@ -44,6 +47,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
+        _testRunner = testRunner,
         _androidTestDriver = androidTestDriver,
         _iosTestDriver = iosTestDriver,
         _dartDefinesReader = dartDefinesReader,
@@ -112,6 +116,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
+  final NativeTestRunner _testRunner;
   final AndroidTestRunner _androidTestDriver;
   final IOSTestRunner _iosTestDriver;
   final DartDefinesReader _dartDefinesReader;
@@ -196,26 +201,64 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
   @override
   Future<int> execute(TestCommandConfig config) async {
-    for (final device in config.devices) {
-      for (final target in config.targets) {
+    config.targets.forEach(_testRunner.addTarget);
+    config.devices.forEach(_testRunner.addDevice);
+    _testRunner
+      ..repeats = config.repeat
+      ..executor = (target, device) async {
         final appOptions = AppOptions(
           target: target,
           flavor: config.flavor,
           dartDefines: config.dartDefines,
         );
 
+        Future<void> Function() callback;
         switch (device.targetPlatform) {
           case TargetPlatform.android:
-            await _androidTestDriver.run(appOptions, device);
+            callback = () => _androidTestDriver.run(appOptions, device);
             break;
           case TargetPlatform.iOS:
-            await _iosTestDriver.run(appOptions, device);
+            callback = () => _iosTestDriver.run(appOptions, device);
             break;
         }
+
+        try {
+          await callback();
+        } catch (err) {
+          _logger
+            ..err('$err')
+            ..err(
+              'See the logs above to learn what happened. If the logs above '
+              "aren't useful then it's a bug – please report it.",
+            );
+          rethrow;
+        }
+      };
+
+    final results = await _testRunner.run();
+
+    for (final res in results.targetRunResults) {
+      final device = res.device.resolvedName;
+      if (res.allRunsPassed) {
+        _logger.write(
+          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
+        );
+      } else if (res.allRunsFailed) {
+        _logger.write(
+          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
+        );
+      } else if (res.canceled) {
+        _logger.write(
+          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
+        );
+      } else {
+        _logger.write(
+          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
+        );
       }
     }
 
-    const exitCode = 0;
+    final exitCode = results.allSuccessful ? 0 : 1;
 
     return exitCode;
   }

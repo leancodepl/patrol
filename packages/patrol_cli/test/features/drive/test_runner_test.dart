@@ -3,7 +3,8 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:patrol_cli/src/features/drive/test_runner.dart';
+import 'package:patrol_cli/src/features/drive/flutter_test_runner.dart';
+import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:test/test.dart';
 
 import '../../fixtures.dart';
@@ -11,10 +12,10 @@ import '../../fixtures.dart';
 Future<void> delay() => Future.delayed(Duration(seconds: 1));
 
 void main() {
-  late TestRunner testRunner;
+  late FlutterTestRunner testRunner;
 
   setUp(() {
-    testRunner = TestRunner();
+    testRunner = FlutterTestRunner();
   });
 
   group('TestRunner', () {
@@ -249,7 +250,7 @@ void main() {
 
           final expectedLog = <String>[];
           expect(actualLog, equals(<String>[]));
-          late TestRunnerResult result;
+          late RunResults result;
           unawaited(() async {
             result = await testRunner.run();
           }());
@@ -292,7 +293,7 @@ void main() {
 
           expect(
             result,
-            TestRunnerResult(
+            RunResults(
               targetRunResults: [
                 TargetRunResult(
                   target: 'A',
@@ -358,7 +359,7 @@ void main() {
       test('does not execute test target if it failed to build', () async {
         final actualLog = <String>[];
 
-        final testRunner = TestRunner();
+        final testRunner = FlutterTestRunner();
         testRunner
           ..addDevice(androidDevice)
           ..addTarget('A')
@@ -392,7 +393,7 @@ void main() {
 
         expect(
           result,
-          TestRunnerResult(
+          RunResults(
             targetRunResults: [
               TargetRunResult(
                 target: 'A',
@@ -419,7 +420,7 @@ void main() {
         () async {
           final actualLog = <String>[];
 
-          final testRunner = TestRunner();
+          final testRunner = FlutterTestRunner();
           testRunner
             ..addDevice(androidDevice)
             ..addTarget('A')
@@ -455,7 +456,7 @@ void main() {
 
           expect(
             result,
-            TestRunnerResult(
+            RunResults(
               targetRunResults: [
                 TargetRunResult(
                   target: 'A',
