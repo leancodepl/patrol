@@ -18,7 +18,7 @@ void main() {
     testRunner = FlutterTestRunner();
   });
 
-  group('TestRunner', () {
+  group('FlutterTestRunner', () {
     setUp(() {
       testRunner.builder = (_, __) => delay();
       testRunner.executor = (_, __) => delay();

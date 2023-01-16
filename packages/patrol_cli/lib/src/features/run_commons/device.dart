@@ -1,17 +1,15 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class Device {
+  const Device({
+    required this.name,
+    required this.id,
+    required this.targetPlatform,
+    required this.real,
+  });
 
-part 'device.freezed.dart';
-
-@freezed
-class Device with _$Device {
-  const factory Device({
-    required String name,
-    required String id,
-    required TargetPlatform targetPlatform,
-    required bool real,
-  }) = _Device;
-
-  const Device._();
+  final String name;
+  final String id;
+  final TargetPlatform targetPlatform;
+  final bool real;
 
   /// Returns the name that Patrol is usually interested with.
   ///
