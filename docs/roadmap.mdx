@@ -1,0 +1,73 @@
+# Roadmap
+
+Patrol is still in beta, so we understand that not everyone might want to start
+using it to test their production-grade apps. To reassure you, we're sharing our
+plans for the upcoming months, so you can rest assured its development won't
+suddenly stop.
+
+Besides the big milestones mentioned below, we're continuously answering your
+questions, fixing bugs, and adding smaller tweaks, to make testing easier and
+more fun.
+
+## Last release before 1.0
+
+In this release, we'll deprecate the `patrol drive` command.
+
+### Why is `patrol drive` being deprecated?
+
+`patrol drive` is named like that because, under the hood, it executed the
+`flutter drive` command (also known as [flutter_driver]). Depending on
+`flutter_driver` initially seemed like a prudent choice, but as time went by, we
+found many problems with it:
+
+- `flutter_driver` isn't oficially recommended
+
+  Flutter recommends using the `integration_test` package instead of
+  `flutter_driver`, which doesn't get the same amount of support as `flutter
+test`, and is somewhat deprecated. [A large number of flutter_driver issues have
+  been unresolved for many years][flutter_driver_issues].
+
+- `flutter_driver` is very flaky
+
+  When we first tried to use it on GitHub Actions, about 90% of `flutter drive`
+  invocations were timing out. We've [contributed a fix][flutter_driver_fix]
+  that made the situation better, but it still isn't reliable enough.
+
+- `flutter_driver` doesn't work on Firebase Test Lab
+
+  The very way in which `flutter_driver` works is incompatible with device farm
+  platforms such as Firebase Test Lab, and [compatibility with such platforms
+  was the most-upvoted issue in Patrol's GitHub repository][testlab_issue]
+
+### Why remove `patrol drive` instead of leaving it in addition to `patrol test`?
+
+First of all, we want to minimize the number of choices our users have to make.
+Using a new test framework alone is usually a tough decision, why add 2
+similar-but-different commands that to accomplish the same?
+
+This will also let us focus on developing `patrol test` alone, freeing us from
+maintaining 2 ways of running tests.
+
+## 1.0
+
+In 1.0, we'll freeze the API. This means your tests tests won't break because of
+a minor version bump.
+
+The `patrol drive` command will be removed in favor of `patrol test`.
+
+## 2.0
+
+In the longer run, we plan to enable easy, reliable hot-restarting of
+integration tests to speed up the feedback loop and dramatically improve DX.
+
+This feature might be accompanied by a test runner, which will be a separate
+desktop Flutter app allowing you to easily rerun tests and view the results.
+This feature draws much inspiration from the popular [Cypress] tool on the web
+and the awesome [convenient_test] package.
+
+[flutter_driver]: https://github.com/flutter/flutter/tree/master/packages/flutter_driver
+[flutter_driver_issues]: https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3A%22t%3A+flutter+driver%22+sort%3Areactions-%2B1-desc
+[flutter_driver_fix]: https://github.com/flutter/flutter/pull/113969
+[testlab_issue]: https://github.com/leancodepl/patrol/issues/622
+[cypress]: https://www.cypress.io
+[convenient_test]: https://pub.dev/packages/convenient_test
