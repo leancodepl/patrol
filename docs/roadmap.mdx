@@ -3,7 +3,7 @@
 Patrol is still in beta, so we understand that not everyone might want to start
 using it to test their production-grade apps. To reassure you, we're sharing our
 plans for the upcoming months, so you can rest assured its development won't
-suddently stop.
+suddenly stop.
 
 Besides the big milestones mentioned below, we're continuously answering your
 questions, fixing bugs, and adding smaller tweaks, to make testing easier and
@@ -15,24 +15,27 @@ In this release, we'll deprecate the `patrol drive` command.
 
 ### Why is `patrol drive` being deprecated?
 
-`patrol drive` is named like that because under the hood, it executed the
+`patrol drive` is named like that because, under the hood, it executed the
 `flutter drive` command (also known as [flutter_driver]). Depending on
 `flutter_driver` initially seemed like a prudent choice, but as time went by, we
 found many problems with it:
 
-- `flutter_driver` isn't recommended anymore
+- `flutter_driver` isn't oficially recommended
 
   Flutter recommends using the `integration_test` package instead of
   `flutter_driver`, which doesn't get the same amount of support as `flutter
 test`, and is somewhat deprecated. [A large number of flutter_driver issues have
   been unresolved for many years][flutter_driver_issues].
 
-- `flutter_driver` is very flaky. When we first tried to use it on GitHub
-  Actions, about 90% of `flutter drive` invocations were timing out. We've
-  [contributed a fix][flutter_driver_fix] that made the situation better, but it
-  still isn't reliable enough.
+- `flutter_driver` is very flaky
 
-- The very way in which `flutter_driver` works is incompatible with device farm
+  When we first tried to use it on GitHub Actions, about 90% of `flutter drive`
+  invocations were timing out. We've [contributed a fix][flutter_driver_fix]
+  that made the situation better, but it still isn't reliable enough.
+
+- `flutter_driver` doesn't work on Firebase Test Lab
+
+  The very way in which `flutter_driver` works is incompatible with device farm
   platforms such as Firebase Test Lab, and [compatibility with such platforms
   was the most-upvoted issue in Patrol's GitHub repository][testlab_issue]
 
@@ -42,13 +45,13 @@ First of all, we want to minimize the number of choices our users have to make.
 Using a new test framework alone is usually a tough decision, why add 2
 similar-but-different commands that to accomplish the same?
 
-This will also let focus on making `patrol test`, by freeing us from maintaining
-2 ways of running tests.
+This will also let us focus on developing `patrol test` alone, freeing us from
+maintaining 2 ways of running tests.
 
 ## 1.0
 
-In 1.0, we'll freeze the API, so that you'll confident your tests won't break
-because of a minor version bump.
+In 1.0, we'll freeze the API. This means your tests tests won't break because of
+a minor version bump.
 
 The `patrol drive` command will be removed in favor of `patrol test`.
 
