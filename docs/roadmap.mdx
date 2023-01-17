@@ -15,17 +15,10 @@ In this release, we'll deprecate the `patrol drive` command.
 
 ### Why is `patrol drive` being deprecated?
 
-`patrol drive` is named like that because, under the hood, it executed the
+`patrol drive` is named like that because, under the hood, it executes the
 `flutter drive` command (also known as [flutter_driver]). Depending on
 `flutter_driver` initially seemed like a prudent choice, but as time went by, we
 found many problems with it:
-
-- `flutter_driver` isn't oficially recommended
-
-  Flutter recommends using the `integration_test` package instead of
-  `flutter_driver`, which doesn't get the same amount of support as `flutter
-test`, and is somewhat deprecated. [A large number of flutter_driver issues have
-  been unresolved for many years][flutter_driver_issues].
 
 - `flutter_driver` is very flaky
 
@@ -38,6 +31,13 @@ test`, and is somewhat deprecated. [A large number of flutter_driver issues have
   The very way in which `flutter_driver` works is incompatible with device farm
   platforms such as Firebase Test Lab, and [compatibility with such platforms
   was the most-upvoted issue in Patrol's GitHub repository][testlab_issue]
+
+- `flutter_driver` isn't oficially recommended anymore
+
+  Flutter recommends using the `integration_test` package instead of
+  `flutter_driver`, which doesn't get the same amount of support as `flutter
+test`, and is somewhat deprecated. [A large number of flutter_driver issues have
+  been unresolved for many years][flutter_driver_issues].
 
 ### Why remove `patrol drive` instead of leaving it in addition to `patrol test`?
 
