@@ -1,12 +1,23 @@
+## 0.8.2+1
+
+- Fix typo in changelog (#783)
+
 ## 0.8.2
 
-- Add `patrol test` command, which runs tests with native automation (with
-  Gradle on Android and `xcodebuild` on iOS). This command is hidden for now
-  until we're sure it has the same features `patrol drive`. In the 1.0 release,
-  `patrol drive` will be removed in favor of `patrol test.
+- Add `patrol test` command (#731)
 
-  [Learn more](https://patrol.leancode.co/ci) how to setup your project for
-  `patrol test`.
+  `patrol test` runs tests natively (using Gradle on Android and `xcodebuild` on
+  iOS). This command is hidden from `patrol --help` for now until we're sure it
+  has the same features `patrol drive`, but you can already use it. In a future
+  release, `patrol drive` will be deprecated, and in 1.0, `patrol drive` will be
+  removed in favor of `patrol test`.
+
+  [Learn more
+  here](https://patrol.leancode.co/roadmap#why-is-patrol-drive-being-deprecated)
+  about why we're deprecating `patrol drive`.
+
+  [Learn more here](https://patrol.leancode.co/ci) about how to setup your
+  project to use `patrol test`.
 
 ## 0.8.1
 
