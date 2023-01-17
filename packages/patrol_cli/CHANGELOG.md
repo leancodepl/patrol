@@ -1,3 +1,13 @@
+## 0.8.2
+
+- Add `patrol test` command, which runs tests with native automation (with
+  Gradle on Android and `xcodebuild` on iOS). This command is hidden for now
+  until we're sure it has the same features `patrol drive`. In the 1.0 release,
+  `patrol drive` will be removed in favor of `patrol test.
+
+  [Learn more](https://patrol.leancode.co/ci) how to setup your project for
+  `patrol test`.
+
 ## 0.8.1
 
 - Add `--label/--no-label` flag to `patrol drive`, that displays the test name
