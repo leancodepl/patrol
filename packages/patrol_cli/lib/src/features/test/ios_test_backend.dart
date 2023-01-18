@@ -26,10 +26,15 @@ class IOSAppOptions {
 
   /// Translates these options into a proper flutter build invocation, which
   /// runs before xcodebuild and performs configuration.
-  List<String> toFlutterBuildInvocation() {
+  List<String> toFlutterBuildInvocation(Device device) {
     final cmd = [
       ...['flutter', 'build', 'ios'],
-      ...['--config-only', '--no-codesign', '--debug'],
+      ...[
+        '--config-only',
+        '--no-codesign',
+        '--debug',
+        if (!device.real) '--simulator'
+      ],
       if (flavor != null) ...['--flavor', flavor!],
       ...['--target', target],
       for (final dartDefine in dartDefines.entries) ...[
@@ -89,9 +94,8 @@ class IOSTestBackend {
         .task('Building app for $targetName and running it on ${device.id}');
 
     final flutterProcess = await _processManager.start(
-      options.toFlutterBuildInvocation(),
+      options.toFlutterBuildInvocation(device),
       runInShell: true,
-      workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
     );
 
     flutterProcess.stdout.listen((rawMsg) {

@@ -2,18 +2,18 @@ import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:test/test.dart';
 
-const _device = Device(
-  name: 'iPhone 14',
-  id: '633247FA-E35B-4E60-AEB3-FC2D9C52FAD5',
-  targetPlatform: TargetPlatform.iOS,
-  real: false,
-);
-
 void main() {
   group('IOSAppOptions', () {
+    late Device device;
     late IOSAppOptions options;
 
-    test('correctly encodes default invocation', () {
+    test('correctly encodes default invocation on simulator', () {
+      device = Device(
+        name: 'iPhone 14',
+        id: '633247FA-E35B-4E60-AEB3-FC2D9C52FAD5',
+        targetPlatform: TargetPlatform.iOS,
+        real: false,
+      );
       options = IOSAppOptions(
         target: 'integration_test/app_test.dart',
         flavor: null,
@@ -23,17 +23,17 @@ void main() {
         configuration: 'Debug',
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation();
+      final flutterInvocation = options.toFlutterBuildInvocation(device);
       expect(
         flutterInvocation,
         equals([
           ...['flutter', 'build', 'ios'],
-          ...['--config-only', '--no-codesign', '--debug'],
+          ...['--config-only', '--no-codesign', '--debug', '--simulator'],
           ...['--target', 'integration_test/app_test.dart'],
         ]),
       );
 
-      final xcodebuildInvocation = options.toXcodebuildInvocation(_device);
+      final xcodebuildInvocation = options.toXcodebuildInvocation(device);
 
       expect(
         xcodebuildInvocation,
@@ -50,7 +50,13 @@ void main() {
       );
     });
 
-    test('correctly encodes customized invocation', () {
+    test('correctly encodes customized invocation on real device', () {
+      device = Device(
+        name: 'iPhone 14',
+        id: '633247FA-E35B-4E60-AEB3-FC2D9C52FAD5',
+        targetPlatform: TargetPlatform.iOS,
+        real: true,
+      );
       options = IOSAppOptions(
         target: 'integration_test/app_test.dart',
         flavor: 'dev',
@@ -64,7 +70,7 @@ void main() {
         configuration: 'Debug-dev',
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation();
+      final flutterInvocation = options.toFlutterBuildInvocation(device);
       expect(
         flutterInvocation,
         equals([
@@ -78,7 +84,7 @@ void main() {
         ]),
       );
 
-      final xcodebuildInvocation = options.toXcodebuildInvocation(_device);
+      final xcodebuildInvocation = options.toXcodebuildInvocation(device);
 
       expect(
         xcodebuildInvocation,
@@ -88,8 +94,8 @@ void main() {
           ...['-scheme', 'dev'],
           ...['-xcconfig', 'Flutter/Debug.xcconfig'],
           ...['-configuration', 'Debug-dev'],
-          ...['-sdk', 'iphonesimulator'],
-          ...['-destination', 'platform=iOS Simulator,name=iPhone 14'],
+          ...['-sdk', 'iphoneos'],
+          ...['-destination', 'platform=iOS,name=iPhone 14'],
           r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
         ]),
       );
