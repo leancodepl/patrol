@@ -3,47 +3,47 @@ import 'package:test/test.dart';
 
 void main() {
   group('AndroidAppOptions', () {
-    group('translate()', () {
-      test('correctly encodes simple test invocation', () {
-        final options = AndroidAppOptions(
-          target: '/home/john/flutterapp/integration_test/app_test.dart',
-          flavor: null,
-          dartDefines: {},
-        );
+    late AndroidAppOptions options;
 
-        final invocation = options.toGradleInvocation();
-        expect(
-          invocation,
-          equals([
-            './gradlew',
-            ':app:connectedDebugAndroidTest',
-            '-Ptarget=/home/john/flutterapp/integration_test/app_test.dart',
-          ]),
-        );
-      });
+    test('correctly encodes default invocation', () {
+      options = AndroidAppOptions(
+        target: '/home/john/flutterapp/integration_test/app_test.dart',
+        flavor: null,
+        dartDefines: {},
+      );
 
-      test('correctly encodes complex test invocation', () {
-        final options = AndroidAppOptions(
-          target: '/home/john/flutterapp/integration_test/app_test.dart',
-          flavor: 'dev',
-          dartDefines: {
-            'EMAIL': 'user@example.com',
-            'PASSWORD': 'ny4ncat',
-            'foo': 'bar',
-          },
-        );
+      final invocation = options.toGradleInvocation();
+      expect(
+        invocation,
+        equals([
+          './gradlew',
+          ':app:connectedDebugAndroidTest',
+          '-Ptarget=/home/john/flutterapp/integration_test/app_test.dart',
+        ]),
+      );
+    });
 
-        final invocation = options.toGradleInvocation();
-        expect(
-          invocation,
-          equals([
-            './gradlew',
-            ':app:connectedDevDebugAndroidTest',
-            '-Ptarget=/home/john/flutterapp/integration_test/app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
-          ]),
-        );
-      });
+    test('correctly encodes customized invocation', () {
+      options = AndroidAppOptions(
+        target: '/home/john/flutterapp/integration_test/app_test.dart',
+        flavor: 'dev',
+        dartDefines: {
+          'EMAIL': 'user@example.com',
+          'PASSWORD': 'ny4ncat',
+          'foo': 'bar',
+        },
+      );
+
+      final invocation = options.toGradleInvocation();
+      expect(
+        invocation,
+        equals([
+          './gradlew',
+          ':app:connectedDevDebugAndroidTest',
+          '-Ptarget=/home/john/flutterapp/integration_test/app_test.dart',
+          '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
+        ]),
+      );
     });
   });
 }
