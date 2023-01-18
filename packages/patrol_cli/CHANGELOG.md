@@ -1,3 +1,7 @@
+## 0.8.3
+
+- Make `patrol test` more configurable (#791)
+
 ## 0.8.2+1
 
 - Fix typo in changelog (#783)

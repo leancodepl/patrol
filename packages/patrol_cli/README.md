@@ -15,7 +15,7 @@ $ dart pub global activate patrol_cli
 
 ### From git
 
-1. Make sure that you have Dart >= 2.17 installed.
+1. Make sure that you have Dart >= 2.18 installed.
 
    ```console
    $ dart --version
