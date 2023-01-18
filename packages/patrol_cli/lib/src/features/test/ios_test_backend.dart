@@ -6,11 +6,28 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
-import 'package:patrol_cli/src/features/test/app_options.dart';
 import 'package:process/process.dart';
 
-class IOSTestRunner {
-  IOSTestRunner({
+class IOSAppOptions {
+  const IOSAppOptions({
+    required this.target,
+    required this.flavor,
+    required this.dartDefines,
+    required this.scheme,
+    required this.xcconfigFile,
+    required this.configuration,
+  });
+
+  final String target;
+  final String? flavor;
+  final Map<String, String> dartDefines;
+  final String scheme;
+  final String xcconfigFile;
+  final String configuration;
+}
+
+class IOSTestBackend {
+  IOSTestBackend({
     required ProcessManager processManager,
     required FileSystem fs,
     required DisposeScope parentDisposeScope,
@@ -27,7 +44,10 @@ class IOSTestRunner {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> run(AppOptions options, Device device) async {
+  Future<void> run({
+    required Device device,
+    required IOSAppOptions options,
+  }) async {
     final targetName = basename(options.target);
     final task = _logger
         .task('Building app for $targetName and running it on ${device.id}');
@@ -58,7 +78,7 @@ class IOSTestRunner {
   }
 
   @visibleForTesting
-  static List<String> translateFlutterBuild(AppOptions appOptions) {
+  static List<String> translateFlutterBuild(IOSAppOptions appOptions) {
     final cmd = [
       ...['flutter', 'build', 'ios'],
       ...['--config-only', '--no-codesign', '--debug'],
@@ -75,10 +95,10 @@ class IOSTestRunner {
     return cmd;
   }
 
-  /// Translates [AppOptions] into a proper Gradle invocation.
+  /// Translates [IOSAppOptions] into a proper xcodebuild invocation.
   @visibleForTesting
   static List<String> translateXcodebuild(
-    AppOptions appOptions,
+    IOSAppOptions appOptions,
     Device device,
   ) {
     final cmd = [

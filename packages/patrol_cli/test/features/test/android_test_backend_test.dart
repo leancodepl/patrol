@@ -1,18 +1,17 @@
-import 'package:patrol_cli/src/features/test/android_test_runner.dart';
-import 'package:patrol_cli/src/features/test/app_options.dart';
+import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('AndroidTestRunner', () {
+  group('AndroidTestBackend', () {
     group('translate()', () {
       test('correctly encodes simple test invocation', () {
-        final options = AppOptions(
+        final options = AndroidAppOptions(
           target: '/home/john/flutterapp/integration_test/app_test.dart',
           flavor: null,
           dartDefines: {},
         );
 
-        final invocation = AndroidTestRunner.translate(options);
+        final invocation = AndroidNativeTestBackend.translate(options);
         expect(
           invocation,
           equals([
@@ -24,7 +23,7 @@ void main() {
       });
 
       test('correctly encodes complex test invocation', () {
-        final options = AppOptions(
+        final options = AndroidAppOptions(
           target: '/home/john/flutterapp/integration_test/app_test.dart',
           flavor: 'dev',
           dartDefines: {
@@ -34,7 +33,7 @@ void main() {
           },
         );
 
-        final invocation = AndroidTestRunner.translate(options);
+        final invocation = AndroidNativeTestBackend.translate(options);
         expect(
           invocation,
           equals([

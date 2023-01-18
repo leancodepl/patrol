@@ -7,11 +7,22 @@ import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
-import 'package:patrol_cli/src/features/test/app_options.dart';
 import 'package:process/process.dart';
 
-class AndroidTestRunner {
-  AndroidTestRunner({
+class AndroidAppOptions {
+  const AndroidAppOptions({
+    required this.target,
+    required this.flavor,
+    required this.dartDefines,
+  });
+
+  final String target;
+  final String? flavor;
+  final Map<String, String> dartDefines;
+}
+
+class AndroidNativeTestBackend {
+  AndroidNativeTestBackend({
     required ProcessManager processManager,
     required FileSystem fs,
     required DisposeScope parentDisposeScope,
@@ -28,7 +39,10 @@ class AndroidTestRunner {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> run(AppOptions options, Device device) async {
+  Future<void> run({
+    required Device device,
+    required AndroidAppOptions options,
+  }) async {
     final targetName = basename(options.target);
     final task = _logger
         .task('Building apk for $targetName and running it on ${device.id}');
@@ -61,9 +75,9 @@ class AndroidTestRunner {
     }
   }
 
-  /// Translates [AppOptions] into a proper Gradle invocation.
+  /// Translates [AndroidAppOptions] into a proper Gradle invocation.
   @visibleForTesting
-  static List<String> translate(AppOptions appOptions) {
+  static List<String> translate(AndroidAppOptions appOptions) {
     final cmd = <String>['./gradlew'];
 
     // Add Gradle task

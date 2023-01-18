@@ -1,35 +1,39 @@
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
-import 'package:patrol_cli/src/features/test/android_test_runner.dart';
-import 'package:patrol_cli/src/features/test/app_options.dart';
-import 'package:patrol_cli/src/features/test/ios_test_runner.dart';
+import 'package:patrol_cli/src/features/test/android_test_backend.dart';
+import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
 import '../run_commons/constants.dart';
 
-part 'test_command.freezed.dart';
+class TestCommandConfig {
+  const TestCommandConfig({
+    required this.devices,
+    required this.targets,
+    required this.flavor,
+    required this.dartDefines,
+    required this.packageName,
+    required this.bundleId,
+    required this.repeat,
+    required this.displayLabel,
+  });
 
-@freezed
-class TestCommandConfig with _$TestCommandConfig {
-  const factory TestCommandConfig({
-    required List<Device> devices,
-    required List<String> targets,
-    required String? flavor,
-    required Map<String, String> dartDefines,
-    required String? packageName,
-    required String? bundleId,
-    required int repeat,
-    required bool displayLabel,
-  }) = _TestCommandConfig;
+  final List<Device> devices;
+  final List<String> targets;
+  final String? flavor;
+  final Map<String, String> dartDefines;
+  final String? packageName;
+  final String? bundleId;
+  final int repeat;
+  final bool displayLabel;
 }
 
 const _defaultRepeats = 1;
@@ -41,15 +45,15 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     required NativeTestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required DisposeScope parentDisposeScope,
-    required AndroidTestRunner androidTestDriver,
-    required IOSTestRunner iosTestDriver,
+    required AndroidNativeTestBackend androidTestDriver,
+    required IOSTestBackend iosTestDriver,
     required Logger logger,
   })  : _disposeScope = DisposeScope(),
         _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
-        _androidTestDriver = androidTestDriver,
-        _iosTestDriver = iosTestDriver,
+        _androidTestBackend = androidTestDriver,
+        _iosTestBackend = iosTestDriver,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -107,6 +111,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         help: 'Display the label over the application under test.',
         defaultsTo: true,
       );
+    // TODO: add scheme
+    // TODO: add xcconfig file
+    // TODO: add configuration
   }
 
   @override
@@ -117,8 +124,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final NativeTestRunner _testRunner;
-  final AndroidTestRunner _androidTestDriver;
-  final IOSTestRunner _iosTestDriver;
+  final AndroidNativeTestBackend _androidTestBackend;
+  final IOSTestBackend _iosTestBackend;
   final DartDefinesReader _dartDefinesReader;
 
   final Logger _logger;
@@ -206,19 +213,30 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     _testRunner
       ..repeats = config.repeat
       ..executor = (target, device) async {
-        final appOptions = AppOptions(
-          target: target,
-          flavor: config.flavor,
-          dartDefines: config.dartDefines,
-        );
-
         Future<void> Function() callback;
         switch (device.targetPlatform) {
           case TargetPlatform.android:
-            callback = () => _androidTestDriver.run(appOptions, device);
+            callback = () => _androidTestBackend.run(
+                  device: device,
+                  options: AndroidAppOptions(
+                    target: target,
+                    flavor: config.flavor,
+                    dartDefines: config.dartDefines,
+                  ),
+                );
             break;
           case TargetPlatform.iOS:
-            callback = () => _iosTestDriver.run(appOptions, device);
+            callback = () => _iosTestBackend.run(
+                  device: device,
+                  options: IOSAppOptions(
+                    target: target,
+                    flavor: config.flavor,
+                    dartDefines: config.dartDefines,
+                    scheme: config.scheme,
+                    xcconfigFile: config.xcconfigFile,
+                    configuration: config.configuration,
+                  ),
+                );
             break;
         }
 
