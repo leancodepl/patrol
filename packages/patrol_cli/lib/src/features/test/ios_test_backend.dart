@@ -93,6 +93,7 @@ class IOSTestBackend {
       task.complete('Built and ran apk for $targetName on ${device.id}');
     } else {
       task.fail('Failed to build apk for $targetName and run ');
+      throw Exception('xcodebuild exited with code $exitCode');
     }
   }
 
