@@ -104,10 +104,9 @@ class IOSTestBackend {
     final cmd = [
       ...['xcodebuild', 'test'],
       ...['-workspace', 'Runner.xcworkspace'],
-      ...['-scheme', 'Runner'],
-      // TODO: Add support for flavors
-      ...['-xcconfig', 'Flutter/Debug.xcconfig'],
-      ...['-configuration', 'Debug'],
+      ...['-scheme', appOptions.scheme],
+      ...['-xcconfig', appOptions.xcconfigFile],
+      ...['-configuration', appOptions.configuration],
       ...['-sdk', if (device.real) 'iphoneos' else 'iphonesimulator'],
       ...[
         '-destination',

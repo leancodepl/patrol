@@ -19,6 +19,9 @@ class TestCommandConfig {
     required this.devices,
     required this.targets,
     required this.flavor,
+    required this.scheme,
+    required this.xcconfigFile,
+    required this.configuration,
     required this.dartDefines,
     required this.packageName,
     required this.bundleId,
@@ -29,6 +32,9 @@ class TestCommandConfig {
   final List<Device> devices;
   final List<String> targets;
   final String? flavor;
+  final String scheme;
+  final String xcconfigFile;
+  final String configuration;
   final Map<String, String> dartDefines;
   final String? packageName;
   final String? bundleId;
@@ -110,10 +116,22 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         'label',
         help: 'Display the label over the application under test.',
         defaultsTo: true,
+      )
+      ..addOption(
+        'scheme',
+        help: '(iOS only) Xcode scheme to use',
+        defaultsTo: 'Runner',
+      )
+      ..addOption(
+        'xcconfig',
+        help: '(iOS only) Xcode .xcconfig file to use',
+        defaultsTo: 'Flutter/Debug.xcconfig',
+      )
+      ..addOption(
+        'configuration',
+        help: '(iOS only) Xcode configuration to use',
+        defaultsTo: 'Debug',
       );
-    // TODO: add scheme
-    // TODO: add xcconfig file
-    // TODO: add configuration
   }
 
   @override
@@ -192,6 +210,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       devices: attachedDevices,
       targets: targets,
       flavor: flavor,
+      scheme: argResults?['scheme'] as String,
+      xcconfigFile: argResults?['xcconfig'] as String,
+      configuration: argResults?['configuration'] as String,
       dartDefines: <String, String?>{
         ...dartDefines,
         envWaitKey: wait as String? ?? '0',
