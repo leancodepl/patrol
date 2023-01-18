@@ -24,6 +24,25 @@ class IOSAppOptions {
   final String scheme;
   final String xcconfigFile;
   final String configuration;
+
+  /// Translates these options into a proper xcodebuild invocation.
+  List<String> toXcodebuildInvocation(Device device) {
+    final cmd = [
+      ...['xcodebuild', 'test'],
+      ...['-workspace', 'Runner.xcworkspace'],
+      ...['-scheme', scheme],
+      ...['-xcconfig', xcconfigFile],
+      ...['-configuration', configuration],
+      ...['-sdk', if (device.real) 'iphoneos' else 'iphonesimulator'],
+      ...[
+        '-destination',
+        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
+      ],
+      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+    ];
+
+    return cmd;
+  }
 }
 
 class IOSTestBackend {
@@ -53,7 +72,7 @@ class IOSTestBackend {
         .task('Building app for $targetName and running it on ${device.id}');
 
     final process = await _processManager.start(
-      translateXcodebuild(options, device),
+      options.toXcodebuildInvocation(device),
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
     );
@@ -90,29 +109,6 @@ class IOSTestBackend {
         '${dartDefine.key}=${dartDefine.value}',
       ],
       // TODO: Add support for test label
-    ];
-
-    return cmd;
-  }
-
-  /// Translates [IOSAppOptions] into a proper xcodebuild invocation.
-  @visibleForTesting
-  static List<String> translateXcodebuild(
-    IOSAppOptions appOptions,
-    Device device,
-  ) {
-    final cmd = [
-      ...['xcodebuild', 'test'],
-      ...['-workspace', 'Runner.xcworkspace'],
-      ...['-scheme', appOptions.scheme],
-      ...['-xcconfig', appOptions.xcconfigFile],
-      ...['-configuration', appOptions.configuration],
-      ...['-sdk', if (device.real) 'iphoneos' else 'iphonesimulator'],
-      ...[
-        '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
-      ],
-      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
 
     return cmd;

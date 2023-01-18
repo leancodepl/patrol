@@ -2,7 +2,7 @@ import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('AndroidTestBackend', () {
+  group('AndroidAppOptions', () {
     group('translate()', () {
       test('correctly encodes simple test invocation', () {
         final options = AndroidAppOptions(
@@ -11,7 +11,7 @@ void main() {
           dartDefines: {},
         );
 
-        final invocation = AndroidNativeTestBackend.translate(options);
+        final invocation = options.toGradleInvocation();
         expect(
           invocation,
           equals([
@@ -33,7 +33,7 @@ void main() {
           },
         );
 
-        final invocation = AndroidNativeTestBackend.translate(options);
+        final invocation = options.toGradleInvocation();
         expect(
           invocation,
           equals([
