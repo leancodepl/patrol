@@ -1,5 +1,4 @@
 import 'package:ansi_styles/extension.dart';
-import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -50,20 +49,16 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     required TestFinder testFinder,
     required NativeTestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
-    required DisposeScope parentDisposeScope,
-    required AndroidNativeTestBackend androidTestDriver,
-    required IOSTestBackend iosTestDriver,
+    required AndroidTestBackend androidTestBackend,
+    required IOSTestBackend iosTestBackend,
     required Logger logger,
-  })  : _disposeScope = DisposeScope(),
-        _deviceFinder = deviceFinder,
+  })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
-        _androidTestBackend = androidTestDriver,
-        _iosTestBackend = iosTestDriver,
+        _androidTestBackend = androidTestBackend,
+        _iosTestBackend = iosTestBackend,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
-    _disposeScope.disposedBy(parentDisposeScope);
-
     argParser
       ..addMultiOption(
         'target',
@@ -137,12 +132,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   @override
   bool get hidden => true;
 
-  final DisposeScope _disposeScope;
-
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final NativeTestRunner _testRunner;
-  final AndroidNativeTestBackend _androidTestBackend;
+  final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final DartDefinesReader _dartDefinesReader;
 
@@ -218,7 +211,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       flavor: flavor,
       scheme: argResults?['scheme'] as String,
       xcconfigFile: argResults?['xcconfig'] as String,
-      configuration: argResults?['configuration'] as String,
+      configuration: !argResults!.wasParsed('configuration') &&
+              argResults!.wasParsed('flavor')
+          ? 'Debug-${argResults!['flavor']}'
+          : argResults?['configuration'] as String,
       dartDefines: <String, String?>{
         ...dartDefines,
         envWaitKey: wait as String? ?? '0',

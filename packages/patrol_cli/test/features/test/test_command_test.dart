@@ -1,0 +1,145 @@
+import 'package:file/file.dart';
+import 'package:file/memory.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
+import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
+import 'package:patrol_cli/src/features/test/android_test_backend.dart';
+import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
+import 'package:patrol_cli/src/features/test/native_test_runner.dart';
+import 'package:patrol_cli/src/features/test/test_command.dart';
+import 'package:test/test.dart';
+
+import '../../fakes.dart';
+import '../../fixtures.dart';
+import '../../mocks.dart';
+
+final _defaultConfig = TestCommandConfig(
+  devices: [androidDevice],
+  targets: [],
+  flavor: null,
+  scheme: 'Runner',
+  xcconfigFile: 'Flutter/Debug.xcconfig',
+  configuration: 'Debug',
+  dartDefines: {'PATROL_WAIT': '0', 'PATROL_VERBOSE': 'false'},
+  displayLabel: false,
+  packageName: null,
+  bundleId: null,
+  repeat: 1,
+);
+
+void main() {
+  setUpFakes();
+
+  late TestCommand testCommand;
+
+  group('TestCommand', () {
+    late DeviceFinder deviceFinder;
+    late TestFinder testFinder;
+    late AndroidTestBackend androidTestBackend;
+    late IOSTestBackend iosTestBackend;
+    late FileSystem fs;
+    late NativeTestRunner testRunner;
+
+    setUp(() {
+      fs = MemoryFileSystem.test();
+      final wd = fs.directory('/projects/awesome_app')
+        ..createSync(recursive: true);
+      fs.currentDirectory = wd;
+      final integrationTestDir = fs.directory('integration_test')..createSync();
+
+      deviceFinder = MockDeviceFinder();
+      when(
+        () => deviceFinder.find(any()),
+      ).thenAnswer((_) async => [androidDevice]);
+
+      testFinder = TestFinder(
+        integrationTestDir: fs.directory(integrationTestDir),
+        fs: fs,
+      );
+
+      androidTestBackend = MockAndroidTestBackend();
+      iosTestBackend = MockIOSTestBackend();
+      testRunner = NativeTestRunner();
+
+      testCommand = TestCommand(
+        deviceFinder: deviceFinder,
+        testFinder: testFinder,
+        testRunner: testRunner,
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
+        dartDefinesReader: DartDefinesReader(
+          fs: fs,
+          projectRoot: fs.currentDirectory,
+        ),
+        logger: MockLogger(),
+      );
+    });
+
+    test('has correct default config', () async {
+      final config = await testCommand.parseInput();
+      expect(config, _defaultConfig);
+    });
+
+    test('has correct config when single target is given', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+
+      final config = await testCommand.parseInput();
+
+      // TODO: write test case
+    });
+
+    test('has correct config when multiple targets are given', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+      fs.file('integration_test/login_test.dart').createSync();
+
+      final config = await testCommand.parseInput();
+
+      expect(
+        config,
+        _defaultConfig.copyWith(
+          targets: [
+            '/projects/awesome_app/integration_test/app_test.dart',
+            '/projects/awesome_app/integration_test/login_test.dart'
+          ],
+        ),
+      );
+
+      // TODO: write test case
+    });
+
+    test('returns exit code 0 when all tests pass', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+      fs.file('integration_test/login_test.dart').createSync();
+
+      final config = await testCommand.parseInput();
+
+      when(
+        () => androidTestBackend.run(
+          device: any(named: 'device'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer((_) async {});
+
+      final exitCode = await testCommand.execute(config);
+      expect(exitCode, isZero);
+    });
+
+    test('returns exit code 1 when any test fails', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+      fs.file('integration_test/login_test.dart').createSync();
+
+      final config = await testCommand.parseInput();
+
+      when(
+        () => androidTestBackend.run(
+          device: any(named: 'device'),
+          options: any(named: 'options'),
+        ),
+      ).thenThrow(Exception());
+
+      final exitCode = await testCommand.execute(config);
+      expect(exitCode, equals(1));
+    });
+  });
+}
