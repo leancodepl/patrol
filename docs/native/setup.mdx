@@ -6,20 +6,41 @@ app with Android and/or iOS native testing tools.
 
 We believe that the poweful features you'll get will make up for it!
 
+### Add dependency on patrol
+
+If you haven't already, add a dependency on the `patrol` package in the
+`dev_dependencies` section of `pubspec.yaml`.
+
+```bash
+flutter pub add patrol --dev
+```
+
+### Install patrol_cli
+
+Patrol CLI (command-line interface) is a small program that makes it easier to
+run Flutter integration tests using Patrol's native automation feature. It
+handles the complexity of native iOS and Android testing tools itself, so you
+can focus on writing your tests instead of learning yet another
+platform-specific tool.
+
 1. Install `patrol` executable:
 
    ```bash
-   $ dart pub global activate patrol_cli
+   dart pub global activate patrol_cli
    ```
 
-2. Perform initial setup in your Flutter project root:
+2. Verify that installation was successful:
 
    ```bash
-   $ patrol bootstrap
+   patrol --version
    ```
 
-3. Run the example generated integration test:
+Also make sure to update Patrol CLI from time to time:
 
-   ```bash
-   $ patrol drive
-   ```
+```bash
+patrol update
+```
+
+These 2 first steps were common across platforms. The rest is platform-specific.
+
+Psst... Android is a bit easier to set up, so we recommend starting with it!
