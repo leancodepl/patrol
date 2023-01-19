@@ -14,7 +14,7 @@
       "Custom finders",
       [
         ["Overview", "/custom-finders/overview"],
-        ["Getting started", "/custom-finders/getting-started"],
+        ["Usage", "/custom-finders/usage"],
         ["Advanced", "/custom-finders/advanced"]
       ]
     ],

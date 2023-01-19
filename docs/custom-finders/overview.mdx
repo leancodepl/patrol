@@ -7,7 +7,7 @@ We took them and made something awesome.
 Thanks to Patrol's custom finders, you'll take your tests from this:
 
 ```dart
-testWidgets('signs up', (tester) async {
+testWidgets('signs up', (WidgetTester tester) async {
   await tester.pumpWidget(AwesomeApp());
   await tester.pumpAndSettle();
 
@@ -42,7 +42,7 @@ testWidgets('signs up', (tester) async {
 to this:
 
 ```dart
-patrolTest('signs up', ($) async {
+patrolTest('signs up', (PatrolTester $) async {
   await $.pumpWidgetAndSettle(AwesomeApp());
 
   await $(#emailTextField).enterText('bartek@awesome.com');
