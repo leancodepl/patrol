@@ -12,7 +12,7 @@ First, add the `patrol` package as a `dev_dependency` in your app's
 `pubspec.yaml`. You can do this by executing the following command in the app's
 directory:
 
-```bash
+```console
 flutter pub add patrol --dev
 ```
 
@@ -45,6 +45,12 @@ void main() {
 }
 ```
 
+To run the test, simply execute:
+
+```console
+flutter test
+```
+
 Below is the same test written using vanilla Flutter:
 
 ```dart
@@ -74,10 +80,16 @@ easier and more fun.
 
 Patrol has 2 main features that can be used independently of each other:
 **custom finders** and **native capabilities**. The choice if to use one or both
-belongs to you.
+belongs to you (yet most people use both!)
 
-[Here][custom_finders] you can learn more about custom finders, and
-[here][native_capabilities] you can learn more about native capabilities.
+[Here][custom_finders] you can learn more about custom finders. They make
+interacting with Flutter widgets in tests much easier and more concise – you've
+seen the tiny sample above! They are platform independent and work in widget
+tests and integration tests.
+
+[Here][native_capabilities] you can learn more about our native automation.
+Native automation lets you do things that were previously impossible in Flutter
+integration tests - for e
 
 [patrol]: https://pub.dev/packages/patrol
 [patrol_cli]: https://pub.dev/packages/patrol_cli
