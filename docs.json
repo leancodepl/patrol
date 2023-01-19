@@ -24,6 +24,7 @@
         ["Overview", "/native/overview"],
         ["Setup", "/native/setup"],
         ["Usage", "/native/usage"],
+        ["Advanced", "/native/advanced"],
         ["Feature parity", "/native/feature-parity"]
       ]
     ],
