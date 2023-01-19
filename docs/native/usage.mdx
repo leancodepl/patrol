@@ -30,59 +30,7 @@ That's why you must use `patrol drive` instead of `flutter test` to run
 integration tests. Technically, you could do everything that `patrol drive` does
 yourself, but fortunately, you don't have to.
 
-### Initializing `NativeAutomator`
-
-The class responsible for native interactions is [NativeAutomator].
-
-You can initialize it in 2 ways:
-
-**Automatically (recommended)**
-
-It makes `NativeAutomator` available as `PatrolTester.native`. In the rest of
-documentation we'll use this way.
-
-```dart
-// integration_test/app_test.dart
-
-void main() {
-  patrolTest(
-    'test description',
-    config: patrolConfig,
-    nativeAutomation: true,
-    (PatrolTester $) async {
-      await $.native.pressHome();
-      // more test code
-    },
-  );
-}
-```
-
-**Manually**
-
-This is useful if, for any reason, you have to use Flutter's default
-[testWidgets()][test_widgets] function rather than Patrol's
-[patrolTest()][patrol_test].
-
-```dart
-// integration_test/app_test.dart
-
-void main() {
-  final automator = NativeAutomator(
-    packageName: 'your.app.id.on.android',
-    bundleId: 'your.app.id.on.ios',
-  );
-
-  testWidgets(
-    'test description',
-    (WidgetTester tester) async {
-      await automator.pressHome();
-      // more test code
-    },
-  );
-}
-```
-
-### Using `NativeAutomator`
+### The basics
 
 After you've got your `NativeAutomator` object, you simply call methods on it
 and it does the magic.
@@ -101,6 +49,12 @@ To tap on a native view (for example, a button in a WebView):
 ```dart
 await $.native.tap(Selector(text: 'Sign up for newsletter'));
 ```
+
+The above are the simplest, most common actions, but they already make it
+possible to test scenarios that were impossible to test before, such as
+WebViews.
+
+### Going deeper
 
 To open the notification shade:
 
@@ -154,6 +108,4 @@ To see more integration tests demonstrating Patrol's various features, check out
 our [example app][example_app_tests].
 
 [nativeautomator]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator-class.html
-[test_widgets]: https://api.flutter.dev/flutter/flutter_test/testWidgets.html
-[patrol_test]: https://pub.dev/documentation/patrol/latest/patrol/patrolTest.html
 [example_app_tests]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
