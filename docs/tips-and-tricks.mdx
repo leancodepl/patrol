@@ -1,6 +1,6 @@
 # Tips and tricks
 
-## Running a test many times
+### Running a test many times
 
 Sometimes, you might want to run a test many times. Patrol makes this easy:
 
@@ -24,7 +24,7 @@ $ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
 1..10 | ForEach-Object { patrol drive --target integration_test/my_test.dart }
 ```
 
-## Inspecting native view hierarchy
+### Inspecting native view hierarchy
 
 It's hard to tap on or enter text into a view you don't know how to refer to. In
 such situation we recommmend doing a native view hierarchy dump and finding the
@@ -55,7 +55,7 @@ Once you have [idb] installed, perform a dump:
 $ idb ui describe-all
 ```
 
-## Avoiding hardcoding credentials in tests
+### Avoiding hardcoding credentials in tests
 
 It's a bad practice to hardcode data such as emails, usernames, and passwords in
 test code.
@@ -91,7 +91,7 @@ PASSWORD=ny4ncat
 DISABLE_ANALYTICS=true
 ```
 
-## Granting sensitive permission through the Settings app
+### Granting sensitive permission through the Settings app
 
 Some particularly sensitive permissions (such as access to background location
 or controlling the Do Not Disturb feature) cannot be requested in the permission
@@ -119,7 +119,7 @@ Please note that the UI of the Settings app differs across operating systems,
 their versions, and OEM flavors (in case of Android). You'll have to handle all
 edge cases yourself.
 
-## Ignoring exceptions
+### Ignoring exceptions
 
 If an exception is thrown during a test, it is marked as failed. This is
 Flutter's default behavior and it's usually good – after all, it's better to fix
@@ -152,7 +152,7 @@ if (exceptionCount != 0) {
 }
 ```
 
-## Handling permission dialogs before the main app widget is pumped
+### Handling permission dialogs before the main app widget is pumped
 
 Sometimes you might want to manually request permissions in the test before the
 main app widget is pumped. Let's say that you're using the [geolocator] package:
@@ -183,7 +183,7 @@ See also:
 
 - [Patrol issue #628][628]
 
-## Bundling many tests into a single app binary
+### Bundling many tests into a single app binary
 
 A new application binary (`.apk` for Android and `.app` for iOS) is built for
 every Dart test file in the `integration_test` directory. This is [slow and
