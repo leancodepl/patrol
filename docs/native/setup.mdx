@@ -83,8 +83,13 @@ The 3 first steps were common across platforms. The rest is platform-specific.
 
 Psst... Android is a bit easier to set up, so we recommend starting with it!
 
-<Tabs defaultValue="android" values={[ { label: "Android", value: "android" }, {
-  label: "iOS", value: "ios" }, ]}> <TabItem value="android">
+<Tabs 
+  defaultValue="android" 
+  values={[
+    { label: "Android", value: "android" },
+    { label: "iOS", value: "ios" },
+  ]}>
+  <TabItem value="android">
     
       Create an instrumentation test file in your application's
       **android/app/src/androidTest/java/com/example/myapp/** directory (replacing
@@ -122,89 +127,99 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       }
       ```
 
-      To run `integration_test/example_test.dart` on a local Android device (emulated or
-      physical):
+      To run `integration_test/example_test.dart` on a local Android device
+      (emulated or physical):
 
       ```bash
-      $ ./gradlew :app:connectedDebugAndroidTest -Ptarget=$(pwd)/../integration_test/example_test.dart
+      patrol test --target integration_test/example_test.dart
       ```
 
-  </TabItem> <TabItem value="ios">
+      If the setup is successful, you should see a **TEST PASSED** message.
 
-    ⚠️ We're working on making this process easier and improving its documentation.
+  </TabItem>
+  <TabItem value="ios">
 
-    Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
-    do not already have one via `File > New > Target...` and select `UI Testing Bundle`.
-    Change the `Product Name` to `RunnerUITests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
-    Select `Finish`.
-    Make sure that the **iOS Deployment Target** of `RunnerUITests` within the **Build Settings** section is the same as `Runner`.
+      Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
+      do not already have one via `File > New > Target...` and select `UI Testing Bundle`.
+      Change the `Product Name` to `RunnerUITests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
+      Select `Finish`.
+      Make sure that the **iOS Deployment Target** of `RunnerUITests` within the **Build Settings** section is the same as `Runner`.
 
-    Add the new test target to `ios/Podfile` by embedding in the existing `Runner` target.
+      Add the new test target to `ios/Podfile` by embedding in the existing `Runner` target.
 
-    ```ruby
-    target 'Runner' do
+      ```ruby
+      target 'Runner' do
       # Do not change existing lines.
       ...
 
       target 'RunnerUITests' do
-        inherit! :complete
+         inherit! :complete
       end
-    end
-    ```
+      end
+      ```
 
-    In Xcode, add a test file called `RunnerUITests.m` (or any name of your choice)
-    to the new target and replace the file with the following:
+      In Xcode, add a test file called `RunnerUITests.m` (or any name of your choice)
+      to the new target and replace the file with the following:
 
-    ```objective-c
-    @import XCTest;
-    @import patrol;
+      ```objective-c
+      @import XCTest;
+      @import patrol;
 
-    PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
-    ```
+      PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
+      ```
 
-    To build `integration_test/example_test.dart` from the command line, run:
+      To build `integration_test/example_test.dart` from the command line, run:
 
-    ```bash
-    $ flutter build ios --config-only integration_test/example_test.dart
-    ```
+      ```bash
+      $ flutter build ios --config-only integration_test/example_test.dart
+      ```
 
-    Now, go to your `ios` directory and set up the new target:
+      Now, go to your `ios` directory and set up the new target:
 
-    ```
-    $ pod install --repo-update
-    ```
+      ```
+      $ pod install --repo-update
+      ```
 
-    Open your Xcode project and select make every target have correct base
-    Build Configurations:
+      Open your Xcode project and select make every target have correct base
+      Build Configurations:
 
-    ```
-    $ open Runner.xcworkspace
-    ```
+      ```
+      $ open Runner.xcworkspace
+      ```
 
-    ![Xcode config setup](/assets/ios_runner_configs.png)
+      ![Xcode config setup](/assets/ios_runner_configs.png)
 
-    RunnerUITests depends on Patrol, which depens on Flutter, so we need to
-    tell Xcode to embed Flutter in the RunnerUITests target. To do this, add
-    2 new Build Phases to the `RunnerUITests` target:
+      RunnerUITests depends on Patrol, which depens on Flutter, so we need to
+      tell Xcode to embed Flutter in the RunnerUITests target. To do this, add
+      2 new Build Phases to the `RunnerUITests` target:
 
-    ![Xcode config setup](/assets/ios_runner_build_phases.png)
+      ![Xcode config setup](/assets/ios_runner_build_phases.png)
 
-    Paste this code into the first `xcode_backend build` Build Phase:
+      Paste this code into the first `xcode_backend build` Build Phase:
 
-    ```bash
-    /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
-    ```
+      ```bash
+      /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
+      ```
 
-    Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
+      Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
 
-    ```bash
-    /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
-    ```
+      ```bash
+      /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
+      ```
 
-    To run the test on a local iOS device (simulated or physical):
-    - run `Product > Test` to run the integration tests on your selected device.
-    - or click the "play" button on the last line of your test:
+      To run the test on a local iOS device (simulated or physical):
+
+      ```bash
+      patrol test --target integration_test/example_test.dart
+      ```
+
+      Alternatively, you can:
+      - run `Product > Test` to run the integration tests on your selected device.
+      - or click the "play" button on the last line of your test:
 
       ![Run tests natively on iOS](/assets/ios_run_test.png)
 
-  </TabItem> </Tabs>
+      If the setup is successful, you should see a **TEST PASSED** message.
+
+  </TabItem>
+</Tabs>
