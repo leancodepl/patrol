@@ -1,4 +1,4 @@
-# Getting started
+# Usage
 
 Once set up, interacting with the native UI with Patrol is very easy!
 
@@ -32,7 +32,7 @@ yourself, but fortunately, you don't have to.
 
 ### Initializing `NativeAutomator`
 
-The class which is responsible for native interactions is [NativeAutomator].
+The class responsible for native interactions is [NativeAutomator].
 
 You can initialize it in 2 ways:
 
@@ -84,16 +84,16 @@ void main() {
 
 ### Using `NativeAutomator`
 
-After you've got your `NativeAutomator` object, you just call methods on it and
-it does magic.
+After you've got your `NativeAutomator` object, you simply call methods on it
+and it does the magic.
 
 To enter text into a native view (for example, a form in a WebView):
 
 ```dart
 await $.native.enterText(
-    Selector(text: 'Enter your email'),
-    text: 'bartek@awesome.com',
-  );
+  Selector(text: 'Enter your email'),
+  text: 'bartek@awesome.com',
+);
 ```
 
 To tap on a native view (for example, a button in a WebView):
@@ -130,7 +130,23 @@ await $.native.selectFineLocation();
 await $.native.selectCoarseLocation();
 ```
 
-The test will fail if the permission prompt is not visible.
+The test will fail if the permission prompt is not visible. You can check if it
+is with:
+
+```dart
+if (await $.native.isPermissionDialogVisible()) {
+  await $.native.grantPermissionWhenInUse();
+}
+```
+
+By default, `isPermissionDialogVisible()` waits for a short amount of time and
+then returns `false` if the dialog is not visible. To increase the timeout:
+
+```dart
+if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
+  await $.native.grantPermissionWhenInUse();
+}
+```
 
 ### More resources
 

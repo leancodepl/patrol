@@ -23,7 +23,7 @@
       [
         ["Overview", "/native/overview"],
         ["Setup", "/native/setup"],
-        ["Getting started", "/native/getting-started"],
+        ["Usage", "/native/usage"],
         ["Feature parity", "/native/feature-parity"]
       ]
     ],
