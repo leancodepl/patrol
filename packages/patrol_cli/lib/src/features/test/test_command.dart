@@ -1,4 +1,5 @@
 import 'package:ansi_styles/extension.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -13,32 +14,23 @@ import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
 import '../run_commons/constants.dart';
 
-class TestCommandConfig {
-  const TestCommandConfig({
-    required this.devices,
-    required this.targets,
-    required this.flavor,
-    required this.scheme,
-    required this.xcconfigFile,
-    required this.configuration,
-    required this.dartDefines,
-    required this.packageName,
-    required this.bundleId,
-    required this.repeat,
-    required this.displayLabel,
-  });
+part 'test_command.freezed.dart';
 
-  final List<Device> devices;
-  final List<String> targets;
-  final String? flavor;
-  final String scheme;
-  final String xcconfigFile;
-  final String configuration;
-  final Map<String, String> dartDefines;
-  final String? packageName;
-  final String? bundleId;
-  final int repeat;
-  final bool displayLabel;
+@freezed
+class TestCommandConfig with _$TestCommandConfig {
+  const factory TestCommandConfig({
+    required List<Device> devices,
+    required List<String> targets,
+    required String? flavor,
+    required String scheme,
+    required String xcconfigFile,
+    required String configuration,
+    required Map<String, String> dartDefines,
+    required String? packageName,
+    required String? bundleId,
+    required int repeat,
+    required bool displayLabel,
+  }) = _TestCommandConfig;
 }
 
 const _defaultRepeats = 1;
@@ -115,19 +107,22 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       ..addOption(
         'scheme',
         help: '(iOS only) Xcode scheme to use',
-        defaultsTo: 'Runner',
+        defaultsTo: _defaultScheme,
       )
       ..addOption(
         'xcconfig',
         help: '(iOS only) Xcode .xcconfig file to use',
-        defaultsTo: 'Flutter/Debug.xcconfig',
+        defaultsTo: _defaultXCConfigFile,
       )
       ..addOption(
         'configuration',
         help: '(iOS only) Xcode configuration to use',
-        defaultsTo: 'Debug',
+        defaultsTo: _defaultConfiguration,
       );
   }
+  static const _defaultScheme = 'Runner';
+  static const _defaultXCConfigFile = 'Flutter/Debug.xcconfig';
+  static const _defaultConfiguration = 'Debug';
 
   @override
   bool get hidden => true;
@@ -209,12 +204,12 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       devices: attachedDevices,
       targets: targets,
       flavor: flavor,
-      scheme: argResults?['scheme'] as String,
-      xcconfigFile: argResults?['xcconfig'] as String,
-      configuration: !argResults!.wasParsed('configuration') &&
-              argResults!.wasParsed('flavor')
+      scheme: argResults?['scheme'] as String? ?? _defaultScheme,
+      xcconfigFile: argResults?['xcconfig'] as String? ?? _defaultXCConfigFile,
+      configuration: !(argResults?.wasParsed('configuration') ?? false) &&
+              (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
-          : argResults?['configuration'] as String,
+          : argResults?['configuration'] as String? ?? _defaultConfiguration,
       dartDefines: <String, String?>{
         ...dartDefines,
         envWaitKey: wait as String? ?? '0',

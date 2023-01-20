@@ -22,7 +22,7 @@ final _defaultConfig = TestCommandConfig(
   xcconfigFile: 'Flutter/Debug.xcconfig',
   configuration: 'Debug',
   dartDefines: {'PATROL_WAIT': '0', 'PATROL_VERBOSE': 'false'},
-  displayLabel: false,
+  displayLabel: true,
   packageName: null,
   bundleId: null,
   repeat: 1,
@@ -86,7 +86,25 @@ void main() {
 
       final config = await testCommand.parseInput();
 
-      // TODO: write test case
+      expect(
+        config,
+        _defaultConfig.copyWith(
+          targets: ['/projects/awesome_app/integration_test/app_test.dart'],
+        ),
+      );
+    });
+
+    test('has correct config when single target is given', () async {
+      fs.file('integration_test/app_test.dart').createSync();
+
+      final config = await testCommand.parseInput();
+
+      expect(
+        config,
+        _defaultConfig.copyWith(
+          targets: ['/projects/awesome_app/integration_test/app_test.dart'],
+        ),
+      );
     });
 
     test('has correct config when multiple targets are given', () async {
@@ -104,8 +122,6 @@ void main() {
           ],
         ),
       );
-
-      // TODO: write test case
     });
 
     test('returns exit code 0 when all tests pass', () async {
