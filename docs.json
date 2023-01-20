@@ -35,6 +35,7 @@
         ["devices", "/cli-commands/devices"],
         ["doctor", "/cli-commands/doctor"],
         ["drive", "/cli-commands/drive"],
+        ["test", "/cli-commands/test"],
         ["update", "/cli-commands/update"]
       ]
     ],
