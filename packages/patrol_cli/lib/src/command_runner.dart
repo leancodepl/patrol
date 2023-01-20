@@ -123,6 +123,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         testRunner: NativeTestRunner(),
         androidTestDriver: AndroidNativeTestBackend(
           processManager: LoggingLocalProcessManager(logger: _logger),
+          platform: const LocalPlatform(),
           fs: _fs,
           parentDisposeScope: _disposeScope,
           logger: _logger,

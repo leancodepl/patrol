@@ -6,6 +6,7 @@ import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 class AndroidAppOptions {
@@ -20,8 +21,13 @@ class AndroidAppOptions {
   final Map<String, String> dartDefines;
 
   /// Translates these options into a proper Gradle invocation.
-  List<String> toGradleInvocation() {
-    final cmd = <String>['./gradlew'];
+  List<String> toGradleInvocation(Platform platform) {
+    final List<String> cmd;
+    if (platform.isWindows) {
+      cmd = <String>['gradlew.bat'];
+    } else {
+      cmd = <String>['./gradlew'];
+    }
 
     // Add Gradle task
     var flavor = this.flavor ?? '';
@@ -57,17 +63,20 @@ class AndroidAppOptions {
 class AndroidNativeTestBackend {
   AndroidNativeTestBackend({
     required ProcessManager processManager,
+    required Platform platform,
     required FileSystem fs,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
         _fs = fs,
+        _platform = platform,
         _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
   final ProcessManager _processManager;
+  final Platform _platform;
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
@@ -81,7 +90,7 @@ class AndroidNativeTestBackend {
         .task('Building apk for $targetName and running it on ${device.id}');
 
     final process = await _processManager.start(
-      options.toGradleInvocation(),
+      options.toGradleInvocation(_platform),
       runInShell: true,
       environment: {
         'ANDROID_SERIAL': device.id,
