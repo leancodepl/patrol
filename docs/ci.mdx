@@ -45,7 +45,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     ```
     gcloud firebase test android run --type instrumentation \
         --app build/app/outputs/apk/debug/app-debug.apk \
-        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
+        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
         --timeout 1m \
         --results-bucket=<RESULTS_BUCKET> \
         --results-dir=<RESULTS_DIRECTORY>

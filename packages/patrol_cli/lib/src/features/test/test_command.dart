@@ -163,6 +163,11 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         ? _testFinder.findTests(target)
         : _testFinder.findAllTests();
 
+    _logger.detail('Received ${targets.length} test target(s)');
+    for (final t in targets) {
+      _logger.detail('Received test target: $t');
+    }
+
     final flavor = argResults?['flavor'] as String?;
 
     final devices = argResults?['device'] as List<String>? ?? [];
@@ -174,8 +179,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       ),
     };
 
+    _logger.detail('Received ${dartDefines.length} --dart-define(s)');
     for (final dartDefine in dartDefines.entries) {
-      _logger.info('Got --dart-define ${dartDefine.key}');
+      _logger.detail('Received --dart-define: ${dartDefine.key}');
     }
 
     final dynamic packageName = argResults?['package-name'];
