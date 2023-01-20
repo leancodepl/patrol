@@ -9,9 +9,7 @@ This is useful if, for any reason, you have to use Flutter's default
 [testWidgets()][test_widgets] function rather than Patrol's
 [patrolTest()][patrol_test].
 
-```dart
-// integration_test/app_test.dart
-
+```dart title="integration_test/app_test.dart"
 Future<void> main() async {
   final automator = NativeAutomator(
     packageName: 'your.app.id.on.android',
@@ -42,7 +40,7 @@ does under the hood anyway.
 
 Execute the below Gradle command in your app's `android` directory:
 
-```bash
+```
 ./gradlew :app:connectedDebugAndroidTest -Ptarget=$(pwd)/../integration_test/example_test.dart
 ```
 
@@ -52,7 +50,7 @@ Execute these 2 commands in your app's `ios` directory:
 
 First,
 
-```bash
+```
 flutter build ios --target integration_test/example_test.dart --config-only --debug
 ```
 
@@ -72,7 +70,7 @@ Of course, replace the device name with the name of your device.
 
 Execute these 2 commands in your app's `ios` directory:
 
-```bash
+```
 flutter build ios --target integration_test/example_test.dart --config-only --debug --simulator
 ```
 

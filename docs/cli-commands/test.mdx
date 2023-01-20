@@ -1,16 +1,11 @@
-# drive
-
-<Warning>
-  This command is deprecated and is scheduled for removal in Patrol 1.0. Use
-  [patrol test] instead.
-</Warning>
+# test
 
 ### Synopsis
 
-Runs tests on devices.
+Runs Flutter integration tests as native tests on devices.
 
 ```
-patrol drive
+patrol test
 ```
 
 To learn more about this command, run `patrol drive --help`.
@@ -19,12 +14,17 @@ To learn more about this command, run `patrol drive --help`.
 
 This command is the one use you'll be using most often.
 
-It does all the low-level things required to enable interacting with native OS,
-such as tapping on permission dialogs, notifications, and controlling Wi-Fi.
+It:
+
+1. Builds the app under test (AUT) and the instrumentation app
+2. Installs the AUT and the instrumentation on the selected device
+3. Runs the tests natively, and reports results back in native format.
+
+Under the hood, it calls Gradle on Android and `xcodebuild` on iOS
 
 ### Discussion
 
-By default, `patrol drive` runs all integration tests (files ending with
+By default, `patrol test` runs all integration tests (files ending with
 `_test.dart` located in the `integration_test` directory).
 
 To run a single test, use `--target`:
@@ -45,5 +45,3 @@ Test files must end with `_test.dart`. Otherwise the file is not considered a
 test and is not run.
 
 There's no difference between `--target` and `--targets`.
-
-[patrol test]: /cli-commands/test

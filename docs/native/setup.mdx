@@ -11,7 +11,7 @@ We believe that the poweful features you'll get will make up for it!
 If you haven't already, add a dependency on the `patrol` package in the
 `dev_dependencies` section of `pubspec.yaml`.
 
-```bash
+```
 flutter pub add patrol --dev
 ```
 
@@ -25,19 +25,19 @@ platform-specific tool.
 
 1. Install `patrol` executable:
 
-   ```bash
+   ```
    dart pub global activate patrol_cli
    ```
 
 2. Verify that installation was successful:
 
-   ```bash
+   ```
    patrol --version
    ```
 
 Also make sure to update Patrol CLI from time to time:
 
-```bash
+```
 patrol update
 ```
 
@@ -48,7 +48,7 @@ that Patrol is correctly set up.
 
 Paste the following code into `integration_test/example_test.dart`:
 
-```dart
+```dart title="integration_test/example_test.dart"
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -118,7 +118,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       Next, update your **app-level build.gradle**:
 
-      ```groovy
+      ```groovy title="android/app/build.gradle"
       android {
         // ...
         defaultConfig {
@@ -135,7 +135,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       To run `integration_test/example_test.dart` on a local Android device
       (emulated or physical):
 
-      ```bash
+      ```
       patrol test --target integration_test/example_test.dart
       ```
 
@@ -152,21 +152,21 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       Add the new test target to `ios/Podfile` by embedding in the existing `Runner` target.
 
-      ```ruby
+      ```ruby title="ios/Podfile"
       target 'Runner' do
-      # Do not change existing lines.
-      ...
+        # Do not change existing lines.
+        ...
 
-      target 'RunnerUITests' do
-         inherit! :complete
-      end
+        target 'RunnerUITests' do
+          inherit! :complete
+        end
       end
       ```
 
       In Xcode, add a test file called `RunnerUITests.m` (or any name of your choice)
       to the new target and replace the file with the following:
 
-      ```objective-c
+      ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
       @import XCTest;
       @import patrol;
 
@@ -175,7 +175,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       To build `integration_test/example_test.dart` from the command line, run:
 
-      ```bash
+      ```
       $ flutter build ios --config-only integration_test/example_test.dart
       ```
 
@@ -202,19 +202,19 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       Paste this code into the first `xcode_backend build` Build Phase:
 
-      ```bash
+      ```
       /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
       ```
 
       Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
 
-      ```bash
+      ```
       /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
       ```
 
       To run the test on a local iOS device (simulated or physical):
 
-      ```bash
+      ```
       patrol test --target integration_test/example_test.dart
       ```
 

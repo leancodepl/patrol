@@ -9,7 +9,6 @@
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
-    ["Comparison with other testing frameworks", "/comparison"],
     [
       "Custom finders",
       [
@@ -19,7 +18,7 @@
       ]
     ],
     [
-      "Native",
+      "Native automation",
       [
         ["Overview", "/native/overview"],
         ["Setup", "/native/setup"],
@@ -31,16 +30,18 @@
     [
       "CLI commands",
       [
-        ["bootstrap", "/cli-commands/bootstrap"],
-        ["clean", "/cli-commands/clean"],
+        ["test", "/cli-commands/test"],
         ["devices", "/cli-commands/devices"],
         ["doctor", "/cli-commands/doctor"],
-        ["drive", "/cli-commands/drive"],
-        ["update", "/cli-commands/update"]
+        ["update", "/cli-commands/update"],
+        ["clean [DEPRECATED]", "/cli-commands/clean"],
+        ["drive [DEPRECATED]", "/cli-commands/drive"],
+        ["bootstrap [DEPRECATED]", "/cli-commands/bootstrap"]
       ]
     ],
     ["Patrol and CI", "/ci"],
     ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"]
+    ["Tips and tricks", "/tips-and-tricks"],
+    ["Competition", "/comparison"]
   ]
 }
