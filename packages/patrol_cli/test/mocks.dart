@@ -9,6 +9,8 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
 import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
 import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
+import 'package:patrol_cli/src/features/test/android_test_backend.dart';
+import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:process/process.dart' as process;
 import 'package:pub_updater/pub_updater.dart' as pub;
 
@@ -33,6 +35,10 @@ class MockArtifactsRepository extends Mock implements ArtifactsRepository {}
 class MockDeviceFinder extends Mock implements DeviceFinder {}
 
 class MockAndroidDriver extends Mock implements AndroidDriver {}
+
+class MockAndroidTestBackend extends Mock implements AndroidTestBackend {}
+
+class MockIOSTestBackend extends Mock implements IOSTestBackend {}
 
 class MockIOSDriver extends Mock implements IOSDriver {}
 

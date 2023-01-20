@@ -121,14 +121,14 @@ class PatrolCommandRunner extends CommandRunner<int> {
           fs: _fs,
         ),
         testRunner: NativeTestRunner(),
-        androidTestDriver: AndroidNativeTestBackend(
+        androidTestBackend: AndroidTestBackend(
           processManager: LoggingLocalProcessManager(logger: _logger),
           platform: const LocalPlatform(),
           fs: _fs,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        iosTestDriver: IOSTestBackend(
+        iosTestBackend: IOSTestBackend(
           processManager: LoggingLocalProcessManager(logger: _logger),
           fs: _fs,
           parentDisposeScope: _disposeScope,
@@ -138,7 +138,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
           projectRoot: _fs.currentDirectory,
           fs: _fs,
         ),
-        parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
     );

@@ -60,8 +60,8 @@ class AndroidAppOptions {
   }
 }
 
-class AndroidNativeTestBackend {
-  AndroidNativeTestBackend({
+class AndroidTestBackend {
+  AndroidTestBackend({
     required ProcessManager processManager,
     required Platform platform,
     required FileSystem fs,
