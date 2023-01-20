@@ -34,14 +34,14 @@ properties of the view you want to act on.
 
 First, perform a native view hierarchy dump using `adb`:
 
-```bash
-$ adb shell uiautomator dump
+```
+adb shell uiautomator dump
 ```
 
 Then, copy the dump file from the device to your machine:
 
-```bash
-$ adb pull /sdcard/window_dump.xml .
+```
+adb pull /sdcard/window_dump.xml .
 ```
 
 **iOS**
@@ -51,8 +51,8 @@ The easiest way to perform the native view hierarchy dumb on iOS is to use the
 
 Once you have [idb] installed, perform a dump:
 
-```bash
-$ idb ui describe-all
+```
+idb ui describe-all
 ```
 
 ### Avoiding hardcoding credentials in tests
@@ -77,8 +77,8 @@ await $(#passwordTextField).enterText(const String.fromEnvironment('PASSWORD'));
 
 To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 
-```bash
-$ patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
+```
+patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
 ```
 
 Alternatively you can create a `.patrol.env` file in your project's root. Here's
@@ -210,8 +210,8 @@ Let's say that you have 2 tests: `add_comment_test.dart` and
 
 Now you can run the `bundled_test.dart`:
 
-```bash
-$ patrol drive --target integration_test/bundled_test.dart
+```
+patrol drive --target integration_test/bundled_test.dart
 ```
 
 This builds the application binary once, saving you some time.

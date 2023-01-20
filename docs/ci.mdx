@@ -26,13 +26,13 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
 
     - the normal apk (often called the "app under test"). To build it, run:
 
-      ```bash
+      ```
       ./gradlew :app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
       ```
 
     - the intrumentation apk. To build it, run:
 
-      ```bash
+      ```
       ./gradlew :app:assembleDebugAndroidTest
       ```
 
@@ -42,7 +42,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     Once you have built the apks, use the [gcloud] tool to run them on Firebase
     Test Lab:
 
-    ```bash
+    ```
     gcloud firebase test android run --type instrumentation \
         --app build/app/outputs/apk/debug/app-debug.apk \
         --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
@@ -61,14 +61,14 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
 
     First, build your Flutter app, choosing the integration test file as target:
 
-    ```bash
+    ```
     flutter build ios --target integration_test/example_test.dart --debug # or --release
     ```
 
     Then, build the UI testing target by running `xcodebuild` in the `ios`
     directory:
 
-    ```bash
+    ```
     xcodebuild build-for-testing \
       -workspace Runner.xcworkspace \
       -scheme Runner \
@@ -82,7 +82,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     If you want to test a debug version of your app, replace `xcconfig` and
     `configuration`:
 
-    ```bash
+    ```
     xcodebuild build-for-testing \
       -workspace Runner.xcworkspace \
       -scheme Runner \
@@ -96,25 +96,24 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     Now, go to your project's root directory, and from there go to the build
     outputs:
 
-    ```bash
+    ```
     cd build/ios_integ/Build/Products
     ```
 
     Create a zip archive named `ios_test.zip`. It will contain both your app
     under test (`Runner` target) and UI test runner (`RunnerUITests` target).
 
-    ```bash
+    ```
     zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos15.7-arm64.xctestrun"
     ```
 
     And finally, upload the `ios_test.zip` to Firebase Test Lab for execution:
 
 
-    ```bash
+    ```
     exec gcloud firebase test ios run \
       --test "build/ios_integ/Build/Products/ios_tests.zip" \
       --device model=iphone8,version=15.7,locale=en_US,orientation=portrait
-
     ```
 
     If your `.xctestrun` file has different iOS version in its name than the
