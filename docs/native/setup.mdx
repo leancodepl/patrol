@@ -141,6 +141,17 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       If the setup is successful, you should see a **TEST PASSED** message.
 
+      <Info>
+        If your app is using flavors, then you can pass them like so:
+
+        ```
+        patrol test --target integration_test/example_test.dart --flavor development
+        ```
+
+        If you're a tester and you're unsure what flavors are and if your app is
+        using them, ask the developer and they'll surely help you.
+      </Info>
+
   </TabItem>
   <TabItem value="ios">
 
@@ -225,6 +236,23 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       ![Run tests natively on iOS](/assets/ios_run_test.png)
 
       If the setup is successful, you should see a **TEST PASSED** message.
+
+      <Info>
+        If your app is using flavors, then you can pass them like so:
+
+        ```
+        patrol test --target integration_test/example_test.dart --flavor development
+        ```
+
+        If you're a tester and you're unsure what flavors are and if your app is
+        using them, ask the developer and they'll surely help you.
+      </Info>
+
+      <Info>
+        In addition to `--flavor`, `patrol test` optionally accepts a bunch of
+        iOS-specific arguments, such as `--scheme`, `xcconfig`, and
+        `--configuration`, in case your app is set up in a less standard way.
+      <Info>
 
   </TabItem>
 </Tabs>
