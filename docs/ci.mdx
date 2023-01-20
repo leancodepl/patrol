@@ -119,7 +119,7 @@ Add a dependency on the `patrol` package in the `dev_dependencies` section of
 `pubspec.yaml`.
 
 ```bash
-$ flutter pub add patrol --dev
+flutter pub add patrol --dev
 ```
 
 That first step of setup is common across platforms. The rest is platform-specific.
@@ -174,7 +174,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       physical):
 
       ```bash
-      $ ./gradlew :app:connectedDebugAndroidTest -Ptarget=$(pwd)/../integration_test/example_test.dart
+      ./gradlew :app:connectedDebugAndroidTest -Ptarget=$(pwd)/../integration_test/example_test.dart
       ```
 
   </TabItem>
@@ -214,20 +214,20 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
     To build `integration_test/example_test.dart` from the command line, run:
 
     ```bash
-    $ flutter build ios --config-only integration_test/example_test.dart
+    flutter build ios --config-only integration_test/example_test.dart
     ```
 
     Now, go to your `ios` directory and set up the new target:
 
     ```
-    $ pod install --repo-update
+    pod install --repo-update
     ```
 
     Open your Xcode project and select make every target have correct base
     Build Configurations:
 
     ```
-    $ open Runner.xcworkspace
+    open Runner.xcworkspace
     ```
 
     ![Xcode config setup](/assets/ios_runner_configs.png)
@@ -279,13 +279,13 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     - the normal apk (often called the "app under test"). To build it, run:
 
       ```bash
-      $ ./gradlew :app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
+      ./gradlew :app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
       ```
 
     - the intrumentation apk. To build it, run:
 
       ```bash
-      $ ./gradlew :app:assembleDebugAndroidTest
+      ./gradlew :app:assembleDebugAndroidTest
       ```
 
     You need to run the above commands from the `android` directory of your
@@ -295,7 +295,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     Test Lab:
 
     ```bash
-    $ gcloud firebase test android run --type instrumentation \
+    gcloud firebase test android run --type instrumentation \
         --app build/app/outputs/apk/debug/app-debug.apk \
         --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk\
         --timeout 1m \
@@ -314,7 +314,7 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     First, build your Flutter app, choosing the integration test file as target:
 
     ```bash
-    $ flutter build ios --target integration_test/example_test.dart --debug # or --release
+    flutter build ios --target integration_test/example_test.dart --debug # or --release
     ```
 
     Then, build the UI testing target by running `xcodebuild` in the `ios`
@@ -349,14 +349,14 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
     outputs:
 
     ```bash
-    $ cd build/ios_integ/Build/Products
+    cd build/ios_integ/Build/Products
     ```
 
     Create a zip archive named `ios_test.zip`. It will contain both your app
     under test (`Runner` target) and UI test runner (`RunnerUITests` target).
 
     ```bash
-    $ zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos15.7-arm64.xctestrun"
+    zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos15.7-arm64.xctestrun"
     ```
 
     And finally, upload the `ios_test.zip` to Firebase Test Lab for execution:
