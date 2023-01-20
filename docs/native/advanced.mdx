@@ -48,10 +48,10 @@ Execute the below Gradle command in your app's `android` directory:
 
 Execute these 2 commands in your app's `ios` directory:
 
-First,
-
 ```
-flutter build ios --target integration_test/example_test.dart --config-only --debug
+flutter build ios --config-only \
+  --target integration_test/example_test.dart \
+  --debug
 ```
 
 ```
@@ -71,7 +71,10 @@ Of course, replace the device name with the name of your device.
 Execute these 2 commands in your app's `ios` directory:
 
 ```
-flutter build ios --target integration_test/example_test.dart --config-only --debug --simulator
+flutter build ios --config-only \
+  --target integration_test/example_test.dart \
+  --debug \
+  --simulator
 ```
 
 ```
