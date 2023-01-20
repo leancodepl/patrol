@@ -9,7 +9,6 @@
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
-    ["Comparison with other testing frameworks", "/comparison"],
     [
       "Custom finders",
       [
@@ -19,7 +18,7 @@
       ]
     ],
     [
-      "Native",
+      "Native automation",
       [
         ["Overview", "/native/overview"],
         ["Setup", "/native/setup"],
@@ -41,6 +40,7 @@
     ],
     ["Patrol and CI", "/ci"],
     ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"]
+    ["Tips and tricks", "/tips-and-tricks"],
+    ["Competition", "/comparison"]
   ]
 }
