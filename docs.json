@@ -30,13 +30,13 @@
     [
       "CLI commands",
       [
-        ["bootstrap", "/cli-commands/bootstrap"],
-        ["clean", "/cli-commands/clean"],
+        ["test", "/cli-commands/test"],
         ["devices", "/cli-commands/devices"],
         ["doctor", "/cli-commands/doctor"],
-        ["drive", "/cli-commands/drive"],
-        ["test", "/cli-commands/test"],
-        ["update", "/cli-commands/update"]
+        ["update", "/cli-commands/update"],
+        ["clean [DEPRECATED]", "/cli-commands/clean"],
+        ["drive [DEPRECATED]", "/cli-commands/drive"],
+        ["bootstrap [DEPRECATED]", "/cli-commands/bootstrap"]
       ]
     ],
     ["Patrol and CI", "/ci"],
