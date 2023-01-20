@@ -9,9 +9,7 @@ This is useful if, for any reason, you have to use Flutter's default
 [testWidgets()][test_widgets] function rather than Patrol's
 [patrolTest()][patrol_test].
 
-```dart
-// integration_test/app_test.dart
-
+```dart title="integration_test/app_test.dart"
 Future<void> main() async {
   final automator = NativeAutomator(
     packageName: 'your.app.id.on.android',

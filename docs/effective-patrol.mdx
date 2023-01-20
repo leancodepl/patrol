@@ -4,7 +4,7 @@ Over the past months, we've written many Patrol tests and often learned the hard
 way what works well and what doesn't. We're sharing our findings hoping that
 they'll help you write robust tests.
 
-> This document follows [RFC 2119][rfc2119].
+<Info>This document follows [RFC 2119][rfc2119].</Info>
 
 ### PREFER using keys to find widgets
 
@@ -82,7 +82,7 @@ The number of keys will get bigger as your app grows and you write more tests.
 To keep track of them, it's a good idea to keep all keys in, say,
 `lib/keys.dart` file.
 
-```dart
+```dart title="lib/keys.dart"
 import 'package:flutter/foundation.dart';
 
 typedef K = Keys;
@@ -100,17 +100,30 @@ class Keys {
 
 Then you can use it in your app's and tests' code:
 
-```dart
-// somehwere in app
-TextField(
-  key: K.usernameTextField,
-  // more properties
-)
+```dart title="In app UI code"
+@override
+Widget build(BuildContext context) {
+  return Column(
+    children: [
+      /// some widgets
+      TextField(
+        key: K.usernameTextField,
+        // some other TextField properties
+      ),
+      // more widgets
+    ],
+  );
+}
 ```
 
-```dart
-// in test
-await $(K.usernameTextField).enterText('CoolGuy');
+```dart title="In app test code"
+void main() {
+  patrolTest('logs in', (PatrolTester $) {
+    // some code
+    await $(K.usernameTextField).enterText('CoolGuy');
+    // more code
+  });
+}
 ```
 
 This is a good way to make sure that the same keys are used in app and tests. No
@@ -147,10 +160,10 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-      await $(#phoneNumber).enterText("800-555-0199");
+      await $(#phoneNumber).enterText('800-555-0199');
       await $(#loginButton).tap();
 
-      // lots of lines
+      // more code
     },
   );
 }
@@ -165,10 +178,10 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
-      await $(#phoneNumber).enterText("800-555-0199");
+      await $(#phoneNumber).enterText('800-555-0199');
       await $(#loginButton).tap();
 
-      // lots of lines
+      // more code
     },
   );
 }
