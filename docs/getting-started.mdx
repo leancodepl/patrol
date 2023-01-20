@@ -26,7 +26,7 @@ import 'package:patrol/patrol.dart';
 
 Once imported, you can write widget tests:
 
-```dart
+```dart title="test/widget_test.dart"
 void main() {
   patrolTest(
     'counter is incremented when plus button is tapped',
@@ -53,7 +53,7 @@ flutter test
 
 Below is the same test written using vanilla Flutter:
 
-```dart
+```dart title="test/vanilla_widget_test.dart"
 void main() {
   testWidgets(
     'counter is incremented when plus button is tapped',
@@ -76,6 +76,14 @@ void main() {
 This is just a small demo: Patrol's got many more features that make writing
 tests easier and more fun.
 
+<Info>
+  There are 2 types of tests specific to Flutter: widget tests (living in the
+  `test` directory) and integration tests (living in the `integration_test`
+  directory). Use `flutter test` to run widget tests. To run integration tests
+  using [Patrol's native automation feature][native_automation], use `patrol
+  test` instead. Read on to learn more!
+</Info>
+
 ### Going from here
 
 Patrol has 2 main features that can be used independently of each other:
@@ -87,7 +95,7 @@ interacting with Flutter widgets in tests much easier and more concise – you'v
 seen the tiny sample above! They are platform independent and work in widget
 tests and integration tests.
 
-[Here][native_capabilities] you can learn more about our native automation.
+[Here][native_automation] you can learn more about our native automation.
 Native automation lets you do things that were previously impossible in Flutter
 integration tests - for example, you can go to the home screen, tap on
 notifications, change device settings, or toggle Wi-Fi.
@@ -95,4 +103,4 @@ notifications, change device settings, or toggle Wi-Fi.
 [patrol]: https://pub.dev/packages/patrol
 [patrol_cli]: https://pub.dev/packages/patrol_cli
 [custom_finders]: /custom-finders/overview
-[native_capabilities]: /native/overview
+[native_automation]: /native/overview
