@@ -1,3 +1,10 @@
+## 0.8.4
+
+- When using `patrol test`, infer `--configuration` from `--flavor` when
+  possible (#796)
+
+- Fix `patrol test` on Windows (#805)
+
 ## 0.8.3
 
 - Make `patrol test` more configurable (#791)
