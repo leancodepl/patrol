@@ -7,7 +7,7 @@ repository: https://github.com/leancodepl/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: ">=2.18.0 <4.0.0"
 
 dependencies:
   adb: ^0.2.4

@@ -34,8 +34,6 @@ class Artifacts {
 
   // iOS
 
-  // TODO(bartekpacia): Remove once code signing for iosDevice works
-  @Deprecated('Remove once code signing for iosDevice works')
   static const ios = Artifact.archive(
     name: 'ios',
     version: globalVersion,
@@ -186,7 +184,6 @@ class ArtifactsRepository {
     return join(artifactPath, artifact.localFileName);
   }
 
-  @Deprecated('Migrate to iosDevicePath once it works')
   String get iosPath {
     final artifact = debug ? Artifacts.ios.debug : Artifacts.ios;
 
@@ -306,7 +303,6 @@ class ArtifactsRepository {
     final bytes = await archiveFile.readAsBytes();
     final archive = _zipDecoder.decodeBytes(bytes);
 
-    // TODO(bartekpacia): Remove once code signing for iosDevice works
     var newArtifactPath = artifactPath;
     if (artifact.remoteFileName.startsWith('ios-')) {
       newArtifactPath = join(artifactPath, artifact.localFileName);
