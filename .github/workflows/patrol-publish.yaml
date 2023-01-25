@@ -19,7 +19,7 @@ jobs:
       - name: Install Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 2.17.0
+          sdk: 2.19.0
 
       - name: Download mobile-tools
         uses: actions/checkout@v3
