@@ -18,14 +18,14 @@ fi
 target_path="$(realpath "$target")"
 dev_target="16.2"
 
-flutter build ios --target "$target_path" --release
+flutter build ios --target "$target_path" --debug --no-codesign
 
 pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-xcconfig Flutter/Release.xcconfig \
-	-configuration Release \
+	-xcconfig Flutter/Debug.xcconfig \
+	-configuration Debug \
 	-derivedDataPath ../build/ios_integ \
 	-sdk iphoneos
 popd
