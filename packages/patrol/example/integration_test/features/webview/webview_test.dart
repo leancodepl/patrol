@@ -2,9 +2,9 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'webview_a_test.dart';
-import 'webview_b_test.dart';
-import 'webview_c_test.dart';
+import 'webview_hackernews_test.dart';
+import 'webview_leancode_test.dart';
+import 'webview_stackoverflow_test.dart';
 
 void main() {
   group('Patrol', () {
