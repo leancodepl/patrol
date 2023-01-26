@@ -27,8 +27,8 @@ void main() {
       print('Found ${notifications.length} notifications');
       notifications.forEach(print);
 
-      expect(notifications.length, equals(1));
       await $.native.tapOnNotificationByIndex(0);
+      await $('Tapped notification with ID: 1').waitUntilVisible();
     },
   );
 
@@ -54,10 +54,10 @@ void main() {
       print('Found ${notifications.length} notifications');
       notifications.forEach(print);
 
-      expect(notifications.length, equals(1));
       await $.native.tapOnNotificationBySelector(
         Selector(textContains: 'Tap to see who'),
       );
+      await $('Tapped notification with ID: 1').waitUntilVisible();
     },
   );
 }
