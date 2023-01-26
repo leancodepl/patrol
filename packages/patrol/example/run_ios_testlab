@@ -26,7 +26,11 @@ xcodebuild build-for-testing \
 	-xcconfig Flutter/Debug.xcconfig \
 	-configuration Debug \
 	-derivedDataPath ../build/ios_integ \
-	-sdk iphoneos
+	-sdk iphoneos \
+	CODE_SIGN_IDENTITY="" \
+	CODE_SIGNING_REQUIRED="NO" \
+	CODE_SIGN_ENTITLEMENTS="" \
+	CODE_SIGNING_ALLOWED="NO"
 popd
 
 product="build/ios_integ/Build/Products"
