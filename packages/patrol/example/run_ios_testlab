@@ -16,7 +16,7 @@ if [ -z "$target" ]; then
 fi
 
 target_path="$(realpath "$target")"
-dev_target="15.7"
+dev_target="16.2"
 
 flutter build ios --target "$target_path" --release
 
