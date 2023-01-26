@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-import '../../common.dart';
+import 'common.dart';
 
 void main() {
   patrol(

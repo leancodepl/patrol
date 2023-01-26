@@ -1,4 +1,4 @@
-import '../../common.dart';
+import 'common.dart';
 
 void main() {
   patrol('disables and enables dark mode twice', ($) async {

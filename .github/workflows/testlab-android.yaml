@@ -49,6 +49,8 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
+      # TODO: Parallelize running on Firebase Test Lab with Flank
+
       - name: Run example_test.dart
         run: ./run_android_testlab integration_test/example_test.dart
 
@@ -56,4 +58,13 @@ jobs:
         run: ./run_android_testlab integration_test/app_test.dart
 
       - name: Run notifications_single_test.dart
-        run: ./run_android_testlab integration_test/features/notifications/notifications_single_test.dart
+        run: ./run_android_testlab integration_test/notifications_single_test.dart
+
+      - name: Run notifications_many_test.dart
+        run: ./run_android_testlab integration_test/notifications_many_test.dart
+
+      - name: Run open_app_test.dart
+        run: ./run_android_testlab integration_test/open_app_test.dart
+
+      - name: Run open_quick_settings_test.dart
+        run: ./run_android_testlab integration_test/open_quick_settings_test.dart

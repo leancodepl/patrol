@@ -1,4 +1,4 @@
-import '../../common.dart';
+import 'common.dart';
 
 Future<void> main() async {
   testWebViewB();
