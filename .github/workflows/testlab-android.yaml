@@ -49,17 +49,11 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
-      - name: "Build instrumentation app"
-        run: cd android && ./gradlew app:assembleDebugAndroidTest
+      - name: Run example_test.dart
+        run: ./run_android_testlab integration_test/example_test.dart
 
-      - name: "Build app under test for example_test.dart"
-        run: cd android && ./gradlew app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
+      - name: Run app_test.dart
+        run: ./run_android_testlab integration_test/app_test.dart
 
-      - name: "Upload and test on Firebase Test Lab"
-        run: |
-          gcloud firebase test android run --type instrumentation \
-            --app build/app/outputs/apk/debug/app-debug.apk \
-            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --timeout 1m \
-            --results-bucket=patrol_runs \
-            --results-dir=runs
+      - name: Run notifications_single_test.dart
+        run: ./run_android_testlab integration_test/features/notifications/notifications_single_test.dart
