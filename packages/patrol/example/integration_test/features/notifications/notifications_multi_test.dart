@@ -29,13 +29,14 @@ void main() {
       print('Found ${notifications.length} notifications');
       notifications.forEach(print);
 
-      expect(notifications.length, isNonZero);
       await $.native.tapOnNotificationByIndex(1);
+      await $('Tapped notification with ID: 1').waitUntilVisible();
 
       await $.native.openNotifications();
       await $.native.tapOnNotificationBySelector(
         Selector(textContains: 'Special offer'),
       );
+      await $('Tapped notification with ID: 2').waitUntilVisible();
     },
   );
 }
