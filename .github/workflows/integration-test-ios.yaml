@@ -17,7 +17,7 @@ jobs:
         flutter-channel: [stable]
         device: ["iPhone 14", "iPad (9th generation)"]
         os: ["iOS"]
-        os_version: ["16.0"]
+        os_version: ["16.2"]
 
     defaults:
       run:
