@@ -2,7 +2,7 @@
 
 import 'dart:io' show Platform;
 
-import '../../common.dart';
+import 'common.dart';
 
 Future<void> main() async {
   late String appId;
