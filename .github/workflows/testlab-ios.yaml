@@ -46,24 +46,28 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: "Configure Flutter build options"
-        run: flutter build ios --target integration_test/example_test.dart --release
+      # TODO: Parallelize running on Firebase Test Lab with Flank
 
-      - name: "Build app and create zip archive"
-        run: |
-          cd ios
-          xcodebuild build-for-testing \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -xcconfig Flutter/Release.xcconfig \
-            -configuration Release \
-            -derivedDataPath ../build/ios_integ \
-            -sdk iphoneos
+      - name: Run example_test.dart
+        run: ./run_ios_testlab integration_test/example_test.dart
+        if: success() || failure()
 
-          zip -r "ios_tests.zip" Release-iphoneos Runner_iphoneos*
+      - name: Run app_test.dart
+        run: ./run_ios_testlab integration_test/app_test.dart
+        if: success() || failure()
 
-      - name: "Upload and test on Firebase Test Lab"
-        run: |
-          gcloud firebase test ios run \
-            --test "build/ios_integ/Build/Products/ios_tests.zip" \
-            --device model=iphone8,version="$dev_target",locale=en_US,orientation=portrait
+      - name: Run notifications_single_test.dart
+        run: ./run_ios_testlab integration_test/notifications_single_test.dart
+        if: success() || failure()
+
+      - name: Run notifications_many_test.dart
+        run: ./run_ios_testlab integration_test/notifications_many_test.dart
+        if: success() || failure()
+
+      - name: Run open_app_test.dart
+        run: ./run_ios_testlab integration_test/open_app_test.dart
+        if: success() || failure()
+
+      - name: Run open_quick_settings_test.dart
+        run: ./run_ios_testlab integration_test/open_quick_settings_test.dart
+        if: success() || failure()
