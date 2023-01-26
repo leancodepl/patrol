@@ -29,7 +29,15 @@ void main() {
       print('Found ${notifications.length} notifications');
       notifications.forEach(print);
 
-      await $.native.tapOnNotificationByIndex(1);
+      await $.native.tap(
+        Selector(
+          resourceId: 'android:id/expand_button_number',
+        ),
+      );
+
+      await $.native.tapOnNotificationBySelector(
+        Selector(textContains: 'Someone liked'),
+      );
       await $('Tapped notification with ID: 1').waitUntilVisible();
 
       await $.native.openNotifications();
