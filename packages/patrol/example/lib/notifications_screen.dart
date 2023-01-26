@@ -12,6 +12,7 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   final _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  int? _notificationId;
 
   @override
   void initState() {
@@ -28,6 +29,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             print(
               'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
             );
+            setState(() {
+              _notificationId = notificationResponse.id;
+            });
           },
         );
 
@@ -66,7 +70,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           TextButton(
             onPressed: () async => _showNotification(
               id: 1,
@@ -83,6 +88,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
             child: const Text('Show "special offer" notification'),
           ),
+          if (_notificationId != null)
+            Text(
+              'Tapped notification with ID: $_notificationId',
+              textAlign: TextAlign.center,
+            )
+          else
+            Text('No notification tapped', textAlign: TextAlign.center)
         ],
       ),
     );
