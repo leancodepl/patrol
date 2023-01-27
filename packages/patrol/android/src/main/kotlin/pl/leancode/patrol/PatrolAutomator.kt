@@ -313,8 +313,6 @@ class PatrolAutomator private constructor() {
     fun tapOnNotification(index: Int) {
         Logger.d("tapOnNotification($index)")
 
-        openNotifications()
-
         try {
             val query = Contracts.Selector.newBuilder().setResourceId("android:id/status_bar_latest_event_content")
                 .setInstance(index).build()
@@ -329,8 +327,6 @@ class PatrolAutomator private constructor() {
 
     fun tapOnNotification(selector: UiSelector) {
         Logger.d("tapOnNotification()")
-
-        openNotifications()
 
         val obj = uiDevice.findObject(selector)
         obj.click()

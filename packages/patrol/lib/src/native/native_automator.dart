@@ -250,6 +250,16 @@ class NativeAutomator {
     );
   }
 
+  /// Closes the notification shade.
+  ///
+  /// It must be visible, otherwise the behavior is undefined.
+  Future<void> closeNotifications() async {
+    await _wrapRequest(
+      'closeNotifications',
+      () => _client.closeNotifications(Empty()),
+    );
+  }
+
   /// Opens the quick settings shade.
   ///
   /// See also:
@@ -302,7 +312,7 @@ class NativeAutomator {
 
   /// Taps on the [index]-th visible notification.
   ///
-  /// Notification shade has to be opened with [openNotifications].
+  /// Notification shade has to be opened first with [openNotifications].
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
@@ -312,7 +322,7 @@ class NativeAutomator {
 
   /// Taps on the visible notification using [selector].
   ///
-  /// Notification shade will be opened automatically.
+  /// Notification shade has to be opened first with [openNotifications].
   ///
   /// On iOS, only [Selector.textContains] is taken into account.
   Future<void> tapOnNotificationBySelector(Selector selector) async {
