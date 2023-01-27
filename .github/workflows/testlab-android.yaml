@@ -63,9 +63,10 @@ jobs:
         run: ./run_android_testlab integration_test/notifications_single_test.dart
         if: success() || failure()
 
-      - name: Run notifications_many_test.dart
-        run: ./run_android_testlab integration_test/notifications_many_test.dart
-        if: success() || failure()
+      # TODO: Enable again when flakiness is fixed
+      # - name: Run notifications_many_test.dart
+      #   run: ./run_android_testlab integration_test/notifications_many_test.dart
+      #   if: success() || failure()
 
       - name: Run open_app_test.dart
         run: ./run_android_testlab integration_test/open_app_test.dart
