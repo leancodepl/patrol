@@ -159,6 +159,16 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
 
   @override
   Future<DriveCommandConfig> parseInput() async {
+    _logger.write(
+      yellow.wrap(
+        '\n'
+        '`patrol drive` is deprecated and will be removed in the first stable 1.0 version.\n'
+        '\n'
+        'Migrate to `patrol test` instead – https://patrol.leancode.co/native/setup\n'
+        '\n',
+      ),
+    );
+
     final host = argResults?['host'] as String?;
 
     final port = argResults?['port'] as String?;
