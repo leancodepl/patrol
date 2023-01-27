@@ -54,6 +54,11 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         return empty { }
     }
 
+    override suspend fun closeNotifications(request: Contracts.Empty): Contracts.Empty {
+        automation.closeNotifications()
+        return empty { }
+    }
+
     override suspend fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest): Empty {
         automation.openQuickSettings()
         return empty { }
