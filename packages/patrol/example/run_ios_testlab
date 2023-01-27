@@ -15,34 +15,38 @@ if [ -z "$target" ]; then
 	exit 1
 fi
 
+product="build/ios_integ/Build/Products"
+rm -rf "$product"
+
 dev_target="16.2"
 
-flutter build ios --target "$target" --debug --no-codesign
+flutter build ios --target "$target" --release --no-codesign
+
 
 pushd ios
 xcodebuild build-for-testing \
 	-workspace Runner.xcworkspace \
 	-scheme Runner \
-	-xcconfig Flutter/Debug.xcconfig \
-	-configuration Debug \
-	-derivedDataPath ../build/ios_integ \
+	-xcconfig Flutter/Release.xcconfig \
+	-configuration Release \
 	-sdk iphoneos \
-	CODE_SIGN_IDENTITY="" \
-	CODE_SIGNING_REQUIRED="NO" \
-	CODE_SIGN_ENTITLEMENTS="" \
-	CODE_SIGNING_ALLOWED="NO"
+	-derivedDataPath ../build/ios_integ \
+	OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
+	# CODE_SIGN_IDENTITY="" \
+	# CODE_SIGNING_REQUIRED="NO" \
+	# CODE_SIGN_ENTITLEMENTS="" \
+	# CODE_SIGNING_ALLOWED="NO"
 popd
 
-product="build/ios_integ/Build/Products"
 
 pushd "$product"
 # mv Runner_iphoneos16.2-arm64.xctestrun Runner_iphoneos"$dev_target"-arm64.xctestrun
-zip -r "ios_tests.zip" "Debug-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
+zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
 popd
 
 exec gcloud firebase test ios run \
 	--type xctest \
-	--test "build/ios_integ/Build/Products/ios_tests.zip" \
+	--test "$product/ios_tests.zip" \
 	--device model=iphone8,version="$dev_target",locale=en_US,orientation=portrait \
 	--timeout 1m \
 	--results-bucket=patrol_runs \
