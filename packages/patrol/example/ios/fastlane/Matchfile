@@ -1,0 +1,10 @@
+git_url("git@github.com:leancodepl/certificates.git")
+storage_mode("git")
+type("development")
+app_identifier("pl.leancode.patrol.Example")
+
+
+# For all available options run `fastlane match --help`
+# Remove the # in the beginning of the line to enable the other options
+
+# The docs are available on https://docs.fastlane.tools/actions/match

@@ -13,7 +13,7 @@ platform :ios do
     )
 
     match(
-      type: "adhoc",
+      type: "development",
       force_for_new_devices: true,
     )
 
@@ -22,9 +22,9 @@ platform :ios do
     )
 
     update_project_provisioning(
-      profile: ENV["sigh_#{APP_ID}_adhoc_profile-path"],
+      profile: ENV["sigh_#{APP_ID}_development_profile-path"],
       build_configuration: "Release",
-      code_signing_identity: "iPhone Distribution",
+      code_signing_identity: "iPhone Development",
     )
 
     build_app(
@@ -34,9 +34,9 @@ platform :ios do
       xcargs: "-allowProvisioningUpdates",
       export_options: {
         signingStyle: "manual",
-        method: "ad-hoc",
+        method: "development",
         provisioningProfiles: {
-          "#{APP_ID}": "match AdHoc #{APP_ID}"
+          "#{APP_ID}": "match Development #{APP_ID}"
         }
       },
       output_name: "Runner.ipa"
