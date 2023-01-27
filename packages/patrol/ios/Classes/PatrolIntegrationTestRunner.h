@@ -41,6 +41,15 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
                                                                                                                    \
   @implementation RunnerTests                                                                                      \
                                                                                                                    \
+  - (void)setUp {                                                                                                  \
+    [self addUIInterruptionMonitorWithDescription:@"System Dialog" handler:^BOOL(XCUIElement *alert) {             \
+      NSLog(@"UI interruption monitor called: %@", alert);                                                         \
+      [alert buttons];                                                                                             \
+      return YES;                                                                                                  \
+    }];                                                                                                            \
+    NSLog(@"UI interruption monitor added");                                                                       \
+  }                                                                                                                \
+                                                                                                                   \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                    \
     /* Start native automation gRPC server */                                                                      \
     PatrolServer *server = [[PatrolServer alloc] init];                                                            \
