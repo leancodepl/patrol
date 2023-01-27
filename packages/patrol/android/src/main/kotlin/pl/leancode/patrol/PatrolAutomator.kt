@@ -247,6 +247,15 @@ class PatrolAutomator private constructor() {
         delay()
     }
 
+    fun closeNotifications() {
+        Logger.d("closeNotifications()")
+        val success = uiDevice.pressBack()
+        if (!success) {
+            throw PatrolException("Could not close notifications")
+        }
+        delay()
+    }
+
     fun openQuickSettings() {
         Logger.d("openNotifications()")
         val success = uiDevice.openQuickSettings()

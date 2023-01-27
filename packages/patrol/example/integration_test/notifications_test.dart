@@ -34,6 +34,19 @@ void main() {
     },
   );
 
+  patrol(
+    'opens and closes notification shade',
+    ($) async {
+      await $.pumpWidgetAndSettle(ExampleApp());
+
+      await $.native.openNotifications();
+      await $.native.closeNotifications();
+
+      await $.native.openNotifications();
+      await $.native.closeNotifications();
+    },
+  );
+
   // Disabled because the first notification is often about Android device setup
   // patrol(
   //   'sends a notification, verifies that it is visible and taps on it by index',
