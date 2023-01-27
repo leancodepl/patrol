@@ -1,0 +1,45 @@
+default_platform(:ios)
+
+platform :ios do
+  APP_ID = "pl.leancode.patrol.Example"
+
+  desc "Description of what the lane does"
+  lane :build do
+    app_store_connect_api_key(
+      key_id: "Z52W2M4TXY",
+      issuer_id: "cd58c0ce-eee0-47bf-8cbf-f4310dfda4bc",
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      in_house: false,
+    )
+
+    match(
+      type: "adhoc",
+      force_for_new_devices: true,
+    )
+
+    automatic_code_signing(
+      use_automatic_signing: false,
+    )
+
+    update_project_provisioning(
+      profile: ENV["sigh_#{APP_ID}_adhoc_profile-path"],
+      build_configuration: "Release",
+      code_signing_identity: "iPhone Distribution",
+    )
+
+    build_app(
+      scheme: "Runner",
+      configuration: "Release",
+      xcconfig: "Flutter/Release.xcconfig",
+      xcargs: "-allowProvisioningUpdates",
+      export_options: {
+        signingStyle: "manual",
+        method: "ad-hoc",
+        provisioningProfiles: {
+          "#{APP_ID}": "match AdHoc #{APP_ID}"
+        }
+      },
+      output_name: "Runner.ipa"
+    )
+  end
+end
