@@ -1,12 +1,14 @@
 # Patrol
 
-Simple yet powerful Flutter-native UI testing framework eliminating
-limitations of `flutter_test`, `integration_test`, and `flutter_driver`.
+Simple yet powerful Flutter-native UI testing framework eliminating limitations
+of `flutter_test`, `integration_test`, and `flutter_driver`.
 
-[![patrol on pub.dev][patrol_badge]][patrol_link]
-[![patrol_cli on pub.dev][patrol_cli_badge]][patrol_cli_link]
-[![code style][leancode_lint_badge]][leancode_lint_link]
-[![powered by][docs_page_badge]][docs_page_link]
+[![patrol on pub.dev][patrol_badge]][patrol_link] [![patrol_cli on
+pub.dev][patrol_cli_badge]][patrol_cli_link] [![code
+style][leancode_lint_badge]][leancode_lint_link] [![powered
+by][docs_page_badge]][docs_page_link]
+
+## Getting started
 
 ## Documentation
 
@@ -16,19 +18,14 @@ limitations of `flutter_test`, `integration_test`, and `flutter_driver`.
 
 See [packages/patrol_cli][github_patrol_cli].
 
+The CLI is needed to enable Patrol's native automation feature in integration
+tests.
+
+To run widget tests, you can simply use `flutter test`.
+
 ## Package
 
 See [packages/patrol][github_patrol].
-
-## Release process
-
-1. Create a git tag:
-
-   ```console
-   $ git tag patrol_cli-v0.3.4
-   ```
-
-2. Push it! GitHub Actions will take care of the rest.
 
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
 [github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
