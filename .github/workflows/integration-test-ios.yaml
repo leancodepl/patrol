@@ -3,7 +3,7 @@ name: integration test ios
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */4 * * *"
+    - cron: "0 */12 * * *"
 
 jobs:
   main:
