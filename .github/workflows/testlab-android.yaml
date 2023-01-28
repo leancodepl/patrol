@@ -53,7 +53,6 @@ jobs:
 
       - name: Run app_test.dart
         run: ./run_android_testlab integration_test/app_test.dart
-        if: success() || failure()
 
       - name: Run example_test.dart
         run: ./run_android_testlab integration_test/example_test.dart
