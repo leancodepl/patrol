@@ -43,6 +43,16 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Permission.location.isGranted.then(
+      (value) {
+        setState(() => _permissionGranted = value);
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
