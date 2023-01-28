@@ -51,55 +51,40 @@ jobs:
 
       # TODO: Parallelize running on Firebase Test Lab with Flank
 
-      - name: Run app_test.dart
-        run: ./run_android_testlab integration_test/app_test.dart
+      - run: ./run_android_testlab integration_test/app_test.dart
 
-      - name: Run example_test.dart
-        run: ./run_android_testlab integration_test/example_test.dart
+      - run: ./run_android_testlab integration_test/example_test.dart
         if: success() || failure()
 
-      - name: Run notifications_test.dart
-        run: ./run_android_testlab integration_test/notifications_test.dart
+      - run: ./run_android_testlab integration_test/notifications_test.dart
         if: success() || failure()
 
-      - name: Run open_app_test.dart
-        run: ./run_android_testlab integration_test/open_app_test.dart
+      - run: ./run_android_testlab integration_test/open_app_test.dart
         if: success() || failure()
 
-      - name: Run open_quick_settings_test.dart
-        run: ./run_android_testlab integration_test/open_quick_settings_test.dart
+      - run: ./run_android_testlab integration_test/open_quick_settings_test.dart
         if: success() || failure()
 
-      - name: Run permissions_location_test.dart
-        run: ./run_android_testlab integration_test/permissions_location_test.dart
+      - run: ./run_android_testlab integration_test/permissions_location_test.dart
         if: success() || failure()
 
-      - name: Run permissions_many_test.dart
-        run: ./run_android_testlab integration_test/permissions_many_test.dart
+      - run: ./run_android_testlab integration_test/permissions_many_test.dart
         if: success() || failure()
 
-      # Not implemented on Android
-      # - name: Run service_airplane_mode_test.dart
-      #   run: ./run_android_testlab integration_test/service_airplane_mode_test.dart
-      #   if: success() || failure()
+      - run: ./run_android_testlab integration_test/service_airplane_mode_test.dart
+        if: ${{ false }} # Not implemented on Android
 
-      # Not implemented on Android
-      # - name: Run service_bluetooth_test.dart
-      #   run: ./run_android_testlab integration_test/service_bluetooth_test.dart
-      #   if: success() || failure()
+      - run: ./run_android_testlab integration_test/service_bluetooth_test.dart
+        if: ${{ false }} # Not implemented on Android
 
-      - name: Run service_cellular_test.dart
-        run: ./run_android_testlab integration_test/service_cellular_test.dart
+      - run: ./run_android_testlab integration_test/service_cellular_test.dart
         if: success() || failure()
 
-      - name: Run service_dark_mode_test.dart
-        run: ./run_android_testlab integration_test/service_dark_mode_test.dart
+      - run: ./run_android_testlab integration_test/service_dark_mode_test.dart
         if: success() || failure()
 
-      - name: Run service_wifi_test.dart
-        run: ./run_android_testlab integration_test/service_wifi_test.dart
+      - run: ./run_android_testlab integration_test/service_wifi_test.dart
         if: success() || failure()
 
-      - name: Run swipe_test.dart
-        run: ./run_android_testlab integration_test/swipe_test.dart
+      - run: ./run_android_testlab integration_test/swipe_test.dart
         if: success() || failure()
