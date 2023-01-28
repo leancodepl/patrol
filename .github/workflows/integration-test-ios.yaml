@@ -3,7 +3,7 @@ name: integration test ios
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */4 * * *"
+    - cron: "0 */12 * * *"
 
 jobs:
   main:
@@ -48,41 +48,15 @@ jobs:
 
       - name: Run example test
         run: |
-          cd ios
-
-          flutter build ios --config-only integration_test/example_test.dart --debug --simulator
-          xcodebuild test \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -xcconfig Flutter/Debug.xcconfig \
-            -configuration Debug \
-            -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
-            OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
-
-          flutter build ios --config-only integration_test/features/services/dark_mode_test.dart --debug --simulator
-          xcodebuild test \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -xcconfig Flutter/Debug.xcconfig \
-            -configuration Debug \
-            -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
-            OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
-
-          flutter build ios --config-only integration_test/features/permissions/permissions_test.dart --debug --simulator
-          xcodebuild test \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -xcconfig Flutter/Debug.xcconfig \
-            -configuration Debug \
-            -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
-            OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
-
-          # # Fails on CI: cannot tap on "Open" button in the notification
-          # flutter build ios --config-only integration_test/features/notifications/notifications_single_test.dart --debug --simulator
-          # xcodebuild test \
-          #   -workspace Runner.xcworkspace \
-          #   -scheme Runner \
-          #   -xcconfig Flutter/Debug.xcconfig \
-          #   -configuration Debug \
-          #   -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 14" \
-          #   OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
+          # FIXME: Execution of subsequent tests is aborted on failure
+          patrol test -t integration_test/app_test.dart
+          patrol test -t integration_test/example_test.dart
+          patrol test -t integration_test/notifications_test.dart
+          patrol test -t integration_test/open_app_test.dart
+          # patrol test -t integration_test/open_quick_settings_test.dart # Not on Simulator
+          patrol test -t integration_test/permissions_location_test.dart
+          patrol test -t integration_test/permissions_many_test.dart
+          # patrol test -t integration_test/service_cellular_test.dart # Not on Simulator
+          patrol test -t integration_test/service_dark_mode_test.dart
+          # patrol test -t integration_test/service_wifi_test.dart # Not on Simulator
+          patrol test -t integration_test/swipe_test.dart

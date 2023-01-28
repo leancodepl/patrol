@@ -3,7 +3,7 @@ name: integration test android
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */4 * * *"
+    - cron: "0 */12 * * *"
 
 jobs:
   main:
@@ -85,25 +85,28 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -wipe-data
           disable-animations: false
-          working-directory: ${{ github.workspace }}/packages/patrol/example/android
+          working-directory: ${{ github.workspace }}/packages/patrol/example
           script: |
+            # FIXME: Execution of subsequent tests is aborted on failure
             adb logcat -c
             adb logcat > logcat.txt &
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/example_test.dart"
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/get_native_widgets_test.dart"
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/quick_settings_test.dart"
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/dark_mode_test.dart"
-            ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/services/wifi_test.dart"
-
-            # DISABLED
-            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/location_test.dart"
-            # FLAKY # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/permissions/permissions_test.dart"
-            # NOT ON ATD # ./gradlew :app:connectedDebugAndroidTest -Ptarget="$(pwd)/../integration_test/features/open_app_test.dart"
+            patrol test -t integration_test/app_test.dart
+            patrol test -t integration_test/example_test.dart
+            patrol test -t integration_test/notifications_test.dart
+            patrol test -t integration_test/open_app_test.dart
+            patrol test -t integration_test/open_quick_settings_test.dart
+            patrol test -t integration_test/permissions_location_test.dart
+            patrol test -t integration_test/permissions_many_test.dart
+            patrol test -t integration_test/service_cellular_test.dart
+            patrol test -t integration_test/service_dark_mode_test.dart
+            patrol test -t integration_test/service_wifi_test.dart
+            patrol test -t integration_test/swipe_test.dart
 
       - name: Upload logcat to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
+          # FIXME: Reports and results of only the last test are uploadeds
           name: Results for ${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
           path: |
             ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
