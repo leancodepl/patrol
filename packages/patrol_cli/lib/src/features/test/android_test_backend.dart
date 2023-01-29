@@ -116,4 +116,18 @@ class AndroidTestBackend {
       throw Exception('Gradle exited with code $exitCode');
     }
   }
+
+  Future<void> uninstall({
+    required Device device,
+    required String packageName,
+  }) async {
+    _logger.info('Uninstalling $packageName from ${device.name}');
+    await _processManager.run([
+      'adb',
+      '-s',
+      device.id,
+      'uninstall',
+      packageName,
+    ]);
+  }
 }

@@ -252,10 +252,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               );
               break;
             }
-            // finalizer = () => _androidTestBackend.uninstall(
-            //       device: device,
-            //       packageName: packageName,
-            //     );
+            finalizer = () => _androidTestBackend.uninstall(
+                  device: device,
+                  packageName: packageName,
+                );
 
             break;
           case TargetPlatform.iOS:
