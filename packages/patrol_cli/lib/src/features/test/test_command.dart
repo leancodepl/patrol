@@ -242,10 +242,12 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     _testRunner
       ..repeats = config.repeat
       ..executor = (target, device) async {
-        Future<void> Function() callback;
+        Future<void> Function() action;
+        Future<void> Function()? finalizer;
+
         switch (device.targetPlatform) {
           case TargetPlatform.android:
-            callback = () => _androidTestBackend.run(
+            action = () => _androidTestBackend.run(
                   device: device,
                   options: AndroidAppOptions(
                     target: target,
@@ -253,9 +255,22 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
                     dartDefines: config.dartDefines,
                   ),
                 );
+            final packageName = config.packageName;
+            if (packageName == null) {
+              _logger.info(
+                'App will not be uninstalled after tests finish because the '
+                'package name is null',
+              );
+              break;
+            }
+            // finalizer = () => _androidTestBackend.uninstall(
+            //       device: device,
+            //       packageName: packageName,
+            //     );
+
             break;
           case TargetPlatform.iOS:
-            callback = () => _iosTestBackend.run(
+            action = () => _iosTestBackend.run(
                   device: device,
                   options: IOSAppOptions(
                     target: target,
@@ -266,11 +281,23 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
                     configuration: config.configuration,
                   ),
                 );
-            break;
+            final bundleId = config.bundleId;
+            if (bundleId == null) {
+              _logger.info(
+                'App will not be uninstalled after tests finish because the '
+                'bundle identifier is null',
+              );
+              break;
+            }
+
+            finalizer = () => _iosTestBackend.uninstall(
+                  device: device,
+                  bundleId: bundleId,
+                );
         }
 
         try {
-          await callback();
+          await action();
         } catch (err) {
           _logger
             ..err('$err')
@@ -279,6 +306,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               "aren't useful then it's a bug – please report it.",
             );
           rethrow;
+        } finally {
+          await finalizer?.call();
         }
       };
 
