@@ -14,6 +14,7 @@ void patrol(
     description,
     nativeAutomatorConfig: nativeAutomatorConfig,
     nativeAutomation: true,
+    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
     ($) async {
       addTearDown(() async {
         debugPrint("Taking screenshot for test '$description'");

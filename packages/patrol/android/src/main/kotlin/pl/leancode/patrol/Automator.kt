@@ -146,10 +146,10 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun tap(uiSelector: UiSelector, bySelector: BySelector) {
+    fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
         Logger.d("tap(): $uiSelector, $bySelector")
 
-        if (!waitForSelector(bySelector)) {
+        if (!waitForSelector(bySelector, index)) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -159,12 +159,12 @@ class Automator private constructor() {
         delay()
     }
 
-    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector) {
+    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
         Logger.d("doubleTap(): $uiSelector, $bySelector")
 
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (!waitForSelector(bySelector)) {
+        if (!waitForSelector(bySelector, index)) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -192,10 +192,10 @@ class Automator private constructor() {
         pressBack() // Hide keyboard.
     }
 
-    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector) {
+    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
-        if (!waitForSelector(bySelector)) {
+        if (!waitForSelector(bySelector, index)) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -418,11 +418,13 @@ class Automator private constructor() {
         uiObject.click()
     }
 
-    // Returns true if selector found something withing timeout, false otherwise.
-    private fun waitForSelector(bySelector: BySelector): Boolean {
+    /**
+     * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
+     */
+    private fun waitForSelector(bySelector: BySelector, index: Int): Boolean {
         val startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < timeoutMillis) {
-            if (uiDevice.findObjects(bySelector).isNotEmpty()) {
+            if (uiDevice.findObjects(bySelector)[index] != null) {
                 return true
             }
 
