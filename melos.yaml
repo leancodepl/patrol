@@ -11,7 +11,7 @@ scripts:
     run: melos exec flutter analyze
 
   format:
-    run: melos exec flutter format .
+    run: melos exec dart format .
 
   test:
     run: melos exec flutter test

@@ -174,14 +174,14 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     final dynamic packageName = argResults?['package-name'];
     if (packageName == null) {
-      _logger.info(
+      _logger.detail(
         'Package name not provided, Android app will not be uninstalled after tests finish',
       );
     }
 
     final dynamic bundleId = argResults?['bundle-id'];
     if (bundleId == null) {
-      _logger.info(
+      _logger.detail(
         'Bundle identifier not provided, iOS app will not be uninstalled after tests finish',
       );
     }
