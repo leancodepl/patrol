@@ -104,7 +104,6 @@ class PatrolTester {
   const PatrolTester({
     required this.tester,
     required this.nativeAutomator,
-    required this.hostAutomator,
     required this.config,
   });
 
@@ -118,21 +117,11 @@ class PatrolTester {
   /// on.
   final NativeAutomator? nativeAutomator;
 
-  /// Provides functionality to run actions as the host system (your computer).
-  final HostAutomator? hostAutomator;
-
   /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null,
   /// which is the case if it wasn't initialized.
   NativeAutomator get native {
     assert(nativeAutomator != null, 'native automator is null');
     return nativeAutomator!;
-  }
-
-  /// Shorthand for [hostAutomator]. Throws if [hostAutomator] is null, which is
-  /// the case if it wasn't initialized.
-  HostAutomator get host {
-    assert(hostAutomator != null, 'host automator is null');
-    return hostAutomator!;
   }
 
   /// Returns a [PatrolFinder] that matches [matching].
