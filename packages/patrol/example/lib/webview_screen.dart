@@ -19,6 +19,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
     super.initState();
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate())
       ..loadRequest(Uri.parse(widget.url));
   }
 
