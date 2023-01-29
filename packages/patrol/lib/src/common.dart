@@ -3,7 +3,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
-import 'package:patrol/src/host/host_automator.dart';
 import 'package:patrol/src/native/native.dart';
 
 /// Signature for callback to [patrolTest].
@@ -40,13 +39,11 @@ void patrolTest(
   dynamic tags,
   PatrolTesterConfig config = const PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
-  HostAutomatorConfig hostAutomatorConfig = const HostAutomatorConfig(),
   bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  HostAutomator? hostAutomator;
   NativeAutomator? nativeAutomator;
 
   if (nativeAutomation) {
@@ -54,11 +51,6 @@ void patrolTest(
       case BindingType.patrol:
         final binding = PatrolBinding.ensureInitialized();
         binding.framePolicy = framePolicy;
-
-        hostAutomator = HostAutomator(
-          config: hostAutomatorConfig,
-          binding: binding,
-        );
 
         nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
         break;
@@ -85,7 +77,6 @@ void patrolTest(
       final patrolTester = PatrolTester(
         tester: widgetTester,
         nativeAutomator: nativeAutomator,
-        hostAutomator: hostAutomator,
         config: config,
       );
       await callback(patrolTester);

@@ -30,5 +30,3 @@ final nativeAutomatorConfig = NativeAutomatorConfig(
   packageName: 'pl.leancode.patrol.example',
   bundleId: 'pl.leancode.patrol.Example',
 );
-
-const hostAutomatorConfig = HostAutomatorConfig();
