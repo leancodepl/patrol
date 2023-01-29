@@ -8,11 +8,63 @@ pub.dev][patrol_cli_badge]][patrol_cli_link] [![code
 style][leancode_lint_badge]][leancode_lint_link] [![powered
 by][docs_page_badge]][docs_page_link]
 
-## Getting started
+## Patrol custom finders
 
-## Documentation
+Flutter's finders are powerful, but not very intuitive to use.
 
-[Here it is!][patrol_docs]
+We took them and made something awesome.
+
+Thanks to Patrol's custom finders, you'll take your tests from this:
+
+```dart
+testWidgets('signs up', (WidgetTester tester) async {
+  await tester.pumpWidget(AwesomeApp());
+  await tester.pumpAndSettle();
+
+  await tester.enterText(
+    find.byKey(Key('emailTextField')),
+    'bartek@awesome.com',
+  );
+  await tester.pumpAndSettle();
+
+  await tester.enterText(
+    find.byKey(Key('nameTextField')),
+    'Bartek',
+  );
+  await tester.pumpAndSettle();
+
+  await tester.enterText(
+    find.byKey(Key('passwordTextField')),
+    'ny4ncat',
+  );
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byKey(Key('termsCheckbox')));
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byKey(Key('signUpButton')));
+  await tester.pumpAndSettle();
+
+  expect(find.text('Welcome, Bartek!'), findsOneWidget);
+});
+```
+
+to this:
+
+```dart
+patrolTest('signs up', (PatrolTester $) async {
+  await $.pumpWidgetAndSettle(AwesomeApp());
+
+  await $(#emailTextField).enterText('bartek@awesome.com');
+  await $(#nameTextField).enterText('Bartek');
+  await $(#passwordTextField).enterText('ny4ncat');
+  await $(#termsCheckbox).tap();
+  await $(#signUpButton).tap();
+  expect($('Welcome, Bartek!'), findsOneWidget);
+});
+```
+
+Learn more in our [extensive documentation][patrol_docs]!
 
 ## CLI
 
