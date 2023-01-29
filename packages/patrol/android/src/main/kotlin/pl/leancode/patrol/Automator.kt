@@ -47,7 +47,7 @@ private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
     }
 }
 
-class PatrolAutomator private constructor() {
+class Automator private constructor() {
     private var timeoutMillis: Long = 10_000
 
     fun configure(waitForSelectorTimeout: Long) {
@@ -449,6 +449,6 @@ class PatrolAutomator private constructor() {
     }
 
     companion object {
-        val instance = PatrolAutomator()
+        val instance = Automator()
     }
 }
