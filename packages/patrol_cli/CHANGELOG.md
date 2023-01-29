@@ -1,3 +1,10 @@
+## 0.8.5
+
+- Add a deprecation warning to `patrol drive` command (#833)
+
+  Use the new `patrol test` command. [See setup
+  instructions](https://patrol.leancode.co/native/setup).
+
 ## 0.8.4
 
 - When using `patrol test`, infer `--configuration` from `--flavor` when
