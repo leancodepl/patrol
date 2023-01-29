@@ -35,9 +35,8 @@ class ProgressTask implements mason_logger.Progress {
     final elapsedTime = _stopwatch.elapsed.inMilliseconds;
     final displayInMilliseconds = elapsedTime < 100;
     final time = displayInMilliseconds ? elapsedTime : elapsedTime / 1000;
-    final formattedTime = displayInMilliseconds
-        ? '${time.toString()}ms'
-        : '${time.toStringAsFixed(1)}s';
+    final formattedTime =
+        displayInMilliseconds ? '${time}ms' : '${time.toStringAsFixed(1)}s';
     return '${darkGray.wrap('($formattedTime)')}';
   }
 
