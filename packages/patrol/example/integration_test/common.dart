@@ -8,13 +8,15 @@ export 'package:patrol/patrol.dart';
 
 void patrol(
   String description,
-  Future<void> Function(PatrolTester) callback,
-) {
+  Future<void> Function(PatrolTester) callback, {
+  bool? skip,
+}) {
   patrolTest(
     description,
     nativeAutomatorConfig: nativeAutomatorConfig,
     nativeAutomation: true,
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
+    skip: skip,
     ($) async {
       addTearDown(() async {
         debugPrint("Taking screenshot for test '$description'");
