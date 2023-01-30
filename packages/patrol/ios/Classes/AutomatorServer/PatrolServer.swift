@@ -47,7 +47,7 @@ import NIOPosix
   @objc public func start() async throws {
     let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 
-    let provider = NativeAutomatorServer(automator: automator) { testResults in
+    let provider = AutomatorServer(automator: automator) { testResults in
       Logger.shared.i("Got \(testResults.count) dart test results")
       self.dartTestResults = testResults
     }

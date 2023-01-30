@@ -16,8 +16,8 @@ import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
-class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-    private val automation = PatrolAutomator.instance
+class AutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
+    private val automation = Automator.instance
 
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
@@ -128,6 +128,7 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         automation.tap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
+            index = request.selector.instance,
         )
 
         return empty { }
@@ -137,6 +138,7 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
         automation.doubleTap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
+            index = request.selector.instance,
         )
 
         return empty { }
@@ -149,6 +151,7 @@ class NativeAutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImpl
                 text = request.data,
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
+                index = request.selector.instance,
             )
 
             else -> throw PatrolException("enterText(): neither index nor selector are set")

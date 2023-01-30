@@ -165,7 +165,7 @@ fun Contracts.Selector.toBySelector(): BySelector {
     }
 
     if (hasInstance()) {
-        throw IllegalArgumentException("instance() argument is not supported for BySelector")
+        // We handle the index (aka "instance") ourselves
     }
 
     if (!matchedEnabled && hasEnabled()) {

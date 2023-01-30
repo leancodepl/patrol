@@ -16,7 +16,7 @@ class PatrolServer {
         server = OkHttpServerBuilder
             .forPort(port, InsecureServerCredentials.create())
             .intercept(LoggerInterceptor())
-            .addService(NativeAutomatorServer())
+            .addService(AutomatorServer())
             .build()
     }
 
