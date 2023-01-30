@@ -54,54 +54,48 @@ class Automator {
 
   // MARK: General UI interaction
 
-  func tap(on text: String, inApp bundleId: String, atIndex index: Int) async throws {
+  func tap(on text: String, inApp bundleId: String) async throws {
     try await runAction("tapping on view with text \(format: text)") {
       let app = try self.getApp(withBundleId: bundleId)
-      let desc = "view identified by text \(format: text) in app \(format: bundleId) at index \(index)"
+      let element = app.descendants(matching: .any)[text]
 
-      Logger.shared.i("waiting for existence of \(desc)")
-      guard let element = self.waitForAnyElement(
-        elements: app.descendants(matching: .any).matching(identifier: text).allElementsBoundByIndex,
-        timeout: self.timeout,
-        index: index
-      ) else {
-        throw PatrolError.viewNotExists(desc)
+      Logger.shared.i("waiting for existence of view with text \(format: text)")
+      let exists = element.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
-      Logger.shared.i("found \(desc)")
+      Logger.shared.i("found view with text \(format: text), will tap on it")
 
       element.firstMatch.forceTap()
     }
   }
 
-  func doubleTap(on text: String, inApp bundleId: String, atIndex index: Int) async throws {
+  func doubleTap(on text: String, inApp bundleId: String) async throws {
     try await runAction("double tapping on text \(format: text)") {
       let app = try self.getApp(withBundleId: bundleId)
+      let element = app.descendants(matching: .any)[text]
 
-      guard let element = self.waitForAnyElement(
-        elements: app.descendants(matching: .any).matching(identifier: text).allElementsBoundByIndex,
-        timeout: self.timeout,
-        index: index
-      ) else {
-        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId) at index \(index)")
+      let exists = element.waitForExistence(timeout: self.timeout)
+      guard exists else {
+        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
       }
 
       element.firstMatch.forceTap()
     }
   }
 
-  func enterText(_ data: String, by text: String, inApp bundleId: String, atIndex index: Int) async throws {
+  func enterText(_ data: String, by text: String, inApp bundleId: String) async throws {
     try await runAction("entering text \(format: data) into text field with text \(text)") {
       let app = try self.getApp(withBundleId: bundleId)
 
       guard
         let element = self.waitForAnyElement(
-          elements: [app.textFields[text], app.secureTextFields[text]], // FIXME:
-          timeout: self.timeout,
-          index: index
+          elements: [app.textFields[text], app.secureTextFields[text]],
+          timeout: self.timeout
         )
       else {
         throw PatrolError.viewNotExists(
-          "text field with text \(format: text) in app \(format: bundleId) at index \(index)")
+          "text field with text \(format: text) in app \(format: bundleId)")
       }
 
       element.firstMatch.typeText(data)
@@ -385,8 +379,7 @@ class Automator {
 
       let button = self.waitForAnyElement(
         elements: labels.map { systemAlerts.buttons[$0] },
-        timeout: timeout,
-        index: 0
+        timeout: timeout
       )
 
       return button != nil
@@ -401,8 +394,7 @@ class Automator {
       guard
         let button = self.waitForAnyElement(
           elements: labels.map { systemAlerts.buttons[$0] },
-          timeout: self.timeout,
-          index: 0
+          timeout: self.timeout
         )
       else {
         throw PatrolError.viewNotExists("button to allow permission only once")
@@ -420,8 +412,7 @@ class Automator {
       guard
         let button = self.waitForAnyElement(
           elements: labels.map { systemAlerts.buttons[$0] },
-          timeout: self.timeout,
-          index: 0
+          timeout: self.timeout
         )
       else {
         throw PatrolError.viewNotExists("button to allow permission only once")
@@ -502,27 +493,18 @@ class Automator {
 
   // MARK: Private stuff
 
-  // TODO: This should probably accepts an array of `XCUIElementQuery`
   /// Adapted from https://stackoverflow.com/q/47880395/7009800
   @discardableResult
-  func waitForAnyElement(elements: [XCUIElement], timeout: TimeInterval, index: Int) -> XCUIElement? {
+  func waitForAnyElement(elements: [XCUIElement], timeout: TimeInterval) -> XCUIElement? {
     var foundElement: XCUIElement?
     let startTime = Date()
 
     while Date().timeIntervalSince(startTime) < timeout {
-      let existingElements = elements.filter { $0.exists }
-      Logger.shared.i("HEREEE 1, existingElements: \(existingElements.count)")
-      guard existingElements.indices.contains(index) else {
-        let ms = 1000
-        usleep(useconds_t(500 * ms))
-        continue
+      if let elementFound = elements.first(where: { $0.exists }) {
+        foundElement = elementFound
+        break
       }
-
-      
-      foundElement = existingElements[index]
-      Logger.shared.i("Found element to tap on at index \(index)")
-      // Logger.shared.i("Element type: \(foundElement)")
-      break
+      sleep(1)
     }
 
     return foundElement
