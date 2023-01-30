@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<-- Thank you for your interest in Patrol! Please follow this template to make sure all the important details about your problem are included -->
+<!-- Thank you for your interest in Patrol! Please follow this template to make sure all the important details about your problem are included -->
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -31,11 +31,11 @@ A clear and concise description of what you expected to happen.
 <details>
 <summary>Additional information</summary>
 
-<-- Please paste output of `flutter --version` below -->
+<!-- Please paste output of `flutter --version` below -->
 
-<-- Please paste version of Patrol in pubspec.yaml -->
+<!-- Please paste version of Patrol in pubspec.yaml -->
 
-<-- If using Patrol CLI, please paste output of `patrol --version` below -->
+<!-- If using Patrol CLI, please paste output of `patrol --version` below -->
 
 </details>
 
