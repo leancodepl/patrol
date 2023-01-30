@@ -91,7 +91,7 @@ class IOSTestBackend {
   }) async {
     final targetName = basename(options.target);
     final task = _logger
-        .task('Building app for $targetName and running it on ${device.id}');
+        .task('Building app for $targetName and running it on ${device.name}');
 
     final flutterProcess = await _processManager.start(
       options.toFlutterBuildInvocation(device),
@@ -132,10 +132,40 @@ class IOSTestBackend {
 
     exitCode = await xcodebuildProcess.exitCode;
     if (exitCode == 0) {
-      task.complete('Built and ran apk for $targetName on ${device.id}');
+      task.complete('Built and ran app for $targetName on ${device.name}');
     } else {
-      task.fail('Failed to build apk for $targetName and run ');
+      task.fail('Failed to build/run app for $targetName on ${device.name}');
       throw Exception('xcodebuild exited with code $exitCode');
+    }
+  }
+
+  Future<void> uninstall({
+    required Device device,
+    required String bundleId,
+  }) async {
+    _logger.info('Uninstalling $bundleId from ${device.name}');
+    if (device.real) {
+      // uninstall from iOS device
+      await _processManager.run(
+        [
+          'ideviceinstaller',
+          ...['--udid', device.id],
+          ...['--uninstall', bundleId],
+        ],
+        runInShell: true,
+      );
+    } else {
+      // uninstall from iOS simulator
+      await _processManager.run(
+        [
+          'xcrun',
+          'simctl',
+          'uninstall',
+          device.id,
+          bundleId,
+        ],
+        runInShell: true,
+      );
     }
   }
 }
