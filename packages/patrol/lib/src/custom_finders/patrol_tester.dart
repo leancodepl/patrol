@@ -120,7 +120,12 @@ class PatrolTester {
   /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null,
   /// which is the case if it wasn't initialized.
   NativeAutomator get native {
-    assert(nativeAutomator != null, 'native automator is null');
+    assert(
+      nativeAutomator != null,
+      'NativeAutomator is not initialized. Make sure you passed '
+      "`nativeAutomation: true` to patrolTest(), and that you're *not* "
+      'initializing any bindings in your test.',
+    );
     return nativeAutomator!;
   }
 

@@ -7,6 +7,13 @@ import 'package:patrol/src/custom_finders/exceptions.dart';
 
 void main() {
   group('PatrolTester', () {
+    patrolTest(
+      'fires assertion when NativeAutomator is accessed, but it is null',
+      ($) async {
+        expect(() => $.native, throwsAssertionError);
+      },
+    );
+
     group('tap()', () {
       patrolTest(
         'throws exception when no widget to tap on is found',
