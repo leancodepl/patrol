@@ -4,7 +4,7 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'sends a notification, verifies that it is visible and taps on it by text',
+    'taps on notification',
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
@@ -42,6 +42,16 @@ void main() {
 
       await $.native.openNotifications();
       await $.native.closeNotifications();
+    },
+  );
+
+  patrol(
+    'exits the app and enters it again',
+    ($) async {
+      await $.pumpWidgetAndSettle(ExampleApp());
+
+      await $.native.pressHome();
+      await $.native.openApp(appId: 'com.apple.Preferences');
     },
   );
 

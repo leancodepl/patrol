@@ -176,14 +176,34 @@ class NativeAutomator {
   ///
   /// Must be called before using any native features.
   Future<void> configure() async {
-    await _wrapRequest(
-      'configure',
-      () => _client.configure(
-        ConfigureRequest(
-          findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
-        ),
-      ),
-    );
+    const retries = 30;
+
+    PatrolActionException? exception;
+    for (var i = 0; i < retries; i++) {
+      try {
+        await _wrapRequest(
+          'configure',
+          () => _client.configure(
+            ConfigureRequest(
+              findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
+            ),
+          ),
+        );
+        break;
+      } on PatrolActionException catch (err) {
+        _config.logger('configure() failed: (${err.message})');
+        exception = err;
+      }
+
+      _config.logger('trying to configure() again in 2 seconds');
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
+
+    if (exception != null) {
+      throw PatrolActionException(
+        'configure() failed after $retries retries (${exception.message}',
+      );
+    }
   }
 
   /// Presses the back button.
