@@ -57,8 +57,8 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
       NSLog(@"Server loop done, error: %@", err);                                                                  \
     }];                                                                                                            \
                                                                                                                    \
-    XCUIApplication *app = [[XCUIApplication alloc] initWithBundleIdentifier:@"pl.leancode.patrol.Example"];       \
-    [app activate];                                                                                                  \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                         \
+    [app activate];                                                                                                \
                                                                                                                    \
     /* Spin the runloop waiting for test results */                                                                \
     while (!server.dartTestResults) {                                                                              \
