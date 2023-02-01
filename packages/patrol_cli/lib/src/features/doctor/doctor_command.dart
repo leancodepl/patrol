@@ -57,7 +57,7 @@ class DoctorCommand extends Command<int> {
 
     final androidHome = _platform.environment['ANDROID_HOME'];
     if (androidHome?.isNotEmpty ?? false) {
-      _logger.success('Env var \$ANDROID_HOME env var set to $androidHome');
+      _logger.success('Env var \$ANDROID_HOME set to $androidHome');
     } else {
       _logger.err(r'Env var $ANDROID_HOME is not set');
     }
@@ -66,6 +66,7 @@ class DoctorCommand extends Command<int> {
   void _printIosSpecifics() {
     _checkIfToolInstalled('xcodebuild');
     _checkIfToolInstalled('ideviceinstaller', 'brew install ideviceinstaller');
+    _checkIfToolInstalled('ios-deploy', 'brew install ios-deploy');
   }
 
   void _checkIfToolInstalled(String tool, [String? hint]) {
