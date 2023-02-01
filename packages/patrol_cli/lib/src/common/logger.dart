@@ -55,4 +55,9 @@ class Logger extends mason_logger.Logger {
   mason_logger.Progress task(String message) {
     return ProgressTask(message, io.stdout);
   }
+
+  @override
+  void warn(String? message, {String tag = ''}) {
+    super.warn(message, tag: tag);
+  }
 }

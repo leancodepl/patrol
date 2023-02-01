@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'artifacts_repository.dart';
 
@@ -28,8 +28,8 @@ mixin _$Artifact {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String name, String? version, String? ext)? file,
-    TResult Function(String name, String? version, String? ext)? archive,
+    TResult? Function(String name, String? version, String? ext)? file,
+    TResult? Function(String name, String? version, String? ext)? archive,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -47,8 +47,8 @@ mixin _$Artifact {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_ArtifactFile value)? file,
-    TResult Function(_ArtifactArchive value)? archive,
+    TResult? Function(_ArtifactFile value)? file,
+    TResult? Function(_ArtifactArchive value)? archive,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -67,38 +67,42 @@ mixin _$Artifact {
 /// @nodoc
 abstract class $ArtifactCopyWith<$Res> {
   factory $ArtifactCopyWith(Artifact value, $Res Function(Artifact) then) =
-      _$ArtifactCopyWithImpl<$Res>;
+      _$ArtifactCopyWithImpl<$Res, Artifact>;
+  @useResult
   $Res call({String name, String? version, String? ext});
 }
 
 /// @nodoc
-class _$ArtifactCopyWithImpl<$Res> implements $ArtifactCopyWith<$Res> {
+class _$ArtifactCopyWithImpl<$Res, $Val extends Artifact>
+    implements $ArtifactCopyWith<$Res> {
   _$ArtifactCopyWithImpl(this._value, this._then);
 
-  final Artifact _value;
   // ignore: unused_field
-  final $Res Function(Artifact) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = freezed,
+    Object? name = null,
     Object? version = freezed,
     Object? ext = freezed,
   }) {
     return _then(_value.copyWith(
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      version: version == freezed
+      version: freezed == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String?,
-      ext: ext == freezed
+      ext: freezed == ext
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
               as String?,
-    ));
+    ) as $Val);
   }
 }
 
@@ -109,35 +113,35 @@ abstract class _$$_ArtifactFileCopyWith<$Res>
           _$_ArtifactFile value, $Res Function(_$_ArtifactFile) then) =
       __$$_ArtifactFileCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String name, String? version, String? ext});
 }
 
 /// @nodoc
-class __$$_ArtifactFileCopyWithImpl<$Res> extends _$ArtifactCopyWithImpl<$Res>
+class __$$_ArtifactFileCopyWithImpl<$Res>
+    extends _$ArtifactCopyWithImpl<$Res, _$_ArtifactFile>
     implements _$$_ArtifactFileCopyWith<$Res> {
   __$$_ArtifactFileCopyWithImpl(
       _$_ArtifactFile _value, $Res Function(_$_ArtifactFile) _then)
-      : super(_value, (v) => _then(v as _$_ArtifactFile));
+      : super(_value, _then);
 
-  @override
-  _$_ArtifactFile get _value => super._value as _$_ArtifactFile;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = freezed,
+    Object? name = null,
     Object? version = freezed,
     Object? ext = freezed,
   }) {
     return _then(_$_ArtifactFile(
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      version: version == freezed
+      version: freezed == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String?,
-      ext: ext == freezed
+      ext: freezed == ext
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -168,20 +172,17 @@ class _$_ArtifactFile extends _ArtifactFile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ArtifactFile &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.version, version) &&
-            const DeepCollectionEquality().equals(other.ext, ext));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.ext, ext) || other.ext == ext));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(version),
-      const DeepCollectionEquality().hash(ext));
+  int get hashCode => Object.hash(runtimeType, name, version, ext);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ArtifactFileCopyWith<_$_ArtifactFile> get copyWith =>
       __$$_ArtifactFileCopyWithImpl<_$_ArtifactFile>(this, _$identity);
 
@@ -198,8 +199,8 @@ class _$_ArtifactFile extends _ArtifactFile {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String name, String? version, String? ext)? file,
-    TResult Function(String name, String? version, String? ext)? archive,
+    TResult? Function(String name, String? version, String? ext)? file,
+    TResult? Function(String name, String? version, String? ext)? archive,
   }) {
     return file?.call(name, version, ext);
   }
@@ -229,8 +230,8 @@ class _$_ArtifactFile extends _ArtifactFile {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_ArtifactFile value)? file,
-    TResult Function(_ArtifactArchive value)? archive,
+    TResult? Function(_ArtifactFile value)? file,
+    TResult? Function(_ArtifactArchive value)? archive,
   }) {
     return file?.call(this);
   }
@@ -275,36 +276,35 @@ abstract class _$$_ArtifactArchiveCopyWith<$Res>
           _$_ArtifactArchive value, $Res Function(_$_ArtifactArchive) then) =
       __$$_ArtifactArchiveCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({String name, String? version, String? ext});
 }
 
 /// @nodoc
 class __$$_ArtifactArchiveCopyWithImpl<$Res>
-    extends _$ArtifactCopyWithImpl<$Res>
+    extends _$ArtifactCopyWithImpl<$Res, _$_ArtifactArchive>
     implements _$$_ArtifactArchiveCopyWith<$Res> {
   __$$_ArtifactArchiveCopyWithImpl(
       _$_ArtifactArchive _value, $Res Function(_$_ArtifactArchive) _then)
-      : super(_value, (v) => _then(v as _$_ArtifactArchive));
+      : super(_value, _then);
 
-  @override
-  _$_ArtifactArchive get _value => super._value as _$_ArtifactArchive;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = freezed,
+    Object? name = null,
     Object? version = freezed,
     Object? ext = freezed,
   }) {
     return _then(_$_ArtifactArchive(
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      version: version == freezed
+      version: freezed == version
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as String?,
-      ext: ext == freezed
+      ext: freezed == ext
           ? _value.ext
           : ext // ignore: cast_nullable_to_non_nullable
               as String?,
@@ -335,20 +335,17 @@ class _$_ArtifactArchive extends _ArtifactArchive {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ArtifactArchive &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.version, version) &&
-            const DeepCollectionEquality().equals(other.ext, ext));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.version, version) || other.version == version) &&
+            (identical(other.ext, ext) || other.ext == ext));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(version),
-      const DeepCollectionEquality().hash(ext));
+  int get hashCode => Object.hash(runtimeType, name, version, ext);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_ArtifactArchiveCopyWith<_$_ArtifactArchive> get copyWith =>
       __$$_ArtifactArchiveCopyWithImpl<_$_ArtifactArchive>(this, _$identity);
 
@@ -365,8 +362,8 @@ class _$_ArtifactArchive extends _ArtifactArchive {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(String name, String? version, String? ext)? file,
-    TResult Function(String name, String? version, String? ext)? archive,
+    TResult? Function(String name, String? version, String? ext)? file,
+    TResult? Function(String name, String? version, String? ext)? archive,
   }) {
     return archive?.call(name, version, ext);
   }
@@ -396,8 +393,8 @@ class _$_ArtifactArchive extends _ArtifactArchive {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(_ArtifactFile value)? file,
-    TResult Function(_ArtifactArchive value)? archive,
+    TResult? Function(_ArtifactFile value)? file,
+    TResult? Function(_ArtifactArchive value)? archive,
   }) {
     return archive?.call(this);
   }

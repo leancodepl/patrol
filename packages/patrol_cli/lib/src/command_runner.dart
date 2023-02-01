@@ -59,14 +59,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
-const _description = '''
-Tool for running Flutter-native UI tests with superpowers
-
-Read documentation at https://patrol.leancode.pl
-Report bugs, request features at https://github.com/leancodepl/patrol/issues
-Ask questions, get support at https://github.com/leancodepl/patrol/discussions
-''';
-
 class PatrolCommandRunner extends CommandRunner<int> {
   PatrolCommandRunner({
     required Logger logger,
@@ -84,7 +76,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         _logger = logger,
         super(
           'patrol',
-          _description,
+          'Tool for running Flutter-native UI tests with superpowers',
         ) {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     driveCommand = DriveCommand(
@@ -192,7 +184,8 @@ class PatrolCommandRunner extends CommandRunner<int> {
       )
       ..addFlag(
         'debug',
-        help: 'Use default, non-versioned artifacts.',
+        help:
+            '[DEPRECATED] Use default, non-versioned artifacts with `patrol drive`',
         negatable: false,
       );
   }
@@ -215,6 +208,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ..err('$st');
     }
   }
+
+  @override
+  String? get usageFooter => '''
+Read documentation at https://patrol.leancode.pl
+Report bugs, request features at https://github.com/leancodepl/patrol/issues
+Ask questions, get support at https://github.com/leancodepl/patrol/discussions''';
 
   @override
   Future<int?> run(Iterable<String> args) async {
