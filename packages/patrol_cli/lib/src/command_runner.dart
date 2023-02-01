@@ -59,6 +59,14 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
+const _description = '''
+Tool for running Flutter-native UI tests with superpowers
+
+Read documentation at https://patrol.leancode.pl
+Report bugs, request features at https://github.com/leancodepl/patrol/issues
+Ask questions, get support at https://github.com/leancodepl/patrol/discussions
+''';
+
 class PatrolCommandRunner extends CommandRunner<int> {
   PatrolCommandRunner({
     required Logger logger,
@@ -76,7 +84,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         _logger = logger,
         super(
           'patrol',
-          'Tool for running Flutter-native UI tests with superpowers',
+          _description,
         ) {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     driveCommand = DriveCommand(

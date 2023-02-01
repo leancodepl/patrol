@@ -1,7 +1,7 @@
 import 'dart:io' as io;
 
 import 'package:mason_logger/mason_logger.dart' as mason_logger;
-import 'package:mason_logger/mason_logger.dart' show darkGray, red, lightGreen;
+import 'package:mason_logger/mason_logger.dart' show darkGray, lightGreen, red;
 
 export 'package:mason_logger/mason_logger.dart';
 

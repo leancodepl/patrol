@@ -21,7 +21,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  leancode_lint: ^2.0.0+1
+  leancode_lint: ^2.1.0
   patrol:
     path: ../
 

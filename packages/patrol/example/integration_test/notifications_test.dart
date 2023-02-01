@@ -1,5 +1,3 @@
-@Tags(['android', 'ios'])
-
 import 'dart:io';
 
 import 'common.dart';

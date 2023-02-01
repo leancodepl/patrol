@@ -4,7 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:file/file.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' show join, dirname;
+import 'package:path/path.dart' show dirname, join;
 import 'package:patrol_cli/src/common/constants.dart' show globalVersion;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:platform/platform.dart';
@@ -137,11 +137,15 @@ class ArtifactsRepository {
   final ZipDecoder _zipDecoder;
   bool debug;
 
+  bool get artifactPathSetFromEnv {
+    return platform.environment.containsKey(artifactPathEnv);
+  }
+
   String get artifactPath {
     final env = platform.environment;
     String p;
-    if (env.containsKey(env)) {
-      p = env[env]!;
+    if (artifactPathSetFromEnv) {
+      p = env[artifactPathEnv]!;
     } else {
       p = _defaultArtifactPath;
     }
@@ -164,10 +168,6 @@ class ArtifactsRepository {
     } else {
       throw Exception('Cannot find home directory. Unsupported platform');
     }
-  }
-
-  bool get artifactPathSetFromEnv {
-    return platform.environment.containsKey(artifactPathEnv);
   }
 
   String get serverArtifactPath {

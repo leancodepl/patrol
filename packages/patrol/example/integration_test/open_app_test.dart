@@ -1,5 +1,3 @@
-@Tags(['android', 'ios'])
-
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
