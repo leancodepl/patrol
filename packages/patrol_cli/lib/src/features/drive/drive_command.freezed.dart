@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'drive_command.dart';
 
@@ -38,7 +38,8 @@ mixin _$DriveCommandConfig {
 abstract class $DriveCommandConfigCopyWith<$Res> {
   factory $DriveCommandConfigCopyWith(
           DriveCommandConfig value, $Res Function(DriveCommandConfig) then) =
-      _$DriveCommandConfigCopyWithImpl<$Res>;
+      _$DriveCommandConfigCopyWithImpl<$Res, DriveCommandConfig>;
+  @useResult
   $Res call(
       {List<Device> devices,
       List<String> targets,
@@ -55,79 +56,81 @@ abstract class $DriveCommandConfigCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$DriveCommandConfigCopyWithImpl<$Res>
+class _$DriveCommandConfigCopyWithImpl<$Res, $Val extends DriveCommandConfig>
     implements $DriveCommandConfigCopyWith<$Res> {
   _$DriveCommandConfigCopyWithImpl(this._value, this._then);
 
-  final DriveCommandConfig _value;
   // ignore: unused_field
-  final $Res Function(DriveCommandConfig) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? devices = freezed,
-    Object? targets = freezed,
-    Object? host = freezed,
-    Object? port = freezed,
-    Object? driver = freezed,
+    Object? devices = null,
+    Object? targets = null,
+    Object? host = null,
+    Object? port = null,
+    Object? driver = null,
     Object? flavor = freezed,
-    Object? dartDefines = freezed,
+    Object? dartDefines = null,
     Object? packageName = freezed,
     Object? bundleId = freezed,
-    Object? repeat = freezed,
+    Object? repeat = null,
     Object? useApplicationBinary = freezed,
-    Object? displayLabel = freezed,
+    Object? displayLabel = null,
   }) {
     return _then(_value.copyWith(
-      devices: devices == freezed
+      devices: null == devices
           ? _value.devices
           : devices // ignore: cast_nullable_to_non_nullable
               as List<Device>,
-      targets: targets == freezed
+      targets: null == targets
           ? _value.targets
           : targets // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      host: host == freezed
+      host: null == host
           ? _value.host
           : host // ignore: cast_nullable_to_non_nullable
               as String,
-      port: port == freezed
+      port: null == port
           ? _value.port
           : port // ignore: cast_nullable_to_non_nullable
               as String,
-      driver: driver == freezed
+      driver: null == driver
           ? _value.driver
           : driver // ignore: cast_nullable_to_non_nullable
               as String,
-      flavor: flavor == freezed
+      flavor: freezed == flavor
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
               as String?,
-      dartDefines: dartDefines == freezed
+      dartDefines: null == dartDefines
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      packageName: packageName == freezed
+      packageName: freezed == packageName
           ? _value.packageName
           : packageName // ignore: cast_nullable_to_non_nullable
               as String?,
-      bundleId: bundleId == freezed
+      bundleId: freezed == bundleId
           ? _value.bundleId
           : bundleId // ignore: cast_nullable_to_non_nullable
               as String?,
-      repeat: repeat == freezed
+      repeat: null == repeat
           ? _value.repeat
           : repeat // ignore: cast_nullable_to_non_nullable
               as int,
-      useApplicationBinary: useApplicationBinary == freezed
+      useApplicationBinary: freezed == useApplicationBinary
           ? _value.useApplicationBinary
           : useApplicationBinary // ignore: cast_nullable_to_non_nullable
               as String?,
-      displayLabel: displayLabel == freezed
+      displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -138,6 +141,7 @@ abstract class _$$_DriveCommandConfigCopyWith<$Res>
           $Res Function(_$_DriveCommandConfig) then) =
       __$$_DriveCommandConfigCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {List<Device> devices,
       List<String> targets,
@@ -155,76 +159,74 @@ abstract class _$$_DriveCommandConfigCopyWith<$Res>
 
 /// @nodoc
 class __$$_DriveCommandConfigCopyWithImpl<$Res>
-    extends _$DriveCommandConfigCopyWithImpl<$Res>
+    extends _$DriveCommandConfigCopyWithImpl<$Res, _$_DriveCommandConfig>
     implements _$$_DriveCommandConfigCopyWith<$Res> {
   __$$_DriveCommandConfigCopyWithImpl(
       _$_DriveCommandConfig _value, $Res Function(_$_DriveCommandConfig) _then)
-      : super(_value, (v) => _then(v as _$_DriveCommandConfig));
+      : super(_value, _then);
 
-  @override
-  _$_DriveCommandConfig get _value => super._value as _$_DriveCommandConfig;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? devices = freezed,
-    Object? targets = freezed,
-    Object? host = freezed,
-    Object? port = freezed,
-    Object? driver = freezed,
+    Object? devices = null,
+    Object? targets = null,
+    Object? host = null,
+    Object? port = null,
+    Object? driver = null,
     Object? flavor = freezed,
-    Object? dartDefines = freezed,
+    Object? dartDefines = null,
     Object? packageName = freezed,
     Object? bundleId = freezed,
-    Object? repeat = freezed,
+    Object? repeat = null,
     Object? useApplicationBinary = freezed,
-    Object? displayLabel = freezed,
+    Object? displayLabel = null,
   }) {
     return _then(_$_DriveCommandConfig(
-      devices: devices == freezed
+      devices: null == devices
           ? _value._devices
           : devices // ignore: cast_nullable_to_non_nullable
               as List<Device>,
-      targets: targets == freezed
+      targets: null == targets
           ? _value._targets
           : targets // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      host: host == freezed
+      host: null == host
           ? _value.host
           : host // ignore: cast_nullable_to_non_nullable
               as String,
-      port: port == freezed
+      port: null == port
           ? _value.port
           : port // ignore: cast_nullable_to_non_nullable
               as String,
-      driver: driver == freezed
+      driver: null == driver
           ? _value.driver
           : driver // ignore: cast_nullable_to_non_nullable
               as String,
-      flavor: flavor == freezed
+      flavor: freezed == flavor
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
               as String?,
-      dartDefines: dartDefines == freezed
+      dartDefines: null == dartDefines
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      packageName: packageName == freezed
+      packageName: freezed == packageName
           ? _value.packageName
           : packageName // ignore: cast_nullable_to_non_nullable
               as String?,
-      bundleId: bundleId == freezed
+      bundleId: freezed == bundleId
           ? _value.bundleId
           : bundleId // ignore: cast_nullable_to_non_nullable
               as String?,
-      repeat: repeat == freezed
+      repeat: null == repeat
           ? _value.repeat
           : repeat // ignore: cast_nullable_to_non_nullable
               as int,
-      useApplicationBinary: useApplicationBinary == freezed
+      useApplicationBinary: freezed == useApplicationBinary
           ? _value.useApplicationBinary
           : useApplicationBinary // ignore: cast_nullable_to_non_nullable
               as String?,
-      displayLabel: displayLabel == freezed
+      displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -255,6 +257,7 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
   final List<Device> _devices;
   @override
   List<Device> get devices {
+    if (_devices is EqualUnmodifiableListView) return _devices;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_devices);
   }
@@ -262,6 +265,7 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
   final List<String> _targets;
   @override
   List<String> get targets {
+    if (_targets is EqualUnmodifiableListView) return _targets;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_targets);
   }
@@ -277,6 +281,7 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
   final Map<String, String> _dartDefines;
   @override
   Map<String, String> get dartDefines {
+    if (_dartDefines is EqualUnmodifiableMapView) return _dartDefines;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_dartDefines);
   }
@@ -304,20 +309,21 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
             other is _$_DriveCommandConfig &&
             const DeepCollectionEquality().equals(other._devices, _devices) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
-            const DeepCollectionEquality().equals(other.host, host) &&
-            const DeepCollectionEquality().equals(other.port, port) &&
-            const DeepCollectionEquality().equals(other.driver, driver) &&
-            const DeepCollectionEquality().equals(other.flavor, flavor) &&
+            (identical(other.host, host) || other.host == host) &&
+            (identical(other.port, port) || other.port == port) &&
+            (identical(other.driver, driver) || other.driver == driver) &&
+            (identical(other.flavor, flavor) || other.flavor == flavor) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
-            const DeepCollectionEquality()
-                .equals(other.packageName, packageName) &&
-            const DeepCollectionEquality().equals(other.bundleId, bundleId) &&
-            const DeepCollectionEquality().equals(other.repeat, repeat) &&
-            const DeepCollectionEquality()
-                .equals(other.useApplicationBinary, useApplicationBinary) &&
-            const DeepCollectionEquality()
-                .equals(other.displayLabel, displayLabel));
+            (identical(other.packageName, packageName) ||
+                other.packageName == packageName) &&
+            (identical(other.bundleId, bundleId) ||
+                other.bundleId == bundleId) &&
+            (identical(other.repeat, repeat) || other.repeat == repeat) &&
+            (identical(other.useApplicationBinary, useApplicationBinary) ||
+                other.useApplicationBinary == useApplicationBinary) &&
+            (identical(other.displayLabel, displayLabel) ||
+                other.displayLabel == displayLabel));
   }
 
   @override
@@ -325,19 +331,20 @@ class _$_DriveCommandConfig implements _DriveCommandConfig {
       runtimeType,
       const DeepCollectionEquality().hash(_devices),
       const DeepCollectionEquality().hash(_targets),
-      const DeepCollectionEquality().hash(host),
-      const DeepCollectionEquality().hash(port),
-      const DeepCollectionEquality().hash(driver),
-      const DeepCollectionEquality().hash(flavor),
+      host,
+      port,
+      driver,
+      flavor,
       const DeepCollectionEquality().hash(_dartDefines),
-      const DeepCollectionEquality().hash(packageName),
-      const DeepCollectionEquality().hash(bundleId),
-      const DeepCollectionEquality().hash(repeat),
-      const DeepCollectionEquality().hash(useApplicationBinary),
-      const DeepCollectionEquality().hash(displayLabel));
+      packageName,
+      bundleId,
+      repeat,
+      useApplicationBinary,
+      displayLabel);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_DriveCommandConfigCopyWith<_$_DriveCommandConfig> get copyWith =>
       __$$_DriveCommandConfigCopyWithImpl<_$_DriveCommandConfig>(
           this, _$identity);

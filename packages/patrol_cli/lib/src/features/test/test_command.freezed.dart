@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'test_command.dart';
 
@@ -37,7 +37,8 @@ mixin _$TestCommandConfig {
 abstract class $TestCommandConfigCopyWith<$Res> {
   factory $TestCommandConfigCopyWith(
           TestCommandConfig value, $Res Function(TestCommandConfig) then) =
-      _$TestCommandConfigCopyWithImpl<$Res>;
+      _$TestCommandConfigCopyWithImpl<$Res, TestCommandConfig>;
+  @useResult
   $Res call(
       {List<Device> devices,
       List<String> targets,
@@ -53,74 +54,76 @@ abstract class $TestCommandConfigCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$TestCommandConfigCopyWithImpl<$Res>
+class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
     implements $TestCommandConfigCopyWith<$Res> {
   _$TestCommandConfigCopyWithImpl(this._value, this._then);
 
-  final TestCommandConfig _value;
   // ignore: unused_field
-  final $Res Function(TestCommandConfig) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? devices = freezed,
-    Object? targets = freezed,
+    Object? devices = null,
+    Object? targets = null,
     Object? flavor = freezed,
-    Object? scheme = freezed,
-    Object? xcconfigFile = freezed,
-    Object? configuration = freezed,
-    Object? dartDefines = freezed,
+    Object? scheme = null,
+    Object? xcconfigFile = null,
+    Object? configuration = null,
+    Object? dartDefines = null,
     Object? packageName = freezed,
     Object? bundleId = freezed,
-    Object? repeat = freezed,
-    Object? displayLabel = freezed,
+    Object? repeat = null,
+    Object? displayLabel = null,
   }) {
     return _then(_value.copyWith(
-      devices: devices == freezed
+      devices: null == devices
           ? _value.devices
           : devices // ignore: cast_nullable_to_non_nullable
               as List<Device>,
-      targets: targets == freezed
+      targets: null == targets
           ? _value.targets
           : targets // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      flavor: flavor == freezed
+      flavor: freezed == flavor
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
               as String?,
-      scheme: scheme == freezed
+      scheme: null == scheme
           ? _value.scheme
           : scheme // ignore: cast_nullable_to_non_nullable
               as String,
-      xcconfigFile: xcconfigFile == freezed
+      xcconfigFile: null == xcconfigFile
           ? _value.xcconfigFile
           : xcconfigFile // ignore: cast_nullable_to_non_nullable
               as String,
-      configuration: configuration == freezed
+      configuration: null == configuration
           ? _value.configuration
           : configuration // ignore: cast_nullable_to_non_nullable
               as String,
-      dartDefines: dartDefines == freezed
+      dartDefines: null == dartDefines
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      packageName: packageName == freezed
+      packageName: freezed == packageName
           ? _value.packageName
           : packageName // ignore: cast_nullable_to_non_nullable
               as String?,
-      bundleId: bundleId == freezed
+      bundleId: freezed == bundleId
           ? _value.bundleId
           : bundleId // ignore: cast_nullable_to_non_nullable
               as String?,
-      repeat: repeat == freezed
+      repeat: null == repeat
           ? _value.repeat
           : repeat // ignore: cast_nullable_to_non_nullable
               as int,
-      displayLabel: displayLabel == freezed
+      displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
               as bool,
-    ));
+    ) as $Val);
   }
 }
 
@@ -131,6 +134,7 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
           $Res Function(_$_TestCommandConfig) then) =
       __$$_TestCommandConfigCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {List<Device> devices,
       List<String> targets,
@@ -147,71 +151,69 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
 
 /// @nodoc
 class __$$_TestCommandConfigCopyWithImpl<$Res>
-    extends _$TestCommandConfigCopyWithImpl<$Res>
+    extends _$TestCommandConfigCopyWithImpl<$Res, _$_TestCommandConfig>
     implements _$$_TestCommandConfigCopyWith<$Res> {
   __$$_TestCommandConfigCopyWithImpl(
       _$_TestCommandConfig _value, $Res Function(_$_TestCommandConfig) _then)
-      : super(_value, (v) => _then(v as _$_TestCommandConfig));
+      : super(_value, _then);
 
-  @override
-  _$_TestCommandConfig get _value => super._value as _$_TestCommandConfig;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? devices = freezed,
-    Object? targets = freezed,
+    Object? devices = null,
+    Object? targets = null,
     Object? flavor = freezed,
-    Object? scheme = freezed,
-    Object? xcconfigFile = freezed,
-    Object? configuration = freezed,
-    Object? dartDefines = freezed,
+    Object? scheme = null,
+    Object? xcconfigFile = null,
+    Object? configuration = null,
+    Object? dartDefines = null,
     Object? packageName = freezed,
     Object? bundleId = freezed,
-    Object? repeat = freezed,
-    Object? displayLabel = freezed,
+    Object? repeat = null,
+    Object? displayLabel = null,
   }) {
     return _then(_$_TestCommandConfig(
-      devices: devices == freezed
+      devices: null == devices
           ? _value._devices
           : devices // ignore: cast_nullable_to_non_nullable
               as List<Device>,
-      targets: targets == freezed
+      targets: null == targets
           ? _value._targets
           : targets // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      flavor: flavor == freezed
+      flavor: freezed == flavor
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
               as String?,
-      scheme: scheme == freezed
+      scheme: null == scheme
           ? _value.scheme
           : scheme // ignore: cast_nullable_to_non_nullable
               as String,
-      xcconfigFile: xcconfigFile == freezed
+      xcconfigFile: null == xcconfigFile
           ? _value.xcconfigFile
           : xcconfigFile // ignore: cast_nullable_to_non_nullable
               as String,
-      configuration: configuration == freezed
+      configuration: null == configuration
           ? _value.configuration
           : configuration // ignore: cast_nullable_to_non_nullable
               as String,
-      dartDefines: dartDefines == freezed
+      dartDefines: null == dartDefines
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      packageName: packageName == freezed
+      packageName: freezed == packageName
           ? _value.packageName
           : packageName // ignore: cast_nullable_to_non_nullable
               as String?,
-      bundleId: bundleId == freezed
+      bundleId: freezed == bundleId
           ? _value.bundleId
           : bundleId // ignore: cast_nullable_to_non_nullable
               as String?,
-      repeat: repeat == freezed
+      repeat: null == repeat
           ? _value.repeat
           : repeat // ignore: cast_nullable_to_non_nullable
               as int,
-      displayLabel: displayLabel == freezed
+      displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
               as bool,
@@ -241,6 +243,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   final List<Device> _devices;
   @override
   List<Device> get devices {
+    if (_devices is EqualUnmodifiableListView) return _devices;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_devices);
   }
@@ -248,6 +251,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   final List<String> _targets;
   @override
   List<String> get targets {
+    if (_targets is EqualUnmodifiableListView) return _targets;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_targets);
   }
@@ -263,6 +267,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   final Map<String, String> _dartDefines;
   @override
   Map<String, String> get dartDefines {
+    if (_dartDefines is EqualUnmodifiableMapView) return _dartDefines;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableMapView(_dartDefines);
   }
@@ -288,20 +293,21 @@ class _$_TestCommandConfig implements _TestCommandConfig {
             other is _$_TestCommandConfig &&
             const DeepCollectionEquality().equals(other._devices, _devices) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
-            const DeepCollectionEquality().equals(other.flavor, flavor) &&
-            const DeepCollectionEquality().equals(other.scheme, scheme) &&
-            const DeepCollectionEquality()
-                .equals(other.xcconfigFile, xcconfigFile) &&
-            const DeepCollectionEquality()
-                .equals(other.configuration, configuration) &&
+            (identical(other.flavor, flavor) || other.flavor == flavor) &&
+            (identical(other.scheme, scheme) || other.scheme == scheme) &&
+            (identical(other.xcconfigFile, xcconfigFile) ||
+                other.xcconfigFile == xcconfigFile) &&
+            (identical(other.configuration, configuration) ||
+                other.configuration == configuration) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
-            const DeepCollectionEquality()
-                .equals(other.packageName, packageName) &&
-            const DeepCollectionEquality().equals(other.bundleId, bundleId) &&
-            const DeepCollectionEquality().equals(other.repeat, repeat) &&
-            const DeepCollectionEquality()
-                .equals(other.displayLabel, displayLabel));
+            (identical(other.packageName, packageName) ||
+                other.packageName == packageName) &&
+            (identical(other.bundleId, bundleId) ||
+                other.bundleId == bundleId) &&
+            (identical(other.repeat, repeat) || other.repeat == repeat) &&
+            (identical(other.displayLabel, displayLabel) ||
+                other.displayLabel == displayLabel));
   }
 
   @override
@@ -309,18 +315,19 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       runtimeType,
       const DeepCollectionEquality().hash(_devices),
       const DeepCollectionEquality().hash(_targets),
-      const DeepCollectionEquality().hash(flavor),
-      const DeepCollectionEquality().hash(scheme),
-      const DeepCollectionEquality().hash(xcconfigFile),
-      const DeepCollectionEquality().hash(configuration),
+      flavor,
+      scheme,
+      xcconfigFile,
+      configuration,
       const DeepCollectionEquality().hash(_dartDefines),
-      const DeepCollectionEquality().hash(packageName),
-      const DeepCollectionEquality().hash(bundleId),
-      const DeepCollectionEquality().hash(repeat),
-      const DeepCollectionEquality().hash(displayLabel));
+      packageName,
+      bundleId,
+      repeat,
+      displayLabel);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_TestCommandConfigCopyWith<_$_TestCommandConfig> get copyWith =>
       __$$_TestCommandConfigCopyWithImpl<_$_TestCommandConfig>(
           this, _$identity);
