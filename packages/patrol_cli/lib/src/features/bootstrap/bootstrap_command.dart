@@ -27,7 +27,7 @@ class BootstrapCommand extends Command<int> {
 
   @override
   String get description =>
-      'Create default config and test files and add patrol as a dev dependency.';
+      '[DEPRECATED] Create default config and test files and add patrol as a dev dependency.';
 
   @override
   Future<int> run() async {

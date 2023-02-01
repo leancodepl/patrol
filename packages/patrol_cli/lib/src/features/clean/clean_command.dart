@@ -16,7 +16,7 @@ class CleanCommand extends Command<int> {
   String get name => 'clean';
 
   @override
-  String get description => 'Delete all downloaded artifacts.';
+  String get description => '[DEPRECATED] Delete all downloaded artifacts.';
 
   @override
   Future<int> run() async {

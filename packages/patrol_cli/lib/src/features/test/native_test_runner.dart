@@ -1,12 +1,12 @@
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:patrol_cli/src/features/drive/flutter_test_runner.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
 
-/// This class doesn't have a builder callback (like [FlutterTestRunner] does).
+/// This class doesn't have a builder callback.
+///
 /// This means that it's not possible to split the build and run phases.
 class NativeTestRunner extends TestRunner implements Disposable {
   final Map<String, Device> _devices = {};

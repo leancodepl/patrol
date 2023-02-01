@@ -124,9 +124,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   static const _defaultXCConfigFile = 'Flutter/Debug.xcconfig';
   static const _defaultConfiguration = 'Debug';
 
-  @override
-  bool get hidden => true;
-
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final NativeTestRunner _testRunner;
@@ -142,7 +139,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   String get name => 'test';
 
   @override
-  String get description => 'Test the app using native instrumentation.';
+  String get description => 'Run integration tests';
 
   @override
   Future<TestCommandConfig> parseInput() async {

@@ -155,18 +155,16 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   String get name => 'drive';
 
   @override
-  String get description => 'Drive the app using flutter_driver.';
+  String get description => '[DEPRECATED] Drive the app using flutter_driver.';
 
   @override
   Future<DriveCommandConfig> parseInput() async {
-    _logger.write(
-      yellow.wrap(
-        '\n'
-        '`patrol drive` is deprecated and will be removed in the first stable 1.0 version.\n'
-        '\n'
-        'Migrate to `patrol test` instead – https://patrol.leancode.co/native/setup\n'
-        '\n',
-      ),
+    _logger.warn(
+      '\n'
+      '`patrol drive` is deprecated and will be removed in the first stable 1.0 version.\n'
+      '\n'
+      'Migrate to `patrol test` instead – https://patrol.leancode.co/native/setup\n'
+      '\n',
     );
 
     final host = argResults?['host'] as String?;
