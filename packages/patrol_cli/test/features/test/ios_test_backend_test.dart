@@ -33,7 +33,8 @@ void main() {
         ]),
       );
 
-      final xcodebuildInvocation = options.toXcodebuildInvocation(device);
+      final xcodebuildInvocation =
+          options.toXcodebuildForTestingInvocation(device);
 
       expect(
         xcodebuildInvocation,
@@ -84,7 +85,8 @@ void main() {
         ]),
       );
 
-      final xcodebuildInvocation = options.toXcodebuildInvocation(device);
+      final xcodebuildInvocation =
+          options.toXcodebuildForTestingInvocation(device);
 
       expect(
         xcodebuildInvocation,

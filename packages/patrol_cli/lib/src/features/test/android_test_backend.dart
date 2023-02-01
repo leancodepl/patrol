@@ -160,6 +160,7 @@ class AndroidTestBackend {
     required Device device,
     required String packageName,
   }) async {
+    // TODO: Also uninstall .test apk
     _logger.info('Uninstalling $packageName from ${device.name}');
     await _processManager.run([
       'adb',

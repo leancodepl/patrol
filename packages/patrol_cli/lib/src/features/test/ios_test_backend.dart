@@ -2,7 +2,7 @@ import 'dart:io' show systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:path/path.dart' show basename;
+import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:process/process.dart';
@@ -47,10 +47,11 @@ class IOSAppOptions {
     return cmd;
   }
 
-  /// Translates these options into a proper xcodebuild invocation.
-  List<String> toXcodebuildInvocation(Device device) {
+  /// Translates these options into a proper `xcodebuild build-for-testing`
+  /// invocation.
+  List<String> buildForTestingInvocation(Device device) {
     final cmd = [
-      ...['xcodebuild', 'test'],
+      ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
       ...['-xcconfig', xcconfigFile],
@@ -58,9 +59,34 @@ class IOSAppOptions {
       ...['-sdk', if (device.real) 'iphoneos' else 'iphonesimulator'],
       ...[
         '-destination',
+        'generic/platform=${device.real ? 'iOS' : 'iOS Simulator'}',
+      ],
+      '-quiet',
+      ...['-derivedDataPath', '../build/ios_integ'],
+      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+    ];
+
+    return cmd;
+  }
+
+  /// Translates these options into a proper `xcodebuild test-without-building`
+  /// invocation.
+  List<String> testWithoutBuildingInvocation(Device device) {
+    const prefix = '../build/ios_integ/Build/Products';
+    final cmd = [
+      ...['xcodebuild', 'test-without-building'],
+      ...[
+        '-xctestrun',
+        // FIXME: determine the version somehow
+        if (device.real)
+          join(prefix, 'Runner_iphoneos16.2-arm64.xctestrun')
+        else
+          join(prefix, 'Runner_iphonesimulator16.2-arm64-x86_64.xctestrun')
+      ],
+      ...[
+        '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
-      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
 
     return cmd;
@@ -85,13 +111,14 @@ class IOSTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> run({
+  Future<void> build({
     required Device device,
     required IOSAppOptions options,
   }) async {
     final targetName = basename(options.target);
-    final task = _logger
-        .task('Building app for $targetName and running it on ${device.name}');
+    final subject =
+        'app for $targetName (${device.real ? 'device' : 'simulator'})';
+    final task = _logger.task('Building $subject');
 
     final flutterProcess = await _processManager.start(
       options.toFlutterBuildInvocation(device),
@@ -115,7 +142,7 @@ class IOSTestBackend {
     }
 
     final xcodebuildProcess = await _processManager.start(
-      options.toXcodebuildInvocation(device),
+      options.buildForTestingInvocation(device),
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
     );
