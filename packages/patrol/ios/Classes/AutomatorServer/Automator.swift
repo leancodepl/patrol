@@ -349,7 +349,7 @@ class Automator {
       }
 
       #if targetEnvironment(simulator)
-      // For some weird reason, this works differently on Simulator
+        // For some weird reason, this works differently on Simulator
         cells[index].doubleTap()
         self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
       #else
@@ -365,12 +365,12 @@ class Automator {
       for (i, cell) in cells.enumerated() {
         if cell.label.contains(text) {
           Logger.shared.i("tapping on notification at index \(i) which contains text \(text)")
-            #if targetEnvironment(simulator)
+          #if targetEnvironment(simulator)
             // For some weird reason, this works differently on Simulator
             cell.doubleTap()
             self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
           #else
-          cell.tap()
+            cell.tap()
           #endif
           return
         }
@@ -568,12 +568,14 @@ class Automator {
       block()
 
       self.springboard.activate()
-      
+
       // Workaround for https://github.com/leancodepl/patrol/issues/681
       #if PATROL_ENABLED
         self.preferences.terminate()
       #else
-        throw PatrolError.internal("tried to call XCUIApplication.terminate, but PATROL_ENABLED is not defined. This is an error.")
+        throw PatrolError.internal(
+          "tried to call XCUIApplication.terminate, but PATROL_ENABLED is not defined. This is an error."
+        )
       #endif
 
       // go back to the app under test
