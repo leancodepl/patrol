@@ -19,15 +19,6 @@
   [tests enumerateKeysAndObjectsUsingBlock:^(NSString *test, NSString *result, BOOL *stop) {
     NSString *testSelectorName = [[self class] testCaseNameFromDartTestName:test];
     
-    // Dismiss "App would like to find and connect to devices on your local network"
-    
-//    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
-//    XCUIElementQuery *systemAlerts = springboard.alerts;
-//    if (systemAlerts.buttons[@"Allow"].exists) {
-//      [systemAlerts.buttons[@"Allow"] tap];
-//    }
-    
-    
     // Make sure that Objective-C test method names are unique after sanitization
     if ([testCaseNames containsObject:testSelectorName]) {
       NSString *reason = [NSString
