@@ -164,7 +164,8 @@ class NativeAutomator {
       return result;
     } on GrpcError catch (err) {
       _config.logger('$name() failed');
-      final log = '$name() failed with code ${err.codeName} (${err.message})';
+      final log = 'GrpcError: '
+          '$name() failed with code ${err.codeName} (${err.message})';
       throw PatrolActionException(log);
     } catch (err) {
       _config.logger('$name() failed');
