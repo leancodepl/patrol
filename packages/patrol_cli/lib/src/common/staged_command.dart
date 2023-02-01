@@ -11,14 +11,14 @@ import 'package:meta/meta.dart';
 /// This allows for clear separation of setting things up from actual business
 /// logic.
 abstract class StagedCommand<C> extends Command<int> {
-  Future<C> parseInput();
+  Future<C> configure();
 
   Future<int> execute(C config);
 
   @override
   @nonVirtual
   Future<int> run() async {
-    final config = await parseInput();
+    final config = await configure();
     return execute(config);
   }
 }

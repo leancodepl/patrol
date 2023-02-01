@@ -34,6 +34,9 @@ class TestCommandConfig with _$TestCommandConfig {
 }
 
 const _defaultRepeats = 1;
+const _failureMessage =
+    "See the logs above to learn what happened. If they aren't useful then"
+    "it's a bug – please report it.";
 
 class TestCommand extends StagedCommand<TestCommandConfig> {
   TestCommand({
@@ -142,7 +145,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   String get description => 'Run integration tests.';
 
   @override
-  Future<TestCommandConfig> parseInput() async {
+  Future<TestCommandConfig> configure() async {
     final target = argResults?['target'] as List<String>? ?? [];
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
@@ -227,59 +230,29 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     config.devices.forEach(_testRunner.addDevice);
     _testRunner
       ..repeats = config.repeat
-      ..executor = (target, device) async {
+      ..builder = (target, device) async {
         Future<void> Function() action;
-        Future<void> Function()? finalizer;
 
         switch (device.targetPlatform) {
           case TargetPlatform.android:
-            action = () => _androidTestBackend.run(
-                  device: device,
-                  options: AndroidAppOptions(
-                    target: target,
-                    flavor: config.flavor,
-                    dartDefines: config.dartDefines,
-                  ),
-                );
-            final packageName = config.packageName;
-            if (packageName == null) {
-              _logger.info(
-                'App will not be uninstalled after tests finish because the '
-                'package name is null',
-              );
-              break;
-            }
-            finalizer = () => _androidTestBackend.uninstall(
-                  device: device,
-                  packageName: packageName,
-                );
-
+            final options = AndroidAppOptions(
+              target: target,
+              flavor: config.flavor,
+              dartDefines: config.dartDefines,
+            );
+            action = () => _androidTestBackend.build(options);
             break;
           case TargetPlatform.iOS:
-            action = () => _iosTestBackend.run(
-                  device: device,
-                  options: IOSAppOptions(
-                    target: target,
-                    flavor: config.flavor,
-                    dartDefines: config.dartDefines,
-                    scheme: config.scheme,
-                    xcconfigFile: config.xcconfigFile,
-                    configuration: config.configuration,
-                  ),
-                );
-            final bundleId = config.bundleId;
-            if (bundleId == null) {
-              _logger.info(
-                'App will not be uninstalled after tests finish because the '
-                'bundle identifier is null',
-              );
-              break;
-            }
-
-            finalizer = () => _iosTestBackend.uninstall(
-                  device: device,
-                  bundleId: bundleId,
-                );
+            final options = IOSAppOptions(
+              target: target,
+              flavor: config.flavor,
+              dartDefines: config.dartDefines,
+              scheme: config.scheme,
+              xcconfigFile: config.xcconfigFile,
+              configuration: config.configuration,
+            );
+            // action = () => _iosTestBackend.build(options);
+            action = () async => _logger.warn('NOT IMPLEMENTED');
         }
 
         try {
@@ -287,13 +260,40 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         } catch (err) {
           _logger
             ..err('$err')
-            ..err(
-              'See the logs above to learn what happened. If the logs above '
-              "aren't useful then it's a bug – please report it.",
-            );
+            ..err(_failureMessage);
           rethrow;
         } finally {
-          await finalizer?.call();
+          // FIXME: Register uninstall app here
+          // Use iosTestBackend.uninstall() and androidTestBackend.uninstall()
+        }
+      }
+      ..executor = (target, device) async {
+        Future<void> Function() action;
+
+        switch (device.targetPlatform) {
+          case TargetPlatform.android:
+            final options = AndroidAppOptions(
+              target: target,
+              flavor: config.flavor,
+              dartDefines: config.dartDefines,
+            );
+            action = () => _androidTestBackend.execute(options, device);
+            break;
+          case TargetPlatform.iOS:
+            action = () async => _logger.warn('NOT IMPLEMENTED');
+        }
+
+        try {
+          await action();
+        } catch (err) {
+          _logger
+            ..err('$err')
+            ..err(_failureMessage);
+          rethrow;
+        } finally {
+          // FIXME: Actually uninstall app here (call finalizers of NativeTestRunner?)
+          // Use iosTestBackend.uninstall() and androidTestBackend.uninstall()
+          // await finalizer?.call();
         }
       };
 

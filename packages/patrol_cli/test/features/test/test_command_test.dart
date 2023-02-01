@@ -77,14 +77,14 @@ void main() {
     });
 
     test('has correct default config', () async {
-      final config = await testCommand.parseInput();
+      final config = await testCommand.configure();
       expect(config, _defaultConfig);
     });
 
     test('has correct config when single target is given', () async {
       fs.file('integration_test/app_test.dart').createSync();
 
-      final config = await testCommand.parseInput();
+      final config = await testCommand.configure();
 
       expect(
         config,
@@ -97,7 +97,7 @@ void main() {
     test('has correct config when single target is given', () async {
       fs.file('integration_test/app_test.dart').createSync();
 
-      final config = await testCommand.parseInput();
+      final config = await testCommand.configure();
 
       expect(
         config,
@@ -111,7 +111,7 @@ void main() {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
-      final config = await testCommand.parseInput();
+      final config = await testCommand.configure();
 
       expect(
         config,
@@ -128,14 +128,9 @@ void main() {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
-      final config = await testCommand.parseInput();
+      final config = await testCommand.configure();
 
-      when(
-        () => androidTestBackend.run(
-          device: any(named: 'device'),
-          options: any(named: 'options'),
-        ),
-      ).thenAnswer((_) async {});
+      when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
 
       final exitCode = await testCommand.execute(config);
       expect(exitCode, isZero);
@@ -145,14 +140,9 @@ void main() {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
-      final config = await testCommand.parseInput();
+      final config = await testCommand.configure();
 
-      when(
-        () => androidTestBackend.run(
-          device: any(named: 'device'),
-          options: any(named: 'options'),
-        ),
-      ).thenThrow(Exception());
+      when(() => androidTestBackend.build(any())).thenThrow(Exception());
 
       final exitCode = await testCommand.execute(config);
       expect(exitCode, equals(1));

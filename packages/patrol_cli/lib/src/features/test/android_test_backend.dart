@@ -2,6 +2,7 @@ import 'dart:convert' show base64Encode, utf8;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -20,10 +21,22 @@ class AndroidAppOptions {
   final String? flavor;
   final Map<String, String> dartDefines;
 
+  List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
+    return toGradleInvocation(isWindows: isWindows, task: 'assemble');
+  }
+
+  List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
+    return toGradleInvocation(isWindows: isWindows, task: 'connected');
+  }
+
   /// Translates these options into a proper Gradle invocation.
-  List<String> toGradleInvocation(Platform platform) {
+  @visibleForTesting
+  List<String> toGradleInvocation({
+    required bool isWindows,
+    required String task,
+  }) {
     final List<String> cmd;
-    if (platform.isWindows) {
+    if (isWindows) {
       cmd = <String>['gradlew.bat'];
     } else {
       cmd = <String>['./gradlew'];
@@ -34,7 +47,7 @@ class AndroidAppOptions {
     if (flavor.isNotEmpty) {
       flavor = flavor[0].toUpperCase() + flavor.substring(1);
     }
-    final gradleTask = ':app:connected${flavor}DebugAndroidTest';
+    final gradleTask = ':app:$task${flavor}DebugAndroidTest';
     cmd.add(gradleTask);
 
     // Add Dart test target
@@ -60,6 +73,9 @@ class AndroidAppOptions {
   }
 }
 
+/// Provides functionality to build, install, run, and uninstall Android apps.
+///
+/// This class must be stateless.
 class AndroidTestBackend {
   AndroidTestBackend({
     required ProcessManager processManager,
@@ -81,16 +97,41 @@ class AndroidTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> run({
-    required Device device,
-    required AndroidAppOptions options,
-  }) async {
+  Future<void> build(AndroidAppOptions options) async {
     final targetName = basename(options.target);
-    final task = _logger
-        .task('Building apk for $targetName and running it on ${device.id}');
+    final subject = 'apk with entrypoint $targetName';
+    final task = _logger.task('Building $subject');
 
     final process = await _processManager.start(
-      options.toGradleInvocation(_platform),
+      options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
+      runInShell: true,
+      workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+    );
+
+    process
+        .listenStdOut((line) => _logger.detail('\t: $line'))
+        .disposedBy(_disposeScope);
+    process
+        .listenStdErr((line) => _logger.err('\t$line'))
+        .disposedBy(_disposeScope);
+
+    final exitCode = await process.exitCode;
+
+    if (exitCode == 0) {
+      task.complete('Built $subject');
+    } else {
+      task.fail('Failed to build $subject');
+      throw Exception('Gradle exited with code $exitCode');
+    }
+  }
+
+  Future<void> execute(AndroidAppOptions options, Device device) async {
+    final targetName = basename(options.target);
+    final subject = 'apk with entrypoint $targetName on device ${device.id}';
+    final task = _logger.task('Running $subject');
+
+    final process = await _processManager.start(
+      options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
       runInShell: true,
       environment: {
         'ANDROID_SERIAL': device.id,
@@ -108,11 +149,9 @@ class AndroidTestBackend {
     final exitCode = await process.exitCode;
 
     if (exitCode == 0) {
-      task.complete('Built and ran apk for $targetName on ${device.id}');
+      task.complete('Ran $subject');
     } else {
-      task.fail(
-        'Failed to build and run apk for $targetName and run ${device.id}',
-      );
+      task.fail('Failed to run $subject');
       throw Exception('Gradle exited with code $exitCode');
     }
   }

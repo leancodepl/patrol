@@ -17,12 +17,13 @@ void main() {
           dartDefines: {},
         );
 
-        final invocation = options.toGradleInvocation(_windows);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: true);
         expect(
           invocation,
           equals([
             'gradlew.bat',
-            ':app:connectedDebugAndroidTest',
+            ':app:assembleDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
           ]),
         );
@@ -35,12 +36,13 @@ void main() {
           dartDefines: {},
         );
 
-        final invocation = options.toGradleInvocation(_macos);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: false);
         expect(
           invocation,
           equals([
             './gradlew',
-            ':app:connectedDebugAndroidTest',
+            ':app:assembleDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
           ]),
         );
@@ -61,12 +63,13 @@ void main() {
           dartDefines: dartDefines,
         );
 
-        final invocation = options.toGradleInvocation(_windows);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: true);
         expect(
           invocation,
           equals([
             'gradlew.bat',
-            ':app:connectedDevDebugAndroidTest',
+            ':app:assembleDevDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
           ]),
@@ -80,12 +83,13 @@ void main() {
           dartDefines: dartDefines,
         );
 
-        final invocation = options.toGradleInvocation(_macos);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: false);
         expect(
           invocation,
           equals([
             './gradlew',
-            ':app:connectedDevDebugAndroidTest',
+            ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
           ]),
