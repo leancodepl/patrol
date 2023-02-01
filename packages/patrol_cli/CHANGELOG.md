@@ -1,3 +1,14 @@
+## 0.8.6
+
+- Uninstall app under test after `patrol test` (#848)
+
+  This currently requires package name (on Android) and bundle identifier (on
+  iOS) to be passed through respective arguments to `patrol test`. Soon it'll
+  also be possible to define these values in `pubspec.yaml.
+
+- Print helpful links when called without arguments (#865)
+- Fix verbose output from Gradle having garbled newlines (#858)
+
 ## 0.8.5
 
 - Add a deprecation warning to `patrol drive` command (#833)
