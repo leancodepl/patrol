@@ -1,5 +1,3 @@
-@Tags(['ios'])
-
 import 'package:flutter_test/flutter_test.dart';
 
 import 'webview_hackernews_test.dart';

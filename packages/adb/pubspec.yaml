@@ -9,11 +9,11 @@ environment:
 
 dependencies:
   mocktail: ^0.3.0
-  path: ^1.8.2
+  path: ^1.8.3
 
 dev_dependencies:
-  leancode_lint: ^2.0.0+1
-  test: ^1.21.4
+  leancode_lint: ^2.1.0
+  test: ^1.22.2
 
 executables:
   dadb: example
