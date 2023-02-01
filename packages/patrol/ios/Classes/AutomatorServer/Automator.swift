@@ -348,12 +348,13 @@ class Automator {
         throw PatrolError.viewNotExists("notification at index \(index)")
       }
 
-      // FIXME: Do this only on simulator
-      // cells[index].doubleTap()
-      // self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
-      
-      // FIXME: Do this only on physical device
-      cells[index].tap()
+      #if targetEnvironment(simulator)
+      // For some weird reason, this works differently on Simulator
+        cells[index].doubleTap()
+        self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+      #else
+        cells[index].tap()
+      #endif
     }
   }
 
@@ -364,12 +365,13 @@ class Automator {
       for (i, cell) in cells.enumerated() {
         if cell.label.contains(text) {
           Logger.shared.i("tapping on notification at index \(i) which contains text \(text)")
-          // FIXME: Do this only on simulator
-          // cell.doubleTap()
-          // self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
-
-          // FIXME: Do this only on physical device
+            #if targetEnvironment(simulator)
+            // For some weird reason, this works differently on Simulator
+            cell.doubleTap()
+            self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          #else
           cell.tap()
+          #endif
           return
         }
       }
