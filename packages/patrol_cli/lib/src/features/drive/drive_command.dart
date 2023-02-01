@@ -19,6 +19,7 @@ part 'drive_command.freezed.dart';
 
 @freezed
 class DriveCommandConfig with _$DriveCommandConfig {
+  @Deprecated('To be removed in 1.0')
   const factory DriveCommandConfig({
     required List<Device> devices,
     required List<String> targets,
@@ -38,6 +39,7 @@ class DriveCommandConfig with _$DriveCommandConfig {
 const _defaultRepeats = 1;
 
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
+  @Deprecated('To be removed in 1.0')
   DriveCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,

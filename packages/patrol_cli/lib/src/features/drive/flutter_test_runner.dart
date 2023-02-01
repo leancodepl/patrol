@@ -16,6 +16,7 @@ typedef _Callback = Future<void> Function(String target, Device device);
 /// This class requires a separate builder and executor callbacks. This
 /// decouples the building of a test from running the test. It also maps nicely
 /// to `flutter build` and `flutter drive`.
+@Deprecated('To be removed in 1.0')
 class FlutterTestRunner extends TestRunner implements Disposable {
   final Map<String, Device> _devices = {};
   final Set<String> _targets = {};

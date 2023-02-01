@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/features/run_commons/constants.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:process/process.dart';
 
+@Deprecated('To be removed in 1.0')
 extension TargetPlatformX on TargetPlatform {
   String get artifactType {
     switch (this) {
@@ -31,6 +32,7 @@ extension TargetPlatformX on TargetPlatform {
 
 /// Thrown when `flutter build` exits with non-zero exit code.
 class FlutterBuildFailedException implements Exception {
+  @Deprecated('To be removed in 1.0')
   FlutterBuildFailedException(this.code)
       : assert(code != 0, 'exit code is 0, which means success'),
         super();
@@ -43,6 +45,7 @@ class FlutterBuildFailedException implements Exception {
 
 /// Thrown when `flutter drive` exits with non-zero exit code.
 class FlutterDriverFailedException implements Exception {
+  @Deprecated('To be removed in 1.0')
   FlutterDriverFailedException(this.code)
       : assert(code != 0, 'exit code is 0, which means success'),
         super();
@@ -55,6 +58,7 @@ class FlutterDriverFailedException implements Exception {
 
 /// Wrapper around the flutter tool.
 class FlutterTool {
+  @Deprecated('To be removed in 1.0')
   FlutterTool({
     required ProcessManager processManager,
     required FileSystem fs,
