@@ -1,4 +1,4 @@
-import 'dart:convert' show utf8, base64Encode;
+import 'dart:convert' show base64Encode, utf8;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
