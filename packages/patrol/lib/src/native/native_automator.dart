@@ -190,6 +190,7 @@ class NativeAutomator {
             ),
           ),
         );
+        exception = null;
         break;
       } on PatrolActionException catch (err) {
         _config.logger('configure() failed: (${err.message})');
@@ -540,7 +541,7 @@ class NativeAutomator {
   /// Checks if a native permission request dialog is from now until [timeout]
   /// passees.
   Future<bool> isPermissionDialogVisible({
-    Duration timeout = const Duration(seconds: 1),
+    Duration timeout = const Duration(seconds: 3),
   }) async {
     final response = await _wrapRequest(
       'isPermissionDialogVisible',
