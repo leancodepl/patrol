@@ -139,7 +139,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   String get name => 'test';
 
   @override
-  String get description => 'Run integration tests';
+  String get description => 'Run integration tests.';
 
   @override
   Future<TestCommandConfig> parseInput() async {
