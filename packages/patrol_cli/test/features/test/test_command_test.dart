@@ -1,3 +1,4 @@
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
@@ -72,6 +73,7 @@ void main() {
           fs: fs,
           projectRoot: fs.currentDirectory,
         ),
+        parentDisposeScope: DisposeScope(),
         logger: MockLogger(),
       );
     });

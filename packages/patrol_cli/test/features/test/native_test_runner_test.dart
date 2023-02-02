@@ -119,20 +119,6 @@ void main() {
         );
       });
 
-      test('build not called when userApplicationBinary is not null', () {
-        testRunner
-          ..addDevice(androidDevice)
-          ..addTarget('app_test.dart')
-          ..useApplicationBinary = '/some/path/app-debug.apk';
-        unawaited(testRunner.run());
-
-        expect(buildCalled, false);
-        expect(
-          () => testRunner.run(),
-          throwsStateError,
-        );
-      });
-
       test(
         'builds and executes test targets sequentially on single device',
         () {

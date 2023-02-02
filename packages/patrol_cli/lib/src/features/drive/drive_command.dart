@@ -48,8 +48,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required DartDefinesReader dartDefinesReader,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _disposeScope = DisposeScope(),
-        _deviceFinder = deviceFinder,
+  })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
         _androidDriver = androidDriver,
@@ -57,7 +56,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _flutterTool = flutterTool,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
-    _disposeScope.disposedBy(parentDisposeScope);
     _testRunner.disposedBy(parentDisposeScope);
 
     argParser
@@ -136,8 +134,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         defaultsTo: true,
       );
   }
-
-  final DisposeScope _disposeScope;
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;

@@ -8,7 +8,6 @@ import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:process/process.dart';
 
-// TODO: Consider extending from a (hypotehtical) common `AppOptions` class
 class IOSAppOptions extends AppOptions {
   const IOSAppOptions({
     required super.target,
@@ -178,7 +177,8 @@ class IOSTestBackend extends TestBackend {
       options.buildForTestingInvocation(device),
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
-    );
+    )
+      ..disposedBy(_disposeScope);
 
     xcodebuildProcess.stdout.listen((rawMsg) {
       final msg = systemEncoding.decode(rawMsg).trim();

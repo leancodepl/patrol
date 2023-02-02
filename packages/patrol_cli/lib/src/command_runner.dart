@@ -140,6 +140,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           projectRoot: _fs.currentDirectory,
           fs: _fs,
         ),
+        parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
     );
@@ -201,6 +202,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
   late DriveCommand driveCommand;
 
   Future<void> dispose() async {
+    _logger.detail('Command runner is being disposed...');
     try {
       await _disposeScope.dispose();
     } catch (err, st) {

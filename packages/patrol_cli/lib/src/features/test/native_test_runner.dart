@@ -4,7 +4,7 @@ import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 
 // TODO: Maybe make this return a closure? And that closure would be called when
-// TODO: the action (that this callback did, e.g installed app) would be undone.
+// the action (that this callback did, e.g installed app) would be undone.
 typedef _Callback = Future<void> Function(String target, Device device);
 
 /// Orchestrates running tests on devices.
@@ -32,15 +32,6 @@ class NativeTestRunner extends TestRunner implements Disposable {
     }
 
     _repeats = newValue;
-  }
-
-  String? _useApplicationBinary;
-  set useApplicationBinary(String? newValue) {
-    if (_running) {
-      throw StateError('application binary cannot be changed while running');
-    }
-
-    _useApplicationBinary = newValue;
   }
 
   _Callback? _builder;
@@ -146,17 +137,9 @@ class NativeTestRunner extends TestRunner implements Disposable {
             continue;
           }
 
-          if (_useApplicationBinary == null) {
-            try {
-              await builder(target, device);
-            } catch (_) {
-              targetRuns.add(TargetRunStatus.failedToBuild);
-              continue;
-            }
-          }
-
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
+              print('disposed!');
               targetRuns.add(TargetRunStatus.canceled);
               continue;
             }

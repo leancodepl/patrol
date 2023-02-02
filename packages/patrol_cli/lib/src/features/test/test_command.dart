@@ -1,4 +1,5 @@
 import 'package:ansi_styles/extension.dart';
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -46,6 +47,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     required DartDefinesReader dartDefinesReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
@@ -54,6 +56,11 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         _iosTestBackend = iosTestBackend,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
+    parentDisposeScope.addDispose(() async {
+      _logger.detail('TestRunner is being disposed');
+      await _testRunner.dispose();
+    });
+
     argParser
       ..addMultiOption(
         'target',

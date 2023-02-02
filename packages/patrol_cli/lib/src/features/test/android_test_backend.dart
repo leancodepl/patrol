@@ -11,7 +11,6 @@ import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
-// TODO: Consider extending from a (hypotehtical) common `AppOptions` class
 class AndroidAppOptions extends AppOptions {
   const AndroidAppOptions({
     required super.target,
@@ -128,8 +127,8 @@ class AndroidTestBackend extends TestBackend {
       options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-    )
-      ..disposedBy(_disposeScope);
+    );
+//      ..disposedBy(_disposeScope);
 
     process
         .listenStdOut((line) => _logger.detail('\t: $line'))
