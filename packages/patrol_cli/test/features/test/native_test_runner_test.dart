@@ -18,8 +18,9 @@ void main() {
     testRunner = NativeTestRunner();
   });
 
-  group('FlutterTestRunner', () {
+  group('NativeTestRunner', () {
     setUp(() {
+      testRunner.builder = (_, __) => delay();
       testRunner.executor = (_, __) => delay();
     });
 
@@ -75,15 +76,23 @@ void main() {
     group('run()', () {
       late List<String> actualLog;
       late List<String> expectedLog;
+      var buildCalled = false;
 
       setUp(() {
         actualLog = [];
         expectedLog = [];
+        buildCalled = false;
 
-        testRunner.executor = (target, device) async {
-          await delay();
-          actualLog.add('execute $target ${device.id}');
-        };
+        testRunner
+          ..builder = (target, device) async {
+            buildCalled = true;
+            await delay();
+            actualLog.add('build $target ${device.id}');
+          }
+          ..executor = (target, device) async {
+            await delay();
+            actualLog.add('execute $target ${device.id}');
+          };
       });
 
       test('throws when no devices were added', () {
@@ -110,6 +119,20 @@ void main() {
         );
       });
 
+      test('build not called when userApplicationBinary is not null', () {
+        testRunner
+          ..addDevice(androidDevice)
+          ..addTarget('app_test.dart')
+          ..useApplicationBinary = '/some/path/app-debug.apk';
+        unawaited(testRunner.run());
+
+        expect(buildCalled, false);
+        expect(
+          () => testRunner.run(),
+          throwsStateError,
+        );
+      });
+
       test(
         'builds and executes test targets sequentially on single device',
         () {
@@ -124,7 +147,15 @@ void main() {
             testRunner.run();
 
             fakeAsync.elapse(Duration(seconds: 1));
+            expectedLog.add('build A ${androidDevice.id}');
+            expect(actualLog, equals(actualLog));
+
+            fakeAsync.elapse(Duration(seconds: 1));
             expectedLog.add('execute A ${androidDevice.id}');
+            expect(actualLog, equals(expectedLog));
+
+            fakeAsync.elapse(Duration(seconds: 1));
+            expectedLog.add('build B ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
@@ -132,8 +163,14 @@ void main() {
             expect(actualLog, equals(expectedLog));
 
             fakeAsync.elapse(Duration(seconds: 1));
+            expectedLog.add('build C ${androidDevice.id}');
+            expect(actualLog, equals(expectedLog));
+
+            fakeAsync.elapse(Duration(seconds: 1));
             expectedLog.add('execute C ${androidDevice.id}');
             expect(actualLog, equals(expectedLog));
+
+            expect(buildCalled, true);
           });
         },
       );
@@ -153,7 +190,7 @@ void main() {
           unawaited(testRunner.run());
 
           fakeAsync.elapse(Duration(seconds: 1));
-          expectedLog.add('execute A ${androidDevice.id}');
+          expectedLog.add('build A ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
@@ -162,6 +199,14 @@ void main() {
 
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.add('execute A ${androidDevice.id}');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('execute A ${androidDevice.id}');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build B ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
@@ -174,6 +219,10 @@ void main() {
 
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.add('execute B ${androidDevice.id}');
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build C ${androidDevice.id}');
           expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
@@ -208,7 +257,19 @@ void main() {
 
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.addAll(
+            ['build A ${androidDevice.id}', 'build A ${iosDevice.id}'],
+          );
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.addAll(
             ['execute A ${androidDevice.id}', 'execute A ${iosDevice.id}'],
+          );
+          expect(actualLog, equals(expectedLog));
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.addAll(
+            ['build B ${androidDevice.id}', 'build B ${iosDevice.id}'],
           );
           expect(actualLog, equals(expectedLog));
 
@@ -217,6 +278,12 @@ void main() {
             ['execute B ${androidDevice.id}', 'execute B ${iosDevice.id}'],
           );
           expect(actualLog, expectedLog);
+
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.addAll(
+            ['build C ${androidDevice.id}', 'build C ${iosDevice.id}'],
+          );
+          expect(actualLog, equals(expectedLog));
 
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.addAll(
@@ -275,6 +342,10 @@ void main() {
           expect(actualLog, equals(<String>[]));
           testRunner.run();
 
+          fakeAsync.elapse(Duration(seconds: 1));
+          expectedLog.add('build A ${androidDevice.id}');
+          expect(actualLog, equals(actualLog));
+
           testRunner.dispose();
           fakeAsync.elapse(Duration(seconds: 1));
           expectedLog.add('execute A ${androidDevice.id}');
@@ -284,6 +355,129 @@ void main() {
           expect(actualLog, equals(expectedLog));
         });
       });
+
+      test('does not execute test target if it failed to build', () async {
+        final actualLog = <String>[];
+
+        final testRunner = NativeTestRunner();
+        testRunner
+          ..addDevice(androidDevice)
+          ..addTarget('A')
+          ..addTarget('B')
+          ..addTarget('C');
+
+        testRunner.builder = (target, device) async {
+          actualLog.add('start build $target ${device.id}');
+          if (target == 'B') {
+            throw Exception('failed to build');
+          }
+          actualLog.add('end build $target ${device.id}');
+        };
+        testRunner.executor = (target, device) async {
+          actualLog.add('start execute $target ${device.id}');
+          actualLog.add('end execute $target ${device.id}');
+        };
+
+        final result = await testRunner.run();
+        expect(actualLog, [
+          'start build A ${androidDevice.id}',
+          'end build A ${androidDevice.id}',
+          'start execute A ${androidDevice.id}',
+          'end execute A ${androidDevice.id}',
+          'start build B ${androidDevice.id}',
+          'start build C ${androidDevice.id}',
+          'end build C ${androidDevice.id}',
+          'start execute C ${androidDevice.id}',
+          'end execute C ${androidDevice.id}',
+        ]);
+
+        expect(
+          result,
+          RunResults(
+            targetRunResults: [
+              TargetRunResult(
+                target: 'A',
+                device: androidDevice,
+                runs: [TargetRunStatus.passed],
+              ),
+              TargetRunResult(
+                target: 'B',
+                device: androidDevice,
+                runs: [TargetRunStatus.failedToBuild],
+              ),
+              TargetRunResult(
+                target: 'C',
+                device: androidDevice,
+                runs: [TargetRunStatus.passed],
+              ),
+            ],
+          ),
+        );
+      });
+
+      test(
+        'continues to run tests if one test target failed to execute',
+        () async {
+          final actualLog = <String>[];
+
+          final testRunner = NativeTestRunner();
+          testRunner
+            ..addDevice(androidDevice)
+            ..addTarget('A')
+            ..addTarget('B')
+            ..addTarget('C');
+
+          testRunner.builder = (target, device) async {
+            actualLog.add('start build $target ${device.id}');
+            actualLog.add('end build $target ${device.id}');
+          };
+          testRunner.executor = (target, device) async {
+            actualLog.add('start execute $target ${device.id}');
+            if (target == 'B') {
+              throw Exception('failed to execute');
+            }
+            actualLog.add('end execute $target ${device.id}');
+          };
+
+          final result = await testRunner.run();
+          expect(actualLog, [
+            'start build A ${androidDevice.id}',
+            'end build A ${androidDevice.id}',
+            'start execute A ${androidDevice.id}',
+            'end execute A ${androidDevice.id}',
+            'start build B ${androidDevice.id}',
+            'end build B ${androidDevice.id}',
+            'start execute B ${androidDevice.id}',
+            'start build C ${androidDevice.id}',
+            'end build C ${androidDevice.id}',
+            'start execute C ${androidDevice.id}',
+            'end execute C ${androidDevice.id}',
+          ]);
+
+          expect(
+            result,
+            RunResults(
+              targetRunResults: [
+                TargetRunResult(
+                  target: 'A',
+                  device: androidDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+                TargetRunResult(
+                  target: 'B',
+                  device: androidDevice,
+                  runs: [TargetRunStatus.failedToExecute],
+                ),
+                TargetRunResult(
+                  target: 'C',
+                  device: androidDevice,
+                  runs: [TargetRunStatus.passed],
+                ),
+              ],
+            ),
+          );
+        },
+      );
     });
   });
 }
