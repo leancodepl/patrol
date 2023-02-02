@@ -1,5 +1,6 @@
 import 'dart:convert' show base64Encode, utf8;
 
+import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:path/path.dart' show basename;
@@ -96,12 +97,14 @@ class AndroidAppOptions extends AppOptions {
 /// This class must be stateless.
 class AndroidTestBackend extends TestBackend {
   AndroidTestBackend({
+    required Adb adb,
     required ProcessManager processManager,
     required Platform platform,
     required FileSystem fs,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _processManager = processManager,
+  })  : _adb = adb,
+        _processManager = processManager,
         _fs = fs,
         _platform = platform,
         _disposeScope = DisposeScope(),
@@ -109,6 +112,7 @@ class AndroidTestBackend extends TestBackend {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
+  final Adb _adb;
   final ProcessManager _processManager;
   final Platform _platform;
   final FileSystem _fs;
@@ -179,14 +183,9 @@ class AndroidTestBackend extends TestBackend {
     required Device device,
     required String packageName,
   }) async {
-    // TODO: Also uninstall .test apk
-    _logger.info('Uninstalling $packageName from ${device.name}');
-    await _processManager.run([
-      'adb',
-      '-s',
-      device.id,
-      'uninstall',
-      packageName,
-    ]);
+    _logger.detail('Uninstalling $packageName from ${device.name}');
+    await _adb.uninstall(packageName, device: device.id);
+    _logger.detail('Uninstalling $packageName.test from ${device.name}');
+    await _adb.uninstall('$packageName.test', device: device.id);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io' show ProcessSignal, exit;
 
+import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
@@ -122,6 +123,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ),
         testRunner: NativeTestRunner(),
         androidTestBackend: AndroidTestBackend(
+          adb: Adb(),
           processManager: LoggingLocalProcessManager(logger: _logger),
           platform: const LocalPlatform(),
           fs: _fs,
