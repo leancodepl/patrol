@@ -313,6 +313,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     final results = await _testRunner.run();
 
+    if (results.targetRunResults.isEmpty) {
+      _logger.warn('No run results found');
+    }
     for (final res in results.targetRunResults) {
       final device = res.device.resolvedName;
       if (res.allRunsPassed) {

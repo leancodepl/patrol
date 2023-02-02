@@ -137,6 +137,14 @@ class NativeTestRunner extends TestRunner implements Disposable {
             continue;
           }
 
+          // Build once for every target, no matter how many repeats.
+          try {
+            await builder(target, device);
+          } catch (_) {
+            targetRuns.add(TargetRunStatus.failedToBuild);
+            continue;
+          }
+
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
               print('disposed!');
@@ -162,6 +170,7 @@ class NativeTestRunner extends TestRunner implements Disposable {
 
     await Future.wait<void>(testRunsOnAllDevices);
     _running = false;
+
 
     return RunResults(targetRunResults: targetRunResults);
   }

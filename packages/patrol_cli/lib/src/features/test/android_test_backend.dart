@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/common/logging_dispose_scope.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:platform/platform.dart';
@@ -106,7 +107,10 @@ class AndroidTestBackend extends TestBackend {
         _processManager = processManager,
         _fs = fs,
         _platform = platform,
-        _disposeScope = DisposeScope(),
+        _disposeScope = LoggingDisposeScope(
+          name: 'AndroidTestBackend',
+          logger: logger,
+        ),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
@@ -123,22 +127,27 @@ class AndroidTestBackend extends TestBackend {
     final subject = options.desc;
     final task = _logger.task('Building $subject');
 
+    int? exitCode;
     final process = await _processManager.start(
-      options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
+      options.toGradleAssembleTestInvocation(
+        isWindows: _platform.isWindows,
+      ),
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
     );
-//      ..disposedBy(_disposeScope);
-
+    _disposeScope.addDispose(() async {
+      _logger.warn(
+        process.kill() ? 'Killed gradle build' : 'Failed to kill gradle build',
+      );
+    });
+    //process.disposedBy(scope);
     process
-        .listenStdOut((line) => _logger.detail('\t: $line'))
+        .listenStdOut((l) => _logger.detail('\t: $l'))
         .disposedBy(_disposeScope);
-    process
-        .listenStdErr((line) => _logger.err('\t$line'))
-        .disposedBy(_disposeScope);
+    process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(_disposeScope);
 
-    final exitCode = await process.exitCode;
-
+    exitCode = await process.exitCode;
+    _logger.warn('gradle build exit code: $exitCode');
     if (exitCode == 0) {
       task.complete('Built $subject');
     } else {
@@ -152,6 +161,7 @@ class AndroidTestBackend extends TestBackend {
     final subject = '${options.desc} on ${device.description}';
     final task = _logger.task('Running $subject');
 
+    int? exitCode;
     final process = await _processManager.start(
       options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
       runInShell: true,
@@ -160,20 +170,17 @@ class AndroidTestBackend extends TestBackend {
       },
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
     );
-
+    process.disposedBy(_disposeScope);
     process
-        .listenStdOut((line) => _logger.detail('\t: $line'))
+        .listenStdOut((l) => _logger.detail('\t: $l'))
         .disposedBy(_disposeScope);
-    process
-        .listenStdErr((line) => _logger.err('\t$line'))
-        .disposedBy(_disposeScope);
+    process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(_disposeScope);
 
-    final exitCode = await process.exitCode;
-
+    exitCode = await process.exitCode;
     if (exitCode == 0) {
       task.complete('Ran $subject');
     } else {
-      task.fail('Failed to run $subject');
+      task.fail('Failure while running $subject');
       throw Exception('Gradle exited with code $exitCode');
     }
   }

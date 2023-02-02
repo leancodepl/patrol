@@ -4,6 +4,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/common/logging_dispose_scope.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:process/process.dart';
@@ -103,7 +104,10 @@ class IOSTestBackend extends TestBackend {
     required Logger logger,
   })  : _processManager = processManager,
         _fs = fs,
-        _disposeScope = DisposeScope(),
+        _disposeScope = LoggingDisposeScope(
+          name: 'IOSTestBackend',
+          logger: logger,
+        ),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
