@@ -131,6 +131,8 @@ void main() {
       final config = await testCommand.configure();
 
       when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
+      when(() => androidTestBackend.execute(any(), any()))
+          .thenAnswer((_) async {});
 
       final exitCode = await testCommand.execute(config);
       expect(exitCode, isZero);

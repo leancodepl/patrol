@@ -38,13 +38,15 @@ void main() {
       expect(
         xcodebuildInvocation,
         equals([
-          ...['xcodebuild', 'test'],
+          ...['xcodebuild', 'build-for-testing'],
           ...['-workspace', 'Runner.xcworkspace'],
           ...['-scheme', 'Runner'],
           ...['-xcconfig', 'Flutter/Debug.xcconfig'],
           ...['-configuration', 'Debug'],
           ...['-sdk', 'iphonesimulator'],
-          ...['-destination', 'platform=iOS Simulator,name=iPhone 14'],
+          ...['-destination', 'generic/platform=iOS Simulator'],
+          '-quiet',
+          ...['-derivedDataPath', '../build/ios_integ'],
           r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
         ]),
       );
@@ -89,13 +91,15 @@ void main() {
       expect(
         xcodebuildInvocation,
         equals([
-          ...['xcodebuild', 'test'],
+          ...['xcodebuild', 'build-for-testing'],
           ...['-workspace', 'Runner.xcworkspace'],
           ...['-scheme', 'dev'],
           ...['-xcconfig', 'Flutter/Debug.xcconfig'],
           ...['-configuration', 'Debug-dev'],
           ...['-sdk', 'iphoneos'],
-          ...['-destination', 'platform=iOS,name=iPhone 14'],
+          ...['-destination', 'generic/platform=iOS'],
+          '-quiet',
+          ...['-derivedDataPath', '../build/ios_integ'],
           r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
         ]),
       );
