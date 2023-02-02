@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:process/process.dart';
 
+// TODO: Consider extending from a (hypotehtical) common `AppOptions` class
 class IOSAppOptions {
   const IOSAppOptions({
     required this.target,
@@ -23,6 +24,8 @@ class IOSAppOptions {
   final String scheme;
   final String xcconfigFile;
   final String configuration;
+
+  String get desc => 'app with entrypoint ${basename(target)}';
 
   /// Translates these options into a proper flutter build invocation, which
   /// runs before xcodebuild and performs configuration.
@@ -77,7 +80,8 @@ class IOSAppOptions {
       ...['xcodebuild', 'test-without-building'],
       ...[
         '-xctestrun',
-        // FIXME: determine the version somehow
+        // FIXME: determine the version:
+        // xcodebuild -showsdks | grep iphone | awk -F '-sdk' '{print $2}' | xargs
         if (device.real)
           join(prefix, 'Runner_iphoneos16.2-arm64.xctestrun')
         else
@@ -112,13 +116,13 @@ class IOSTestBackend {
   final Logger _logger;
 
   Future<void> build({
-    required Device device,
     required IOSAppOptions options,
+    required Device device,
   }) async {
-    final targetName = basename(options.target);
-    final subject =
-        'app for $targetName (${device.real ? 'device' : 'simulator'})';
+    final subject = '${options.desc} for ${device.platformDescription}';
     final task = _logger.task('Building $subject');
+
+    // flutter build ios --config-only
 
     final flutterProcess = await _processManager.start(
       options.toFlutterBuildInvocation(device),
@@ -137,9 +141,11 @@ class IOSTestBackend {
 
     var exitCode = await flutterProcess.exitCode;
     if (exitCode != 0) {
-      task.fail('Failed to run `flutter build` for $targetName');
+      task.fail('Failed to build $subject');
       throw Exception('flutter build exited with code $exitCode');
     }
+
+    // xcodebuild build-for-testing
 
     final xcodebuildProcess = await _processManager.start(
       options.buildForTestingInvocation(device),
@@ -159,9 +165,41 @@ class IOSTestBackend {
 
     exitCode = await xcodebuildProcess.exitCode;
     if (exitCode == 0) {
-      task.complete('Built and ran app for $targetName on ${device.name}');
+      task.complete('Built $subject');
     } else {
-      task.fail('Failed to build/run app for $targetName on ${device.name}');
+      task.fail('Failed to build $subject');
+      throw Exception('xcodebuild exited with code $exitCode');
+    }
+  }
+
+  Future<void> execute({
+    required IOSAppOptions options,
+    required Device device,
+  }) async {
+    final subject = '${options.desc} on ${device.description}';
+    final task = _logger.task('Running $subject');
+
+    final xcodebuildProcess = await _processManager.start(
+      options.buildForTestingInvocation(device),
+      runInShell: true,
+      workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
+    );
+
+    xcodebuildProcess.stdout.listen((rawMsg) {
+      final msg = systemEncoding.decode(rawMsg).trim();
+      _logger.detail('\t$msg');
+    }).disposedBy(_disposeScope);
+
+    xcodebuildProcess.stderr.listen((rawMsg) {
+      final msg = systemEncoding.decode(rawMsg).trim();
+      _logger.err('\t$msg');
+    }).disposedBy(_disposeScope);
+
+    final exitCode = await xcodebuildProcess.exitCode;
+    if (exitCode == 0) {
+      task.complete('Built $subject');
+    } else {
+      task.fail('Failed to build $subject');
       throw Exception('xcodebuild exited with code $exitCode');
     }
   }

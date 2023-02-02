@@ -2,7 +2,6 @@ import 'dart:convert' show base64Encode, utf8;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -10,6 +9,7 @@ import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
+// TODO: Consider extending from a (hypotehtical) common `AppOptions` class
 class AndroidAppOptions {
   const AndroidAppOptions({
     required this.target,
@@ -21,17 +21,42 @@ class AndroidAppOptions {
   final String? flavor;
   final Map<String, String> dartDefines;
 
+  String get desc => 'apk with entrypoint ${basename(target)}';
+
+  List<String> toGradleAssembleInvocation({required bool isWindows}) {
+    final flavor = _effectiveFlavor(this.flavor);
+    return _toGradleInvocation(
+      isWindows: isWindows,
+      task: 'assemble${flavor}Debug',
+    );
+  }
+
   List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
-    return toGradleInvocation(isWindows: isWindows, task: 'assemble');
+    final flavor = _effectiveFlavor(this.flavor);
+    return _toGradleInvocation(
+      isWindows: isWindows,
+      task: 'assemble${flavor}DebugAndroidTest',
+    );
   }
 
   List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
-    return toGradleInvocation(isWindows: isWindows, task: 'connected');
+    final flavor = _effectiveFlavor(this.flavor);
+    return _toGradleInvocation(
+      isWindows: isWindows,
+      task: 'connected${flavor}DebugAndroidTest',
+    );
+  }
+
+  String _effectiveFlavor(String? flavor) {
+    var flavor = this.flavor ?? '';
+    if (flavor.isNotEmpty) {
+      flavor = flavor[0].toUpperCase() + flavor.substring(1);
+    }
+    return flavor;
   }
 
   /// Translates these options into a proper Gradle invocation.
-  @visibleForTesting
-  List<String> toGradleInvocation({
+  List<String> _toGradleInvocation({
     required bool isWindows,
     required String task,
   }) {
@@ -43,12 +68,7 @@ class AndroidAppOptions {
     }
 
     // Add Gradle task
-    var flavor = this.flavor ?? '';
-    if (flavor.isNotEmpty) {
-      flavor = flavor[0].toUpperCase() + flavor.substring(1);
-    }
-    final gradleTask = ':app:$task${flavor}DebugAndroidTest';
-    cmd.add(gradleTask);
+    cmd.add(':app:$task');
 
     // Add Dart test target
     final target = '-Ptarget=${this.target}';
@@ -98,15 +118,15 @@ class AndroidTestBackend {
   final Logger _logger;
 
   Future<void> build(AndroidAppOptions options) async {
-    final targetName = basename(options.target);
-    final subject = 'apk with entrypoint $targetName';
+    final subject = options.desc;
     final task = _logger.task('Building $subject');
 
     final process = await _processManager.start(
       options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-    );
+    )
+      ..disposedBy(_disposeScope);
 
     process
         .listenStdOut((line) => _logger.detail('\t: $line'))
@@ -126,8 +146,7 @@ class AndroidTestBackend {
   }
 
   Future<void> execute(AndroidAppOptions options, Device device) async {
-    final targetName = basename(options.target);
-    final subject = 'apk with entrypoint $targetName on device ${device.id}';
+    final subject = '${options.desc} on ${device.description}';
     final task = _logger.task('Running $subject');
 
     final process = await _processManager.start(
