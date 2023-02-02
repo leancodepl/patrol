@@ -240,7 +240,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               flavor: config.flavor,
               dartDefines: config.dartDefines,
             );
-            action = () => _androidTestBackend.build(options);
+            action = () => _androidTestBackend.build(options, device);
             break;
           case TargetPlatform.iOS:
             final options = IOSAppOptions(
@@ -251,8 +251,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               xcconfigFile: config.xcconfigFile,
               configuration: config.configuration,
             );
-            // action = () => _iosTestBackend.build(options);
-            action = () async => _logger.warn('NOT IMPLEMENTED');
+            action = () => _iosTestBackend.build(options, device);
         }
 
         try {
@@ -280,7 +279,15 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             action = () => _androidTestBackend.execute(options, device);
             break;
           case TargetPlatform.iOS:
-            action = () async => _logger.warn('NOT IMPLEMENTED');
+            final options = IOSAppOptions(
+              target: target,
+              flavor: config.flavor,
+              dartDefines: config.dartDefines,
+              scheme: config.scheme,
+              xcconfigFile: config.xcconfigFile,
+              configuration: config.configuration,
+            );
+            action = () async => _iosTestBackend.execute(options, device);
         }
 
         try {

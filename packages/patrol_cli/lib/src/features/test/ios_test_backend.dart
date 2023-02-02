@@ -5,26 +5,25 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:process/process.dart';
 
 // TODO: Consider extending from a (hypotehtical) common `AppOptions` class
-class IOSAppOptions {
+class IOSAppOptions extends AppOptions {
   const IOSAppOptions({
-    required this.target,
-    required this.flavor,
-    required this.dartDefines,
+    required super.target,
+    required super.flavor,
+    required super.dartDefines,
     required this.scheme,
     required this.xcconfigFile,
     required this.configuration,
   });
 
-  final String target;
-  final String? flavor;
-  final Map<String, String> dartDefines;
   final String scheme;
   final String xcconfigFile;
   final String configuration;
 
+  @override
   String get desc => 'app with entrypoint ${basename(target)}';
 
   /// Translates these options into a proper flutter build invocation, which
@@ -97,7 +96,7 @@ class IOSAppOptions {
   }
 }
 
-class IOSTestBackend {
+class IOSTestBackend extends TestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
     required FileSystem fs,
@@ -115,10 +114,8 @@ class IOSTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> build({
-    required IOSAppOptions options,
-    required Device device,
-  }) async {
+  @override
+  Future<void> build(IOSAppOptions options, Device device) async {
     final subject = '${options.desc} for ${device.platformDescription}';
     final task = _logger.task('Building $subject');
 
@@ -172,10 +169,8 @@ class IOSTestBackend {
     }
   }
 
-  Future<void> execute({
-    required IOSAppOptions options,
-    required Device device,
-  }) async {
+  @override
+  Future<void> execute(IOSAppOptions options, Device device) async {
     final subject = '${options.desc} on ${device.description}';
     final task = _logger.task('Running $subject');
 

@@ -6,21 +6,19 @@ import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 // TODO: Consider extending from a (hypotehtical) common `AppOptions` class
-class AndroidAppOptions {
+class AndroidAppOptions extends AppOptions {
   const AndroidAppOptions({
-    required this.target,
-    required this.flavor,
-    required this.dartDefines,
+    required super.target,
+    required super.flavor,
+    required super.dartDefines,
   });
 
-  final String target;
-  final String? flavor;
-  final Map<String, String> dartDefines;
-
+  @override
   String get desc => 'apk with entrypoint ${basename(target)}';
 
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
@@ -96,7 +94,7 @@ class AndroidAppOptions {
 /// Provides functionality to build, install, run, and uninstall Android apps.
 ///
 /// This class must be stateless.
-class AndroidTestBackend {
+class AndroidTestBackend extends TestBackend {
   AndroidTestBackend({
     required ProcessManager processManager,
     required Platform platform,
@@ -117,7 +115,8 @@ class AndroidTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> build(AndroidAppOptions options) async {
+  @override
+  Future<void> build(AndroidAppOptions options, Device device) async {
     final subject = options.desc;
     final task = _logger.task('Building $subject');
 
@@ -145,6 +144,7 @@ class AndroidTestBackend {
     }
   }
 
+  @override
   Future<void> execute(AndroidAppOptions options, Device device) async {
     final subject = '${options.desc} on ${device.description}';
     final task = _logger.task('Running $subject');
