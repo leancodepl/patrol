@@ -6,6 +6,7 @@ import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:process/process.dart';
 
@@ -100,10 +101,12 @@ class IOSTestBackend extends TestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
     required FileSystem fs,
+    required IOSDeploy iosDeploy,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
         _fs = fs,
+        _iosDeploy = iosDeploy,
         _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -111,6 +114,7 @@ class IOSTestBackend extends TestBackend {
 
   final ProcessManager _processManager;
   final FileSystem _fs;
+  final IOSDeploy _iosDeploy;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -173,6 +177,12 @@ class IOSTestBackend extends TestBackend {
       final subject = '${options.desc} on ${device.description}';
       final task = _logger.task('Running $subject');
 
+      Process? iosDeployProcess;
+      if (device.real) {
+        _logger.detail('Executing on physical iOS device using ios-deploy...');
+        iosDeployProcess = await _iosDeploy.installAndLaunch(device.id);
+      }
+
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(device),
         runInShell: true,
@@ -183,6 +193,10 @@ class IOSTestBackend extends TestBackend {
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
+      // Tests have finished now, kill the app under test
+      iosDeployProcess?.stdin.writeln('kill');
+      iosDeployProcess?.kill(); // kill it with fire
+
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
       } else {
@@ -203,6 +217,15 @@ class IOSTestBackend extends TestBackend {
           'ideviceinstaller',
           ...['--udid', device.id],
           ...['--uninstall', appId],
+        ],
+        runInShell: true,
+      );
+
+      await _processManager.run(
+        [
+          'ideviceinstaller',
+          ...['--udid', device.id],
+          ...['--uninstall', '$appId.RunnerUITests.xctrunner'],
         ],
         runInShell: true,
       );

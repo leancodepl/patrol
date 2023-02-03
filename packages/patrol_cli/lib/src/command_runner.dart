@@ -24,6 +24,7 @@ import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
+import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
@@ -128,6 +129,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
         iosTestBackend: IOSTestBackend(
           processManager: LoggingLocalProcessManager(logger: _logger),
           fs: _fs,
+          iosDeploy: IOSDeploy(
+            processManager: const LocalProcessManager(),
+            parentDisposeScope: _disposeScope,
+            fs: _fs,
+            logger: _logger,
+          ),
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),

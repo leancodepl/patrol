@@ -3,8 +3,6 @@ import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 
-// TODO: Maybe make this return a closure? And that closure would be called when
-// the action (that this callback did, e.g installed app) would be undone.
 typedef _Callback = Future<void> Function(String target, Device device);
 
 /// Orchestrates running tests on devices.
@@ -170,7 +168,6 @@ class NativeTestRunner extends TestRunner implements Disposable {
 
     await Future.wait<void>(testRunsOnAllDevices);
     _running = false;
-
 
     return RunResults(targetRunResults: targetRunResults);
   }

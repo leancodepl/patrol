@@ -9,12 +9,13 @@ void main() {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
-      await $(RegExp('someone liked')).tap();
 
       if (await $.native.isPermissionDialogVisible()) {
         print('Dialog is visible');
         await $.native.grantPermissionWhenInUse();
       }
+
+      await $(RegExp('someone liked')).tap();
 
       if (Platform.isIOS) {
         await $.native.closeHeadsUpNotification();
@@ -52,6 +53,7 @@ void main() {
 
       await $.native.pressHome();
       await $.native.openApp(appId: 'com.apple.Preferences');
+      await $.native.pressHome();
     },
   );
 
