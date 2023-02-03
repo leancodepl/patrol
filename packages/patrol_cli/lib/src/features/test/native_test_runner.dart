@@ -145,7 +145,6 @@ class NativeTestRunner extends TestRunner implements Disposable {
 
           for (var i = 0; i < _repeats; i++) {
             if (_disposed) {
-              print('disposed!');
               targetRuns.add(TargetRunStatus.canceled);
               continue;
             }
