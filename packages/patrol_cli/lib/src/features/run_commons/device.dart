@@ -29,7 +29,11 @@ class Device {
   String get description {
     switch (targetPlatform) {
       case TargetPlatform.android:
-        return '$platformDescription $id';
+        if (platformDescription.isEmpty) {
+          return id;
+        } else {
+          return '$platformDescription $id';
+        }
       case TargetPlatform.iOS:
         return '$platformDescription $name';
     }
@@ -38,7 +42,7 @@ class Device {
   String get platformDescription {
     switch (targetPlatform) {
       case TargetPlatform.android:
-        return real ? 'device' : 'emulator';
+        return real ? 'device' : '';
       case TargetPlatform.iOS:
         return real ? 'device' : 'simulator';
     }

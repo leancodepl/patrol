@@ -36,7 +36,7 @@ class TestCommandConfig with _$TestCommandConfig {
 
 const _defaultRepeats = 1;
 const _failureMessage =
-    "See the logs above to learn what happened. If they aren't useful then"
+    "See the logs above to learn what happened. If they aren't useful then "
     "it's a bug – please report it.";
 
 class TestCommand extends StagedCommand<TestCommandConfig> {
@@ -56,10 +56,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         _iosTestBackend = iosTestBackend,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
-    parentDisposeScope.addDispose(() async {
-      _logger.detail('TestRunner is being disposed');
-      await _testRunner.dispose();
-    });
+    _testRunner.disposedBy(parentDisposeScope);
 
     argParser
       ..addMultiOption(

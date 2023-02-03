@@ -124,65 +124,67 @@ class AndroidTestBackend extends TestBackend {
 
   @override
   Future<void> build(AndroidAppOptions options, Device device) async {
-    final subject = options.desc;
-    final task = _logger.task('Building $subject');
+    await _disposeScope.run((scope) async {
+      final subject = options.desc;
+      final task = _logger.task('Building $subject');
 
-    int? exitCode;
-    final process = await _processManager.start(
-      options.toGradleAssembleTestInvocation(
-        isWindows: _platform.isWindows,
-      ),
-      runInShell: true,
-      workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-    );
-    _disposeScope.addDispose(() async {
-      _logger.warn(
-        process.kill() ? 'Killed gradle build' : 'Failed to kill gradle build',
+      final process = await _processManager.start(
+        options.toGradleAssembleTestInvocation(
+          isWindows: _platform.isWindows,
+        ),
+        runInShell: true,
+        workingDirectory: _fs.currentDirectory.childDirectory('android').path,
       );
-    });
-    //process.disposedBy(scope);
-    process
-        .listenStdOut((l) => _logger.detail('\t: $l'))
-        .disposedBy(_disposeScope);
-    process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(_disposeScope);
+      process.disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
-    exitCode = await process.exitCode;
-    _logger.warn('gradle build exit code: $exitCode');
-    if (exitCode == 0) {
-      task.complete('Built $subject');
-    } else {
-      task.fail('Failed to build $subject');
-      throw Exception('Gradle exited with code $exitCode');
-    }
+      final exitCode = await process.exitCode;
+      if (exitCode == 0) {
+        task.complete('Completed building $subject');
+      } else if (exitCode == 130) {
+        const cause = 'Gradle build interrupted';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      } else {
+        final cause = 'Gradle build failed with code $exitCode';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      }
+    });
   }
 
   @override
   Future<void> execute(AndroidAppOptions options, Device device) async {
-    final subject = '${options.desc} on ${device.description}';
-    final task = _logger.task('Running $subject');
+    await _disposeScope.run((scope) async {
+      final subject = '${options.desc} on ${device.description}';
+      final task = _logger.task('Executing tests of $subject');
 
-    int? exitCode;
-    final process = await _processManager.start(
-      options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
-      runInShell: true,
-      environment: {
-        'ANDROID_SERIAL': device.id,
-      },
-      workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-    );
-    process.disposedBy(_disposeScope);
-    process
-        .listenStdOut((l) => _logger.detail('\t: $l'))
-        .disposedBy(_disposeScope);
-    process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(_disposeScope);
+      final process = await _processManager.start(
+        options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
+        runInShell: true,
+        environment: {
+          'ANDROID_SERIAL': device.id,
+        },
+        workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+      );
+      process.disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
-    exitCode = await process.exitCode;
-    if (exitCode == 0) {
-      task.complete('Ran $subject');
-    } else {
-      task.fail('Failure while running $subject');
-      throw Exception('Gradle exited with code $exitCode');
-    }
+      final exitCode = await process.exitCode;
+      if (exitCode == 0) {
+        task.complete('Completed executing $subject');
+      } else if (exitCode == 130) {
+        const cause = 'Gradle test execution interrupted';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throw Exception(cause);
+      } else {
+        final cause = 'Gradle test execution failed with code $exitCode';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throw Exception(cause);
+      }
+    });
   }
 
   Future<void> uninstall({

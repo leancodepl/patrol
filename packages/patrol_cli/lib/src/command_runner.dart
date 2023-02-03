@@ -35,29 +35,24 @@ import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
-
   final runner = PatrolCommandRunner(logger: logger);
-  int exitCode;
-
-  Future<Never>? interruption;
 
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
-    interruption = runner.dispose().onError((err, st) {
+    await runner.dispose().onError((err, st) {
       logger
         ..err('error while disposing')
         ..err('$err')
         ..err('$st');
-    }).then((_) => exit(130));
+    });
   });
 
-  exitCode = await runner.run(args) ?? 0;
+  final exitCode = await runner.run(args) ?? 0;
 
-  if (interruption != null) {
-    await interruption; // will never complete
+  if (!runner._disposeScope.disposed) {
+    await runner.dispose();
   }
 
-  await runner.dispose();
   return exitCode;
 }
 
@@ -206,7 +201,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
   late DriveCommand driveCommand;
 
   Future<void> dispose() async {
-    _logger.detail('Command runner is being disposed...');
     try {
       await _disposeScope.dispose();
     } catch (err, st) {
