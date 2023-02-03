@@ -26,7 +26,7 @@ class IOSDeploy {
 
   /// Installs and launches the app on physical iOS device with [deviceId].
   ///
-  /// To kill the app, send `kill` to the returned [Process]' stdin.
+  /// To kill the app, send `kill` to the returned [Process]'s stdin.
   Future<Process> installAndLaunch(String deviceId) async {
     final process = await _processManager.start(
       [
