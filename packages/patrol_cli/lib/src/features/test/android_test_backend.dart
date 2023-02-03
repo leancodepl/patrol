@@ -20,7 +20,7 @@ class AndroidAppOptions extends AppOptions {
   });
 
   @override
-  String get desc => 'apk with entrypoint ${basename(target)}';
+  String get description => 'apk with entrypoint ${basename(target)}';
 
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
     final flavor = _effectiveFlavor(this.flavor);
@@ -122,7 +122,7 @@ class AndroidTestBackend extends TestBackend {
   @override
   Future<void> build(AndroidAppOptions options, Device device) async {
     await _disposeScope.run((scope) async {
-      final subject = options.desc;
+      final subject = options.description;
       final task = _logger.task('Building $subject');
 
       Process process;
@@ -177,7 +177,7 @@ class AndroidTestBackend extends TestBackend {
   @override
   Future<void> execute(AndroidAppOptions options, Device device) async {
     await _disposeScope.run((scope) async {
-      final subject = '${options.desc} on ${device.description}';
+      final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
       final process = await _processManager.start(

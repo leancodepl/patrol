@@ -11,7 +11,7 @@ abstract class AppOptions {
   final String? flavor;
   final Map<String, String> dartDefines;
 
-  String get desc;
+  String get description;
 }
 
 abstract class TestBackend {

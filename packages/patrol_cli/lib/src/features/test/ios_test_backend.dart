@@ -25,7 +25,7 @@ class IOSAppOptions extends AppOptions {
   final String configuration;
 
   @override
-  String get desc => 'app with entrypoint ${basename(target)}';
+  String get description => 'app with entrypoint ${basename(target)}';
 
   /// Translates these options into a proper flutter build invocation, which
   /// runs before xcodebuild and performs configuration.
@@ -121,7 +121,8 @@ class IOSTestBackend extends TestBackend {
   @override
   Future<void> build(IOSAppOptions options, Device device) async {
     await _disposeScope.run((scope) async {
-      final subject = '${options.desc} for ${device.platformDescription}';
+      final subject =
+          '${options.description} for ${device.platformDescription}';
       final task = _logger.task('Building $subject');
 
       Process process;
@@ -174,7 +175,7 @@ class IOSTestBackend extends TestBackend {
   @override
   Future<void> execute(IOSAppOptions options, Device device) async {
     await _disposeScope.run((scope) async {
-      final subject = '${options.desc} on ${device.description}';
+      final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
 
       Process? iosDeployProcess;
