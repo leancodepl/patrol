@@ -23,30 +23,27 @@ class AndroidAppOptions extends AppOptions {
   String get description => 'apk with entrypoint ${basename(target)}';
 
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
-    final flavor = _effectiveFlavor(this.flavor);
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'assemble${flavor}Debug',
+      task: 'assemble${_effectiveFlavor}Debug',
     );
   }
 
   List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
-    final flavor = _effectiveFlavor(this.flavor);
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'assemble${flavor}DebugAndroidTest',
+      task: 'assemble${_effectiveFlavor}DebugAndroidTest',
     );
   }
 
   List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
-    final flavor = _effectiveFlavor(this.flavor);
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'connected${flavor}DebugAndroidTest',
+      task: 'connected${_effectiveFlavor}DebugAndroidTest',
     );
   }
 
-  String _effectiveFlavor(String? flavor) {
+  String get _effectiveFlavor {
     var flavor = this.flavor ?? '';
     if (flavor.isNotEmpty) {
       flavor = flavor[0].toUpperCase() + flavor.substring(1);
