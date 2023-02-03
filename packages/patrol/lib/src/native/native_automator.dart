@@ -543,7 +543,7 @@ class NativeAutomator {
   ///
   /// Returns true if the dialog became visible within timeout, false otherwise.
   Future<bool> isPermissionDialogVisible({
-    Duration timeout = const Duration(seconds: 3),
+    Duration timeout = const Duration(seconds: 1),
   }) async {
     final response = await _wrapRequest(
       'isPermissionDialogVisible',
