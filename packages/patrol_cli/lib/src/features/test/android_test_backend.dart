@@ -1,4 +1,5 @@
 import 'dart:convert' show base64Encode, utf8;
+import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
@@ -124,14 +125,22 @@ class AndroidTestBackend extends TestBackend {
       final subject = options.desc;
       final task = _logger.task('Building $subject');
 
-      final process = await _processManager.start(
-        options.toGradleAssembleTestInvocation(
-          isWindows: _platform.isWindows,
-        ),
+      Process process;
+      process = await _processManager.start(
+        options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-      );
-      process.disposedBy(scope);
+      )
+        ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+
+      process = await _processManager.start(
+        options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
+        runInShell: true,
+        workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+      )
+        ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
