@@ -37,7 +37,7 @@ class TestCommandConfig with _$TestCommandConfig {
 const _defaultRepeats = 1;
 const _failureMessage =
     'See the logs above to learn what happened. Also consider running with '
-    "--verbose. If the logs still aren't useful then, then it's a bug – please "
+    "--verbose. If the logs still aren't useful, then it's a bug – please "
     'report it.';
 
 class TestCommand extends StagedCommand<TestCommandConfig> {
