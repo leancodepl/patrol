@@ -235,85 +235,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     config.devices.forEach(_testRunner.addDevice);
     _testRunner
       ..repeats = config.repeat
-      ..builder = (target, device) async {
-        Future<void> Function() action;
-
-        switch (device.targetPlatform) {
-          case TargetPlatform.android:
-            final options = AndroidAppOptions(
-              target: target,
-              flavor: config.flavor,
-              dartDefines: config.dartDefines,
-            );
-            action = () => _androidTestBackend.build(options, device);
-            break;
-          case TargetPlatform.iOS:
-            final options = IOSAppOptions(
-              target: target,
-              flavor: config.flavor,
-              dartDefines: config.dartDefines,
-              scheme: config.scheme,
-              xcconfigFile: config.xcconfigFile,
-              configuration: config.configuration,
-            );
-            action = () => _iosTestBackend.build(options, device);
-        }
-
-        try {
-          await action();
-        } catch (err, st) {
-          _logger
-            ..err('$err')
-            ..detail('$st')
-            ..err(_failureMessage);
-          rethrow;
-        }
-      }
-      ..executor = (target, device) async {
-        Future<void> Function() action;
-        Future<void> Function()? finalizer;
-
-        switch (device.targetPlatform) {
-          case TargetPlatform.android:
-            final options = AndroidAppOptions(
-              target: target,
-              flavor: config.flavor,
-              dartDefines: config.dartDefines,
-            );
-            action = () => _androidTestBackend.execute(options, device);
-            final package = config.packageName;
-            if (package != null) {
-              finalizer = () => _androidTestBackend.uninstall(package, device);
-            }
-            break;
-          case TargetPlatform.iOS:
-            final options = IOSAppOptions(
-              target: target,
-              flavor: config.flavor,
-              dartDefines: config.dartDefines,
-              scheme: config.scheme,
-              xcconfigFile: config.xcconfigFile,
-              configuration: config.configuration,
-            );
-            action = () async => _iosTestBackend.execute(options, device);
-            final bundle = config.bundleId;
-            if (bundle != null) {
-              finalizer = () => _iosTestBackend.uninstall(bundle, device);
-            }
-        }
-
-        try {
-          await action();
-        } catch (err, st) {
-          _logger
-            ..err('$err')
-            ..detail('$st')
-            ..err(_failureMessage);
-          rethrow;
-        } finally {
-          await finalizer?.call();
-        }
-      };
+      ..builder = _builderFor(config)
+      ..executor = _executorFor(config);
 
     final results = await _testRunner.run();
 
@@ -344,5 +267,90 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     final exitCode = results.allSuccessful ? 0 : 1;
 
     return exitCode;
+  }
+
+  Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
+    return (target, device) async {
+      Future<void> Function() action;
+
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          final options = AndroidAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+          );
+          action = () => _androidTestBackend.build(options, device);
+          break;
+        case TargetPlatform.iOS:
+          final options = IOSAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+            scheme: config.scheme,
+            xcconfigFile: config.xcconfigFile,
+            configuration: config.configuration,
+          );
+          action = () => _iosTestBackend.build(options, device);
+      }
+
+      try {
+        await action();
+      } catch (err, st) {
+        _logger
+          ..err('$err')
+          ..detail('$st')
+          ..err(_failureMessage);
+        rethrow;
+      }
+    };
+  }
+
+  Future<void> Function(String, Device) _executorFor(TestCommandConfig config) {
+    return (target, device) async {
+      Future<void> Function() action;
+      Future<void> Function()? finalizer;
+
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          final options = AndroidAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+          );
+          action = () => _androidTestBackend.execute(options, device);
+          final package = config.packageName;
+          if (package != null) {
+            finalizer = () => _androidTestBackend.uninstall(package, device);
+          }
+          break;
+        case TargetPlatform.iOS:
+          final options = IOSAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+            scheme: config.scheme,
+            xcconfigFile: config.xcconfigFile,
+            configuration: config.configuration,
+          );
+          action = () async => _iosTestBackend.execute(options, device);
+          final bundle = config.bundleId;
+          if (bundle != null) {
+            finalizer = () => _iosTestBackend.uninstall(bundle, device);
+          }
+      }
+
+      try {
+        await action();
+      } catch (err, st) {
+        _logger
+          ..err('$err')
+          ..detail('$st')
+          ..err(_failureMessage);
+        rethrow;
+      } finally {
+        await finalizer?.call();
+      }
+    };
   }
 }
