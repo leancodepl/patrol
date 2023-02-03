@@ -116,6 +116,8 @@ class AndroidTestBackend extends TestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
+  static const _interrupted = 130;
+
   @override
   Future<void> build(AndroidAppOptions options, Device device) async {
     await _disposeScope.run((scope) async {
@@ -136,7 +138,7 @@ class AndroidTestBackend extends TestBackend {
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
-      if (exitCode == 130) {
+      if (exitCode == _interrupted) {
         const cause = 'Gradle build interrupted';
         task.fail('Failed to build $subject ($cause)');
         throw Exception(cause);
@@ -159,7 +161,7 @@ class AndroidTestBackend extends TestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
-      } else if (exitCode == 130) {
+      } else if (exitCode == _interrupted) {
         const cause = 'Gradle build interrupted';
         task.fail('Failed to build $subject ($cause)');
         throw Exception(cause);
@@ -192,7 +194,7 @@ class AndroidTestBackend extends TestBackend {
       final exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
-      } else if (exitCode == 130) {
+      } else if (exitCode == _interrupted) {
         const cause = 'Gradle test execution interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
         throw Exception(cause);
