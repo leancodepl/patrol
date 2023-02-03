@@ -8,6 +8,7 @@ import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
+import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
 import 'package:test/test.dart';
 
@@ -48,6 +49,9 @@ void main() {
         ..createSync(recursive: true);
       fs.currentDirectory = wd;
       final integrationTestDir = fs.directory('integration_test')..createSync();
+      fs.file('pubspec.yaml')
+        ..createSync()
+        ..writeAsString('name: awesome_app');
 
       deviceFinder = MockDeviceFinder();
       when(
@@ -67,13 +71,14 @@ void main() {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testRunner: testRunner,
-        androidTestBackend: androidTestBackend,
-        iosTestBackend: iosTestBackend,
         dartDefinesReader: DartDefinesReader(
           fs: fs,
           projectRoot: fs.currentDirectory,
         ),
+        pubspecReader: PubspecReader(fs: fs, projectRoot: fs.currentDirectory),
         parentDisposeScope: DisposeScope(),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
         logger: MockLogger(),
       );
     });

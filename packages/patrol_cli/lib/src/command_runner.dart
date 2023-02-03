@@ -27,6 +27,7 @@ import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
+import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
@@ -126,6 +127,14 @@ class PatrolCommandRunner extends CommandRunner<int> {
           fs: _fs,
         ),
         testRunner: NativeTestRunner(),
+        dartDefinesReader: DartDefinesReader(
+          projectRoot: _fs.currentDirectory,
+          fs: _fs,
+        ),
+        pubspecReader: PubspecReader(
+          projectRoot: _fs.currentDirectory,
+          fs: _fs,
+        ),
         androidTestBackend: AndroidTestBackend(
           adb: Adb(),
           processManager: LoggingLocalProcessManager(logger: _logger),
@@ -145,10 +154,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
           ),
           parentDisposeScope: _disposeScope,
           logger: _logger,
-        ),
-        dartDefinesReader: DartDefinesReader(
-          projectRoot: _fs.currentDirectory,
-          fs: _fs,
         ),
         parentDisposeScope: _disposeScope,
         logger: _logger,

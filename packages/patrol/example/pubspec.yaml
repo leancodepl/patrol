@@ -27,3 +27,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+patrol:
+  android:
+    package_name: pl.leancode.patrol.example
+    app_name: Patrol example
+  ios:
+    bundle_id: pl.leancode.patrol.Example
+    app_name: Patrol example
