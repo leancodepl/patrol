@@ -126,6 +126,10 @@ class AndroidTestBackend extends TestBackend {
       final task = _logger.task('Building $subject');
 
       Process process;
+      int exitCode;
+
+      // :app:assembleDebug
+
       process = await _processManager.start(
         options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
         runInShell: true,
@@ -134,6 +138,18 @@ class AndroidTestBackend extends TestBackend {
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      exitCode = await process.exitCode;
+      if (exitCode == 130) {
+        const cause = 'Gradle build interrupted';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      } else if (exitCode != 0) {
+        final cause = 'Gradle build failed with code $exitCode';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      }
+
+      // :app:assembleDebugAndroidTest
 
       process = await _processManager.start(
         options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
@@ -143,8 +159,7 @@ class AndroidTestBackend extends TestBackend {
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-
-      final exitCode = await process.exitCode;
+      exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
       } else if (exitCode == 130) {
@@ -172,8 +187,8 @@ class AndroidTestBackend extends TestBackend {
           'ANDROID_SERIAL': device.id,
         },
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-      );
-      process.disposedBy(scope);
+      )
+        ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -192,13 +207,11 @@ class AndroidTestBackend extends TestBackend {
     });
   }
 
-  Future<void> uninstall({
-    required Device device,
-    required String packageName,
-  }) async {
-    _logger.detail('Uninstalling $packageName from ${device.name}');
-    await _adb.uninstall(packageName, device: device.id);
-    _logger.detail('Uninstalling $packageName.test from ${device.name}');
-    await _adb.uninstall('$packageName.test', device: device.id);
+  @override
+  Future<void> uninstall(String appId, Device device) async {
+    _logger.detail('Uninstalling $appId from ${device.name}');
+    await _adb.uninstall(appId, device: device.id);
+    _logger.detail('Uninstalling $appId.test from ${device.name}');
+    await _adb.uninstall('$appId.test', device: device.id);
   }
 }

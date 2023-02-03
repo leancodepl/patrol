@@ -1,8 +1,9 @@
-import 'dart:io' show systemEncoding;
+import 'dart:io' show Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:path/path.dart' show basename, join;
+import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
@@ -115,102 +116,85 @@ class IOSTestBackend extends TestBackend {
 
   @override
   Future<void> build(IOSAppOptions options, Device device) async {
-    final subject = '${options.desc} for ${device.platformDescription}';
-    final task = _logger.task('Building $subject');
+    await _disposeScope.run((scope) async {
+      final subject = '${options.desc} for ${device.platformDescription}';
+      final task = _logger.task('Building $subject');
 
-    // flutter build ios --config-only
+      Process process;
 
-    final flutterProcess = await _processManager.start(
-      options.toFlutterBuildInvocation(device),
-      runInShell: true,
-    );
+      // flutter build ios --config-only
 
-    flutterProcess.stdout.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.detail('\t$msg');
-    }).disposedBy(_disposeScope);
+      process = await _processManager.start(
+        options.toFlutterBuildInvocation(device),
+        runInShell: true,
+      )
+        ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      var exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        final cause = '`flutter build ios` exited with code $exitCode';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      }
 
-    flutterProcess.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err('\t$msg');
-    }).disposedBy(_disposeScope);
+      // xcodebuild build-for-testing
 
-    var exitCode = await flutterProcess.exitCode;
-    if (exitCode != 0) {
-      task.fail('Failed to build $subject');
-      throw Exception('flutter build exited with code $exitCode');
-    }
-
-    // xcodebuild build-for-testing
-
-    final xcodebuildProcess = await _processManager.start(
-      options.buildForTestingInvocation(device),
-      runInShell: true,
-      workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
-    );
-
-    xcodebuildProcess.stdout.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.detail('\t$msg');
-    }).disposedBy(_disposeScope);
-
-    xcodebuildProcess.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err('\t$msg');
-    }).disposedBy(_disposeScope);
-
-    exitCode = await xcodebuildProcess.exitCode;
-    if (exitCode == 0) {
-      task.complete('Built $subject');
-    } else {
-      task.fail('Failed to build $subject');
-      throw Exception('xcodebuild exited with code $exitCode');
-    }
+      process = await _processManager.start(
+        options.buildForTestingInvocation(device),
+        runInShell: true,
+        workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
+      )
+        ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      exitCode = await process.exitCode;
+      if (exitCode == 0) {
+        task.complete('Completed building $subject');
+      } else {
+        final cause = 'xcodebuild exited with code $exitCode';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      }
+    });
   }
 
   @override
   Future<void> execute(IOSAppOptions options, Device device) async {
-    final subject = '${options.desc} on ${device.description}';
-    final task = _logger.task('Running $subject');
+    await _disposeScope.run((scope) async {
+      final subject = '${options.desc} on ${device.description}';
+      final task = _logger.task('Running $subject');
 
-    final xcodebuildProcess = await _processManager.start(
-      options.buildForTestingInvocation(device),
-      runInShell: true,
-      workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
-    )
-      ..disposedBy(_disposeScope);
+      final process = await _processManager.start(
+        options.testWithoutBuildingInvocation(device),
+        runInShell: true,
+        workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
+      )
+        ..disposedBy(_disposeScope);
+      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
-    xcodebuildProcess.stdout.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.detail('\t$msg');
-    }).disposedBy(_disposeScope);
-
-    xcodebuildProcess.stderr.listen((rawMsg) {
-      final msg = systemEncoding.decode(rawMsg).trim();
-      _logger.err('\t$msg');
-    }).disposedBy(_disposeScope);
-
-    final exitCode = await xcodebuildProcess.exitCode;
-    if (exitCode == 0) {
-      task.complete('Built $subject');
-    } else {
-      task.fail('Failed to build $subject');
-      throw Exception('xcodebuild exited with code $exitCode');
-    }
+      final exitCode = await process.exitCode;
+      if (exitCode == 0) {
+        task.complete('Completed executing $subject');
+      } else {
+        final cause = 'xcodebuild exited with code $exitCode';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throw Exception(cause);
+      }
+    });
   }
 
-  Future<void> uninstall({
-    required Device device,
-    required String bundleId,
-  }) async {
-    _logger.info('Uninstalling $bundleId from ${device.name}');
+  @override
+  Future<void> uninstall(String appId, Device device) async {
+    _logger.info('Uninstalling $appId from ${device.name}');
     if (device.real) {
       // uninstall from iOS device
       await _processManager.run(
         [
           'ideviceinstaller',
           ...['--udid', device.id],
-          ...['--uninstall', bundleId],
+          ...['--uninstall', appId],
         ],
         runInShell: true,
       );
@@ -222,7 +206,7 @@ class IOSTestBackend extends TestBackend {
           'simctl',
           'uninstall',
           device.id,
-          bundleId,
+          appId,
         ],
         runInShell: true,
       );

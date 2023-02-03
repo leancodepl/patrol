@@ -265,13 +265,11 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             ..err('$err')
             ..err(_failureMessage);
           rethrow;
-        } finally {
-          // FIXME: Register uninstall app here
-          // Use iosTestBackend.uninstall() and androidTestBackend.uninstall()
         }
       }
       ..executor = (target, device) async {
         Future<void> Function() action;
+        Future<void> Function()? finalizer;
 
         switch (device.targetPlatform) {
           case TargetPlatform.android:
@@ -281,6 +279,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               dartDefines: config.dartDefines,
             );
             action = () => _androidTestBackend.execute(options, device);
+            final package = config.packageName;
+            if (package != null) {
+              finalizer = () => _androidTestBackend.uninstall(package, device);
+            }
             break;
           case TargetPlatform.iOS:
             final options = IOSAppOptions(
@@ -292,6 +294,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               configuration: config.configuration,
             );
             action = () async => _iosTestBackend.execute(options, device);
+            final bundle = config.bundleId;
+            if (bundle != null) {
+              finalizer = () => _iosTestBackend.uninstall(bundle, device);
+            }
         }
 
         try {
@@ -302,9 +308,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             ..err(_failureMessage);
           rethrow;
         } finally {
-          // FIXME: Actually uninstall app here (call finalizers of NativeTestRunner?)
-          // Use iosTestBackend.uninstall() and androidTestBackend.uninstall()
-          // await finalizer?.call();
+          await finalizer?.call();
         }
       };
 

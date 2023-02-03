@@ -17,7 +17,7 @@ class LoggingLocalProcessManager extends LocalProcessManager {
     bool runInShell = false,
     ProcessStartMode mode = ProcessStartMode.normal,
   }) {
-    _logger.detail(command.map((e) => e.toString()).join(' '));
+    _logger.detail('\$ ${command.map((e) => e.toString()).join(' ')}');
     return super.start(
       command,
       workingDirectory: workingDirectory,
