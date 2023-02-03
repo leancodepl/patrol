@@ -124,16 +124,24 @@ class IOSTestBackend extends TestBackend {
 
       // flutter build ios --config-only
 
+      var flutterBuildKilled = false;
       process = await _processManager.start(
         options.toFlutterBuildInvocation(device),
         runInShell: true,
-      )
-        ..disposedBy(scope);
+      );
+      scope.addDispose(() async {
+        process.kill();
+        flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
+      });
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       var exitCode = await process.exitCode;
       if (exitCode != 0) {
         final cause = '`flutter build ios` exited with code $exitCode';
+        task.fail('Failed to build $subject ($cause)');
+        throw Exception(cause);
+      } else if (flutterBuildKilled) {
+        const cause = '`flutter build ios` was interrupted';
         task.fail('Failed to build $subject ($cause)');
         throw Exception(cause);
       }

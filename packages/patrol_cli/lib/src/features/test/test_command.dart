@@ -36,8 +36,9 @@ class TestCommandConfig with _$TestCommandConfig {
 
 const _defaultRepeats = 1;
 const _failureMessage =
-    "See the logs above to learn what happened. If they aren't useful then "
-    "it's a bug – please report it.";
+    'See the logs above to learn what happened. Also consider running with '
+    "--verbose. If the logs still aren't useful then, then it's a bug – please "
+    'report it.';
 
 class TestCommand extends StagedCommand<TestCommandConfig> {
   TestCommand({
@@ -260,9 +261,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
         try {
           await action();
-        } catch (err) {
+        } catch (err, st) {
           _logger
             ..err('$err')
+            ..detail('$st')
             ..err(_failureMessage);
           rethrow;
         }
@@ -302,9 +304,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
         try {
           await action();
-        } catch (err) {
+        } catch (err, st) {
           _logger
             ..err('$err')
+            ..detail('$st')
             ..err(_failureMessage);
           rethrow;
         } finally {
