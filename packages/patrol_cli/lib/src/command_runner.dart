@@ -1,4 +1,4 @@
-import 'dart:io' show ProcessSignal, exit;
+import 'dart:io' show ProcessSignal;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -9,7 +9,6 @@ import 'package:file/local.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/logger.dart';
-import 'package:patrol_cli/src/common/logging_dispose_scope.dart';
 import 'package:patrol_cli/src/common/logging_local_process_manager.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/bootstrap/bootstrap_command.dart';
@@ -62,10 +61,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     PubUpdater? pubUpdater,
     ArtifactsRepository? artifactsRepository,
     FileSystem? fs,
-  })  : _disposeScope = LoggingDisposeScope(
-          name: 'PatrolCommandRunner',
-          logger: logger,
-        ),
+  })  : _disposeScope = DisposeScope(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
         _fs = fs ?? const LocalFileSystem(),
         _artifactsRepository = artifactsRepository ??

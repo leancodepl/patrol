@@ -6,7 +6,6 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
-import 'package:patrol_cli/src/common/logging_dispose_scope.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:platform/platform.dart';
@@ -107,10 +106,7 @@ class AndroidTestBackend extends TestBackend {
         _processManager = processManager,
         _fs = fs,
         _platform = platform,
-        _disposeScope = LoggingDisposeScope(
-          name: 'AndroidTestBackend',
-          logger: logger,
-        ),
+        _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
