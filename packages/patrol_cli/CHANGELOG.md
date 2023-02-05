@@ -2,6 +2,7 @@
 
 - Improve error message of `patrol test` when the `integration_test` directory
   doesn't exist (#876)
+- Make `patrol test` run tests in a more predictable, `ls`-like order (#882)
 
 ## 0.9.0
 

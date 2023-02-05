@@ -87,8 +87,8 @@ void main() {
 
     test('finds tests when target is a directory', () {
       final files = [
+        'integration_test/features/login/existing_user_test.dart',
         'integration_test/features/login/new_user_test.dart',
-        'integration_test/features/login/existing_user_test.dart'
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
@@ -104,8 +104,8 @@ void main() {
       'finds tests when target is a directory containing no direct test files',
       () {
         final files = [
+          'integration_test/features/login/existing_user_test.dart',
           'integration_test/features/login/new_user_test.dart',
-          'integration_test/features/login/existing_user_test.dart'
         ];
         for (final file in files) {
           fs.file(file).createSync(recursive: true);
@@ -120,9 +120,9 @@ void main() {
 
     test('finds tests recursively when target is a directory', () {
       final files = [
-        'integration_test/features/some_test.dart',
+        'integration_test/features/login/existing_user_test.dart',
         'integration_test/features/login/new_user_test.dart',
-        'integration_test/features/login/existing_user_test.dart'
+        'integration_test/features/some_test.dart',
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
@@ -143,8 +143,8 @@ void main() {
     test('finds tests when targets are files and directories', () {
       final files = [
         'integration_test/app_test.dart',
-        'integration_test/features/login/new_user_test.dart',
         'integration_test/features/login/existing_user_test.dart',
+        'integration_test/features/login/new_user_test.dart',
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
@@ -192,11 +192,14 @@ void main() {
       );
     });
 
-    test('finds tests recursively', () {
+    test('finds tests recursively in the correct order', () {
       final files = [
-        'integration_test/app_test.dart',
-        'integration_test/permission_test.dart',
-        'integration_test/auth/sign_in_test.dart'
+        'integration_test/alpha/alpha_test.dart',
+        'integration_test/alpha/bravo_test.dart',
+        'integration_test/alpha_test.dart',
+        'integration_test/bravo/bravo_test.dart',
+        'integration_test/charlie/charlie_test.dart',
+        'integration_test/zulu_test.dart',
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
