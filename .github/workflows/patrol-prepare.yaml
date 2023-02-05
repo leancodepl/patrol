@@ -50,6 +50,9 @@ jobs:
       - name: flutter format
         run: flutter format --set-exit-if-changed .
 
+      - name: flutter pub publish --dry-run
+        run: flutter pub publish --dry-run
+
       - name: flutter pub get (example app)
         working-directory: ./packages/patrol/example
         run: flutter pub get

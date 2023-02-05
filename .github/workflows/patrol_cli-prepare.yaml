@@ -52,6 +52,9 @@ jobs:
       - name: dart format
         run: dart format --set-exit-if-changed .
 
+      - name: dart pub publish --dry-run
+        run: dart pub publish --dry-run
+
       - name: Install patrol_cli
         run: dart pub global activate --source path . && patrol
 
