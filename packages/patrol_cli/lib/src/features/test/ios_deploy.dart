@@ -36,7 +36,7 @@ class IOSDeploy {
           '--bundle',
           '../build/ios_integ/Build/Products/Debug-iphoneos/Runner.app'
         ],
-        // TODO: Enable deltas
+        // TODO: Enable deltas (https://github.com/leancodepl/patrol/issues/871)
         // ...['--app_deltas', '../build/ios_integ/Runner-delta'],
         '--debug',
         '--no-wifi',
