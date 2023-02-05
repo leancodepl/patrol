@@ -36,8 +36,8 @@ jobs:
         env:
           CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
         run: |
-          mkdir -p ~/.pub-cache
-          echo $CREDENTIALS > ~/.pub-cache/credentials.json
+          mkdir -p ~/.config/dart
+          echo $CREDENTIALS > ~/.config/dart/pub-credentials.json
 
       - name: Set version data
         run: |
