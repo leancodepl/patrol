@@ -1,9 +1,5 @@
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
-import 'package:platform/platform.dart';
 import 'package:test/test.dart';
-
-final _windows = FakePlatform(operatingSystem: 'windows');
-final _macos = FakePlatform(operatingSystem: 'macos');
 
 void main() {
   group('AndroidAppOptions', () {
