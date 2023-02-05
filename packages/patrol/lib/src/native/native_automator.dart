@@ -177,7 +177,7 @@ class NativeAutomator {
   ///
   /// Must be called before using any native features.
   Future<void> configure() async {
-    const retries = 30;
+    const retries = 60;
 
     PatrolActionException? exception;
     for (var i = 0; i < retries; i++) {
@@ -197,8 +197,8 @@ class NativeAutomator {
         exception = err;
       }
 
-      _config.logger('trying to configure() again in 2 seconds');
-      await Future<void>.delayed(const Duration(seconds: 2));
+      _config.logger('trying to configure() again in 1 second');
+      await Future<void>.delayed(const Duration(seconds: 1));
     }
 
     if (exception != null) {
