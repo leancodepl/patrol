@@ -74,16 +74,16 @@ class AndroidAppOptions extends AppOptions {
     // Add Dart defines encoded in base64
     if (dartDefines.isNotEmpty) {
       final dartDefinesString = StringBuffer();
-      for (var i = 0; i < this.dartDefines.length; i++) {
-        final entry = this.dartDefines.entries.toList()[i];
-        dartDefinesString.write('${entry.key}=${entry.value}');
-        if (i != this.dartDefines.length - 1) {
+      for (var i = 0; i < dartDefines.length; i++) {
+        final entry = dartDefines.entries.elementAt(i);
+        final pair = utf8.encode('${entry.key}=${entry.value}');
+        dartDefinesString.write(base64Encode(pair));
+        if (i != dartDefines.length - 1) {
           dartDefinesString.write(',');
         }
       }
 
-      final dartDefines = utf8.encode(dartDefinesString.toString());
-      cmd.add('-Pdart-defines=${base64Encode(dartDefines)}');
+      cmd.add('-Pdart-defines=$dartDefinesString');
     }
 
     return cmd;

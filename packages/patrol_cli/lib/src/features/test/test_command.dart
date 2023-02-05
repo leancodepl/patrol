@@ -1,6 +1,7 @@
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -14,7 +15,6 @@ import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
-import '../run_commons/constants.dart';
 
 part 'test_command.freezed.dart';
 
@@ -171,15 +171,15 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     final devices = argResults?['device'] as List<String>? ?? [];
     final attachedDevices = await _deviceFinder.find(devices);
 
-    final dartDefines = {
+    final userDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(
         args: argResults?['dart-define'] as List<String>? ?? [],
       ),
     };
 
-    _logger.detail('Received ${dartDefines.length} --dart-define(s)');
-    for (final dartDefine in dartDefines.entries) {
+    _logger.detail('Received ${userDartDefines.length} --dart-define(s)');
+    for (final dartDefine in userDartDefines.entries) {
       _logger.detail('Received --dart-define: ${dartDefine.key}');
     }
 
@@ -223,11 +223,11 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           ? 'Debug-${argResults!['flavor']}'
           : argResults?['configuration'] as String? ?? _defaultConfiguration,
       dartDefines: <String, String?>{
-        ...dartDefines,
-        envWaitKey: wait as String? ?? '0',
-        envPackageNameKey: packageName,
-        envBundleIdKey: bundleId,
-        envVerbose: '$verbose',
+        ...userDartDefines,
+        'PATROL_WAIT': wait as String? ?? '0',
+        'PATROL_VERBOSE': '$verbose',
+        'PATROL_APP_PACKAGE_NAME': packageName,
+        'PATROL_APP_BUNDLE_ID': bundleId,
       }.withNullsRemoved(),
       packageName: packageName,
       bundleId: bundleId,
@@ -285,7 +285,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           final options = AndroidAppOptions(
             target: target,
             flavor: config.flavor,
-            dartDefines: config.dartDefines,
+            dartDefines: {
+              ...config.dartDefines,
+              'PATROL_TEST_LABEL': basename(target)
+            },
           );
           action = () => _androidTestBackend.build(options, device);
           break;
@@ -293,7 +296,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           final options = IOSAppOptions(
             target: target,
             flavor: config.flavor,
-            dartDefines: config.dartDefines,
+            dartDefines: {
+              ...config.dartDefines,
+              'PATROL_TEST_LABEL': basename(target)
+            },
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,
@@ -323,7 +329,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           final options = AndroidAppOptions(
             target: target,
             flavor: config.flavor,
-            dartDefines: config.dartDefines,
+            dartDefines: {
+              ...config.dartDefines,
+              'PATROL_TEST_LABEL': basename(target)
+            },
           );
           action = () => _androidTestBackend.execute(options, device);
           final package = config.packageName;
@@ -335,7 +344,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           final options = IOSAppOptions(
             target: target,
             flavor: config.flavor,
-            dartDefines: config.dartDefines,
+            dartDefines: {
+              ...config.dartDefines,
+              'PATROL_TEST_LABEL': basename(target)
+            },
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,

@@ -206,7 +206,6 @@ Thrown by PatrolBinding.
   @override
   void attachRootWidget(Widget rootWidget) {
     const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
-
     if (testLabel.isEmpty) {
       super.attachRootWidget(RepaintBoundary(child: rootWidget));
     }
