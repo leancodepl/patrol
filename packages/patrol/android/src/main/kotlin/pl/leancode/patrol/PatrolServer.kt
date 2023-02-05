@@ -5,7 +5,6 @@ import io.grpc.InsecureServerCredentials
 import io.grpc.Server
 import io.grpc.okhttp.OkHttpServerBuilder
 
-
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
     private val port: Int

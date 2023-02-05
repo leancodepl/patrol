@@ -17,17 +17,26 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol/android
+        working-directory: packages/patrol/example/android
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Generate Gradle wrapper
+        working-directory: packages/patrol/example
+        run: flutter build apk --debug --flavor=does-not-exist || true
+
       - name: ktlint check
-        run: ./gradlew :app:ktlintCheck
+        run: ./gradlew :patrol:ktlintCheck
 
       - name: ktlint format
-        run: ./gradlew :app:ktlintFormat
+        run: ./gradlew :patrol:ktlintFormat
 
   prepare-ios:
     runs-on: macos-latest
@@ -64,7 +73,7 @@ jobs:
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
   prepare-flutter:
-    name: Flutter ${{ matrix.channel }}${{ matrix.version }}
+    name: prepare-flutter ${{ matrix.channel }}${{ matrix.version }}
     runs-on: ubuntu-latest
 
     strategy:
