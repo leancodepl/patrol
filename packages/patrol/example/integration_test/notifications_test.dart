@@ -52,7 +52,10 @@ void main() {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $.native.pressHome();
-      await $.native.openApp(appId: 'com.apple.Preferences');
+      await $.native.openApp(
+        appId:
+            Platform.isIOS ? 'com.apple.Preferences' : 'com.android.settings',
+      );
       await $.native.pressHome();
     },
   );
