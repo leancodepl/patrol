@@ -23,8 +23,14 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      - name: brew update
+        run: brew update
+
       - name: Install swift-format
-        run: brew update && brew install swift-format
+        run: brew install swift-format
+
+      - name: Install clang-format
+        run: brew install clang-format
 
       # Disabled because of generated protobuf code
       #- name: swift-format lint
@@ -35,6 +41,10 @@ jobs:
           swift-format format --recursive --in-place .
           git update-index --refresh
           git diff-index --quiet HEAD --
+
+      - name: clang-format
+        run: |
+          find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
   prepare-flutter-package:
     name: Flutter ${{ matrix.channel }}${{ matrix.version }}
