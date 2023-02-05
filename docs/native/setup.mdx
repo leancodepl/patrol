@@ -17,7 +17,7 @@ flutter pub add patrol --dev
 
 ### Configure Patrol in pubspec.yaml
 
-<Info>This step is recommended, but not necessary.</Info>
+<Warning>This step is not necessary, but it's recommended.</Warning>
 
 Create `patrol` section in your **pubspec.yaml**:
 
@@ -29,13 +29,28 @@ dev_dependencies:
   # ...
 
 patrol:
+  app_name: Awesome App
+  android:
+    package_name: pl.leancode.awesomeapp
+  ios:
+    bundle_id: pl.leancode.AwesomeApp
+```
+
+<Info>
+  If your app has different name on iOS and Android, then specify the names like
+  so:
+
+```yaml title="pubspec.yaml"
+patrol:
   android:
     package_name: pl.leancode.awesomeapp
     app_name: Awesome App
   ios:
     bundle_id: pl.leancode.AwesomeApp
-    app_name: Awesome App
+    app_name: The Awesome App
 ```
+
+</Info>
 
 Of course, replace these placeholders with values specific to your app!
 
@@ -180,6 +195,19 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
         patrol test --target integration_test/example_test.dart --flavor development
         ```
 
+        or you can specify them in **pubspec.yaml** (recommended):
+
+        ```yaml name="pubspec.yaml"
+        patrol:
+          app_name: Awesome App
+          flavor: development
+          android:
+            package_name: pl.leancode.awesomeapp
+          ios:
+            bundle_id: pl.leancode.AwesomeApp
+            app_name: The Awesome App
+        ```
+
         If you're a tester and you're unsure what flavors are and if your app is
         using them, ask the developer and they'll surely help you.
       </Info>
@@ -274,6 +302,19 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
         ```
         patrol test --target integration_test/example_test.dart --flavor development
+        ```
+
+        or you can specify them in **pubspec.yaml** (recommended):
+
+        ```yaml name="pubspec.yaml"
+        patrol:
+          app_name: Awesome App
+          flavor: development
+          android:
+            package_name: pl.leancode.awesomeapp
+          ios:
+            bundle_id: pl.leancode.AwesomeApp
+            app_name: The Awesome App
         ```
 
         If you're a tester and you're unsure what flavors are and if your app is
