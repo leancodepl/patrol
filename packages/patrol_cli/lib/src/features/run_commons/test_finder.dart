@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 
@@ -55,6 +56,7 @@ class TestFinder {
 
     return directory
         .listSync(recursive: true, followLinks: false)
+        .sorted((a, b) => a.path.compareTo(b.path))
         .where(
           (fileSystemEntity) {
             final hasSuffix = fileSystemEntity.path.endsWith('_test.dart');
