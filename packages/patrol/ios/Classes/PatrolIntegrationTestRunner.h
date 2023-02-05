@@ -36,20 +36,10 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
 /// Adapted from:
 /// https://github.com/flutter/flutter/blob/master/packages/integration_test/ios/Classes/IntegrationTestIosTest.h
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                           \
-  @interface RunnerTests : XCTestCase                                                                              \
+  @interface RunnerUITests : XCTestCase                                                                            \
   @end                                                                                                             \
                                                                                                                    \
-  @implementation RunnerTests                                                                                      \
-                                                                                                                   \
-  - (void)setUp {                                                                                                  \
-    [self addUIInterruptionMonitorWithDescription:@"System Dialog" handler:^BOOL(XCUIElement *alert) {             \
-      NSLog(@"UI interruption monitor called: %@", alert);                                                         \
-      [alert buttons];                                                                                             \
-      return YES;                                                                                                  \
-    }];                                                                                                            \
-    NSLog(@"UI interruption monitor added");                                                                       \
-  }                                                                                                                \
-                                                                                                                   \
+  @implementation RunnerUITests                                                                                    \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                    \
     /* Start native automation gRPC server */                                                                      \
     PatrolServer *server = [[PatrolServer alloc] init];                                                            \
@@ -57,7 +47,7 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
       NSLog(@"Server loop done, error: %@", err);                                                                  \
     }];                                                                                                            \
                                                                                                                    \
-                                                                                                                   \
+    /* Allow the Local Network permission required by Dart Observatory */                                          \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];    \
     XCUIElementQuery *systemAlerts = springboard.alerts;                                                           \
     if (systemAlerts.buttons[@"Allow"].exists) {                                                                   \
