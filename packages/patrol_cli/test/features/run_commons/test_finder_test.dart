@@ -5,6 +5,8 @@ import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:test/test.dart';
 
+import '../../common.dart';
+
 void main() {
   late FileSystem fs;
   late TestFinder testFinder;
@@ -169,9 +171,9 @@ void main() {
 
   group('findAllTests', () {
     test(
-      'throws FileSystemException when integration_test directory does not exist',
+      'throws ToolExit when integration_test directory does not exist',
       () {
-        expect(testFinder.findAllTests, throwsA(isA<FileSystemException>()));
+        expect(testFinder.findAllTests, throwsToolExit);
       },
     );
 
