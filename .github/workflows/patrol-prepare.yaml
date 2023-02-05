@@ -12,7 +12,24 @@ on:
       - 'packages/patrol/**'
 
 jobs:
-  prepare-ios-plugin:
+  prepare-android:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: packages/patrol/android
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: ktlint check
+        run: ./gradlew :app:ktlintCheck
+
+      - name: ktlint format
+        run: ./gradlew :app:ktlintFormat
+
+  prepare-ios:
     runs-on: macos-latest
 
     defaults:
@@ -46,7 +63,7 @@ jobs:
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
-  prepare-flutter-package:
+  prepare-flutter:
     name: Flutter ${{ matrix.channel }}${{ matrix.version }}
     runs-on: ubuntu-latest
 
