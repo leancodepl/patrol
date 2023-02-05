@@ -1,5 +1,6 @@
 #import "PatrolIntegrationTestRunner.h"
 #import "PatrolPlugin.h"
+#import "XCTest/XCTest.h"
 
 @import ObjectiveC.runtime;
 @import UIKit;
@@ -17,7 +18,7 @@
 
   [tests enumerateKeysAndObjectsUsingBlock:^(NSString *test, NSString *result, BOOL *stop) {
     NSString *testSelectorName = [[self class] testCaseNameFromDartTestName:test];
-
+    
     // Make sure that Objective-C test method names are unique after sanitization
     if ([testCaseNames containsObject:testSelectorName]) {
       NSString *reason = [NSString
@@ -39,6 +40,8 @@
 
 - (NSDictionary<NSString *, UIImage *> *)capturedScreenshotsByName {
   // TODO: Implement
+  
+  
   return [[NSDictionary alloc] init];
 }
 

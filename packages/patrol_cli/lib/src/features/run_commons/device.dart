@@ -25,6 +25,28 @@ class Device {
         return name;
     }
   }
+
+  String get description {
+    switch (targetPlatform) {
+      case TargetPlatform.android:
+        if (platformDescription.isEmpty) {
+          return id;
+        } else {
+          return '$platformDescription $id';
+        }
+      case TargetPlatform.iOS:
+        return '$platformDescription $name';
+    }
+  }
+
+  String get platformDescription {
+    switch (targetPlatform) {
+      case TargetPlatform.android:
+        return real ? 'device' : '';
+      case TargetPlatform.iOS:
+        return real ? 'device' : 'simulator';
+    }
+  }
 }
 
 enum TargetPlatform { iOS, android }

@@ -21,6 +21,9 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
+  /// Called after all Dart tests finish sending the results to the RunnerUITests app.
+  ///
+  /// RunnerUITests app then dynamically creates test methods (using Objective-C runtime) from the Dart test results.
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     NSLog("call on patrolChannel: %@", call.method)
 

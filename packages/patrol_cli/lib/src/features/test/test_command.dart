@@ -1,4 +1,5 @@
 import 'package:ansi_styles/extension.dart';
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -34,6 +35,10 @@ class TestCommandConfig with _$TestCommandConfig {
 }
 
 const _defaultRepeats = 1;
+const _failureMessage =
+    'See the logs above to learn what happened. Also consider running with '
+    "--verbose. If the logs still aren't useful, then it's a bug – please "
+    'report it.';
 
 class TestCommand extends StagedCommand<TestCommandConfig> {
   TestCommand({
@@ -43,6 +48,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     required DartDefinesReader dartDefinesReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
@@ -51,6 +57,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         _iosTestBackend = iosTestBackend,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
+    _testRunner.disposedBy(parentDisposeScope);
+
     argParser
       ..addMultiOption(
         'target',
@@ -142,7 +150,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   String get description => 'Run integration tests.';
 
   @override
-  Future<TestCommandConfig> parseInput() async {
+  Future<TestCommandConfig> configure() async {
     final target = argResults?['target'] as List<String>? ?? [];
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
@@ -227,78 +235,14 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     config.devices.forEach(_testRunner.addDevice);
     _testRunner
       ..repeats = config.repeat
-      ..executor = (target, device) async {
-        Future<void> Function() action;
-        Future<void> Function()? finalizer;
-
-        switch (device.targetPlatform) {
-          case TargetPlatform.android:
-            action = () => _androidTestBackend.run(
-                  device: device,
-                  options: AndroidAppOptions(
-                    target: target,
-                    flavor: config.flavor,
-                    dartDefines: config.dartDefines,
-                  ),
-                );
-            final packageName = config.packageName;
-            if (packageName == null) {
-              _logger.info(
-                'App will not be uninstalled after tests finish because the '
-                'package name is null',
-              );
-              break;
-            }
-            finalizer = () => _androidTestBackend.uninstall(
-                  device: device,
-                  packageName: packageName,
-                );
-
-            break;
-          case TargetPlatform.iOS:
-            action = () => _iosTestBackend.run(
-                  device: device,
-                  options: IOSAppOptions(
-                    target: target,
-                    flavor: config.flavor,
-                    dartDefines: config.dartDefines,
-                    scheme: config.scheme,
-                    xcconfigFile: config.xcconfigFile,
-                    configuration: config.configuration,
-                  ),
-                );
-            final bundleId = config.bundleId;
-            if (bundleId == null) {
-              _logger.info(
-                'App will not be uninstalled after tests finish because the '
-                'bundle identifier is null',
-              );
-              break;
-            }
-
-            finalizer = () => _iosTestBackend.uninstall(
-                  device: device,
-                  bundleId: bundleId,
-                );
-        }
-
-        try {
-          await action();
-        } catch (err) {
-          _logger
-            ..err('$err')
-            ..err(
-              'See the logs above to learn what happened. If the logs above '
-              "aren't useful then it's a bug – please report it.",
-            );
-          rethrow;
-        } finally {
-          await finalizer?.call();
-        }
-      };
+      ..builder = _builderFor(config)
+      ..executor = _executorFor(config);
 
     final results = await _testRunner.run();
 
+    if (results.targetRunResults.isEmpty) {
+      _logger.warn('No run results found');
+    }
     for (final res in results.targetRunResults) {
       final device = res.device.resolvedName;
       if (res.allRunsPassed) {
@@ -323,5 +267,90 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     final exitCode = results.allSuccessful ? 0 : 1;
 
     return exitCode;
+  }
+
+  Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
+    return (target, device) async {
+      Future<void> Function() action;
+
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          final options = AndroidAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+          );
+          action = () => _androidTestBackend.build(options, device);
+          break;
+        case TargetPlatform.iOS:
+          final options = IOSAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+            scheme: config.scheme,
+            xcconfigFile: config.xcconfigFile,
+            configuration: config.configuration,
+          );
+          action = () => _iosTestBackend.build(options, device);
+      }
+
+      try {
+        await action();
+      } catch (err, st) {
+        _logger
+          ..err('$err')
+          ..detail('$st')
+          ..err(_failureMessage);
+        rethrow;
+      }
+    };
+  }
+
+  Future<void> Function(String, Device) _executorFor(TestCommandConfig config) {
+    return (target, device) async {
+      Future<void> Function() action;
+      Future<void> Function()? finalizer;
+
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          final options = AndroidAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+          );
+          action = () => _androidTestBackend.execute(options, device);
+          final package = config.packageName;
+          if (package != null) {
+            finalizer = () => _androidTestBackend.uninstall(package, device);
+          }
+          break;
+        case TargetPlatform.iOS:
+          final options = IOSAppOptions(
+            target: target,
+            flavor: config.flavor,
+            dartDefines: config.dartDefines,
+            scheme: config.scheme,
+            xcconfigFile: config.xcconfigFile,
+            configuration: config.configuration,
+          );
+          action = () async => _iosTestBackend.execute(options, device);
+          final bundle = config.bundleId;
+          if (bundle != null) {
+            finalizer = () => _iosTestBackend.uninstall(bundle, device);
+          }
+      }
+
+      try {
+        await action();
+      } catch (err, st) {
+        _logger
+          ..err('$err')
+          ..detail('$st')
+          ..err(_failureMessage);
+        rethrow;
+      } finally {
+        await finalizer?.call();
+      }
+    };
   }
 }

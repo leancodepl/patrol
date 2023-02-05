@@ -57,8 +57,15 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
       NSLog(@"Server loop done, error: %@", err);                                                                  \
     }];                                                                                                            \
                                                                                                                    \
+                                                                                                                   \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];    \
+    XCUIElementQuery *systemAlerts = springboard.alerts;                                                           \
+    if (systemAlerts.buttons[@"Allow"].exists) {                                                                   \
+      [systemAlerts.buttons[@"Allow"] tap];                                                                        \
+    }                                                                                                              \
+                                                                                                                   \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                         \
-    [app launch];                                                                                                  \
+    [app activate];                                                                                                \
                                                                                                                    \
     /* Spin the runloop waiting for test results */                                                                \
     while (!server.dartTestResults) {                                                                              \

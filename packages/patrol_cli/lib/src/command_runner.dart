@@ -1,5 +1,6 @@
-import 'dart:io' show ProcessSignal, exit;
+import 'dart:io' show ProcessSignal;
 
+import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
@@ -23,6 +24,7 @@ import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
+import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
@@ -33,29 +35,24 @@ import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
-
   final runner = PatrolCommandRunner(logger: logger);
-  int exitCode;
-
-  Future<Never>? interruption;
 
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
-    interruption = runner.dispose().onError((err, st) {
+    await runner.dispose().onError((err, st) {
       logger
         ..err('error while disposing')
         ..err('$err')
         ..err('$st');
-    }).then((_) => exit(130));
+    });
   });
 
-  exitCode = await runner.run(args) ?? 0;
+  final exitCode = await runner.run(args) ?? 0;
 
-  if (interruption != null) {
-    await interruption; // will never complete
+  if (!runner._disposeScope.disposed) {
+    await runner.dispose();
   }
 
-  await runner.dispose();
   return exitCode;
 }
 
@@ -80,7 +77,11 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     driveCommand = DriveCommand(
-      deviceFinder: DeviceFinder(logger: _logger),
+      deviceFinder: DeviceFinder(
+        processManager: LoggingLocalProcessManager(logger: _logger),
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
       testFinder: TestFinder(
         integrationTestDir: _fs.directory('integration_test'),
         fs: _fs,
@@ -115,13 +116,18 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     addCommand(
       TestCommand(
-        deviceFinder: DeviceFinder(logger: _logger),
+        deviceFinder: DeviceFinder(
+          processManager: LoggingLocalProcessManager(logger: logger),
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
         testFinder: TestFinder(
           integrationTestDir: _fs.directory('integration_test'),
           fs: _fs,
         ),
         testRunner: NativeTestRunner(),
         androidTestBackend: AndroidTestBackend(
+          adb: Adb(),
           processManager: LoggingLocalProcessManager(logger: _logger),
           platform: const LocalPlatform(),
           fs: _fs,
@@ -131,6 +137,12 @@ class PatrolCommandRunner extends CommandRunner<int> {
         iosTestBackend: IOSTestBackend(
           processManager: LoggingLocalProcessManager(logger: _logger),
           fs: _fs,
+          iosDeploy: IOSDeploy(
+            processManager: const LocalProcessManager(),
+            parentDisposeScope: _disposeScope,
+            fs: _fs,
+            logger: _logger,
+          ),
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
@@ -138,13 +150,18 @@ class PatrolCommandRunner extends CommandRunner<int> {
           projectRoot: _fs.currentDirectory,
           fs: _fs,
         ),
+        parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
     );
 
     addCommand(
       DevicesCommand(
-        deviceFinder: DeviceFinder(logger: _logger),
+        deviceFinder: DeviceFinder(
+          processManager: LoggingLocalProcessManager(logger: _logger),
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
         logger: _logger,
       ),
     );
@@ -248,7 +265,16 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err('$err');
       }
-      exitCode = 1;
+      exitCode = err.exitCode;
+    } on ToolInterrupted catch (err, st) {
+      if (verbose) {
+        _logger
+          ..err('$err')
+          ..err('$st');
+      } else {
+        _logger.err(err.message);
+      }
+      exitCode = err.exitCode;
     } on FormatException catch (err, st) {
       _logger
         ..err(err.message)
@@ -354,7 +380,7 @@ Run ${lightCyan.wrap('patrol update')} to update''',
     }
 
     if (debug) {
-      throw ToolExit('Debug artifacts are not present.');
+      throw const ToolExit('Debug artifacts are not present.');
     }
 
     final progress = _logger.progress('Artifacts are not present, downloading');

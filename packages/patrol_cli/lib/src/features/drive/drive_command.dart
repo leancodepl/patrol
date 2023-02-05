@@ -48,8 +48,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
     required DartDefinesReader dartDefinesReader,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _disposeScope = DisposeScope(),
-        _deviceFinder = deviceFinder,
+  })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
         _androidDriver = androidDriver,
@@ -57,7 +56,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
         _flutterTool = flutterTool,
         _dartDefinesReader = dartDefinesReader,
         _logger = logger {
-    _disposeScope.disposedBy(parentDisposeScope);
     _testRunner.disposedBy(parentDisposeScope);
 
     argParser
@@ -137,8 +135,6 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
       );
   }
 
-  final DisposeScope _disposeScope;
-
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final FlutterTestRunner _testRunner;
@@ -158,7 +154,7 @@ class DriveCommand extends StagedCommand<DriveCommandConfig> {
   String get description => '[DEPRECATED] Drive the app using flutter_driver.';
 
   @override
-  Future<DriveCommandConfig> parseInput() async {
+  Future<DriveCommandConfig> configure() async {
     _logger.warn(
       '\n'
       '`patrol drive` is deprecated and will be removed in the first stable 1.0 version.\n'

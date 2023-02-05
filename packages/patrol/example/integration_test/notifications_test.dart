@@ -4,17 +4,18 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'sends a notification, verifies that it is visible and taps on it by text',
+    'taps on notification',
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
       await $('Open notifications screen').tap();
-      await $(RegExp('someone liked')).tap();
 
       if (await $.native.isPermissionDialogVisible()) {
         print('Dialog is visible');
         await $.native.grantPermissionWhenInUse();
       }
+
+      await $(RegExp('someone liked')).tap();
 
       if (Platform.isIOS) {
         await $.native.closeHeadsUpNotification();
@@ -42,6 +43,17 @@ void main() {
 
       await $.native.openNotifications();
       await $.native.closeNotifications();
+    },
+  );
+
+  patrol(
+    'exits the app and enters it again',
+    ($) async {
+      await $.pumpWidgetAndSettle(ExampleApp());
+
+      await $.native.pressHome();
+      await $.native.openApp(appId: 'com.apple.Preferences');
+      await $.native.pressHome();
     },
   );
 

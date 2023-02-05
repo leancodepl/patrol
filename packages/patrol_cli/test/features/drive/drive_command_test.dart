@@ -85,14 +85,14 @@ void main() {
     });
 
     test('has correct default config', () async {
-      final config = await driveCommand.parseInput();
+      final config = await driveCommand.configure();
       expect(config, _defaultConfig);
     });
 
     test('has correct config when single target is given', () async {
       fs.file('integration_test/app_test.dart').createSync();
 
-      final config = await driveCommand.parseInput();
+      final config = await driveCommand.configure();
 
       expect(
         config,
@@ -106,7 +106,7 @@ void main() {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
-      final config = await driveCommand.parseInput();
+      final config = await driveCommand.configure();
 
       expect(
         config,
@@ -123,7 +123,7 @@ void main() {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
-      final config = await driveCommand.parseInput();
+      final config = await driveCommand.configure();
 
       when(() => flutterTool.drive(any(), any(), null))
           .thenAnswer((_) async {});
@@ -136,7 +136,7 @@ void main() {
       fs.file('integration_test/app_test.dart').createSync();
       fs.file('integration_test/login_test.dart').createSync();
 
-      final config = await driveCommand.parseInput();
+      final config = await driveCommand.configure();
 
       when(() => flutterTool.drive(any(), any(), null)).thenThrow(
         FlutterDriverFailedException(1),

@@ -5,9 +5,22 @@ import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
 
-/// This class doesn't have a builder callback.
+// NOTE: This class should probably expose a stream so that test results can be
+// listened to in real time.
+
+/// Orchestrates running tests on devices.
 ///
-/// This means that it's not possible to split the build and run phases.
+/// It maps running T test targets on D devices, resulting in T * D test runs.
+/// Every test target can also be repeated R times, resulting in T * R * D test
+/// runs.
+///
+/// Tests targets are run sequentially in the context of a single device.
+///
+/// This class requires a separate builder and executor callbacks. This
+/// decouples the building of a test from running the test. All exceptions
+/// thrown by [builder] and [executor] are swallowed and reported as test
+/// failures. It's up to these callbacks to perform more elaborate error
+/// reporting.
 class NativeTestRunner extends TestRunner implements Disposable {
   final Map<String, Device> _devices = {};
   final Set<String> _targets = {};
@@ -15,6 +28,7 @@ class NativeTestRunner extends TestRunner implements Disposable {
   bool _disposed = false;
 
   int _repeats = 1;
+
   @override
   set repeats(int newValue) {
     if (_running) {
@@ -24,10 +38,32 @@ class NativeTestRunner extends TestRunner implements Disposable {
     _repeats = newValue;
   }
 
+  _Callback? _builder;
+
+  /// Sets the builder callback that is called once for every test target.
+  ///
+  /// The [callback] should:
+  /// * call Gradle task `assembleAndroidTest` (when building for Android)
+  /// * call `xcodebuild build-for-testing` (when building for iOS)
+  ///
+  /// The builder callback must build the artifacts necessary for the
+  /// [_executor] callback to be able to run a test, or throw if it's not
+  /// possible to build the artifacts.
+  ///
+  /// Error reporting is the callback's responsibility.
+  set builder(_Callback callback) => _builder = callback;
+
   _Callback? _executor;
 
   /// Sets the executor callback that can is called 1 or more times for every
-  /// test target.
+  /// test target, except if the [_builder] callback threw, in which case the
+  /// executor callback isn't called.
+  ///
+  /// The callback should:
+  /// * call Gradle task `connectedAndroidTest` (when running on Android)
+  /// * call `xcodebuild test-without-building` (when running on iOS simulator)
+  /// * call a combination of `ios-deploy` and `xcodebuild
+  ///   test-without-building` (when running on iOS device)
   ///
   /// Error reporting is the callback's responsibility.
   set executor(_Callback callback) => _executor = callback;
@@ -58,6 +94,11 @@ class NativeTestRunner extends TestRunner implements Disposable {
     _targets.add(target);
   }
 
+  /// Runs all added test targets on on all added devices.
+  ///
+  /// Tests are run sequentially on a single device, but many devices can be
+  /// attached at the same time, and thus many tests can be running at the same
+  /// time.
   @override
   Future<RunResults> run() async {
     if (_running) {
@@ -68,6 +109,11 @@ class NativeTestRunner extends TestRunner implements Disposable {
     }
     if (_targets.isEmpty) {
       throw StateError('no test targets to run');
+    }
+
+    final builder = _builder;
+    if (builder == null) {
+      throw StateError('builder is null');
     }
 
     final executor = _executor;
@@ -92,6 +138,14 @@ class NativeTestRunner extends TestRunner implements Disposable {
             for (var i = 0; i < _repeats; i++) {
               targetRuns.add(TargetRunStatus.canceled);
             }
+            continue;
+          }
+
+          // Build once for every target, no matter how many repeats.
+          try {
+            await builder(target, device);
+          } catch (_) {
+            targetRuns.add(TargetRunStatus.failedToBuild);
             continue;
           }
 

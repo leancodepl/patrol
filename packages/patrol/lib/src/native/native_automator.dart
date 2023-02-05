@@ -164,7 +164,8 @@ class NativeAutomator {
       return result;
     } on GrpcError catch (err) {
       _config.logger('$name() failed');
-      final log = '$name() failed with code ${err.codeName} (${err.message})';
+      final log = 'GrpcError: '
+          '$name() failed with code ${err.codeName} (${err.message})';
       throw PatrolActionException(log);
     } catch (err) {
       _config.logger('$name() failed');
@@ -176,14 +177,35 @@ class NativeAutomator {
   ///
   /// Must be called before using any native features.
   Future<void> configure() async {
-    await _wrapRequest(
-      'configure',
-      () => _client.configure(
-        ConfigureRequest(
-          findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
-        ),
-      ),
-    );
+    const retries = 60;
+
+    PatrolActionException? exception;
+    for (var i = 0; i < retries; i++) {
+      try {
+        await _wrapRequest(
+          'configure',
+          () => _client.configure(
+            ConfigureRequest(
+              findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
+            ),
+          ),
+        );
+        exception = null;
+        break;
+      } on PatrolActionException catch (err) {
+        _config.logger('configure() failed: (${err.message})');
+        exception = err;
+      }
+
+      _config.logger('trying to configure() again in 1 second');
+      await Future<void>.delayed(const Duration(seconds: 1));
+    }
+
+    if (exception != null) {
+      throw PatrolActionException(
+        'configure() failed after $retries retries (${exception.message}',
+      );
+    }
   }
 
   /// Presses the back button.
@@ -516,8 +538,10 @@ class NativeAutomator {
     return response.nativeViews;
   }
 
-  /// Checks if a native permission request dialog is from now until [timeout]
-  /// passees.
+  /// Waits until a native permission request dialog becomes visible within
+  /// [timeout].
+  ///
+  /// Returns true if the dialog became visible within timeout, false otherwise.
   Future<bool> isPermissionDialogVisible({
     Duration timeout = const Duration(seconds: 1),
   }) async {
