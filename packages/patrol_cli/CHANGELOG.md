@@ -1,3 +1,30 @@
+## 0.9.0
+
+- Enable `patrol test` for physical iOS devices (#863)
+- Make it possible to specify `package_name` and `bundle_id` in **pubspec.yaml**
+  (#868)
+
+  If these values are set, the tool automatically uninstalls the app after every
+  test. It's recommended to set them.
+
+  Example:
+
+  ```yaml
+  dependencies:
+    # ...
+
+  dev_dependencies:
+    # ...
+
+  patrol:
+    android:
+      package_name: pl.leancode.awesomeapp
+      app_name: Awesome App
+    ios:
+      bundle_id: pl.leancode.AwesomeApp
+      app_name: Awesome App
+  ```
+
 ## 0.8.6
 
 - Uninstall app under test after `patrol test` (#848)

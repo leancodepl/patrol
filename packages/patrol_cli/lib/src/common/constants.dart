@@ -1,7 +1,7 @@
 import 'package:path/path.dart' as path;
 
 /// Version of Patrol CLI. Must be kept in sync with pubspec.yaml.
-const globalVersion = '0.8.6';
+const globalVersion = '0.9.0';
 
 const patrolPackage = 'patrol';
 const patrolCliPackage = 'patrol_cli';
