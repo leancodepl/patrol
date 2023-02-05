@@ -1,3 +1,8 @@
+## Unreleased
+
+- Improve error message of `patrol test` when the `integration_test` directory
+  doesn't exist (#876)
+
 ## 0.9.0
 
 - Enable `patrol test` for physical iOS devices (#863)
