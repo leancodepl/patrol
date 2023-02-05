@@ -3,13 +3,13 @@ name: patrol_cli prepare
 on:
   push:
     branches: [master]
-    tags-ignore: ["*"]
+    tags-ignore: ['*']
     paths:
-      - "packages/patrol_cli/**"
+      - 'packages/patrol_cli/**'
   pull_request:
     branches: [master]
     paths:
-      - "packages/patrol_cli/**"
+      - 'packages/patrol_cli/**'
 
 jobs:
   main:
@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - version: 3.3.0
+          - version: '3.3.0'
           - channel: stable
           - channel: beta
 
@@ -51,6 +51,9 @@ jobs:
 
       - name: dart format
         run: dart format --set-exit-if-changed .
+
+      - name: dart pub publish --dry-run
+        run: dart pub publish --dry-run
 
       - name: Install patrol_cli
         run: dart pub global activate --source path . && patrol

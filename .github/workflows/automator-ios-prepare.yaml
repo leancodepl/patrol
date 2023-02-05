@@ -3,13 +3,13 @@ name: automator-ios prepare
 on:
   push:
     branches: [master]
-    tags-ignore: ["*"]
+    tags-ignore: ['*']
     paths:
-      - "AutomatorServer/ios/**"
+      - 'AutomatorServer/ios/**'
   pull_request:
     branches: [master]
     paths:
-      - "AutomatorServer/ios/**"
+      - 'AutomatorServer/ios/**'
 
 jobs:
   main:

@@ -3,13 +3,13 @@ name: automator-android prepare
 on:
   push:
     branches: [master]
-    tags-ignore: ["*"]
+    tags-ignore: ['*']
     paths:
-      - "AutomatorServer/android/**"
+      - 'AutomatorServer/android/**'
   pull_request:
     branches: [master]
     paths:
-      - "AutomatorServer/android/**"
+      - 'AutomatorServer/android/**'
 
 jobs:
   main:
