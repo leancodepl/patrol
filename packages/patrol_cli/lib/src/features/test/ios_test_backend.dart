@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io' show Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -74,18 +75,22 @@ class IOSAppOptions extends AppOptions {
 
   /// Translates these options into a proper `xcodebuild test-without-building`
   /// invocation.
-  List<String> testWithoutBuildingInvocation(Device device) {
+  List<String> testWithoutBuildingInvocation(
+    Device device, {
+    required String sdkVersion,
+  }) {
     const prefix = '../build/ios_integ/Build/Products';
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...[
         '-xctestrun',
-        // FIXME: determine the version:
-        // xcodebuild -showsdks | grep iphone | awk -F '-sdk' '{print $2}' | xargs
         if (device.real)
-          join(prefix, 'Runner_iphoneos16.2-arm64.xctestrun')
+          join(prefix, 'Runner_iphoneos$sdkVersion-arm64.xctestrun')
         else
-          join(prefix, 'Runner_iphonesimulator16.2-arm64-x86_64.xctestrun')
+          join(
+            prefix,
+            'Runner_iphonesimulator$sdkVersion-arm64-x86_64.xctestrun',
+          )
       ],
       ...[
         '-destination',
@@ -185,7 +190,10 @@ class IOSTestBackend extends TestBackend {
       }
 
       final process = await _processManager.start(
-        options.testWithoutBuildingInvocation(device),
+        options.testWithoutBuildingInvocation(
+          device,
+          sdkVersion: await _sdkVersion(device.real),
+        ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
       )
@@ -243,5 +251,40 @@ class IOSTestBackend extends TestBackend {
         runInShell: true,
       );
     }
+  }
+
+  Future<String> _sdkVersion(bool real) async {
+    // See the versions yourself:
+    // $ xcodebuild -showsdks -json | jq ".[] | {sdkVersion, platform}"
+
+    final process = await _processManager.run(
+      ['xcodebuild', '-showsdks', '-json'],
+      runInShell: true,
+    );
+
+    String? sdkVersion;
+    String? platform;
+    final jsonOutput = jsonDecode(process.stdOut) as List<dynamic>;
+    for (final sdkJson in jsonOutput) {
+      final sdk = sdkJson as Map<String, dynamic>;
+      if (real && sdk['platform'] == 'iphonesimulator') {
+        sdkVersion = sdk['sdkVersion'] as String;
+        platform = sdk['platform'] as String;
+        break;
+      }
+
+      if (!real && sdk['platform'] == 'iphonesimulator') {
+        sdkVersion = sdk['sdkVersion'] as String;
+        platform = sdk['platform'] as String;
+        break;
+      }
+    }
+
+    if (sdkVersion == null) {
+      throw Exception('xcodebuild: could not find SDK version');
+    }
+
+    _logger.detail('Assuming SDK version $sdkVersion for $platform');
+    return sdkVersion;
   }
 }
