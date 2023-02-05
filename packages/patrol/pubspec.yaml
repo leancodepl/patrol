@@ -2,14 +2,14 @@ name: patrol
 description: >
   Simple yet powerful Flutter-native UI testing framework eliminating
   limitations of flutter_test, integration_test, and flutter_driver.
-version: 0.10.8
+version: 0.10.9
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
 
 environment:
-  sdk: ">=2.18.0 <4.0.0"
-  flutter: ">=3.3.0 <4.0.0"
+  sdk: '>=2.18.0 <4.0.0'
+  flutter: '>=3.3.0 <4.0.0'
 
 dependencies:
   fixnum: ^1.0.1

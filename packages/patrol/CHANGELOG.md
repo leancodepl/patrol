@@ -1,3 +1,8 @@
+## 0.10.9
+
+- Improve error message when trying to use `NativeAutomator`, but it's not
+  initialized (#856)
+
 ## 0.10.8
 
 - Add GitHub Actions showing to run Patrol tests natively on both Android and
