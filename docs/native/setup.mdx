@@ -9,11 +9,43 @@ We believe that the poweful features you'll get will make up for it!
 ### Add dependency on patrol
 
 If you haven't already, add a dependency on the `patrol` package in the
-`dev_dependencies` section of `pubspec.yaml`.
+`dev_dependencies` section of **pubspec.yaml**.
 
 ```
 flutter pub add patrol --dev
 ```
+
+### Configure Patrol in pubspec.yaml
+
+<Info>This step is recommended, but not necessary.</Info>
+
+Create `patrol` section in your **pubspec.yaml**:
+
+```yaml title="pubspec.yaml"
+dependencies:
+  # ...
+
+dev_dependencies:
+  # ...
+
+patrol:
+  android:
+    package_name: pl.leancode.awesomeapp
+    app_name: Awesome App
+  ios:
+    bundle_id: pl.leancode.AwesomeApp
+    app_name: Awesome App
+```
+
+Of course, replace these placeholders with values specific to your app!
+
+We highly recommend performing this step, because it enables the following
+features:
+
+- Patrol will automatically uninstall your app after every test (using
+  `package_name` and `bundle_id`). This will make the environment which your
+  tests run in more stable and predictable.
+- Patrol will be able to tap on your app's notifications (using `app_name`)
 
 ### Install patrol_cli
 
@@ -101,7 +133,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       com, example, and myapp with values from your app's package name). You can name
       this test file `MainActivityTest.java` or another name of your choice.
 
-      ```java
+      ```java name="MainActivityTest.java"
       package pl.leancode.patrol.example; // replace "pl.leancode.patrol.example" with your app's package
 
       import org.junit.Rule;
@@ -291,7 +323,7 @@ does at well, but at a bit smaller scale).
 
 Take a look at this simple Flutter integration tests using Patrol:
 
-```dart
+```dart title="integration_test/example_test.dart"
 void main() {
   patrolTest(
     'counter state is the same after going to Home and switching apps',
