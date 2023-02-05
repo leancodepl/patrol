@@ -1,15 +1,26 @@
 import 'dart:convert';
-import 'dart:io' show Process;
 
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:process/process.dart';
 
 class DeviceFinder {
-  DeviceFinder({required Logger logger}) : _logger = logger;
+  DeviceFinder({
+    required ProcessManager processManager,
+    required DisposeScope parentDisposeScope,
+    required Logger logger,
+  })  : _processManager = processManager,
+        _disposeScope = DisposeScope(),
+        _logger = logger {
+    _disposeScope.disposedBy(parentDisposeScope);
+  }
 
+  final ProcessManager _processManager;
+  final DisposeScope _disposeScope;
   final Logger _logger;
 
   Future<List<Device>> getAttachedDevices() async {
@@ -111,15 +122,25 @@ class DeviceFinder {
   }
 
   Future<String> _getCommandOutput() async {
-    final process = await Process.start(
-      'flutter',
-      ['--no-version-check', 'devices', '--machine'],
+    var flutterKilled = false;
+    final process = await _processManager.start(
+      ['flutter', '--no-version-check', 'devices', '--machine'],
       runInShell: true,
     );
+    _disposeScope.addDispose(() async {
+      process.kill();
+      flutterKilled = true; // `flutter` has exit code 0 on SIGINT
+    });
 
     var output = '';
-    process.listenStdOut((line) => output += line);
-    await process.exitCode;
-    return output;
+    process.listenStdOut((line) => output += line).disposedBy(_disposeScope);
+    final exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throwToolExit('`flutter devices` exited with code $exitCode');
+    } else if (flutterKilled) {
+      throwToolInterrupted('`flutter devices` was interrupted');
+    } else {
+      return output;
+    }
   }
 }

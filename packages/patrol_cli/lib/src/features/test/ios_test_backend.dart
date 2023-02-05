@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/common.dart';
 import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
@@ -117,6 +118,8 @@ class IOSTestBackend extends TestBackend {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
+  static const _xcodebuildInterrupted = -15;
+
   final ProcessManager _processManager;
   final FileSystem _fs;
   final IOSDeploy _iosDeploy;
@@ -149,11 +152,11 @@ class IOSTestBackend extends TestBackend {
       if (exitCode != 0) {
         final cause = '`flutter build ios` exited with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       } else if (flutterBuildKilled) {
         const cause = '`flutter build ios` was interrupted';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolInterrupted(cause);
       }
 
       // xcodebuild build-for-testing
@@ -169,10 +172,14 @@ class IOSTestBackend extends TestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
+      } else if (exitCode == _xcodebuildInterrupted) {
+        const cause = 'xcodebuild was interrupted';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throwToolInterrupted(cause);
       } else {
         final cause = 'xcodebuild exited with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       }
     });
   }
@@ -208,10 +215,14 @@ class IOSTestBackend extends TestBackend {
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
+      } else if (exitCode == _xcodebuildInterrupted) {
+        const cause = 'xcodebuild was interrupted';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throwToolInterrupted(cause);
       } else {
         final cause = 'xcodebuild exited with code $exitCode';
         task.fail('Failed to execute tests of $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       }
     });
   }
@@ -257,14 +268,14 @@ class IOSTestBackend extends TestBackend {
     // See the versions yourself:
     // $ xcodebuild -showsdks -json | jq ".[] | {sdkVersion, platform}"
 
-    final process = await _processManager.run(
+    final processResult = await _processManager.run(
       ['xcodebuild', '-showsdks', '-json'],
       runInShell: true,
     );
 
     String? sdkVersion;
     String? platform;
-    final jsonOutput = jsonDecode(process.stdOut) as List<dynamic>;
+    final jsonOutput = jsonDecode(processResult.stdOut) as List<dynamic>;
     for (final sdkJson in jsonOutput) {
       final sdk = sdkJson as Map<String, dynamic>;
       if (real && sdk['platform'] == 'iphonesimulator') {

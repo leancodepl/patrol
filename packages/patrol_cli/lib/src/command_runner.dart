@@ -77,7 +77,11 @@ class PatrolCommandRunner extends CommandRunner<int> {
         ) {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     driveCommand = DriveCommand(
-      deviceFinder: DeviceFinder(logger: _logger),
+      deviceFinder: DeviceFinder(
+        processManager: LoggingLocalProcessManager(logger: _logger),
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
       testFinder: TestFinder(
         integrationTestDir: _fs.directory('integration_test'),
         fs: _fs,
@@ -112,7 +116,11 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     addCommand(
       TestCommand(
-        deviceFinder: DeviceFinder(logger: _logger),
+        deviceFinder: DeviceFinder(
+          processManager: LoggingLocalProcessManager(logger: logger),
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
         testFinder: TestFinder(
           integrationTestDir: _fs.directory('integration_test'),
           fs: _fs,
@@ -149,7 +157,11 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     addCommand(
       DevicesCommand(
-        deviceFinder: DeviceFinder(logger: _logger),
+        deviceFinder: DeviceFinder(
+          processManager: LoggingLocalProcessManager(logger: _logger),
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
         logger: _logger,
       ),
     );
@@ -254,12 +266,19 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
         _logger.err('$err');
       }
       exitCode = 1;
+    } on ToolInterrupted catch (err, st) {
+      if (verbose) {
+        _logger
+          ..err('$err')
+          ..err('$st');
+      } else {
+        _logger.err(err.message);
+      }
+      exitCode = 1;
     } on FormatException catch (err, st) {
       _logger
-        ..err(err.message)
-        ..err('$st')
-        ..info('')
-        ..info(usage);
+        ..err('$err')
+        ..err('$st');
       exitCode = 1;
     } on UsageException catch (err) {
       _logger
@@ -359,7 +378,7 @@ Run ${lightCyan.wrap('patrol update')} to update''',
     }
 
     if (debug) {
-      throw ToolExit('Debug artifacts are not present.');
+      throw const ToolExit('Debug artifacts are not present.');
     }
 
     final progress = _logger.progress('Artifacts are not present, downloading');

@@ -1,3 +1,4 @@
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';
@@ -10,8 +11,14 @@ void main() {
   late DeviceFinder deviceFinder;
 
   setUp(() {
+    final processManager = MockProcessManager();
+    final disposeScope = DisposeScope();
     final logger = MockLogger();
-    deviceFinder = DeviceFinder(logger: logger);
+    deviceFinder = DeviceFinder(
+      processManager: processManager,
+      parentDisposeScope: disposeScope,
+      logger: logger,
+    );
   });
 
   group('findDevicesToUse()', () {

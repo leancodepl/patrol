@@ -5,6 +5,9 @@ import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 
 typedef _Callback = Future<void> Function(String target, Device device);
 
+// NOTE: This class should probably expose a stream so that test results can be
+// listened to in real time.
+
 /// Orchestrates running tests on devices.
 ///
 /// It maps running T test targets on D devices, resulting in T * D test runs.
@@ -14,7 +17,10 @@ typedef _Callback = Future<void> Function(String target, Device device);
 /// Tests targets are run sequentially in the context of a single device.
 ///
 /// This class requires a separate builder and executor callbacks. This
-/// decouples the building of a test from running the test.
+/// decouples the building of a test from running the test. All exceptions
+/// thrown by [builder] and [executor] are swallowed and reported as test
+/// failures. It's up to these callbacks to perform more elaborate error
+/// reporting.
 class NativeTestRunner extends TestRunner implements Disposable {
   final Map<String, Device> _devices = {};
   final Set<String> _targets = {};
