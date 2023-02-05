@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
+import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 
 import '../../common/staged_command.dart';
 import '../../common/tool_exit.dart';
@@ -46,6 +47,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     required TestFinder testFinder,
     required NativeTestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
+    required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required DisposeScope parentDisposeScope,
@@ -53,9 +55,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testRunner = testRunner,
+        _dartDefinesReader = dartDefinesReader,
+        _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
-        _dartDefinesReader = dartDefinesReader,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -135,9 +138,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final NativeTestRunner _testRunner;
+  final DartDefinesReader _dartDefinesReader;
+  final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
-  final DartDefinesReader _dartDefinesReader;
 
   final Logger _logger;
 
@@ -162,8 +166,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     }
 
     final flavor = argResults?['flavor'] as String?;
+    final pubspecConfig = _pubspecReader.read();
 
     final devices = argResults?['device'] as List<String>? ?? [];
+    final attachedDevices = await _deviceFinder.find(devices);
 
     final dartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -177,8 +183,11 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.detail('Received --dart-define: ${dartDefine.key}');
     }
 
-    final dynamic packageName = argResults?['package-name'];
-    final dynamic bundleId = argResults?['bundle-id'];
+    var packageName = argResults?['package-name'] as String?;
+    packageName ??= pubspecConfig.android?.packageName;
+
+    var bundleId = argResults?['bundle-id'] as String?;
+    bundleId ??= pubspecConfig.ios?.bundleId;
 
     final dynamic wait = argResults?['wait'];
     if (wait != null && int.tryParse(wait as String) == null) {
@@ -203,8 +212,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.info('Every test target will be run $repeat times');
     }
 
-    final attachedDevices = await _deviceFinder.find(devices);
-
     return TestCommandConfig(
       devices: attachedDevices,
       targets: targets,
@@ -218,8 +225,8 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       dartDefines: <String, String?>{
         ...dartDefines,
         envWaitKey: wait as String? ?? '0',
-        envPackageNameKey: packageName as String?,
-        envBundleIdKey: bundleId as String?,
+        envPackageNameKey: packageName,
+        envBundleIdKey: bundleId,
         envVerbose: '$verbose',
       }.withNullsRemoved(),
       packageName: packageName,
