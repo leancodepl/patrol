@@ -3,11 +3,11 @@ name: integration test ios
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: '0 */12 * * *'
 
 jobs:
   main:
-    name: "Test on iOS (${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }})"
+    name: 'Test on iOS (${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }})'
     runs-on: macos-latest
     timeout-minutes: 60
 
@@ -15,9 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         flutter-channel: [stable]
-        device: ["iPhone 14", "iPad (9th generation)"]
-        os: ["iOS"]
-        os_version: ["16.2"]
+        device: ['iPhone 14', 'iPad (9th generation)']
+        os: [iOS]
+        os_version: ['16.2']
 
     defaults:
       run:

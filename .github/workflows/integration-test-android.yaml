@@ -3,11 +3,11 @@ name: integration test android
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */12 * * *"
+    - cron: '0 */12 * * *'
 
 jobs:
   main:
-    name: "Test on Android (${{ matrix.api-level }}, ${{ matrix.target}}, ${{matrix.arch}})"
+    name: 'Test on Android (${{ matrix.api-level }}, ${{ matrix.target}}, ${{matrix.arch}})'
     runs-on: macos-latest
     timeout-minutes: 60
 
@@ -30,8 +30,8 @@ jobs:
       - name: Install Java
         uses: actions/setup-java@v3
         with:
-          distribution: "temurin"
-          java-version: "11"
+          distribution: temurin
+          java-version: 11
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2

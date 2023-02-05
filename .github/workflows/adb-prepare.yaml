@@ -3,13 +3,13 @@ name: adb prepare
 on:
   push:
     branches: [master]
-    tags-ignore: ["*"]
+    tags-ignore: ['*']
     paths:
-      - "packages/adb/**"
+      - 'packages/adb/**'
   pull_request:
     branches: [master]
     paths:
-      - "packages/adb/**"
+      - 'packages/adb/**'
 
 jobs:
   main:
@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: [2.18.0, stable, beta]
+        sdk: ['2.18.0', stable, beta]
 
     defaults:
       run:
