@@ -4,7 +4,7 @@ const exitCodeInterrupted = 130;
 /// exit with a clear message to the user and no stack trace unless the
 /// --verbose option is specified. For example: network errors.
 Never throwToolExit(String message, {int? exitCode}) {
-  throw ToolExit('Error: $message', exitCode: exitCode);
+  throw ToolExit(message, exitCode: exitCode);
 }
 
 /// Throw a specialized exception for when the tool is interrupted by the user.
@@ -25,7 +25,7 @@ class ToolExit implements Exception {
   final int exitCode;
 
   @override
-  String toString() => message;
+  String toString() => 'Error: $message';
 }
 
 /// Sspecialized exception for when the tool is interrupted by the user.
@@ -37,7 +37,7 @@ class ToolInterrupted implements Exception {
 
   final String message = 'Interrupted';
   final String details;
-  static const exitCode = exitCodeInterrupted;
+  final exitCode = exitCodeInterrupted;
 
   @override
   String toString() => '$message: $details';

@@ -265,7 +265,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err('$err');
       }
-      exitCode = 1;
+      exitCode = err.exitCode;
     } on ToolInterrupted catch (err, st) {
       if (verbose) {
         _logger
@@ -274,11 +274,13 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err(err.message);
       }
-      exitCode = 1;
+      exitCode = err.exitCode;
     } on FormatException catch (err, st) {
       _logger
-        ..err('$err')
-        ..err('$st');
+        ..err(err.message)
+        ..err('$st')
+        ..info('')
+        ..info(usage);
       exitCode = 1;
     } on UsageException catch (err) {
       _logger
