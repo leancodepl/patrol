@@ -27,7 +27,7 @@ import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
-import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
+import 'package:patrol_cli/src/features/test/config_reader.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
 import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
