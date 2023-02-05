@@ -1,6 +1,5 @@
 import 'package:file/file.dart';
-
-import '../../common/tool_exit.dart';
+import 'package:patrol_cli/src/common/tool_exit.dart';
 
 class TestFinder {
   const TestFinder({
@@ -49,6 +48,10 @@ class TestFinder {
   /// ending with `_test.dart` as absolute paths.
   List<String> findAllTests({Directory? directory}) {
     directory ??= _integrationTestDirectory;
+
+    if (!directory.existsSync()) {
+      throwToolExit("Directory 'integration_test' doesn't exist");
+    }
 
     return directory
         .listSync(recursive: true, followLinks: false)
