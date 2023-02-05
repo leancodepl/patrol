@@ -3,6 +3,9 @@
 - Improve error message of `patrol test` when the `integration_test` directory
   doesn't exist (#876)
 - Make `patrol test` run tests in a more predictable, `ls`-like order (#882)
+- Fix `patrol test` incorrectly encoding `--dart-define` when running on Android
+  (#885)
+- Display name of currently running test file in top-left corner (#885)
 
 ## 0.9.0
 
