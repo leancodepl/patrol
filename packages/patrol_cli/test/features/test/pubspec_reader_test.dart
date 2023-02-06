@@ -33,19 +33,21 @@ void main() {
       test('returns empty config when `patrol` block does not exist', () {
         fs.file('pubspec.yaml').writeAsStringSync(_pubspecBase);
 
-        expect(reader.read().android, equals(null));
-        expect(reader.read().ios, equals(null));
+        expect(reader.read(), equals(PatrolPubspecConfig.empty()));
       });
 
-      test('reads top-level app name', () {
+      test('reads top-level arguments', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase
 patrol:
   app_name: Example
+  flavor: dev
 ''');
 
         expect(reader.read().android.appName, equals('Example'));
         expect(reader.read().ios.appName, equals('Example'));
+        expect(reader.read().android.flavor, equals('dev'));
+        expect(reader.read().ios.flavor, equals('dev'));
       });
     });
   });
