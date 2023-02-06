@@ -18,7 +18,7 @@ void main() {
         expect(
           invocation,
           equals([
-            'gradlew.bat',
+            r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
           ]),
@@ -64,7 +64,7 @@ void main() {
         expect(
           invocation,
           equals([
-            'gradlew.bat',
+            r'.\gradlew.bat',
             ':app:assembleDevDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg=='
