@@ -49,6 +49,53 @@ patrol:
         expect(reader.read().android.flavor, equals('dev'));
         expect(reader.read().ios.flavor, equals('dev'));
       });
+
+      test('reads `android` block', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  android:
+    app_name: Example
+    package_name: com.example.app
+''');
+
+        expect(reader.read().android.appName, equals('Example'));
+        expect(reader.read().android.packageName, equals('com.example.app'));
+      });
+
+      test('reads `ios` block', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  ios:
+    app_name: The Example
+    bundle_id: com.example.ExampleApp
+''');
+
+        expect(reader.read().ios.appName, equals('The Example'));
+        expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
+      });
+    });
+
+    test('overrides global values with platform-specific ones', () {
+      fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  app_name: Example
+  flavor: dev
+  android:
+    package_name: com.example.app
+  ios:
+    app_name: The Example
+    bundle_id: com.example.ExampleApp
+''');
+
+      expect(reader.read().android.appName, equals('Example'));
+      expect(reader.read().android.packageName, equals('com.example.app'));
+      expect(reader.read().android.flavor, equals('dev'));
+      expect(reader.read().ios.appName, equals('The Example'));
+      expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
+      expect(reader.read().ios.flavor, equals('dev'));
     });
   });
 }
