@@ -3,10 +3,10 @@ import 'package:path/path.dart' show join;
 import 'package:yaml/yaml.dart';
 
 class PatrolPubspecConfig {
-  PatrolPubspecConfig({this.android, this.ios});
+  PatrolPubspecConfig({required this.android, required this.ios});
 
-  AndroidPubspecConfig? android;
-  IOSPubspecConfig? ios;
+  AndroidPubspecConfig android;
+  IOSPubspecConfig ios;
 }
 
 class AndroidPubspecConfig {
@@ -26,11 +26,10 @@ class IOSPubspecConfig {
 
 /// Reads Patrol CLI configuration block from pubspec.yaml.
 class PubspecReader {
-  const PubspecReader({
+  PubspecReader({
     required Directory projectRoot,
-    required FileSystem fs,
   })  : _projectRoot = projectRoot,
-        _fs = fs;
+        _fs = projectRoot.fileSystem;
 
   final Directory _projectRoot;
   final FileSystem _fs;
@@ -46,38 +45,47 @@ class PubspecReader {
     final contents = file.readAsStringSync();
     final yaml = loadYaml(contents) as Map;
 
-    final config = PatrolPubspecConfig();
+    final androidConfig = AndroidPubspecConfig();
+    final iosConfig = IOSPubspecConfig();
+    final config = PatrolPubspecConfig(android: androidConfig, ios: iosConfig);
+
     final patrol = yaml['patrol'] as Map?;
-    if (patrol != null) {
-      final patrol = yaml['patrol'] as Map;
-      final android = patrol['android'] as Map?;
-      if (android != null) {
-        final androidConfig = AndroidPubspecConfig();
-        config.android = androidConfig;
+    if (patrol == null) {
+      return config;
+    }
 
-        final dynamic packageName = android['package_name'];
-        if (packageName != null && packageName is String?) {
-          androidConfig.packageName = packageName;
-        }
-        final dynamic appName = android['app_name'];
-        if (appName != null && appName is String?) {
-          androidConfig.appName = appName;
-        }
+    final dynamic appName = patrol['app_name'];
+    if (appName != null && appName is String?) {
+      androidConfig.appName = appName;
+      iosConfig.appName = appName;
+    }
+    
+
+    final android = patrol['android'] as Map?;
+    if (android != null) {
+      config.android = androidConfig;
+
+      final dynamic packageName = android['package_name'];
+      if (packageName != null && packageName is String?) {
+        androidConfig.packageName = packageName;
       }
+      final dynamic appName = android['app_name'];
+      if (appName != null && appName is String?) {
+        androidConfig.appName = appName;
+      }
+    }
 
-      final ios = patrol['ios'] as Map?;
-      if (ios != null) {
-        final iosConfig = IOSPubspecConfig();
-        config.ios = iosConfig;
+    final ios = patrol['ios'] as Map?;
+    if (ios != null) {
+      config.ios = iosConfig;
 
-        final dynamic bundleId = ios['bundle_id'];
-        if (bundleId != null && bundleId is String?) {
-          iosConfig.bundleId = bundleId;
-        }
-        final dynamic appName = ios['app_name'];
-        if (appName != null && appName is String?) {
-          iosConfig.appName = appName;
-        }
+      final dynamic bundleId = ios['bundle_id'];
+      if (bundleId != null && bundleId is String?) {
+        iosConfig.bundleId = bundleId;
+      }
+      final dynamic appName = ios['app_name'];
+      if (appName != null && appName is String?) {
+        iosConfig.appName = appName;
       }
     }
 

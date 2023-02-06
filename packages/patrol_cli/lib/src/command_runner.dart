@@ -131,10 +131,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
           projectRoot: _fs.currentDirectory,
           fs: _fs,
         ),
-        pubspecReader: PubspecReader(
-          projectRoot: _fs.currentDirectory,
-          fs: _fs,
-        ),
+        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: AndroidTestBackend(
           adb: Adb(),
           processManager: LoggingLocalProcessManager(logger: _logger),
