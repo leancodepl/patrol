@@ -52,6 +52,7 @@ class NativeAutomatorConfig {
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
+    this.appName = const String.fromEnvironment('PATROL_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
     this.logger = _defaultPrintLogger,
@@ -81,6 +82,9 @@ class NativeAutomatorConfig {
   /// iOS only.
   final String bundleId;
 
+  /// Name of the application under test.
+  final String appName;
+
   /// Called when a native action is performed.
   final void Function(String) logger;
 
@@ -91,6 +95,7 @@ class NativeAutomatorConfig {
     String? port,
     String? packageName,
     String? bundleId,
+    String? appName,
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
@@ -100,6 +105,7 @@ class NativeAutomatorConfig {
       port: port ?? this.port,
       packageName: packageName ?? this.packageName,
       bundleId: bundleId ?? this.bundleId,
+      appName: appName ?? this.appName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
       logger: logger ?? this.logger,
