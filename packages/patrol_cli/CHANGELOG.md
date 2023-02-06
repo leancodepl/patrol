@@ -1,3 +1,7 @@
+## 0.9.2
+
+- Fix `patrol test` broken on Windows when running tests on Android (#889)
+
 ## 0.9.1
 
 - Improve error message of `patrol test` when the `integration_test` directory
