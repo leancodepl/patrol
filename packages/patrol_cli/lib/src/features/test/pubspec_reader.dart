@@ -13,6 +13,7 @@ class AndroidPubspecConfig {
   AndroidPubspecConfig({this.packageName, this.appName});
   String? packageName;
   String? appName;
+  String? flavor;
 }
 
 class IOSPubspecConfig {
@@ -20,6 +21,7 @@ class IOSPubspecConfig {
 
   String? bundleId;
   String? appName;
+  String? flavor;
 }
 
 /// Reads Patrol CLI configuration block from pubspec.yaml.
