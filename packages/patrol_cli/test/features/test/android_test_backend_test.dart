@@ -67,7 +67,7 @@ void main() {
             'gradlew.bat',
             ':app:assembleDevDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg=='
           ]),
         );
       });
@@ -87,7 +87,7 @@ void main() {
             './gradlew',
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbSxQQVNTV09SRD1ueTRuY2F0LGZvbz1iYXI='
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg=='
           ]),
         );
       });

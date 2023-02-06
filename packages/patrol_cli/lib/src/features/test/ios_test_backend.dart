@@ -46,7 +46,6 @@ class IOSAppOptions extends AppOptions {
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],
-      // TODO: Add support for test label
     ];
 
     return cmd;
