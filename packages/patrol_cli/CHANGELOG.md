@@ -1,4 +1,4 @@
-## Unreleased
+## 0.9.1
 
 - Improve error message of `patrol test` when the `integration_test` directory
   doesn't exist (#876)
