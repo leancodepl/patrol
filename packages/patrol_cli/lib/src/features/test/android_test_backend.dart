@@ -59,7 +59,7 @@ class AndroidAppOptions extends AppOptions {
   }) {
     final List<String> cmd;
     if (isWindows) {
-      cmd = <String>['gradlew.bat'];
+      cmd = <String>[r'.\gradlew.bat'];
     } else {
       cmd = <String>['./gradlew'];
     }
