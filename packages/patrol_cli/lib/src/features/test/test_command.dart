@@ -165,11 +165,20 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.detail('Received test target: $t');
     }
 
-    final flavor = argResults?['flavor'] as String?;
     final pubspecConfig = _pubspecReader.read();
 
+    var flavor = argResults?['flavor'] as String?;
+    flavor ??= pubspecConfig.flavor;
+    if (flavor != null) {
+      _logger.detail('Received flavor: $flavor');
+    }
+
     final devices = argResults?['device'] as List<String>? ?? [];
-    final attachedDevices = await _deviceFinder.find(devices);
+    final devicesToUse = await _deviceFinder.find(devices);
+    _logger.detail('Received ${devicesToUse.length} device(s) to run on');
+    for (final device in devicesToUse) {
+      _logger.detail('Received device: ${device.resolvedName}');
+    }
 
     final userDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -184,10 +193,16 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     }
 
     var packageName = argResults?['package-name'] as String?;
-    packageName ??= pubspecConfig.android?.packageName;
+    packageName ??= pubspecConfig.android.packageName;
+    if (packageName != null) {
+      _logger.detail('Received Android package name: $packageName');
+    }
 
     var bundleId = argResults?['bundle-id'] as String?;
-    bundleId ??= pubspecConfig.ios?.bundleId;
+    bundleId ??= pubspecConfig.ios.bundleId;
+    if (bundleId != null) {
+      _logger.detail('Received iOS bundle identifier: $bundleId');
+    }
 
     final dynamic wait = argResults?['wait'];
     if (wait != null && int.tryParse(wait as String) == null) {
@@ -213,7 +228,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     }
 
     return TestCommandConfig(
-      devices: attachedDevices,
+      devices: devicesToUse,
       targets: targets,
       flavor: flavor,
       scheme: argResults?['scheme'] as String? ?? _defaultScheme,

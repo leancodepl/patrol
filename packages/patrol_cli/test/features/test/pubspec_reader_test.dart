@@ -46,8 +46,7 @@ patrol:
 
         expect(reader.read().android.appName, equals('Example'));
         expect(reader.read().ios.appName, equals('Example'));
-        expect(reader.read().android.flavor, equals('dev'));
-        expect(reader.read().ios.flavor, equals('dev'));
+        expect(reader.read().flavor, equals('dev'));
       });
 
       test('reads `android` block', () {
@@ -92,10 +91,9 @@ patrol:
 
       expect(reader.read().android.appName, equals('Example'));
       expect(reader.read().android.packageName, equals('com.example.app'));
-      expect(reader.read().android.flavor, equals('dev'));
+      expect(reader.read().flavor, equals('dev'));
       expect(reader.read().ios.appName, equals('The Example'));
       expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
-      expect(reader.read().ios.flavor, equals('dev'));
     });
   });
 }

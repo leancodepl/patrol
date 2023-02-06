@@ -4,7 +4,7 @@ import 'package:path/path.dart' show join;
 import 'package:yaml/yaml.dart';
 
 class PatrolPubspecConfig with EquatableMixin {
-  PatrolPubspecConfig({required this.android, required this.ios});
+  PatrolPubspecConfig({this.flavor, required this.android, required this.ios});
 
   PatrolPubspecConfig.empty()
       : this(
@@ -12,11 +12,12 @@ class PatrolPubspecConfig with EquatableMixin {
           ios: IOSPubspecConfig.empty(),
         );
 
+  String? flavor;
   AndroidPubspecConfig android;
   IOSPubspecConfig ios;
 
   @override
-  List<Object?> get props => [android, ios];
+  List<Object?> get props => [flavor, android, ios];
 }
 
 class AndroidPubspecConfig with EquatableMixin {
@@ -26,10 +27,9 @@ class AndroidPubspecConfig with EquatableMixin {
 
   String? packageName;
   String? appName;
-  String? flavor;
 
   @override
-  List<Object?> get props => [packageName, appName, flavor];
+  List<Object?> get props => [packageName, appName];
 }
 
 class IOSPubspecConfig with EquatableMixin {
@@ -39,10 +39,9 @@ class IOSPubspecConfig with EquatableMixin {
 
   String? bundleId;
   String? appName;
-  String? flavor;
 
   @override
-  List<Object?> get props => [bundleId, appName, flavor];
+  List<Object?> get props => [bundleId, appName];
 }
 
 /// Reads Patrol CLI configuration block from pubspec.yaml.
@@ -82,8 +81,7 @@ class PubspecReader {
     }
     final dynamic flavor = patrol['flavor'];
     if (flavor != null && flavor is String?) {
-      androidConfig.flavor = flavor;
-      iosConfig.flavor = flavor;
+      config.flavor = flavor;
     }
 
     final android = patrol['android'] as Map?;
