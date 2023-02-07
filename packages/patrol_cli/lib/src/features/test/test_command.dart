@@ -180,7 +180,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.detail('Received device: ${device.resolvedName}');
     }
 
-    final userDartDefines = {
+    final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(
         args: argResults?['dart-define'] as List<String>? ?? [],
@@ -189,15 +189,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     var packageName = argResults?['package-name'] as String?;
     packageName ??= pubspecConfig.android.packageName;
-    if (packageName != null) {
-      _logger.detail('Received Android app package name: $packageName');
-    }
 
     var bundleId = argResults?['bundle-id'] as String?;
     bundleId ??= pubspecConfig.ios.bundleId;
-    if (bundleId != null) {
-      _logger.detail('Received iOS app bundle identifier: $bundleId');
-    }
 
     final dynamic wait = argResults?['wait'];
     if (wait != null && int.tryParse(wait as String) == null) {
@@ -222,8 +216,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.info('Every test target will be run $repeat times');
     }
 
-    final effectiveDartDefines = <String, String?>{
-      ...userDartDefines,
+    final internalDartDefines = {
       'PATROL_WAIT': wait as String? ?? '0',
       'PATROL_VERBOSE': '$verbose',
       'PATROL_APP_PACKAGE_NAME': packageName,
@@ -232,10 +225,18 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
     }.withNullsRemoved();
 
-    _logger.detail('Received ${effectiveDartDefines.length} --dart-define(s)');
-    for (final dartDefine in effectiveDartDefines.entries) {
+    final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
+
+    _logger.detail(
+      'Received ${effectiveDartDefines.length} --dart-define(s) '
+      '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
+    );
+    for (final dartDefine in customDartDefines.entries) {
+      _logger.detail('Received custom --dart-define: ${dartDefine.key}');
+    }
+    for (final dartDefine in internalDartDefines.entries) {
       _logger.detail(
-        'Received --dart-define: ${dartDefine.key}=${dartDefine.value}',
+        'Received internal --dart-define: ${dartDefine.key}=${dartDefine.value}',
       );
     }
 
