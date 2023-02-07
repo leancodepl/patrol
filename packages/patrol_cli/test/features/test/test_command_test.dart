@@ -75,7 +75,7 @@ void main() {
           fs: fs,
           projectRoot: fs.currentDirectory,
         ),
-        pubspecReader: PubspecReader(fs: fs, projectRoot: fs.currentDirectory),
+        pubspecReader: PubspecReader(projectRoot: fs.currentDirectory),
         parentDisposeScope: DisposeScope(),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,

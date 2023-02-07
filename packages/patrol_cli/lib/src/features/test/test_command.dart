@@ -165,29 +165,33 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.detail('Received test target: $t');
     }
 
-    final flavor = argResults?['flavor'] as String?;
     final pubspecConfig = _pubspecReader.read();
 
-    final devices = argResults?['device'] as List<String>? ?? [];
-    final attachedDevices = await _deviceFinder.find(devices);
+    var flavor = argResults?['flavor'] as String?;
+    flavor ??= pubspecConfig.flavor;
+    if (flavor != null) {
+      _logger.detail('Received flavor: $flavor');
+    }
 
-    final userDartDefines = {
+    final devices = argResults?['device'] as List<String>? ?? [];
+    final devicesToUse = await _deviceFinder.find(devices);
+    _logger.detail('Received ${devicesToUse.length} device(s) to run on');
+    for (final device in devicesToUse) {
+      _logger.detail('Received device: ${device.resolvedName}');
+    }
+
+    final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(
         args: argResults?['dart-define'] as List<String>? ?? [],
       ),
     };
 
-    _logger.detail('Received ${userDartDefines.length} --dart-define(s)');
-    for (final dartDefine in userDartDefines.entries) {
-      _logger.detail('Received --dart-define: ${dartDefine.key}');
-    }
-
     var packageName = argResults?['package-name'] as String?;
-    packageName ??= pubspecConfig.android?.packageName;
+    packageName ??= pubspecConfig.android.packageName;
 
     var bundleId = argResults?['bundle-id'] as String?;
-    bundleId ??= pubspecConfig.ios?.bundleId;
+    bundleId ??= pubspecConfig.ios.bundleId;
 
     final dynamic wait = argResults?['wait'];
     if (wait != null && int.tryParse(wait as String) == null) {
@@ -212,8 +216,32 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.info('Every test target will be run $repeat times');
     }
 
+    final internalDartDefines = {
+      'PATROL_WAIT': wait as String? ?? '0',
+      'PATROL_VERBOSE': '$verbose',
+      'PATROL_APP_PACKAGE_NAME': packageName,
+      'PATROL_APP_BUNDLE_ID': bundleId,
+      'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
+      'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
+    }.withNullsRemoved();
+
+    final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
+
+    _logger.detail(
+      'Received ${effectiveDartDefines.length} --dart-define(s) '
+      '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
+    );
+    for (final dartDefine in customDartDefines.entries) {
+      _logger.detail('Received custom --dart-define: ${dartDefine.key}');
+    }
+    for (final dartDefine in internalDartDefines.entries) {
+      _logger.detail(
+        'Received internal --dart-define: ${dartDefine.key}=${dartDefine.value}',
+      );
+    }
+
     return TestCommandConfig(
-      devices: attachedDevices,
+      devices: devicesToUse,
       targets: targets,
       flavor: flavor,
       scheme: argResults?['scheme'] as String? ?? _defaultScheme,
@@ -222,13 +250,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
           : argResults?['configuration'] as String? ?? _defaultConfiguration,
-      dartDefines: <String, String?>{
-        ...userDartDefines,
-        'PATROL_WAIT': wait as String? ?? '0',
-        'PATROL_VERBOSE': '$verbose',
-        'PATROL_APP_PACKAGE_NAME': packageName,
-        'PATROL_APP_BUNDLE_ID': bundleId,
-      }.withNullsRemoved(),
+      dartDefines: effectiveDartDefines,
       packageName: packageName,
       bundleId: bundleId,
       repeat: repeat,

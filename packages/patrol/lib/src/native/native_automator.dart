@@ -52,6 +52,9 @@ class NativeAutomatorConfig {
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
+    this.androidAppName =
+        const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
+    this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
     this.logger = _defaultPrintLogger,
@@ -81,6 +84,25 @@ class NativeAutomatorConfig {
   /// iOS only.
   final String bundleId;
 
+  /// Name of the application under test on Android.
+  final String androidAppName;
+
+  /// Name of the application under test on iOS.
+  final String iosAppName;
+
+  /// Name of the application under test.
+  ///
+  /// Returns [androidAppName] on Android and [iosAppName] on iOS.
+  String get appName {
+    if (io.Platform.isAndroid) {
+      return androidAppName;
+    } else if (io.Platform.isIOS) {
+      return iosAppName;
+    } else {
+      throw StateError('Unsupported platform');
+    }
+  }
+
   /// Called when a native action is performed.
   final void Function(String) logger;
 
@@ -91,6 +113,8 @@ class NativeAutomatorConfig {
     String? port,
     String? packageName,
     String? bundleId,
+    String? androidAppName,
+    String? iosAppName,
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
@@ -100,6 +124,8 @@ class NativeAutomatorConfig {
       port: port ?? this.port,
       packageName: packageName ?? this.packageName,
       bundleId: bundleId ?? this.bundleId,
+      androidAppName: androidAppName ?? this.androidAppName,
+      iosAppName: iosAppName ?? this.iosAppName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
       logger: logger ?? this.logger,
@@ -121,15 +147,20 @@ class NativeAutomator {
         ),
         _config = config {
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
-      config.logger("packageName is not set. It's recommended to set it.");
+      _config.logger("packageName is not set. It's recommended to set it.");
     }
     if (_config.bundleId.isEmpty && io.Platform.isIOS) {
-      config.logger("bundleId is not set. It's recommended to set it.");
+      _config.logger("bundleId is not set. It's recommended to set it.");
     }
 
+    _config.logger('Android app name: ${_config.androidAppName}');
+    _config.logger('iOS app name: ${_config.iosAppName}');
+    _config.logger('Android package name: ${_config.packageName}');
+    _config.logger('iOS bundle identifier: ${_config.bundleId}');
+
     final channel = ClientChannel(
-      config.host,
-      port: int.parse(config.port),
+      _config.host,
+      port: int.parse(_config.port),
       options: const ChannelOptions(
         credentials: ChannelCredentials.insecure(),
       ),

@@ -115,50 +115,46 @@ class PatrolCommandRunner extends CommandRunner<int> {
     );
     addCommand(driveCommand);
 
-    addCommand(
-      TestCommand(
-        deviceFinder: DeviceFinder(
-          processManager: LoggingLocalProcessManager(logger: logger),
+    testCommand = TestCommand(
+      deviceFinder: DeviceFinder(
+        processManager: LoggingLocalProcessManager(logger: logger),
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      testFinder: TestFinder(
+        integrationTestDir: _fs.directory('integration_test'),
+        fs: _fs,
+      ),
+      testRunner: NativeTestRunner(),
+      dartDefinesReader: DartDefinesReader(
+        projectRoot: _fs.currentDirectory,
+        fs: _fs,
+      ),
+      pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+      androidTestBackend: AndroidTestBackend(
+        adb: Adb(),
+        processManager: LoggingLocalProcessManager(logger: _logger),
+        platform: const LocalPlatform(),
+        fs: _fs,
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      iosTestBackend: IOSTestBackend(
+        processManager: LoggingLocalProcessManager(logger: _logger),
+        fs: _fs,
+        iosDeploy: IOSDeploy(
+          processManager: const LocalProcessManager(),
           parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        testFinder: TestFinder(
-          integrationTestDir: _fs.directory('integration_test'),
           fs: _fs,
-        ),
-        testRunner: NativeTestRunner(),
-        dartDefinesReader: DartDefinesReader(
-          projectRoot: _fs.currentDirectory,
-          fs: _fs,
-        ),
-        pubspecReader: PubspecReader(
-          projectRoot: _fs.currentDirectory,
-          fs: _fs,
-        ),
-        androidTestBackend: AndroidTestBackend(
-          adb: Adb(),
-          processManager: LoggingLocalProcessManager(logger: _logger),
-          platform: const LocalPlatform(),
-          fs: _fs,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        iosTestBackend: IOSTestBackend(
-          processManager: LoggingLocalProcessManager(logger: _logger),
-          fs: _fs,
-          iosDeploy: IOSDeploy(
-            processManager: const LocalProcessManager(),
-            parentDisposeScope: _disposeScope,
-            fs: _fs,
-            logger: _logger,
-          ),
-          parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
     );
+    addCommand(testCommand);
 
     addCommand(
       DevicesCommand(
@@ -219,6 +215,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
   final Logger _logger;
 
   late DriveCommand driveCommand;
+  late TestCommand testCommand;
 
   Future<void> dispose() async {
     try {
@@ -249,6 +246,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       debug = topLevelResults['debug'] == true;
 
       driveCommand.verbose = verbose;
+      testCommand.verbose = verbose;
 
       if (verbose) {
         _logger

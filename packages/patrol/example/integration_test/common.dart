@@ -5,21 +5,18 @@ export 'package:example/main.dart';
 export 'package:flutter_test/flutter_test.dart';
 export 'package:patrol/patrol.dart';
 
+final _patrolTesterConfig = PatrolTesterConfig();
+final _nativeAutomatorConfig = NativeAutomatorConfig();
+
 void patrol(
   String description,
   Future<void> Function(PatrolTester) callback,
 ) {
   patrolTest(
     description,
-    nativeAutomatorConfig: nativeAutomatorConfig,
+    config: _patrolTesterConfig,
+    nativeAutomatorConfig: _nativeAutomatorConfig,
     nativeAutomation: true,
     callback,
   );
 }
-
-final patrolTesterConfig = PatrolTesterConfig();
-
-final nativeAutomatorConfig = NativeAutomatorConfig(
-  packageName: 'pl.leancode.patrol.example',
-  bundleId: 'pl.leancode.patrol.Example',
-);
