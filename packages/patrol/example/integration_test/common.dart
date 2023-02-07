@@ -10,13 +10,15 @@ final _nativeAutomatorConfig = NativeAutomatorConfig();
 
 void patrol(
   String description,
-  Future<void> Function(PatrolTester) callback,
-) {
+  Future<void> Function(PatrolTester) callback, {
+  bool? skip,
+}) {
   patrolTest(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: _nativeAutomatorConfig,
     nativeAutomation: true,
+    skip: skip,
     callback,
   );
 }
