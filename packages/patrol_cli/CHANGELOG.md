@@ -1,3 +1,10 @@
+## 0.9.3
+
+- Add support for `flavor` in Patrol configuration block in `pubspec.yaml`
+  (#892)
+- Fix `patrol test` not propagating `PATROL_VERBOSE` (activated with `--verbose`
+  flag) to the Flutter side (#892)
+
 ## 0.9.2
 
 - Fix `patrol test` broken on Windows when running tests on Android (#889)
@@ -14,7 +21,7 @@
 ## 0.9.0
 
 - Enable `patrol test` for physical iOS devices (#863)
-- Make it possible to specify `package_name` and `bundle_id` in **pubspec.yaml**
+- Make it possible to specify `package_name` and `bundle_id` in `pubspec.yaml`
   (#868)
 
   If these values are set, the tool automatically uninstalls the app after every
