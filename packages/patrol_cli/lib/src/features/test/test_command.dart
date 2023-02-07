@@ -187,21 +187,16 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       ),
     };
 
-    _logger.detail('Received ${userDartDefines.length} --dart-define(s)');
-    for (final dartDefine in userDartDefines.entries) {
-      _logger.detail('Received --dart-define: ${dartDefine.key}');
-    }
-
     var packageName = argResults?['package-name'] as String?;
     packageName ??= pubspecConfig.android.packageName;
     if (packageName != null) {
-      _logger.detail('Received Android package name: $packageName');
+      _logger.detail('Received Android app package name: $packageName');
     }
 
     var bundleId = argResults?['bundle-id'] as String?;
     bundleId ??= pubspecConfig.ios.bundleId;
     if (bundleId != null) {
-      _logger.detail('Received iOS bundle identifier: $bundleId');
+      _logger.detail('Received iOS app bundle identifier: $bundleId');
     }
 
     final dynamic wait = argResults?['wait'];
@@ -227,6 +222,23 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       _logger.info('Every test target will be run $repeat times');
     }
 
+    final effectiveDartDefines = <String, String?>{
+      ...userDartDefines,
+      'PATROL_WAIT': wait as String? ?? '0',
+      'PATROL_VERBOSE': '$verbose',
+      'PATROL_APP_PACKAGE_NAME': packageName,
+      'PATROL_APP_BUNDLE_ID': bundleId,
+      'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
+      'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
+    }.withNullsRemoved();
+
+    _logger.detail('Received ${effectiveDartDefines.length} --dart-define(s)');
+    for (final dartDefine in effectiveDartDefines.entries) {
+      _logger.detail(
+        'Received --dart-define: ${dartDefine.key}=${dartDefine.value}',
+      );
+    }
+
     return TestCommandConfig(
       devices: devicesToUse,
       targets: targets,
@@ -237,13 +249,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
           : argResults?['configuration'] as String? ?? _defaultConfiguration,
-      dartDefines: <String, String?>{
-        ...userDartDefines,
-        'PATROL_WAIT': wait as String? ?? '0',
-        'PATROL_VERBOSE': '$verbose',
-        'PATROL_APP_PACKAGE_NAME': packageName,
-        'PATROL_APP_BUNDLE_ID': bundleId,
-      }.withNullsRemoved(),
+      dartDefines: effectiveDartDefines,
       packageName: packageName,
       bundleId: bundleId,
       repeat: repeat,

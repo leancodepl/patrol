@@ -29,9 +29,8 @@ flutter:
   uses-material-design: true
 
 patrol:
+  app_name: Patrol example
   android:
     package_name: pl.leancode.patrol.example
-    app_name: Patrol example
   ios:
     bundle_id: pl.leancode.patrol.Example
-    app_name: Patrol example
