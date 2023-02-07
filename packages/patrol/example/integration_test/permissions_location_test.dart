@@ -14,7 +14,8 @@ void main() {
       expect($('Permission not granted'), findsOneWidget);
       await $('Grant permission').tap();
       if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-        await $.native.grantPermissionWhenInUse();
+        await $.native.selectCoarseLocation();
+        await $.native.selectFineLocation();
         await $.native.selectCoarseLocation();
         await $.native.selectFineLocation();
         await $.native.grantPermissionOnlyThisTime();
