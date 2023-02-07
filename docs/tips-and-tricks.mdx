@@ -5,23 +5,23 @@
 Sometimes, you might want to run a test many times. Patrol makes this easy:
 
 ```console
-$ patrol drive --target integration_test/my_test.dart --repeat 10
+patrol test --target integration_test/my_test.dart --repeat 10
 ```
 
 You can also use the one-liners below, but keep in mind that they build and test
-the app 10 times, while `patrol drive --repeat 10` builds every test target only
+the app 10 times, while `patrol test --repeat 10` builds every test target only
 once and run it 10 times.
 
 **Bash**
 
 ```console
-$ for i in {1..10}; do patrol drive --target integration_test/my_test.dart; done
+for i in {1..10}; do patrol test --target integration_test/my_test.dart; done
 ```
 
 **PowerShell**
 
 ```powershell
-1..10 | ForEach-Object { patrol drive --target integration_test/my_test.dart }
+1..10 | ForEach-Object { patrol test --target integration_test/my_test.dart }
 ```
 
 ### Inspecting native view hierarchy
@@ -78,7 +78,7 @@ await $(#passwordTextField).enterText(const String.fromEnvironment('PASSWORD'));
 To set `USERNAME` and `PASSWORD`, use `--dart-define`:
 
 ```
-patrol drive --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
+patrol test --dart-define 'USERNAME=Bartek' --dart-define 'PASSWORD=ny4ncat'
 ```
 
 Alternatively you can create a `.patrol.env` file in your project's root. Here's
@@ -211,7 +211,7 @@ Let's say that you have 2 tests: `add_comment_test.dart` and
 Now you can run the `bundled_test.dart`:
 
 ```
-patrol drive --target integration_test/bundled_test.dart
+patrol test --target integration_test/bundled_test.dart
 ```
 
 This builds the application binary once, saving you some time.
