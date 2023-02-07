@@ -6,6 +6,11 @@
   "logo": "/assets/favicon-light.png",
   "logoDark": "/assets/favicon-dark.png",
   "socialPreview": "https://raw.githubusercontent.com/leancodepl/patrol/master/docs/assets/preview.jpg",
+  "docsearch": {
+    "appId": "HFSGK31MT8",
+    "apiKey": "4d41430f0f5928c58db0acfdace04a8b",
+    "indexName": "patrol-leancode"
+  },
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
