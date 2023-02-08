@@ -390,8 +390,6 @@ class PatrolFinder extends MatchFinder {
     return isVisible;
   }
 
-  // region Overriden fields
-
   @override
   Iterable<Element> evaluate() => finder.evaluate();
 
@@ -445,8 +443,6 @@ class PatrolFinder extends MatchFinder {
 
   @override
   String toString() => finder.toString();
-
-// endregion
 }
 
 /// Useful methods that make chained finders more readable.
