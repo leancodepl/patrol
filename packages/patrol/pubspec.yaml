@@ -23,7 +23,6 @@ dependencies:
   http: ^0.13.5
   integration_test:
     sdk: flutter
-  json_annotation: ^4.8.0
   meta: ^1.7.0
   path: ^1.8.2
   protobuf: ^2.1.0
@@ -31,7 +30,6 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.3.3
-  json_serializable: ^6.6.0
   leancode_lint: ^2.1.0
 
 flutter:
