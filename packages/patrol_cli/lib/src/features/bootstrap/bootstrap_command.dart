@@ -7,7 +7,9 @@ import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/features/bootstrap/file_contents.dart';
 import 'package:patrol_cli/src/features/bootstrap/pubspec.dart' as pubspec;
 
+@Deprecated('Scheduled for removal in 1.0')
 class BootstrapCommand extends Command<int> {
+  @Deprecated('Scheduled for removal in 1.0')
   BootstrapCommand({required FileSystem fs, required Logger logger})
       : _fs = fs,
         _logger = logger {

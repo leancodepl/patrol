@@ -63,13 +63,20 @@ class PatrolCommandRunner extends CommandRunner<int> {
     PubUpdater? pubUpdater,
     ArtifactsRepository? artifactsRepository,
     FileSystem? fs,
+    ProcessManager? processManager,
+    Platform? platform,
   })  : _disposeScope = DisposeScope(),
+        _platform = platform ?? const LocalPlatform(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
         _fs = fs ?? const LocalFileSystem(),
         _artifactsRepository = artifactsRepository ??
             ArtifactsRepository(
-              fs: const LocalFileSystem(),
-              platform: const LocalPlatform(),
+              fs: fs ?? const LocalFileSystem(),
+              platform: platform ?? const LocalPlatform(),
+            ),
+        _processManager = processManager ??
+            LoggingLocalProcessManager(
+              logger: logger,
             ),
         _logger = logger,
         super(
@@ -79,7 +86,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     driveCommand = DriveCommand(
       deviceFinder: DeviceFinder(
-        processManager: LoggingLocalProcessManager(logger: _logger),
+        processManager: _processManager,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
@@ -91,14 +98,14 @@ class PatrolCommandRunner extends CommandRunner<int> {
         logger: _logger,
       ),
       iosDriver: IOSDriver(
-        processManager: const LocalProcessManager(),
-        platform: const LocalPlatform(),
+        processManager: _processManager,
+        platform: _platform,
         artifactsRepository: _artifactsRepository,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
       flutterTool: FlutterTool(
-        processManager: const LocalProcessManager(),
+        processManager: _processManager,
         fs: _fs,
         parentDisposeScope: _disposeScope,
         logger: _logger,
@@ -114,7 +121,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     testCommand = TestCommand(
       deviceFinder: DeviceFinder(
-        processManager: LoggingLocalProcessManager(logger: logger),
+        processManager: _processManager,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
@@ -127,17 +134,17 @@ class PatrolCommandRunner extends CommandRunner<int> {
       pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
       androidTestBackend: AndroidTestBackend(
         adb: Adb(),
-        processManager: LoggingLocalProcessManager(logger: _logger),
-        platform: const LocalPlatform(),
+        processManager: _processManager,
+        platform: _platform,
         fs: _fs,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
       iosTestBackend: IOSTestBackend(
-        processManager: LoggingLocalProcessManager(logger: _logger),
+        processManager: _processManager,
         fs: _fs,
         iosDeploy: IOSDeploy(
-          processManager: const LocalProcessManager(),
+          processManager: _processManager,
           parentDisposeScope: _disposeScope,
           fs: _fs,
           logger: _logger,
@@ -153,7 +160,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(
       DevicesCommand(
         deviceFinder: DeviceFinder(
-          processManager: LoggingLocalProcessManager(logger: _logger),
+          processManager: _processManager,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
@@ -164,7 +171,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       DoctorCommand(
         logger: _logger,
         artifactsRepository: _artifactsRepository,
-        platform: const LocalPlatform(),
+        platform: _platform,
       ),
     );
     addCommand(
@@ -202,14 +209,21 @@ class PatrolCommandRunner extends CommandRunner<int> {
       );
   }
 
+  // Context of the tool, used through the codebase
+  // TODO: Encapsulate these objects in a context object
+
   final DisposeScope _disposeScope;
-  final ArtifactsRepository _artifactsRepository;
-  final PubUpdater _pubUpdater;
+  final Platform _platform;
   final FileSystem _fs;
+  final ProcessManager _processManager;
   final Logger _logger;
 
+  final ArtifactsRepository _artifactsRepository;
   late DriveCommand driveCommand;
+
   late TestCommand testCommand;
+
+  final PubUpdater _pubUpdater;
 
   Future<void> dispose() async {
     try {

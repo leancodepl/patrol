@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 
+/// Discovers integration tests.
 class TestFinder {
   TestFinder({required Directory testDir})
       : _integrationTestDirectory = testDir,

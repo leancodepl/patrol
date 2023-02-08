@@ -118,7 +118,9 @@ class Artifact with _$Artifact {
   }
 }
 
+@Deprecated('Scheduled for removal in 1.0')
 class ArtifactsRepository {
+  @Deprecated('Scheduled for removal in 1.0')
   ArtifactsRepository({
     required FileSystem fs,
     required this.platform,

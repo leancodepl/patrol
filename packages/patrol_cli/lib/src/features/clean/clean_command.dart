@@ -2,7 +2,9 @@ import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 
+@Deprecated('Scheduled for removal in 1.0')
 class CleanCommand extends Command<int> {
+  @Deprecated('Scheduled for removal in 1.0')
   CleanCommand({
     required ArtifactsRepository artifactsRepository,
     required Logger logger,
