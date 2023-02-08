@@ -28,6 +28,7 @@ void main() {
         flutterInvocation,
         equals([
           ...['flutter', 'build', 'ios'],
+          '--no-version-check',
           ...['--config-only', '--no-codesign', '--debug', '--simulator'],
           ...['--target', 'integration_test/app_test.dart'],
         ]),
@@ -77,6 +78,7 @@ void main() {
         flutterInvocation,
         equals([
           ...['flutter', 'build', 'ios'],
+          '--no-version-check',
           ...['--config-only', '--no-codesign', '--debug'],
           ...['--flavor', 'dev'],
           ...['--target', 'integration_test/app_test.dart'],
