@@ -3,11 +3,9 @@ import 'package:file/file.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 
 class TestFinder {
-  const TestFinder({
-    required Directory integrationTestDir,
-    required FileSystem fs,
-  })  : _integrationTestDirectory = integrationTestDir,
-        _fs = fs;
+  TestFinder({required Directory testDir})
+      : _integrationTestDirectory = testDir,
+        _fs = testDir.fileSystem;
 
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
