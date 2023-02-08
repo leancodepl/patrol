@@ -210,6 +210,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
   }
 
   // Context of the tool, used through the codebase
+  // TODO: Encapsulate these objects in a context object
 
   final DisposeScope _disposeScope;
   final Platform _platform;
