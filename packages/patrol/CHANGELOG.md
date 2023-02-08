@@ -1,3 +1,8 @@
+## 0.10.11
+
+- Remove unnecessary dependency on `json_serializable` and `json_annotation`
+  (#904)
+
 ## 0.10.10
 
 - Fix crash `Instrumentation run failed due to Process crashed` on Android
