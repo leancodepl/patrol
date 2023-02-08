@@ -63,15 +63,21 @@ class PatrolCommandRunner extends CommandRunner<int> {
     PubUpdater? pubUpdater,
     ArtifactsRepository? artifactsRepository,
     FileSystem? fs,
+    ProcessManager? processManager,
+    Platform? platform,
   })  : _disposeScope = DisposeScope(),
+        _platform = platform ?? const LocalPlatform(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
         _fs = fs ?? const LocalFileSystem(),
         _artifactsRepository = artifactsRepository ??
             ArtifactsRepository(
-              fs: const LocalFileSystem(),
-              platform: const LocalPlatform(),
+              fs: fs ?? const LocalFileSystem(),
+              platform: platform ?? const LocalPlatform(),
             ),
-        _processManager = LoggingLocalProcessManager(logger: logger),
+        _processManager = processManager ??
+            LoggingLocalProcessManager(
+              logger: logger,
+            ),
         _logger = logger,
         super(
           'patrol',
@@ -93,7 +99,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       ),
       iosDriver: IOSDriver(
         processManager: _processManager,
-        platform: const LocalPlatform(),
+        platform: _platform,
         artifactsRepository: _artifactsRepository,
         parentDisposeScope: _disposeScope,
         logger: _logger,
@@ -129,7 +135,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       androidTestBackend: AndroidTestBackend(
         adb: Adb(),
         processManager: _processManager,
-        platform: const LocalPlatform(),
+        platform: _platform,
         fs: _fs,
         parentDisposeScope: _disposeScope,
         logger: _logger,
@@ -165,7 +171,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       DoctorCommand(
         logger: _logger,
         artifactsRepository: _artifactsRepository,
-        platform: const LocalPlatform(),
+        platform: _platform,
       ),
     );
     addCommand(
@@ -206,6 +212,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
   // Context of the tool, used through the codebase
 
   final DisposeScope _disposeScope;
+  final Platform _platform;
   final FileSystem _fs;
   final ProcessManager _processManager;
   final Logger _logger;
