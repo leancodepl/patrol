@@ -34,6 +34,7 @@ class IOSAppOptions extends AppOptions {
   List<String> toFlutterBuildInvocation(Device device) {
     final cmd = [
       ...['flutter', 'build', 'ios'],
+      '--no-version-check',
       ...[
         '--config-only',
         '--no-codesign',
@@ -229,6 +230,7 @@ class IOSTestBackend extends TestBackend {
   @override
   Future<void> uninstall(String appId, Device device) async {
     _logger.info('Uninstalling $appId from ${device.name}');
+
     if (device.real) {
       // uninstall from iOS device
       await _processManager.run(
@@ -257,6 +259,17 @@ class IOSTestBackend extends TestBackend {
           'uninstall',
           device.id,
           appId,
+        ],
+        runInShell: true,
+      );
+      // uninstall from iOS simulator
+      await _processManager.run(
+        [
+          'xcrun',
+          'simctl',
+          'uninstall',
+          device.id,
+          '$appId.RunnerUITests.xctrunner',
         ],
         runInShell: true,
       );
