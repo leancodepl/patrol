@@ -214,6 +214,8 @@ Thrown by PatrolBinding.
           textDirection: TextDirection.ltr,
           children: [
             RepaintBoundary(child: rootWidget),
+            // Prevents crashes when Android activity is resumed
+            // See https://github.com/leancodepl/patrol/issues/901
             ExcludeSemantics(
               child: Padding(
                 padding: EdgeInsets.only(

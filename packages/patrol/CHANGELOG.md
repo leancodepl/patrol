@@ -1,3 +1,8 @@
+## 0.10.10
+
+- Fix crash `Instrumentation run failed due to Process crashed` on Android
+  (#902)
+
 ## 0.10.9
 
 - Improve error message when trying to use `NativeAutomator`, but it's not
