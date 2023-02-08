@@ -83,10 +83,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
-      testFinder: TestFinder(
-        integrationTestDir: _fs.directory('integration_test'),
-        fs: _fs,
-      ),
+      testFinder: TestFinder(testDir: _fs.directory('integration_test')),
       testRunner: FlutterTestRunner(),
       androidDriver: AndroidDriver(
         artifactsRepository: _artifactsRepository,
@@ -121,10 +118,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
-      testFinder: TestFinder(
-        integrationTestDir: _fs.directory('integration_test'),
-        fs: _fs,
-      ),
+      testFinder: TestFinder(testDir: _fs.directory('integration_test')),
       testRunner: NativeTestRunner(),
       dartDefinesReader: DartDefinesReader(
         projectRoot: _fs.currentDirectory,

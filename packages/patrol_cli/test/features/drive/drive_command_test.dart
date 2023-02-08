@@ -50,10 +50,7 @@ void main() {
         () => deviceFinder.find(any()),
       ).thenAnswer((_) async => [androidDevice]);
 
-      final testFinder = TestFinder(
-        integrationTestDir: fs.directory(integrationTestDir),
-        fs: fs,
-      );
+      final testFinder = TestFinder(testDir: fs.directory(integrationTestDir));
 
       final androidDriver = MockAndroidDriver();
       when(

@@ -17,10 +17,7 @@ void main() {
     wd = fs.directory('/projects/awesome_app')..createSync(recursive: true);
     fs.currentDirectory = wd;
 
-    testFinder = TestFinder(
-      integrationTestDir: fs.directory('integration_test'),
-      fs: fs,
-    );
+    testFinder = TestFinder(testDir: fs.directory('integration_test'));
   });
 
   group('findTests', () {
