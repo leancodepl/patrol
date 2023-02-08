@@ -71,6 +71,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
               fs: const LocalFileSystem(),
               platform: const LocalPlatform(),
             ),
+        _processManager = LoggingLocalProcessManager(logger: logger),
         _logger = logger,
         super(
           'patrol',
@@ -79,7 +80,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(BootstrapCommand(fs: _fs, logger: _logger));
     driveCommand = DriveCommand(
       deviceFinder: DeviceFinder(
-        processManager: LoggingLocalProcessManager(logger: _logger),
+        processManager: _processManager,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
@@ -91,14 +92,14 @@ class PatrolCommandRunner extends CommandRunner<int> {
         logger: _logger,
       ),
       iosDriver: IOSDriver(
-        processManager: const LocalProcessManager(),
+        processManager: _processManager,
         platform: const LocalPlatform(),
         artifactsRepository: _artifactsRepository,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
       flutterTool: FlutterTool(
-        processManager: const LocalProcessManager(),
+        processManager: _processManager,
         fs: _fs,
         parentDisposeScope: _disposeScope,
         logger: _logger,
@@ -114,7 +115,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
 
     testCommand = TestCommand(
       deviceFinder: DeviceFinder(
-        processManager: LoggingLocalProcessManager(logger: logger),
+        processManager: _processManager,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
@@ -127,17 +128,17 @@ class PatrolCommandRunner extends CommandRunner<int> {
       pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
       androidTestBackend: AndroidTestBackend(
         adb: Adb(),
-        processManager: LoggingLocalProcessManager(logger: _logger),
+        processManager: _processManager,
         platform: const LocalPlatform(),
         fs: _fs,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
       iosTestBackend: IOSTestBackend(
-        processManager: LoggingLocalProcessManager(logger: _logger),
+        processManager: _processManager,
         fs: _fs,
         iosDeploy: IOSDeploy(
-          processManager: const LocalProcessManager(),
+          processManager: _processManager,
           parentDisposeScope: _disposeScope,
           fs: _fs,
           logger: _logger,
@@ -153,7 +154,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(
       DevicesCommand(
         deviceFinder: DeviceFinder(
-          processManager: LoggingLocalProcessManager(logger: _logger),
+          processManager: _processManager,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
@@ -202,14 +203,19 @@ class PatrolCommandRunner extends CommandRunner<int> {
       );
   }
 
+  // Context of the tool, used through the codebase
+
   final DisposeScope _disposeScope;
-  final ArtifactsRepository _artifactsRepository;
-  final PubUpdater _pubUpdater;
   final FileSystem _fs;
+  final ProcessManager _processManager;
   final Logger _logger;
 
+  final ArtifactsRepository _artifactsRepository;
   late DriveCommand driveCommand;
+
   late TestCommand testCommand;
+
+  final PubUpdater _pubUpdater;
 
   Future<void> dispose() async {
     try {

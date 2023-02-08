@@ -17,8 +17,10 @@ import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 
 part 'drive_command.freezed.dart';
 
+@Deprecated('Scheduled for removal in 1.0')
 @freezed
 class DriveCommandConfig with _$DriveCommandConfig {
+  @Deprecated('Scheduled for removal in 1.0')
   const factory DriveCommandConfig({
     required List<Device> devices,
     required List<String> targets,
@@ -37,7 +39,9 @@ class DriveCommandConfig with _$DriveCommandConfig {
 
 const _defaultRepeats = 1;
 
+@Deprecated('Scheduled for removal in 1.0')
 class DriveCommand extends StagedCommand<DriveCommandConfig> {
+  @Deprecated('Scheduled for removal in 1.0')
   DriveCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
