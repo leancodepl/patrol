@@ -208,26 +208,28 @@ Thrown by PatrolBinding.
     const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
     if (testLabel.isEmpty) {
       super.attachRootWidget(RepaintBoundary(child: rootWidget));
+    } else {
+      super.attachRootWidget(
+        Stack(
+          textDirection: TextDirection.ltr,
+          children: [
+            RepaintBoundary(child: rootWidget),
+            ExcludeSemantics(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQueryData.fromWindow(window).padding.top + 4,
+                  left: 4,
+                ),
+                child: const Text(
+                  testLabel,
+                  textDirection: TextDirection.ltr,
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     }
-
-    super.attachRootWidget(
-      Stack(
-        textDirection: TextDirection.ltr,
-        children: [
-          RepaintBoundary(child: rootWidget),
-          Padding(
-            padding: EdgeInsets.only(
-              top: MediaQueryData.fromWindow(window).padding.top + 4,
-              left: 4,
-            ),
-            child: const Text(
-              testLabel,
-              textDirection: TextDirection.ltr,
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
