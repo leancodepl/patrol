@@ -1,3 +1,7 @@
+## 0.10.12
+
+- Minor documentation fixes (#912)
+
 ## 0.10.11
 
 - Remove unnecessary dependency on `json_serializable` and `json_annotation`
