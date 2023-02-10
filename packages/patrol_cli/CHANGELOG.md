@@ -1,3 +1,10 @@
+## 0.9.4
+
+- `patrol test`: Improve how external tool invocations are logged when running
+  with `--verbose` (#906)
+- `patrol test:` Fix `.xctrunner` app not being uninstalled after tests finish
+  on iOS Simulator (#907)
+
 ## 0.9.3
 
 - Add support for `flavor` in Patrol configuration block in `pubspec.yaml`
