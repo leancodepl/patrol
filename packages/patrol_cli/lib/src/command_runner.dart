@@ -244,7 +244,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
-      _logger.info('patrol_cli v$globalVersion');
+      _logger.info('patrol_cli v$version');
       exitCode = 0;
     } else {
       exitCode = await super.runCommand(topLevelResults);
@@ -271,8 +271,8 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       return;
     }
 
-    final latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
-    final isUpToDate = globalVersion == latestVersion;
+    final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
+    final isUpToDate = version == latestVersion;
 
     if (isUpToDate) {
       return;
@@ -282,7 +282,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       ..info('')
       ..info(
         '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(globalVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');

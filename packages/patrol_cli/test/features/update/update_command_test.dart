@@ -72,13 +72,13 @@ void main() {
       'does not update when already on latest version',
       () async {
         when(() => pubUpdater.getLatestVersion('patrol_cli'))
-            .thenAnswer((_) async => globalVersion);
+            .thenAnswer((_) async => version);
 
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
         verify(
           () => progress.complete(
-            "You're already using the latest patrol_cli version ($globalVersion)",
+            "You're on the latest patrol_cli version ($version)",
           ),
         ).called(1);
 

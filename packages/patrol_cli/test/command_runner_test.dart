@@ -13,7 +13,7 @@ import 'mocks.dart';
 const latestVersion = '0.0.0';
 
 final updatePrompt = '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(globalVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''';
 
 void main() {
@@ -29,7 +29,7 @@ void main() {
 
       when(
         () => pubUpdater.getLatestVersion(any()),
-      ).thenAnswer((_) async => globalVersion);
+      ).thenAnswer((_) async => version);
 
       commandRunner = PatrolCommandRunner(
         logger: logger,
@@ -116,7 +116,7 @@ void main() {
       test('prints current version', () async {
         final result = await commandRunner.run(['--version']);
         expect(result, equals(0));
-        verify(() => logger.info('patrol_cli v$globalVersion')).called(1);
+        verify(() => logger.info('patrol_cli v$version')).called(1);
       });
     });
 

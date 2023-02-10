@@ -35,7 +35,7 @@ class DoctorCommand extends Command<int> {
   }
 
   void _printVersion() {
-    _logger.info('Patrol CLI version: $globalVersion');
+    _logger.info('Patrol CLI version: $version');
   }
 
   void _printAndroidSpecifics() {

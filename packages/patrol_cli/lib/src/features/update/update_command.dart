@@ -13,56 +13,49 @@ class UpdateCommand extends Command<int> {
   final PubUpdater _pubUpdater;
   final Logger _logger;
 
+  static const _pkg = 'patrol_cli';
+
   @override
   String get name => 'update';
 
   @override
-  String get description => 'Updates patrol CLI.';
+  String get description => 'Updates the tool.';
 
   @override
   Future<int> run() async {
-    var progress =
-        _logger.progress('Checking if newer patrol_cli version is available');
+    Progress progress;
 
-    final String latestVersion;
+    progress = _logger.progress('Checking if newer $_pkg version is available');
+
+    final String newVersion;
     try {
-      latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
+      newVersion = await _pubUpdater.getLatestVersion(_pkg);
     } catch (err, st) {
-      progress.fail(
-        'Failed to check if newer patrol_cli version is available',
-      );
+      progress.fail('Failed to check if newer $_pkg version is available');
       _logger
         ..err('$err')
         ..err('$st');
       return 1;
     }
 
-    final isUpToDate = globalVersion == latestVersion;
+    final isUpToDate = version == newVersion;
     if (isUpToDate) {
-      progress.complete(
-        "You're already using the latest patrol_cli version ($globalVersion)",
-      );
+      progress.complete("You're on the latest $_pkg version ($version)");
       return 0;
     }
 
-    progress.complete('New patrol_cli version is available ($latestVersion)');
-
-    // Update CLI
-
-    progress = _logger.progress(
-      'Updating $patrolCliPackage to version $latestVersion',
-    );
+    progress.complete('New $_pkg version is available ($newVersion)');
+    progress = _logger.progress('Updating $_pkg to version $newVersion');
     try {
-      await _pubUpdater.update(packageName: patrolCliPackage);
+      await _pubUpdater.update(packageName: _pkg);
     } catch (err, st) {
-      progress
-          .fail('Failed to update $patrolCliPackage to version $latestVersion');
+      progress.fail('Failed to update $_pkg to version $newVersion');
       _logger
         ..err('$err')
         ..err('$st');
       return 1;
     }
-    progress.complete('Updated $patrolCliPackage to version $latestVersion');
+    progress.complete('Updated $_pkg to version $newVersion');
 
     return 0;
   }
