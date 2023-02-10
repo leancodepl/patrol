@@ -37,19 +37,8 @@ patrol:
 ```
 
 <Info>
-  If your app has different name on iOS and Android, then specify the names like
-  so:
-
-```yaml title="pubspec.yaml"
-patrol:
-  android:
-    package_name: pl.leancode.awesomeapp
-    app_name: Awesome App
-  ios:
-    bundle_id: pl.leancode.AwesomeApp
-    app_name: The Awesome App
-```
-
+  If your app has different name on iOS and Android, you can specify `app_name`
+  twice – one in `android` block, and one in `ios` block.
 </Info>
 
 Of course, replace these placeholders with values specific to your app!
