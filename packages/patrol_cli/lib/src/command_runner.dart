@@ -77,10 +77,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       ),
       testFinder: TestFinder(testDir: _fs.directory('integration_test')),
       testRunner: NativeTestRunner(),
-      dartDefinesReader: DartDefinesReader(
-        projectRoot: _fs.currentDirectory,
-        fs: _fs,
-      ),
+      dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
       pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
       androidTestBackend: AndroidTestBackend(
         adb: Adb(),

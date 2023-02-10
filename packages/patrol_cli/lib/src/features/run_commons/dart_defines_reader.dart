@@ -3,11 +3,10 @@ import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 
 class DartDefinesReader {
-  const DartDefinesReader({
+  DartDefinesReader({
     required Directory projectRoot,
-    required FileSystem fs,
   })  : _projectRoot = projectRoot,
-        _fs = fs;
+        _fs = projectRoot.fileSystem;
 
   final Directory _projectRoot;
   final FileSystem _fs;
