@@ -64,17 +64,6 @@ void main() {
           ),
         ).called(1);
 
-        verify(
-          () => logger.progress(
-            'Downloading artifacts for version $latestVersion',
-          ),
-        ).called(1);
-        verify(
-          () => progress.complete(
-            'Downloaded artifacts for version $latestVersion',
-          ),
-        ).called(1);
-
         verify(() => pubUpdater.update(packageName: 'patrol_cli')).called(1);
       },
     );

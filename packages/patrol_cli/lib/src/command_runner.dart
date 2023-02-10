@@ -21,6 +21,7 @@ import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/features/test/test_command.dart';
+import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -122,6 +123,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
         platform: _platform,
       ),
     );
+    addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
 
     argParser
       ..addFlag(
