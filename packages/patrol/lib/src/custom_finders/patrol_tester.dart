@@ -12,19 +12,26 @@ class PatrolTesterConfig {
     this.andSettle = true,
   });
 
-  /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't finds
-  /// a widget.
+  /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't find
+  /// an existing widget.
+  ///
+  /// If a widget exists, it doesn't mean that it is visible.
+  ///
+  /// On the other hand, if a widget is visible, then it always exists.
   final Duration existsTimeout;
 
-  /// Time after which [PatrolFinder.waitUntilVisible] fails if it doesn't finds
-  /// a widget.
+  /// Time after which [PatrolFinder.waitUntilVisible] fails if it doesn't find
+  /// a visible widget.
   ///
-  /// [PatrolFinder.waitUntilVisible] is used internally by [PatrolFinder.tap]
-  /// and [PatrolFinder.enterText].
-  ///
+  /// [PatrolFinder.waitUntilVisible] is used internally by methods such as
+  /// [PatrolFinder.tap] and [PatrolFinder.enterText].
   final Duration visibleTimeout;
 
   /// Time after which [PatrolTester.pumpAndSettle] fails.
+  ///
+  /// [PatrolFinder.waitUntilVisible] is used internally by methods such as
+  /// [PatrolFinder.tap] and [PatrolFinder.enterText] (unless disabled by
+  /// [andSettle]).
   final Duration settleTimeout;
 
   /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
