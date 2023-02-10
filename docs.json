@@ -17,9 +17,9 @@
     [
       "Custom finders",
       [
-        ["Overview", "/custom-finders/overview"],
-        ["Usage", "/custom-finders/usage"],
-        ["Advanced", "/custom-finders/advanced"]
+        ["Overview", "/finders/overview"],
+        ["Usage", "/finders/usage"],
+        ["Advanced", "/finders/advanced"]
       ]
     ],
     [
