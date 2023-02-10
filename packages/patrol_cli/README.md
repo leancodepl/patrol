@@ -36,49 +36,10 @@ directories to PATH:
 
 ## Usage
 
-### First run
+Read the documentation:
 
-On first run, `patrol_cli` will download artifacts it needs to the _artifact
-path_. By default it is `$XDG_CACHE_HOME` (on Unix-like systems) or
-`$HOME/.patrol` (on Windows), but you can change it by setting `PATROL_CACHE`
-environment variable.
-
-To learn about commands, run:
-
-```console
-$ patrol --help
-```
-
-### Bootstrap
-
-To use Patrol in your Flutter project, you need to:
-
-1. add `patrol` as a `dev_dependency` in `pubspec.yaml`
-1. add `integration_test` as a `dev_dependency` in `pubspec.yaml`
-1. create `test_driver/integration_test.dart`
-1. create `integration_test/app_test.dart`
-
-Run `patrol bootstrap` to automatically perform these steps.
-
-### First drive
-
-Make sure that you have at least one device attached:
-
-```console
-patrol devices
-```
-
-To run all integration tests:
-
-```console
-patrol test
-```
-
-To run a specific integration test:
-
-```console
-patrol test --target integration_test/app_test.dart
-```
+- [setup](https://patrol.leancode.pl/native/setup)
+- [test command](https://patrol.leancode.co/cli-commands/test)
 
 [pub_badge]: https://img.shields.io/pub/v/patrol_cli.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol_cli
