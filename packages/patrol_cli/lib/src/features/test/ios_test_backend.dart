@@ -4,7 +4,7 @@ import 'dart:io' show Process;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:path/path.dart' show basename, join;
-import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/run_commons/device.dart';

@@ -2,7 +2,6 @@ import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/extensions/command_runner.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -21,15 +20,12 @@ void main() {
   group('PatrolCommandRunner', () {
     late Logger logger;
     late PubUpdater pubUpdater;
-    late ArtifactsRepository artifactsRepository;
 
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
       logger = MockLogger();
       pubUpdater = MockPubUpdater();
-      artifactsRepository = MockArtifactsRepository();
-      when(() => artifactsRepository.areArtifactsPresent()).thenReturn(true);
 
       when(
         () => pubUpdater.getLatestVersion(any()),
@@ -38,7 +34,6 @@ void main() {
       commandRunner = PatrolCommandRunner(
         logger: logger,
         pubUpdater: pubUpdater,
-        artifactsRepository: artifactsRepository,
         fs: MemoryFileSystem.test(),
       );
     });

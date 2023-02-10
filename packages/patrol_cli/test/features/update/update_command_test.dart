@@ -1,7 +1,6 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
@@ -16,7 +15,6 @@ void main() {
     late Logger logger;
     late Progress progress;
     late PubUpdater pubUpdater;
-    late ArtifactsRepository artifactsRepository;
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
@@ -25,12 +23,10 @@ void main() {
       when(() => logger.progress(any())).thenReturn(progress);
 
       pubUpdater = MockPubUpdater();
-      artifactsRepository = MockArtifactsRepository();
 
       commandRunner = PatrolCommandRunner(
         logger: logger,
         pubUpdater: pubUpdater,
-        artifactsRepository: artifactsRepository,
       );
     });
 
@@ -42,12 +38,6 @@ void main() {
 
         when(() => pubUpdater.update(packageName: 'patrol_cli'))
             .thenAnswer((_) async => FakeProcessResult());
-
-        when(
-          () => artifactsRepository.downloadArtifacts(
-            version: any(named: 'version', that: equals(latestVersion)),
-          ),
-        ).thenAnswer((_) async {});
 
         final result = await commandRunner.run(['update']);
         expect(result, equals(0));
@@ -86,11 +76,6 @@ void main() {
         ).called(1);
 
         verify(() => pubUpdater.update(packageName: 'patrol_cli')).called(1);
-        verify(
-          () => artifactsRepository.downloadArtifacts(
-            version: any(named: 'version', that: equals(latestVersion)),
-          ),
-        );
       },
     );
 
@@ -109,11 +94,6 @@ void main() {
         ).called(1);
 
         verifyNever(() => pubUpdater.update(packageName: 'patrol_cli'));
-        verifyNever(
-          () => artifactsRepository.downloadArtifacts(
-            version: any(named: 'version'),
-          ),
-        );
       },
     );
 
