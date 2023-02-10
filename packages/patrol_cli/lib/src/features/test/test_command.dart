@@ -308,7 +308,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             flavor: config.flavor,
             dartDefines: {
               ...config.dartDefines,
-              'PATROL_TEST_LABEL': basename(target)
+              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
             },
           );
           action = () => _androidTestBackend.build(options, device);
@@ -319,7 +319,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             flavor: config.flavor,
             dartDefines: {
               ...config.dartDefines,
-              'PATROL_TEST_LABEL': basename(target)
+              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
             },
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
@@ -352,7 +352,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             flavor: config.flavor,
             dartDefines: {
               ...config.dartDefines,
-              'PATROL_TEST_LABEL': basename(target)
+              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
             },
           );
           action = () => _androidTestBackend.execute(options, device);
@@ -367,7 +367,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             flavor: config.flavor,
             dartDefines: {
               ...config.dartDefines,
-              'PATROL_TEST_LABEL': basename(target)
+              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
             },
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
