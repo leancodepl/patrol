@@ -90,7 +90,7 @@ jobs:
             # FIXME: Execution of subsequent tests is aborted on failure
             adb logcat -c
             adb logcat > logcat.txt &
-            patrol test -t integration_test/app_test.dart
+            patrol test -t integration_test/android_app_test.dart
             patrol test -t integration_test/example_test.dart
             patrol test -t integration_test/notifications_test.dart
             patrol test -t integration_test/open_app_test.dart
