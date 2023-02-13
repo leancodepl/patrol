@@ -1,13 +1,13 @@
-name: testlab ios
+name: test ios device
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '30 21 * * *'
 
 jobs:
   main:
-    name: 'Test on iOS on Firebase Test Lab'
+    name: Test on iOS device on Firebase Test Lab
     runs-on: macos-latest
     timeout-minutes: 60
 

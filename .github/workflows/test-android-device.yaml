@@ -1,13 +1,13 @@
-name: testlab android
+name: test android device
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '30 21 * * *'
 
 jobs:
   main:
-    name: 'Test on Android on Firebase Test Lab'
+    name: Test on Android device on Firebase Test Lab
     runs-on: ubuntu-latest
     timeout-minutes: 90
 
@@ -22,8 +22,8 @@ jobs:
       - name: Install Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '11'
+          distribution: temurin
+          java-version: 11
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
