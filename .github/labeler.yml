@@ -1,7 +1,3 @@
-'automator: android':
-  - AutomatorServer/android/**/*
-'automator: ios':
-  - AutomatorServer/ios/**/*
 'package: adb':
   - packages/adb/**/*
 'package: patrol_cli':
