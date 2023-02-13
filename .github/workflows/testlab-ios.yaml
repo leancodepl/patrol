@@ -52,10 +52,6 @@ jobs:
         run: ./run_ios_testlab integration_test/example_test.dart
         if: success() || failure()
 
-      - name: Run app_test.dart
-        run: ./run_ios_testlab integration_test/app_test.dart
-        if: success() || failure()
-
       - name: Run notifications_single_test.dart
         run: ./run_ios_testlab integration_test/notifications_single_test.dart
         if: success() || failure()
