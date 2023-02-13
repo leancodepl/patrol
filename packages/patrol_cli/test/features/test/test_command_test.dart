@@ -68,10 +68,7 @@ void main() {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testRunner: testRunner,
-        dartDefinesReader: DartDefinesReader(
-          fs: fs,
-          projectRoot: fs.currentDirectory,
-        ),
+        dartDefinesReader: DartDefinesReader(projectRoot: fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: fs.currentDirectory),
         parentDisposeScope: DisposeScope(),
         androidTestBackend: androidTestBackend,

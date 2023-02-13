@@ -14,7 +14,7 @@ void main() {
       final wd = fs.directory('/projects/awesome_app')
         ..createSync(recursive: true);
       fs.currentDirectory = wd;
-      reader = DartDefinesReader(fs: fs, projectRoot: fs.currentDirectory);
+      reader = DartDefinesReader(projectRoot: fs.currentDirectory);
     });
 
     group('fromCli()', () {

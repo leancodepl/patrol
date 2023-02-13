@@ -6,21 +6,13 @@ import 'package:args/command_runner.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
-import 'package:patrol_cli/src/common/common.dart';
+import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/logging_local_process_manager.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/bootstrap/bootstrap_command.dart';
-import 'package:patrol_cli/src/features/clean/clean_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/devices/devices_command.dart';
 import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
-import 'package:patrol_cli/src/features/drive/drive_command.dart';
-import 'package:patrol_cli/src/features/drive/flutter_test_runner.dart';
-import 'package:patrol_cli/src/features/drive/flutter_tool.dart';
-import 'package:patrol_cli/src/features/drive/platform/android_driver.dart';
-import 'package:patrol_cli/src/features/drive/platform/ios_driver.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
@@ -61,7 +53,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
   PatrolCommandRunner({
     required Logger logger,
     PubUpdater? pubUpdater,
-    ArtifactsRepository? artifactsRepository,
     FileSystem? fs,
     ProcessManager? processManager,
     Platform? platform,
@@ -69,11 +60,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
         _platform = platform ?? const LocalPlatform(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
         _fs = fs ?? const LocalFileSystem(),
-        _artifactsRepository = artifactsRepository ??
-            ArtifactsRepository(
-              fs: fs ?? const LocalFileSystem(),
-              platform: platform ?? const LocalPlatform(),
-            ),
         _processManager = processManager ??
             LoggingLocalProcessManager(
               logger: logger,
@@ -83,42 +69,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
-    addCommand(BootstrapCommand(fs: _fs, logger: _logger));
-    driveCommand = DriveCommand(
-      deviceFinder: DeviceFinder(
-        processManager: _processManager,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
-      ),
-      testFinder: TestFinder(testDir: _fs.directory('integration_test')),
-      testRunner: FlutterTestRunner(),
-      androidDriver: AndroidDriver(
-        artifactsRepository: _artifactsRepository,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
-      ),
-      iosDriver: IOSDriver(
-        processManager: _processManager,
-        platform: _platform,
-        artifactsRepository: _artifactsRepository,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
-      ),
-      flutterTool: FlutterTool(
-        processManager: _processManager,
-        fs: _fs,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
-      ),
-      dartDefinesReader: DartDefinesReader(
-        projectRoot: _fs.currentDirectory,
-        fs: _fs,
-      ),
-      parentDisposeScope: _disposeScope,
-      logger: _logger,
-    );
-    addCommand(driveCommand);
-
     testCommand = TestCommand(
       deviceFinder: DeviceFinder(
         processManager: _processManager,
@@ -127,10 +77,7 @@ class PatrolCommandRunner extends CommandRunner<int> {
       ),
       testFinder: TestFinder(testDir: _fs.directory('integration_test')),
       testRunner: NativeTestRunner(),
-      dartDefinesReader: DartDefinesReader(
-        projectRoot: _fs.currentDirectory,
-        fs: _fs,
-      ),
+      dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
       pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
       androidTestBackend: AndroidTestBackend(
         adb: Adb(),
@@ -170,23 +117,10 @@ class PatrolCommandRunner extends CommandRunner<int> {
     addCommand(
       DoctorCommand(
         logger: _logger,
-        artifactsRepository: _artifactsRepository,
         platform: _platform,
       ),
     );
-    addCommand(
-      CleanCommand(
-        artifactsRepository: _artifactsRepository,
-        logger: _logger,
-      ),
-    );
-    addCommand(
-      UpdateCommand(
-        pubUpdater: _pubUpdater,
-        artifactsRepository: _artifactsRepository,
-        logger: _logger,
-      ),
-    );
+    addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
 
     argParser
       ..addFlag(
@@ -200,12 +134,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
         abbr: 'V',
         help: 'Print version of this program.',
         negatable: false,
-      )
-      ..addFlag(
-        'debug',
-        help:
-            '[DEPRECATED] Use default, non-versioned artifacts with `patrol drive`',
-        negatable: false,
       );
   }
 
@@ -217,9 +145,6 @@ class PatrolCommandRunner extends CommandRunner<int> {
   final FileSystem _fs;
   final ProcessManager _processManager;
   final Logger _logger;
-
-  final ArtifactsRepository _artifactsRepository;
-  late DriveCommand driveCommand;
 
   late TestCommand testCommand;
 
@@ -245,27 +170,18 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   @override
   Future<int?> run(Iterable<String> args) async {
     var verbose = false;
-    var debug = false;
 
     int exitCode;
     try {
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
-      debug = topLevelResults['debug'] == true;
 
-      driveCommand.verbose = verbose;
       testCommand.verbose = verbose;
 
       if (verbose) {
         _logger
           ..level = Level.verbose
           ..info('Verbose mode enabled. More logs will be printed.');
-      }
-
-      if (debug) {
-        _artifactsRepository.debug = true;
-        _logger
-            .info('Debug mode enabled. Non-versioned artifacts will be used.');
       }
       exitCode = await runCommand(topLevelResults) ?? 0;
     } on ToolExit catch (err, st) {
@@ -319,17 +235,13 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   Future<int?> runCommand(ArgResults topLevelResults) async {
     final commandName = topLevelResults.command?.name;
 
-    if (_wantsArtifacts(commandName)) {
-      await _ensureArtifactsArePresent(debug: topLevelResults['debug'] == true);
-    }
-
     if (_wantsUpdateCheck(commandName)) {
       await _checkForUpdate(commandName);
     }
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
-      _logger.info('patrol_cli v$globalVersion');
+      _logger.info('patrol_cli v$version');
       exitCode = 0;
     } else {
       exitCode = await super.runCommand(topLevelResults);
@@ -356,8 +268,8 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       return;
     }
 
-    final latestVersion = await _pubUpdater.getLatestVersion(patrolCliPackage);
-    final isUpToDate = globalVersion == latestVersion;
+    final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
+    final isUpToDate = version == latestVersion;
 
     if (isUpToDate) {
       return;
@@ -367,41 +279,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       ..info('')
       ..info(
         '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(globalVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');
-  }
-
-  bool _wantsArtifacts(String? commandName) {
-    if (commandName == 'clean' ||
-        commandName == 'devices' ||
-        commandName == 'doctor' ||
-        commandName == 'update' ||
-        commandName == 'help') {
-      return false;
-    }
-
-    return true;
-  }
-
-  Future<void> _ensureArtifactsArePresent({required bool debug}) async {
-    if (_artifactsRepository.areArtifactsPresent()) {
-      return;
-    }
-
-    if (debug) {
-      throw const ToolExit('Debug artifacts are not present.');
-    }
-
-    final progress = _logger.progress('Artifacts are not present, downloading');
-    try {
-      await _artifactsRepository.downloadArtifacts();
-    } catch (_) {
-      progress.fail('Failed to download artifacts');
-      rethrow;
-    }
-
-    progress.complete('Downloaded artifacts');
   }
 }

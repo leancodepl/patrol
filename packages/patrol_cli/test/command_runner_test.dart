@@ -2,7 +2,6 @@ import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/command_runner.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/extensions/command_runner.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -14,31 +13,27 @@ import 'mocks.dart';
 const latestVersion = '0.0.0';
 
 final updatePrompt = '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(globalVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''';
 
 void main() {
   group('PatrolCommandRunner', () {
     late Logger logger;
     late PubUpdater pubUpdater;
-    late ArtifactsRepository artifactsRepository;
 
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
       logger = MockLogger();
       pubUpdater = MockPubUpdater();
-      artifactsRepository = MockArtifactsRepository();
-      when(() => artifactsRepository.areArtifactsPresent()).thenReturn(true);
 
       when(
         () => pubUpdater.getLatestVersion(any()),
-      ).thenAnswer((_) async => globalVersion);
+      ).thenAnswer((_) async => version);
 
       commandRunner = PatrolCommandRunner(
         logger: logger,
         pubUpdater: pubUpdater,
-        artifactsRepository: artifactsRepository,
         fs: MemoryFileSystem.test(),
       );
     });
@@ -121,7 +116,7 @@ void main() {
       test('prints current version', () async {
         final result = await commandRunner.run(['--version']);
         expect(result, equals(0));
-        verify(() => logger.info('patrol_cli v$globalVersion')).called(1);
+        verify(() => logger.info('patrol_cli v$version')).called(1);
       });
     });
 

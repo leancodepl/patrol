@@ -1,7 +1,6 @@
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
-import 'package:patrol_cli/src/common/artifacts_repository.dart';
 import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -9,14 +8,11 @@ import 'package:platform/platform.dart';
 
 class DoctorCommand extends Command<int> {
   DoctorCommand({
-    required ArtifactsRepository artifactsRepository,
     required Logger logger,
     required Platform platform,
-  })  : _artifactsRepository = artifactsRepository,
-        _logger = logger,
+  })  : _logger = logger,
         _platform = platform;
 
-  final ArtifactsRepository _artifactsRepository;
   final Logger _logger;
   final Platform _platform;
 
@@ -29,7 +25,6 @@ class DoctorCommand extends Command<int> {
   @override
   Future<int> run() async {
     _printVersion();
-    _printCachePath();
     _printAndroidSpecifics();
 
     if (_platform.isMacOS) {
@@ -40,16 +35,7 @@ class DoctorCommand extends Command<int> {
   }
 
   void _printVersion() {
-    _logger.info('Patrol CLI version: $globalVersion');
-  }
-
-  void _printCachePath() {
-    final artifactPath = _artifactsRepository.artifactPath;
-    final extra = _artifactsRepository.artifactPathSetFromEnv
-        ? '(set from ${ArtifactsRepository.artifactPathEnv})'
-        : '(default)';
-
-    _logger.info('Artifact path: $artifactPath $extra');
+    _logger.info('Patrol CLI version: $version');
   }
 
   void _printAndroidSpecifics() {

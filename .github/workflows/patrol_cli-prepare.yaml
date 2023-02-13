@@ -54,22 +54,3 @@ jobs:
 
       - name: dart pub publish --dry-run
         run: dart pub publish --dry-run
-
-      - name: Install patrol_cli
-        run: dart pub global activate --source path . && patrol
-
-      - name: Test patrol bootstrap --template basic
-        working-directory: ../
-        run: |
-          flutter create my_awesome_app
-          cd my_awesome_app
-          patrol bootstrap --template basic
-          flutter analyze
-
-      - name: Test patrol bootstrap --template counter
-        working-directory: ../
-        run: |
-          flutter create example
-          cd example
-          patrol bootstrap --template counter
-          flutter analyze
