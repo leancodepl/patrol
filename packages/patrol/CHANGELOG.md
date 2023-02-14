@@ -1,6 +1,6 @@
 ## 1.0.0
 
-- [Patrol 1.0 is released](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework)
+- [Patrol 1.0 is released!](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework)
 
 ## 0.10.12
 
