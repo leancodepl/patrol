@@ -5,6 +5,8 @@
 [![code style][leancode_lint_badge]][leancode_lint_link]
 [![powered by][docs_page_badge]][docs_page_link]
 
+![Patrol promotial graphics][promo_graphics]
+
 Simple yet powerful Flutter-native UI testing framework eliminating limitations
 of `flutter_test`, `integration_test`, and `flutter_driver`.
 
@@ -90,3 +92,4 @@ See [packages/patrol][github_patrol].
 [docs_page_badge]: https://img.shields.io/badge/documentation-docs.page-34C4AC.svg?style
 [docs_page_link]: https://docs.page
 [patrol_docs]: https://patrol.leancode.co
+[promo_graphics]: docs/assets/promo.png
