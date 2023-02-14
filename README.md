@@ -1,12 +1,12 @@
 # Patrol
 
+[![patrol on pub.dev][patrol_badge]][patrol_link]
+[![patrol_cli on pub.dev][patrol_cli_badge]][patrol_cli_link]
+[![code style][leancode_lint_badge]][leancode_lint_link]
+[![powered by][docs_page_badge]][docs_page_link]
+
 Simple yet powerful Flutter-native UI testing framework eliminating limitations
 of `flutter_test`, `integration_test`, and `flutter_driver`.
-
-[![patrol on pub.dev][patrol_badge]][patrol_link] [![patrol_cli on
-pub.dev][patrol_cli_badge]][patrol_cli_link] [![code
-style][leancode_lint_badge]][leancode_lint_link] [![powered
-by][docs_page_badge]][docs_page_link]
 
 ## Patrol custom finders
 
