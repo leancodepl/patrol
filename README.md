@@ -10,6 +10,12 @@
 Simple yet powerful Flutter-native UI testing framework eliminating limitations
 of `flutter_test`, `integration_test`, and `flutter_driver`.
 
+Learn more about Patrol:
+
+- [Our extensive documentation][docs]
+- [The article about the first public release][article_0x]
+- [The first stable 1.0 release article][article_1x]
+
 ## Patrol custom finders
 
 Flutter's finders are powerful, but not very intuitive to use.
@@ -66,7 +72,7 @@ patrolTest('signs up', (PatrolTester $) async {
 });
 ```
 
-Learn more in our [extensive documentation][patrol_docs]!
+[Learn more about custom finders in the docs][docs_finders]!
 
 ## CLI
 
@@ -91,5 +97,6 @@ See [packages/patrol][github_patrol].
 [leancode_lint_link]: https://pub.dev/packages/leancode_lint
 [docs_page_badge]: https://img.shields.io/badge/documentation-docs.page-34C4AC.svg?style
 [docs_page_link]: https://docs.page
-[patrol_docs]: https://patrol.leancode.co
+[docs]: https://patrol.leancode.co
+[docs_finders]: https://patrol.leancode.co/finders
 [promo_graphics]: docs/assets/promo.png
