@@ -44,7 +44,7 @@ jobs:
           echo "RELEASE_NOTES=$(link_changelog $tag)" >> $GITHUB_ENV
           echo "IS_PRERELEASE=$(is_prerelease $tag)" >> $GITHUB_ENV
 
-      - name: Publish
+      - name: Publish to pub.dev
         run: dart pub publish --force
 
       - name: Create release
