@@ -100,3 +100,5 @@ See [packages/patrol][github_patrol].
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders
 [promo_graphics]: docs/assets/promo.png
+[article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
+[article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
