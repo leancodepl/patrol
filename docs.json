@@ -38,10 +38,7 @@
         ["test", "/cli-commands/test"],
         ["devices", "/cli-commands/devices"],
         ["doctor", "/cli-commands/doctor"],
-        ["update", "/cli-commands/update"],
-        ["clean [DEPRECATED]", "/cli-commands/clean"],
-        ["drive [DEPRECATED]", "/cli-commands/drive"],
-        ["bootstrap [DEPRECATED]", "/cli-commands/bootstrap"]
+        ["update", "/cli-commands/update"]
       ]
     ],
     ["Patrol and CI", "/ci"],
