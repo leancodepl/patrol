@@ -424,7 +424,8 @@ class Automator private constructor() {
     private fun waitForSelector(bySelector: BySelector, index: Int): Boolean {
         val startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < timeoutMillis) {
-            if (uiDevice.findObjects(bySelector)[index] != null) {
+            val objects = uiDevice.findObjects(bySelector)
+            if (objects.size > index && objects[index] != null) {
                 return true
             }
 
