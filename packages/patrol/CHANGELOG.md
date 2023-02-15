@@ -1,6 +1,13 @@
+## 1.0.1
+
+- Fix IndexOutOfBounds exception when waiting for native views on Android (#939)
+- Fix `flutter run` not working in example app because of an error in Gradle
+  build file (#940)
+
 ## 1.0.0
 
-- [Patrol 1.0 is released!](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework)
+- [Patrol 1.0 is
+  released!](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework)
 
 ## 0.10.12
 
