@@ -10,11 +10,21 @@ void testWebViewA() {
 
     await $('Open webview screen A').scrollTo().tap();
 
-    await $.native.enterTextByIndex('test@hey.com', index: 0);
-    await $.native.enterTextByIndex('some pass', index: 0);
-    // await $.native.enterText(
-    //   Selector(text: 'user_email'), // "you@example.com", "Email", etc..
-    //   text: 'bartek@awesome.com',
-    // );
+    print('AAAAAA');
+
+    for (var i = 0; i < 300; i++) {
+      await $.pump();
+    }
+    print('BBBBBB');
+
+    await $.native.enterTextByIndex(
+      'barpac02@gmail.com',
+      index: 0,
+    );
+    await $.native.enterTextByIndex(
+      'ny4ncat',
+      index: 1,
+    );
+    await $.native.tap(Selector(text: 'Log in'));
   });
 }
