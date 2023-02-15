@@ -19,7 +19,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
     super.initState();
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate())
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (progress) => print('WebView progress: $progress'),
+          onPageStarted: (url) => print('WebView started loading: $url'),
+          onPageFinished: (url) => print('WebView finished loading: $url'),
+          onWebResourceError: (error) => print('WebView error: $error'),
+        ),
+      )
       ..loadRequest(Uri.parse(widget.url));
   }
 
