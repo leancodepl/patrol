@@ -56,7 +56,7 @@ android {
 
     testOptions {
         def targetPath = findProperty("target")
-        if (targetPath != null) {
+        if (targetPath != null && !target.contains("/lib/")) {
             targetPath = targetPath.substring(0, targetPath.length() - 5) // remove ".dart" from the end
             String result = targetPath.split("integration_test", 2)[1]
             result = result.substring(1) // remove path separator from the beginning
