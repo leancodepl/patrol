@@ -241,6 +241,8 @@ class NativeAutomator {
 
   /// Presses the back button.
   ///
+  /// This method throws on iOS, because there's no back button.
+  ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
   ///    which is used on Android.
@@ -502,7 +504,13 @@ class NativeAutomator {
 
   /// Enters text to the native view specified by [selector].
   ///
-  /// The native view specified by selector must be an EditText on Android.
+  /// If the text field isn't visible immediately, this method waits for the
+  /// view to become visible until [NativeAutomatorConfig.findTimeout] passes.
+  /// If the text field isn't found within the timeout, an exception is thrown.
+  ///
+  /// The native view specified by [selector] must be:
+  /// - EditText on Android
+  /// - TextField or SecureTextField on iOS
   Future<void> enterText(
     Selector selector, {
     required String text,
@@ -521,6 +529,15 @@ class NativeAutomator {
   }
 
   /// Enters text to the [index]-th visible text field.
+  ///
+  /// If the text field at [index] isn't visible immediately, this method waits
+  /// for the view to become visible until [NativeAutomatorConfig.findTimeout]
+  /// passes. If the text field isn't found within the timeout, an exception is
+  /// thrown.
+  ///
+  /// Native views considered as texts fields are:
+  /// - EditText on Android
+  /// - TextField or SecureTextField on iOS
   Future<void> enterTextByIndex(
     String text, {
     required int index,
