@@ -69,7 +69,7 @@ class Automator {
       }
       
       Logger.shared.i("found \(view), will tap on it")
-      element.firstMatch.forceTap()
+      element.tap()
     }
   }
 
@@ -648,7 +648,7 @@ class Automator {
         foundElement = elementFound
         break
       }
-      usleep(MICROSECONDS_IN_SECOND * 1/2)
+      usleep(MICROSECONDS_IN_SECOND * 1)
     }
 
     return foundElement
@@ -666,7 +666,7 @@ class Automator {
         foundElement = elements[index]
         break
       }
-      usleep(MICROSECONDS_IN_SECOND * 1/2)
+      usleep(MICROSECONDS_IN_SECOND * 1)
     }
 
     return foundElement
