@@ -98,7 +98,11 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automator.tap(on: request.selector.text, inApp: request.appID)
+      try await automator.tap(
+        onText: request.selector.text,
+        inApp: request.appID,
+        atIndex: Int(request.selector.instance)
+      )
       return DefaultResponse()
     }
   }
@@ -390,6 +394,7 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     do {
       return try await block()
     } catch let err as PatrolError {
+      Logger.shared.e(err.description)
       throw err
     } catch let err {
       throw PatrolError.unknown(err)

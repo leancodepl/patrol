@@ -54,17 +54,26 @@ class Automator {
 
   // MARK: General UI interaction
 
-  func tap(on text: String, inApp bundleId: String) async throws {
-    try await runAction("tapping on view with text \(format: text) in app \(bundleId)") {
+  func tap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+    try await runAction(
+      "tapping on view with text \(format: text) in app \(bundleId) at index \(index)"
+    ) {
       let app = try self.getApp(withBundleId: bundleId)
-      let element = app.descendants(matching: .any)[text]
+      let elementQuery = app.descendants(matching: .any).matching(identifier: text)
 
       Logger.shared.i("waiting for existence of view with text \(format: text)")
-      let exists = element.waitForExistence(timeout: self.timeout)
-      guard exists else {
-        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
+      guard
+        let element = self.waitFor(
+          query: elementQuery,
+          byIndex: index,
+          timeout: self.timeout
+        )
+      else {
+        throw PatrolError.viewNotExists(
+          "view with text \(format: text) in app \(format: bundleId) at index \(index)")
       }
-      Logger.shared.i("found view with text \(format: text), will tap on it")
+      Logger.shared.i(
+        "found view with text \(format: text) in app \(bundleId) at index \(index), will tap on it")
 
       element.firstMatch.forceTap()
     }
