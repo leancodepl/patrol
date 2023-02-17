@@ -1,3 +1,7 @@
+## 0.2.4+2
+
+- Fix publish workflow (#955)
+
 ## 0.2.4+1
 
 - Use automated publishing with GitHub Actions on pub.dev (#953)
