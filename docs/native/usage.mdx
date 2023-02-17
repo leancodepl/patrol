@@ -2,19 +2,10 @@
 
 Once set up, interacting with the native UI using Patrol is very easy!
 
-### The basics
+### Basics
 
 After you've got your `NativeAutomator` object, you simply call methods on it
 and it does the magic.
-
-To enter text into a native view (for example, a form in a WebView):
-
-```dart
-await $.native.enterText(
-  Selector(text: 'Enter your email'),
-  text: 'bartek@awesome.com',
-);
-```
 
 To tap on a native view (for example, a button in a WebView):
 
@@ -22,11 +13,39 @@ To tap on a native view (for example, a button in a WebView):
 await $.native.tap(Selector(text: 'Sign up for newsletter'));
 ```
 
+To enter text into a native view (for example, a form in a WebView):
+
+```dart
+await $.native.enterText(
+  Selector(text: 'Enter your email'),
+  text: 'charlie@root.me',
+);
+```
+
+You can also enter text into n-th currently visible text field (counting from
+0):
+
+```dart
+await $.native.enterTextByIndex('charlie_root', index: 0); // enter username
+await $.native.enterTextByIndex('ny4ncat', index: 1); // enter password
+```
+
 The above are the simplest, most common actions, but they already make it
 possible to test scenarios that were impossible to test before, such as
 WebViews.
 
-### Going deeper
+<Warning>
+  To tap, enter text, or perform generally any UI interaction with a iOS app
+  that is not your Flutter app under test, you need to pass its bundle
+  identifier. For example, to tap on the plus button in the iPhone contacts app,
+  use:
+
+  ```dart
+  await $.native.tap(Selector(text: 'Add'), appId: 'com.apple.MobileAddressBook');
+  ```
+</Warning>
+
+### Notifications
 
 To open the notification shade:
 
@@ -34,13 +53,25 @@ To open the notification shade:
 await $.native.openNotifications();
 ```
 
-To open the notification shade and tap on the first notfication:
+To tap on the second notfication:
 
 ```dart
 await $.native.tapOnNotificationByIndex(1);
 ```
 
-To handle the permission prompt:
+You can also tap on notification by its content:
+
+```dart
+await $.native.tapOnNotificationBySelector(
+  Selector(textContains: 'Charlie just sent you a secret message!'),
+);
+```
+
+![Notifications test][notifications_test]
+
+### Permissions
+
+To handle the native permission request dialog:
 
 ```dart
 await $.native.grantPermissionWhenInUse();
@@ -48,16 +79,20 @@ await $.native.grantPermissionOnlyThisTime();
 await $.native.denyPermission();
 ```
 
-If the shown permission prompt is the location prompt, you can also select the
-accuracy:
+![Permissions many test][permissions_many_test]
+
+If the permission request dialog visible is the location dialog, you can also
+select the accuracy:
 
 ```dart
 await $.native.selectFineLocation();
 await $.native.selectCoarseLocation();
 ```
 
-The test will fail if the permission prompt is not visible. You can check if it
-is with:
+![Permissions location test][permissions_location_test]
+
+The test will fail if the permission request dialog is not visible. You can
+check if it is with:
 
 ```dart
 if (await $.native.isPermissionDialogVisible()) {
@@ -74,10 +109,26 @@ if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
 }
 ```
 
+<Warning>
+  Patrol can handle permissions on iOS only if the device language is set to
+  English (preferably US). That's because there's no way to refer to a specific
+  view in a language-independent way (like resourceId on Android).
+
+  If you want to handle permissions on iOS device with non-English locale, do it
+  manually:
+
+  ```dart
+  await $.native.tap(Selector(text: 'Allow'), appId: 'com.apple.springboard'));
+  ```
+</Warning>
+
 ### More resources
 
 To see more integration tests demonstrating Patrol's various features, check out
-our [example app][example_app_tests].
+our [example app][example_app].
 
 [nativeautomator]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator-class.html
-[example_app_tests]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example_app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[permissions_many_test]: https://user-images.githubusercontent.com/40357511/219790614-dddcfc2b-c68c-44a6-be4b-c161151c9fe6.mp4
+[permissions_location_test]: https://user-images.githubusercontent.com/40357511/219790600-0ec5f42c-424e-4dc7-a36f-eea5f9a3e49f.mp4
+[notifications_test]: https://user-images.githubusercontent.com/40357511/219792140-09fa967a-8c81-4096-a533-df107741e5f0.mp4
