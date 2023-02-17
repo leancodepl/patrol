@@ -13,19 +13,24 @@ Future<void> main() async {
     contactsAppId = 'com.android.contacts';
   }
 
+  late String firstContact;
+
   patrol('creates new contact', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
 
     await $.native.pressHome();
     await $.native.openApp(appId: contactsAppId);
 
-    final name1 = await _createNewContact($);
-    final name2 = await _createNewContact($);
+    firstContact = await _createNewContact($);
+    // secondContact = await _createNewContact($);
+  });
 
-    await $.native.tap(Selector(text: name1), appId: contactsAppId);
-    // await _goBack($);
-    // await $.native.tap(Selector(text: name2), appId: contactsAppId);
-    // await _goBack($);
+  patrol('opens created contacts', ($) async {
+    await $.native.tap(Selector(text: firstContact), appId: contactsAppId);
+    await $.native.pressHome();
+
+    // await $.native.tap(Selector(text: secondContact), appId: contactsAppId);
+    // await $.native.pressHome();
   });
 }
 
