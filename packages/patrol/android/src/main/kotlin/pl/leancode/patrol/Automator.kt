@@ -180,7 +180,7 @@ class Automator private constructor() {
     fun enterText(text: String, index: Int) {
         Logger.d("enterText(text: $text, index: $index)")
 
-        val selector = By.clazz(EditText::class.java);
+        val selector = By.clazz(EditText::class.java)
         if (waitForView(selector, index) == null) {
             throw UiObjectNotFoundException("$selector")
         }
@@ -435,7 +435,7 @@ class Automator private constructor() {
             delay(ms = 500)
         }
 
-        return null;
+        return null
     }
 
     private fun waitForUiObjectByResourceId(vararg identifiers: String, timeout: Long): UiObject? {
