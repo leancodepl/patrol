@@ -8,7 +8,7 @@ void testWebViewB() {
   patrol('interacts with the orange website in a webview', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
 
-    await $('Open webview screen B').scrollTo().tap();
+    await $('Open webview (Hacker News').scrollTo().tap();
 
     await $.native.tap(Selector(text: 'login'));
     await $.native.enterTextByIndex('test@leancode.pl', index: 0);

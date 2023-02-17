@@ -8,7 +8,7 @@ void testWebViewA() {
   patrol('interacts with the LeanCode website in a webview', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
 
-    await $('Open webview screen A').scrollTo().tap();
+    await $('Open webview (LeanCode)').scrollTo().tap();
 
     await $.native.enterTextByIndex('test@hey.com', index: 0);
     await $.native.enterTextByIndex('some pass', index: 1);

@@ -10,7 +10,7 @@ void testWebViewC() {
     ($) async {
       await $.pumpWidgetAndSettle(ExampleApp());
 
-      await $('Open webview screen C').scrollTo().tap();
+      await $('Open webview (StackOverflow)').scrollTo().tap();
 
       await $.native.tap(Selector(text: 'Accept all cookies'));
       await $.native.tap(Selector(text: 'Log in'));

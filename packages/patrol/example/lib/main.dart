@@ -178,35 +178,46 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const WebViewScreen(
-                  title: 'WebView A',
+                  title: 'WebView (LeanCode)',
+                  url: 'https://leancode.co',
+                ),
+              ),
+            ),
+            child: const Text('Open webview (LeanCode)'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (Hacker News)',
+                  url: 'https://news.ycombinator.com',
+                ),
+              ),
+            ),
+            child: const Text('Open webview (Hacker News)'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (StackOverflow)',
+                  url: 'https://stackoverflow.com',
+                ),
+              ),
+            ),
+            child: const Text('Open webview (StackOverflow)'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (login form)',
                   url:
                       'https://joyful-noise-staging.joyful-noise.link/users/sign_in',
                 ),
               ),
             ),
-            child: const Text('Open webview screen A'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView B',
-                  url: 'https://news.ycombinator.com',
-                ),
-              ),
-            ),
-            child: const Text('Open webview screen B'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView C',
-                  url: 'https://stackoverflow.com',
-                ),
-              ),
-            ),
-            child: const Text('Open webview screen C'),
+            child: const Text('Open webview (login form)'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(
