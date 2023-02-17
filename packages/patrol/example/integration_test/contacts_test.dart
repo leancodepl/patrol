@@ -14,23 +14,24 @@ Future<void> main() async {
   }
 
   late String firstContact;
+  late String secondContact;
 
   patrol('creates new contact', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
 
     await $.native.pressHome();
     await $.native.openApp(appId: contactsAppId);
+    await $.native.tap(Selector(text: 'All Contacts'), appId: contactsAppId);
 
     firstContact = await _createNewContact($);
-    // secondContact = await _createNewContact($);
+    secondContact = await _createNewContact($);
   });
 
   patrol('opens created contacts', ($) async {
     await $.native.tap(Selector(text: firstContact), appId: contactsAppId);
     await $.native.pressHome();
-
-    // await $.native.tap(Selector(text: secondContact), appId: contactsAppId);
-    // await $.native.pressHome();
+    await $.native.tap(Selector(text: secondContact), appId: contactsAppId);
+    await $.native.pressHome();
   });
 }
 
@@ -72,7 +73,7 @@ Future<String> _createNewContact(PatrolTester $) async {
 
 Future<void> _goBack(PatrolTester $) async {
   if (Platform.isIOS) {
-    await $.native.tap(Selector(text: 'iPhone'), appId: contactsAppId);
+    await $.native.tap(Selector(text: 'Contacts'), appId: contactsAppId);
   } else {
     await $.native.pressBack();
   }
