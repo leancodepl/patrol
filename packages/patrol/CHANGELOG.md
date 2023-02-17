@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix `PATROL_WAIT` (passed through `--wait` argument to `patrol test`)
+  preventing frames from being pumped (#959)
+
 ## 1.0.2
 
 - Make `NativeAutomator.enterTextByIndex()` have a default timeout, just like
