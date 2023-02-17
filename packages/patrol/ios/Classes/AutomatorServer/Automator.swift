@@ -86,8 +86,7 @@ class Automator {
       }
 
       Logger.shared.i("found \(view), will double tap on it")
-      element.firstMatch.forceTap()
-      element.firstMatch.forceTap()
+      element.doubleTap()
     }
   }
 
@@ -115,8 +114,8 @@ class Automator {
         throw PatrolError.viewNotExists(view)
       }
 
-      element.firstMatch.forceTap()
-      element.firstMatch.typeText(data)
+      element.tap()
+      element.typeText(data)
     }
   }
 
@@ -139,8 +138,8 @@ class Automator {
         throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
       }
 
-      element.firstMatch.forceTap()
-      element.firstMatch.typeText(data)
+      element.tap()
+      element.typeText(data)
     }
   }
 
