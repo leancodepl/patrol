@@ -6,10 +6,13 @@ on:
 
 jobs:
   main:
+    name: Publish on pub.dev
     runs-on: ubuntu-latest
+    needs: check_versions
 
     permissions:
       id-token: write
+      contents: write
 
     defaults:
       run:
