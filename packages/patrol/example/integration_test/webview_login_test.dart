@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'common.dart';
 
 Future<void> main() async {
@@ -14,9 +12,6 @@ void testWebViewD() {
 
     await $.native.enterTextByIndex('test@hey.com', index: 0);
     await $.native.enterTextByIndex('some pass', index: 1);
-    if (Platform.isIOS) {
-      await $.native.tap(Selector(text: 'Done')); // hide keyboard
-    }
     await $.native.tap(Selector(text: 'Sign in'));
   });
 }
