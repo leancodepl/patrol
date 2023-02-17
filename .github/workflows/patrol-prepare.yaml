@@ -82,7 +82,6 @@ jobs:
         include:
           - version: '3.3.0'
           - channel: stable
-          - channel: beta
 
     defaults:
       run:
