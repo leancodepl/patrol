@@ -8,7 +8,7 @@ void testWebViewA() {
   patrol('interacts with the LeanCode website in a webview', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
 
-    await $('Open webview screen A').scrollTo().tap();
+    await $('Open webview (LeanCode)').scrollTo().tap();
 
     await $.native.tap(Selector(text: 'Accept cookies'));
     await $.native.tap(Selector(text: 'What do you do in IT?', instance: 1));

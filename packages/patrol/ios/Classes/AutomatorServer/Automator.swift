@@ -55,7 +55,7 @@ class Automator {
   // MARK: General UI interaction
 
   func tap(on text: String, inApp bundleId: String) async throws {
-    try await runAction("tapping on view with text \(format: text)") {
+    try await runAction("tapping on view with text \(format: text) in app \(bundleId)") {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.descendants(matching: .any)[text]
 
@@ -71,7 +71,7 @@ class Automator {
   }
 
   func doubleTap(on text: String, inApp bundleId: String) async throws {
-    try await runAction("double tapping on text \(format: text)") {
+    try await runAction("double tapping on text \(format: text) in app \(bundleId)") {
       let app = try self.getApp(withBundleId: bundleId)
       let element = app.descendants(matching: .any)[text]
 
@@ -85,7 +85,9 @@ class Automator {
   }
 
   func enterText(_ data: String, by text: String, inApp bundleId: String) async throws {
-    try await runAction("entering text \(format: data) into text field with text \(text)") {
+    try await runAction(
+      "entering text \(format: data) into text field with text \(text) in app \(bundleId)"
+    ) {
       let app = try self.getApp(withBundleId: bundleId)
 
       guard
@@ -103,7 +105,7 @@ class Automator {
   }
 
   func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
-    try await runAction("entering text \(format: data) by index \(index)") {
+    try await runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
       let app = try self.getApp(withBundleId: bundleId)
 
       // elementType must be specified as integer
@@ -116,16 +118,19 @@ class Automator {
         orPredicateWithSubpredicates: [textFieldPredicate, secureTextFieldPredicate]
       )
 
-      let textFields = app.descendants(matching: .any).matching(predicate)
-      let textFieldCount = textFields.allElementsBoundByIndex.count
-      Logger.shared.i("found \(textFields.count) text fields")
-      guard index < textFieldCount else {
-        throw PatrolError.viewNotExists("text field at index \(index)")
+      let textFieldsQuery = app.descendants(matching: .any).matching(predicate)
+      guard
+        let element = self.waitFor(
+          query: textFieldsQuery,
+          byIndex: index,
+          timeout: self.timeout
+        )
+      else {
+        throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
       }
 
-      let textField = textFields.element(boundBy: index)
-      textField.forceTap()
-      textField.typeText(data)
+      element.forceTap()
+      element.typeText(data)
     }
   }
 
@@ -512,6 +517,23 @@ class Automator {
     while Date().timeIntervalSince(startTime) < timeout {
       if let elementFound = elements.first(where: { $0.exists }) {
         foundElement = elementFound
+        break
+      }
+      sleep(1)
+    }
+
+    return foundElement
+  }
+
+  @discardableResult
+  func waitFor(query: XCUIElementQuery, byIndex index: Int, timeout: TimeInterval) -> XCUIElement? {
+    var foundElement: XCUIElement?
+    let startTime = Date()
+
+    while Date().timeIntervalSince(startTime) < timeout {
+      let elements = query.allElementsBoundByIndex
+      if index < elements.count && elements[index].exists {
+        foundElement = elements[index]
         break
       }
       sleep(1)
