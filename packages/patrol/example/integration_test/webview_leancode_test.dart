@@ -10,18 +10,10 @@ void testWebViewA() {
 
     await $('Open webview (LeanCode)').scrollTo().tap();
 
-    await $.native.enterTextByIndex('test@hey.com', index: 0);
-    await $.native.enterTextByIndex('some pass', index: 1);
-    await $.native.tap(Selector(text: 'Done'));
-    await $.native.tap(
-      Selector(
-        text: 'Log in',
-        instance: 1,
-      ),
-    );
-    // await $.native.enterText(
-    //   Selector(text: 'user_email'), // "you@example.com", "Email", etc..
-    //   text: 'bartek@awesome.com',
-    // );
+    await $.native.tap(Selector(text: 'Accept cookies'));
+    await $.native.tap(Selector(text: 'What do you do in IT?', instance: 1));
+    await $.native.tap(Selector(text: 'Developer'));
+    await $.native.tap(Selector(text: '1 item selected'));
+    await $.native.enterTextByIndex('test@leancode.pl', index: 0);
   });
 }
