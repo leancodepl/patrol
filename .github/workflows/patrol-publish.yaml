@@ -21,6 +21,12 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      # This action adds a token needed for pub.dev
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:

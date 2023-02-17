@@ -7,6 +7,7 @@
   in more detail.
 
 - Use automated publishing with GitHub Actions on pub.dev (#953) (#955) (#956)
+  (#957)
 
 ## 1.0.1
 
