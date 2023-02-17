@@ -2,19 +2,10 @@
 
 Once set up, interacting with the native UI using Patrol is very easy!
 
-### The basics
+### Basics
 
 After you've got your `NativeAutomator` object, you simply call methods on it
 and it does the magic.
-
-To enter text into a native view (for example, a form in a WebView):
-
-```dart
-await $.native.enterText(
-  Selector(text: 'Enter your email'),
-  text: 'bartek@awesome.com',
-);
-```
 
 To tap on a native view (for example, a button in a WebView):
 
@@ -22,11 +13,40 @@ To tap on a native view (for example, a button in a WebView):
 await $.native.tap(Selector(text: 'Sign up for newsletter'));
 ```
 
+To enter text into a native view (for example, a form in a WebView):
+
+```dart
+await $.native.enterText(
+  Selector(text: 'Enter your email'),
+  text: 'charlie@root.me',
+);
+```
+
+You can also enter text into n-th currently visible text field (counting from
+0):
+
+```dart
+await $.native.enterTextByIndex('charlie_root', index: 0); // enter username
+await $.native.enterTextByIndex('ny4ncat', index: 1); // enter password
+```
+
 The above are the simplest, most common actions, but they already make it
 possible to test scenarios that were impossible to test before, such as
 WebViews.
 
-### Going deeper
+<Warning>
+  To tap, enter text, or perform generally any UI interaction with a iOS app
+  that is not your Flutter app under test, you need to pass its bundle
+  identifier. For example, to tap on the plus button in the iPhone contacts app,
+  use:
+
+```dart
+await $.native.tap(Selector(text: 'Add'), appId: 'com.apple.MobileAddressBook');
+```
+
+</Warning>
+
+### Notifications
 
 To open the notification shade:
 
@@ -34,13 +54,23 @@ To open the notification shade:
 await $.native.openNotifications();
 ```
 
-To open the notification shade and tap on the first notfication:
+To tap on the second notfication:
 
 ```dart
 await $.native.tapOnNotificationByIndex(1);
 ```
 
-To handle the permission prompt:
+You can also tap on notification by its content:
+
+```dart
+await $.native.tapOnNotificationBySelector(
+  Selector(textContains: 'Charlie just sent you a secret message!'),
+);
+```
+
+### Permissions
+
+To handle the native permission request dialog:
 
 ```dart
 await $.native.grantPermissionWhenInUse();
@@ -48,16 +78,16 @@ await $.native.grantPermissionOnlyThisTime();
 await $.native.denyPermission();
 ```
 
-If the shown permission prompt is the location prompt, you can also select the
-accuracy:
+If the permission request dialog visible is the location dialog, you can also
+select the accuracy:
 
 ```dart
 await $.native.selectFineLocation();
 await $.native.selectCoarseLocation();
 ```
 
-The test will fail if the permission prompt is not visible. You can check if it
-is with:
+The test will fail if the permission request dialog is not visible. You can
+check if it is with:
 
 ```dart
 if (await $.native.isPermissionDialogVisible()) {
@@ -77,7 +107,7 @@ if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
 ### More resources
 
 To see more integration tests demonstrating Patrol's various features, check out
-our [example app][example_app_tests].
+our [example app][example_app].
 
 [nativeautomator]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator-class.html
-[example_app_tests]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example_app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
