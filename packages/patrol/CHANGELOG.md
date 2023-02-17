@@ -1,3 +1,11 @@
+## Unreleased
+
+- Make `NativeAutomator.enterTextByIndex()` have a default timeout, just like
+  `NativeAutomator.enterText()` (#943)
+
+  Documentation of these 2 methods has also been updated to explain the behavior
+  in more detail.
+
 ## 1.0.1
 
 - Fix IndexOutOfBounds exception when waiting for native views on Android (#939)
