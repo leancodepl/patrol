@@ -139,7 +139,7 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
           byText: selector.text,
           inApp: request.appID,
           atIndex: Int(request.selector.instance)
-      )
+        )
       default:
         throw PatrolError.internal("enterText(): neither index nor selector are set")
       }

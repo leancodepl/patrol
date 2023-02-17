@@ -67,7 +67,7 @@ class Automator {
       guard let element = self.waitForView(query: elementQuery, index: index) else {
         throw PatrolError.viewNotExists(view)
       }
-      
+
       Logger.shared.i("found \(view), will tap on it")
       element.tap()
     }
@@ -75,7 +75,7 @@ class Automator {
 
   func doubleTap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
     let view = "view with text \(format: text) in app \(bundleId) at index \(index)"
-    
+
     try await runAction("double tapping on \(view)") {
       let app = try self.getApp(withBundleId: bundleId)
       let elementQuery = app.descendants(matching: .any).matching(identifier: text)
@@ -91,12 +91,14 @@ class Automator {
     }
   }
 
-  func enterText(_ data: String, byText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+  func enterText(_ data: String, byText text: String, inApp bundleId: String, atIndex index: Int)
+    async throws
+  {
     let view = "text field with ident/label \(format: text) in app \(bundleId) at index \(index)"
-    
+
     try await runAction("entering text \(format: data) into \(view)") {
       let app = try self.getApp(withBundleId: bundleId)
-      
+
       // elementType must be specified as integer
       // See:
       // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
@@ -106,12 +108,13 @@ class Automator {
       let predicate = NSCompoundPredicate(
         orPredicateWithSubpredicates: [textFieldPredicate, secureTextFieldPredicate]
       )
-      
-      let elementQuery = app.descendants(matching: .any).matching(predicate).matching(identifier: text)
+
+      let elementQuery = app.descendants(matching: .any).matching(predicate).matching(
+        identifier: text)
       guard let element = self.waitForView(query: elementQuery, index: index) else {
         throw PatrolError.viewNotExists(view)
       }
-      
+
       element.firstMatch.forceTap()
       element.firstMatch.typeText(data)
     }
@@ -634,7 +637,7 @@ class Automator {
       return result
     }
   }
-  
+
   // MARK: Custom view utilities
 
   /// Adapted from https://stackoverflow.com/q/47880395/7009800
@@ -656,7 +659,9 @@ class Automator {
 
   /// Adapted from https://stackoverflow.com/q/47880395/7009800
   @discardableResult
-  func waitForView(query: XCUIElementQuery, index: Int, timeout: TimeInterval? = nil) -> XCUIElement? {
+  func waitForView(query: XCUIElementQuery, index: Int, timeout: TimeInterval? = nil)
+    -> XCUIElement?
+  {
     var foundElement: XCUIElement?
     let startTime = Date()
 
