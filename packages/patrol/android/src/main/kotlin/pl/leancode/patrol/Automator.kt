@@ -149,7 +149,7 @@ class Automator private constructor() {
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
         Logger.d("tap(): $uiSelector, $bySelector")
 
-        if (!waitForSelector(bySelector, index)) {
+        if (waitForView(bySelector, index) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -164,7 +164,7 @@ class Automator private constructor() {
 
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (!waitForSelector(bySelector, index)) {
+        if (waitForView(bySelector, index) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -180,12 +180,15 @@ class Automator private constructor() {
     fun enterText(text: String, index: Int) {
         Logger.d("enterText(text: $text, index: $index)")
 
-        val selector = UiSelector().className(EditText::class.java).instance(index)
-        Logger.d("Selector: $selector")
+        val selector = By.clazz(EditText::class.java);
+        if (waitForView(selector, index) == null) {
+            throw UiObjectNotFoundException("$selector")
+        }
 
-        Logger.d("entering text \"$text\" to $selector")
+        Logger.d("entering text \"$text\" to EditText at index $index")
 
-        val uiObject = uiDevice.findObject(selector)
+        val uiSelector = UiSelector().className(EditText::class.java).instance(index)
+        val uiObject = uiDevice.findObject(uiSelector)
         uiObject.click()
         uiObject.text = text
 
@@ -195,7 +198,7 @@ class Automator private constructor() {
     fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
-        if (!waitForSelector(bySelector, index)) {
+        if (waitForView(bySelector, index) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -421,18 +424,18 @@ class Automator private constructor() {
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */
-    private fun waitForSelector(bySelector: BySelector, index: Int): Boolean {
+    private fun waitForView(bySelector: BySelector, index: Int): UiObject2? {
         val startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() - startTime < timeoutMillis) {
             val objects = uiDevice.findObjects(bySelector)
             if (objects.size > index && objects[index] != null) {
-                return true
+                return objects[index]
             }
 
             delay(ms = 500)
         }
 
-        return false
+        return null;
     }
 
     private fun waitForUiObjectByResourceId(vararg identifiers: String, timeout: Long): UiObject? {
