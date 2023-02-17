@@ -6,7 +6,7 @@
   Documentation of these 2 methods has also been updated to explain the behavior
   in more detail.
 
-- Use automated publishing with GitHub Actions on pub.dev (#953) (#955)
+- Use automated publishing with GitHub Actions on pub.dev (#953) (#955) (#956)
 
 ## 1.0.1
 

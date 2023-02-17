@@ -1,6 +1,6 @@
 ## 1.0.1+1
 
-- Fix publish workflow (#955)
+- Fix publish workflow (#955) (#956)
 
 ## 1.0.1
 
