@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add shell completion (#950)
+
 ## 1.0.0
 
 - [Patrol 1.0 is released!](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework))

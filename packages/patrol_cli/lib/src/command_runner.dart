@@ -3,6 +3,7 @@ import 'dart:io' show ProcessSignal;
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
+import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
@@ -49,7 +50,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
-class PatrolCommandRunner extends CommandRunner<int> {
+class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
     required Logger logger,
     PubUpdater? pubUpdater,
