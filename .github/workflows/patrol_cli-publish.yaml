@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: check_versions
 
+    permissions:
+      id-token: write
+
     defaults:
       run:
         working-directory: packages/patrol_cli
@@ -34,13 +37,6 @@ jobs:
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
-
-      - name: Download pub.dev credentials
-        env:
-          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
-        run: |
-          mkdir -p ~/.pub-cache
-          echo $CREDENTIALS > ~/.pub-cache/credentials.json
 
       - name: Set version data
         run: |

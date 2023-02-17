@@ -8,6 +8,9 @@ jobs:
   main:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+
     defaults:
       run:
         working-directory: packages/adb
@@ -30,13 +33,6 @@ jobs:
       - name: Add mobile-tools to PATH
         run: |
           echo $GITHUB_WORKSPACE/mobile-tools/bin >> $GITHUB_PATH
-
-      - name: Download pub.dev credentials
-        env:
-          CREDENTIALS: ${{ secrets.PUB_DEV_CREDENTIALS }}
-        run: |
-          mkdir -p ~/.pub-cache
-          echo $CREDENTIALS > ~/.pub-cache/credentials.json
 
       - name: Set version data
         run: |
