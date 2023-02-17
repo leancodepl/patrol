@@ -1,6 +1,6 @@
 ## 0.2.4+2
 
-- Fix publish workflow (#955)
+- Fix publish workflow (#955) (#956)
 
 ## 0.2.4+1
 
