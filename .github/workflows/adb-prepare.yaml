@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ['2.18.0', stable, beta]
+        sdk: ['2.18.0', stable]
 
     defaults:
       run:

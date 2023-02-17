@@ -1,3 +1,7 @@
+## 0.2.4+1
+
+- Use automated publishing with GitHub Actions on pub.dev (#953)
+
 ## 0.2.4
 
 - Wait for the `activity` service before installing, uninstalling, and

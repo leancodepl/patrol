@@ -1,6 +1,7 @@
-## Unreleased
+## 1.0.1
 
 - Add shell completion (#950)
+- Use automated publishing with GitHub Actions on pub.dev (#953)
 
 ## 1.0.0
 

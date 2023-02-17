@@ -1,10 +1,12 @@
-## Unreleased
+## 1.0.2
 
 - Make `NativeAutomator.enterTextByIndex()` have a default timeout, just like
   `NativeAutomator.enterText()` (#943)
 
   Documentation of these 2 methods has also been updated to explain the behavior
   in more detail.
+
+- Use automated publishing with GitHub Actions on pub.dev (#953)
 
 ## 1.0.1
 
