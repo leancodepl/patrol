@@ -2,6 +2,7 @@
 
 - Fix `PATROL_WAIT` (passed through `--wait` argument to `patrol test`)
   preventing frames from being pumped (#959)
+- Fix tapping on notification crashing on iPads (#963)
 
 ## 1.0.2
 
