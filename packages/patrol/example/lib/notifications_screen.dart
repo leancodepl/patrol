@@ -78,8 +78,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       NotificationDetails(
         iOS: DarwinNotificationDetails(),
         android: AndroidNotificationDetails(
-          'main',
+          'default',
           'Default notification channel',
+          channelDescription: "For all the notifications, because we're lazy",
+          importance: Importance.max,
+          priority: Priority.high,
         ),
       ),
       uiLocalNotificationDateInterpretation:
