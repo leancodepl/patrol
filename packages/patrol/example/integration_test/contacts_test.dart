@@ -20,7 +20,10 @@ Future<void> main() async {
     await $.pumpWidgetAndSettle(ExampleApp());
     await $.native.pressHome();
     await $.native.openApp(appId: contactsAppId);
-    await $.native.tap(Selector(text: 'iPhone'), appId: contactsAppId);
+
+    if (Platform.isIOS) {
+      await $.native.tap(Selector(text: 'All iPhone'), appId: contactsAppId);
+    }
 
     firstContact = await _createNewContact($);
     secondContact = await _createNewContact($);
