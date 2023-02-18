@@ -19,7 +19,7 @@ class UpdateCommand extends Command<int> {
   String get name => 'update';
 
   @override
-  String get description => 'Updates the tool.';
+  String get description => 'Update the tool.';
 
   @override
   Future<int> run() async {

@@ -188,7 +188,15 @@ class AndroidTestBackend extends TestBackend {
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) {
+        const prefix = 'There were failing tests. ';
+        if (l.contains(prefix)) {
+          final msg = l.substring(prefix.length + 2);
+          _logger.err('\t$msg');
+        } else {
+          _logger.detail('\t$l');
+        }
+      }).disposedBy(scope);
 
       final exitCode = await process.exitCode;
       if (exitCode == 0) {

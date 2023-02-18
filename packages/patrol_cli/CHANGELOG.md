@@ -1,3 +1,10 @@
+## Unreleased
+
+- Make output of `patrol test` much less verbose when test fails on Android.
+  (#964)
+
+  Run with `--verbose` to still see all the logs that were previously visible.
+
 ## 1.0.1+1
 
 - Fix publish workflow (#955) (#956)
@@ -9,7 +16,8 @@
 
 ## 1.0.0
 
-- [Patrol 1.0 is released!](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework))
+- [Patrol 1.0 is
+  released!](https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework)
 
 ## 0.9.4
 
