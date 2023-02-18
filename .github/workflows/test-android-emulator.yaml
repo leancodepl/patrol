@@ -87,20 +87,20 @@ jobs:
           disable-animations: false
           working-directory: ${{ github.workspace }}/packages/patrol/example
           script: |
-            # FIXME: Execution of subsequent tests is aborted on failure
             adb logcat -c
             adb logcat > logcat.txt &
-            patrol test -t integration_test/android_app_test.dart
-            patrol test -t integration_test/example_test.dart
-            patrol test -t integration_test/notifications_test.dart
-            patrol test -t integration_test/open_app_test.dart
-            patrol test -t integration_test/open_quick_settings_test.dart
-            patrol test -t integration_test/permissions_location_test.dart
-            patrol test -t integration_test/permissions_many_test.dart
-            patrol test -t integration_test/service_cellular_test.dart
-            patrol test -t integration_test/service_dark_mode_test.dart
-            patrol test -t integration_test/service_wifi_test.dart
-            patrol test -t integration_test/swipe_test.dart
+            patrol test \
+              -t integration_test/android_app_test.dart \
+              -t integration_test/example_test.dart \
+              -t integration_test/notifications_test.dart \
+              -t integration_test/open_app_test.dart \
+              -t integration_test/open_quick_settings_test.dart \
+              -t integration_test/permissions_location_test.dart \
+              -t integration_test/permissions_many_test.dart \
+              -t integration_test/service_cellular_test.dart \
+              -t integration_test/service_dark_mode_test.dart \
+              -t integration_test/service_wifi_test.dart \
+              -t integration_test/swipe_test.dart
 
       - name: Upload logcat to artifacts
         if: always()

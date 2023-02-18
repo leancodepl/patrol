@@ -1,4 +1,4 @@
-name: assign labels to pull request
+name: label pull request
 
 on:
   pull_request:
