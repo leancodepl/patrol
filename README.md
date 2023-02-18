@@ -31,13 +31,13 @@ testWidgets('signs up', (WidgetTester tester) async {
 
   await tester.enterText(
     find.byKey(Key('emailTextField')),
-    'bartek@awesome.com',
+    'charlie@root.me',
   );
   await tester.pumpAndSettle();
 
   await tester.enterText(
     find.byKey(Key('nameTextField')),
-    'Bartek',
+    'Charlie',
   );
   await tester.pumpAndSettle();
 
@@ -53,7 +53,7 @@ testWidgets('signs up', (WidgetTester tester) async {
   await tester.tap(find.byKey(Key('signUpButton')));
   await tester.pumpAndSettle();
 
-  expect(find.text('Welcome, Bartek!'), findsOneWidget);
+  expect(find.text('Welcome, Charlie!'), findsOneWidget);
 });
 ```
 
@@ -63,12 +63,12 @@ to this:
 patrolTest('signs up', (PatrolTester $) async {
   await $.pumpWidgetAndSettle(AwesomeApp());
 
-  await $(#emailTextField).enterText('bartek@awesome.com');
-  await $(#nameTextField).enterText('Bartek');
+  await $(#emailTextField).enterText('charlie@root.me');
+  await $(#nameTextField).enterText('Charlie');
   await $(#passwordTextField).enterText('ny4ncat');
   await $(#termsCheckbox).tap();
   await $(#signUpButton).tap();
-  expect($('Welcome, Bartek!'), findsOneWidget);
+  expect($('Welcome, Charlie!'), findsOneWidget);
 });
 ```
 
