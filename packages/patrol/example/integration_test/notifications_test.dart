@@ -4,7 +4,7 @@ void main() {
   patrol(
     'taps on notification',
     ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+      await createApp($);
       await $('Open notifications screen').tap();
 
       if (await $.native.isPermissionDialogVisible()) {

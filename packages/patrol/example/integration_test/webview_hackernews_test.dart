@@ -1,12 +1,8 @@
 import 'common.dart';
 
-Future<void> main() async {
-  testWebViewB();
-}
-
-void testWebViewB() {
+void main() {
   patrol('interacts with the orange website in a webview', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $('Open webview (Hacker News').scrollTo().tap();
 

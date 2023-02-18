@@ -2,7 +2,7 @@ import 'common.dart';
 
 void main() {
   patrol('taps around', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $.native.pressHome();
     await $.native.pressDoubleRecentApps();

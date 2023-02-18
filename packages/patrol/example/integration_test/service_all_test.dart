@@ -6,7 +6,7 @@ import 'service_dark_mode_test.dart' as dark_mode_test;
 import 'service_wifi_test.dart' as wifi_test;
 
 void main() {
-  group('bundled tests', () {
+  group('all services', () {
     airplane_mode_test.main();
     bluetooth_test.main();
     location_test.main();

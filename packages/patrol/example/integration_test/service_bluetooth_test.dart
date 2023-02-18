@@ -2,7 +2,7 @@ import 'common.dart';
 
 void main() {
   patrol('disables and enables bluetooth twice', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $.native.disableBluetooth();
     await $.native.enableBluetooth();

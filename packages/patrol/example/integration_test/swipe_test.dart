@@ -11,7 +11,7 @@ Future<void> main() async {
   }
 
   patrol('scrolls the Settings app', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     final window = $.tester.binding.window;
     final width = window.physicalSize.width;

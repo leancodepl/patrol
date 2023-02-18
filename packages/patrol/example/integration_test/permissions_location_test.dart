@@ -6,7 +6,7 @@ const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
   patrol('accepts location permission', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $('Open location screen').scrollTo().tap();
 

@@ -1,12 +1,8 @@
 import 'common.dart';
 
-Future<void> main() async {
-  testWebViewD();
-}
-
-void testWebViewD() {
+void main() async {
   patrol('interacts with the login form website in a webview', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $('Open webview (login form)').scrollTo().tap();
 
