@@ -28,12 +28,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         await _notificationsPlugin.initialize(
           const InitializationSettings(
             android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-            iOS: DarwinInitializationSettings(),
+            iOS: DarwinInitializationSettings(
+              defaultPresentAlert: false,
+            ),
           ),
           onDidReceiveNotificationResponse: (notificationResponse) {
-            print(
-              'NotificationScreen: tapped notification with ID ${notificationResponse.id}',
-            );
             setState(() {
               _notificationId = notificationResponse.id;
             });
@@ -76,13 +75,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       'This notification has ID = $id',
       tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
       NotificationDetails(
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(
+          interruptionLevel: InterruptionLevel.passive,
+        ),
         android: AndroidNotificationDetails(
           'default',
           'Default notification channel',
           channelDescription: "For all the notifications, because we're lazy",
-          importance: Importance.max,
-          priority: Priority.high,
         ),
       ),
       uiLocalNotificationDateInterpretation:

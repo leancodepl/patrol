@@ -12,14 +12,14 @@ void main() {
       }
 
       await $('Show in a few seconds').tap();
-      // if (Platform.isIOS) {
-      //   await $.native.closeHeadsUpNotification();
-      // }
       await $.native.pressHome();
-
       await $.native.openNotifications();
+
+      // wait for notification to show up
+      await Future<void>.delayed(const Duration(seconds: 5));
+
       await $.native.tapOnNotificationBySelector(
-        Selector(textContains: 'Tap to see who'),
+        Selector(textContains: 'Someone liked'),
       );
 
       await $('Tapped notification with ID: 1').waitUntilVisible();
