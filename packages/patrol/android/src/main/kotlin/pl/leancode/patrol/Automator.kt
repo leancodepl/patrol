@@ -189,10 +189,7 @@ class Automator private constructor() {
 
         val uiSelector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = uiDevice.findObject(uiSelector)
-        uiObject.click()
         uiObject.text = text
-
-        pressBack() // Hide keyboard.
     }
 
     fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int) {
@@ -203,10 +200,7 @@ class Automator private constructor() {
         }
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
-        uiObject.click()
         uiObject.text = text
-
-        pressBack() // Hide keyboard.
     }
 
     fun swipe(startX: Float, startY: Float, endX: Float, endY: Float, steps: Int) {
