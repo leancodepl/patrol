@@ -353,13 +353,13 @@ class Automator {
         throw PatrolError.viewNotExists("notification at index \(index)")
       }
 
-      #if targetEnvironment(simulator)
+      if self.isSimulator() && self.isPhone() {
         // For some weird reason, this works differently on Simulator
         cells[index].doubleTap()
         self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
-      #else
+      } else {
         cells[index].tap()
-      #endif
+      }
     }
   }
 
@@ -370,13 +370,13 @@ class Automator {
       for (i, cell) in cells.enumerated() {
         if cell.label.contains(substring) {
           Logger.shared.i("tapping on notification at index \(i) which contains text \(substring)")
-          #if targetEnvironment(simulator)
+          if self.isSimulator() && self.isPhone() {
             // For some weird reason, this works differently on Simulator
             cell.doubleTap()
             self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
-          #else
+          } else {
             cell.tap()
-          #endif
+          }
           return
         }
       }
@@ -507,6 +507,17 @@ class Automator {
   }
 
   // MARK: Private stuff
+  private func isSimulator() -> Bool {
+    #if targetEnvironment(simulator)
+      return true
+    #else
+      return false
+    #endif
+  }
+
+  private func isPhone() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .phone
+  }
 
   /// Adapted from https://stackoverflow.com/q/47880395/7009800
   @discardableResult
