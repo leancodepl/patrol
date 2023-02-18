@@ -345,7 +345,7 @@ class Automator {
     return notifications
   }
 
-  func tapOnNotification(by index: Int) async throws {
+  func tapOnNotification(byIndex index: Int) async throws {
     try await runAction("tapping on notification at index \(index)") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
         .allElementsBoundByIndex
@@ -363,13 +363,13 @@ class Automator {
     }
   }
 
-  func tapOnNotification(by text: String) async throws {
-    try await runAction("tapping on notification containing text \(format: text)") {
+  func tapOnNotification(bySubstring substring: String) async throws {
+    try await runAction("tapping on notification containing text \(format: substring)") {
       let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
         .allElementsBoundByIndex
       for (i, cell) in cells.enumerated() {
-        if cell.label.contains(text) {
-          Logger.shared.i("tapping on notification at index \(i) which contains text \(text)")
+        if cell.label.contains(substring) {
+          Logger.shared.i("tapping on notification at index \(i) which contains text \(substring)")
           #if targetEnvironment(simulator)
             // For some weird reason, this works differently on Simulator
             cell.doubleTap()
@@ -381,7 +381,7 @@ class Automator {
         }
       }
 
-      throw PatrolError.viewNotExists("notification containing text \(format: text)")
+      throw PatrolError.viewNotExists("notification containing text \(format: substring)")
     }
   }
 
