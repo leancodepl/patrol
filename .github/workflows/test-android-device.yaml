@@ -89,9 +89,11 @@ jobs:
 
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
+        if: success() || failure()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: Firebase Test Lab
           SLACK_ICON: https://lh3.googleusercontent.com/gi3juiFPUx9A8vMvHqozISdrbTy-Rg6gjecG9k0J_Wnz_GJktwfkHu3iRpu8RFb8nAWSAjIZX0HEm0fO1ZNChQ
           SLACK_TITLE: Android test status
           SLACK_MESSAGE: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_COLOR: ${{ job.status }}
