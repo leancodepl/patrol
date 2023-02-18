@@ -35,6 +35,8 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
+    shouldPropagateDevicePointerEvents = true;
+
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       // ignore: invalid_use_of_visible_for_testing_member
@@ -87,10 +89,6 @@ Thrown by PatrolBinding.
   }
 
   final _logger = _defaultPrintLogger;
-
-  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
-  @override
-  TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
   @override
   void initInstances() {
