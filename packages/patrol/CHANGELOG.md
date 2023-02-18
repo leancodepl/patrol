@@ -3,6 +3,7 @@
 - Fix `PATROL_WAIT` (passed through `--wait` argument to `patrol test`)
   preventing frames from being pumped (#959)
 - Fix tapping on notification crashing on iPads (#963)
+- Remove no longer functional methods from `PatrolBinding` (#970)
 
 ## 1.0.2
 
