@@ -52,7 +52,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           return;
         }
 
-        // TODO: Migrate communication to gRPC
+        // TODO: Migrate communication to gRPC (https://github.com/leancodepl/patrol/issues/969)
         _logger('Sending Dart test results to the native side');
         await patrolChannel.invokeMethod<void>(
           'allTestsFinished',
