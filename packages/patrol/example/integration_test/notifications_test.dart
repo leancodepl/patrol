@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'common.dart';
 
 void main() {
@@ -13,10 +11,11 @@ void main() {
         await $.native.grantPermissionWhenInUse();
       }
 
-      await $(RegExp('someone liked')).tap();
-      if (Platform.isIOS) {
-        await $.native.closeHeadsUpNotification();
-      }
+      await $('Show in a few seconds').tap();
+      // if (Platform.isIOS) {
+      //   await $.native.closeHeadsUpNotification();
+      // }
+      await $.native.pressHome();
 
       await $.native.openNotifications();
       await $.native.tapOnNotificationBySelector(
