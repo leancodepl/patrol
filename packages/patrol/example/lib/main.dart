@@ -6,9 +6,21 @@ import 'package:example/permissions_screen.dart';
 import 'package:example/scrolling_screen.dart';
 import 'package:example/webview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 void main() {
   runApp(const ExampleApp());
+
+  setUpTimezone();
+}
+
+Future<void> setUpTimezone() async {
+  tz_data.initializeTimeZones();
+  final timezone = await FlutterNativeTimezone.getLocalTimezone();
+  final location = tz.getLocation(timezone);
+  tz.setLocalLocation(location);
 }
 
 class ExampleApp extends StatelessWidget {

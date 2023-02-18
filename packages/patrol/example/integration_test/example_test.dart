@@ -6,7 +6,7 @@ void main() {
   patrol(
     'counter state is the same after going to Home and switching apps',
     ($) async {
-      await $.pumpWidget(ExampleApp());
+      await createApp($);
 
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');

@@ -52,3 +52,9 @@ Test files must end with `_test.dart`. Otherwise the file is not considered a
 test and is not run.
 
 <Info>There's no difference between `--target` and `--targets`.</Info>
+
+To delay app uninstallation for 5 seconds after the test finishes:
+
+```
+patrol test --target integration_test/app_test.dart --wait 5
+```

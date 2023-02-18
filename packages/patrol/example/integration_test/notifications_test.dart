@@ -1,34 +1,27 @@
-import 'dart:io';
-
 import 'common.dart';
 
 void main() {
   patrol(
     'taps on notification',
     ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
-
+      await createApp($);
       await $('Open notifications screen').tap();
 
       if (await $.native.isPermissionDialogVisible()) {
-        print('Dialog is visible');
         await $.native.grantPermissionWhenInUse();
       }
 
-      await $(RegExp('someone liked')).tap();
-
-      if (Platform.isIOS) {
-        await $.native.closeHeadsUpNotification();
-      }
-
+      await $('Show in a few seconds').tap();
+      await $.native.pressHome();
       await $.native.openNotifications();
-      final notifications = await $.native.getNotifications();
-      print('Found ${notifications.length} notifications');
-      notifications.forEach(print);
+
+      // wait for notification to show up
+      await Future<void>.delayed(const Duration(seconds: 5));
 
       await $.native.tapOnNotificationBySelector(
-        Selector(textContains: 'Tap to see who'),
+        Selector(textContains: 'Someone liked'),
       );
+
       await $('Tapped notification with ID: 1').waitUntilVisible();
     },
   );

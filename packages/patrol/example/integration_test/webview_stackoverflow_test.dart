@@ -1,14 +1,10 @@
 import 'common.dart';
 
-Future<void> main() async {
-  testWebViewC();
-}
-
-void testWebViewC() {
+void main() async {
   patrol(
     'interacts with the StackOverflow website in a webview',
     ($) async {
-      await $.pumpWidgetAndSettle(ExampleApp());
+      await createApp($);
 
       await $('Open webview (StackOverflow)').scrollTo().tap();
 

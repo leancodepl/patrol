@@ -13,7 +13,7 @@ Future<void> main() async {
   }
 
   patrol('counter state is the same after switching apps', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     expect($(#counterText).text, '0');
 

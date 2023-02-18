@@ -2,7 +2,7 @@ import 'common.dart';
 
 void main() {
   patrol('disables and enables wifi twice', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $.native.disableWifi();
     await $.native.enableWifi();

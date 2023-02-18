@@ -63,8 +63,8 @@ class _LocationScreenState extends State<LocationScreen> {
           builder: (context) {
             if (!_permissionGranted) {
               return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'No location',

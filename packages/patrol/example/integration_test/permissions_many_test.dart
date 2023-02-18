@@ -6,7 +6,7 @@ const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
   patrol('grants various permissions', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $('Open permissions screen').scrollTo().tap();
 

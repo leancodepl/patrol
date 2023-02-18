@@ -1,3 +1,4 @@
+import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -7,6 +8,11 @@ export 'package:patrol/patrol.dart';
 
 final _patrolTesterConfig = PatrolTesterConfig();
 final _nativeAutomatorConfig = NativeAutomatorConfig();
+
+Future<void> createApp(PatrolTester $) async {
+  await setUpTimezone();
+  await $.pumpWidget(ExampleApp());
+}
 
 void patrol(
   String description,

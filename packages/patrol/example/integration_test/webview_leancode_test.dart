@@ -1,12 +1,8 @@
 import 'common.dart';
 
-Future<void> main() async {
-  testWebViewA();
-}
-
-void testWebViewA() {
+void main() async {
   patrol('interacts with the LeanCode website in a webview', ($) async {
-    await $.pumpWidgetAndSettle(ExampleApp());
+    await createApp($);
 
     await $('Open webview (LeanCode)').scrollTo().tap();
 

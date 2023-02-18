@@ -293,9 +293,13 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return try await runCatching {
       switch request.findBy {
       case .index(let index):
-        try await automator.tapOnNotification(by: Int(index))
+        try await automator.tapOnNotification(
+          byIndex: Int(index)
+        )
       case .selector(let selector):
-        try await automator.tapOnNotification(by: selector.textContains)
+        try await automator.tapOnNotification(
+          bySubstring: selector.textContains
+        )
       default:
         throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
       }
