@@ -19,12 +19,6 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 11
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
@@ -33,11 +27,6 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
-        with:
-          generate-job-summary: false
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -45,8 +34,6 @@ jobs:
 
       - name: Preload Flutter artifacts
         run: flutter precache
-
-      # TODO: Parallelize running on Firebase Test Lab with Flank
 
       - name: Run example_test.dart
         run: ./run_ios_testlab integration_test/example_test.dart
