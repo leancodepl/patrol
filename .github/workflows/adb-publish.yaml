@@ -26,4 +26,4 @@ jobs:
         with:
           sdk: stable
 
-      - uses: leancodepl/mobile-tools/.github/actions/pub-release
+      - uses: leancodepl/mobile-tools/.github/actions/pub-release@v1
