@@ -50,7 +50,8 @@ patrolTest('signs up', (PatrolTester $) async {
   await $(#passwordTextField).enterText('ny4ncat');
   await $(#termsCheckbox).tap();
   await $(#signUpButton).tap();
-  expect($('Welcome, Charlie!'), findsOneWidget);
+
+  await $('Welcome, Charlie!').waitUntilVisible();
 });
 ```
 
