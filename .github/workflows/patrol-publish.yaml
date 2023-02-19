@@ -33,4 +33,4 @@ jobs:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.version }}
 
-      - uses: leancodepl/mobile-tools/.github/actions/pub-release
+      - uses: leancodepl/mobile-tools/.github/actions/pub-release@master
