@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.2
 
 - Make output of `patrol test` much less verbose when test fails on Android.
   (#964)
