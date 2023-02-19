@@ -88,8 +88,7 @@ Thrown by PatrolBinding.
 
   final _logger = _defaultPrintLogger;
 
-  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is
-  // available on the stable channel
+  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
