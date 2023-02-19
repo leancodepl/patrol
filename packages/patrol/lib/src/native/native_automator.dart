@@ -315,7 +315,10 @@ class NativeAutomator {
     );
   }
 
-  /// Opens the quick settings shade.
+  /// Opens the quick settings shade on Android and Control Center on iOS.
+  ///
+  /// Doesn't work on iOS Simulator because Control Center is not available
+  /// there.
   ///
   /// See also:
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#openquicksettings>,
@@ -368,6 +371,11 @@ class NativeAutomator {
   /// Taps on the [index]-th visible notification.
   ///
   /// Notification shade has to be opened first with [openNotifications].
+  ///
+  /// See also:
+  ///
+  ///  * [tapOnNotificationBySelector], which allows for more precise
+  ///    specification of the notification to tap on
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
@@ -380,6 +388,10 @@ class NativeAutomator {
   /// Notification shade has to be opened first with [openNotifications].
   ///
   /// On iOS, only [Selector.textContains] is taken into account.
+  ///
+  /// See also:
+  ///
+  /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
   Future<void> tapOnNotificationBySelector(Selector selector) async {
     await _wrapRequest(
       'tapOnNotificationBySelector',
@@ -511,6 +523,10 @@ class NativeAutomator {
   /// The native view specified by [selector] must be:
   /// - EditText on Android
   /// - TextField or SecureTextField on iOS
+  ///
+  /// See also:
+  ///
+  ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
     Selector selector, {
     required String text,
@@ -538,6 +554,11 @@ class NativeAutomator {
   /// Native views considered as texts fields are:
   /// - EditText on Android
   /// - TextField or SecureTextField on iOS
+  ///
+  /// See also:
+  ///
+  ///  * [enterText], which allows for more precise specification of the text
+  ///    field to enter text into
   Future<void> enterTextByIndex(
     String text, {
     required int index,
@@ -609,6 +630,15 @@ class NativeAutomator {
   /// dialog is asking for.
   ///
   /// Throws if no permission request dialog is present.
+  ///
+  /// See also:
+  ///
+  ///  * [grantPermissionOnlyThisTime] and [denyPermission]
+  ///
+  ///  * [isPermissionDialogVisible], which should guard calls to this method
+  ///
+  ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
+  ///    location permission request dialogs
   Future<void> grantPermissionWhenInUse() async {
     await _wrapRequest(
       'grantPermissionWhenInUse',
@@ -625,6 +655,15 @@ class NativeAutomator {
   ///
   /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
   /// location permission.
+  ///
+  /// See also:
+  ///
+  ///  * [grantPermissionWhenInUse] and [denyPermission]
+  ///
+  ///  * [isPermissionDialogVisible], which should guard calls to this method
+  ///
+  ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
+  ///    location permission request dialogs
   Future<void> grantPermissionOnlyThisTime() async {
     await _wrapRequest(
       'grantPermissionOnlyThisTime',
@@ -640,6 +679,15 @@ class NativeAutomator {
   /// dialog is asking for.
   ///
   /// Throws if no permission request dialog is present.
+  ///
+  /// See also:
+  ///
+  ///  * [grantPermissionWhenInUse] and [grantPermissionOnlyThisTime]
+  ///
+  ///  * [isPermissionDialogVisible], which should guard calls to this method
+  ///
+  ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
+  ///    location permission request dialogs
   Future<void> denyPermission() async {
     await _wrapRequest(
       'denyPermission',
