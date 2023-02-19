@@ -21,7 +21,7 @@ jobs:
         working-directory: packages/patrol_cli
         run: ./check_versions
 
-      - name: Install Dart
+      - name: Set up Dart
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable

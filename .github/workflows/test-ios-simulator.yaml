@@ -27,7 +27,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Install Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.flutter-channel }}
@@ -35,7 +35,7 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: Install Patrol
+      - name: dart pub global activate patrol_cli
         run: dart pub global activate patrol_cli
 
       - uses: futureware-tech/simulator-action@v2

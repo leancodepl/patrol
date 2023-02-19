@@ -27,7 +27,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Install Java
+      - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -62,7 +62,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: echo "Generated AVD snapshot for caching"
 
-      - name: Install Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.flutter-channel }}
@@ -70,7 +70,7 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: Install Patrol
+      - name: dart pub global activate patrol_cli
         run: dart pub global activate patrol_cli
 
       - name: Generate Gradle wrapper

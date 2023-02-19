@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.3
 
 - Fix `PATROL_WAIT` (passed through `--wait` argument to `patrol test`)
   preventing frames from being pumped (#959)
