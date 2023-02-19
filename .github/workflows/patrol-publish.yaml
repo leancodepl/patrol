@@ -18,12 +18,12 @@ jobs:
         uses: actions/checkout@v3
 
       # This action adds a token needed for pub.dev
-      - name: Install Dart
+      - name: Set up Dart
         uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
 
-      - name: Install Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}

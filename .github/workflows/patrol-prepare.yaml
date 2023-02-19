@@ -23,7 +23,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Install Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -52,10 +52,10 @@ jobs:
       - name: brew update
         run: brew update
 
-      - name: Install swift-format
+      - name: brew install swift-format
         run: brew install swift-format
 
-      - name: Install clang-format
+      - name: brew install clang-format
         run: brew install clang-format
 
       # Disabled because of generated protobuf code
@@ -91,7 +91,7 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: Install Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}
