@@ -13,10 +13,6 @@ jobs:
       id-token: write
       contents: write
 
-    defaults:
-      run:
-        working-directory: packages/patrol_cli
-
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -29,4 +25,7 @@ jobs:
         with:
           sdk: stable
 
-      - uses: leancodepl/mobile-tools/.github/actions/pub-release@v1
+      - name: Publish to pub.dev
+        uses: leancodepl/mobile-tools/.github/actions/pub-release@v1
+        with:
+          path: packages/patrol_cli
