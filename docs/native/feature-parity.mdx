@@ -6,27 +6,43 @@ implemented. We hope that it will help you evaluate Patrol.
 We strive for high feature parity across iOS and Android, but unfortunately it's
 impossible to reach 100%.
 
-| **Feature**                          | **Android**   | **iOS**       |
-| ------------------------------------ | ------------- | ------------- |
-| Press home                           | ✅            | ✅            |
-| Press back                           | ✅            | ❌ (no API)   |
-| Open any app                         | ✅            | ✅            |
-| Open notifications                   | ✅            | ✅            |
-| Tap on notification                  | ✅            | ✅            |
-| Open quick settings / Control Center | ✅            | ✅            |
-| Toggle dark mode                     | ✅            | ✅            |
-| Toggle airplane mode                 | ❌            | ✅            |
-| Toggle cellular                      | ✅            | ✅            |
-| Toggle Wi-Fi                         | ✅            | ✅            |
-| Toggle Bluetooth                     | ❌ see [#282] | ✅            |
-| Toggle location                      | ❌ see [#283] | ❌ see [#326] |
-| Tap                                  | ✅            | ✅            |
-| Double tap                           | ✅            | ✅            |
-| Enter text                           | ✅            | ✅            |
-| Handle permission dialogs            | ✅            | ✅            |
-| Interact with WebView                | ⚠️ see [#244] | ✅            |
+| **Feature**                 | **Android**   | **iOS**       |
+| --------------------------- | ------------- | ------------- |
+| [Press home]                | ✅            | ✅            |
+| [Press back]                | ✅            | ❌ (no API)   |
+| [Open any app]              | ✅            | ✅            |
+| [Open notifications]        | ✅            | ✅            |
+| [Tap on notification]       | ✅            | ✅            |
+| [Open quick settings]       | ✅            | ✅            |
+| [Toggle dark mode]          | ✅            | ✅            |
+| [Toggle airplane mode]      | ❌            | ✅            |
+| [Toggle cellular]           | ✅            | ✅            |
+| [Toggle Wi-Fi]              | ✅            | ✅            |
+| [Toggle Bluetooth]          | ❌ see [#282] | ✅            |
+| [Toggle location]           | ❌ see [#283] | ❌ see [#326] |
+| [Tap]                       | ✅            | ✅            |
+| [Double tap]                | ✅            | ✅            |
+| [Enter text]                | ✅            | ✅            |
+| [Handle permission dialogs] | ✅            | ✅            |
+| Interact with WebView       | ⚠️ see [#244] | ✅            |
 
 [#244]: https://github.com/leancodepl/patrol/issues/244
 [#282]: https://github.com/leancodepl/patrol/issues/282
 [#283]: https://github.com/leancodepl/patrol/issues/283
 [#326]: https://github.com/leancodepl/patrol/issues/326
+[press home]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/pressHome.html
+[press back]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/pressBack.html
+[open any app]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openApp.html
+[open notifications]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openNotifications.html
+[tap on notification]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/tapOnNotificationBySelector.html
+[open quick settings]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openQuickSettings.html
+[toggle dark mode]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableDarkMode.html
+[toggle airplane mode]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableAirplaneMode.html
+[toggle cellular]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableCellular.html
+[toggle wi-fi]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableWifi.html
+[toggle bluetooth]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableBluetooth.html
+[toggle location]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableLocation.html
+[tap]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/tap.html
+[double tap]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/doubleTap.html
+[enter text]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enterText.html
+[handle permission dialogs]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/grantPermissionWhenInUse.html
