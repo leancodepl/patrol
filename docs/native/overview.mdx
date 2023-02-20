@@ -11,7 +11,30 @@ to test many critical business features:
   mode
 - granting runtime permissions
 
-Patrol's native automation feature solve these problems.
+Patrol's native automation feature finally solve these problems. Here's a tiny
+snippet to spice things up:
+
+```dart title="integration_test/demo_test.dart"
+void main() {
+  patrolTest('demo', nativeAutomation: true, (PatrolTester $) async {
+    await $.pumpWidgetAndSettle(AwesomeApp());
+    // prepare network conditions
+    await $.native.enableCellular();
+    await $.native.disableWifi();
+
+    // toggle system theme
+    await $.native.enableDarkMode();
+
+    // handle native location permission request dialog
+    await $.native.selectFineLocation();
+    await $.native.grantPermissionWhenInUse();
+
+    // tap on the first notification
+    await $.native.openNotifications();
+    await $.native.tapOnNotificationByIndex(0);
+  });
+}
+```
 
 <Info>Native automation is currently available only on Android and iOS.</Info>
 
