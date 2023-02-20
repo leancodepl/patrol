@@ -35,6 +35,13 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
+    // Override FlutterError.onError to log all exceptions
+    final oldReporter = FlutterError.onError;
+    FlutterError.onError = (details) {
+      FlutterError.dumpErrorToConsole(details, forceReport: true);
+      oldReporter!(details);
+    };
+
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       // ignore: invalid_use_of_visible_for_testing_member
