@@ -369,7 +369,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           );
           action = () => _androidTestBackend.execute(options, device);
           final package = config.packageName;
-          if (package != null) {
+          if (package != null && config.uninstall) {
             finalizer = () => _androidTestBackend.uninstall(package, device);
           }
           break;
@@ -387,7 +387,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
           );
           action = () async => _iosTestBackend.execute(options, device);
           final bundle = config.bundleId;
-          if (bundle != null) {
+          if (bundle != null && config.uninstall) {
             finalizer = () => _iosTestBackend.uninstall(bundle, device);
           }
       }
