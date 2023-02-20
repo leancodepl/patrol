@@ -25,6 +25,7 @@ final _defaultConfig = TestCommandConfig(
   configuration: 'Debug',
   dartDefines: {'PATROL_WAIT': '0', 'PATROL_VERBOSE': 'false'},
   displayLabel: true,
+  uninstall: true,
   packageName: null,
   bundleId: null,
   repeat: 1,
