@@ -1,3 +1,8 @@
+## Unreleased
+
+- Added `--no-uninstall` flag, which lets you not uninstall the apps after the
+  tests finish
+
 ## 1.0.2
 
 - Make output of `patrol test` much less verbose when test fails on Android.
