@@ -15,12 +15,6 @@ void _defaultPrintLogger(String message) {
   }
 }
 
-// copied from package:integration_test/lib/integration_test.dart
-const bool _shouldReportResultsToNative = bool.fromEnvironment(
-  'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
-  defaultValue: true,
-);
-
 /// The method channel used to report the results of the tests to the underlying
 /// platform's testing framework.
 ///
@@ -35,24 +29,6 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
-    // Override FlutterError.onError to log all exceptions
-    final oldReporter = FlutterError.onError;
-    FlutterError.onError = (details) {
-      FlutterError.dumpErrorToConsole(details, forceReport: true);
-      oldReporter!(details);
-    };
-
-    final oldTestExceptionReporter = reportTestException;
-    reportTestException = (details, testDescription) {
-      // ignore: invalid_use_of_visible_for_testing_member
-      results[testDescription] = Failure(testDescription, details.toString());
-      oldTestExceptionReporter(details, testDescription);
-    };
-
-    if (!_shouldReportResultsToNative) {
-      return;
-    }
-
     tearDownAll(() async {
       try {
         if (!Platform.isIOS) {
