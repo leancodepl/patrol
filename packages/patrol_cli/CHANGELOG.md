@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.3
 
 - Add `--no-uninstall` flag, which lets you not uninstall the apps after the
   tests finish (#983)
