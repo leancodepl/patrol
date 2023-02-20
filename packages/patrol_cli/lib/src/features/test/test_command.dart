@@ -233,6 +233,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
       'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
+      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
     final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
