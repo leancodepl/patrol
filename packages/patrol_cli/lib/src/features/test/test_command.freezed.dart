@@ -19,14 +19,17 @@ mixin _$TestCommandConfig {
   List<Device> get devices => throw _privateConstructorUsedError;
   List<String> get targets => throw _privateConstructorUsedError;
   String? get flavor => throw _privateConstructorUsedError;
+  Map<String, String> get dartDefines => throw _privateConstructorUsedError;
+  int get repeat => throw _privateConstructorUsedError;
+  bool get displayLabel => throw _privateConstructorUsedError;
+  bool get uninstall =>
+      throw _privateConstructorUsedError; // Android-only options
+  String? get packageName =>
+      throw _privateConstructorUsedError; // iOS-only options
+  String? get bundleId => throw _privateConstructorUsedError;
   String get scheme => throw _privateConstructorUsedError;
   String get xcconfigFile => throw _privateConstructorUsedError;
   String get configuration => throw _privateConstructorUsedError;
-  Map<String, String> get dartDefines => throw _privateConstructorUsedError;
-  String? get packageName => throw _privateConstructorUsedError;
-  String? get bundleId => throw _privateConstructorUsedError;
-  int get repeat => throw _privateConstructorUsedError;
-  bool get displayLabel => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TestCommandConfigCopyWith<TestCommandConfig> get copyWith =>
@@ -43,14 +46,15 @@ abstract class $TestCommandConfigCopyWith<$Res> {
       {List<Device> devices,
       List<String> targets,
       String? flavor,
-      String scheme,
-      String xcconfigFile,
-      String configuration,
       Map<String, String> dartDefines,
+      int repeat,
+      bool displayLabel,
+      bool uninstall,
       String? packageName,
       String? bundleId,
-      int repeat,
-      bool displayLabel});
+      String scheme,
+      String xcconfigFile,
+      String configuration});
 }
 
 /// @nodoc
@@ -69,14 +73,15 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
     Object? devices = null,
     Object? targets = null,
     Object? flavor = freezed,
+    Object? dartDefines = null,
+    Object? repeat = null,
+    Object? displayLabel = null,
+    Object? uninstall = null,
+    Object? packageName = freezed,
+    Object? bundleId = freezed,
     Object? scheme = null,
     Object? xcconfigFile = null,
     Object? configuration = null,
-    Object? dartDefines = null,
-    Object? packageName = freezed,
-    Object? bundleId = freezed,
-    Object? repeat = null,
-    Object? displayLabel = null,
   }) {
     return _then(_value.copyWith(
       devices: null == devices
@@ -91,6 +96,30 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
               as String?,
+      dartDefines: null == dartDefines
+          ? _value.dartDefines
+          : dartDefines // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      repeat: null == repeat
+          ? _value.repeat
+          : repeat // ignore: cast_nullable_to_non_nullable
+              as int,
+      displayLabel: null == displayLabel
+          ? _value.displayLabel
+          : displayLabel // ignore: cast_nullable_to_non_nullable
+              as bool,
+      uninstall: null == uninstall
+          ? _value.uninstall
+          : uninstall // ignore: cast_nullable_to_non_nullable
+              as bool,
+      packageName: freezed == packageName
+          ? _value.packageName
+          : packageName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bundleId: freezed == bundleId
+          ? _value.bundleId
+          : bundleId // ignore: cast_nullable_to_non_nullable
+              as String?,
       scheme: null == scheme
           ? _value.scheme
           : scheme // ignore: cast_nullable_to_non_nullable
@@ -103,26 +132,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.configuration
           : configuration // ignore: cast_nullable_to_non_nullable
               as String,
-      dartDefines: null == dartDefines
-          ? _value.dartDefines
-          : dartDefines // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>,
-      packageName: freezed == packageName
-          ? _value.packageName
-          : packageName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      bundleId: freezed == bundleId
-          ? _value.bundleId
-          : bundleId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      repeat: null == repeat
-          ? _value.repeat
-          : repeat // ignore: cast_nullable_to_non_nullable
-              as int,
-      displayLabel: null == displayLabel
-          ? _value.displayLabel
-          : displayLabel // ignore: cast_nullable_to_non_nullable
-              as bool,
     ) as $Val);
   }
 }
@@ -139,14 +148,15 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
       {List<Device> devices,
       List<String> targets,
       String? flavor,
-      String scheme,
-      String xcconfigFile,
-      String configuration,
       Map<String, String> dartDefines,
+      int repeat,
+      bool displayLabel,
+      bool uninstall,
       String? packageName,
       String? bundleId,
-      int repeat,
-      bool displayLabel});
+      String scheme,
+      String xcconfigFile,
+      String configuration});
 }
 
 /// @nodoc
@@ -163,14 +173,15 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
     Object? devices = null,
     Object? targets = null,
     Object? flavor = freezed,
+    Object? dartDefines = null,
+    Object? repeat = null,
+    Object? displayLabel = null,
+    Object? uninstall = null,
+    Object? packageName = freezed,
+    Object? bundleId = freezed,
     Object? scheme = null,
     Object? xcconfigFile = null,
     Object? configuration = null,
-    Object? dartDefines = null,
-    Object? packageName = freezed,
-    Object? bundleId = freezed,
-    Object? repeat = null,
-    Object? displayLabel = null,
   }) {
     return _then(_$_TestCommandConfig(
       devices: null == devices
@@ -185,6 +196,30 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value.flavor
           : flavor // ignore: cast_nullable_to_non_nullable
               as String?,
+      dartDefines: null == dartDefines
+          ? _value._dartDefines
+          : dartDefines // ignore: cast_nullable_to_non_nullable
+              as Map<String, String>,
+      repeat: null == repeat
+          ? _value.repeat
+          : repeat // ignore: cast_nullable_to_non_nullable
+              as int,
+      displayLabel: null == displayLabel
+          ? _value.displayLabel
+          : displayLabel // ignore: cast_nullable_to_non_nullable
+              as bool,
+      uninstall: null == uninstall
+          ? _value.uninstall
+          : uninstall // ignore: cast_nullable_to_non_nullable
+              as bool,
+      packageName: freezed == packageName
+          ? _value.packageName
+          : packageName // ignore: cast_nullable_to_non_nullable
+              as String?,
+      bundleId: freezed == bundleId
+          ? _value.bundleId
+          : bundleId // ignore: cast_nullable_to_non_nullable
+              as String?,
       scheme: null == scheme
           ? _value.scheme
           : scheme // ignore: cast_nullable_to_non_nullable
@@ -197,26 +232,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value.configuration
           : configuration // ignore: cast_nullable_to_non_nullable
               as String,
-      dartDefines: null == dartDefines
-          ? _value._dartDefines
-          : dartDefines // ignore: cast_nullable_to_non_nullable
-              as Map<String, String>,
-      packageName: freezed == packageName
-          ? _value.packageName
-          : packageName // ignore: cast_nullable_to_non_nullable
-              as String?,
-      bundleId: freezed == bundleId
-          ? _value.bundleId
-          : bundleId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      repeat: null == repeat
-          ? _value.repeat
-          : repeat // ignore: cast_nullable_to_non_nullable
-              as int,
-      displayLabel: null == displayLabel
-          ? _value.displayLabel
-          : displayLabel // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
   }
 }
@@ -228,14 +243,15 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       {required final List<Device> devices,
       required final List<String> targets,
       required this.flavor,
-      required this.scheme,
-      required this.xcconfigFile,
-      required this.configuration,
       required final Map<String, String> dartDefines,
+      required this.repeat,
+      required this.displayLabel,
+      required this.uninstall,
       required this.packageName,
       required this.bundleId,
-      required this.repeat,
-      required this.displayLabel})
+      required this.scheme,
+      required this.xcconfigFile,
+      required this.configuration})
       : _devices = devices,
         _targets = targets,
         _dartDefines = dartDefines;
@@ -258,12 +274,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 
   @override
   final String? flavor;
-  @override
-  final String scheme;
-  @override
-  final String xcconfigFile;
-  @override
-  final String configuration;
   final Map<String, String> _dartDefines;
   @override
   Map<String, String> get dartDefines {
@@ -273,17 +283,27 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   }
 
   @override
-  final String? packageName;
-  @override
-  final String? bundleId;
-  @override
   final int repeat;
   @override
   final bool displayLabel;
+  @override
+  final bool uninstall;
+// Android-only options
+  @override
+  final String? packageName;
+// iOS-only options
+  @override
+  final String? bundleId;
+  @override
+  final String scheme;
+  @override
+  final String xcconfigFile;
+  @override
+  final String configuration;
 
   @override
   String toString() {
-    return 'TestCommandConfig(devices: $devices, targets: $targets, flavor: $flavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration, dartDefines: $dartDefines, packageName: $packageName, bundleId: $bundleId, repeat: $repeat, displayLabel: $displayLabel)';
+    return 'TestCommandConfig(devices: $devices, targets: $targets, flavor: $flavor, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, bundleId: $bundleId, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
   }
 
   @override
@@ -294,20 +314,22 @@ class _$_TestCommandConfig implements _TestCommandConfig {
             const DeepCollectionEquality().equals(other._devices, _devices) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             (identical(other.flavor, flavor) || other.flavor == flavor) &&
-            (identical(other.scheme, scheme) || other.scheme == scheme) &&
-            (identical(other.xcconfigFile, xcconfigFile) ||
-                other.xcconfigFile == xcconfigFile) &&
-            (identical(other.configuration, configuration) ||
-                other.configuration == configuration) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
+            (identical(other.repeat, repeat) || other.repeat == repeat) &&
+            (identical(other.displayLabel, displayLabel) ||
+                other.displayLabel == displayLabel) &&
+            (identical(other.uninstall, uninstall) ||
+                other.uninstall == uninstall) &&
             (identical(other.packageName, packageName) ||
                 other.packageName == packageName) &&
             (identical(other.bundleId, bundleId) ||
                 other.bundleId == bundleId) &&
-            (identical(other.repeat, repeat) || other.repeat == repeat) &&
-            (identical(other.displayLabel, displayLabel) ||
-                other.displayLabel == displayLabel));
+            (identical(other.scheme, scheme) || other.scheme == scheme) &&
+            (identical(other.xcconfigFile, xcconfigFile) ||
+                other.xcconfigFile == xcconfigFile) &&
+            (identical(other.configuration, configuration) ||
+                other.configuration == configuration));
   }
 
   @override
@@ -316,14 +338,15 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       const DeepCollectionEquality().hash(_devices),
       const DeepCollectionEquality().hash(_targets),
       flavor,
-      scheme,
-      xcconfigFile,
-      configuration,
       const DeepCollectionEquality().hash(_dartDefines),
+      repeat,
+      displayLabel,
+      uninstall,
       packageName,
       bundleId,
-      repeat,
-      displayLabel);
+      scheme,
+      xcconfigFile,
+      configuration);
 
   @JsonKey(ignore: true)
   @override
@@ -338,14 +361,15 @@ abstract class _TestCommandConfig implements TestCommandConfig {
       {required final List<Device> devices,
       required final List<String> targets,
       required final String? flavor,
-      required final String scheme,
-      required final String xcconfigFile,
-      required final String configuration,
       required final Map<String, String> dartDefines,
+      required final int repeat,
+      required final bool displayLabel,
+      required final bool uninstall,
       required final String? packageName,
       required final String? bundleId,
-      required final int repeat,
-      required final bool displayLabel}) = _$_TestCommandConfig;
+      required final String scheme,
+      required final String xcconfigFile,
+      required final String configuration}) = _$_TestCommandConfig;
 
   @override
   List<Device> get devices;
@@ -354,21 +378,23 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   @override
   String? get flavor;
   @override
+  Map<String, String> get dartDefines;
+  @override
+  int get repeat;
+  @override
+  bool get displayLabel;
+  @override
+  bool get uninstall;
+  @override // Android-only options
+  String? get packageName;
+  @override // iOS-only options
+  String? get bundleId;
+  @override
   String get scheme;
   @override
   String get xcconfigFile;
   @override
   String get configuration;
-  @override
-  Map<String, String> get dartDefines;
-  @override
-  String? get packageName;
-  @override
-  String? get bundleId;
-  @override
-  int get repeat;
-  @override
-  bool get displayLabel;
   @override
   @JsonKey(ignore: true)
   _$$_TestCommandConfigCopyWith<_$_TestCommandConfig> get copyWith =>
