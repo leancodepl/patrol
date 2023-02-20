@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:meta/meta.dart';
 
 // ignore: avoid_print
 void _defaultPrintLogger(String message) {
@@ -27,6 +28,14 @@ const patrolChannel = MethodChannel('plugins.flutter.io/integration_test');
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
+    // Override FlutterError.onError to log all exceptions
+    final oldReporter = FlutterError.onError;
+    FlutterError.onError = (details) {
+      testResults.
+      FlutterError.dumpErrorToConsole(details, forceReport: true);
+      oldReporter!(details);
+    };
+
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       oldTestExceptionReporter(details, testDescription);
@@ -45,7 +54,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           'allTestsFinished',
           <String, dynamic>{
             // ignore: invalid_use_of_visible_for_testing_member
-            'results': results.map<String, dynamic>((name, result) {
+            'results': testResults.map<String, dynamic>((name, result) {
               if (result is Failure) {
                 return MapEntry<String, dynamic>(name, result.details);
               }
@@ -84,6 +93,9 @@ Thrown by PatrolBinding.
     super.initInstances();
     _instance = this;
   }
+
+  @internal
+  Map<String, Object> testResults = <String, Object>{};
 
   /// The singleton instance of this object.
   ///
