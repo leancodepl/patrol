@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,19 +20,25 @@ void _defaultPrintLogger(String message) {
 /// UIAutomator.
 ///
 /// On iOS, this is relevant when running UI tests with XCUITest.
-const patrolChannel = MethodChannel('pl.leancode.patrol/main');
+const patrolChannel = MethodChannel('plugins.flutter.io/integration_test');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
+    final oldTestExceptionReporter = reportTestException;
+    reportTestException = (details, testDescription) {
+      oldTestExceptionReporter(details, testDescription);
+      print('HERE HERE');
+      results[testDescription] = Failure(
+        'HELLO1 $testDescription',
+        'HELLO2 $details',
+      );
+    };
+
     tearDownAll(() async {
       try {
-        if (!Platform.isIOS) {
-          return;
-        }
-
         // TODO: Migrate communication to gRPC
         _logger('Sending Dart test results to the native side');
         await patrolChannel.invokeMethod<void>(
