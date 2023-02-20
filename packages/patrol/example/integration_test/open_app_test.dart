@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'common.dart';
 
-Future<void> main() async {
+void main() {
   late String mapsId;
   if (Platform.isIOS) {
     mapsId = 'com.apple.Maps';
