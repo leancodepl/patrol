@@ -23,14 +23,17 @@ class TestCommandConfig with _$TestCommandConfig {
     required List<Device> devices,
     required List<String> targets,
     required String? flavor,
+    required Map<String, String> dartDefines,
+    required int repeat,
+    required bool displayLabel,
+    required bool uninstall,
+    // Android-only options
+    required String? packageName,
+    // iOS-only options
+    required String? bundleId,
     required String scheme,
     required String xcconfigFile,
     required String configuration,
-    required Map<String, String> dartDefines,
-    required String? packageName,
-    required String? bundleId,
-    required int repeat,
-    required bool displayLabel,
   }) = _TestCommandConfig;
 }
 
@@ -89,16 +92,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         valueHelp: 'KEY=VALUE',
       )
       ..addOption(
-        'package-name',
-        help: 'Package name of the Android app under test.',
-        valueHelp: 'pl.leancode.awesomeapp',
-      )
-      ..addOption(
-        'bundle-id',
-        help: 'Bundle identifier of the iOS app under test.',
-        valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addOption(
         'wait',
         help: 'Seconds to wait after the test fails or succeeds.',
         defaultsTo: '0',
@@ -110,9 +103,26 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         defaultsTo: '$_defaultRepeats',
       )
       ..addFlag(
+        'uninstall',
+        help: 'Whether to uninstall the apps after test finishes.',
+        defaultsTo: true,
+      )
+      ..addFlag(
         'label',
         help: 'Display the label over the application under test.',
         defaultsTo: true,
+      )
+      // Android-only options
+      ..addOption(
+        'package-name',
+        help: 'Package name of the Android app under test.',
+        valueHelp: 'pl.leancode.awesomeapp',
+      )
+      // iOS-only options
+      ..addOption(
+        'bundle-id',
+        help: 'Bundle identifier of the iOS app under test.',
+        valueHelp: 'pl.leancode.AwesomeApp',
       )
       ..addOption(
         'scheme',
@@ -206,6 +216,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     }
 
     final displayLabel = argResults?['label'] as bool?;
+    final uninstall = argResults?['uninstall'] as bool?;
 
     if (repeat < 1) {
       throwToolExit('repeat count must not be smaller than 1');
@@ -254,6 +265,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       bundleId: bundleId,
       repeat: repeat,
       displayLabel: displayLabel ?? true,
+      uninstall: uninstall ?? true,
     );
   }
 
