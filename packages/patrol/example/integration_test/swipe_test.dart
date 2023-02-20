@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 
 import 'common.dart';
 
-Future<void> main() async {
+void main() {
   late String appId;
   if (Platform.isIOS) {
     appId = 'com.apple.Preferences';
