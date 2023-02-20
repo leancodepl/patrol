@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Remove unnecessary dependency on `vm_service` (#986)
+
 ## 1.0.3
 
 - Fix `PATROL_WAIT` (passed through `--wait` argument to `patrol test`)
