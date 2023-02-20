@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
+import 'package:test_api/src/backend/invoker.dart'; // ignore: implementation_imports
 
 // ignore: avoid_print
 void _defaultPrintLogger(String message) {
@@ -26,23 +27,57 @@ const patrolChannel = MethodChannel('plugins.flutter.io/integration_test');
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
+  /// Returns an instance of the [PatrolBinding], creating and initializing it
+  /// if necessary.
+  factory PatrolBinding.ensureInitialized() {
+    if (_instance == null) {
+      PatrolBinding();
+    }
+    return _instance!;
+  }
+
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
     // Override FlutterError.onError to log all exceptions
     final oldReporter = FlutterError.onError;
+
+    setUp(() {
+      final name = Invoker.current?.liveTest.individualName;
+      print('DEBUG Starting test: $name');
+      _currentTestName = name;
+    });
+
+    tearDown(() {
+      final name = Invoker.current?.liveTest.individualName;
+      print('DEBUG Finishing test: $name');
+      _currentTestName = null;
+    });
+
     FlutterError.onError = (details) {
-      testResults.
-      FlutterError.dumpErrorToConsole(details, forceReport: true);
+      final currentTestName = _currentTestName;
+      debugPrint('Exception caught during test: $currentTestName');
+      if (currentTestName == null) {
+        debugPrint(
+          'DEBUG FLutterError was thrown but current test name is null',
+        );
+        return;
+      }
+      testResults[currentTestName] = Failure(
+        'HELLO1 ${Invoker.current?.liveTest.individualName}',
+        'HELLO2 $details',
+      );
+
       oldReporter!(details);
     };
 
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       oldTestExceptionReporter(details, testDescription);
-      print('HERE HERE');
-      results[testDescription] = Failure(
-        'HELLO1 $testDescription',
-        'HELLO2 $details',
+
+      final previousResult = testResults[testDescription];
+      testResults[testDescription] = Failure(
+        'Name: $testDescription',
+        'Details: $details + $previousResult',
       );
     };
 
@@ -73,14 +108,7 @@ Thrown by PatrolBinding.
     });
   }
 
-  /// Returns an instance of the [PatrolBinding], creating and initializing it
-  /// if necessary.
-  factory PatrolBinding.ensureInitialized() {
-    if (_instance == null) {
-      PatrolBinding();
-    }
-    return _instance!;
-  }
+  String? _currentTestName;
 
   final _logger = _defaultPrintLogger;
 
