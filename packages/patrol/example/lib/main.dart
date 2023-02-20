@@ -60,6 +60,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
     setState(() {
       _counter = newValue;
     });
+    throw Exception('oopsie!');
   }
 
   void _decrementCounter([int value = 1]) {
