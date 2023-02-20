@@ -10,6 +10,7 @@ class PatrolPlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        // This channel is currently not used
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "pl.leancode.patrol/main")
         channel.setMethodCallHandler(this)
     }

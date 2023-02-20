@@ -2,7 +2,7 @@ import Flutter
 import GRPC
 import UIKit
 
-let kChannelName = "pl.leancode.patrol/main"
+let kChannelName = "plugins.flutter.io/integration_test"
 let kMethodAllTestsFinished = "allTestsFinished"
 
 let kErrorCreateChannelFailed = "create_channel_failed"
