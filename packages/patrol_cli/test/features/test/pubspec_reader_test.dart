@@ -46,7 +46,8 @@ patrol:
 
         expect(reader.read().android.appName, equals('Example'));
         expect(reader.read().ios.appName, equals('Example'));
-        expect(reader.read().flavor, equals('dev'));
+        expect(reader.read().android.flavor, equals('dev'));
+        expect(reader.read().ios.flavor, equals('dev'));
       });
 
       test('reads `android` block', () {
@@ -74,26 +75,29 @@ patrol:
         expect(reader.read().ios.appName, equals('The Example'));
         expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
       });
-    });
 
-    test('overrides global values with platform-specific ones', () {
-      fs.file('pubspec.yaml').writeAsStringSync('''
+      test('overrides global values with platform-specific ones', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase
 patrol:
   app_name: Example
   flavor: dev
   android:
     package_name: com.example.app
+    flavor: devAndroid
   ios:
     app_name: The Example
     bundle_id: com.example.ExampleApp
+    flavor: devApple
 ''');
 
-      expect(reader.read().android.appName, equals('Example'));
-      expect(reader.read().android.packageName, equals('com.example.app'));
-      expect(reader.read().flavor, equals('dev'));
-      expect(reader.read().ios.appName, equals('The Example'));
-      expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
+        expect(reader.read().android.appName, equals('Example'));
+        expect(reader.read().android.packageName, equals('com.example.app'));
+        expect(reader.read().android.flavor, equals('devAndroid'));
+        expect(reader.read().ios.appName, equals('The Example'));
+        expect(reader.read().ios.bundleId, equals('com.example.ExampleApp'));
+        expect(reader.read().ios.flavor, equals('devApple'));
+      });
     });
   });
 }

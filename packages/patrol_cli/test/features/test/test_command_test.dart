@@ -19,16 +19,19 @@ import '../../mocks.dart';
 final _defaultConfig = TestCommandConfig(
   devices: [androidDevice],
   targets: [],
-  flavor: null,
-  scheme: 'Runner',
-  xcconfigFile: 'Flutter/Debug.xcconfig',
-  configuration: 'Debug',
+  repeat: 1,
   dartDefines: {'PATROL_WAIT': '0', 'PATROL_VERBOSE': 'false'},
   displayLabel: true,
   uninstall: true,
+  // Android-specific options
   packageName: null,
+  androidFlavor: null,
+  // iOS-specific options
   bundleId: null,
-  repeat: 1,
+  iosFlavor: null,
+  scheme: 'Runner',
+  xcconfigFile: 'Flutter/Debug.xcconfig',
+  configuration: 'Debug',
 );
 
 void main() {

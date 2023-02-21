@@ -22,15 +22,16 @@ class TestCommandConfig with _$TestCommandConfig {
   const factory TestCommandConfig({
     required List<Device> devices,
     required List<String> targets,
-    required String? flavor,
     required Map<String, String> dartDefines,
     required int repeat,
     required bool displayLabel,
     required bool uninstall,
     // Android-only options
     required String? packageName,
+    required String? androidFlavor,
     // iOS-only options
     required String? bundleId,
+    required String? iosFlavor,
     required String scheme,
     required String xcconfigFile,
     required String configuration,
@@ -176,10 +177,20 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     final pubspecConfig = _pubspecReader.read();
 
-    var flavor = argResults?['flavor'] as String?;
-    flavor ??= pubspecConfig.flavor;
-    if (flavor != null) {
-      _logger.detail('Received flavor: $flavor');
+    String? androidFlavor;
+    String? iosFlavor;
+    if (argResults?['flavor'] is String) {
+      androidFlavor = argResults?['flavor'] as String;
+      iosFlavor = argResults?['flavor'] as String;
+    } else {
+      androidFlavor = pubspecConfig.android.flavor;
+      iosFlavor = pubspecConfig.ios.flavor;
+    }
+    if (androidFlavor != null) {
+      _logger.detail('Received Android flavor: $androidFlavor');
+    }
+    if (iosFlavor != null) {
+      _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
     final devices = argResults?['device'] as List<String>? ?? [];
@@ -253,19 +264,22 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     return TestCommandConfig(
       devices: devicesToUse,
       targets: targets,
-      flavor: flavor,
+      dartDefines: effectiveDartDefines,
+      repeat: repeat,
+      displayLabel: displayLabel ?? true,
+      uninstall: uninstall ?? true,
+      // Android-specific options
+      packageName: packageName,
+      androidFlavor: androidFlavor,
+      // iOS-specific options
+      bundleId: bundleId,
+      iosFlavor: iosFlavor,
       scheme: argResults?['scheme'] as String? ?? _defaultScheme,
       xcconfigFile: argResults?['xcconfig'] as String? ?? _defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
           : argResults?['configuration'] as String? ?? _defaultConfiguration,
-      dartDefines: effectiveDartDefines,
-      packageName: packageName,
-      bundleId: bundleId,
-      repeat: repeat,
-      displayLabel: displayLabel ?? true,
-      uninstall: uninstall ?? true,
     );
   }
 
@@ -317,7 +331,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         case TargetPlatform.android:
           final options = AndroidAppOptions(
             target: target,
-            flavor: config.flavor,
+            flavor: config.androidFlavor,
             dartDefines: {
               ...config.dartDefines,
               if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
@@ -328,7 +342,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
             target: target,
-            flavor: config.flavor,
+            flavor: config.iosFlavor,
             dartDefines: {
               ...config.dartDefines,
               if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
@@ -361,7 +375,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         case TargetPlatform.android:
           final options = AndroidAppOptions(
             target: target,
-            flavor: config.flavor,
+            flavor: config.androidFlavor,
             dartDefines: {
               ...config.dartDefines,
               if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
@@ -376,7 +390,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
             target: target,
-            flavor: config.flavor,
+            flavor: config.iosFlavor,
             dartDefines: {
               ...config.dartDefines,
               if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
