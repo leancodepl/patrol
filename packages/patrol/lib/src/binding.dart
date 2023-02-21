@@ -38,48 +38,17 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
-    // Override FlutterError.onError to log all exceptions
-    final oldReporter = FlutterError.onError;
-
     setUp(() {
       final name = Invoker.current?.liveTest.individualName;
       print('DEBUG Starting test: $name');
-      _currentTestName = name;
+      currentTestName = name;
     });
 
     tearDown(() {
       final name = Invoker.current?.liveTest.individualName;
       print('DEBUG Finishing test: $name');
-      _currentTestName = null;
+      currentTestName = null;
     });
-
-    FlutterError.onError = (details) {
-      final currentTestName = _currentTestName;
-      debugPrint('Exception caught during test: $currentTestName');
-      if (currentTestName == null) {
-        debugPrint(
-          'DEBUG FLutterError was thrown but current test name is null',
-        );
-        return;
-      }
-      testResults[currentTestName] = Failure(
-        'HELLO1 ${Invoker.current?.liveTest.individualName}',
-        'HELLO2 $details',
-      );
-
-      oldReporter!(details);
-    };
-
-    final oldTestExceptionReporter = reportTestException;
-    reportTestException = (details, testDescription) {
-      oldTestExceptionReporter(details, testDescription);
-
-      final previousResult = testResults[testDescription];
-      testResults[testDescription] = Failure(
-        'Name: $testDescription',
-        'Details: $details + $previousResult',
-      );
-    };
 
     tearDownAll(() async {
       try {
@@ -108,7 +77,8 @@ Thrown by PatrolBinding.
     });
   }
 
-  String? _currentTestName;
+  @internal
+  String? currentTestName;
 
   final _logger = _defaultPrintLogger;
 

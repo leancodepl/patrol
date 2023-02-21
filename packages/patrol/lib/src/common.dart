@@ -1,4 +1,6 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
@@ -45,13 +47,13 @@ void patrolTest(
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   NativeAutomator? nativeAutomator;
+  PatrolBinding? binding;
 
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
-        final binding = PatrolBinding.ensureInitialized();
+        binding = PatrolBinding.ensureInitialized();
         binding.framePolicy = framePolicy;
-
         nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
         break;
       case BindingType.integrationTest:
@@ -73,6 +75,29 @@ void patrolTest(
     tags: tags,
     (widgetTester) async {
       await nativeAutomator?.configure();
+
+      if (binding != null) {
+        final oldReporter = FlutterError.onError;
+        FlutterError.onError = (details) {
+          final currentTestName = binding?.currentTestName;
+          debugPrint('Exception caught during test: $currentTestName');
+          if (currentTestName == null) {
+            debugPrint(
+              'DEBUG FLutterError was thrown but current test name is null',
+            );
+            return;
+          }
+
+          final previousDetails = binding?.testResults[currentTestName];
+
+          binding?.testResults[currentTestName] = Failure(
+            'Summary: $currentTestName',
+            'Details: $details, previous: $previousDetails',
+          );
+
+          oldReporter!(details);
+        };
+      }
 
       final patrolTester = PatrolTester(
         tester: widgetTester,
