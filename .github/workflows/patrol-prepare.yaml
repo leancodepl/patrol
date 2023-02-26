@@ -36,18 +36,23 @@ jobs:
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
+        shell: pwsh
         run: flutter build apk --debug --flavor=does-not-exist || true
 
       - name: ktlint check
+        shell: pwsh
         run: ./gradlew :patrol:ktlintCheck
 
       - name: ktlint format
+        shell: pwsh
         run: ./gradlew :patrol:ktlintFormat
 
       - name: Build debug app under test apk
+        shell: pwsh
         run: ./gradlew :app:assembleDebug
 
       - name: Build debug instrumentation apk
+        shell: pwsh
         run: ./gradlew :app:assembleDebugAndroidTest
 
   prepare-android-on-linux:
