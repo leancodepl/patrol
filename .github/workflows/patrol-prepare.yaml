@@ -28,6 +28,12 @@ jobs:
         with:
           channel: stable
 
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
         run: flutter build apk --debug --flavor=does-not-exist || true

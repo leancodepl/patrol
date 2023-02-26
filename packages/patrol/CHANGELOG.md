@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix build of example app for Android when building on Windows (#998)
+
 ## 1.0.4
 
 - Remove unnecessary dependency on `vm_service` (#986)
