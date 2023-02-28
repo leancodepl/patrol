@@ -64,13 +64,14 @@ android {
         boolean relative = targetPath.startsWith("integration_test${File.separator}")
         // Other tools (e.g Patrol) set target as absolute path, e.g "/home/charlie/my_app/lib/main.dart"
         boolean absolute = targetPath.contains("${File.separator}integration_test${File.separator}")
+        if (relative || absolute) {
+            targetPath = targetPath.substring(0, targetPath.length() - 5) // remove ".dart" from the end
+            String result = targetPath.split("integration_test", 2)[1]
+            result = result.substring(1) // remove path separator from the beginning
 
-        targetPath = targetPath.substring(0, targetPath.length() - 5) // remove ".dart" from the end
-        String result = targetPath.split("integration_test", 2)[1]
-        result = result.substring(1) // remove path separator from the beginning
-
-        reportDir = rootDir.path + File.separator + "test-reports" + File.separator + result
-        resultsDir = rootDir.path + File.separator + "test-results" + File.separator + result
+            reportDir = rootDir.path + File.separator + "test-reports" + File.separator + result
+            resultsDir = rootDir.path + File.separator + "test-results" + File.separator + result
+        }
     }
 }
 
