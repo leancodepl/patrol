@@ -4,7 +4,7 @@ import 'package:path/path.dart' show join;
 import 'package:yaml/yaml.dart';
 
 class PatrolPubspecConfig with EquatableMixin {
-  PatrolPubspecConfig({this.flavor, required this.android, required this.ios});
+  PatrolPubspecConfig({required this.android, required this.ios});
 
   PatrolPubspecConfig.empty()
       : this(
@@ -12,36 +12,47 @@ class PatrolPubspecConfig with EquatableMixin {
           ios: IOSPubspecConfig.empty(),
         );
 
-  String? flavor;
   AndroidPubspecConfig android;
   IOSPubspecConfig ios;
 
   @override
-  List<Object?> get props => [flavor, android, ios];
+  List<Object?> get props => [android, ios];
 }
 
 class AndroidPubspecConfig with EquatableMixin {
-  AndroidPubspecConfig({this.packageName, this.appName});
+  AndroidPubspecConfig({this.packageName, this.appName, this.flavor});
 
-  AndroidPubspecConfig.empty() : this(packageName: null, appName: null);
+  AndroidPubspecConfig.empty()
+      : this(
+          packageName: null,
+          appName: null,
+          flavor: null,
+        );
 
   String? packageName;
   String? appName;
+  String? flavor;
 
   @override
-  List<Object?> get props => [packageName, appName];
+  List<Object?> get props => [packageName, appName, flavor];
 }
 
 class IOSPubspecConfig with EquatableMixin {
-  IOSPubspecConfig({this.bundleId, this.appName});
+  IOSPubspecConfig({this.bundleId, this.appName, this.flavor});
 
-  IOSPubspecConfig.empty() : this(bundleId: null, appName: null);
+  IOSPubspecConfig.empty()
+      : this(
+          bundleId: null,
+          appName: null,
+          flavor: null,
+        );
 
   String? bundleId;
   String? appName;
+  String? flavor;
 
   @override
-  List<Object?> get props => [bundleId, appName];
+  List<Object?> get props => [bundleId, appName, flavor];
 }
 
 /// Reads Patrol CLI configuration block from pubspec.yaml.
@@ -81,7 +92,8 @@ class PubspecReader {
     }
     final dynamic flavor = patrol['flavor'];
     if (flavor != null && flavor is String?) {
-      config.flavor = flavor;
+      config.android.flavor = flavor;
+      config.ios.flavor = flavor;
     }
 
     final android = patrol['android'] as Map?;
@@ -96,6 +108,10 @@ class PubspecReader {
       if (appName != null && appName is String?) {
         androidConfig.appName = appName;
       }
+      final dynamic flavor = android['flavor'];
+      if (flavor != null && flavor is String?) {
+        androidConfig.flavor = flavor;
+      }
     }
 
     final ios = patrol['ios'] as Map?;
@@ -109,6 +125,10 @@ class PubspecReader {
       final dynamic appName = ios['app_name'];
       if (appName != null && appName is String?) {
         iosConfig.appName = appName;
+      }
+      final dynamic flavor = ios['flavor'];
+      if (flavor != null && flavor is String?) {
+        iosConfig.flavor = flavor;
       }
     }
 

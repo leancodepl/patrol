@@ -18,15 +18,16 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$TestCommandConfig {
   List<Device> get devices => throw _privateConstructorUsedError;
   List<String> get targets => throw _privateConstructorUsedError;
-  String? get flavor => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
   int get repeat => throw _privateConstructorUsedError;
   bool get displayLabel => throw _privateConstructorUsedError;
   bool get uninstall =>
       throw _privateConstructorUsedError; // Android-only options
-  String? get packageName =>
+  String? get packageName => throw _privateConstructorUsedError;
+  String? get androidFlavor =>
       throw _privateConstructorUsedError; // iOS-only options
   String? get bundleId => throw _privateConstructorUsedError;
+  String? get iosFlavor => throw _privateConstructorUsedError;
   String get scheme => throw _privateConstructorUsedError;
   String get xcconfigFile => throw _privateConstructorUsedError;
   String get configuration => throw _privateConstructorUsedError;
@@ -45,13 +46,14 @@ abstract class $TestCommandConfigCopyWith<$Res> {
   $Res call(
       {List<Device> devices,
       List<String> targets,
-      String? flavor,
       Map<String, String> dartDefines,
       int repeat,
       bool displayLabel,
       bool uninstall,
       String? packageName,
+      String? androidFlavor,
       String? bundleId,
+      String? iosFlavor,
       String scheme,
       String xcconfigFile,
       String configuration});
@@ -72,13 +74,14 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
   $Res call({
     Object? devices = null,
     Object? targets = null,
-    Object? flavor = freezed,
     Object? dartDefines = null,
     Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
     Object? packageName = freezed,
+    Object? androidFlavor = freezed,
     Object? bundleId = freezed,
+    Object? iosFlavor = freezed,
     Object? scheme = null,
     Object? xcconfigFile = null,
     Object? configuration = null,
@@ -92,10 +95,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.targets
           : targets // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      flavor: freezed == flavor
-          ? _value.flavor
-          : flavor // ignore: cast_nullable_to_non_nullable
-              as String?,
       dartDefines: null == dartDefines
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
@@ -116,9 +115,17 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.packageName
           : packageName // ignore: cast_nullable_to_non_nullable
               as String?,
+      androidFlavor: freezed == androidFlavor
+          ? _value.androidFlavor
+          : androidFlavor // ignore: cast_nullable_to_non_nullable
+              as String?,
       bundleId: freezed == bundleId
           ? _value.bundleId
           : bundleId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      iosFlavor: freezed == iosFlavor
+          ? _value.iosFlavor
+          : iosFlavor // ignore: cast_nullable_to_non_nullable
               as String?,
       scheme: null == scheme
           ? _value.scheme
@@ -147,13 +154,14 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
   $Res call(
       {List<Device> devices,
       List<String> targets,
-      String? flavor,
       Map<String, String> dartDefines,
       int repeat,
       bool displayLabel,
       bool uninstall,
       String? packageName,
+      String? androidFlavor,
       String? bundleId,
+      String? iosFlavor,
       String scheme,
       String xcconfigFile,
       String configuration});
@@ -172,13 +180,14 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
   $Res call({
     Object? devices = null,
     Object? targets = null,
-    Object? flavor = freezed,
     Object? dartDefines = null,
     Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
     Object? packageName = freezed,
+    Object? androidFlavor = freezed,
     Object? bundleId = freezed,
+    Object? iosFlavor = freezed,
     Object? scheme = null,
     Object? xcconfigFile = null,
     Object? configuration = null,
@@ -192,10 +201,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value._targets
           : targets // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      flavor: freezed == flavor
-          ? _value.flavor
-          : flavor // ignore: cast_nullable_to_non_nullable
-              as String?,
       dartDefines: null == dartDefines
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
@@ -216,9 +221,17 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value.packageName
           : packageName // ignore: cast_nullable_to_non_nullable
               as String?,
+      androidFlavor: freezed == androidFlavor
+          ? _value.androidFlavor
+          : androidFlavor // ignore: cast_nullable_to_non_nullable
+              as String?,
       bundleId: freezed == bundleId
           ? _value.bundleId
           : bundleId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      iosFlavor: freezed == iosFlavor
+          ? _value.iosFlavor
+          : iosFlavor // ignore: cast_nullable_to_non_nullable
               as String?,
       scheme: null == scheme
           ? _value.scheme
@@ -242,13 +255,14 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   const _$_TestCommandConfig(
       {required final List<Device> devices,
       required final List<String> targets,
-      required this.flavor,
       required final Map<String, String> dartDefines,
       required this.repeat,
       required this.displayLabel,
       required this.uninstall,
       required this.packageName,
+      required this.androidFlavor,
       required this.bundleId,
+      required this.iosFlavor,
       required this.scheme,
       required this.xcconfigFile,
       required this.configuration})
@@ -272,8 +286,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
     return EqualUnmodifiableListView(_targets);
   }
 
-  @override
-  final String? flavor;
   final Map<String, String> _dartDefines;
   @override
   Map<String, String> get dartDefines {
@@ -291,9 +303,13 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 // Android-only options
   @override
   final String? packageName;
+  @override
+  final String? androidFlavor;
 // iOS-only options
   @override
   final String? bundleId;
+  @override
+  final String? iosFlavor;
   @override
   final String scheme;
   @override
@@ -303,7 +319,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 
   @override
   String toString() {
-    return 'TestCommandConfig(devices: $devices, targets: $targets, flavor: $flavor, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, bundleId: $bundleId, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
+    return 'TestCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
   }
 
   @override
@@ -313,7 +329,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
             other is _$_TestCommandConfig &&
             const DeepCollectionEquality().equals(other._devices, _devices) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
-            (identical(other.flavor, flavor) || other.flavor == flavor) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
             (identical(other.repeat, repeat) || other.repeat == repeat) &&
@@ -323,8 +338,12 @@ class _$_TestCommandConfig implements _TestCommandConfig {
                 other.uninstall == uninstall) &&
             (identical(other.packageName, packageName) ||
                 other.packageName == packageName) &&
+            (identical(other.androidFlavor, androidFlavor) ||
+                other.androidFlavor == androidFlavor) &&
             (identical(other.bundleId, bundleId) ||
                 other.bundleId == bundleId) &&
+            (identical(other.iosFlavor, iosFlavor) ||
+                other.iosFlavor == iosFlavor) &&
             (identical(other.scheme, scheme) || other.scheme == scheme) &&
             (identical(other.xcconfigFile, xcconfigFile) ||
                 other.xcconfigFile == xcconfigFile) &&
@@ -337,13 +356,14 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       runtimeType,
       const DeepCollectionEquality().hash(_devices),
       const DeepCollectionEquality().hash(_targets),
-      flavor,
       const DeepCollectionEquality().hash(_dartDefines),
       repeat,
       displayLabel,
       uninstall,
       packageName,
+      androidFlavor,
       bundleId,
+      iosFlavor,
       scheme,
       xcconfigFile,
       configuration);
@@ -360,13 +380,14 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   const factory _TestCommandConfig(
       {required final List<Device> devices,
       required final List<String> targets,
-      required final String? flavor,
       required final Map<String, String> dartDefines,
       required final int repeat,
       required final bool displayLabel,
       required final bool uninstall,
       required final String? packageName,
+      required final String? androidFlavor,
       required final String? bundleId,
+      required final String? iosFlavor,
       required final String scheme,
       required final String xcconfigFile,
       required final String configuration}) = _$_TestCommandConfig;
@@ -375,8 +396,6 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   List<Device> get devices;
   @override
   List<String> get targets;
-  @override
-  String? get flavor;
   @override
   Map<String, String> get dartDefines;
   @override
@@ -387,8 +406,12 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   bool get uninstall;
   @override // Android-only options
   String? get packageName;
+  @override
+  String? get androidFlavor;
   @override // iOS-only options
   String? get bundleId;
+  @override
+  String? get iosFlavor;
   @override
   String get scheme;
   @override
