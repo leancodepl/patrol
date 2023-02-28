@@ -12,7 +12,45 @@ on:
       - 'packages/patrol/**'
 
 jobs:
-  prepare-android:
+  prepare-android-on-windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: packages/patrol/example/android
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Generate Gradle wrapper
+        working-directory: packages/patrol/example
+        run: flutter build apk --debug --flavor=does-not-exist || true
+
+      - name: ktlint check
+        run: .\gradlew.bat :patrol:ktlintCheck
+
+      - name: ktlint format
+        run: .\gradlew.bat :patrol:ktlintFormat
+
+      - name: Build app with Gradle
+        run: .\gradlew.bat :app:assembleDebug
+
+      - name: Build app with Flutter tool
+        run: flutter build apk --debug
+
+  prepare-android-on-linux:
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,6 +75,12 @@ jobs:
 
       - name: ktlint format
         run: ./gradlew :patrol:ktlintFormat
+
+      - name: Build app with Gradle
+        run: ./gradlew :app:assembleDebug
+
+      - name: Build app with Flutter tool
+        run: flutter build apk --debug
 
   prepare-ios:
     runs-on: macos-latest

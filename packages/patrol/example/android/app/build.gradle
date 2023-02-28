@@ -55,8 +55,16 @@ android {
     }
 
     testOptions {
-        def targetPath = findProperty("target")
-        if (targetPath != null && !target.contains("/lib/")) {
+        String targetPath = findProperty("target")
+        if (targetPath == null) {
+            return
+        }
+
+        // Flutter tool sets target as relative path, e.g "lib/main.dart"
+        boolean relative = targetPath.startsWith("integration_test${File.separator}")
+        // Other tools (e.g Patrol) set target as absolute path, e.g "/home/charlie/my_app/lib/main.dart"
+        boolean absolute = targetPath.contains("${File.separator}integration_test${File.separator}")
+        if (relative || absolute) {
             targetPath = targetPath.substring(0, targetPath.length() - 5) // remove ".dart" from the end
             String result = targetPath.split("integration_test", 2)[1]
             result = result.substring(1) // remove path separator from the beginning
