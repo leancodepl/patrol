@@ -133,10 +133,10 @@ packages:
     dependency: "direct main"
     description:
       name: cli_completion
-      sha256: "6f0c5920a85878652a84ad48c722655a7ea7fe6cd7074452a7c1e3efa389307b"
+      sha256: "595b192451285749369e99b3c2fd9a9aea7d74ed1aba61cddeb9ad8c84a44812"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.0"
+    version: "0.3.0"
   clock:
     dependency: transitive
     description:
@@ -357,10 +357,10 @@ packages:
     dependency: "direct main"
     description:
       name: mason_logger
-      sha256: "893b47be5628aa97ec802111e64799b90bfeaf74f03976b0ca0fc19ecd0044c9"
+      sha256: ca34d14e998cd7a7738e7320b102aa45fb363aa49a290084b211ababf75bb7ee
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.4"
+    version: "0.2.5"
   matcher:
     dependency: transitive
     description:
