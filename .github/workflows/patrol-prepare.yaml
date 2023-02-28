@@ -36,24 +36,19 @@ jobs:
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
-        shell: pwsh
         run: flutter build apk --debug --flavor=does-not-exist || true
 
       - name: ktlint check
-        shell: pwsh
-        run: ./gradlew :patrol:ktlintCheck
+        run: .\gradlew.bat :patrol:ktlintCheck
 
       - name: ktlint format
-        shell: pwsh
-        run: ./gradlew :patrol:ktlintFormat
+        run: .\gradlew.bat :patrol:ktlintFormat
 
-      - name: Build debug app under test apk
-        shell: pwsh
-        run: ./gradlew :app:assembleDebug
+      - name: Build app with Gradle
+        run: .\gradlew.bat :app:assembleDebug
 
-      - name: Build debug instrumentation apk
-        shell: pwsh
-        run: ./gradlew :app:assembleDebugAndroidTest
+      - name: Build app with Flutter tool
+        run: flutter build apk --debug
 
   prepare-android-on-linux:
     runs-on: ubuntu-latest
@@ -81,11 +76,11 @@ jobs:
       - name: ktlint format
         run: ./gradlew :patrol:ktlintFormat
 
-      - name: Build debug app under test apk
+      - name: Build app with Gradle
         run: ./gradlew :app:assembleDebug
 
-      - name: Build debug instrumentation apk
-        run: ./gradlew :app:assembleDebugAndroidTest
+      - name: Build app with Flutter tool
+        run: flutter build apk --debug
 
   prepare-ios:
     runs-on: macos-latest
