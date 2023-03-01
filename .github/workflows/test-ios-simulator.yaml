@@ -35,7 +35,7 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: dart pub global activate patrol_cli
+      - name: Set up Patrol CLI
         run: dart pub global activate patrol_cli
 
       - uses: futureware-tech/simulator-action@v2

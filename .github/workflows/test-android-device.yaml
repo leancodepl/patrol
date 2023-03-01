@@ -46,6 +46,9 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
+      - name: Set up Patrol CLI
+        run: dart pub global activate patrol_cli
+
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
