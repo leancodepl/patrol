@@ -38,13 +38,17 @@ jobs:
       - name: Set up Patrol CLI
         run: dart pub global activate patrol_cli
 
-      - uses: futureware-tech/simulator-action@v2
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
         with:
           model: ${{ matrix.device }}
           os: ${{ matrix.os }}
           os_version: ${{ matrix.os_version }}
           erase_before_boot: true
           shutdown_after_job: true
+
+      - name: Set simulator location
+        run: xcrun simctl location booted set 52.17469,21.03193
 
       - run: patrol test -t integration_test/example_test.dart
         if: success() || failure()
