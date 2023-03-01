@@ -8,7 +8,7 @@ import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
@@ -118,7 +118,7 @@ class AndroidTestBackend extends TestBackend {
   final Logger _logger;
 
   @override
-  Future<void> build(AndroidAppOptions options, Device device) async {
+  Future<void> build(AndroidAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task('Building $subject');

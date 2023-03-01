@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' show basename;
-import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 
 class RunResults with EquatableMixin {
   const RunResults({required this.targetRunResults});

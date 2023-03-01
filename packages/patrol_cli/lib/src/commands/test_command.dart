@@ -6,13 +6,13 @@ import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
-import 'package:patrol_cli/src/features/run_commons/device.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
+import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
-import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 
 part 'test_command.freezed.dart';
@@ -41,14 +41,14 @@ class TestCommandConfig with _$TestCommandConfig {
 const _defaultRepeats = 1;
 const _failureMessage =
     'See the logs above to learn what happened. Also consider running with '
-    "--verbose. If the logs still aren't useful, then it's a bug – please "
+    "--verbose. If the logs still aren't useful, then it's a bug - please "
     'report it.';
 
 class TestCommand extends StagedCommand<TestCommandConfig> {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
-    required NativeTestRunner testRunner,
+    required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
@@ -147,7 +147,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
-  final NativeTestRunner _testRunner;
+  final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
@@ -337,7 +337,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
             },
           );
-          action = () => _androidTestBackend.build(options, device);
+          action = () => _androidTestBackend.build(options);
           break;
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
@@ -350,8 +350,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,
+            simulator: !device.real,
           );
-          action = () => _iosTestBackend.build(options, device);
+          action = () => _iosTestBackend.build(options);
       }
 
       try {
@@ -398,6 +399,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,
+            simulator: !device.real,
           );
           action = () async => _iosTestBackend.execute(options, device);
           final bundle = config.bundleId;

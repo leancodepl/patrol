@@ -2,6 +2,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/commands/test_command.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
@@ -9,7 +10,6 @@ import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
-import 'package:patrol_cli/src/features/test/test_command.dart';
 import 'package:test/test.dart';
 
 import '../../fakes.dart';
@@ -135,8 +135,7 @@ void main() {
 
       final config = await testCommand.configure();
 
-      when(() => androidTestBackend.build(any(), any()))
-          .thenAnswer((_) async {});
+      when(() => androidTestBackend.build(any())).thenAnswer((_) async {});
       when(() => androidTestBackend.execute(any(), any()))
           .thenAnswer((_) async {});
 
@@ -150,7 +149,7 @@ void main() {
 
       final config = await testCommand.configure();
 
-      when(() => androidTestBackend.build(any(), any())).thenThrow(Exception());
+      when(() => androidTestBackend.build(any())).thenThrow(Exception());
 
       final exitCode = await testCommand.execute(config);
       expect(exitCode, equals(1));

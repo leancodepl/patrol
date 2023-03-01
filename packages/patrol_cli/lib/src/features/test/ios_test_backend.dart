@@ -8,7 +8,7 @@ import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:process/process.dart';
@@ -21,18 +21,23 @@ class IOSAppOptions extends AppOptions {
     required this.scheme,
     required this.xcconfigFile,
     required this.configuration,
+    required this.simulator,
   });
 
   final String scheme;
   final String xcconfigFile;
   final String configuration;
+  final bool simulator;
 
   @override
-  String get description => 'app with entrypoint ${basename(target)}';
+  String get description {
+    final platform = simulator ? 'simulator' : 'device';
+    return 'app with entrypoint ${basename(target)} for iOS $platform';
+  }
 
   /// Translates these options into a proper flutter build invocation, which
   /// runs before xcodebuild and performs configuration.
-  List<String> toFlutterBuildInvocation(Device device) {
+  List<String> toFlutterBuildInvocation() {
     final cmd = [
       ...['flutter', 'build', 'ios'],
       '--no-version-check',
@@ -40,7 +45,7 @@ class IOSAppOptions extends AppOptions {
         '--config-only',
         '--no-codesign',
         '--debug',
-        if (!device.real) '--simulator'
+        if (simulator) '--simulator',
       ],
       if (flavor != null) ...['--flavor', flavor!],
       ...['--target', target],
@@ -55,17 +60,17 @@ class IOSAppOptions extends AppOptions {
 
   /// Translates these options into a proper `xcodebuild build-for-testing`
   /// invocation.
-  List<String> buildForTestingInvocation(Device device) {
+  List<String> buildForTestingInvocation() {
     final cmd = [
       ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
       ...['-xcconfig', xcconfigFile],
       ...['-configuration', configuration],
-      ...['-sdk', if (device.real) 'iphoneos' else 'iphonesimulator'],
+      ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
       ...[
         '-destination',
-        'generic/platform=${device.real ? 'iOS' : 'iOS Simulator'}',
+        'generic/platform=${simulator ? 'iOS Simulator' : 'iOS'}',
       ],
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
@@ -118,10 +123,9 @@ class IOSTestBackend extends TestBackend {
   final Logger _logger;
 
   @override
-  Future<void> build(IOSAppOptions options, Device device) async {
+  Future<void> build(IOSAppOptions options) async {
     await _disposeScope.run((scope) async {
-      final subject =
-          '${options.description} for ${device.platformDescription}';
+      final subject = options.description;
       final task = _logger.task('Building $subject');
 
       Process process;
@@ -130,7 +134,7 @@ class IOSTestBackend extends TestBackend {
 
       var flutterBuildKilled = false;
       process = await _processManager.start(
-        options.toFlutterBuildInvocation(device),
+        options.toFlutterBuildInvocation(),
         runInShell: true,
       );
       scope.addDispose(() async {
@@ -153,7 +157,7 @@ class IOSTestBackend extends TestBackend {
       // xcodebuild build-for-testing
 
       process = await _processManager.start(
-        options.buildForTestingInvocation(device),
+        options.buildForTestingInvocation(),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
       )

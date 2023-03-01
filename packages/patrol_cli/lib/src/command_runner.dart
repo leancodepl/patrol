@@ -7,13 +7,16 @@ import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:patrol_cli/src/commands/build_command.dart';
+import 'package:patrol_cli/src/commands/devices_command.dart';
+import 'package:patrol_cli/src/commands/doctor_command.dart';
+import 'package:patrol_cli/src/commands/test_command.dart';
+import 'package:patrol_cli/src/commands/update_command.dart';
 import 'package:patrol_cli/src/common/constants.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/logging_local_process_manager.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/devices/devices_command.dart';
-import 'package:patrol_cli/src/features/doctor/doctor_command.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
@@ -21,8 +24,6 @@ import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
-import 'package:patrol_cli/src/features/test/test_command.dart';
-import 'package:patrol_cli/src/features/update/update_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -70,6 +71,34 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    buildCommand = BuildCommand(
+      testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+      dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+      pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+      androidTestBackend: AndroidTestBackend(
+        adb: Adb(),
+        processManager: _processManager,
+        platform: _platform,
+        fs: _fs,
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      iosTestBackend: IOSTestBackend(
+        processManager: _processManager,
+        fs: _fs,
+        iosDeploy: IOSDeploy(
+          processManager: _processManager,
+          parentDisposeScope: _disposeScope,
+          fs: _fs,
+          logger: _logger,
+        ),
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      logger: _logger,
+    );
+    addCommand(buildCommand);
+
     testCommand = TestCommand(
       deviceFinder: DeviceFinder(
         processManager: _processManager,
@@ -147,6 +176,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   final ProcessManager _processManager;
   final Logger _logger;
 
+  late BuildCommand buildCommand;
   late TestCommand testCommand;
 
   final PubUpdater _pubUpdater;
@@ -177,6 +207,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
 
+      buildCommand.verbose = verbose;
       testCommand.verbose = verbose;
 
       if (verbose) {
