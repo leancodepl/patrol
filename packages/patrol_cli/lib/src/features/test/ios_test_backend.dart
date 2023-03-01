@@ -281,7 +281,7 @@ class IOSTestBackend extends TestBackend {
     _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
     final files = await glob.listFileSystem(_fs, root: root).toList();
     if (files.isEmpty) {
-      final cause = 'No .xctestrun file were found at $root';
+      final cause = 'No .xctestrun file was found at $root';
       throwToolExit(cause);
     }
 
