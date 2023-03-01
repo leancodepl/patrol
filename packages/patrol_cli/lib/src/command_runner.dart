@@ -72,13 +72,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
     buildCommand = BuildCommand(
-      deviceFinder: DeviceFinder(
-        processManager: _processManager,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
-      ),
       testFinder: TestFinder(testDir: _fs.directory('integration_test')),
-      testRunner: NativeTestRunner(),
       dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
       pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
       androidTestBackend: AndroidTestBackend(
@@ -101,7 +95,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
-      parentDisposeScope: _disposeScope,
       logger: _logger,
     );
     addCommand(buildCommand);

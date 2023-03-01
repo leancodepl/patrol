@@ -1,14 +1,11 @@
-import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
-import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
@@ -34,7 +31,6 @@ class BuildCommandConfig with _$BuildCommandConfig {
   }) = _BuildCommandConfig;
 }
 
-const _defaultRepeats = 1;
 const _failureMessage =
     'See the logs above to learn what happened. Also consider running with '
     "--verbose. If the logs still aren't useful, then it's a bug - please "
@@ -43,25 +39,18 @@ const _failureMessage =
 // TODO: Supports only Android at the moment.
 class BuildCommand extends StagedCommand<BuildCommandConfig> {
   BuildCommand({
-    required DeviceFinder deviceFinder,
     required TestFinder testFinder,
-    required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
-    required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _deviceFinder = deviceFinder,
-        _testFinder = testFinder,
-        _testRunner = testRunner,
+  })  : _testFinder = testFinder,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _logger = logger {
-    _testRunner.disposedBy(parentDisposeScope);
-
     argParser
       ..addOption(
         'target',
@@ -125,12 +114,11 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
   static const _defaultXCConfigFile = 'Flutter/Debug.xcconfig';
   static const _defaultConfiguration = 'Debug';
 
-  final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
-  final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
+  // ignore: unused_field
   final IOSTestBackend _iosTestBackend;
 
   final Logger _logger;
@@ -174,12 +162,6 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
-    final devices = argResults?['device'] as List<String>? ?? [];
-    final devicesToUse = await _deviceFinder.find(devices);
-    for (final device in devicesToUse) {
-      _logger.detail('Received device: ${device.resolvedName}');
-    }
-
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(
@@ -198,23 +180,7 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
       throw const FormatException('`wait` argument is not an int');
     }
 
-    final int repeat;
-    try {
-      final repeatStr = argResults?['repeat'] as String? ?? '$_defaultRepeats';
-      repeat = int.parse(repeatStr);
-    } on FormatException {
-      throw const FormatException('`repeat` argument is not an int');
-    }
-
     final displayLabel = argResults?['label'] as bool?;
-
-    if (repeat < 1) {
-      throwToolExit('repeat count must not be smaller than 1');
-    }
-
-    if (repeat != 1) {
-      _logger.info('Every test target will be run $repeat times');
-    }
 
     final internalDartDefines = {
       'PATROL_WAIT': wait as String? ?? '0',

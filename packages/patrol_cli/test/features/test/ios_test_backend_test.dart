@@ -1,19 +1,11 @@
-import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('IOSAppOptions', () {
-    late Device device;
     late IOSAppOptions options;
 
     test('correctly encodes default invocation on simulator', () {
-      device = Device(
-        name: 'iPhone 14',
-        id: '633247FA-E35B-4E60-AEB3-FC2D9C52FAD5',
-        targetPlatform: TargetPlatform.iOS,
-        real: false,
-      );
       options = IOSAppOptions(
         target: 'integration_test/app_test.dart',
         flavor: null,
@@ -55,12 +47,6 @@ void main() {
     });
 
     test('correctly encodes customized invocation on real device', () {
-      device = Device(
-        name: 'iPhone 14',
-        id: '633247FA-E35B-4E60-AEB3-FC2D9C52FAD5',
-        targetPlatform: TargetPlatform.iOS,
-        real: true,
-      );
       options = IOSAppOptions(
         target: 'integration_test/app_test.dart',
         flavor: 'dev',
