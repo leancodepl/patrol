@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:process/process.dart';
 
 class DeviceFinder {

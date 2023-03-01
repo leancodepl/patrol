@@ -1,4 +1,4 @@
-import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 
 abstract class AppOptions {
   const AppOptions({

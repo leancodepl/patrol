@@ -14,9 +14,11 @@ class TestFinder {
   /// Checks that every element of [targets] is a valid target.
   ///
   /// A target is valid if it:
-  /// - is a path to a Dart test file, or
-  /// - is a path to a directory recursively containing at least one Dart test
-  ///   file
+  ///
+  ///  * is a path to a Dart test file, or
+  ///
+  ///  * is a path to a directory recursively containing at least one Dart test
+  ///    file
   List<String> findTests(List<String> targets) {
     final testFiles = <String>[];
 

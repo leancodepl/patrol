@@ -1,4 +1,4 @@
-import 'package:patrol_cli/src/features/run_commons/device.dart';
+import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:test/test.dart';
 
