@@ -21,9 +21,10 @@ void main() {
         scheme: 'Runner',
         xcconfigFile: 'Flutter/Debug.xcconfig',
         configuration: 'Debug',
+        simulator: true,
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation(device);
+      final flutterInvocation = options.toFlutterBuildInvocation();
       expect(
         flutterInvocation,
         equals([
@@ -34,7 +35,7 @@ void main() {
         ]),
       );
 
-      final xcodebuildInvocation = options.buildForTestingInvocation(device);
+      final xcodebuildInvocation = options.buildForTestingInvocation();
 
       expect(
         xcodebuildInvocation,
@@ -71,9 +72,10 @@ void main() {
         scheme: 'dev',
         xcconfigFile: 'Flutter/Debug.xcconfig',
         configuration: 'Debug-dev',
+        simulator: false,
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation(device);
+      final flutterInvocation = options.toFlutterBuildInvocation();
       expect(
         flutterInvocation,
         equals([
@@ -88,7 +90,7 @@ void main() {
         ]),
       );
 
-      final xcodebuildInvocation = options.buildForTestingInvocation(device);
+      final xcodebuildInvocation = options.buildForTestingInvocation();
 
       expect(
         xcodebuildInvocation,

@@ -337,7 +337,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
               if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
             },
           );
-          action = () => _androidTestBackend.build(options, device);
+          action = () => _androidTestBackend.build(options);
           break;
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
@@ -350,8 +350,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,
+            simulator: !device.real,
           );
-          action = () => _iosTestBackend.build(options, device);
+          action = () => _iosTestBackend.build(options);
       }
 
       try {
@@ -398,6 +399,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,
+            simulator: !device.real,
           );
           action = () async => _iosTestBackend.execute(options, device);
           final bundle = config.bundleId;

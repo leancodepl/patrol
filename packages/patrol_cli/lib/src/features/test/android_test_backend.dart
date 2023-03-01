@@ -118,7 +118,7 @@ class AndroidTestBackend extends TestBackend {
   final Logger _logger;
 
   @override
-  Future<void> build(AndroidAppOptions options, Device device) async {
+  Future<void> build(AndroidAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task('Building $subject');

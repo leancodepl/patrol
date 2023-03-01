@@ -15,7 +15,7 @@ abstract class AppOptions {
 }
 
 abstract class TestBackend {
-  Future<void> build(covariant AppOptions options, Device device);
+  Future<void> build(covariant AppOptions options);
   Future<void> execute(covariant AppOptions options, Device device);
   Future<void> uninstall(String appId, Device device);
 }
