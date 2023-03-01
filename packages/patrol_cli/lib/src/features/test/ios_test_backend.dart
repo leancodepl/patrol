@@ -285,7 +285,8 @@ class IOSTestBackend extends TestBackend {
       throwToolExit(cause);
     }
 
-    _logger.detail('Found ${files.length} match(es)');
+    _logger
+        .detail('Found ${files.length} match(es), the first one will be used');
     for (final file in files) {
       _logger.detail('Found ${file.absolute.path}');
     }
