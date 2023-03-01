@@ -11,12 +11,26 @@ class TestFinder {
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
 
+  String findTest(String target) {
+    final testFiles = findTests([target]);
+    if (testFiles.length > 1) {
+      throwToolExit(
+        'target $target is ambiguous, '
+        'it matches multiple test targets: ${testFiles.join(', ')}',
+      );
+    }
+
+    return testFiles.single;
+  }
+
   /// Checks that every element of [targets] is a valid target.
   ///
   /// A target is valid if it:
-  /// - is a path to a Dart test file, or
-  /// - is a path to a directory recursively containing at least one Dart test
-  ///   file
+  ///
+  ///  * is a path to a Dart test file, or
+  ///
+  ///  * is a path to a directory recursively containing at least one Dart test
+  ///    file
   List<String> findTests(List<String> targets) {
     final testFiles = <String>[];
 

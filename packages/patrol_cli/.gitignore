@@ -3,7 +3,7 @@
 .packages
 
 # Conventional directory for build output.
-build/
+/build/
 
 *.exe
 /coverage
