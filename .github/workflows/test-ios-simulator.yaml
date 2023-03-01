@@ -38,13 +38,17 @@ jobs:
       - name: Set up Patrol CLI
         run: dart pub global activate patrol_cli
 
-      - uses: futureware-tech/simulator-action@v2
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
         with:
           model: ${{ matrix.device }}
           os: ${{ matrix.os }}
           os_version: ${{ matrix.os_version }}
           erase_before_boot: true
           shutdown_after_job: true
+
+      - name: Set simulator location
+        run: xcrun simctl location booted set 52.17469,21.03193
 
       - run: patrol test -t integration_test/example_test.dart
         if: success() || failure()
@@ -59,6 +63,9 @@ jobs:
         if: success() || failure() # should work, but is empty on Simulator
 
       - run: patrol test -t integration_test/permissions_location_test.dart
+        if: success() || failure()
+
+      - run: ./run_android_testlab integration_test/permissions_many_test.dart
         if: success() || failure()
 
       - run: patrol test -t integration_test/service_cellular_test.dart
