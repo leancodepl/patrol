@@ -3,6 +3,7 @@ import 'dart:io' show Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:glob/glob.dart';
 import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
@@ -78,21 +79,11 @@ class IOSAppOptions extends AppOptions {
   /// invocation.
   List<String> testWithoutBuildingInvocation(
     Device device, {
-    required String sdkVersion,
+    required String xcTestRunPath,
   }) {
-    const prefix = '../build/ios_integ/Build/Products';
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
-      ...[
-        '-xctestrun',
-        if (device.real)
-          join(prefix, 'Runner_iphoneos$sdkVersion-arm64.xctestrun')
-        else
-          join(
-            prefix,
-            'Runner_iphonesimulator$sdkVersion-arm64-x86_64.xctestrun',
-          )
-      ],
+      ...['-xctestrun', xcTestRunPath],
       ...[
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
@@ -196,10 +187,11 @@ class IOSTestBackend extends TestBackend {
         iosDeployProcess = await _iosDeploy.installAndLaunch(device.id);
       }
 
+      final sdkVersion = await _sdkVersion(device.real);
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(
           device,
-          sdkVersion: await _sdkVersion(device.real),
+          xcTestRunPath: await _xcTestRunPath(device.real, sdkVersion),
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
@@ -274,6 +266,31 @@ class IOSTestBackend extends TestBackend {
         runInShell: true,
       );
     }
+  }
+
+  Future<String> _xcTestRunPath(bool real, String sdkVersion) async {
+    final Glob glob;
+    if (real) {
+      glob = Glob('Runner_iphoneos$sdkVersion-*.xctestrun');
+    } else {
+      glob = Glob('Runner_iphonesimulator$sdkVersion-*.xctestrun');
+    }
+
+    const suffix = 'build/ios_integ/Build/Products';
+    final root = join(_fs.currentDirectory.absolute.path, suffix);
+    _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
+    final files = await glob.listFileSystem(_fs, root: root).toList();
+    if (files.isEmpty) {
+      final cause = 'No .xctestrun file were found at $root';
+      throwToolExit(cause);
+    }
+
+    _logger.detail('Found ${files.length} match(es)');
+    for (final file in files) {
+      _logger.detail('Found ${file.absolute.path}');
+    }
+
+    return files.first.absolute.path;
   }
 
   Future<String> _sdkVersion(bool real) async {
