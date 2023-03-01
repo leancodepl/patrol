@@ -1,3 +1,9 @@
+## 1.0.4
+
+- Make it possible to run x86-only iOS apps on the Simulator (#1005)
+- Make it possible to define flavor per OS in `patrol` in `pubspec.yaml`
+- Generate CLI completion in `$XDG_USER_HOME` instead of `$HOME` (#1002)
+
 ## 1.0.3
 
 - Add `--no-uninstall` flag, which lets you not uninstall the apps after the
