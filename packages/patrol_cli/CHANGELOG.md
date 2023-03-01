@@ -1,3 +1,10 @@
+## 1.0.5
+
+- Add `patrol build` command to make it easier to build app binaries for cloud
+  device farms (#1006)
+
+  It's hidden and Android-only for now. Stay tuned for more.
+
 ## 1.0.4
 
 - Make it possible to run x86-only iOS apps on the Simulator (#1005)
@@ -11,7 +18,7 @@
 
 ## 1.0.2
 
-- Make output of `patrol test` much less verbose when test fails on Android.
+- Make output of `patrol test` much less verbose when test fails on Android
   (#964)
 
   Run with `--verbose` to still see all the logs that were previously visible.
