@@ -1,4 +1,3 @@
-import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
@@ -6,7 +5,6 @@ import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
-import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
@@ -15,17 +13,15 @@ import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 
-part 'test_command.freezed.dart';
+part 'build_command.freezed.dart';
 
 @freezed
-class TestCommandConfig with _$TestCommandConfig {
-  const factory TestCommandConfig({
-    required List<Device> devices,
-    required List<String> targets,
+// FIXME: works only on Android
+class BuildCommandConfig with _$BuildCommandConfig {
+  const factory BuildCommandConfig({
+    required String target,
     required Map<String, String> dartDefines,
-    required int repeat,
     required bool displayLabel,
-    required bool uninstall,
     // Android-only options
     required String? packageName,
     required String? androidFlavor,
@@ -35,7 +31,7 @@ class TestCommandConfig with _$TestCommandConfig {
     required String scheme,
     required String xcconfigFile,
     required String configuration,
-  }) = _TestCommandConfig;
+  }) = _BuildCommandConfig;
 }
 
 const _defaultRepeats = 1;
@@ -44,8 +40,9 @@ const _failureMessage =
     "--verbose. If the logs still aren't useful, then it's a bug - please "
     'report it.';
 
-class TestCommand extends StagedCommand<TestCommandConfig> {
-  TestCommand({
+// TODO: Supports only Android at the moment.
+class BuildCommand extends StagedCommand<BuildCommandConfig> {
+  BuildCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
@@ -66,20 +63,13 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     _testRunner.disposedBy(parentDisposeScope);
 
     argParser
-      ..addMultiOption(
+      ..addOption(
         'target',
         aliases: ['targets'],
         abbr: 't',
-        help: 'Integration tests to run. If empty, all tests are run.',
+        help: 'Integration test to set as entrypoint.',
         valueHelp: 'integration_test/app_test.dart',
-      )
-      ..addMultiOption(
-        'device',
-        aliases: ['devices'],
-        abbr: 'd',
-        help:
-            'Devices to run the tests on. If empty, the first device is used.',
-        valueHelp: "all, emulator-5554, 'iPhone 14'",
+        mandatory: true,
       )
       ..addOption(
         'flavor',
@@ -96,17 +86,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         'wait',
         help: 'Seconds to wait after the test fails or succeeds.',
         defaultsTo: '0',
-      )
-      ..addOption(
-        'repeat',
-        abbr: 'n',
-        help: 'Repeat the test n times.',
-        defaultsTo: '$_defaultRepeats',
-      )
-      ..addFlag(
-        'uninstall',
-        help: 'Whether to uninstall the apps after test finishes.',
-        defaultsTo: true,
       )
       ..addFlag(
         'label',
@@ -141,6 +120,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         defaultsTo: _defaultConfiguration,
       );
   }
+
   static const _defaultScheme = 'Runner';
   static const _defaultXCConfigFile = 'Flutter/Debug.xcconfig';
   static const _defaultConfiguration = 'Debug';
@@ -158,22 +138,23 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   bool verbose = false;
 
   @override
-  String get name => 'test';
+  String get name => 'build';
 
   @override
-  String get description => 'Run integration tests.';
+  String get description => 'Build app with integration test as entrypoint.';
 
   @override
-  Future<TestCommandConfig> configure() async {
-    final target = argResults?['target'] as List<String>? ?? [];
-    final targets = target.isNotEmpty
-        ? _testFinder.findTests(target)
-        : _testFinder.findAllTests();
+  bool get hidden => true;
 
-    _logger.detail('Received ${targets.length} test target(s)');
-    for (final t in targets) {
-      _logger.detail('Received test target: $t');
+  @override
+  Future<BuildCommandConfig> configure() async {
+    final targetArg = argResults?['target'] as String?;
+    if (targetArg == null) {
+      throwToolExit('Missing required option: --target');
     }
+
+    final target = _testFinder.findTest(targetArg);
+    _logger.detail('Received test target: $target');
 
     final pubspecConfig = _pubspecReader.read();
 
@@ -195,7 +176,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     final devices = argResults?['device'] as List<String>? ?? [];
     final devicesToUse = await _deviceFinder.find(devices);
-    _logger.detail('Received ${devicesToUse.length} device(s) to run on');
     for (final device in devicesToUse) {
       _logger.detail('Received device: ${device.resolvedName}');
     }
@@ -227,7 +207,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     }
 
     final displayLabel = argResults?['label'] as bool?;
-    final uninstall = argResults?['uninstall'] as bool?;
 
     if (repeat < 1) {
       throwToolExit('repeat count must not be smaller than 1');
@@ -247,11 +226,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
     }.withNullsRemoved();
 
     final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
-
-    _logger.detail(
-      'Received ${effectiveDartDefines.length} --dart-define(s) '
-      '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
-    );
     for (final dartDefine in customDartDefines.entries) {
       _logger.detail('Received custom --dart-define: ${dartDefine.key}');
     }
@@ -261,13 +235,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       );
     }
 
-    return TestCommandConfig(
-      devices: devicesToUse,
-      targets: targets,
+    return BuildCommandConfig(
+      target: target,
       dartDefines: effectiveDartDefines,
-      repeat: repeat,
       displayLabel: displayLabel ?? true,
-      uninstall: uninstall ?? true,
       // Android-specific options
       packageName: packageName,
       androidFlavor: androidFlavor,
@@ -284,139 +255,27 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
   }
 
   @override
-  Future<int> execute(TestCommandConfig config) async {
-    config.targets.forEach(_testRunner.addTarget);
-    config.devices.forEach(_testRunner.addDevice);
-    _testRunner
-      ..repeats = config.repeat
-      ..builder = _builderFor(config)
-      ..executor = _executorFor(config);
+  Future<int> execute(BuildCommandConfig config) async {
+    final options = AndroidAppOptions(
+      target: config.target,
+      flavor: config.androidFlavor,
+      dartDefines: {
+        ...config.dartDefines,
+        if (config.displayLabel) 'PATROL_TEST_LABEL': basename(config.target)
+      },
+    );
+    Future<void> action() => _androidTestBackend.build(options);
 
-    final results = await _testRunner.run();
-
-    if (results.targetRunResults.isEmpty) {
-      _logger.warn('No run results found');
-    }
-    for (final res in results.targetRunResults) {
-      final device = res.device.resolvedName;
-      if (res.allRunsPassed) {
-        _logger.write(
-          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.allRunsFailed) {
-        _logger.write(
-          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.canceled) {
-        _logger.write(
-          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
-        );
-      } else {
-        _logger.write(
-          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
-        );
-      }
+    try {
+      await action();
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(_failureMessage);
+      rethrow;
     }
 
-    final exitCode = results.allSuccessful ? 0 : 1;
-
-    return exitCode;
-  }
-
-  Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
-    return (target, device) async {
-      Future<void> Function() action;
-
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          action = () => _androidTestBackend.build(options, device);
-          break;
-        case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-          );
-          action = () => _iosTestBackend.build(options, device);
-      }
-
-      try {
-        await action();
-      } catch (err, st) {
-        _logger
-          ..err('$err')
-          ..detail('$st')
-          ..err(_failureMessage);
-        rethrow;
-      }
-    };
-  }
-
-  Future<void> Function(String, Device) _executorFor(TestCommandConfig config) {
-    return (target, device) async {
-      Future<void> Function() action;
-      Future<void> Function()? finalizer;
-
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          action = () => _androidTestBackend.execute(options, device);
-          final package = config.packageName;
-          if (package != null && config.uninstall) {
-            finalizer = () => _androidTestBackend.uninstall(package, device);
-          }
-          break;
-        case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-          );
-          action = () async => _iosTestBackend.execute(options, device);
-          final bundle = config.bundleId;
-          if (bundle != null && config.uninstall) {
-            finalizer = () => _iosTestBackend.uninstall(bundle, device);
-          }
-      }
-
-      try {
-        await action();
-      } catch (err, st) {
-        _logger
-          ..err('$err')
-          ..detail('$st')
-          ..err(_failureMessage);
-        rethrow;
-      } finally {
-        await finalizer?.call();
-      }
-    };
+    return 0;
   }
 }

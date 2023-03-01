@@ -11,6 +11,18 @@ class TestFinder {
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
 
+  String findTest(String target) {
+    final testFiles = findTests([target]);
+    if (testFiles.length > 1) {
+      throwToolExit(
+        'target $target is ambiguous, '
+        'it matches multiple test targets: ${testFiles.join(', ')}',
+      );
+    }
+
+    return testFiles.single;
+  }
+
   /// Checks that every element of [targets] is a valid target.
   ///
   /// A target is valid if it:

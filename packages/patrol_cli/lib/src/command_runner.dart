@@ -7,6 +7,7 @@ import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:patrol_cli/src/commands/build_command.dart';
 import 'package:patrol_cli/src/commands/devices_command.dart';
 import 'package:patrol_cli/src/commands/doctor_command.dart';
 import 'package:patrol_cli/src/commands/test_command.dart';
@@ -70,6 +71,41 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    buildCommand = BuildCommand(
+      deviceFinder: DeviceFinder(
+        processManager: _processManager,
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+      testRunner: NativeTestRunner(),
+      dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+      pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+      androidTestBackend: AndroidTestBackend(
+        adb: Adb(),
+        processManager: _processManager,
+        platform: _platform,
+        fs: _fs,
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      iosTestBackend: IOSTestBackend(
+        processManager: _processManager,
+        fs: _fs,
+        iosDeploy: IOSDeploy(
+          processManager: _processManager,
+          parentDisposeScope: _disposeScope,
+          fs: _fs,
+          logger: _logger,
+        ),
+        parentDisposeScope: _disposeScope,
+        logger: _logger,
+      ),
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+    addCommand(buildCommand);
+
     testCommand = TestCommand(
       deviceFinder: DeviceFinder(
         processManager: _processManager,
@@ -147,6 +183,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   final ProcessManager _processManager;
   final Logger _logger;
 
+  late BuildCommand buildCommand;
   late TestCommand testCommand;
 
   final PubUpdater _pubUpdater;
@@ -177,6 +214,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
 
+      buildCommand.verbose = verbose;
       testCommand.verbose = verbose;
 
       if (verbose) {
