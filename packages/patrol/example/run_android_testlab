@@ -18,11 +18,7 @@ fi
 target_path="$(realpath "$target")"
 
 flutter pub get
-
-pushd android
-./gradlew :app:assembleDebugAndroidTest
-./gradlew :app:assembleDebug -Ptarget="$target_path"
-popd
+patrol build --target "$target_path"
 
 exec gcloud firebase test android run \
 	--type instrumentation \
