@@ -1,3 +1,10 @@
+## 1.0.5
+
+- Add `patrol build` command to make it easier to build app binaries for cloud
+  device farms (#1006)
+
+  It's hidden and Android-only for now. Stay tuned for more.
+
 ## 1.0.4
 
 - Make it possible to run x86-only iOS apps on the Simulator (#1005)
