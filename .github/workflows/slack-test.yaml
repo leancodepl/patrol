@@ -1,4 +1,4 @@
-name: test ios simulator
+name: slack test
 
 on:
   workflow_dispatch:
