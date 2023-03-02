@@ -110,7 +110,7 @@ jobs:
             msg="⚠️ Something went wrong.";
           fi;
           msg="$msg
-          See workflow run [here]($url)";
+          See workflow run here <$url>";
           echo "MESSAGE=$msg" >> "$GITHUB_ENV";
 
       - name: Share test results on Slack
