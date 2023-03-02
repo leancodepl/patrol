@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.5
 
 - Fix build of example app for Android when building on Windows (#998)
 
