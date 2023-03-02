@@ -29,61 +29,58 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      # - name: Set up Flutter
-      #   uses: subosito/flutter-action@v2
-      #   with:
-      #     channel: ${{ matrix.flutter-channel }}
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.flutter-channel }}
 
-      # - name: Preload Flutter artifacts
-      #   run: flutter precache
+      - name: Preload Flutter artifacts
+        run: flutter precache
 
-      # - name: Set up Patrol CLI
-      #   run: dart pub global activate patrol_cli
+      - name: Set up Patrol CLI
+        run: dart pub global activate patrol_cli
 
-      # - name: Start iOS simulator
-      #   uses: futureware-tech/simulator-action@v2
-      #   with:
-      #     model: ${{ matrix.device }}
-      #     os: ${{ matrix.os }}
-      #     os_version: ${{ matrix.os_version }}
-      #     erase_before_boot: true
-      #     shutdown_after_job: true
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: ${{ matrix.device }}
+          os: ${{ matrix.os }}
+          os_version: ${{ matrix.os_version }}
+          erase_before_boot: true
+          shutdown_after_job: true
 
-      # - name: Set simulator location
-      #   run: xcrun simctl location booted set 52.17469,21.03193
+      - name: Set simulator location
+        run: xcrun simctl location booted set 52.17469,21.03193
 
-      - name: forcefully exit
-        run: exit 1
+      - run: patrol test -t integration_test/example_test.dart
+        if: success() || failure()
 
-      # - run: patrol test -t integration_test/example_test.dart
-      #   if: success() || failure()
+      - run: patrol test -t integration_test/notifications_test.dart
+        if: success() || failure()
 
-      # - run: patrol test -t integration_test/notifications_test.dart
-      #   if: success() || failure()
+      - run: patrol test -t integration_test/open_app_test.dart
+        if: success() || failure()
 
-      # - run: patrol test -t integration_test/open_app_test.dart
-      #   if: success() || failure()
+      - run: patrol test -t integration_test/open_quick_settings_test.dart
+        if: success() || failure() # should work, but is empty on Simulator
 
-      # - run: patrol test -t integration_test/open_quick_settings_test.dart
-      #   if: success() || failure() # should work, but is empty on Simulator
+      - run: patrol test -t integration_test/permissions_location_test.dart
+        if: success() || failure()
 
-      # - run: patrol test -t integration_test/permissions_location_test.dart
-      #   if: success() || failure()
+      - run: patrol test -t integration_test/permissions_many_test.dart
+        if: success() || failure()
 
-      # - run: patrol test -t integration_test/permissions_many_test.dart
-      #   if: success() || failure()
+      - run: patrol test -t integration_test/service_cellular_test.dart
+        if: ${{ false }} # Not on Simulator
 
-      # - run: patrol test -t integration_test/service_cellular_test.dart
-      #   if: ${{ false }} # Not on Simulator
+      - run: patrol test -t integration_test/service_dark_mode_test.dart
+        if: success() || failure()
 
-      # - run: patrol test -t integration_test/service_dark_mode_test.dart
-      #   if: success() || failure()
+      - run: patrol test -t integration_test/service_wifi_test.dart
+        if: ${{ false }} # Not on Simulator
 
-      # - run: patrol test -t integration_test/service_wifi_test.dart
-      #   if: ${{ false }} # Not on Simulator
-
-      # - run: patrol test -t integration_test/webview_all_test.dart
-      #   if: ${{ false }} # Temporarily broken
+      - run: patrol test -t integration_test/webview_all_test.dart
+        if: ${{ false }} # Temporarily broken
 
       - name: Set job status
         id: set_status
