@@ -10,6 +10,8 @@ jobs:
     name: Test on Android device on Firebase Test Lab
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    outputs:
+      status: ${{ steps.set_status.outputs.status }}
 
     defaults:
       run:
