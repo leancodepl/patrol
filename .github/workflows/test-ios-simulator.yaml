@@ -109,7 +109,8 @@ jobs:
           else
             msg="⚠️ Something went wrong.";
           fi;
-          msg="$msg\n\n$url";
+          msg="$msg
+          $url";
           echo "MESSAGE=$msg" >> "$GITHUB_ENV";
 
       - name: Share test results on Slack
@@ -117,7 +118,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ job.status }}
+          SLACK_COLOR: ${{ env.STATUS }}
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_TITLE: Test status (iOS Simulator)
           SLACK_MESSAGE: ${{ env.MESSAGE }}
