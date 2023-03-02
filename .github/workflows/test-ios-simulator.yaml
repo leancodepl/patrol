@@ -104,13 +104,13 @@ jobs:
           msg="";
           if [ "$STATUS" = "failure" ]; then
             msg="💥 There were test failures. Immediate action required!";
-          else if [ "$STATUS" = "success" ]; then
+          elif [ "$STATUS" = "success" ]; then
             msg="✅ All tests have passed.";
           else
             msg="⚠️ Something went wrong.";
           fi;
           msg="$msg\n\n$url";
-          echo "MESSAGE=$msg" >> $GITHUB_ENV;
+          echo "MESSAGE=$msg" >> "$GITHUB_ENV";
 
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
