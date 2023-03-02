@@ -6,10 +6,12 @@ on:
     - cron: '0 */12 * * *'
 
 jobs:
-  main:
+  run_tests:
     name: Test on iOS simulator (${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }})
     runs-on: macos-latest
     timeout-minutes: 60
+    outputs:
+      status: ${{ steps.set_status.outputs.status }}
 
     strategy:
       fail-fast: false
@@ -80,12 +82,22 @@ jobs:
       - run: patrol test -t integration_test/webview_all_test.dart
         if: ${{ false }} # Temporarily broken
 
+      - name: Set job status
+        id: set_status
+        if: success() || failure()
+        run: echo "status=${{ job.status }}" >> "$GITHUB_OUTPUT"
+
+  slack_notify:
+    runs-on: ubuntu-18.04
+    needs: run_tests
+    steps:
       - name: Set Slack message
+        env:
+          STATUS: ${{ needs.run_tests.outputs.status }}
         run: >
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          job_status="${{ job.status }}";
           msg="";
-          if [ "$job_status" = "failure" ]; then
+          if [ "$STATUS" = "failure" ]; then
             msg="💥 There were test failures. Immediate action required!";
           else
             msg="✅ All tests have passed.";
