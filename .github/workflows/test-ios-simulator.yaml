@@ -97,28 +97,39 @@ jobs:
 
     steps:
       - name: Set Slack message
+        id: slack_message
         env:
           STATUS: ${{ needs.run_tests.outputs.status }}
         run: >
+          status="${{ env.STATUS }}"
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          msg="";
+          message="";
           if [ "$STATUS" = "failure" ]; then
-            msg="💥 There were test failures. Immediate action required!";
+            message="💥 There were test failures.";
           elif [ "$STATUS" = "success" ]; then
-            msg="✅ All tests have passed.";
+            message="✅ All tests have passed.";
           else
-            msg="⚠️ Something went wrong.";
+            message="⚠️ Something went wrong.";
           fi;
-          msg="$msg
-          See workflow run here <$url>";
-          echo "MESSAGE=$msg" >> "$GITHUB_ENV";
+          echo "message=$message" >> $GITHUB_OUTPUT;
+          echo "url=$url" >> $GITHUB_OUTPUT;
+          echo "status=$status" >> $GITHUB_OUTPUT;
+
+      - name: Convert Slack message from Markdown to mrkdwn
+        uses: LoveToKnow/slackify-markdown-action@v1.0.0
+        id: markdown
+        with:
+          text: |
+            ${{ steps.slack_message.outputs.message }}
+
+            [See workflow run here](${{ steps.slack_message.outputs.url }})
 
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ env.STATUS }}
+          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_TITLE: Test status (iOS Simulator)
-          SLACK_MESSAGE: ${{ env.MESSAGE }}
+          SLACK_MESSAGE: ${{ steps.markdown.outputs.text }}
