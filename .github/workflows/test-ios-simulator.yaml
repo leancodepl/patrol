@@ -105,11 +105,11 @@ jobs:
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
           message="";
           if [ "$STATUS" = "failure" ]; then
-            message="💥 There were test failures.";
+            message="There were failing tests 💥 ";
           elif [ "$STATUS" = "success" ]; then
-            message="✅ All tests have passed.";
+            message="All tests have passed ✅ ";
           else
-            message="⚠️ Something went wrong.";
+            message="Something went wrong ⚠️";
           fi;
           echo "message=$message" >> $GITHUB_OUTPUT;
           echo "url=$url" >> $GITHUB_OUTPUT;
@@ -122,7 +122,7 @@ jobs:
           text: |
             ${{ steps.slack_message.outputs.message }}
 
-            [See workflow run here](${{ steps.slack_message.outputs.url }})
+            See workflow run [here](${{ steps.slack_message.outputs.url }})
 
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
