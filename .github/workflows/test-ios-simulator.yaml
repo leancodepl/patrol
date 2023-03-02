@@ -91,26 +91,29 @@ jobs:
         run: echo "status=${{ job.status }}" >> "$GITHUB_OUTPUT"
 
   slack_notify:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     needs: run_tests
+    if: always()
+
     steps:
       - name: Set Slack message
         env:
           STATUS: ${{ needs.run_tests.outputs.status }}
         run: >
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
           msg="";
           if [ "$STATUS" = "failure" ]; then
             msg="💥 There were test failures. Immediate action required!";
-          else
+          else if [ "$STATUS" = "success" ]; then
             msg="✅ All tests have passed.";
+          else
+            msg="⚠️ Something went wrong.";
           fi;
-
+          msg="$msg\n\n$url";
           echo "MESSAGE=$msg" >> $GITHUB_ENV;
 
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
-        if: success() || failure()
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_USERNAME: Patrol CI on GitHub Actions
