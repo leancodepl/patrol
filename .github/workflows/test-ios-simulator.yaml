@@ -79,3 +79,27 @@ jobs:
 
       - run: patrol test -t integration_test/webview_all_test.dart
         if: ${{ false }} # Temporarily broken
+
+      - name: Set Slack message
+        run: >
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          job_status="${{ job.status }}";
+          msg="";
+          if [ "$job_status" = "failure" ]; then
+            msg="💥 There were test failures. Immediate action required!";
+          else
+            msg="✅ All tests have passed.";
+          fi;
+
+          echo "MESSAGE=$msg" >> $GITHUB_ENV;
+
+      - name: Share test results on Slack
+        uses: rtCamp/action-slack-notify@v2
+        if: success() || failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_USERNAME: Patrol CI on GitHub Actions
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_TITLE: Test status (iOS Simulator)
+          SLACK_MESSAGE: ${{ env.MESSAGE }}
