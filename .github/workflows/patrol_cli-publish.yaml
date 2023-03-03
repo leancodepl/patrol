@@ -44,10 +44,10 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: dev-testers
+          SLACK_CHANNEL: ${{ vars.SLACK_RELEASES_CHANNEL }}
           SLACK_USERNAME: Patrol CI on GitHub Actions
           SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
-          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_ICON: ${{ vars.SLACK_ICON }}
           SLACK_TITLE: New patrol_cli version
           SLACK_MESSAGE: |
             ${{ github.ref_name }} has just been released 🎉
