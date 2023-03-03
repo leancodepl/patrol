@@ -8,6 +8,8 @@ jobs:
   publish:
     name: Publish on pub.dev
     runs-on: ubuntu-latest
+    outputs:
+      changelog_url: ${{ steps.pub_release.outputs.release_notes }}
 
     permissions:
       id-token: write
@@ -27,6 +29,7 @@ jobs:
           sdk: stable
 
       - name: Publish to pub.dev
+        id: pub_release
         uses: leancodepl/mobile-tools/.github/actions/pub-release@v1
         with:
           path: packages/patrol_cli
@@ -46,4 +49,7 @@ jobs:
           SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
           SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           SLACK_TITLE: New patrol_cli version
-          SLACK_MESSAGE: ${{ github.ref_name }} has just been released 🎉
+          SLACK_MESSAGE: |
+            ${{ github.ref_name }} has just been released 🎉
+
+            See release notes <${{ needs.publish.outputs.changelog_url }}|here>
