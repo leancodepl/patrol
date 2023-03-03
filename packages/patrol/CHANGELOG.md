@@ -58,7 +58,6 @@
 
 - Add GitHub Actions showing to run Patrol tests natively on both Android and
   iOS (#747, #752)
-
 - Add `PatrolTestRunner` class, which should be used instead of
   `FlutterTestRunner` in `MainActivityTest.java` file (#754)
 

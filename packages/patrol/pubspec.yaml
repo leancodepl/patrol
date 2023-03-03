@@ -1,7 +1,7 @@
 name: patrol
 description: >
   Powerful Flutter-native UI testing framework overcoming limitations of
-  existing flutter testing tools. Ready for action!
+  existing Flutter testing tools. Ready for action!
 version: 1.0.5
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol
