@@ -1,3 +1,7 @@
+## 1.0.5+1
+
+- Update small typo in pub.dev listing (#1034)
+
 ## 1.0.5
 
 - Fix build of example app for Android when building on Windows (#998)
@@ -58,7 +62,6 @@
 
 - Add GitHub Actions showing to run Patrol tests natively on both Android and
   iOS (#747, #752)
-
 - Add `PatrolTestRunner` class, which should be used instead of
   `FlutterTestRunner` in `MainActivityTest.java` file (#754)
 
