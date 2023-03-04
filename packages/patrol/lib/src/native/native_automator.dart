@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:patrol/src/binding.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
 /// Thrown when a native action fails.
@@ -58,6 +59,7 @@ class NativeAutomatorConfig {
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
     this.logger = _defaultPrintLogger,
+    this.patrolTester,
   });
 
   /// Host on which Patrol server instrumentation is running.
@@ -90,6 +92,12 @@ class NativeAutomatorConfig {
   /// Name of the application under test on iOS.
   final String iosAppName;
 
+  /// Called when a native action is performed.
+  final void Function(String) logger;
+
+  /// Used to automatically call pump during native actions.
+  final PatrolTester? patrolTester;
+
   /// Name of the application under test.
   ///
   /// Returns [androidAppName] on Android and [iosAppName] on iOS.
@@ -103,9 +111,6 @@ class NativeAutomatorConfig {
     }
   }
 
-  /// Called when a native action is performed.
-  final void Function(String) logger;
-
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   NativeAutomatorConfig copyWith({
@@ -118,6 +123,7 @@ class NativeAutomatorConfig {
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
+    PatrolTester? patrolTester,
   }) {
     return NativeAutomatorConfig(
       host: host ?? this.host,
@@ -129,6 +135,7 @@ class NativeAutomatorConfig {
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
       logger: logger ?? this.logger,
+      patrolTester: patrolTester ?? this.patrolTester,
     );
   }
 }
@@ -576,24 +583,46 @@ class NativeAutomator {
     );
   }
 
+  Future<void> _pump(_Wrap<bool> done) async {
+    final tester = _config.patrolTester;
+
+    while (true) {
+      if (done.value) {
+        return;
+      } else {
+        final future = tester?.pump();
+        done.future = future;
+        await future;
+      }
+    }
+  }
+
   /// Swipes from [from] to [to].
   Future<void> swipe({
     required Offset from,
     required Offset to,
     int steps = 2,
   }) async {
-    await _wrapRequest(
-      'swipe',
-      () => _client.swipe(
-        SwipeRequest(
-          startX: from.dx,
-          startY: from.dy,
-          endX: to.dx,
-          endY: to.dy,
-          steps: steps,
+    final done = _Wrap(false);
+    unawaited(_pump(done));
+
+    try {
+      await _wrapRequest(
+        'swipe',
+        () => _client.swipe(
+          SwipeRequest(
+            startX: from.dx,
+            startY: from.dy,
+            endX: to.dx,
+            endY: to.dy,
+            steps: steps,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Returns a list of currently visible native UI controls, specified by
@@ -726,4 +755,11 @@ class NativeAutomator {
       ),
     );
   }
+}
+
+class _Wrap<T> {
+  _Wrap(this.value);
+
+  T value;
+  Future<void>? future;
 }

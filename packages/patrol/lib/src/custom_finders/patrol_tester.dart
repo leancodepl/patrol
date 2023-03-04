@@ -108,10 +108,10 @@ const defaultScrollMaxIteration = 100;
 /// <https://dart.dev/guides/language/language-tour#callable-classes>
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
-  const PatrolTester({
+  PatrolTester({
     required this.tester,
-    required this.nativeAutomator,
     required this.config,
+    this.nativeAutomator,
   });
 
   /// Global configuration of this tester.
@@ -122,7 +122,7 @@ class PatrolTester {
 
   /// Native automator that allows for interaction with OS the app is running
   /// on.
-  final NativeAutomator? nativeAutomator;
+  NativeAutomator? nativeAutomator;
 
   /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null,
   /// which is the case if it wasn't initialized.
@@ -154,7 +154,9 @@ class PatrolTester {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
   ]) async {
-    await tester.pumpWidget(widget, duration, phase);
+    await TestAsyncUtils.guard(
+      () => tester.pumpWidget(widget, duration, phase),
+    );
   }
 
   /// See [WidgetTester.pump].
@@ -162,7 +164,7 @@ class PatrolTester {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
   ]) async {
-    await tester.pump(duration, phase);
+    await TestAsyncUtils.guard<void>(() => tester.pump(duration, phase));
   }
 
   /// See [WidgetTester.pumpAndSettle].
@@ -171,10 +173,12 @@ class PatrolTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
   }) async {
-    await tester.pumpAndSettle(
-      duration,
-      phase,
-      timeout ?? config.settleTimeout,
+    await TestAsyncUtils.guard<void>(
+      () => tester.pumpAndSettle(
+        duration,
+        phase,
+        timeout ?? config.settleTimeout,
+      ),
     );
   }
 

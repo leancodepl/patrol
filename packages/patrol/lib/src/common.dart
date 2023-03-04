@@ -44,15 +44,10 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  NativeAutomator? nativeAutomator;
-
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
-        final binding = PatrolBinding.ensureInitialized();
-        binding.framePolicy = framePolicy;
-
-        nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
+        PatrolBinding.ensureInitialized().framePolicy = framePolicy;
         break;
       case BindingType.integrationTest:
         IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
@@ -72,13 +67,20 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
+      final patrolTester = PatrolTester(
+        config: config,
+        tester: widgetTester,
+      );
+
+      NativeAutomator? nativeAutomator;
+      if (bindingType == BindingType.patrol) {
+        nativeAutomator = NativeAutomator(
+          config: nativeAutomatorConfig.copyWith(patrolTester: patrolTester),
+        );
+      }
+      patrolTester.nativeAutomator = nativeAutomator;
       await nativeAutomator?.configure();
 
-      final patrolTester = PatrolTester(
-        tester: widgetTester,
-        nativeAutomator: nativeAutomator,
-        config: config,
-      );
       await callback(patrolTester);
 
       // ignore: prefer_const_declarations
