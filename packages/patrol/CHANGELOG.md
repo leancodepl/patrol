@@ -1,3 +1,8 @@
+## Unreleased
+
+- Pump frames during execution of native actions (i.e methods from the
+  `NativeAutomator` class) (#1038)
+
 ## 1.0.5+1
 
 - Update small typo in pub.dev listing (#1034)
