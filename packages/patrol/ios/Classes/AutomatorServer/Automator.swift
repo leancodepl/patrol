@@ -1,5 +1,7 @@
 import XCTest
 
+let MICROSECONDS_IN_SECOND: UInt32 = 1_000_000
+
 class Automator {
   private lazy var device: XCUIDevice = {
     return XCUIDevice.shared
@@ -54,57 +56,70 @@ class Automator {
 
   // MARK: General UI interaction
 
-  func tap(on text: String, inApp bundleId: String) async throws {
-    try await runAction("tapping on view with text \(format: text) in app \(bundleId)") {
+  func tap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+    let view = "view with text \(format: text) in app \(bundleId) at index \(index)"
+
+    try await runAction("tapping on \(view)") {
       let app = try self.getApp(withBundleId: bundleId)
-      let element = app.descendants(matching: .any)[text]
+      let elementQuery = app.descendants(matching: .any).matching(identifier: text)
 
-      Logger.shared.i("waiting for existence of view with text \(format: text)")
-      let exists = element.waitForExistence(timeout: self.timeout)
-      guard exists else {
-        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
+      Logger.shared.i("waiting for existence of \(view)")
+      guard let element = self.waitForView(query: elementQuery, index: index) else {
+        throw PatrolError.viewNotExists(view)
       }
-      Logger.shared.i("found view with text \(format: text), will tap on it")
 
-      element.firstMatch.forceTap()
+      Logger.shared.i("found \(view), will tap on it")
+      element.tap()
     }
   }
 
-  func doubleTap(on text: String, inApp bundleId: String) async throws {
-    try await runAction("double tapping on text \(format: text) in app \(bundleId)") {
-      let app = try self.getApp(withBundleId: bundleId)
-      let element = app.descendants(matching: .any)[text]
+  func doubleTap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+    let view = "view with text \(format: text) in app \(bundleId) at index \(index)"
 
-      let exists = element.waitForExistence(timeout: self.timeout)
-      guard exists else {
-        throw PatrolError.viewNotExists("view with text \(format: text) in app \(format: bundleId)")
+    try await runAction("double tapping on \(view)") {
+      let app = try self.getApp(withBundleId: bundleId)
+      let elementQuery = app.descendants(matching: .any).matching(identifier: text)
+
+      Logger.shared.i("waiting for existence of \(view)")
+      guard let element = self.waitForView(query: elementQuery, index: index) else {
+        throw PatrolError.viewNotExists(view)
       }
 
-      element.firstMatch.forceTap()
+      Logger.shared.i("found \(view), will double tap on it")
+      element.doubleTap()
     }
   }
 
-  func enterText(_ data: String, by text: String, inApp bundleId: String) async throws {
-    try await runAction(
-      "entering text \(format: data) into text field with text \(text) in app \(bundleId)"
-    ) {
+  func enterText(_ data: String, byText text: String, inApp bundleId: String, atIndex index: Int)
+    async throws
+  {
+    let view = "text field with ident/label \(format: text) in app \(bundleId) at index \(index)"
+
+    try await runAction("entering text \(format: data) into \(view)") {
       let app = try self.getApp(withBundleId: bundleId)
 
-      guard
-        let element = self.waitForAnyElement(
-          elements: [app.textFields[text], app.secureTextFields[text]],
-          timeout: self.timeout
-        )
-      else {
-        throw PatrolError.viewNotExists(
-          "text field with text \(format: text) in app \(format: bundleId)")
+      // elementType must be specified as integer
+      // See:
+      // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
+      // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
+      let textFieldPredicate = NSPredicate(format: "elementType == 49")
+      let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
+      let predicate = NSCompoundPredicate(
+        orPredicateWithSubpredicates: [textFieldPredicate, secureTextFieldPredicate]
+      )
+
+      let elementQuery = app.descendants(matching: .any).matching(predicate).matching(
+        identifier: text)
+      guard let element = self.waitForView(query: elementQuery, index: index) else {
+        throw PatrolError.viewNotExists(view)
       }
 
-      element.firstMatch.typeText(data)
+      element.tap()
+      element.typeText(data)
     }
   }
 
-  func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
+  func enterText(_ data: String, byIndex index: Int, inApp bundleId: String) async throws {
     try await runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
       let app = try self.getApp(withBundleId: bundleId)
 
@@ -118,18 +133,12 @@ class Automator {
         orPredicateWithSubpredicates: [textFieldPredicate, secureTextFieldPredicate]
       )
 
-      let textFieldsQuery = app.descendants(matching: .any).matching(predicate)
-      guard
-        let element = self.waitFor(
-          query: textFieldsQuery,
-          byIndex: index,
-          timeout: self.timeout
-        )
-      else {
+      let elementQuery = app.descendants(matching: .any).matching(predicate)
+      guard let element = self.waitForView(query: elementQuery, index: index) else {
         throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
       }
 
-      element.forceTap()
+      element.tap()
       element.typeText(data)
     }
   }
@@ -506,7 +515,8 @@ class Automator {
     }
   }
 
-  // MARK: Private stuff
+  // MARK: Private common methods
+
   private func isSimulator() -> Bool {
     #if targetEnvironment(simulator)
       return true
@@ -622,9 +632,48 @@ class Automator {
       Logger.shared.i("\(log)...")
       let result = try block()
       Logger.shared.i("done \(log)")
-      Logger.shared.i("result: \(result)")
+      Logger.shared.i("result: \(result), type: \(type(of: result))")
       return result
     }
+  }
+
+  // MARK: Custom view utilities
+
+  /// Adapted from https://stackoverflow.com/q/47880395/7009800
+  @discardableResult
+  func waitForAnyElement(elements: [XCUIElement], timeout: TimeInterval? = nil) -> XCUIElement? {
+    var foundElement: XCUIElement?
+    let startTime = Date()
+
+    while Date().timeIntervalSince(startTime) < (timeout ?? self.timeout) {
+      if let elementFound = elements.first(where: { $0.exists }) {
+        foundElement = elementFound
+        break
+      }
+      usleep(MICROSECONDS_IN_SECOND * 1)
+    }
+
+    return foundElement
+  }
+
+  /// Adapted from https://stackoverflow.com/q/47880395/7009800
+  @discardableResult
+  func waitForView(query: XCUIElementQuery, index: Int, timeout: TimeInterval? = nil)
+    -> XCUIElement?
+  {
+    var foundElement: XCUIElement?
+    let startTime = Date()
+
+    while Date().timeIntervalSince(startTime) < (timeout ?? self.timeout) {
+      let elements = query.allElementsBoundByIndex
+      if index < elements.count && elements[index].exists {
+        foundElement = elements[index]
+        break
+      }
+      usleep(MICROSECONDS_IN_SECOND * 1)
+    }
+
+    return foundElement
   }
 }
 
