@@ -192,8 +192,12 @@ class PatrolTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
   }) async {
-    await tester.pumpWidget(widget, duration, phase);
-    await _performPump(andSettle: true, settleTimeout: timeout);
+    await TestAsyncUtils.guard<void>(
+      () => tester.pumpWidget(widget, duration, phase),
+    );
+    await TestAsyncUtils.guard<void>(
+      () => _performPump(andSettle: true, settleTimeout: timeout),
+    );
   }
 
   /// Waits until this finder finds at least 1 visible widget and then taps on
