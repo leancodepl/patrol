@@ -496,29 +496,41 @@ class NativeAutomator {
   ///
   /// If the native view is not found, an exception is thrown.
   Future<void> tap(Selector selector, {String? appId}) async {
-    await _wrapRequest('tap', () async {
-      await _client.tap(
-        TapRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
-        ),
-      );
-    });
+    final done = _startPumping();
+    try {
+      await _wrapRequest('tap', () async {
+        await _client.tap(
+          TapRequest(
+            selector: selector,
+            appId: appId ?? resolvedAppId,
+          ),
+        );
+      });
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Double taps on the native view specified by [selector].
   ///
   /// If the native view is not found, an exception is thrown.
   Future<void> doubleTap(Selector selector, {String? appId}) async {
-    await _wrapRequest(
-      'doubleTap',
-      () => _client.doubleTap(
-        TapRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'doubleTap',
+        () => _client.doubleTap(
+          TapRequest(
+            selector: selector,
+            appId: appId ?? resolvedAppId,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Enters text to the native view specified by [selector].
@@ -539,16 +551,22 @@ class NativeAutomator {
     required String text,
     String? appId,
   }) async {
-    await _wrapRequest(
-      'enterText',
-      () => _client.enterText(
-        EnterTextRequest(
-          data: text,
-          selector: selector,
-          appId: appId ?? resolvedAppId,
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'enterText',
+        () => _client.enterText(
+          EnterTextRequest(
+            data: text,
+            selector: selector,
+            appId: appId ?? resolvedAppId,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Enters text to the [index]-th visible text field.
@@ -571,29 +589,21 @@ class NativeAutomator {
     required int index,
     String? appId,
   }) async {
-    await _wrapRequest(
-      'enterTextByIndex',
-      () => _client.enterText(
-        EnterTextRequest(
-          data: text,
-          index: index,
-          appId: appId ?? resolvedAppId,
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'enterTextByIndex',
+        () => _client.enterText(
+          EnterTextRequest(
+            data: text,
+            index: index,
+            appId: appId ?? resolvedAppId,
+          ),
         ),
-      ),
-    );
-  }
-
-  Future<void> _pump(_Wrap<bool> done) async {
-    final tester = _config.patrolTester;
-
-    while (true) {
-      if (done.value) {
-        return;
-      } else {
-        final future = tester?.pump();
-        done.future = future;
-        await future;
-      }
+      );
+    } finally {
+      done.value = true;
+      await done.future;
     }
   }
 
@@ -603,9 +613,7 @@ class NativeAutomator {
     required Offset to,
     int steps = 2,
   }) async {
-    final done = _Wrap(false);
-    unawaited(_pump(done));
-
+    final done = _startPumping();
     try {
       await _wrapRequest(
         'swipe',
@@ -628,10 +636,17 @@ class NativeAutomator {
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeView>> getNativeViews(Selector selector) async {
-    final response = await _wrapRequest(
-      'getNativeViews',
-      () => _client.getNativeViews(GetNativeViewsRequest(selector: selector)),
-    );
+    GetNativeViewsResponse response;
+    final done = _startPumping();
+    try {
+      response = await _wrapRequest(
+        'getNativeViews',
+        () => _client.getNativeViews(GetNativeViewsRequest(selector: selector)),
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
 
     return response.nativeViews;
   }
@@ -643,14 +658,21 @@ class NativeAutomator {
   Future<bool> isPermissionDialogVisible({
     Duration timeout = const Duration(seconds: 1),
   }) async {
-    final response = await _wrapRequest(
-      'isPermissionDialogVisible',
-      () => _client.isPermissionDialogVisible(
-        PermissionDialogVisibleRequest(
-          timeoutMillis: Int64(timeout.inMilliseconds),
+    final done = _startPumping();
+    PermissionDialogVisibleResponse response;
+    try {
+      response = await _wrapRequest(
+        'isPermissionDialogVisible',
+        () => _client.isPermissionDialogVisible(
+          PermissionDialogVisibleRequest(
+            timeoutMillis: Int64(timeout.inMilliseconds),
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
 
     return response.visible;
   }
@@ -669,12 +691,20 @@ class NativeAutomator {
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
   Future<void> grantPermissionWhenInUse() async {
-    await _wrapRequest(
-      'grantPermissionWhenInUse',
-      () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequest_Code.WHILE_USING),
-      ),
-    );
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'grantPermissionWhenInUse',
+        () => _client.handlePermissionDialog(
+          HandlePermissionRequest(
+            code: HandlePermissionRequest_Code.WHILE_USING,
+          ),
+        ),
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Grants the permission that the currently visible native permission request
@@ -718,12 +748,18 @@ class NativeAutomator {
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
   Future<void> denyPermission() async {
-    await _wrapRequest(
-      'denyPermission',
-      () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
-      ),
-    );
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'denyPermission',
+        () => _client.handlePermissionDialog(
+          HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
+        ),
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Select the "coarse location" (aka "approximate") setting on the currently
@@ -731,14 +767,21 @@ class NativeAutomator {
   ///
   /// Throws if no permission request dialog is present.
   Future<void> selectCoarseLocation() async {
-    await _wrapRequest(
-      'selectCoarseLocation',
-      () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.COARSE,
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'selectCoarseLocation',
+        () => _client.setLocationAccuracy(
+          SetLocationAccuracyRequest(
+            locationAccuracy:
+                SetLocationAccuracyRequest_LocationAccuracy.COARSE,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
   }
 
   /// Select the "fine location" (aka "precise") setting on the currently
@@ -746,14 +789,40 @@ class NativeAutomator {
   ///
   /// Throws if no permission request dialog is present.
   Future<void> selectFineLocation() async {
-    await _wrapRequest(
-      'selectFineLocation',
-      () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
+    final done = _startPumping();
+    try {
+      await _wrapRequest(
+        'selectFineLocation',
+        () => _client.setLocationAccuracy(
+          SetLocationAccuracyRequest(
+            locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      done.value = true;
+      await done.future;
+    }
+  }
+
+  _Wrap<bool> _startPumping() {
+    final done = _Wrap(false);
+    unawaited(_pump(done));
+    return done;
+  }
+
+  Future<void> _pump(_Wrap<bool> done) async {
+    final tester = _config.patrolTester;
+
+    while (true) {
+      if (done.value) {
+        return;
+      } else {
+        final future = tester?.pump();
+        done.future = future;
+        await future;
+      }
+    }
   }
 }
 
