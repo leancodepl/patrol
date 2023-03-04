@@ -23,6 +23,6 @@ jobs:
           sdk: stable
 
       - name: Publish to pub.dev
-        uses: leancodepl/mobile-tools/.github/actions/pub-release@v1
+        uses: leancodepl/mobile-tools/.github/actions/pub-release@pub-release-v1
         with:
           path: packages/adb
