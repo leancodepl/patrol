@@ -9,7 +9,7 @@ jobs:
     name: Publish on pub.dev
     runs-on: ubuntu-latest
     outputs:
-      changelog_url: ${{ steps.pub_release.outputs.release_notes }}
+      changelog_url: ${{ steps.pub_release.outputs.changelog_url }}
 
     permissions:
       id-token: write
@@ -30,7 +30,7 @@ jobs:
 
       - name: Publish to pub.dev
         id: pub_release
-        uses: leancodepl/mobile-tools/.github/actions/pub-release@v1
+        uses: leancodepl/mobile-tools/.github/actions/pub-release@pub-release-v1
         with:
           path: packages/patrol_cli
 
