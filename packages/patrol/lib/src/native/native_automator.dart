@@ -496,29 +496,24 @@ class NativeAutomator {
   ///
   /// If the native view is not found, an exception is thrown.
   Future<void> tap(Selector selector, {String? appId}) async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest('tap', () async {
+    await _pumping(
+      () => _wrapRequest('tap', () async {
         await _client.tap(
           TapRequest(
             selector: selector,
             appId: appId ?? resolvedAppId,
           ),
         );
-      });
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      }),
+    );
   }
 
   /// Double taps on the native view specified by [selector].
   ///
   /// If the native view is not found, an exception is thrown.
   Future<void> doubleTap(Selector selector, {String? appId}) async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () async => _wrapRequest(
         'doubleTap',
         () => _client.doubleTap(
           TapRequest(
@@ -526,11 +521,8 @@ class NativeAutomator {
             appId: appId ?? resolvedAppId,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Enters text to the native view specified by [selector].
@@ -551,9 +543,8 @@ class NativeAutomator {
     required String text,
     String? appId,
   }) async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () => _wrapRequest(
         'enterText',
         () => _client.enterText(
           EnterTextRequest(
@@ -562,11 +553,8 @@ class NativeAutomator {
             appId: appId ?? resolvedAppId,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Enters text to the [index]-th visible text field.
@@ -589,9 +577,8 @@ class NativeAutomator {
     required int index,
     String? appId,
   }) async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () async => _wrapRequest(
         'enterTextByIndex',
         () => _client.enterText(
           EnterTextRequest(
@@ -600,11 +587,8 @@ class NativeAutomator {
             appId: appId ?? resolvedAppId,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Swipes from [from] to [to].
@@ -613,9 +597,8 @@ class NativeAutomator {
     required Offset to,
     int steps = 2,
   }) async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () => _wrapRequest(
         'swipe',
         () => _client.swipe(
           SwipeRequest(
@@ -626,27 +609,19 @@ class NativeAutomator {
             steps: steps,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeView>> getNativeViews(Selector selector) async {
-    GetNativeViewsResponse response;
-    final done = _startPumping();
-    try {
-      response = await _wrapRequest(
+    final response = await _pumping(
+      () => _wrapRequest(
         'getNativeViews',
         () => _client.getNativeViews(GetNativeViewsRequest(selector: selector)),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
 
     return response.nativeViews;
   }
@@ -658,21 +633,16 @@ class NativeAutomator {
   Future<bool> isPermissionDialogVisible({
     Duration timeout = const Duration(seconds: 1),
   }) async {
-    final done = _startPumping();
-    PermissionDialogVisibleResponse response;
-    try {
-      response = await _wrapRequest(
+    final response = await _pumping(
+      () async => _wrapRequest(
         'isPermissionDialogVisible',
         () => _client.isPermissionDialogVisible(
           PermissionDialogVisibleRequest(
             timeoutMillis: Int64(timeout.inMilliseconds),
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
 
     return response.visible;
   }
@@ -691,20 +661,16 @@ class NativeAutomator {
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
   Future<void> grantPermissionWhenInUse() async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () async => _wrapRequest(
         'grantPermissionWhenInUse',
         () => _client.handlePermissionDialog(
           HandlePermissionRequest(
             code: HandlePermissionRequest_Code.WHILE_USING,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Grants the permission that the currently visible native permission request
@@ -724,11 +690,13 @@ class NativeAutomator {
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
   Future<void> grantPermissionOnlyThisTime() async {
-    await _wrapRequest(
-      'grantPermissionOnlyThisTime',
-      () => _client.handlePermissionDialog(
-        HandlePermissionRequest(
-          code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
+    await _pumping(
+      () async => _wrapRequest(
+        'grantPermissionOnlyThisTime',
+        () => _client.handlePermissionDialog(
+          HandlePermissionRequest(
+            code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
+          ),
         ),
       ),
     );
@@ -748,18 +716,14 @@ class NativeAutomator {
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
   Future<void> denyPermission() async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () async => _wrapRequest(
         'denyPermission',
         () => _client.handlePermissionDialog(
           HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Select the "coarse location" (aka "approximate") setting on the currently
@@ -767,9 +731,8 @@ class NativeAutomator {
   ///
   /// Throws if no permission request dialog is present.
   Future<void> selectCoarseLocation() async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () async => _wrapRequest(
         'selectCoarseLocation',
         () => _client.setLocationAccuracy(
           SetLocationAccuracyRequest(
@@ -777,11 +740,8 @@ class NativeAutomator {
                 SetLocationAccuracyRequest_LocationAccuracy.COARSE,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
   /// Select the "fine location" (aka "precise") setting on the currently
@@ -789,46 +749,30 @@ class NativeAutomator {
   ///
   /// Throws if no permission request dialog is present.
   Future<void> selectFineLocation() async {
-    final done = _startPumping();
-    try {
-      await _wrapRequest(
+    await _pumping(
+      () async => _wrapRequest(
         'selectFineLocation',
         () => _client.setLocationAccuracy(
           SetLocationAccuracyRequest(
             locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
           ),
         ),
-      );
-    } finally {
-      done.value = true;
-      await done.future;
-    }
+      ),
+    );
   }
 
-  _Wrap<bool> _startPumping() {
-    final done = _Wrap(false);
-    unawaited(_pump(done));
-    return done;
-  }
-
-  Future<void> _pump(_Wrap<bool> done) async {
+  Future<T> _pumping<T>(Future<T> Function() action) async {
     final tester = _config.patrolTester;
+    final completer = Completer<T>();
 
-    while (true) {
-      if (done.value) {
-        return;
-      } else {
-        final future = tester?.pump();
-        done.future = future;
-        await future;
-      }
+    unawaited(
+      action().then(completer.complete).catchError(completer.completeError),
+    );
+
+    while (!completer.isCompleted) {
+      await tester?.pump();
     }
+
+    return completer.future;
   }
-}
-
-class _Wrap<T> {
-  _Wrap(this.value);
-
-  T value;
-  Future<void>? future;
 }
