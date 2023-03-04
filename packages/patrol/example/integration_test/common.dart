@@ -7,7 +7,9 @@ export 'package:flutter_test/flutter_test.dart';
 export 'package:patrol/patrol.dart';
 
 final globalPatrolTesterConfig = PatrolTesterConfig();
-final globalNativeAutomatorConfig = NativeAutomatorConfig();
+final globalNativeAutomatorConfig = NativeAutomatorConfig(
+  findTimeout: Duration(seconds: 30), // Simulator on GitHub Actions is so slow
+);
 
 Future<void> createApp(PatrolTester $) async {
   await setUpTimezone();
