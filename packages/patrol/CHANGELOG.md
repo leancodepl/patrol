@@ -1,9 +1,3 @@
-## Unreleased
-
-- Make `Selector.instance` field have effect when running tests on iOS (#952).
-
-  Previously it had effect only when running tests on Android.
-
 ## 1.0.5+1
 
 - Update small typo in pub.dev listing (#1034)

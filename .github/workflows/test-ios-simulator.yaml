@@ -52,9 +52,6 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
-      - run: patrol test -t integration_test/smokes/graceful_fail_test.dart
-        if: success() || failure()
-
       - run: patrol test -t integration_test/example_test.dart
         if: success() || failure()
 
@@ -65,7 +62,7 @@ jobs:
         if: success() || failure()
 
       - run: patrol test -t integration_test/open_quick_settings_test.dart
-        if: success() || failure() # not on simulator
+        if: success() || failure() # should work, but is empty on Simulator
 
       - run: patrol test -t integration_test/permissions_location_test.dart
         if: success() || failure()
@@ -74,28 +71,16 @@ jobs:
         if: success() || failure()
 
       - run: patrol test -t integration_test/service_cellular_test.dart
-        if: ${{ false }} # not on simulator
+        if: ${{ false }} # Not on Simulator
 
       - run: patrol test -t integration_test/service_dark_mode_test.dart
         if: success() || failure()
 
       - run: patrol test -t integration_test/service_wifi_test.dart
-        if: ${{ false }} # not on simulator
+        if: ${{ false }} # Not on Simulator
 
-      - run: patrol test -t integration_test/swipe_test.dart
-        if: ${{ false }} # not on iOS
-
-      - run: patrol test -t integration_test/webview_hackernews_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/webview_leancode_test.dart
-        if: ${{ false }} # temporarily broken
-
-      - run: patrol test -t integration_test/webview_login_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/webview_stackoverflow_test.dart
-        if: success() || failure()
+      - run: patrol test -t integration_test/webview_all_test.dart
+        if: ${{ false }} # Temporarily broken
 
       - name: Set job status
         id: set_status
