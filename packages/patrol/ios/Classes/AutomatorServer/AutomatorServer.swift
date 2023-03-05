@@ -98,11 +98,7 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automator.tap(
-        onText: request.selector.text,
-        inApp: request.appID,
-        atIndex: Int(request.selector.instance)
-      )
+      try await automator.tap(on: request.selector.text, inApp: request.appID)
       return DefaultResponse()
     }
   }
@@ -112,11 +108,7 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     context: GRPCAsyncServerCallContext
   ) async throws -> DefaultResponse {
     return try await runCatching {
-      try await automator.doubleTap(
-        onText: request.selector.text,
-        inApp: request.appID,
-        atIndex: Int(request.selector.instance)
-      )
+      try await automator.doubleTap(on: request.selector.text, inApp: request.appID)
       return DefaultResponse()
     }
   }
@@ -128,18 +120,9 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     return try await runCatching {
       switch request.findBy {
       case .index(let index):
-        try await automator.enterText(
-          request.data,
-          byIndex: Int(index),
-          inApp: request.appID
-        )
+        try await automator.enterText(request.data, by: Int(index), inApp: request.appID)
       case .selector(let selector):
-        try await automator.enterText(
-          request.data,
-          byText: selector.text,
-          inApp: request.appID,
-          atIndex: Int(request.selector.instance)
-        )
+        try await automator.enterText(request.data, by: selector.text, inApp: request.appID)
       default:
         throw PatrolError.internal("enterText(): neither index nor selector are set")
       }
@@ -407,7 +390,6 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     do {
       return try await block()
     } catch let err as PatrolError {
-      Logger.shared.e(err.description)
       throw err
     } catch let err {
       throw PatrolError.unknown(err)

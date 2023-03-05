@@ -124,6 +124,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - version: '3.3.0'
           - channel: stable
 
     defaults:

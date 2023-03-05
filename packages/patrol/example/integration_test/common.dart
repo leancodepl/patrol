@@ -6,10 +6,8 @@ export 'package:example/main.dart';
 export 'package:flutter_test/flutter_test.dart';
 export 'package:patrol/patrol.dart';
 
-final globalPatrolTesterConfig = PatrolTesterConfig();
-final globalNativeAutomatorConfig = NativeAutomatorConfig(
-  findTimeout: Duration(seconds: 30), // Simulator on GitHub Actions is so slow
-);
+final _patrolTesterConfig = PatrolTesterConfig();
+final _nativeAutomatorConfig = NativeAutomatorConfig();
 
 Future<void> createApp(PatrolTester $) async {
   await setUpTimezone();
@@ -19,14 +17,12 @@ Future<void> createApp(PatrolTester $) async {
 void patrol(
   String description,
   Future<void> Function(PatrolTester) callback, {
-  PatrolTesterConfig? patrolTesterConfig,
-  NativeAutomatorConfig? nativeAutomatorConfig,
   bool? skip,
 }) {
   patrolTest(
     description,
-    config: patrolTesterConfig ?? globalPatrolTesterConfig,
-    nativeAutomatorConfig: nativeAutomatorConfig ?? globalNativeAutomatorConfig,
+    config: _patrolTesterConfig,
+    nativeAutomatorConfig: _nativeAutomatorConfig,
     nativeAutomation: true,
     skip: skip,
     callback,
