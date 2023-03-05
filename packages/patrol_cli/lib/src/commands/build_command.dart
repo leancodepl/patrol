@@ -54,7 +54,6 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
     argParser
       ..addOption(
         'target',
-        aliases: ['targets'],
         abbr: 't',
         help: 'Integration test to set as entrypoint.',
         valueHelp: 'integration_test/app_test.dart',
