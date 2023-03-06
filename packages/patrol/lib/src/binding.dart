@@ -21,6 +21,8 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
   defaultValue: true,
 );
 
+const bool _hotRestartEnabled = bool.fromEnvironment('PATROL_HOT_RESTART');
+
 /// The method channel used to report the results of the tests to the underlying
 /// platform's testing framework.
 ///
@@ -49,6 +51,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     tearDownAll(() async {
       try {
         if (!Platform.isIOS) {
+          return;
+        }
+
+        if (_hotRestartEnabled) {
+          // Sending results ends the test, which we don't want for Hot Restart
           return;
         }
 

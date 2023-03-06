@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/common/logging_local_process_manager.dart';
 import 'package:patrol_cli/src/common/staged_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
@@ -26,6 +32,7 @@ class TestCommandConfig with _$TestCommandConfig {
     required int repeat,
     required bool displayLabel,
     required bool uninstall,
+    required bool hotRestart,
     // Android-only options
     required String? packageName,
     required String? androidFlavor,
@@ -104,14 +111,18 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         defaultsTo: '$_defaultRepeats',
       )
       ..addFlag(
+        'label',
+        help: 'Display the label over the application under test.',
+        defaultsTo: true,
+      )
+      ..addFlag(
         'uninstall',
         help: 'Whether to uninstall the apps after test finishes.',
         defaultsTo: true,
       )
       ..addFlag(
-        'label',
-        help: 'Display the label over the application under test.',
-        defaultsTo: true,
+        'hot-restart',
+        help: 'Whether to enable Hot Restart.',
       )
       // Android-only options
       ..addOption(
@@ -226,8 +237,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       throw const FormatException('`repeat` argument is not an int');
     }
 
-    final displayLabel = argResults?['label'] as bool?;
-    final uninstall = argResults?['uninstall'] as bool?;
+    final displayLabel = argResults?['label'] as bool? ?? true;
+    final uninstall = argResults?['uninstall'] as bool? ?? true;
+    final hotRestart = argResults?['hot-restart'] as bool? ?? false;
 
     if (repeat < 1) {
       throwToolExit('repeat count must not be smaller than 1');
@@ -244,6 +256,10 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
       'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
+      if (hotRestart) ...{
+        'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+        'PATROL_HOT_RESTART': 'true',
+      },
     }.withNullsRemoved();
 
     final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
@@ -266,8 +282,9 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       targets: targets,
       dartDefines: effectiveDartDefines,
       repeat: repeat,
-      displayLabel: displayLabel ?? true,
-      uninstall: uninstall ?? true,
+      displayLabel: displayLabel,
+      uninstall: uninstall,
+      hotRestart: hotRestart,
       // Android-specific options
       packageName: packageName,
       androidFlavor: androidFlavor,
@@ -372,43 +389,33 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       Future<void> Function() action;
       Future<void> Function()? finalizer;
 
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          action = () => _androidTestBackend.execute(options, device);
-          final package = config.packageName;
-          if (package != null && config.uninstall) {
-            finalizer = () => _androidTestBackend.uninstall(package, device);
-          }
-          break;
-        case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-            simulator: !device.real,
-          );
-          action = () async => _iosTestBackend.execute(options, device);
-          final bundle = config.bundleId;
-          if (bundle != null && config.uninstall) {
-            finalizer = () => _iosTestBackend.uninstall(bundle, device);
-          }
+      final options = AndroidAppOptions(
+        target: target,
+        flavor: config.androidFlavor,
+        dartDefines: {
+          ...config.dartDefines,
+          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
+        },
+      );
+      action = () => _androidTestBackend.execute(options, device);
+      final package = config.packageName;
+      if (package != null && config.uninstall) {
+        finalizer = () => _androidTestBackend.uninstall(package, device);
       }
 
       try {
+        final pm = LoggingLocalProcessManager(logger: _logger);
+        unawaited(() async {
+          final process = await pm.start(options.toFlutterAttachInvocation());
+          process
+            ..listenStdOut((l) => _logger.detail('\t: $l'))
+            ..listenStdErr((l) => _logger.err('\t$l'));
+          stdin.listen((event) {
+            final char = utf8.decode(event);
+            _logger.warn('got stdin event: $event');
+            process.stdin.add(event);
+          });
+        }());
         await action();
       } catch (err, st) {
         _logger

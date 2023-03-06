@@ -11,6 +11,7 @@ void main() {
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 
+      print('will open app, resolvedAppId: ${$.native.resolvedAppId}');
       await $.native.pressHome();
       await $.native.openApp();
 

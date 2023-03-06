@@ -21,7 +21,8 @@ mixin _$TestCommandConfig {
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
   int get repeat => throw _privateConstructorUsedError;
   bool get displayLabel => throw _privateConstructorUsedError;
-  bool get uninstall =>
+  bool get uninstall => throw _privateConstructorUsedError;
+  bool get hotRestart =>
       throw _privateConstructorUsedError; // Android-only options
   String? get packageName => throw _privateConstructorUsedError;
   String? get androidFlavor =>
@@ -50,6 +51,7 @@ abstract class $TestCommandConfigCopyWith<$Res> {
       int repeat,
       bool displayLabel,
       bool uninstall,
+      bool hotRestart,
       String? packageName,
       String? androidFlavor,
       String? bundleId,
@@ -78,6 +80,7 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
     Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
+    Object? hotRestart = null,
     Object? packageName = freezed,
     Object? androidFlavor = freezed,
     Object? bundleId = freezed,
@@ -110,6 +113,10 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
       uninstall: null == uninstall
           ? _value.uninstall
           : uninstall // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hotRestart: null == hotRestart
+          ? _value.hotRestart
+          : hotRestart // ignore: cast_nullable_to_non_nullable
               as bool,
       packageName: freezed == packageName
           ? _value.packageName
@@ -158,6 +165,7 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
       int repeat,
       bool displayLabel,
       bool uninstall,
+      bool hotRestart,
       String? packageName,
       String? androidFlavor,
       String? bundleId,
@@ -184,6 +192,7 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
     Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
+    Object? hotRestart = null,
     Object? packageName = freezed,
     Object? androidFlavor = freezed,
     Object? bundleId = freezed,
@@ -216,6 +225,10 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
       uninstall: null == uninstall
           ? _value.uninstall
           : uninstall // ignore: cast_nullable_to_non_nullable
+              as bool,
+      hotRestart: null == hotRestart
+          ? _value.hotRestart
+          : hotRestart // ignore: cast_nullable_to_non_nullable
               as bool,
       packageName: freezed == packageName
           ? _value.packageName
@@ -259,6 +272,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       required this.repeat,
       required this.displayLabel,
       required this.uninstall,
+      required this.hotRestart,
       required this.packageName,
       required this.androidFlavor,
       required this.bundleId,
@@ -300,6 +314,8 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   final bool displayLabel;
   @override
   final bool uninstall;
+  @override
+  final bool hotRestart;
 // Android-only options
   @override
   final String? packageName;
@@ -319,7 +335,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 
   @override
   String toString() {
-    return 'TestCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
+    return 'TestCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, hotRestart: $hotRestart, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
   }
 
   @override
@@ -336,6 +352,8 @@ class _$_TestCommandConfig implements _TestCommandConfig {
                 other.displayLabel == displayLabel) &&
             (identical(other.uninstall, uninstall) ||
                 other.uninstall == uninstall) &&
+            (identical(other.hotRestart, hotRestart) ||
+                other.hotRestart == hotRestart) &&
             (identical(other.packageName, packageName) ||
                 other.packageName == packageName) &&
             (identical(other.androidFlavor, androidFlavor) ||
@@ -360,6 +378,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       repeat,
       displayLabel,
       uninstall,
+      hotRestart,
       packageName,
       androidFlavor,
       bundleId,
@@ -384,6 +403,7 @@ abstract class _TestCommandConfig implements TestCommandConfig {
       required final int repeat,
       required final bool displayLabel,
       required final bool uninstall,
+      required final bool hotRestart,
       required final String? packageName,
       required final String? androidFlavor,
       required final String? bundleId,
@@ -404,6 +424,8 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   bool get displayLabel;
   @override
   bool get uninstall;
+  @override
+  bool get hotRestart;
   @override // Android-only options
   String? get packageName;
   @override
