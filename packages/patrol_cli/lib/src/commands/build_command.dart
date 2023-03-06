@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/logger.dart';
-import 'package:patrol_cli/src/common/staged_command.dart';
+import 'package:patrol_cli/src/common/patrol_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
@@ -31,13 +31,8 @@ class BuildCommandConfig with _$BuildCommandConfig {
   }) = _BuildCommandConfig;
 }
 
-const _failureMessage =
-    'See the logs above to learn what happened. Also consider running with '
-    "--verbose. If the logs still aren't useful, then it's a bug - please "
-    'report it.';
-
 // TODO: Supports only Android at the moment.
-class BuildCommand extends StagedCommand<BuildCommandConfig> {
+class BuildCommand extends PatrolCommand<BuildCommandConfig> {
   BuildCommand({
     required TestFinder testFinder,
     required DartDefinesReader dartDefinesReader,
@@ -51,67 +46,15 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _logger = logger {
-    argParser
-      ..addOption(
-        'target',
-        abbr: 't',
-        help: 'Integration test to set as entrypoint.',
-        valueHelp: 'integration_test/app_test.dart',
-        mandatory: true,
-      )
-      ..addOption(
-        'flavor',
-        help: 'Flavor of the app to run.',
-      )
-      ..addMultiOption(
-        'dart-define',
-        aliases: ['dart-defines'],
-        help: 'Additional key-value pairs that will be available to the app '
-            'under test.',
-        valueHelp: 'KEY=VALUE',
-      )
-      ..addOption(
-        'wait',
-        help: 'Seconds to wait after the test fails or succeeds.',
-        defaultsTo: '0',
-      )
-      ..addFlag(
-        'label',
-        help: 'Display the label over the application under test.',
-        defaultsTo: true,
-      )
-      // Android-only options
-      ..addOption(
-        'package-name',
-        help: 'Package name of the Android app under test.',
-        valueHelp: 'pl.leancode.awesomeapp',
-      )
-      // iOS-only options
-      ..addOption(
-        'bundle-id',
-        help: 'Bundle identifier of the iOS app under test.',
-        valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addOption(
-        'scheme',
-        help: '(iOS only) Xcode scheme to use',
-        defaultsTo: _defaultScheme,
-      )
-      ..addOption(
-        'xcconfig',
-        help: '(iOS only) Xcode .xcconfig file to use',
-        defaultsTo: _defaultXCConfigFile,
-      )
-      ..addOption(
-        'configuration',
-        help: '(iOS only) Xcode configuration to use',
-        defaultsTo: _defaultConfiguration,
-      );
-  }
+    usesTargetOption();
+    usesFlavorOption();
+    usesDartDefineOption();
+    usesLabelOption();
+    usesWaitOption();
 
-  static const _defaultScheme = 'Runner';
-  static const _defaultXCConfigFile = 'Flutter/Debug.xcconfig';
-  static const _defaultConfiguration = 'Debug';
+    usesAndroidOptions();
+    usesIOSOptions();
+  }
 
   final TestFinder _testFinder;
   final DartDefinesReader _dartDefinesReader;
@@ -128,7 +71,7 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
   String get name => 'build';
 
   @override
-  String get description => 'Build app with integration test as entrypoint.';
+  String get description => 'Build app with integration tests.';
 
   @override
   bool get hidden => true;
@@ -209,12 +152,12 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
       // iOS-specific options
       bundleId: bundleId,
       iosFlavor: iosFlavor,
-      scheme: argResults?['scheme'] as String? ?? _defaultScheme,
-      xcconfigFile: argResults?['xcconfig'] as String? ?? _defaultXCConfigFile,
+      scheme: argResults?['scheme'] as String? ?? defaultScheme,
+      xcconfigFile: argResults?['xcconfig'] as String? ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
-          : argResults?['configuration'] as String? ?? _defaultConfiguration,
+          : argResults?['configuration'] as String? ?? defaultConfiguration,
     );
   }
 
@@ -236,7 +179,7 @@ class BuildCommand extends StagedCommand<BuildCommandConfig> {
       _logger
         ..err('$err')
         ..detail('$st')
-        ..err(_failureMessage);
+        ..err(defaultFailureMessage);
       rethrow;
     }
 

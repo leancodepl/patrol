@@ -10,7 +10,7 @@ import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/common/extensions/process.dart';
 import 'package:patrol_cli/src/common/logger.dart';
 import 'package:patrol_cli/src/common/logging_local_process_manager.dart';
-import 'package:patrol_cli/src/common/staged_command.dart';
+import 'package:patrol_cli/src/common/patrol_command.dart';
 import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
@@ -45,13 +45,7 @@ class TestCommandConfig with _$TestCommandConfig {
   }) = _TestCommandConfig;
 }
 
-const _defaultRepeats = 1;
-const _failureMessage =
-    'See the logs above to learn what happened. Also consider running with '
-    "--verbose. If the logs still aren't useful, then it's a bug - please "
-    'report it.';
-
-class TestCommand extends StagedCommand<TestCommandConfig> {
+class TestCommand extends PatrolCommand<TestCommandConfig> {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
@@ -72,89 +66,24 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
-    argParser
-      ..addMultiOption(
-        'target',
-        aliases: ['targets'],
-        abbr: 't',
-        help: 'Integration tests to run. If empty, all tests are run.',
-        valueHelp: 'integration_test/app_test.dart',
-      )
-      ..addMultiOption(
-        'device',
-        aliases: ['devices'],
-        abbr: 'd',
-        help:
-            'Devices to run the tests on. If empty, the first device is used.',
-        valueHelp: "all, emulator-5554, 'iPhone 14'",
-      )
-      ..addOption(
-        'flavor',
-        help: 'Flavor of the app to run.',
-      )
-      ..addMultiOption(
-        'dart-define',
-        aliases: ['dart-defines'],
-        help: 'Additional key-value pairs that will be available to the app '
-            'under test.',
-        valueHelp: 'KEY=VALUE',
-      )
-      ..addOption(
-        'wait',
-        help: 'Seconds to wait after the test fails or succeeds.',
-        defaultsTo: '0',
-      )
-      ..addOption(
-        'repeat',
-        abbr: 'n',
-        help: 'Repeat the test n times.',
-        defaultsTo: '$_defaultRepeats',
-      )
-      ..addFlag(
-        'label',
-        help: 'Display the label over the application under test.',
-        defaultsTo: true,
-      )
-      ..addFlag(
-        'uninstall',
-        help: 'Whether to uninstall the apps after test finishes.',
-        defaultsTo: true,
-      )
-      ..addFlag(
-        'hot-restart',
-        help: 'Whether to enable Hot Restart.',
-      )
-      // Android-only options
-      ..addOption(
-        'package-name',
-        help: 'Package name of the Android app under test.',
-        valueHelp: 'pl.leancode.awesomeapp',
-      )
-      // iOS-only options
-      ..addOption(
-        'bundle-id',
-        help: 'Bundle identifier of the iOS app under test.',
-        valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addOption(
-        'scheme',
-        help: '(iOS only) Xcode scheme to use',
-        defaultsTo: _defaultScheme,
-      )
-      ..addOption(
-        'xcconfig',
-        help: '(iOS only) Xcode .xcconfig file to use',
-        defaultsTo: _defaultXCConfigFile,
-      )
-      ..addOption(
-        'configuration',
-        help: '(iOS only) Xcode configuration to use',
-        defaultsTo: _defaultConfiguration,
-      );
+    usesTargetOption();
+    usesDeviceOption();
+    usesFlavorOption();
+    usesDartDefineOption();
+    usesLabelOption();
+    usesWaitOption();
+
+    usesUninstallOption();
+    usesRepeatOption();
+
+    usesAndroidOptions();
+    usesIOSOptions();
+
+    argParser.addFlag(
+      'hot-restart',
+      help: 'Whether to enable Hot Restart.',
+    );
   }
-  static const _defaultScheme = 'Runner';
-  static const _defaultXCConfigFile = 'Flutter/Debug.xcconfig';
-  static const _defaultConfiguration = 'Debug';
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
@@ -226,15 +155,16 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     final dynamic wait = argResults?['wait'];
     if (wait != null && int.tryParse(wait as String) == null) {
-      throw const FormatException('`wait` argument is not an int');
+      throwToolExit('`wait` argument is not an int');
     }
 
     final int repeat;
     try {
-      final repeatStr = argResults?['repeat'] as String? ?? '$_defaultRepeats';
+      final repeatStr =
+          argResults?['repeat'] as String? ?? '$defaultRepeatCount';
       repeat = int.parse(repeatStr);
     } on FormatException {
-      throw const FormatException('`repeat` argument is not an int');
+      throwToolExit('`repeat` argument is not an int');
     }
 
     final displayLabel = argResults?['label'] as bool? ?? true;
@@ -290,12 +220,12 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
       // iOS-specific options
       bundleId: bundleId,
       iosFlavor: iosFlavor,
-      scheme: argResults?['scheme'] as String? ?? _defaultScheme,
-      xcconfigFile: argResults?['xcconfig'] as String? ?? _defaultXCConfigFile,
+      scheme: argResults?['scheme'] as String? ?? defaultScheme,
+      xcconfigFile: argResults?['xcconfig'] as String? ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
-          : argResults?['configuration'] as String? ?? _defaultConfiguration,
+          : argResults?['configuration'] as String? ?? defaultConfiguration,
     );
   }
 
@@ -377,7 +307,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         _logger
           ..err('$err')
           ..detail('$st')
-          ..err(_failureMessage);
+          ..err(defaultFailureMessage);
         rethrow;
       }
     };
@@ -420,7 +350,7 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
         _logger
           ..err('$err')
           ..detail('$st')
-          ..err(_failureMessage);
+          ..err(defaultFailureMessage);
         rethrow;
       } finally {
         await finalizer?.call();
