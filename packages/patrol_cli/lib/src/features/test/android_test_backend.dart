@@ -23,23 +23,6 @@ class AndroidAppOptions extends AppOptions {
   @override
   String get description => 'apk with entrypoint ${basename(target)}';
 
-  /// Translates these options into a proper `flutter attach`.
-  List<String> toFlutterAttachInvocation() {
-    final cmd = [
-      ...['flutter', 'attach'],
-      '--no-version-check',
-      '--debug',
-      if (flavor != null) ...['--flavor', flavor!],
-      ...['--target', target],
-      for (final dartDefine in dartDefines.entries) ...[
-        '--dart-define',
-        '${dartDefine.key}=${dartDefine.value}',
-      ],
-    ];
-
-    return cmd;
-  }
-
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
     return _toGradleInvocation(
       isWindows: isWindows,

@@ -16,6 +16,7 @@ import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
+import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 part 'develop_command.freezed.dart';
@@ -277,24 +278,50 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       Future<void> Function() action;
       Future<void> Function()? finalizer;
 
-      final options = AndroidAppOptions(
-        target: target,
-        flavor: config.androidFlavor,
-        dartDefines: {
-          ...config.dartDefines,
-          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-        },
-      );
-      action = () => _androidTestBackend.execute(options, device);
-      final package = config.packageName;
-      if (package != null && config.uninstall) {
-        finalizer = () => _androidTestBackend.uninstall(package, device);
+      AppOptions appOptions;
+      switch (device.targetPlatform) {
+        case TargetPlatform.android:
+          final options = AndroidAppOptions(
+            target: target,
+            flavor: config.androidFlavor,
+            dartDefines: {
+              ...config.dartDefines,
+              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
+            },
+          );
+          appOptions = options;
+          action = () => _androidTestBackend.execute(options, device);
+          final package = config.packageName;
+          if (package != null && config.uninstall) {
+            finalizer = () => _androidTestBackend.uninstall(package, device);
+          }
+          break;
+        case TargetPlatform.iOS:
+          final options = IOSAppOptions(
+            target: target,
+            flavor: config.iosFlavor,
+            dartDefines: {
+              ...config.dartDefines,
+              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
+            },
+            scheme: config.scheme,
+            xcconfigFile: config.xcconfigFile,
+            configuration: config.configuration,
+            simulator: !device.real,
+          );
+          appOptions = options;
+          action = () async => _iosTestBackend.execute(options, device);
+          final bundle = config.bundleId;
+          if (bundle != null && config.uninstall) {
+            finalizer = () => _iosTestBackend.uninstall(bundle, device);
+          }
       }
 
       try {
         final pm = LoggingLocalProcessManager(logger: _logger);
         unawaited(() async {
-          final process = await pm.start(options.toFlutterAttachInvocation());
+          final process =
+              await pm.start(appOptions.toFlutterAttachInvocation());
           process
             ..listenStdOut((l) => _logger.detail('\t: $l'))
             ..listenStdErr((l) => _logger.err('\t$l'));

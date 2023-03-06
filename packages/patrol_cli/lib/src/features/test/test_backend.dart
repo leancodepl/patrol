@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
 
 abstract class AppOptions {
@@ -12,6 +13,24 @@ abstract class AppOptions {
   final Map<String, String> dartDefines;
 
   String get description;
+
+  /// Translates these options into a proper `flutter attach`.
+  @nonVirtual
+  List<String> toFlutterAttachInvocation() {
+    final cmd = [
+      ...['flutter', 'attach'],
+      '--no-version-check',
+      '--debug',
+      if (flavor != null) ...['--flavor', flavor!],
+      ...['--target', target],
+      for (final dartDefine in dartDefines.entries) ...[
+        '--dart-define',
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
+    ];
+
+    return cmd;
+  }
 }
 
 abstract class TestBackend {
