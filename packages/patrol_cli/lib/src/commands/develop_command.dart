@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
@@ -93,8 +92,6 @@ class TestCommand extends PatrolCommand<DevelopCommandConfig> {
   final IOSTestBackend _iosTestBackend;
 
   final Logger _logger;
-
-  bool verbose = false;
 
   @override
   String get name => 'test';
@@ -241,26 +238,6 @@ class TestCommand extends PatrolCommand<DevelopCommandConfig> {
 
     if (results.targetRunResults.isEmpty) {
       _logger.warn('No run results found');
-    }
-    for (final res in results.targetRunResults) {
-      final device = res.device.resolvedName;
-      if (res.allRunsPassed) {
-        _logger.write(
-          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.allRunsFailed) {
-        _logger.write(
-          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.canceled) {
-        _logger.write(
-          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
-        );
-      } else {
-        _logger.write(
-          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
-        );
-      }
     }
 
     final exitCode = results.allSuccessful ? 0 : 1;

@@ -23,7 +23,6 @@ final _defaultConfig = TestCommandConfig(
   dartDefines: {'PATROL_WAIT': '0'},
   displayLabel: true,
   uninstall: true,
-  hotRestart: false,
   // Android-specific options
   packageName: null,
   androidFlavor: null,
