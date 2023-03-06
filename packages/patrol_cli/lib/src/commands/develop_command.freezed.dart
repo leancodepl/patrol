@@ -19,10 +19,8 @@ mixin _$DevelopCommandConfig {
   List<Device> get devices => throw _privateConstructorUsedError;
   List<String> get targets => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
-  int get repeat => throw _privateConstructorUsedError;
   bool get displayLabel => throw _privateConstructorUsedError;
-  bool get uninstall => throw _privateConstructorUsedError;
-  bool get hotRestart =>
+  bool get uninstall =>
       throw _privateConstructorUsedError; // Android-only options
   String? get packageName => throw _privateConstructorUsedError;
   String? get androidFlavor =>
@@ -48,10 +46,8 @@ abstract class $DevelopCommandConfigCopyWith<$Res> {
       {List<Device> devices,
       List<String> targets,
       Map<String, String> dartDefines,
-      int repeat,
       bool displayLabel,
       bool uninstall,
-      bool hotRestart,
       String? packageName,
       String? androidFlavor,
       String? bundleId,
@@ -78,10 +74,8 @@ class _$DevelopCommandConfigCopyWithImpl<$Res,
     Object? devices = null,
     Object? targets = null,
     Object? dartDefines = null,
-    Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
-    Object? hotRestart = null,
     Object? packageName = freezed,
     Object? androidFlavor = freezed,
     Object? bundleId = freezed,
@@ -103,10 +97,6 @@ class _$DevelopCommandConfigCopyWithImpl<$Res,
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      repeat: null == repeat
-          ? _value.repeat
-          : repeat // ignore: cast_nullable_to_non_nullable
-              as int,
       displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
@@ -114,10 +104,6 @@ class _$DevelopCommandConfigCopyWithImpl<$Res,
       uninstall: null == uninstall
           ? _value.uninstall
           : uninstall // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hotRestart: null == hotRestart
-          ? _value.hotRestart
-          : hotRestart // ignore: cast_nullable_to_non_nullable
               as bool,
       packageName: freezed == packageName
           ? _value.packageName
@@ -163,10 +149,8 @@ abstract class _$$_DevelopCommandConfigCopyWith<$Res>
       {List<Device> devices,
       List<String> targets,
       Map<String, String> dartDefines,
-      int repeat,
       bool displayLabel,
       bool uninstall,
-      bool hotRestart,
       String? packageName,
       String? androidFlavor,
       String? bundleId,
@@ -190,10 +174,8 @@ class __$$_DevelopCommandConfigCopyWithImpl<$Res>
     Object? devices = null,
     Object? targets = null,
     Object? dartDefines = null,
-    Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
-    Object? hotRestart = null,
     Object? packageName = freezed,
     Object? androidFlavor = freezed,
     Object? bundleId = freezed,
@@ -215,10 +197,6 @@ class __$$_DevelopCommandConfigCopyWithImpl<$Res>
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      repeat: null == repeat
-          ? _value.repeat
-          : repeat // ignore: cast_nullable_to_non_nullable
-              as int,
       displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
@@ -226,10 +204,6 @@ class __$$_DevelopCommandConfigCopyWithImpl<$Res>
       uninstall: null == uninstall
           ? _value.uninstall
           : uninstall // ignore: cast_nullable_to_non_nullable
-              as bool,
-      hotRestart: null == hotRestart
-          ? _value.hotRestart
-          : hotRestart // ignore: cast_nullable_to_non_nullable
               as bool,
       packageName: freezed == packageName
           ? _value.packageName
@@ -270,10 +244,8 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
       {required final List<Device> devices,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
-      required this.repeat,
       required this.displayLabel,
       required this.uninstall,
-      required this.hotRestart,
       required this.packageName,
       required this.androidFlavor,
       required this.bundleId,
@@ -310,13 +282,9 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
   }
 
   @override
-  final int repeat;
-  @override
   final bool displayLabel;
   @override
   final bool uninstall;
-  @override
-  final bool hotRestart;
 // Android-only options
   @override
   final String? packageName;
@@ -336,7 +304,7 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
 
   @override
   String toString() {
-    return 'DevelopCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, hotRestart: $hotRestart, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
+    return 'DevelopCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
   }
 
   @override
@@ -348,13 +316,10 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
-            (identical(other.repeat, repeat) || other.repeat == repeat) &&
             (identical(other.displayLabel, displayLabel) ||
                 other.displayLabel == displayLabel) &&
             (identical(other.uninstall, uninstall) ||
                 other.uninstall == uninstall) &&
-            (identical(other.hotRestart, hotRestart) ||
-                other.hotRestart == hotRestart) &&
             (identical(other.packageName, packageName) ||
                 other.packageName == packageName) &&
             (identical(other.androidFlavor, androidFlavor) ||
@@ -376,10 +341,8 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
       const DeepCollectionEquality().hash(_devices),
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_dartDefines),
-      repeat,
       displayLabel,
       uninstall,
-      hotRestart,
       packageName,
       androidFlavor,
       bundleId,
@@ -401,10 +364,8 @@ abstract class _DevelopCommandConfig implements DevelopCommandConfig {
       {required final List<Device> devices,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
-      required final int repeat,
       required final bool displayLabel,
       required final bool uninstall,
-      required final bool hotRestart,
       required final String? packageName,
       required final String? androidFlavor,
       required final String? bundleId,
@@ -420,13 +381,9 @@ abstract class _DevelopCommandConfig implements DevelopCommandConfig {
   @override
   Map<String, String> get dartDefines;
   @override
-  int get repeat;
-  @override
   bool get displayLabel;
   @override
   bool get uninstall;
-  @override
-  bool get hotRestart;
   @override // Android-only options
   String? get packageName;
   @override

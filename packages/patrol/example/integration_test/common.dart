@@ -10,7 +10,7 @@ final _patrolTesterConfig = PatrolTesterConfig();
 final _nativeAutomatorConfig = NativeAutomatorConfig();
 
 Future<void> createApp(PatrolTester $) async {
-  // await setUpTimezone();
+  await setUpTimezone();
   await $.pumpWidget(ExampleApp());
 }
 

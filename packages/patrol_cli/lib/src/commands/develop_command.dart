@@ -27,10 +27,8 @@ class DevelopCommandConfig with _$DevelopCommandConfig {
     required List<Device> devices,
     required List<String> targets,
     required Map<String, String> dartDefines,
-    required int repeat,
     required bool displayLabel,
     required bool uninstall,
-    required bool hotRestart,
     // Android-only options
     required String? packageName,
     required String? androidFlavor,
@@ -72,15 +70,9 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
     usesWaitOption();
 
     usesUninstallOption();
-    usesRepeatOption();
 
     usesAndroidOptions();
     usesIOSOptions();
-
-    argParser.addFlag(
-      'hot-restart',
-      help: 'Whether to enable Hot Restart.',
-    );
   }
 
   final DeviceFinder _deviceFinder;
@@ -94,10 +86,10 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
   final Logger _logger;
 
   @override
-  String get name => 'test';
+  String get name => 'develop';
 
   @override
-  String get description => 'Run integration tests.';
+  String get description => 'Develop integration tests with Hot Reload.';
 
   @override
   Future<DevelopCommandConfig> configure() async {
@@ -154,26 +146,8 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       throwToolExit('`wait` argument is not an int');
     }
 
-    final int repeat;
-    try {
-      final repeatStr =
-          argResults?['repeat'] as String? ?? '$defaultRepeatCount';
-      repeat = int.parse(repeatStr);
-    } on FormatException {
-      throwToolExit('`repeat` argument is not an int');
-    }
-
     final displayLabel = argResults?['label'] as bool? ?? true;
     final uninstall = argResults?['uninstall'] as bool? ?? true;
-    final hotRestart = argResults?['hot-restart'] as bool? ?? false;
-
-    if (repeat < 1) {
-      throwToolExit('repeat count must not be smaller than 1');
-    }
-
-    if (repeat != 1) {
-      _logger.info('Every test target will be run $repeat times');
-    }
 
     final internalDartDefines = {
       'PATROL_WAIT': wait as String? ?? '0',
@@ -181,7 +155,8 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
       'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
-      if (hotRestart) ...{
+      // develop-specific
+      ...{
         'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
         'PATROL_HOT_RESTART': 'true',
       },
@@ -206,10 +181,8 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       devices: devicesToUse,
       targets: targets,
       dartDefines: effectiveDartDefines,
-      repeat: repeat,
       displayLabel: displayLabel,
       uninstall: uninstall,
-      hotRestart: hotRestart,
       // Android-specific options
       packageName: packageName,
       androidFlavor: androidFlavor,
@@ -230,7 +203,6 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
     config.targets.forEach(_testRunner.addTarget);
     config.devices.forEach(_testRunner.addDevice);
     _testRunner
-      ..repeats = config.repeat
       ..builder = _builderFor(config)
       ..executor = _executorFor(config);
 
