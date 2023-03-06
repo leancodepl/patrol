@@ -89,7 +89,7 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
   String get name => 'develop';
 
   @override
-  String get description => 'Develop integration tests with Hot Reload.';
+  String get description => 'Develop integration tests with Hot Restart.';
 
   @override
   Future<DevelopCommandConfig> configure() async {
@@ -327,7 +327,7 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
             ..listenStdErr((l) => _logger.err('\t$l'));
           stdin.listen((event) {
             if (event.first == 'R'.codeUnitAt(0)) {
-              _logger.success('Hot Reload in progress...');
+              _logger.success('Hot Restart in progress...');
               process.stdin.add(event);
             }
           });
