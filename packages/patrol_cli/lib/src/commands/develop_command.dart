@@ -20,11 +20,11 @@ import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
-part 'test_command.freezed.dart';
+part 'develop_command.freezed.dart';
 
 @freezed
-class TestCommandConfig with _$TestCommandConfig {
-  const factory TestCommandConfig({
+class DevelopCommandConfig with _$DevelopCommandConfig {
+  const factory DevelopCommandConfig({
     required List<Device> devices,
     required List<String> targets,
     required Map<String, String> dartDefines,
@@ -41,10 +41,10 @@ class TestCommandConfig with _$TestCommandConfig {
     required String scheme,
     required String xcconfigFile,
     required String configuration,
-  }) = _TestCommandConfig;
+  }) = _DevelopCommandConfig;
 }
 
-class TestCommand extends PatrolCommand<TestCommandConfig> {
+class TestCommand extends PatrolCommand<DevelopCommandConfig> {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
@@ -103,7 +103,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
   String get description => 'Run integration tests.';
 
   @override
-  Future<TestCommandConfig> configure() async {
+  Future<DevelopCommandConfig> configure() async {
     final target = argResults?['target'] as List<String>? ?? [];
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
@@ -205,7 +205,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
       );
     }
 
-    return TestCommandConfig(
+    return DevelopCommandConfig(
       devices: devicesToUse,
       targets: targets,
       dartDefines: effectiveDartDefines,
@@ -229,7 +229,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
   }
 
   @override
-  Future<int> execute(TestCommandConfig config) async {
+  Future<int> execute(DevelopCommandConfig config) async {
     config.targets.forEach(_testRunner.addTarget);
     config.devices.forEach(_testRunner.addDevice);
     _testRunner
@@ -268,7 +268,9 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
     return exitCode;
   }
 
-  Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
+  Future<void> Function(String, Device) _builderFor(
+    DevelopCommandConfig config,
+  ) {
     return (target, device) async {
       Future<void> Function() action;
 
@@ -312,7 +314,9 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
     };
   }
 
-  Future<void> Function(String, Device) _executorFor(TestCommandConfig config) {
+  Future<void> Function(String, Device) _executorFor(
+    DevelopCommandConfig config,
+  ) {
     return (target, device) async {
       Future<void> Function() action;
       Future<void> Function()? finalizer;
@@ -340,7 +344,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
             ..listenStdErr((l) => _logger.err('\t$l'));
           stdin.listen((event) {
             final char = utf8.decode(event);
-            _logger.warn('got stdin event: $event');
+            _logger.warn('got stdin event: $char');
             process.stdin.add(event);
           });
         }());

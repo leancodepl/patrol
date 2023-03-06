@@ -1,7 +1,9 @@
-import 'dart:convert' show Encoding;
+import 'dart:async';
+import 'dart:convert' show Encoding, LineSplitter, utf8;
 import 'dart:io' show Process, ProcessResult, ProcessStartMode, systemEncoding;
 
-import 'package:patrol_cli/src/common/logger.dart';
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:process/process.dart';
 
 class LoggingLocalProcessManager extends LocalProcessManager {
@@ -56,4 +58,58 @@ class LoggingLocalProcessManager extends LocalProcessManager {
       stderrEncoding: stderrEncoding,
     );
   }
+}
+
+extension ProcessListeners on Process {
+  StreamSubscription<void> listenStdOut(
+    void Function(String) onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen(
+          onData,
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        );
+  }
+
+  StreamSubscription<void> listenStdErr(
+    void Function(String) onData, {
+    Function? onError,
+    void Function()? onDone,
+    bool? cancelOnError,
+  }) {
+    return stderr
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .listen(
+          onData,
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        );
+  }
+}
+
+extension ProcessDisposers on Process {
+  void disposed(DisposeScope disposeScope) {
+    disposeScope.addDispose(() async => kill());
+  }
+}
+
+extension ProcessResultX on ProcessResult {
+  /// A shortcut to avoid typing `as String` every time.
+  ///
+  /// If [stdout] is not a String, this will crash.
+  String get stdOut => stdout as String;
+
+  /// A shortcut to avoid typing `as String` every time.
+  ///
+  /// If [stderr] is not a String, this will crash.
+  String get stdErr => stderr as String;
 }

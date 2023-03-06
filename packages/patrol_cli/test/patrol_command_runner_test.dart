@@ -1,10 +1,10 @@
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/command_runner.dart';
-import 'package:patrol_cli/src/common/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/common/extensions/command_runner.dart';
-import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 

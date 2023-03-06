@@ -1,6 +1,6 @@
 import 'package:args/command_runner.dart';
-import 'package:patrol_cli/src/common/constants.dart';
-import 'package:patrol_cli/src/common/logger.dart';
+import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 class UpdateCommand extends Command<int> {

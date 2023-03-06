@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:file/file.dart';
-import 'package:patrol_cli/src/common/tool_exit.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 
 /// Discovers integration tests.
 class TestFinder {

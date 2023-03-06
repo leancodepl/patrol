@@ -1,5 +1,5 @@
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:patrol_cli/src/common/tool_exit.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:test/test.dart';
 

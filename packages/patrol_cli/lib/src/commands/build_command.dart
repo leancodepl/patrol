@@ -1,14 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
-import 'package:patrol_cli/src/common/logger.dart';
-import 'package:patrol_cli/src/common/patrol_command.dart';
-import 'package:patrol_cli/src/common/tool_exit.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 part 'build_command.freezed.dart';
 
