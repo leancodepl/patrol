@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -200,6 +199,14 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
 
   @override
   Future<int> execute(DevelopCommandConfig config) async {
+    // Prevents keystrokes from being printed automatically. Needs to be
+    // disabled for lineMode to be disabled too.
+    stdin.echoMode = false;
+
+    // Causes the stdin stream to provide the input as soon as it arrives (one
+    // key press at a time).
+    stdin.lineMode = false;
+
     config.targets.forEach(_testRunner.addTarget);
     config.devices.forEach(_testRunner.addDevice);
     _testRunner
@@ -292,9 +299,10 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
             ..listenStdOut((l) => _logger.detail('\t: $l'))
             ..listenStdErr((l) => _logger.err('\t$l'));
           stdin.listen((event) {
-            final char = utf8.decode(event);
-            _logger.warn('got stdin event: $char');
-            process.stdin.add(event);
+            if (event.first == 'R'.codeUnitAt(0)) {
+              _logger.success('Hot Reload in progress...');
+              process.stdin.add(event);
+            }
           });
         }());
         await action();
