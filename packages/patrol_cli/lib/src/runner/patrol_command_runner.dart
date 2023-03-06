@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/build_command.dart';
+import 'package:patrol_cli/src/commands/develop_command.dart';
 import 'package:patrol_cli/src/commands/devices_command.dart';
 import 'package:patrol_cli/src/commands/doctor_command.dart';
 import 'package:patrol_cli/src/commands/test_command.dart';
@@ -96,6 +97,42 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
+        logger: _logger,
+      ),
+    );
+
+    addCommand(
+      DevelopCommand(
+        deviceFinder: DeviceFinder(
+          processManager: _processManager,
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
+        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        testRunner: NativeTestRunner(),
+        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        androidTestBackend: AndroidTestBackend(
+          adb: Adb(),
+          processManager: _processManager,
+          platform: _platform,
+          fs: _fs,
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
+        iosTestBackend: IOSTestBackend(
+          processManager: _processManager,
+          fs: _fs,
+          iosDeploy: IOSDeploy(
+            processManager: _processManager,
+            parentDisposeScope: _disposeScope,
+            fs: _fs,
+            logger: _logger,
+          ),
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
+        parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
     );

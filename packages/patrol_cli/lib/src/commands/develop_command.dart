@@ -43,8 +43,8 @@ class DevelopCommandConfig with _$DevelopCommandConfig {
   }) = _DevelopCommandConfig;
 }
 
-class TestCommand extends PatrolCommand<DevelopCommandConfig> {
-  TestCommand({
+class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
+  DevelopCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
