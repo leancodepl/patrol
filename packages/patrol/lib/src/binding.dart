@@ -7,12 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 
-// ignore: avoid_print
 void _defaultPrintLogger(String message) {
-  if (const bool.fromEnvironment('PATROL_VERBOSE')) {
-    // ignore: avoid_print
-    print('PatrolBinding: $message');
-  }
+  // ignore: avoid_print
+  print('PatrolBinding: $message');
 }
 
 // copied from package:integration_test/lib/integration_test.dart
@@ -60,7 +57,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         }
 
         // TODO: Migrate communication to gRPC
-        _logger('Sending Dart test results to the native side');
+        logger('Sending Dart test results to the native side');
         await patrolChannel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
@@ -93,7 +90,8 @@ Thrown by PatrolBinding.
     return _instance!;
   }
 
-  final _logger = _defaultPrintLogger;
+  /// Logger used by this binding.
+  void Function(String message) logger = _defaultPrintLogger;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override

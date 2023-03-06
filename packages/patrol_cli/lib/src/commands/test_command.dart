@@ -251,7 +251,6 @@ class TestCommand extends StagedCommand<TestCommandConfig> {
 
     final internalDartDefines = {
       'PATROL_WAIT': wait as String? ?? '0',
-      'PATROL_VERBOSE': '$verbose',
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,

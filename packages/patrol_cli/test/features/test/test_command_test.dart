@@ -20,7 +20,7 @@ final _defaultConfig = TestCommandConfig(
   devices: [androidDevice],
   targets: [],
   repeat: 1,
-  dartDefines: {'PATROL_WAIT': '0', 'PATROL_VERBOSE': 'false'},
+  dartDefines: {'PATROL_WAIT': '0'},
   displayLabel: true,
   uninstall: true,
   hotRestart: false,
