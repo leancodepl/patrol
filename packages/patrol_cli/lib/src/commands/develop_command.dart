@@ -320,14 +320,22 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       try {
         final pm = LoggingLocalProcessManager(logger: _logger);
         unawaited(() async {
-          final process =
-              await pm.start(appOptions.toFlutterAttachInvocation());
+          final process = await pm.start(
+            appOptions.toFlutterAttachInvocation(),
+          );
+          _logger.info('Waiting for app to connect for Hot Restart...');
           process
             ..listenStdOut((l) => _logger.detail('\t: $l'))
             ..listenStdErr((l) => _logger.err('\t$l'));
           stdin.listen((event) {
-            if (event.first == 'R'.codeUnitAt(0)) {
+            final char = String.fromCharCode(event.first);
+            if (char == 'r' || char == 'R') {
               _logger.success('Hot Restart in progress...');
+              process.stdin.add(event);
+            }
+
+            if (char == 'q' || char == 'Q') {
+              _logger.success('Quitting APP...');
               process.stdin.add(event);
             }
           });
