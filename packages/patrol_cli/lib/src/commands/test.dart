@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
@@ -11,10 +13,34 @@ import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
-import 'package:patrol_cli/src/features/test/android_test_backend.dart';
-import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+
+// Note: this class is a bit sphagetti because I didn't model classes to handle
+// multiple targets. This problem will go away when #1004 is done.
+part 'test.freezed.dart';
+
+@freezed
+class TestCommandConfig with _$TestCommandConfig {
+  const factory TestCommandConfig({
+    required List<Device> devices,
+    required List<String> targets,
+    required Map<String, String> dartDefines,
+    required int repeat,
+    required bool displayLabel,
+    required bool uninstall,
+    // Android-only options
+    required String? packageName,
+    required String? androidFlavor,
+    // iOS-only options
+    required String? bundleId,
+    required String? iosFlavor,
+    required String scheme,
+    required String xcconfigFile,
+    required String configuration,
+  }) = _TestCommandConfig;
+}
 
 class TestCommand extends PatrolCommand {
   TestCommand({
