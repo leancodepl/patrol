@@ -78,25 +78,13 @@ class BuildCommand extends PatrolCommand<BuildCommandConfig> {
 
   @override
   Future<BuildCommandConfig> configure() async {
-    final targetArg = argResults?['target'] as String?;
-    if (targetArg == null) {
-      throwToolExit('Missing required option: --target');
-    }
-
+    final targetArg = stringArg('target') ?? throwToolExit('No target given');
     final target = _testFinder.findTest(targetArg);
     _logger.detail('Received test target: $target');
 
-    final pubspecConfig = _pubspecReader.read();
-
-    String? androidFlavor;
-    String? iosFlavor;
-    if (argResults?['flavor'] is String) {
-      androidFlavor = argResults?['flavor'] as String;
-      iosFlavor = argResults?['flavor'] as String;
-    } else {
-      androidFlavor = pubspecConfig.android.flavor;
-      iosFlavor = pubspecConfig.ios.flavor;
-    }
+    final config = _pubspecReader.read();
+    final androidFlavor = stringArg('flavor') ?? config.android.flavor;
+    final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
     if (androidFlavor != null) {
       _logger.detail('Received Android flavor: $androidFlavor');
     }
@@ -104,35 +92,28 @@ class BuildCommand extends PatrolCommand<BuildCommandConfig> {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
+    final packageName = stringArg('package-name') ?? config.android.packageName;
+    final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+
+    final displayLabel = boolArg('label') ?? true;
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
-      ..._dartDefinesReader.fromCli(
-        args: argResults?['dart-define'] as List<String>? ?? [],
-      ),
+      ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
-
-    var packageName = argResults?['package-name'] as String?;
-    packageName ??= pubspecConfig.android.packageName;
-
-    var bundleId = argResults?['bundle-id'] as String?;
-    bundleId ??= pubspecConfig.ios.bundleId;
-
-    final dynamic wait = argResults?['wait'];
-    if (wait != null && int.tryParse(wait as String) == null) {
-      throw const FormatException('`wait` argument is not an int');
-    }
-
-    final displayLabel = argResults?['label'] as bool?;
-
     final internalDartDefines = {
-      'PATROL_WAIT': wait as String? ?? '0',
+      'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
-      'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
+      'PATROL_ANDROID_APP_NAME': config.android.appName,
+      'PATROL_IOS_APP_NAME': config.ios.appName,
     }.withNullsRemoved();
 
-    final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
+    final dartDefines = {...customDartDefines, ...internalDartDefines};
+    _logger.detail(
+      'Received ${dartDefines.length} --dart-define(s) '
+      '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
+    );
     for (final dartDefine in customDartDefines.entries) {
       _logger.detail('Received custom --dart-define: ${dartDefine.key}');
     }
@@ -144,20 +125,20 @@ class BuildCommand extends PatrolCommand<BuildCommandConfig> {
 
     return BuildCommandConfig(
       target: target,
-      dartDefines: effectiveDartDefines,
-      displayLabel: displayLabel ?? true,
+      dartDefines: dartDefines,
+      displayLabel: displayLabel,
       // Android-specific options
       packageName: packageName,
       androidFlavor: androidFlavor,
       // iOS-specific options
       bundleId: bundleId,
       iosFlavor: iosFlavor,
-      scheme: argResults?['scheme'] as String? ?? defaultScheme,
-      xcconfigFile: argResults?['xcconfig'] as String? ?? defaultXCConfigFile,
+      scheme: stringArg('scheme') ?? defaultScheme,
+      xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
-          : argResults?['configuration'] as String? ?? defaultConfiguration,
+          : stringArg('configuration') ?? defaultConfiguration,
     );
   }
 

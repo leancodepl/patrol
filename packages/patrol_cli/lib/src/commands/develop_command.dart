@@ -130,7 +130,6 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
-
     _logger.detail(
       'Received ${dartDefines.length} --dart-define(s) '
       '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
