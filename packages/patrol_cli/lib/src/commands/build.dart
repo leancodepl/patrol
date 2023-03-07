@@ -1,11 +1,10 @@
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/base/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
-import 'package:patrol_cli/src/features/test/android_test_backend.dart';
-import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
@@ -16,13 +15,11 @@ class BuildCommand extends PatrolCommand {
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
-    required IOSTestBackend iosTestBackend,
     required Logger logger,
   })  : _testFinder = testFinder,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
-        _iosTestBackend = iosTestBackend,
         _logger = logger {
     usesTargetOption();
     usesFlavorOption();
@@ -38,8 +35,6 @@ class BuildCommand extends PatrolCommand {
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
-  // ignore: unused_field
-  final IOSTestBackend _iosTestBackend;
 
   final Logger _logger;
 
@@ -85,6 +80,7 @@ class BuildCommand extends PatrolCommand {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
+      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -101,32 +97,10 @@ class BuildCommand extends PatrolCommand {
       );
     }
 
-    final buildConfig = BuildCommandConfig(
-      target: target,
-      dartDefines: dartDefines,
-      displayLabel: displayLabel,
-      // Android-specific options
-      packageName: packageName,
-      androidFlavor: androidFlavor,
-      // iOS-specific options
-      bundleId: bundleId,
-      iosFlavor: iosFlavor,
-      scheme: stringArg('scheme') ?? defaultScheme,
-      xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
-      configuration: !(argResults?.wasParsed('configuration') ?? false) &&
-              (argResults?.wasParsed('flavor') ?? false)
-          ? 'Debug-${argResults!['flavor']}'
-          : stringArg('configuration') ?? defaultConfiguration,
-    );
-
     final options = AndroidAppOptions(
-      target: buildConfig.target,
-      flavor: buildConfig.androidFlavor,
-      dartDefines: {
-        ...buildConfig.dartDefines,
-        if (buildConfig.displayLabel)
-          'PATROL_TEST_LABEL': basename(buildConfig.target),
-      },
+      target: target,
+      flavor: androidFlavor,
+      dartDefines: dartDefines,
     );
     Future<void> action() => _androidTestBackend.build(options);
 

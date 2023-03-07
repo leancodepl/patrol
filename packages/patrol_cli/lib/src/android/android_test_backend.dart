@@ -14,16 +14,8 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 class AndroidAppOptions extends AppOptions {
-  AndroidAppOptions({
-    required String target,
-    required super.flavor,
-    required super.dartDefines,
-    this.packageName,
-  }) {
-    this.target = target;
-  }
-
-  AndroidAppOptions.noTarget({
+  const AndroidAppOptions({
+    required super.target,
     required super.flavor,
     required super.dartDefines,
     this.packageName,

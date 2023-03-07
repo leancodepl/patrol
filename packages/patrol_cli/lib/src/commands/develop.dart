@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -11,9 +12,8 @@ import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
-import 'package:patrol_cli/src/features/test/android_test_backend.dart';
-import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 class DevelopCommand extends PatrolCommand {
@@ -148,117 +148,109 @@ class DevelopCommand extends PatrolCommand {
       simulator: !device.real,
     );
 
-    _testRunner
-      ..addTarget(target)
-      ..addDevice(device)
-      ..builder = _builderFor(androidOpts, iosOpts)
-      ..executor = _executorFor(androidOpts, iosOpts, uninstall: uninstall);
+    await _build(androidOpts, iosOpts, device: device);
+    await _execute(androidOpts, iosOpts, uninstall: uninstall, device: device);
 
-    final results = await _testRunner.run();
-    final exitCode = results.allSuccessful ? 0 : 1;
-    return exitCode;
+    return 0; // for now, all exit codes are 0
   }
 
-  Future<void> Function(String, Device) _builderFor(
+  Future<void> _build(
     AndroidAppOptions android,
-    IOSAppOptions ios,
-  ) {
-    return (target, device) async {
-      Future<void> Function() action;
+    IOSAppOptions ios, {
+    required Device device,
+  }) async {
+    Future<void> Function() buildAction;
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        buildAction = () => _androidTestBackend.build(android);
+        break;
+      case TargetPlatform.iOS:
+        buildAction = () => _iosTestBackend.build(ios);
+    }
 
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          action = () => _androidTestBackend.build(android);
-          break;
-        case TargetPlatform.iOS:
-          action = () => _iosTestBackend.build(ios);
-      }
-
-      try {
-        await action();
-      } catch (err, st) {
-        _logger
-          ..err('$err')
-          ..detail('$st')
-          ..err(defaultFailureMessage);
-        rethrow;
-      }
-    };
+    try {
+      await buildAction();
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      rethrow;
+    }
   }
 
-  Future<void> Function(String, Device) _executorFor(
+  Future<void> _execute(
     AndroidAppOptions android,
     IOSAppOptions ios, {
     required bool uninstall,
-  }) {
-    return (target, device) async {
-      Future<void> Function() action;
-      Future<void> Function()? finalizer;
+    required Device device,
+  }) async {
+    Future<void> Function() action;
+    Future<void> Function()? finalizer;
 
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          action = () => _androidTestBackend.execute(android, device);
-          final package = android.packageName;
-          if (package != null && uninstall) {
-            finalizer = () => _androidTestBackend.uninstall(package, device);
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        action = () => _androidTestBackend.execute(android, device);
+        final package = android.packageName;
+        if (package != null && uninstall) {
+          finalizer = () => _androidTestBackend.uninstall(package, device);
+        }
+        break;
+      case TargetPlatform.iOS:
+        action = () async => _iosTestBackend.execute(ios, device);
+        final bundle = ios.bundleId;
+        if (bundle != null && uninstall) {
+          finalizer = () => _iosTestBackend.uninstall(bundle, device);
+        }
+    }
+
+    try {
+      // TODO: Extract "attach" and "logs" to a separate FlutterTool class
+      _enableInteractiveMode();
+      final logsProces = LoggingLocalProcessManager(logger: _logger);
+      unawaited(() async {
+        final process = await logsProces.start(
+          ['flutter', '--no-version-check', 'logs', '--device-id', device.id],
+        );
+        _logger.info('Waiting for app to connect for logs...');
+        process
+          ..listenStdOut((l) => _logger.info('\t: $l'))
+          ..listenStdErr((l) => _logger.err('\t$l'));
+      }());
+
+      final attachProces = LoggingLocalProcessManager(logger: _logger);
+      unawaited(() async {
+        final process = await attachProces.start(
+          // FIXME: hardcoded android
+          android.toFlutterAttachInvocation(),
+        );
+        _logger.info('Waiting for app to connect for Hot Restart...');
+        process
+          ..listenStdOut((l) => _logger.detail('\t: $l'))
+          ..listenStdErr((l) => _logger.err('\t$l'));
+        stdin.listen((event) {
+          final char = String.fromCharCode(event.first);
+          if (char == 'r' || char == 'R') {
+            _logger.success('Hot Restart in progress...');
+            process.stdin.add(event);
           }
-          break;
-        case TargetPlatform.iOS:
-          action = () async => _iosTestBackend.execute(ios, device);
-          final bundle = ios.bundleId;
-          if (bundle != null && uninstall) {
-            finalizer = () => _iosTestBackend.uninstall(bundle, device);
+
+          if (char == 'q' || char == 'Q') {
+            _logger.success('Quitting APP...');
+            process.stdin.add(event);
           }
-      }
-
-      try {
-        // TODO: Extract "attach" and "logs" to a separate FlutterTool class
-        _enableInteractiveMode();
-        final logsProces = LoggingLocalProcessManager(logger: _logger);
-        unawaited(() async {
-          final process = await logsProces.start(
-            ['flutter', '--no-version-check', 'logs', '--device-id', device.id],
-          );
-          _logger.info('Waiting for app to connect for logs...');
-          process
-            ..listenStdOut((l) => _logger.info('\t: $l'))
-            ..listenStdErr((l) => _logger.err('\t$l'));
-        }());
-
-        final attachProces = LoggingLocalProcessManager(logger: _logger);
-        unawaited(() async {
-          final process = await attachProces.start(
-            // FIXME: hardcoded android
-            android.toFlutterAttachInvocation(),
-          );
-          _logger.info('Waiting for app to connect for Hot Restart...');
-          process
-            ..listenStdOut((l) => _logger.detail('\t: $l'))
-            ..listenStdErr((l) => _logger.err('\t$l'));
-          stdin.listen((event) {
-            final char = String.fromCharCode(event.first);
-            if (char == 'r' || char == 'R') {
-              _logger.success('Hot Restart in progress...');
-              process.stdin.add(event);
-            }
-
-            if (char == 'q' || char == 'Q') {
-              _logger.success('Quitting APP...');
-              process.stdin.add(event);
-            }
-          });
-        }());
-        await action();
-      } catch (err, st) {
-        _logger
-          ..err('$err')
-          ..detail('$st')
-          ..err(defaultFailureMessage);
-        rethrow;
-      } finally {
-        await finalizer?.call();
-      }
-    };
+        });
+      }());
+      await action();
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      rethrow;
+    } finally {
+      await finalizer?.call();
+    }
   }
 }
 

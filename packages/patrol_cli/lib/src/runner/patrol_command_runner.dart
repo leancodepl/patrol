@@ -85,18 +85,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        iosTestBackend: IOSTestBackend(
-          processManager: _processManager,
-          fs: _fs,
-          iosDeploy: IOSDeploy(
-            processManager: _processManager,
-            parentDisposeScope: _disposeScope,
-            fs: _fs,
-            logger: _logger,
-          ),
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
         logger: _logger,
       ),
     );
