@@ -139,4 +139,27 @@ abstract class PatrolCommand<C> extends Command<int> {
     final config = await configure();
     return execute(config);
   }
+
+  /// Gets the parsed command-line option named [name] as a `bool?`.
+  bool? boolArg(String name) {
+    if (!argParser.options.containsKey(name)) {
+      return null;
+    }
+    return argResults![name] as bool;
+  }
+
+  String? stringArg(String name) {
+    if (!argParser.options.containsKey(name)) {
+      return null;
+    }
+    return argResults![name] as String?;
+  }
+
+  /// Gets the parsed command-line option named [name] as an `int`.
+  int? intArg(String name) => argResults?[name] as int?;
+
+  /// Gets the parsed command-line option named [name] as `List<String>`.
+  List<String> stringsArg(String name) {
+    return argResults![name]! as List<String>? ?? <String>[];
+  }
 }
