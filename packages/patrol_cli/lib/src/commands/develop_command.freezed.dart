@@ -16,8 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$DevelopCommandConfig {
-  List<Device> get devices => throw _privateConstructorUsedError;
-  List<String> get targets => throw _privateConstructorUsedError;
+  Device get device => throw _privateConstructorUsedError;
+  String get target => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
   bool get displayLabel => throw _privateConstructorUsedError;
   bool get uninstall =>
@@ -43,8 +43,8 @@ abstract class $DevelopCommandConfigCopyWith<$Res> {
       _$DevelopCommandConfigCopyWithImpl<$Res, DevelopCommandConfig>;
   @useResult
   $Res call(
-      {List<Device> devices,
-      List<String> targets,
+      {Device device,
+      String target,
       Map<String, String> dartDefines,
       bool displayLabel,
       bool uninstall,
@@ -71,8 +71,8 @@ class _$DevelopCommandConfigCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? devices = null,
-    Object? targets = null,
+    Object? device = null,
+    Object? target = null,
     Object? dartDefines = null,
     Object? displayLabel = null,
     Object? uninstall = null,
@@ -85,14 +85,14 @@ class _$DevelopCommandConfigCopyWithImpl<$Res,
     Object? configuration = null,
   }) {
     return _then(_value.copyWith(
-      devices: null == devices
-          ? _value.devices
-          : devices // ignore: cast_nullable_to_non_nullable
-              as List<Device>,
-      targets: null == targets
-          ? _value.targets
-          : targets // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      device: null == device
+          ? _value.device
+          : device // ignore: cast_nullable_to_non_nullable
+              as Device,
+      target: null == target
+          ? _value.target
+          : target // ignore: cast_nullable_to_non_nullable
+              as String,
       dartDefines: null == dartDefines
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
@@ -146,8 +146,8 @@ abstract class _$$_DevelopCommandConfigCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<Device> devices,
-      List<String> targets,
+      {Device device,
+      String target,
       Map<String, String> dartDefines,
       bool displayLabel,
       bool uninstall,
@@ -171,8 +171,8 @@ class __$$_DevelopCommandConfigCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? devices = null,
-    Object? targets = null,
+    Object? device = null,
+    Object? target = null,
     Object? dartDefines = null,
     Object? displayLabel = null,
     Object? uninstall = null,
@@ -185,14 +185,14 @@ class __$$_DevelopCommandConfigCopyWithImpl<$Res>
     Object? configuration = null,
   }) {
     return _then(_$_DevelopCommandConfig(
-      devices: null == devices
-          ? _value._devices
-          : devices // ignore: cast_nullable_to_non_nullable
-              as List<Device>,
-      targets: null == targets
-          ? _value._targets
-          : targets // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      device: null == device
+          ? _value.device
+          : device // ignore: cast_nullable_to_non_nullable
+              as Device,
+      target: null == target
+          ? _value.target
+          : target // ignore: cast_nullable_to_non_nullable
+              as String,
       dartDefines: null == dartDefines
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
@@ -241,8 +241,8 @@ class __$$_DevelopCommandConfigCopyWithImpl<$Res>
 
 class _$_DevelopCommandConfig implements _DevelopCommandConfig {
   const _$_DevelopCommandConfig(
-      {required final List<Device> devices,
-      required final List<String> targets,
+      {required this.device,
+      required this.target,
       required final Map<String, String> dartDefines,
       required this.displayLabel,
       required this.uninstall,
@@ -253,26 +253,12 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
       required this.scheme,
       required this.xcconfigFile,
       required this.configuration})
-      : _devices = devices,
-        _targets = targets,
-        _dartDefines = dartDefines;
+      : _dartDefines = dartDefines;
 
-  final List<Device> _devices;
   @override
-  List<Device> get devices {
-    if (_devices is EqualUnmodifiableListView) return _devices;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_devices);
-  }
-
-  final List<String> _targets;
+  final Device device;
   @override
-  List<String> get targets {
-    if (_targets is EqualUnmodifiableListView) return _targets;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_targets);
-  }
-
+  final String target;
   final Map<String, String> _dartDefines;
   @override
   Map<String, String> get dartDefines {
@@ -304,7 +290,7 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
 
   @override
   String toString() {
-    return 'DevelopCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
+    return 'DevelopCommandConfig(device: $device, target: $target, dartDefines: $dartDefines, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
   }
 
   @override
@@ -312,8 +298,8 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_DevelopCommandConfig &&
-            const DeepCollectionEquality().equals(other._devices, _devices) &&
-            const DeepCollectionEquality().equals(other._targets, _targets) &&
+            (identical(other.device, device) || other.device == device) &&
+            (identical(other.target, target) || other.target == target) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
             (identical(other.displayLabel, displayLabel) ||
@@ -338,8 +324,8 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(_devices),
-      const DeepCollectionEquality().hash(_targets),
+      device,
+      target,
       const DeepCollectionEquality().hash(_dartDefines),
       displayLabel,
       uninstall,
@@ -361,8 +347,8 @@ class _$_DevelopCommandConfig implements _DevelopCommandConfig {
 
 abstract class _DevelopCommandConfig implements DevelopCommandConfig {
   const factory _DevelopCommandConfig(
-      {required final List<Device> devices,
-      required final List<String> targets,
+      {required final Device device,
+      required final String target,
       required final Map<String, String> dartDefines,
       required final bool displayLabel,
       required final bool uninstall,
@@ -375,9 +361,9 @@ abstract class _DevelopCommandConfig implements DevelopCommandConfig {
       required final String configuration}) = _$_DevelopCommandConfig;
 
   @override
-  List<Device> get devices;
+  Device get device;
   @override
-  List<String> get targets;
+  String get target;
   @override
   Map<String, String> get dartDefines;
   @override

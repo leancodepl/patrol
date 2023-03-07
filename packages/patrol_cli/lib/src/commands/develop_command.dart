@@ -24,8 +24,8 @@ part 'develop_command.freezed.dart';
 @freezed
 class DevelopCommandConfig with _$DevelopCommandConfig {
   const factory DevelopCommandConfig({
-    required List<Device> devices,
-    required List<String> targets,
+    required Device device,
+    required String target,
     required Map<String, String> dartDefines,
     required bool displayLabel,
     required bool uninstall,
@@ -93,27 +93,13 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
 
   @override
   Future<DevelopCommandConfig> configure() async {
-    final target = argResults?['target'] as List<String>? ?? [];
-    final targets = target.isNotEmpty
-        ? _testFinder.findTests(target)
-        : _testFinder.findAllTests();
+    final targetArg = stringArg('target') ?? throwToolExit('No target given');
+    final target = _testFinder.findTest(targetArg);
+    _logger.detail('Received test target: $target');
 
-    _logger.detail('Received ${targets.length} test target(s)');
-    for (final t in targets) {
-      _logger.detail('Received test target: $t');
-    }
-
-    final pubspecConfig = _pubspecReader.read();
-
-    String? androidFlavor;
-    String? iosFlavor;
-    if (argResults?['flavor'] is String) {
-      androidFlavor = argResults?['flavor'] as String;
-      iosFlavor = argResults?['flavor'] as String;
-    } else {
-      androidFlavor = pubspecConfig.android.flavor;
-      iosFlavor = pubspecConfig.ios.flavor;
-    }
+    final config = _pubspecReader.read();
+    final androidFlavor = stringArg('flavor') ?? config.android.flavor;
+    final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
     if (androidFlavor != null) {
       _logger.detail('Received Android flavor: $androidFlavor');
     }
@@ -121,51 +107,32 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
-    final devices = argResults?['device'] as List<String>? ?? [];
-    final devicesToUse = await _deviceFinder.find(devices);
-    _logger.detail('Received ${devicesToUse.length} device(s) to run on');
-    for (final device in devicesToUse) {
-      _logger.detail('Received device: ${device.resolvedName}');
-    }
+    final devices = await _deviceFinder.find(stringsArg('device'));
+    final device = devices.single;
+    _logger.detail('Received device: ${device.resolvedName}');
+
+    final packageName = stringArg('package-name') ?? config.android.packageName;
+    final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+
+    final displayLabel = boolArg('label') ?? true;
+    final uninstall = boolArg('uninstall') ?? true;
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
-      ..._dartDefinesReader.fromCli(
-        args: argResults?['dart-define'] as List<String>? ?? [],
-      ),
+      ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
-
-    var packageName = argResults?['package-name'] as String?;
-    packageName ??= pubspecConfig.android.packageName;
-
-    var bundleId = argResults?['bundle-id'] as String?;
-    bundleId ??= pubspecConfig.ios.bundleId;
-
-    final dynamic wait = argResults?['wait'];
-    if (wait != null && int.tryParse(wait as String) == null) {
-      throwToolExit('`wait` argument is not an int');
-    }
-
-    final displayLabel = argResults?['label'] as bool? ?? true;
-    final uninstall = argResults?['uninstall'] as bool? ?? true;
-
     final internalDartDefines = {
-      'PATROL_WAIT': wait as String? ?? '0',
+      'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
-      'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
-      // develop-specific
-      ...{
-        'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-        'PATROL_HOT_RESTART': 'true',
-      },
+      'PATROL_ANDROID_APP_NAME': config.android.appName,
+      'PATROL_IOS_APP_NAME': config.ios.appName,
     }.withNullsRemoved();
 
-    final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
+    final dartDefines = {...customDartDefines, ...internalDartDefines};
 
     _logger.detail(
-      'Received ${effectiveDartDefines.length} --dart-define(s) '
+      'Received ${dartDefines.length} --dart-define(s) '
       '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
     );
     for (final dartDefine in customDartDefines.entries) {
@@ -178,9 +145,9 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
     }
 
     return DevelopCommandConfig(
-      devices: devicesToUse,
-      targets: targets,
-      dartDefines: effectiveDartDefines,
+      device: device,
+      target: target,
+      dartDefines: dartDefines,
       displayLabel: displayLabel,
       uninstall: uninstall,
       // Android-specific options
@@ -189,12 +156,12 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       // iOS-specific options
       bundleId: bundleId,
       iosFlavor: iosFlavor,
-      scheme: argResults?['scheme'] as String? ?? defaultScheme,
-      xcconfigFile: argResults?['xcconfig'] as String? ?? defaultXCConfigFile,
+      scheme: stringArg('scheme') ?? defaultScheme,
+      xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
-          : argResults?['configuration'] as String? ?? defaultConfiguration,
+          : stringArg('configuration') ?? defaultConfiguration,
     );
   }
 
@@ -208,20 +175,14 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
     // key press at a time).
     stdin.lineMode = false;
 
-    config.targets.forEach(_testRunner.addTarget);
-    config.devices.forEach(_testRunner.addDevice);
     _testRunner
+      ..addTarget(config.target)
+      ..addDevice(config.device)
       ..builder = _builderFor(config)
       ..executor = _executorFor(config);
 
     final results = await _testRunner.run();
-
-    if (results.targetRunResults.isEmpty) {
-      _logger.warn('No run results found');
-    }
-
     final exitCode = results.allSuccessful ? 0 : 1;
-
     return exitCode;
   }
 
