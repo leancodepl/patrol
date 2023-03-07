@@ -18,12 +18,14 @@ class IOSAppOptions extends AppOptions {
     required super.target,
     required super.flavor,
     required super.dartDefines,
+    this.bundleId,
     required this.scheme,
     required this.xcconfigFile,
     required this.configuration,
     required this.simulator,
   });
 
+  final String? bundleId;
   final String scheme;
   final String xcconfigFile;
   final String configuration;

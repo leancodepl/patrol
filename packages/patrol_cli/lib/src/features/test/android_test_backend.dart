@@ -18,7 +18,10 @@ class AndroidAppOptions extends AppOptions {
     required super.target,
     required super.flavor,
     required super.dartDefines,
+    this.packageName,
   });
+
+  final String? packageName;
 
   @override
   String get description => 'apk with entrypoint ${basename(target)}';

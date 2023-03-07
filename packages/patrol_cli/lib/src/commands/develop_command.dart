@@ -15,7 +15,6 @@ import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
 import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
-import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 part 'develop_command.freezed.dart';
@@ -129,6 +128,7 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
+      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
       // develop-specific
       ...{
         'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
@@ -150,39 +150,32 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       );
     }
 
-    final developConfig = DevelopCommandConfig(
-      device: device,
+    final iosOpts = IOSAppOptions(
       target: target,
+      flavor: iosFlavor,
       dartDefines: dartDefines,
-      displayLabel: displayLabel,
-      uninstall: uninstall,
-      // Android-specific options
-      packageName: packageName,
-      androidFlavor: androidFlavor,
-      // iOS-specific options
       bundleId: bundleId,
-      iosFlavor: iosFlavor,
       scheme: stringArg('scheme') ?? defaultScheme,
       xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
           : stringArg('configuration') ?? defaultConfiguration,
+      simulator: !device.real,
     );
 
-    // Prevents keystrokes from being printed automatically. Needs to be
-    // disabled for lineMode to be disabled too.
-    stdin.echoMode = false;
-
-    // Causes the stdin stream to provide the input as soon as it arrives (one
-    // key press at a time).
-    stdin.lineMode = false;
+    final androidOpts = AndroidAppOptions(
+      target: target,
+      flavor: androidFlavor,
+      dartDefines: dartDefines,
+      packageName: packageName,
+    );
 
     _testRunner
-      ..addTarget(developConfig.target)
-      ..addDevice(developConfig.device)
-      ..builder = _builderFor(developConfig)
-      ..executor = _executorFor(developConfig);
+      ..addTarget(target)
+      ..addDevice(device)
+      ..builder = _builderFor(androidOpts, iosOpts)
+      ..executor = _executorFor(androidOpts, iosOpts, uninstall: uninstall);
 
     final results = await _testRunner.run();
     final exitCode = results.allSuccessful ? 0 : 1;
@@ -190,37 +183,18 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
   }
 
   Future<void> Function(String, Device) _builderFor(
-    DevelopCommandConfig config,
+    AndroidAppOptions android,
+    IOSAppOptions ios,
   ) {
     return (target, device) async {
       Future<void> Function() action;
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          action = () => _androidTestBackend.build(options);
+          action = () => _androidTestBackend.build(android);
           break;
         case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-            simulator: !device.real,
-          );
-          action = () => _iosTestBackend.build(options);
+          action = () => _iosTestBackend.build(ios);
       }
 
       try {
@@ -236,52 +210,33 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
   }
 
   Future<void> Function(String, Device) _executorFor(
-    DevelopCommandConfig config,
-  ) {
+    AndroidAppOptions android,
+    IOSAppOptions ios, {
+    required bool uninstall,
+  }) {
     return (target, device) async {
       Future<void> Function() action;
       Future<void> Function()? finalizer;
 
-      AppOptions appOptions;
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          appOptions = options;
-          action = () => _androidTestBackend.execute(options, device);
-          final package = config.packageName;
-          if (package != null && config.uninstall) {
+          action = () => _androidTestBackend.execute(android, device);
+          final package = android.packageName;
+          if (package != null && uninstall) {
             finalizer = () => _androidTestBackend.uninstall(package, device);
           }
           break;
         case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-            simulator: !device.real,
-          );
-          appOptions = options;
-          action = () async => _iosTestBackend.execute(options, device);
-          final bundle = config.bundleId;
-          if (bundle != null && config.uninstall) {
+          action = () async => _iosTestBackend.execute(ios, device);
+          final bundle = ios.bundleId;
+          if (bundle != null && uninstall) {
             finalizer = () => _iosTestBackend.uninstall(bundle, device);
           }
       }
 
       try {
+        // TODO: Extract "attach" and "logs" to a separate FlutterTool class
+        _enableInteractiveMode();
         final logsProces = LoggingLocalProcessManager(logger: _logger);
         unawaited(() async {
           final process = await logsProces.start(
@@ -296,7 +251,8 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
         final attachProces = LoggingLocalProcessManager(logger: _logger);
         unawaited(() async {
           final process = await attachProces.start(
-            appOptions.toFlutterAttachInvocation(),
+            // FIXME: hardcoded android
+            android.toFlutterAttachInvocation(),
           );
           _logger.info('Waiting for app to connect for Hot Restart...');
           process
@@ -327,4 +283,14 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       }
     };
   }
+}
+
+void _enableInteractiveMode() {
+  // Prevents keystrokes from being printed automatically. Needs to be
+  // disabled for lineMode to be disabled too.
+  stdin.echoMode = false;
+
+  // Causes the stdin stream to provide the input as soon as it arrives (one
+  // key press at a time).
+  stdin.lineMode = false;
 }
