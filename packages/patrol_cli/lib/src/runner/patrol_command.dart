@@ -1,6 +1,6 @@
 import 'package:args/command_runner.dart';
 
-abstract class PatrolCommand<C> extends Command<int> {
+abstract class PatrolCommand extends Command<int> {
   final defaultScheme = 'Runner';
   final defaultXCConfigFile = 'Flutter/Debug.xcconfig';
   final defaultConfiguration = 'Debug';

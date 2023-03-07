@@ -1,6 +1,6 @@
 import 'package:file/file.dart';
 import 'package:path/path.dart' show join;
-import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/base/extensions/core.dart';
 
 class DartDefinesReader {
   DartDefinesReader({

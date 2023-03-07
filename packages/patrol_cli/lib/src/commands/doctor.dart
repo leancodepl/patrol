@@ -1,12 +1,12 @@
 import 'dart:io' as io;
 
-import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:platform/platform.dart';
 
-class DoctorCommand extends Command<int> {
+class DoctorCommand extends PatrolCommand {
   DoctorCommand({
     required Logger logger,
     required Platform platform,

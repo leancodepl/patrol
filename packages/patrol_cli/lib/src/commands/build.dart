@@ -1,8 +1,7 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/base/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
@@ -10,29 +9,8 @@ import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
-part 'build_command.freezed.dart';
-
-@freezed
-// FIXME: works only on Android
-class BuildCommandConfig with _$BuildCommandConfig {
-  const factory BuildCommandConfig({
-    required String target,
-    required Map<String, String> dartDefines,
-    required bool displayLabel,
-    // Android-only options
-    required String? packageName,
-    required String? androidFlavor,
-    // iOS-only options
-    required String? bundleId,
-    required String? iosFlavor,
-    required String scheme,
-    required String xcconfigFile,
-    required String configuration,
-  }) = _BuildCommandConfig;
-}
-
 // TODO: Supports only Android at the moment.
-class BuildCommand extends PatrolCommand<BuildCommandConfig> {
+class BuildCommand extends PatrolCommand {
   BuildCommand({
     required TestFinder testFinder,
     required DartDefinesReader dartDefinesReader,

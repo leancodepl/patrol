@@ -1,8 +1,8 @@
-import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/runner/patrol_command.dart';
 
-class DevicesCommand extends Command<int> {
+class DevicesCommand extends PatrolCommand {
   DevicesCommand({required DeviceFinder deviceFinder, required Logger logger})
       : _deviceFinder = deviceFinder,
         _logger = logger;

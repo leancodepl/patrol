@@ -1,9 +1,9 @@
-import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:pub_updater/pub_updater.dart';
 
-class UpdateCommand extends Command<int> {
+class UpdateCommand extends PatrolCommand {
   UpdateCommand({
     required PubUpdater pubUpdater,
     required Logger logger,

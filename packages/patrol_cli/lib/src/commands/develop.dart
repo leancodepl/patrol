@@ -1,15 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/common/extensions/core.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
-import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
@@ -17,31 +16,8 @@ import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
-part 'test_command.freezed.dart';
-
-@freezed
-class TestCommandConfig with _$TestCommandConfig {
-  const factory TestCommandConfig({
-    required List<Device> devices,
-    required List<String> targets,
-    required Map<String, String> dartDefines,
-    required int repeat,
-    required bool displayLabel,
-    required bool uninstall,
-    // Android-only options
-    required String? packageName,
-    required String? androidFlavor,
-    // iOS-only options
-    required String? bundleId,
-    required String? iosFlavor,
-    required String scheme,
-    required String xcconfigFile,
-    required String configuration,
-  }) = _TestCommandConfig;
-}
-
-class TestCommand extends PatrolCommand<TestCommandConfig> {
-  TestCommand({
+class DevelopCommand extends PatrolCommand {
+  DevelopCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestRunner testRunner,
@@ -69,7 +45,6 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
     usesWaitOption();
 
     usesUninstallOption();
-    usesRepeatOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -86,22 +61,19 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
   final Logger _logger;
 
   @override
-  String get name => 'test';
+  String get name => 'develop';
 
   @override
-  String get description => 'Run integration tests.';
+  String get description => 'Develop integration tests with Hot Restart.';
+
+  @override
+  bool get hidden => true;
 
   @override
   Future<int> run() async {
-    final target = stringsArg('target');
-    final targets = target.isNotEmpty
-        ? _testFinder.findTests(target)
-        : _testFinder.findAllTests();
-
-    _logger.detail('Received ${targets.length} test target(s)');
-    for (final t in targets) {
-      _logger.detail('Received test target: $t');
-    }
+    final targetArg = stringsArg('target');
+    final target = _testFinder.findTest(targetArg.first);
+    _logger.detail('Received test target: $target');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -114,35 +86,34 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
     }
 
     final devices = await _deviceFinder.find(stringsArg('device'));
-    _logger.detail('Received ${devices.length} device(s) to run on');
-    for (final device in devices) {
-      _logger.detail('Received device: ${device.resolvedName}');
-    }
+    final device = devices.single;
+    _logger.detail('Received device: ${device.resolvedName}');
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
-    final wait = intArg('wait') ?? defaultWait;
-    final repeatCount = intArg('repeat') ?? defaultRepeatCount;
     final displayLabel = boolArg('label') ?? true;
     final uninstall = boolArg('uninstall') ?? true;
-
-    _logger.info('Every test target will be run $repeatCount time(s)');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
     final internalDartDefines = {
-      'PATROL_WAIT': wait.toString(),
+      'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
+      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      // develop-specific
+      ...{
+        'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+        'PATROL_HOT_RESTART': 'true',
+      },
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
-
     _logger.detail(
       'Received ${dartDefines.length} --dart-define(s) '
       '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
@@ -156,73 +127,51 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
       );
     }
 
-    final testConfig = TestCommandConfig(
-      devices: devices,
-      targets: targets,
+    final iosOpts = IOSAppOptions(
+      target: target,
+      flavor: iosFlavor,
       dartDefines: dartDefines,
-      repeat: repeatCount,
-      displayLabel: displayLabel,
-      uninstall: uninstall,
-      // Android-specific options
-      packageName: packageName,
-      androidFlavor: androidFlavor,
-      // iOS-specific options
       bundleId: bundleId,
-      iosFlavor: iosFlavor,
       scheme: stringArg('scheme') ?? defaultScheme,
       xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
           : stringArg('configuration') ?? defaultConfiguration,
+      simulator: !device.real,
     );
 
-    testConfig.targets.forEach(_testRunner.addTarget);
-    testConfig.devices.forEach(_testRunner.addDevice);
+    final androidOpts = AndroidAppOptions(
+      target: target,
+      flavor: androidFlavor,
+      dartDefines: dartDefines,
+      packageName: packageName,
+    );
+
     _testRunner
-      ..repeats = testConfig.repeat
-      ..builder = _builderFor(testConfig)
-      ..executor = _executorFor(testConfig);
+      ..addTarget(target)
+      ..addDevice(device)
+      ..builder = _builderFor(androidOpts, iosOpts)
+      ..executor = _executorFor(androidOpts, iosOpts, uninstall: uninstall);
 
     final results = await _testRunner.run();
-
-    _TestResultsPresenter(_logger).printSummary(results);
-
     final exitCode = results.allSuccessful ? 0 : 1;
-
     return exitCode;
   }
 
-  Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
+  Future<void> Function(String, Device) _builderFor(
+    AndroidAppOptions android,
+    IOSAppOptions ios,
+  ) {
     return (target, device) async {
       Future<void> Function() action;
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          action = () => _androidTestBackend.build(options);
+          action = () => _androidTestBackend.build(android);
           break;
         case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-            simulator: !device.real,
-          );
-          action = () => _iosTestBackend.build(options);
+          action = () => _iosTestBackend.build(ios);
       }
 
       try {
@@ -237,48 +186,68 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
     };
   }
 
-  Future<void> Function(String, Device) _executorFor(TestCommandConfig config) {
+  Future<void> Function(String, Device) _executorFor(
+    AndroidAppOptions android,
+    IOSAppOptions ios, {
+    required bool uninstall,
+  }) {
     return (target, device) async {
       Future<void> Function() action;
       Future<void> Function()? finalizer;
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
-          action = () => _androidTestBackend.execute(options, device);
-          final package = config.packageName;
-          if (package != null && config.uninstall) {
+          action = () => _androidTestBackend.execute(android, device);
+          final package = android.packageName;
+          if (package != null && uninstall) {
             finalizer = () => _androidTestBackend.uninstall(package, device);
           }
           break;
         case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
-            simulator: !device.real,
-          );
-          action = () async => _iosTestBackend.execute(options, device);
-          final bundle = config.bundleId;
-          if (bundle != null && config.uninstall) {
+          action = () async => _iosTestBackend.execute(ios, device);
+          final bundle = ios.bundleId;
+          if (bundle != null && uninstall) {
             finalizer = () => _iosTestBackend.uninstall(bundle, device);
           }
       }
 
       try {
+        // TODO: Extract "attach" and "logs" to a separate FlutterTool class
+        _enableInteractiveMode();
+        final logsProces = LoggingLocalProcessManager(logger: _logger);
+        unawaited(() async {
+          final process = await logsProces.start(
+            ['flutter', '--no-version-check', 'logs', '--device-id', device.id],
+          );
+          _logger.info('Waiting for app to connect for logs...');
+          process
+            ..listenStdOut((l) => _logger.info('\t: $l'))
+            ..listenStdErr((l) => _logger.err('\t$l'));
+        }());
+
+        final attachProces = LoggingLocalProcessManager(logger: _logger);
+        unawaited(() async {
+          final process = await attachProces.start(
+            // FIXME: hardcoded android
+            android.toFlutterAttachInvocation(),
+          );
+          _logger.info('Waiting for app to connect for Hot Restart...');
+          process
+            ..listenStdOut((l) => _logger.detail('\t: $l'))
+            ..listenStdErr((l) => _logger.err('\t$l'));
+          stdin.listen((event) {
+            final char = String.fromCharCode(event.first);
+            if (char == 'r' || char == 'R') {
+              _logger.success('Hot Restart in progress...');
+              process.stdin.add(event);
+            }
+
+            if (char == 'q' || char == 'Q') {
+              _logger.success('Quitting APP...');
+              process.stdin.add(event);
+            }
+          });
+        }());
         await action();
       } catch (err, st) {
         _logger
@@ -293,35 +262,12 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
   }
 }
 
-class _TestResultsPresenter {
-  _TestResultsPresenter(this._logger);
+void _enableInteractiveMode() {
+  // Prevents keystrokes from being printed automatically. Needs to be
+  // disabled for lineMode to be disabled too.
+  stdin.echoMode = false;
 
-  final Logger _logger;
-
-  void printSummary(RunResults results) {
-    if (results.targetRunResults.isEmpty) {
-      _logger.warn('No run results found');
-    }
-
-    for (final res in results.targetRunResults) {
-      final device = res.device.resolvedName;
-      if (res.allRunsPassed) {
-        _logger.write(
-          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.allRunsFailed) {
-        _logger.write(
-          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.canceled) {
-        _logger.write(
-          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
-        );
-      } else {
-        _logger.write(
-          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
-        );
-      }
-    }
-  }
+  // Causes the stdin stream to provide the input as soon as it arrives (one
+  // key press at a time).
+  stdin.lineMode = false;
 }
