@@ -21,12 +21,7 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
 const bool _hotRestartEnabled = bool.fromEnvironment('PATROL_HOT_RESTART');
 
 /// The method channel used to report the results of the tests to the underlying
-/// platform's testing framework.
-///
-/// On Android, this is relevant when running instrumented tests with
-/// UIAutomator.
-///
-/// On iOS, this is relevant when running UI tests with XCUITest.
+/// platform's testing framework (JUnit on Android and XCTest on iOS).
 const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
@@ -41,13 +36,14 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       oldTestExceptionReporter(details, testDescription);
     };
 
-    if (!_shouldReportResultsToNative) {
-      return;
-    }
-
     tearDownAll(() async {
       try {
+        // TODO: Use patrolChannel for Android (see https://github.com/leancodepl/patrol/issues/969)
         if (!Platform.isIOS) {
+          return;
+        }
+
+        if (!_shouldReportResultsToNative) {
           return;
         }
 
@@ -122,8 +118,7 @@ Thrown by PatrolBinding.
           textDirection: TextDirection.ltr,
           children: [
             RepaintBoundary(child: rootWidget),
-            // Prevents crashes when Android activity is resumed
-            // See https://github.com/leancodepl/patrol/issues/901
+            // Prevents crashes when Android activity is resumed (see https://github.com/leancodepl/patrol/issues/901)
             ExcludeSemantics(
               child: Padding(
                 padding: EdgeInsets.only(

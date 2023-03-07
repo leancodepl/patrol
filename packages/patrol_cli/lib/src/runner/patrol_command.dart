@@ -13,8 +13,6 @@ abstract class PatrolCommand<C> extends Command<int> {
       "--verbose. If the logs still aren't useful, then it's a bug - please "
       'report it.';
 
-  final bool _usesDartDefineOption = false;
-
   // Common options
 
   /// A command that expects only one target got more should throw.
