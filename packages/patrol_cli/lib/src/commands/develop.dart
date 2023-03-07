@@ -127,6 +127,13 @@ class DevelopCommand extends PatrolCommand {
       );
     }
 
+    final androidOpts = AndroidAppOptions(
+      target: target,
+      flavor: androidFlavor,
+      dartDefines: dartDefines,
+      packageName: packageName,
+    );
+
     final iosOpts = IOSAppOptions(
       target: target,
       flavor: iosFlavor,
@@ -139,13 +146,6 @@ class DevelopCommand extends PatrolCommand {
           ? 'Debug-${argResults!['flavor']}'
           : stringArg('configuration') ?? defaultConfiguration,
       simulator: !device.real,
-    );
-
-    final androidOpts = AndroidAppOptions(
-      target: target,
-      flavor: androidFlavor,
-      dartDefines: dartDefines,
-      packageName: packageName,
     );
 
     _testRunner
