@@ -92,7 +92,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
   String get description => 'Run integration tests.';
 
   @override
-  Future<TestCommandConfig> configure() async {
+  Future<int> run() async {
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
@@ -156,7 +156,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
       );
     }
 
-    return TestCommandConfig(
+    final testConfig = TestCommandConfig(
       devices: devices,
       targets: targets,
       dartDefines: dartDefines,
@@ -176,16 +176,13 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
           ? 'Debug-${argResults!['flavor']}'
           : stringArg('configuration') ?? defaultConfiguration,
     );
-  }
 
-  @override
-  Future<int> execute(TestCommandConfig config) async {
-    config.targets.forEach(_testRunner.addTarget);
-    config.devices.forEach(_testRunner.addDevice);
+    testConfig.targets.forEach(_testRunner.addTarget);
+    testConfig.devices.forEach(_testRunner.addDevice);
     _testRunner
-      ..repeats = config.repeat
-      ..builder = _builderFor(config)
-      ..executor = _executorFor(config);
+      ..repeats = testConfig.repeat
+      ..builder = _builderFor(testConfig)
+      ..executor = _executorFor(testConfig);
 
     final results = await _testRunner.run();
 

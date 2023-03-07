@@ -77,7 +77,7 @@ class BuildCommand extends PatrolCommand<BuildCommandConfig> {
   bool get hidden => true;
 
   @override
-  Future<BuildCommandConfig> configure() async {
+  Future<int> run() async {
     final targetArg = stringArg('target') ?? throwToolExit('No target given');
     final target = _testFinder.findTest(targetArg);
     _logger.detail('Received test target: $target');
@@ -123,7 +123,7 @@ class BuildCommand extends PatrolCommand<BuildCommandConfig> {
       );
     }
 
-    return BuildCommandConfig(
+    final buildConfig = BuildCommandConfig(
       target: target,
       dartDefines: dartDefines,
       displayLabel: displayLabel,
@@ -140,16 +140,14 @@ class BuildCommand extends PatrolCommand<BuildCommandConfig> {
           ? 'Debug-${argResults!['flavor']}'
           : stringArg('configuration') ?? defaultConfiguration,
     );
-  }
 
-  @override
-  Future<int> execute(BuildCommandConfig config) async {
     final options = AndroidAppOptions(
-      target: config.target,
-      flavor: config.androidFlavor,
+      target: buildConfig.target,
+      flavor: buildConfig.androidFlavor,
       dartDefines: {
-        ...config.dartDefines,
-        if (config.displayLabel) 'PATROL_TEST_LABEL': basename(config.target)
+        ...buildConfig.dartDefines,
+        if (buildConfig.displayLabel)
+          'PATROL_TEST_LABEL': basename(buildConfig.target),
       },
     );
     Future<void> action() => _androidTestBackend.build(options);

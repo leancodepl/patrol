@@ -1,5 +1,4 @@
 import 'package:args/command_runner.dart';
-import 'package:meta/meta.dart';
 
 abstract class PatrolCommand<C> extends Command<int> {
   final defaultScheme = 'Runner';
@@ -119,17 +118,6 @@ abstract class PatrolCommand<C> extends Command<int> {
       help: 'Uninstall the app after the test finishes.',
       defaultsTo: true,
     );
-  }
-
-  Future<C> configure();
-
-  Future<int> execute(C config);
-
-  @override
-  @nonVirtual
-  Future<int> run() async {
-    final config = await configure();
-    return execute(config);
   }
 
   /// Gets the parsed command-line option named [name] as a `bool?`.

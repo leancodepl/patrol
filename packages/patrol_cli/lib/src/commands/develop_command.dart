@@ -91,7 +91,10 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
   String get description => 'Develop integration tests with Hot Restart.';
 
   @override
-  Future<DevelopCommandConfig> configure() async {
+  bool get hidden => true;
+
+  @override
+  Future<int> run() async {
     final targetArg = stringsArg('target');
     final target = _testFinder.findTest(targetArg.first);
     _logger.detail('Received test target: $target');
@@ -147,7 +150,7 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       );
     }
 
-    return DevelopCommandConfig(
+    final developConfig = DevelopCommandConfig(
       device: device,
       target: target,
       dartDefines: dartDefines,
@@ -166,10 +169,7 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
           ? 'Debug-${argResults!['flavor']}'
           : stringArg('configuration') ?? defaultConfiguration,
     );
-  }
 
-  @override
-  Future<int> execute(DevelopCommandConfig config) async {
     // Prevents keystrokes from being printed automatically. Needs to be
     // disabled for lineMode to be disabled too.
     stdin.echoMode = false;
@@ -179,10 +179,10 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
     stdin.lineMode = false;
 
     _testRunner
-      ..addTarget(config.target)
-      ..addDevice(config.device)
-      ..builder = _builderFor(config)
-      ..executor = _executorFor(config);
+      ..addTarget(developConfig.target)
+      ..addDevice(developConfig.device)
+      ..builder = _builderFor(developConfig)
+      ..executor = _executorFor(developConfig);
 
     final results = await _testRunner.run();
     final exitCode = results.allSuccessful ? 0 : 1;
