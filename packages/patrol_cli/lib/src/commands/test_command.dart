@@ -4,12 +4,12 @@ import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
-import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
+import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/android_test_backend.dart';
@@ -93,7 +93,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
 
   @override
   Future<TestCommandConfig> configure() async {
-    final target = argResults?['target'] as List<String>? ?? [];
+    final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
         : _testFinder.findAllTests();
@@ -103,17 +103,9 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
       _logger.detail('Received test target: $t');
     }
 
-    final pubspecConfig = _pubspecReader.read();
-
-    String? androidFlavor;
-    String? iosFlavor;
-    if (argResults?['flavor'] is String) {
-      androidFlavor = argResults?['flavor'] as String;
-      iosFlavor = argResults?['flavor'] as String;
-    } else {
-      androidFlavor = pubspecConfig.android.flavor;
-      iosFlavor = pubspecConfig.ios.flavor;
-    }
+    final config = _pubspecReader.read();
+    final androidFlavor = stringArg('flavor') ?? config.android.flavor;
+    final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
     if (androidFlavor != null) {
       _logger.detail('Received Android flavor: $androidFlavor');
     }
@@ -121,63 +113,38 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
-    final devices = argResults?['device'] as List<String>? ?? [];
-    final devicesToUse = await _deviceFinder.find(devices);
-    _logger.detail('Received ${devicesToUse.length} device(s) to run on');
-    for (final device in devicesToUse) {
+    final devices = await _deviceFinder.find(stringsArg('device'));
+    _logger.detail('Received ${devices.length} device(s) to run on');
+    for (final device in devices) {
       _logger.detail('Received device: ${device.resolvedName}');
     }
 
+    final packageName = stringArg('package-name') ?? config.android.packageName;
+    final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+
+    final wait = intArg('wait') ?? defaultWait;
+    final repeatCount = intArg('repeat') ?? defaultRepeatCount;
+    final displayLabel = boolArg('label') ?? true;
+    final uninstall = boolArg('uninstall') ?? true;
+
+    _logger.info('Every test target will be run $repeatCount time(s)');
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
-      ..._dartDefinesReader.fromCli(
-        args: argResults?['dart-define'] as List<String>? ?? [],
-      ),
+      ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
-
-    var packageName = argResults?['package-name'] as String?;
-    packageName ??= pubspecConfig.android.packageName;
-
-    var bundleId = argResults?['bundle-id'] as String?;
-    bundleId ??= pubspecConfig.ios.bundleId;
-
-    final dynamic wait = argResults?['wait'];
-    if (wait != null && int.tryParse(wait as String) == null) {
-      throwToolExit('`wait` argument is not an int');
-    }
-
-    final int repeat;
-    try {
-      final repeatStr =
-          argResults?['repeat'] as String? ?? '$defaultRepeatCount';
-      repeat = int.parse(repeatStr);
-    } on FormatException {
-      throwToolExit('`repeat` argument is not an int');
-    }
-
-    final displayLabel = argResults?['label'] as bool?;
-    final uninstall = argResults?['uninstall'] as bool?;
-
-    if (repeat < 1) {
-      throwToolExit('repeat count must not be smaller than 1');
-    }
-
-    if (repeat != 1) {
-      _logger.info('Every test target will be run $repeat times');
-    }
-
     final internalDartDefines = {
-      'PATROL_WAIT': wait as String? ?? '0',
+      'PATROL_WAIT': wait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_ANDROID_APP_NAME': pubspecConfig.android.appName,
-      'PATROL_IOS_APP_NAME': pubspecConfig.ios.appName,
+      'PATROL_ANDROID_APP_NAME': config.android.appName,
+      'PATROL_IOS_APP_NAME': config.ios.appName,
     }.withNullsRemoved();
 
-    final effectiveDartDefines = {...customDartDefines, ...internalDartDefines};
+    final dartDefines = {...customDartDefines, ...internalDartDefines};
 
     _logger.detail(
-      'Received ${effectiveDartDefines.length} --dart-define(s) '
+      'Received ${dartDefines.length} --dart-define(s) '
       '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
     );
     for (final dartDefine in customDartDefines.entries) {
@@ -190,24 +157,24 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
     }
 
     return TestCommandConfig(
-      devices: devicesToUse,
+      devices: devices,
       targets: targets,
-      dartDefines: effectiveDartDefines,
-      repeat: repeat,
-      displayLabel: displayLabel ?? true,
-      uninstall: uninstall ?? true,
+      dartDefines: dartDefines,
+      repeat: repeatCount,
+      displayLabel: displayLabel,
+      uninstall: uninstall,
       // Android-specific options
       packageName: packageName,
       androidFlavor: androidFlavor,
       // iOS-specific options
       bundleId: bundleId,
       iosFlavor: iosFlavor,
-      scheme: argResults?['scheme'] as String? ?? defaultScheme,
-      xcconfigFile: argResults?['xcconfig'] as String? ?? defaultXCConfigFile,
+      scheme: stringArg('scheme') ?? defaultScheme,
+      xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
       configuration: !(argResults?.wasParsed('configuration') ?? false) &&
               (argResults?.wasParsed('flavor') ?? false)
           ? 'Debug-${argResults!['flavor']}'
-          : argResults?['configuration'] as String? ?? defaultConfiguration,
+          : stringArg('configuration') ?? defaultConfiguration,
     );
   }
 
@@ -222,29 +189,7 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
 
     final results = await _testRunner.run();
 
-    if (results.targetRunResults.isEmpty) {
-      _logger.warn('No run results found');
-    }
-    for (final res in results.targetRunResults) {
-      final device = res.device.resolvedName;
-      if (res.allRunsPassed) {
-        _logger.write(
-          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.allRunsFailed) {
-        _logger.write(
-          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.canceled) {
-        _logger.write(
-          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
-        );
-      } else {
-        _logger.write(
-          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
-        );
-      }
-    }
+    _TestResultsPresenter(_logger).printSummary(results);
 
     final exitCode = results.allSuccessful ? 0 : 1;
 
@@ -348,5 +293,38 @@ class TestCommand extends PatrolCommand<TestCommandConfig> {
         await finalizer?.call();
       }
     };
+  }
+}
+
+class _TestResultsPresenter {
+  _TestResultsPresenter(this._logger);
+
+  final Logger _logger;
+
+  void printSummary(RunResults results) {
+    if (results.targetRunResults.isEmpty) {
+      _logger.warn('No run results found');
+    }
+
+    for (final res in results.targetRunResults) {
+      final device = res.device.resolvedName;
+      if (res.allRunsPassed) {
+        _logger.write(
+          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
+        );
+      } else if (res.allRunsFailed) {
+        _logger.write(
+          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
+        );
+      } else if (res.canceled) {
+        _logger.write(
+          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
+        );
+      } else {
+        _logger.write(
+          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
+        );
+      }
+    }
   }
 }

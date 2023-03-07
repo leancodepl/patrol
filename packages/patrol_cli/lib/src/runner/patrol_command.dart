@@ -1,25 +1,19 @@
 import 'package:args/command_runner.dart';
 import 'package:meta/meta.dart';
 
-/// Command which runs in 2 stages.
-///
-/// First, it parses input (which can come from any source – e.g file or
-/// command-line arguments) into a config.
-///
-/// Then, it executes with the config.
-///
-/// This allows for clear separation of setting things up from actual business
-/// logic.
 abstract class PatrolCommand<C> extends Command<int> {
   final defaultScheme = 'Runner';
   final defaultXCConfigFile = 'Flutter/Debug.xcconfig';
   final defaultConfiguration = 'Debug';
+  final defaultWait = 0;
   final defaultRepeatCount = 1;
 
   final defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '
       "--verbose. If the logs still aren't useful, then it's a bug - please "
       'report it.';
+
+  final bool _usesDartDefineOption = false;
 
   // Common options
 

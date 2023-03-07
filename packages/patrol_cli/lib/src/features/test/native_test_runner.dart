@@ -12,6 +12,10 @@ class NativeTestRunner extends TestRunner implements Disposable {
 
   @override
   set repeats(int newValue) {
+    if (newValue < 1) {
+      throw StateError('repeats must be greater than 0');
+    }
+
     if (_running) {
       throw StateError('repeats cannot be changed while running');
     }
