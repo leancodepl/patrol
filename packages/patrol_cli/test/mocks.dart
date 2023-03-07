@@ -2,10 +2,10 @@ import 'dart:io' as io;
 
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart' as logger;
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
-import 'package:patrol_cli/src/features/test/android_test_backend.dart';
-import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:process/process.dart' as process;
 import 'package:pub_updater/pub_updater.dart' as pub;
 

@@ -9,13 +9,13 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
-import 'package:patrol_cli/src/features/test/ios_deploy.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
+import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
 
 class IOSAppOptions extends AppOptions {
-  const IOSAppOptions({
-    required super.target,
+  IOSAppOptions({
+    required String target,
     required super.flavor,
     required super.dartDefines,
     this.bundleId,
@@ -23,13 +23,15 @@ class IOSAppOptions extends AppOptions {
     required this.xcconfigFile,
     required this.configuration,
     required this.simulator,
-  });
+  }) {
+    this.target = target;
+  }
 
   final String? bundleId;
   final String scheme;
   final String xcconfigFile;
   final String configuration;
-  final bool simulator;
+  bool simulator;
 
   @override
   String get description {

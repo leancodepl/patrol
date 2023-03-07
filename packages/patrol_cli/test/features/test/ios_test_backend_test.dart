@@ -1,4 +1,4 @@
-import 'package:patrol_cli/src/features/test/ios_test_backend.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:test/test.dart';
 
 void main() {
