@@ -150,7 +150,18 @@ abstract class PatrolCommand<C> extends Command<int> {
   }
 
   /// Gets the parsed command-line option named [name] as an `int`.
-  int? intArg(String name) => argResults?[name] as int?;
+  int? intArg(String name) {
+    if (!argParser.options.containsKey(name)) {
+      return null;
+    }
+
+    final value = argResults![name] as String?;
+    if (value == null) {
+      return null;
+    }
+
+    return int.tryParse(value);
+  }
 
   /// Gets the parsed command-line option named [name] as `List<String>`.
   List<String> stringsArg(String name) {
