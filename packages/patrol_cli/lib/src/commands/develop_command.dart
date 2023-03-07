@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
-import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/common/extensions/core.dart';
@@ -93,8 +92,8 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
 
   @override
   Future<DevelopCommandConfig> configure() async {
-    final targetArg = stringArg('target') ?? throwToolExit('No target given');
-    final target = _testFinder.findTest(targetArg);
+    final targetArg = stringsArg('target');
+    final target = _testFinder.findTest(targetArg.first);
     _logger.detail('Received test target: $target');
 
     final config = _pubspecReader.read();
@@ -127,6 +126,11 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
+      // develop-specific
+      ...{
+        'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+        'PATROL_HOT_RESTART': 'true',
+      },
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -278,9 +282,20 @@ class DevelopCommand extends PatrolCommand<DevelopCommandConfig> {
       }
 
       try {
-        final pm = LoggingLocalProcessManager(logger: _logger);
+        final logsProces = LoggingLocalProcessManager(logger: _logger);
         unawaited(() async {
-          final process = await pm.start(
+          final process = await logsProces.start(
+            ['flutter', '--no-version-check', 'logs', '--device-id', device.id],
+          );
+          _logger.info('Waiting for app to connect for logs...');
+          process
+            ..listenStdOut((l) => _logger.info('\t: $l'))
+            ..listenStdErr((l) => _logger.err('\t$l'));
+        }());
+
+        final attachProces = LoggingLocalProcessManager(logger: _logger);
+        unawaited(() async {
+          final process = await attachProces.start(
             appOptions.toFlutterAttachInvocation(),
           );
           _logger.info('Waiting for app to connect for Hot Restart...');
