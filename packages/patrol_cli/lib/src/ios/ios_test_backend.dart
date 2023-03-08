@@ -8,98 +8,10 @@ import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
-
-class IOSAppOptions extends AppOptions {
-  IOSAppOptions({
-    required super.target,
-    required super.flavor,
-    required super.dartDefines,
-    this.bundleId,
-    required this.scheme,
-    required this.xcconfigFile,
-    required this.configuration,
-    required this.simulator,
-  });
-
-  final String? bundleId;
-  final String scheme;
-  final String xcconfigFile;
-  final String configuration;
-  bool simulator;
-
-  @override
-  String get description {
-    final platform = simulator ? 'simulator' : 'device';
-    return 'app with entrypoint ${basename(target)} for iOS $platform';
-  }
-
-  /// Translates these options into a proper flutter build invocation, which
-  /// runs before xcodebuild and performs configuration.
-  List<String> toFlutterBuildInvocation() {
-    final cmd = [
-      ...['flutter', 'build', 'ios'],
-      '--no-version-check',
-      ...[
-        '--config-only',
-        '--no-codesign',
-        '--debug',
-        if (simulator) '--simulator',
-      ],
-      if (flavor != null) ...['--flavor', flavor!],
-      ...['--target', target],
-      for (final dartDefine in dartDefines.entries) ...[
-        '--dart-define',
-        '${dartDefine.key}=${dartDefine.value}',
-      ],
-    ];
-
-    return cmd;
-  }
-
-  /// Translates these options into a proper `xcodebuild build-for-testing`
-  /// invocation.
-  List<String> buildForTestingInvocation() {
-    final cmd = [
-      ...['xcodebuild', 'build-for-testing'],
-      ...['-workspace', 'Runner.xcworkspace'],
-      ...['-scheme', scheme],
-      ...['-xcconfig', xcconfigFile],
-      ...['-configuration', configuration],
-      ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
-      ...[
-        '-destination',
-        'generic/platform=${simulator ? 'iOS Simulator' : 'iOS'}',
-      ],
-      '-quiet',
-      ...['-derivedDataPath', '../build/ios_integ'],
-      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-    ];
-
-    return cmd;
-  }
-
-  /// Translates these options into a proper `xcodebuild test-without-building`
-  /// invocation.
-  List<String> testWithoutBuildingInvocation(
-    Device device, {
-    required String xcTestRunPath,
-  }) {
-    final cmd = [
-      ...['xcodebuild', 'test-without-building'],
-      ...['-xctestrun', xcTestRunPath],
-      ...[
-        '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
-      ],
-    ];
-
-    return cmd;
-  }
-}
 
 class IOSTestBackend {
   IOSTestBackend({

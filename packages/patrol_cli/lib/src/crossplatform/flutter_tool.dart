@@ -61,6 +61,7 @@ class FlutterTool {
     _stdin.listen((event) {
       final char = String.fromCharCode(event.first);
       if (char == 'r' || char == 'R') {
+        _logger.success('Triggered Hot Restart...');
         process.stdin.add('R'.codeUnits);
       } else if (char == 'q' || char == 'Q') {
         process.stdin.add('q'.codeUnits);

@@ -1,4 +1,4 @@
-import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:test/test.dart';
 
 void main() {
