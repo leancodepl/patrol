@@ -49,7 +49,7 @@ class FlutterTool {
     process
       ..listenStdOut((line) {
         if (line == 'Flutter run key commands.' && !completer.isCompleted) {
-          _logger.success('Hot Restart: app connected');
+          _logger.success('Hot Restart: app connected (press "r" to restart)');
           completer.complete();
         }
         _logger.detail('\t: $line');
@@ -81,7 +81,7 @@ class FlutterTool {
     final completer = Completer<void>();
     process.listenStdOut((line) {
       if (line.startsWith('Showing ') && line.endsWith('logs:')) {
-        _logger.success('Logs: connected');
+        _logger.detail('Logs: connected');
         completer.complete();
       }
 

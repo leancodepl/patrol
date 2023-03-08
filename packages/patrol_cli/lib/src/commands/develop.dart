@@ -193,14 +193,16 @@ class DevelopCommand extends PatrolCommand {
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        action = () => _androidTestBackend.execute(android, device);
+        action = () =>
+            _androidTestBackend.execute(android, device, interruptible: true);
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
         break;
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(ios, device);
+        action = () async =>
+            _iosTestBackend.execute(ios, device, interruptible: true);
         final bundle = ios.bundleId;
         if (bundle != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(bundle, device);

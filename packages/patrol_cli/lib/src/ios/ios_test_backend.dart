@@ -101,7 +101,7 @@ class IOSAppOptions extends AppOptions {
   }
 }
 
-class IOSTestBackend extends TestBackend {
+class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
     required FileSystem fs,
@@ -124,7 +124,6 @@ class IOSTestBackend extends TestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  @override
   Future<void> build(IOSAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -181,8 +180,17 @@ class IOSTestBackend extends TestBackend {
     });
   }
 
-  @override
-  Future<void> execute(IOSAppOptions options, Device device) async {
+  /// Executes the tests of the given [options] on the given [device].
+  ///
+  /// [build] must be called before this method.
+  ///
+  /// If [interruptible] is true, then no exception is thrown on SIGINT. This is
+  /// used for Hot Restart.
+  Future<void> execute(
+    IOSAppOptions options,
+    Device device, {
+    bool interruptible = false,
+  }) async {
     await _disposeScope.run((scope) async {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
@@ -213,6 +221,8 @@ class IOSTestBackend extends TestBackend {
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
+      } else if (exitCode != 0 && interruptible) {
+        task.complete('App shut down on request');
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -225,7 +235,6 @@ class IOSTestBackend extends TestBackend {
     });
   }
 
-  @override
   Future<void> uninstall(String appId, Device device) async {
     _logger.info('Uninstalling $appId from ${device.name}');
 

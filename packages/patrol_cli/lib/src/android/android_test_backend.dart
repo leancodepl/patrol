@@ -96,7 +96,7 @@ class AndroidAppOptions extends AppOptions {
 /// Provides functionality to build, install, run, and uninstall Android apps.
 ///
 /// This class must be stateless.
-class AndroidTestBackend extends TestBackend {
+class AndroidTestBackend {
   AndroidTestBackend({
     required Adb adb,
     required ProcessManager processManager,
@@ -120,7 +120,6 @@ class AndroidTestBackend extends TestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  @override
   Future<void> build(AndroidAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -175,8 +174,17 @@ class AndroidTestBackend extends TestBackend {
     });
   }
 
-  @override
-  Future<void> execute(AndroidAppOptions options, Device device) async {
+  /// Executes the tests of the given [options] on the given [device].
+  ///
+  /// [build] must be called before this method.
+  ///
+  /// If [interruptible] is true, then no exception is thrown on SIGINT. This is
+  /// used for Hot Restart.
+  Future<void> execute(
+    AndroidAppOptions options,
+    Device device, {
+    bool interruptible = false,
+  }) async {
     await _disposeScope.run((scope) async {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
@@ -184,9 +192,7 @@ class AndroidTestBackend extends TestBackend {
       final process = await _processManager.start(
         options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
-        environment: {
-          'ANDROID_SERIAL': device.id,
-        },
+        environment: {'ANDROID_SERIAL': device.id},
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
       )
         ..disposedBy(scope);
@@ -204,6 +210,8 @@ class AndroidTestBackend extends TestBackend {
       final exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
+      } else if (exitCode != 0 && interruptible) {
+        task.complete('App shut down on request');
       } else if (exitCode == exitCodeInterrupted) {
         const cause = 'Gradle test execution interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
