@@ -11,10 +11,10 @@ import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
-import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
 import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_runner.dart';
 
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({

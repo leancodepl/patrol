@@ -1,7 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
-import 'package:patrol_cli/src/features/run_commons/result.dart';
-import 'package:patrol_cli/src/features/run_commons/test_runner.dart';
+import 'package:patrol_cli/src/test_runner.dart';
 
 class NativeTestRunner extends TestRunner implements Disposable {
   final Map<String, Device> _devices = {};

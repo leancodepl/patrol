@@ -3,8 +3,8 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:patrol_cli/src/features/run_commons/result.dart';
 import 'package:patrol_cli/src/features/test/native_test_runner.dart';
+import 'package:patrol_cli/src/test_runner.dart';
 import 'package:test/test.dart';
 
 import '../../fixtures.dart';
