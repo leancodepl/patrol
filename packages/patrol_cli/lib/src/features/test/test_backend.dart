@@ -21,7 +21,6 @@ abstract class AppOptions {
       ...['flutter', 'attach'],
       '--no-version-check',
       '--debug',
-      if (flavor != null) ...['--flavor', flavor!],
       ...['--target', target],
       for (final dartDefine in dartDefines.entries) ...[
         '--dart-define',
