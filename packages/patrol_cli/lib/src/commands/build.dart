@@ -68,7 +68,7 @@ class BuildCommand extends PatrolCommand {
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
-    final displayLabel = boolArg('label') ?? true;
+    final displayLabel = boolArg('label');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),

@@ -1,4 +1,4 @@
-import 'dart:io' show ProcessSignal;
+import 'dart:io' show ProcessSignal, stdin;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -18,6 +18,7 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
 import 'package:patrol_cli/src/features/run_commons/test_finder.dart';
@@ -122,6 +123,12 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ),
         parentDisposeScope: _disposeScope,
         logger: _logger,
+        flutterTool: FlutterTool(
+          stdin: stdin,
+          processManager: _processManager,
+          parentDisposeScope: _disposeScope,
+          logger: _logger,
+        ),
       ),
     );
 
@@ -193,9 +200,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         negatable: false,
       );
   }
-
-  // Context of the tool, used through the codebase
-  // TODO: Encapsulate these objects in a context object
 
   final DisposeScope _disposeScope;
   final Platform _platform;

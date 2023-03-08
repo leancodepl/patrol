@@ -120,28 +120,21 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  /// Gets the parsed command-line option named [name] as a `bool?`.
-  bool? boolArg(String name) {
-    if (!argParser.options.containsKey(name)) {
-      return null;
-    }
-    return argResults![name] as bool;
-  }
+  /// Gets the parsed command-line flag named [name] as a `bool`.
+  ///
+  /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
+  /// will be thrown.
+  bool boolArg(String name) => argResults![name] as bool;
 
-  String? stringArg(String name) {
-    if (!argParser.options.containsKey(name)) {
-      return null;
-    }
-    return argResults![name] as String?;
-  }
+  /// Gets the parsed command-line option named [name] as a `String`.
+  ///
+  /// If no option named [name] was added to the `ArgParser`, an [ArgumentError]
+  /// will be thrown.
+  String? stringArg(String name) => argResults![name] as String?;
 
   /// Gets the parsed command-line option named [name] as an `int`.
   int? intArg(String name) {
-    if (!argParser.options.containsKey(name)) {
-      return null;
-    }
-
-    final value = argResults![name] as String?;
+    final value = stringArg(name);
     if (value == null) {
       return null;
     }

@@ -6,7 +6,7 @@ import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/features/devices/device.dart';
 import 'package:patrol_cli/src/features/devices/device_finder.dart';
 import 'package:patrol_cli/src/features/run_commons/dart_defines_reader.dart';
@@ -25,6 +25,7 @@ class DevelopCommand extends PatrolCommand {
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
+    required FlutterTool flutterTool,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -34,6 +35,7 @@ class DevelopCommand extends PatrolCommand {
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
+        _flutterTool = flutterTool,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -57,6 +59,7 @@ class DevelopCommand extends PatrolCommand {
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
+  final FlutterTool _flutterTool;
 
   final Logger _logger;
 
@@ -92,8 +95,8 @@ class DevelopCommand extends PatrolCommand {
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
-    final displayLabel = boolArg('label') ?? true;
-    final uninstall = boolArg('uninstall') ?? true;
+    final displayLabel = boolArg('label');
+    final uninstall = boolArg('uninstall');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -205,43 +208,20 @@ class DevelopCommand extends PatrolCommand {
     }
 
     try {
-      // TODO: Extract "attach" and "logs" to a separate FlutterTool class
+      final future = action();
+
+      await Future.wait<void>([
+        _flutterTool.logs(device.id),
+        _flutterTool.attach(
+          deviceId: device.id,
+          target: android.target, // FIXME: don't use android
+          dartDefines: android.dartDefines, // FIXME: don't use android
+        )
+      ]);
+
       _enableInteractiveMode();
-      final logsProces = LoggingLocalProcessManager(logger: _logger);
-      unawaited(() async {
-        final process = await logsProces.start(
-          ['flutter', '--no-version-check', 'logs', '--device-id', device.id],
-        );
-        _logger.info('Waiting for app to connect for logs...');
-        process
-          ..listenStdOut((l) => _logger.info('\t: $l'))
-          ..listenStdErr((l) => _logger.err('\t$l'));
-      }());
 
-      final attachProces = LoggingLocalProcessManager(logger: _logger);
-      unawaited(() async {
-        final process = await attachProces.start(
-          // FIXME: hardcoded android
-          android.toFlutterAttachInvocation(),
-        );
-        _logger.info('Waiting for app to connect for Hot Restart...');
-        process
-          ..listenStdOut((l) => _logger.detail('\t: $l'))
-          ..listenStdErr((l) => _logger.err('\t$l'));
-        stdin.listen((event) {
-          final char = String.fromCharCode(event.first);
-          if (char == 'r' || char == 'R') {
-            _logger.success('Hot Restart in progress...');
-            process.stdin.add(event);
-          }
-
-          if (char == 'q' || char == 'Q') {
-            _logger.success('Quitting APP...');
-            process.stdin.add(event);
-          }
-        });
-      }());
-      await action();
+      await future;
     } catch (err, st) {
       _logger
         ..err('$err')

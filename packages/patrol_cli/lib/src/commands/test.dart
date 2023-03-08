@@ -126,8 +126,8 @@ class TestCommand extends PatrolCommand {
 
     final wait = intArg('wait') ?? defaultWait;
     final repeatCount = intArg('repeat') ?? defaultRepeatCount;
-    final displayLabel = boolArg('label') ?? true;
-    final uninstall = boolArg('uninstall') ?? true;
+    final displayLabel = boolArg('label');
+    final uninstall = boolArg('uninstall');
 
     _logger.info('Every test target will be run $repeatCount time(s)');
 
