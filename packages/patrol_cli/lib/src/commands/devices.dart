@@ -1,5 +1,5 @@
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/features/devices/device_finder.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 class DevicesCommand extends PatrolCommand {

@@ -1,7 +1,7 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' show basename;
-import 'package:patrol_cli/src/features/devices/device.dart';
+import 'package:patrol_cli/src/devices.dart';
 
 typedef TestRunCallback = Future<void> Function(String target, Device device);
 

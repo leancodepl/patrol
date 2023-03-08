@@ -1,4 +1,4 @@
-import 'package:patrol_cli/src/features/devices/device.dart';
+import 'package:patrol_cli/src/devices.dart';
 
 const androidDeviceName = 'Pixel 5';
 const androidDeviceId = 'emulator-5554';

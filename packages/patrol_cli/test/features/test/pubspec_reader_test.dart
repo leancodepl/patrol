@@ -1,6 +1,6 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:patrol_cli/src/features/test/pubspec_reader.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:test/test.dart';
 
 const _pubspecBase = '''

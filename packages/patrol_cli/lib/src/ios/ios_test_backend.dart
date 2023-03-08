@@ -8,7 +8,7 @@ import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
-import 'package:patrol_cli/src/features/devices/device.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/features/test/test_backend.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
