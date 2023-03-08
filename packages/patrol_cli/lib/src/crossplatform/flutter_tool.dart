@@ -25,7 +25,7 @@ class FlutterTool {
 
   /// Attaches to the running app. Returns a [Future] that completes when the
   /// connection is ready.
-  Future<AttachedAppController> attach({
+  Future<void> attach({
     required String deviceId,
     required String target,
     required Map<String, String> dartDefines,
@@ -57,7 +57,15 @@ class FlutterTool {
       ..listenStdErr((l) => _logger.err('\t$l'));
 
     await completer.future;
-    return AttachedAppController(_stdin, process.stdin);
+
+    _stdin.listen((event) {
+      final char = String.fromCharCode(event.first);
+      if (char == 'r' || char == 'R') {
+        process.stdin.add('R'.codeUnits);
+      } else if (char == 'q' || char == 'Q') {
+        process.stdin.add('q'.codeUnits);
+      }
+    });
   }
 
   /// Connects to app's logs. Returns a [Future] that completes when the logs
@@ -95,25 +103,4 @@ class FlutterTool {
 
     return completer.future;
   }
-}
-
-class AttachedAppController {
-  AttachedAppController(this._stdin, this._flutterStdin) {
-    _stdin.listen((event) {
-      final char = String.fromCharCode(event.first);
-      if (char == 'r' || char == 'R') {
-        _flutterStdin.add('R'.codeUnits);
-      } else if (char == 'q' || char == 'Q') {
-        _flutterStdin.add('q'.codeUnits);
-      }
-    });
-  }
-
-  final Stream<List<int>> _stdin;
-  final StreamSink<List<int>> _flutterStdin;
-
-  // /// Returns a [Future] that completes when the app is ready to be ///
-  // hot-restarted and logs are connected. Future<bool> get ready async { //
-  // TODO: Implement return true;
-  // }
 }
