@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -74,8 +75,11 @@ class DevelopCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    final targetArg = stringsArg('target');
-    final target = _testFinder.findTest(targetArg.first);
+    final targets = stringsArg('target');
+    if (targets.isEmpty) {
+      throwToolExit('No target provided with --target');
+    }
+    final target = _testFinder.findTest(targets.first);
     _logger.detail('Received test target: $target');
 
     final config = _pubspecReader.read();
