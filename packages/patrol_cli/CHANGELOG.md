@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.8
 
 - Disable forwarding `q` from `patrol develop` to `flutter attach` because it's
   broken (#1069)
