@@ -25,7 +25,7 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
   ///
   /// RunnerUITests app then dynamically creates test methods (using Objective-C runtime) from the Dart test results.
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    NSLog("call on patrolChannel: %@", call.method)
+    NSLog("SwiftPatrolPlugin: method call received: %@", call.method)
 
     switch call.method {
     case kMethodAllTestsFinished:
@@ -54,11 +54,12 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
         return
       }
 
-      NSLog("SwiftPatrolPllugin: before creating client")
+      NSLog("SwiftPatrolPlugin: attempting to create client...")
       let client = Patrol_NativeAutomatorNIOClient(
         channel: channel,
         defaultCallOptions: CallOptions(timeLimit: TimeLimit.timeout(.seconds(10)))
       )
+      NSLog("SwiftPatrolPlugin: create client...")
 
       let call = client.submitTestResults(.with { $0.results = results })
 
