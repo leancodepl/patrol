@@ -7,15 +7,12 @@ void main() {
     await $('toggle app bar').scrollTo().tap();
 
     // this works, but the widget is obscured by the notch safe area
-    await $('Some text in the middle').scrollTo();
+    await $('Some text in the middle').scrollTo(alignment: 0.1);
 
     // verify state
-    expect($('Some text in the middle').hitTestable(), findsNothing);
+    expect($('Some text in the middle').hitTestable(), findsOneWidget);
 
     // this fails, because the widget never becomes hitTestable
-    await expectLater(
-      () => $('Some text in the middle').tap(),
-      throwsA(isA<WaitUntilVisibleTimeoutException>()),
-    );
+    await $('Some text in the middle').tap();
   });
 }

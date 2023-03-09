@@ -420,7 +420,12 @@ class PatrolTester {
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
+    double alignment = 0.0,
   }) {
+    if (alignment < 0 || alignment > 1) {
+      throw StateError('alignment must be in the inclusive range 0-1 range');
+    }
+
     return TestAsyncUtils.guard(() async {
       var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
@@ -432,7 +437,10 @@ class PatrolTester {
         await tester.pump(duration);
         iterationsLeft -= 1;
       }
-      await Scrollable.ensureVisible(tester.firstElement(finder));
+      await Scrollable.ensureVisible(
+        tester.firstElement(finder),
+        alignment: alignment,
+      );
 
       await _performPump(
         andSettle: andSettle,
@@ -512,6 +520,7 @@ class PatrolTester {
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
     bool? andSettle,
+    double alignment = 0.0,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     scrollable ??= find.byType(Scrollable);
@@ -545,6 +554,7 @@ class PatrolTester {
         maxIteration: maxScrolls,
         duration: duration,
         andSettle: andSettle,
+        alignment: alignment,
       );
 
       return resolvedFinder;
