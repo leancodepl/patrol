@@ -60,14 +60,20 @@ class IOSDeploy {
 
     var totalTimeElapsed = Duration.zero;
     while (!launchSucceeded) {
+      if (_disposeScope.disposed) {
+        _logger.detail(
+          'Stopped waiting for ios-deploy becuase dispose scope was closed',
+        );
+      }
+
       const delta = Duration(milliseconds: 100);
       await Future<void>.delayed(delta);
       totalTimeElapsed += delta;
 
-      final secondsElapsed = totalTimeElapsed.inSeconds;
-      if (secondsElapsed > 1 && secondsElapsed % 30 == 0) {
+      final millisecondsElapsed = totalTimeElapsed.inMilliseconds;
+      if (millisecondsElapsed > 1 && millisecondsElapsed % (30 * 1000) == 0) {
         _logger.warn(
-          'Waiting for ios-deploy to launch the app is taking unusually long time (${secondsElapsed}s)',
+          'Waiting for ios-deploy to launch the app is taking unusually long time (${millisecondsElapsed / 1000}s)',
         );
       }
     }
