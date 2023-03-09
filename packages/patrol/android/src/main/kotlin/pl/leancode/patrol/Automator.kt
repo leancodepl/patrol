@@ -86,7 +86,7 @@ class Automator private constructor() {
 
     fun openApp(packageName: String) {
         val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)
-            ?: throw Exception("intent for launching $packageName is null. Make sure you have android.permission.QUERY_ALL_PACKAGES in AndroidManifest.xml")
+            ?: throw Exception("intent for launching package \"$packageName\" is null. Make sure you have android.permission.QUERY_ALL_PACKAGES in AndroidManifest.xml")
         // intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // clear out any previous task, i.e., make sure it starts on the initial screen
         targetContext.startActivity(intent) // starts the app
         delay()
@@ -135,7 +135,7 @@ class Automator private constructor() {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun enableBluetooth(): Unit = throw NotImplementedError("enableBluetooth")
+    fun enableBluetooth(): Nothing = throw NotImplementedError("enableBluetooth")
 
     fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
 

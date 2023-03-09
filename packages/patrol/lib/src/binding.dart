@@ -7,12 +7,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 
-// ignore: avoid_print
 void _defaultPrintLogger(String message) {
-  if (const bool.fromEnvironment('PATROL_VERBOSE')) {
-    // ignore: avoid_print
-    print('PatrolBinding: $message');
-  }
+  // ignore: avoid_print
+  print('PatrolBinding: $message');
 }
 
 // copied from package:integration_test/lib/integration_test.dart
@@ -21,13 +18,10 @@ const bool _shouldReportResultsToNative = bool.fromEnvironment(
   defaultValue: true,
 );
 
+const bool _hotRestartEnabled = bool.fromEnvironment('PATROL_HOT_RESTART');
+
 /// The method channel used to report the results of the tests to the underlying
-/// platform's testing framework.
-///
-/// On Android, this is relevant when running instrumented tests with
-/// UIAutomator.
-///
-/// On iOS, this is relevant when running UI tests with XCUITest.
+/// platform's testing framework (JUnit on Android and XCTest on iOS).
 const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
@@ -42,18 +36,24 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       oldTestExceptionReporter(details, testDescription);
     };
 
-    if (!_shouldReportResultsToNative) {
-      return;
-    }
-
     tearDownAll(() async {
       try {
+        // TODO: Use patrolChannel for Android (see https://github.com/leancodepl/patrol/issues/969)
         if (!Platform.isIOS) {
           return;
         }
 
+        if (!_shouldReportResultsToNative) {
+          return;
+        }
+
+        if (_hotRestartEnabled) {
+          // Sending results ends the test, which we don't want for Hot Restart
+          return;
+        }
+
         // TODO: Migrate communication to gRPC
-        _logger('Sending Dart test results to the native side');
+        logger('Sending Dart test results to the native side');
         await patrolChannel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
@@ -86,7 +86,8 @@ Thrown by PatrolBinding.
     return _instance!;
   }
 
-  final _logger = _defaultPrintLogger;
+  /// Logger used by this binding.
+  void Function(String message) logger = _defaultPrintLogger;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
@@ -117,8 +118,7 @@ Thrown by PatrolBinding.
           textDirection: TextDirection.ltr,
           children: [
             RepaintBoundary(child: rootWidget),
-            // Prevents crashes when Android activity is resumed
-            // See https://github.com/leancodepl/patrol/issues/901
+            // Prevents crashes when Android activity is resumed (see https://github.com/leancodepl/patrol/issues/901)
             ExcludeSemantics(
               child: Padding(
                 padding: EdgeInsets.only(

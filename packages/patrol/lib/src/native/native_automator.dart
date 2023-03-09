@@ -32,10 +32,8 @@ enum BindingType {
 }
 
 void _defaultPrintLogger(String message) {
-  if (const bool.fromEnvironment('PATROL_VERBOSE')) {
-    // ignore: avoid_print
-    print('Patrol (native): $message');
-  }
+  // ignore: avoid_print
+  print('Patrol (native): $message');
 }
 
 /// Configuration for [NativeAutomator].

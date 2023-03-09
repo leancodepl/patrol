@@ -1,0 +1,198 @@
+import 'dart:convert' show base64Encode, utf8;
+
+import 'package:meta/meta.dart';
+import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/devices.dart';
+
+class FlutterAppOptions {
+  const FlutterAppOptions({
+    required this.target,
+    required this.flavor,
+    required this.dartDefines,
+  });
+
+  final String target;
+  final String? flavor;
+  final Map<String, String> dartDefines;
+
+  /// Translates these options into a proper `flutter attach`.
+  @nonVirtual
+  List<String> toFlutterAttachInvocation() {
+    final cmd = [
+      ...['flutter', 'attach'],
+      '--no-version-check',
+      '--debug',
+      ...['--target', target],
+      for (final dartDefine in dartDefines.entries) ...[
+        '--dart-define',
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
+    ];
+
+    return cmd;
+  }
+}
+
+class AndroidAppOptions {
+  const AndroidAppOptions({
+    required this.flutter,
+    this.packageName,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? packageName;
+
+  String get description => 'apk with entrypoint ${basename(flutter.target)}';
+
+  List<String> toGradleAssembleInvocation({required bool isWindows}) {
+    return _toGradleInvocation(
+      isWindows: isWindows,
+      task: 'assemble${_effectiveFlavor}Debug',
+    );
+  }
+
+  List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
+    return _toGradleInvocation(
+      isWindows: isWindows,
+      task: 'assemble${_effectiveFlavor}DebugAndroidTest',
+    );
+  }
+
+  List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
+    return _toGradleInvocation(
+      isWindows: isWindows,
+      task: 'connected${_effectiveFlavor}DebugAndroidTest',
+    );
+  }
+
+  String get _effectiveFlavor {
+    var flavor = flutter.flavor ?? '';
+    if (flavor.isNotEmpty) {
+      flavor = flavor[0].toUpperCase() + flavor.substring(1);
+    }
+    return flavor;
+  }
+
+  /// Translates these options into a proper Gradle invocation.
+  List<String> _toGradleInvocation({
+    required bool isWindows,
+    required String task,
+  }) {
+    final List<String> cmd;
+    if (isWindows) {
+      cmd = <String>[r'.\gradlew.bat'];
+    } else {
+      cmd = <String>['./gradlew'];
+    }
+
+    // Add Gradle task
+    cmd.add(':app:$task');
+
+    // Add Dart test target
+    final target = '-Ptarget=${flutter.target}';
+    cmd.add(target);
+
+    // Add Dart defines encoded in base64
+    if (flutter.dartDefines.isNotEmpty) {
+      final dartDefinesString = StringBuffer();
+      for (var i = 0; i < flutter.dartDefines.length; i++) {
+        final entry = flutter.dartDefines.entries.elementAt(i);
+        final pair = utf8.encode('${entry.key}=${entry.value}');
+        dartDefinesString.write(base64Encode(pair));
+        if (i != flutter.dartDefines.length - 1) {
+          dartDefinesString.write(',');
+        }
+      }
+
+      cmd.add('-Pdart-defines=$dartDefinesString');
+    }
+
+    return cmd;
+  }
+}
+
+class IOSAppOptions {
+  IOSAppOptions({
+    required this.flutter,
+    this.bundleId,
+    required this.scheme,
+    required this.xcconfigFile,
+    required this.configuration,
+    required this.simulator,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? bundleId;
+  final String scheme;
+  final String xcconfigFile;
+  final String configuration;
+  bool simulator;
+
+  String get description {
+    final platform = simulator ? 'simulator' : 'device';
+    return 'app with entrypoint ${basename(flutter.target)} for iOS $platform';
+  }
+
+  /// Translates these options into a proper flutter build invocation, which
+  /// runs before xcodebuild and performs configuration.
+  List<String> toFlutterBuildInvocation() {
+    final cmd = [
+      ...['flutter', 'build', 'ios'],
+      '--no-version-check',
+      ...[
+        '--config-only',
+        '--no-codesign',
+        '--debug',
+        if (simulator) '--simulator',
+      ],
+      if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      ...['--target', flutter.target],
+      for (final dartDefine in flutter.dartDefines.entries) ...[
+        '--dart-define',
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
+    ];
+
+    return cmd;
+  }
+
+  /// Translates these options into a proper `xcodebuild build-for-testing`
+  /// invocation.
+  List<String> buildForTestingInvocation() {
+    final cmd = [
+      ...['xcodebuild', 'build-for-testing'],
+      ...['-workspace', 'Runner.xcworkspace'],
+      ...['-scheme', scheme],
+      ...['-xcconfig', xcconfigFile],
+      ...['-configuration', configuration],
+      ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
+      ...[
+        '-destination',
+        'generic/platform=${simulator ? 'iOS Simulator' : 'iOS'}',
+      ],
+      '-quiet',
+      ...['-derivedDataPath', '../build/ios_integ'],
+      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+    ];
+
+    return cmd;
+  }
+
+  /// Translates these options into a proper `xcodebuild test-without-building`
+  /// invocation.
+  List<String> testWithoutBuildingInvocation(
+    Device device, {
+    required String xcTestRunPath,
+  }) {
+    final cmd = [
+      ...['xcodebuild', 'test-without-building'],
+      ...['-xctestrun', xcTestRunPath],
+      ...[
+        '-destination',
+        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
+      ],
+    ];
+
+    return cmd;
+  }
+}
