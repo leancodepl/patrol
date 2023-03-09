@@ -1,3 +1,9 @@
+## Unreleased
+
+- Disable forwarding `q` from `patrol develop` to `flutter attach` because it's
+  broken (#1069)
+- Improve error when patrol develop is missing `--target` option (#1064)
+
 ## 1.0.7
 
 - Fix disposing error when SIGINT (CTRL+C) is sent during `patrol develop`
@@ -5,15 +11,14 @@
 
 ## 1.0.6
 
-- Add `patrol develop` command which supports **Hot Restart** (#1057).
-  It's not stable, but you can already try it out and report bugs.
+- Add `patrol develop` command which supports **Hot Restart** (#1057). It's not
+  stable, but you can already try it out and report bugs.
 
 ## 1.0.5
 
 - Add `patrol build` command to make it easier to build app binaries for cloud
-  device farms (#1006).
-  It's not stable, but you can already try it out and report bugs. Also, for now
-  it only builds Android APKs.
+  device farms (#1006). It's not stable, but you can already try it out and
+  report bugs. Also, for now it only builds Android APKs.
 
 ## 1.0.4
 
