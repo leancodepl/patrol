@@ -3,9 +3,53 @@ import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/devices.dart';
 
+enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
+
+/// Represents a single run of a single target on a single device.
+class TargetRunResult with EquatableMixin {
+  TargetRunResult({
+    required this.target,
+    required this.device,
+    required this.runs,
+  });
+
+  final String target;
+  final Device device;
+
+  final List<TargetRunStatus> runs;
+
+  String get targetName => basename(target);
+
+  bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
+
+  bool get allRunsFailed => runs.every(
+        (run) =>
+            run == TargetRunStatus.failedToBuild ||
+            run == TargetRunStatus.failedToExecute,
+      );
+
+  /// True if at least 1 test run was canceled.
+  bool get canceled => runs.any((run) => run == TargetRunStatus.canceled);
+
+  int get passedRuns {
+    return runs.where((run) => run == TargetRunStatus.passed).length;
+  }
+
+  int get runsFailedToBuild {
+    return runs.where((run) => run == TargetRunStatus.failedToBuild).length;
+  }
+
+  int get runsFailedToExecute {
+    return runs.where((run) => run == TargetRunStatus.failedToExecute).length;
+  }
+
+  @override
+  List<Object?> get props => [target, device, runs];
+}
+
 typedef TestRunCallback = Future<void> Function(String target, Device device);
 
-// NOTE: This class should probably expose a stream so that test results can be
+// NOTE: TestRunner should probably expose a stream so that test results can be
 // listened to in real time.
 
 /// Orchestrates running tests on devices.
@@ -22,7 +66,8 @@ typedef TestRunCallback = Future<void> Function(String target, Device device);
 /// failures. It's up to these callbacks to perform more elaborate error
 /// reporting.
 abstract class TestRunner implements Disposable {
-  /// Sets the numbes of times each test target should be repeated.
+  factory TestRunner() => _NativeTestRunner();
+
   set repeats(int newValue);
 
   /// Sets the builder callback that is called once for every test target.
@@ -82,46 +127,147 @@ class RunResults with EquatableMixin {
   List<Object?> get props => [targetRunResults];
 }
 
-/// Represents a single run of a single target on a single device.
-class TargetRunResult with EquatableMixin {
-  TargetRunResult({
-    required this.target,
-    required this.device,
-    required this.runs,
-  });
+class _NativeTestRunner implements TestRunner, Disposable {
+  final Map<String, Device> _devices = {};
+  final Set<String> _targets = {};
+  bool _running = false;
+  bool _disposed = false;
+  int _repeats = 1;
 
-  final String target;
-  final Device device;
+  @override
+  set repeats(int newValue) {
+    if (newValue < 1) {
+      throw StateError('repeats must be greater than 0');
+    }
 
-  final List<TargetRunStatus> runs;
+    if (_running) {
+      throw StateError('repeats cannot be changed while running');
+    }
 
-  String get targetName => basename(target);
-
-  bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
-
-  bool get allRunsFailed => runs.every(
-        (run) =>
-            run == TargetRunStatus.failedToBuild ||
-            run == TargetRunStatus.failedToExecute,
-      );
-
-  /// True if at least 1 test run was canceled.
-  bool get canceled => runs.any((run) => run == TargetRunStatus.canceled);
-
-  int get passedRuns {
-    return runs.where((run) => run == TargetRunStatus.passed).length;
+    _repeats = newValue;
   }
 
-  int get runsFailedToBuild {
-    return runs.where((run) => run == TargetRunStatus.failedToBuild).length;
-  }
+  TestRunCallback? _builder;
 
-  int get runsFailedToExecute {
-    return runs.where((run) => run == TargetRunStatus.failedToExecute).length;
+  @override
+  set builder(TestRunCallback callback) => _builder = callback;
+
+  TestRunCallback? _executor;
+
+  @override
+  set executor(TestRunCallback callback) => _executor = callback;
+
+  @override
+  void addDevice(Device device) {
+    if (_running) {
+      throw StateError('devices can only be added before run');
+    }
+
+    if (_devices[device.id] != null) {
+      throw StateError('device with id ${device.id} is already added');
+    }
+
+    _devices[device.id] = device;
   }
 
   @override
-  List<Object?> get props => [target, device, runs];
-}
+  void addTarget(String target) {
+    if (_running) {
+      throw StateError('tests can only be added before run');
+    }
 
-enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
+    if (_targets.contains(target)) {
+      throw StateError('target $target is already added');
+    }
+
+    _targets.add(target);
+  }
+
+  @override
+  Future<RunResults> run() async {
+    if (_running) {
+      throw StateError('tests are already running');
+    }
+    if (_devices.isEmpty) {
+      throw StateError('no devices to run tests on');
+    }
+    if (_targets.isEmpty) {
+      throw StateError('no test targets to run');
+    }
+
+    final builder = _builder;
+    if (builder == null) {
+      throw StateError('builder is null');
+    }
+
+    final executor = _executor;
+    if (executor == null) {
+      throw StateError('executor is null');
+    }
+
+    _running = true;
+
+    final targetRunResults = <TargetRunResult>[];
+
+    final testRunsOnAllDevices = <Future<void>>[];
+    for (final device in _devices.values) {
+      Future<void> runTestsOnDevice() async {
+        for (final target in _targets) {
+          final targetRuns = <TargetRunStatus>[];
+          targetRunResults.add(
+            TargetRunResult(target: target, device: device, runs: targetRuns),
+          );
+
+          if (_disposed) {
+            for (var i = 0; i < _repeats; i++) {
+              targetRuns.add(TargetRunStatus.canceled);
+            }
+            continue;
+          }
+
+          // Build once for every target, no matter how many repeats.
+          try {
+            await builder(target, device);
+          } catch (_) {
+            targetRuns.add(TargetRunStatus.failedToBuild);
+            continue;
+          }
+
+          for (var i = 0; i < _repeats; i++) {
+            if (_disposed) {
+              targetRuns.add(TargetRunStatus.canceled);
+              continue;
+            }
+
+            try {
+              await executor(target, device);
+            } catch (_) {
+              targetRuns.add(TargetRunStatus.failedToExecute);
+              continue;
+            }
+
+            targetRuns.add(TargetRunStatus.passed);
+          }
+        }
+      }
+
+      final future = runTestsOnDevice();
+      testRunsOnAllDevices.add(future);
+    }
+
+    await Future.wait<void>(testRunsOnAllDevices);
+    _running = false;
+
+    return RunResults(targetRunResults: targetRunResults);
+  }
+
+  @override
+  Future<void> dispose() async {
+    _disposed = true;
+  }
+
+  @override
+  void disposedBy(DisposeScope disposeScope) {
+    disposeScope.addDispose(dispose);
+  }
+}

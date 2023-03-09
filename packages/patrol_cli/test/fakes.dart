@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
 class FakeDevice extends Fake implements Device {}
 

@@ -21,11 +21,11 @@ import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/test_runner.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -98,7 +98,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           logger: _logger,
         ),
         testFinder: TestFinder(testDir: _fs.directory('integration_test')),
-        testRunner: NativeTestRunner(),
+        testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: AndroidTestBackend(
@@ -140,7 +140,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           logger: _logger,
         ),
         testFinder: TestFinder(testDir: _fs.directory('integration_test')),
-        testRunner: NativeTestRunner(),
+        testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: AndroidTestBackend(

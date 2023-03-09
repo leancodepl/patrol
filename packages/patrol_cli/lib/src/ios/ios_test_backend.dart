@@ -4,7 +4,7 @@ import 'dart:io' show Process;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' show basename, join;
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';

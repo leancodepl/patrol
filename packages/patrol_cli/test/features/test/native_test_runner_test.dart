@@ -3,7 +3,6 @@
 import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
-import 'package:patrol_cli/src/features/test/native_test_runner.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 import 'package:test/test.dart';
 
@@ -12,13 +11,13 @@ import '../../fixtures.dart';
 Future<void> delay() => Future.delayed(Duration(seconds: 1));
 
 void main() {
-  late NativeTestRunner testRunner;
+  late TestRunner testRunner;
 
   setUp(() {
-    testRunner = NativeTestRunner();
+    testRunner = TestRunner();
   });
 
-  group('NativeTestRunner', () {
+  group('TestRunner', () {
     setUp(() {
       testRunner.builder = (_, __) => delay();
       testRunner.executor = (_, __) => delay();
@@ -345,7 +344,7 @@ void main() {
       test('does not execute test target if it failed to build', () async {
         final actualLog = <String>[];
 
-        final testRunner = NativeTestRunner();
+        final testRunner = TestRunner();
         testRunner
           ..addDevice(androidDevice)
           ..addTarget('A')
@@ -406,7 +405,7 @@ void main() {
         () async {
           final actualLog = <String>[];
 
-          final testRunner = NativeTestRunner();
+          final testRunner = TestRunner();
           testRunner
             ..addDevice(androidDevice)
             ..addTarget('A')
