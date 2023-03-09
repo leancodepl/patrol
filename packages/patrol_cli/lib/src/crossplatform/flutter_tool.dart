@@ -70,8 +70,6 @@ class FlutterTool {
       if (char == 'r' || char == 'R') {
         _logger.success('Triggered Hot Restart...');
         process.stdin.add('R'.codeUnits);
-      } else if (char == 'q' || char == 'Q') {
-        process.stdin.add('q'.codeUnits);
       }
     });
   }
