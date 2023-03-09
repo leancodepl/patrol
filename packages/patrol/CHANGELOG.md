@@ -1,3 +1,8 @@
+## 1.0.6
+
+- Add preliminary support for `patrol develop`. Requires version 1.0.6 of
+  `patrol_cli`.
+
 ## 1.0.5+1
 
 - Update small typo in pub.dev listing (#1034)

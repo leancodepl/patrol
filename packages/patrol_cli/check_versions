@@ -15,7 +15,7 @@ checkPubspecVersion() {
 }
 
 checkEmbeddedVersion() {
-    path="./lib/src/common/constants.dart"
+    path="./lib/src/base/constants.dart"
     version=$(grep 'const version' "$path" | cut -d\' -f 2)
     versions[embedded]="$version"
 }

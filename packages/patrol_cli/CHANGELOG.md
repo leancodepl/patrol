@@ -1,9 +1,16 @@
+## 1.0.6
+
+- Add `patrol develop` command which supports **Hot Restart**.
+
+  It's not considered stable yet, but you can already use it.
+
 ## 1.0.5
 
 - Add `patrol build` command to make it easier to build app binaries for cloud
   device farms (#1006)
 
-  It's hidden and Android-only for now. Stay tuned for more.
+  It's not considered stable yet, but you can already use it. Also, for now it
+  only builds Android APKs.
 
 ## 1.0.4
 
