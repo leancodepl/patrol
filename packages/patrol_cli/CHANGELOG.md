@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.9
 
 - Fix "error while disposing" when SIGINT (CTRL+C) is received when waiting for
   app to start on physical iOS device (#1073)
