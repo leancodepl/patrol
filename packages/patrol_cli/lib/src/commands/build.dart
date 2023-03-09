@@ -52,8 +52,13 @@ class BuildCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    final targetArg = stringArg('target') ?? throwToolExit('No target given');
-    final target = _testFinder.findTest(targetArg);
+    final targetArg = stringsArg('target');
+    if (targetArg.isEmpty) {
+      throwToolExit('No test target specified');
+    } else if (targetArg.length > 1) {
+      throwToolExit('Only one test target can be specified');
+    }
+    final target = _testFinder.findTest(targetArg.single);
     _logger.detail('Received test target: $target');
 
     final config = _pubspecReader.read();
