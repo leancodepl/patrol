@@ -47,11 +47,11 @@ class IOSDeploy {
       ],
       runInShell: true,
       workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
-    );
+    )
+      ..disposedBy(_disposeScope);
 
     var launchSucceeded = false;
 
-    process.disposedBy(_disposeScope);
     process.listenStdOut((line) {
       if (line == 'success') {
         launchSucceeded = true;

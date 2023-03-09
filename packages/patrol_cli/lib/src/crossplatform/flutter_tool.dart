@@ -45,6 +45,11 @@ class FlutterTool {
       ..disposedBy(_disposeScope);
 
     final completer = Completer<void>();
+    _disposeScope.addDispose(() async {
+      _logger.detail('Killed before app connected to Hot Restart');
+      completer.complete();
+    });
+
     _logger.detail('Hot Restart: waiting for app to connect...');
     process
       ..listenStdOut((line) {
