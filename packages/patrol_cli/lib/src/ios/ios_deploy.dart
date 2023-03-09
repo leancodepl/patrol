@@ -64,6 +64,7 @@ class IOSDeploy {
         _logger.detail(
           'Stopped waiting for ios-deploy becuase dispose scope was closed',
         );
+        break;
       }
 
       const delta = Duration(milliseconds: 100);
