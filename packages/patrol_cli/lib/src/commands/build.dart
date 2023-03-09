@@ -98,12 +98,16 @@ class BuildCommand extends PatrolCommand {
       );
     }
 
-    final options = AndroidAppOptions(
+    final flutterOpts = FlutterAppOptions(
       target: target,
       flavor: androidFlavor,
       dartDefines: dartDefines,
     );
-    Future<void> action() => _androidTestBackend.build(options);
+    final androidOpts = AndroidAppOptions(
+      flutter: flutterOpts,
+      packageName: packageName,
+    );
+    Future<void> action() => _androidTestBackend.build(androidOpts);
 
     try {
       await action();

@@ -3,8 +3,8 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:test/test.dart';
 
-import '../../fixtures.dart';
-import '../../mocks.dart';
+import '../src/fixtures.dart';
+import '../src/mocks.dart';
 
 void main() {
   late DeviceFinder deviceFinder;

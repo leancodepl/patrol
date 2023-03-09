@@ -6,7 +6,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 import 'package:test/test.dart';
 
-import '../../fixtures.dart';
+import '../src/fixtures.dart';
 
 Future<void> delay() => Future.delayed(Duration(seconds: 1));
 

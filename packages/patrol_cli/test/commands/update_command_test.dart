@@ -5,8 +5,8 @@ import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
-import '../../fakes.dart';
-import '../../mocks.dart';
+import '../src/fakes.dart';
+import '../src/mocks.dart';
 
 void main() {
   const latestVersion = '0.0.0';

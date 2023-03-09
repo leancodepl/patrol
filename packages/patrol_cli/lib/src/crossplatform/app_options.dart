@@ -4,8 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/devices.dart';
 
-abstract class AppOptions {
-  const AppOptions({
+class FlutterAppOptions {
+  const FlutterAppOptions({
     required this.target,
     required this.flavor,
     required this.dartDefines,
@@ -14,8 +14,6 @@ abstract class AppOptions {
   final String target;
   final String? flavor;
   final Map<String, String> dartDefines;
-
-  String get description;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -35,18 +33,16 @@ abstract class AppOptions {
   }
 }
 
-class AndroidAppOptions extends AppOptions {
+class AndroidAppOptions {
   const AndroidAppOptions({
-    required super.target,
-    required super.flavor,
-    required super.dartDefines,
+    required this.flutter,
     this.packageName,
   });
 
+  final FlutterAppOptions flutter;
   final String? packageName;
 
-  @override
-  String get description => 'apk with entrypoint ${basename(target)}';
+  String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
     return _toGradleInvocation(
@@ -70,7 +66,7 @@ class AndroidAppOptions extends AppOptions {
   }
 
   String get _effectiveFlavor {
-    var flavor = this.flavor ?? '';
+    var flavor = flutter.flavor ?? '';
     if (flavor.isNotEmpty) {
       flavor = flavor[0].toUpperCase() + flavor.substring(1);
     }
@@ -93,17 +89,17 @@ class AndroidAppOptions extends AppOptions {
     cmd.add(':app:$task');
 
     // Add Dart test target
-    final target = '-Ptarget=${this.target}';
+    final target = '-Ptarget=${flutter.target}';
     cmd.add(target);
 
     // Add Dart defines encoded in base64
-    if (dartDefines.isNotEmpty) {
+    if (flutter.dartDefines.isNotEmpty) {
       final dartDefinesString = StringBuffer();
-      for (var i = 0; i < dartDefines.length; i++) {
-        final entry = dartDefines.entries.elementAt(i);
+      for (var i = 0; i < flutter.dartDefines.length; i++) {
+        final entry = flutter.dartDefines.entries.elementAt(i);
         final pair = utf8.encode('${entry.key}=${entry.value}');
         dartDefinesString.write(base64Encode(pair));
-        if (i != dartDefines.length - 1) {
+        if (i != flutter.dartDefines.length - 1) {
           dartDefinesString.write(',');
         }
       }
@@ -115,11 +111,9 @@ class AndroidAppOptions extends AppOptions {
   }
 }
 
-class IOSAppOptions extends AppOptions {
+class IOSAppOptions {
   IOSAppOptions({
-    required super.target,
-    required super.flavor,
-    required super.dartDefines,
+    required this.flutter,
     this.bundleId,
     required this.scheme,
     required this.xcconfigFile,
@@ -127,16 +121,16 @@ class IOSAppOptions extends AppOptions {
     required this.simulator,
   });
 
+  final FlutterAppOptions flutter;
   final String? bundleId;
   final String scheme;
   final String xcconfigFile;
   final String configuration;
   bool simulator;
 
-  @override
   String get description {
     final platform = simulator ? 'simulator' : 'device';
-    return 'app with entrypoint ${basename(target)} for iOS $platform';
+    return 'app with entrypoint ${basename(flutter.target)} for iOS $platform';
   }
 
   /// Translates these options into a proper flutter build invocation, which
@@ -151,9 +145,9 @@ class IOSAppOptions extends AppOptions {
         '--debug',
         if (simulator) '--simulator',
       ],
-      if (flavor != null) ...['--flavor', flavor!],
-      ...['--target', target],
-      for (final dartDefine in dartDefines.entries) ...[
+      if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      ...['--target', flutter.target],
+      for (final dartDefine in flutter.dartDefines.entries) ...[
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],

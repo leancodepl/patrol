@@ -198,26 +198,23 @@ class TestCommand extends PatrolCommand {
     return (target, device) async {
       Future<void> Function() action;
 
+      final flutterOpts = FlutterAppOptions(
+        target: target,
+        flavor: config.androidFlavor,
+        dartDefines: {
+          ...config.dartDefines,
+          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
+        },
+      );
+
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
+          final options = AndroidAppOptions(flutter: flutterOpts);
           action = () => _androidTestBackend.build(options);
           break;
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
+            flutter: flutterOpts,
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,
@@ -243,16 +240,18 @@ class TestCommand extends PatrolCommand {
       Future<void> Function() action;
       Future<void> Function()? finalizer;
 
+      final flutterOpts = FlutterAppOptions(
+        target: target,
+        flavor: config.androidFlavor,
+        dartDefines: {
+          ...config.dartDefines,
+          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
+        },
+      );
+
       switch (device.targetPlatform) {
         case TargetPlatform.android:
-          final options = AndroidAppOptions(
-            target: target,
-            flavor: config.androidFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
-          );
+          final options = AndroidAppOptions(flutter: flutterOpts);
           action = () => _androidTestBackend.execute(options, device);
           final package = config.packageName;
           if (package != null && config.uninstall) {
@@ -261,12 +260,7 @@ class TestCommand extends PatrolCommand {
           break;
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
-            target: target,
-            flavor: config.iosFlavor,
-            dartDefines: {
-              ...config.dartDefines,
-              if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-            },
+            flutter: flutterOpts,
             scheme: config.scheme,
             xcconfigFile: config.xcconfigFile,
             configuration: config.configuration,

@@ -5,7 +5,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:test/test.dart';
 
-import '../../common.dart';
+import '../src/common.dart';
 
 void main() {
   late FileSystem fs;

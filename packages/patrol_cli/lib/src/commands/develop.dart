@@ -130,17 +130,19 @@ class DevelopCommand extends PatrolCommand {
       );
     }
 
-    final androidOpts = AndroidAppOptions(
+    final flutterOpts = FlutterAppOptions(
       target: target,
       flavor: androidFlavor,
       dartDefines: dartDefines,
+    );
+
+    final androidOpts = AndroidAppOptions(
+      flutter: flutterOpts,
       packageName: packageName,
     );
 
     final iosOpts = IOSAppOptions(
-      target: target,
-      flavor: iosFlavor,
-      dartDefines: dartDefines,
+      flutter: flutterOpts,
       bundleId: bundleId,
       scheme: stringArg('scheme') ?? defaultScheme,
       xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
@@ -152,23 +154,29 @@ class DevelopCommand extends PatrolCommand {
     );
 
     await _build(androidOpts, iosOpts, device: device);
-    await _execute(androidOpts, iosOpts, uninstall: uninstall, device: device);
+    await _execute(
+      flutterOpts,
+      androidOpts,
+      iosOpts,
+      uninstall: uninstall,
+      device: device,
+    );
 
     return 0; // for now, all exit codes are 0
   }
 
   Future<void> _build(
-    AndroidAppOptions android,
-    IOSAppOptions ios, {
+    AndroidAppOptions androidOpts,
+    IOSAppOptions iosOpts, {
     required Device device,
   }) async {
     Future<void> Function() buildAction;
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        buildAction = () => _androidTestBackend.build(android);
+        buildAction = () => _androidTestBackend.build(androidOpts);
         break;
       case TargetPlatform.iOS:
-        buildAction = () => _iosTestBackend.build(ios);
+        buildAction = () => _iosTestBackend.build(iosOpts);
     }
 
     try {
@@ -183,6 +191,7 @@ class DevelopCommand extends PatrolCommand {
   }
 
   Future<void> _execute(
+    FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions ios, {
     required bool uninstall,
@@ -216,8 +225,8 @@ class DevelopCommand extends PatrolCommand {
         _flutterTool.logs(device.id),
         _flutterTool.attach(
           deviceId: device.id,
-          target: android.target, // FIXME: don't use android
-          dartDefines: android.dartDefines, // FIXME: don't use android
+          target: flutterOpts.target,
+          dartDefines: flutterOpts.dartDefines,
         )
       ]);
 
