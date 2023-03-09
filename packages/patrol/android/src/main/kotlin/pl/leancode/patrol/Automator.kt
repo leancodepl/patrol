@@ -135,7 +135,7 @@ class Automator private constructor() {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun enableBluetooth(): Nothing = throw NotImplementedError("enableBluetooth")
+    fun enableBluetooth(): Unit = throw NotImplementedError("enableBluetooth")
 
     fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
 
