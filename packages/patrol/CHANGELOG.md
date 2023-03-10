@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.7
 
 - Fix `tap()` sometimes not being able to tap on a widget that was previously
   found and scrolled to by `scrollTo()` (#1072)
