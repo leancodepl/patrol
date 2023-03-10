@@ -117,7 +117,8 @@ class IOSTestBackend {
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(
           device,
-          xcTestRunPath: await _xcTestRunPath(device.real, sdkVersion),
+          xcTestRunPath:
+              await _xcTestRunPath(device.real, options.scheme, sdkVersion),
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
@@ -195,12 +196,16 @@ class IOSTestBackend {
     }
   }
 
-  Future<String> _xcTestRunPath(bool real, String sdkVersion) async {
+  Future<String> _xcTestRunPath(
+    bool real,
+    String scheme,
+    String sdkVersion,
+  ) async {
     final Glob glob;
     if (real) {
-      glob = Glob('Runner_iphoneos$sdkVersion-*.xctestrun');
+      glob = Glob('${scheme}_iphoneos$sdkVersion-*.xctestrun');
     } else {
-      glob = Glob('Runner_iphonesimulator$sdkVersion-*.xctestrun');
+      glob = Glob('${scheme}_iphonesimulator$sdkVersion-*.xctestrun');
     }
 
     const suffix = 'build/ios_integ/Build/Products';
