@@ -324,8 +324,8 @@ class PatrolTester {
     return TestAsyncUtils.guard(() async {
       final duration = timeout ?? config.visibleTimeout;
       final end = tester.binding.clock.now().add(duration);
-
-      while (finder.hitTestable().evaluate().isEmpty) {
+      final hitTestableFinder = finder.hitTestable();
+      while (hitTestableFinder.evaluate().isEmpty) {
         final now = tester.binding.clock.now();
         if (now.isAfter(end)) {
           throw WaitUntilVisibleTimeoutException(
@@ -337,7 +337,7 @@ class PatrolTester {
         await tester.pump(const Duration(milliseconds: 100));
       }
 
-      return PatrolFinder(finder: finder, tester: this);
+      return PatrolFinder(finder: hitTestableFinder, tester: this);
     });
   }
 
@@ -390,7 +390,7 @@ class PatrolTester {
         settleTimeout: config.settleTimeout,
       );
 
-      return PatrolFinder(finder: finder.first, tester: this);
+      return PatrolFinder(finder: finder, tester: this);
     });
   }
 
@@ -407,7 +407,7 @@ class PatrolTester {
   ///
   ///  * waits until [view] is visible
   ///
-  ///  * if the [view] finder finds more than 1 view, it scrolls the first one
+  ///  * if the [view] finder finds more than 1 widget, it scrolls the first one
   ///    instead of throwing a [StateError]
   ///
   ///  * uses [WidgetController.firstElement] instead of
@@ -439,7 +439,7 @@ class PatrolTester {
         settleTimeout: config.settleTimeout,
       );
 
-      return PatrolFinder(finder: finder.first, tester: this);
+      return PatrolFinder(finder: finder.hitTestable().first, tester: this);
     });
   }
 

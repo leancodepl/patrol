@@ -130,6 +130,46 @@ void main() {
       );
     },
   );
+
+  patrolTest('can tap() on widget scrolled to by scrollTo()', ($) async {
+    // Regression test for https://github.com/leancodepl/patrol/issues/1046
+
+    var count = 0;
+    await $.pumpWidgetAndSettle(
+      MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              return ListView(
+                children: [
+                  Stack(
+                    children: [
+                      const Center(child: Text('Text')),
+                      Center(
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () => setState(() => count++),
+                    child: const Text('Text'),
+                  ),
+                  Text('Count: $count'),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await $('Text').scrollTo().tap();
+    expect($('Count: 1'), findsOneWidget);
+  });
 }
 
 Future<void> smallPump(PatrolTester $) async {

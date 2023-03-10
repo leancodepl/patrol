@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix `tap()` sometimes not being able to tap on a widget that was previously
+  found and scrolled to by `scrollTo()` (#1072)
+
 ## 1.0.6
 
 - Add preliminary support for `patrol develop`. Requires version 1.0.6 of
