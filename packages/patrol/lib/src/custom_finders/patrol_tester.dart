@@ -439,7 +439,7 @@ class PatrolTester {
         settleTimeout: config.settleTimeout,
       );
 
-      return PatrolFinder(finder: finder, tester: this);
+      return PatrolFinder(finder: finder.hitTestable().first, tester: this);
     });
   }
 

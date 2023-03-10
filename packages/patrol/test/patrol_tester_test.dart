@@ -640,6 +640,54 @@ void main() {
       );
     });
 
+    patrolTest(
+      'returns a finder matching the first widget that was dragged to',
+      (tester) async {
+        var count = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  return ListView(
+                    children: [
+                      Stack(
+                        children: [
+                          const Center(child: Text('Text')),
+                          Center(
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                      GestureDetector(
+                        onTap: () => setState(() => count++),
+                        child: const Text('Text'),
+                      ),
+                      const Text('Text'),
+                      Text('Count: $count'),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final returnedFinder = await tester.dragUntilVisible(
+          finder: find.text('Text'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+        await tester.tester.tap(returnedFinder); // tap without safety checks
+        await tester.pump();
+        expect(find.text('Count: 1'), findsOneWidget);
+      },
+    );
+
     group('scrollUntilExists()', () {
       patrolTest(
         'throws exception when no Scrollable is found within timeout',
