@@ -1,3 +1,7 @@
+## 1.0.10
+
+- Fix error when scheme name is not `Runner` (#1076)
+
 ## 1.0.9
 
 - Fix "error while disposing" when SIGINT (CTRL+C) is received when waiting for
