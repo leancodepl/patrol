@@ -13,6 +13,45 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
 
+enum BuildMode {
+  debug('Debug'),
+  profile('Profile'),
+  release('Release');
+
+  const BuildMode(this.name);
+
+  /// Creates a [BuildMode] from a string. Throws [StateError] if [name] isn't a
+  /// valid value.
+  factory BuildMode.fromName(String name) {
+    return values.firstWhere((value) => value.name == name);
+  }
+
+  static const defaultScheme = 'Runner';
+  final String name;
+
+  String createScheme(String? flavor) {
+    if (flavor == null) {
+      return BuildMode.defaultScheme;
+    }
+    return flavor;
+  }
+
+  String createConfiguration(String? flavor) {
+    if (flavor == null) {
+      return name;
+    }
+    return '$name-$flavor';
+  }
+}
+
+// 1. Simple scheme: Runner
+//
+
+// 2. Complex
+
+// 3. Very complex
+//
+
 class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
@@ -227,8 +266,8 @@ class IOSTestBackend {
   }
 
   Future<String> _sdkVersion(bool real) async {
-    // See the versions yourself:
-    // $ xcodebuild -showsdks -json | jq ".[] | {sdkVersion, platform}"
+    // See the versions yourself: $ xcodebuild -showsdks -json | jq ".[] |
+    // {sdkVersion, platform}"
 
     final processResult = await _processManager.run(
       ['xcodebuild', '-showsdks', '-json'],

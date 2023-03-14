@@ -1,9 +1,10 @@
 import 'package:args/command_runner.dart';
 
 abstract class PatrolCommand extends Command<int> {
-  final defaultScheme = 'Runner';
-  final defaultXCConfigFile = 'Flutter/Debug.xcconfig';
-  final defaultConfiguration = 'Debug';
+  // TODO: Remove the 3 lines below
+  // final defaultScheme = 'Runner';
+  // final defaultXCConfigFile = 'Flutter/Debug.xcconfig';
+  // final defaultConfiguration = 'Debug';
   final defaultWait = 0;
   final defaultRepeatCount = 1;
 
@@ -78,27 +79,11 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesIOSOptions() {
-    argParser
-      ..addOption(
-        'bundle-id',
-        help: 'Bundle identifier of the iOS app under test.',
-        valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addOption(
-        'scheme',
-        help: '(iOS only) Xcode scheme to use',
-        defaultsTo: defaultScheme,
-      )
-      ..addOption(
-        'xcconfig',
-        help: '(iOS only) Xcode .xcconfig file to use',
-        defaultsTo: defaultXCConfigFile,
-      )
-      ..addOption(
-        'configuration',
-        help: '(iOS only) Xcode configuration to use',
-        defaultsTo: defaultConfiguration,
-      );
+    argParser.addOption(
+      'bundle-id',
+      help: 'Bundle identifier of the iOS app under test.',
+      valueHelp: 'pl.leancode.AwesomeApp',
+    );
   }
 
   // Runtime-only options

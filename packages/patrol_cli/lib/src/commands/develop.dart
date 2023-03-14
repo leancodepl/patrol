@@ -145,6 +145,8 @@ class DevelopCommand extends PatrolCommand {
       packageName: packageName,
     );
 
+    final iosBuildMode = BuildMode.fromName();
+
     final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
       bundleId: bundleId,
