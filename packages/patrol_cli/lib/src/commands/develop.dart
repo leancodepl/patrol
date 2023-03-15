@@ -203,9 +203,11 @@ class DevelopCommand extends PatrolCommand {
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+    String? appId;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
+        appId = android.packageName;
         action = () =>
             _androidTestBackend.execute(android, device, interruptible: true);
         final package = android.packageName;
@@ -214,6 +216,7 @@ class DevelopCommand extends PatrolCommand {
         }
         break;
       case TargetPlatform.iOS:
+        appId = ios.bundleId;
         action = () async =>
             _iosTestBackend.execute(ios, device, interruptible: true);
         final bundle = ios.bundleId;
@@ -230,6 +233,7 @@ class DevelopCommand extends PatrolCommand {
         _flutterTool.attach(
           deviceId: device.id,
           target: flutterOpts.target,
+          appId: appId,
           dartDefines: flutterOpts.dartDefines,
         )
       ]);

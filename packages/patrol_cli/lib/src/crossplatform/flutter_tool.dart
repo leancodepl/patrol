@@ -28,6 +28,7 @@ class FlutterTool {
   Future<void> attach({
     required String deviceId,
     required String target,
+    required String? appId,
     required Map<String, String> dartDefines,
   }) async {
     final process = await _processManager.start(
@@ -35,6 +36,7 @@ class FlutterTool {
         ...['flutter', 'attach'],
         '--no-version-check',
         '--debug',
+        if (appId != null) ...['--app-id', appId],
         ...['--target', target],
         for (final dartDefine in dartDefines.entries) ...[
           '--dart-define',
