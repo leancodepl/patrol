@@ -31,7 +31,7 @@ enum BuildMode {
 
   String createScheme(String? flavor) {
     if (flavor == null) {
-      return BuildMode._defaultScheme;
+      return _defaultScheme;
     }
     return flavor;
   }
