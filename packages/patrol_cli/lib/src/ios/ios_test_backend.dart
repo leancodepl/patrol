@@ -26,12 +26,13 @@ enum BuildMode {
     return values.firstWhere((value) => value.name == name);
   }
 
-  static const defaultScheme = 'Runner';
   final String name;
+
+  static const _defaultScheme = 'Runner';
 
   String createScheme(String? flavor) {
     if (flavor == null) {
-      return BuildMode.defaultScheme;
+      return BuildMode._defaultScheme;
     }
     return flavor;
   }
