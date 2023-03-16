@@ -1,3 +1,5 @@
+#if PATROL_ENABLED
+
 import Foundation
 import GRPC
 
@@ -396,3 +398,5 @@ final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     }
   }
 }
+
+#endif

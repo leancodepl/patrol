@@ -1,3 +1,4 @@
+#if PATROL_ENABLED
 import XCTest
 
 class Automator {
@@ -630,12 +631,6 @@ class Automator {
 
 // MARK: Utilities
 
-extension String.StringInterpolation {
-  mutating func appendInterpolation(format value: String) {
-    appendInterpolation("\"\(value)\"")
-  }
-}
-
 // Adapted from https://samwize.com/2016/02/28/everything-about-xcode-ui-testing-snapshot/
 extension XCUIElement {
   func forceTap() {
@@ -647,3 +642,5 @@ extension XCUIElement {
     }
   }
 }
+
+#endif
