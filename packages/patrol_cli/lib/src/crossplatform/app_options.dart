@@ -164,7 +164,6 @@ class IOSAppOptions {
       ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
-      // ...['-xcconfig', xcconfigFile], // FIXME: Remove this line
       ...['-configuration', configuration],
       ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
       ...[

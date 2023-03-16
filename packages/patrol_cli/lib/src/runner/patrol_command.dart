@@ -3,10 +3,6 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
 abstract class PatrolCommand extends Command<int> {
-  // TODO: Remove the 3 lines below
-  // final defaultScheme = 'Runner';
-  // final defaultXCConfigFile = 'Flutter/Debug.xcconfig';
-  // final defaultConfiguration = 'Debug';
   final defaultWait = 0;
   final defaultRepeatCount = 1;
 
