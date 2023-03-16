@@ -199,6 +199,7 @@ class IOSTestBackend {
       );
     }
 
+    // TODO: Not being removed https://github.com/leancodepl/patrol/issues/1094
     final testApp = '$appId.RunnerUITests.xctrunner';
     if (device.real) {
       // uninstall from iOS device
@@ -212,7 +213,6 @@ class IOSTestBackend {
       );
     } else {
       // uninstall from iOS simulator
-      // TODO: Doesn't work when flavor is not null
       await _processManager.run(
         ['xcrun', 'simctl', 'uninstall', device.id, testApp],
         runInShell: true,
