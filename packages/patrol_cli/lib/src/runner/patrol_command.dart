@@ -42,7 +42,7 @@ abstract class PatrolCommand extends Command<int> {
     argParser
       ..addFlag(
         'debug',
-        help: 'Build a debug version of your app',
+        help: 'Build a debug version of your app (default mode)',
         defaultsTo: true,
       )
       ..addFlag(
@@ -51,7 +51,7 @@ abstract class PatrolCommand extends Command<int> {
       )
       ..addFlag(
         'release',
-        help: 'Build a release version of your app (default mode)',
+        help: 'Build a release version of your app',
       );
   }
 
