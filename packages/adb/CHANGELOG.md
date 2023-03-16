@@ -1,3 +1,7 @@
+## Unreleased
+
+- Run CI on Flutter Beta
+
 ## 0.2.4+2
 
 - Fix publish workflow (#955) (#956)

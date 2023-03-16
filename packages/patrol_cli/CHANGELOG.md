@@ -1,3 +1,7 @@
+## Unreleased
+
+- Run CI on Flutter Beta
+
 ## 1.0.10
 
 - Fix error when scheme name is not `Runner` (#1076)

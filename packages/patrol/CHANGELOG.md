@@ -1,3 +1,7 @@
+## Unreleased
+
+- Run CI on Flutter Beta
+
 ## 1.0.7
 
 - Fix `tap()` sometimes not being able to tap on a widget that was previously
