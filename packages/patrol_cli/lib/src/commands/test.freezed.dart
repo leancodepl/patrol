@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$TestCommandConfig {
   List<Device> get devices => throw _privateConstructorUsedError;
+  BuildMode get buildMode => throw _privateConstructorUsedError;
   List<String> get targets => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
   int get repeat => throw _privateConstructorUsedError;
@@ -28,9 +29,6 @@ mixin _$TestCommandConfig {
       throw _privateConstructorUsedError; // iOS-only options
   String? get bundleId => throw _privateConstructorUsedError;
   String? get iosFlavor => throw _privateConstructorUsedError;
-  String get scheme => throw _privateConstructorUsedError;
-  String get xcconfigFile => throw _privateConstructorUsedError;
-  String get configuration => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TestCommandConfigCopyWith<TestCommandConfig> get copyWith =>
@@ -45,6 +43,7 @@ abstract class $TestCommandConfigCopyWith<$Res> {
   @useResult
   $Res call(
       {List<Device> devices,
+      BuildMode buildMode,
       List<String> targets,
       Map<String, String> dartDefines,
       int repeat,
@@ -53,10 +52,7 @@ abstract class $TestCommandConfigCopyWith<$Res> {
       String? packageName,
       String? androidFlavor,
       String? bundleId,
-      String? iosFlavor,
-      String scheme,
-      String xcconfigFile,
-      String configuration});
+      String? iosFlavor});
 }
 
 /// @nodoc
@@ -73,6 +69,7 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
   @override
   $Res call({
     Object? devices = null,
+    Object? buildMode = null,
     Object? targets = null,
     Object? dartDefines = null,
     Object? repeat = null,
@@ -82,15 +79,16 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
     Object? androidFlavor = freezed,
     Object? bundleId = freezed,
     Object? iosFlavor = freezed,
-    Object? scheme = null,
-    Object? xcconfigFile = null,
-    Object? configuration = null,
   }) {
     return _then(_value.copyWith(
       devices: null == devices
           ? _value.devices
           : devices // ignore: cast_nullable_to_non_nullable
               as List<Device>,
+      buildMode: null == buildMode
+          ? _value.buildMode
+          : buildMode // ignore: cast_nullable_to_non_nullable
+              as BuildMode,
       targets: null == targets
           ? _value.targets
           : targets // ignore: cast_nullable_to_non_nullable
@@ -127,18 +125,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.iosFlavor
           : iosFlavor // ignore: cast_nullable_to_non_nullable
               as String?,
-      scheme: null == scheme
-          ? _value.scheme
-          : scheme // ignore: cast_nullable_to_non_nullable
-              as String,
-      xcconfigFile: null == xcconfigFile
-          ? _value.xcconfigFile
-          : xcconfigFile // ignore: cast_nullable_to_non_nullable
-              as String,
-      configuration: null == configuration
-          ? _value.configuration
-          : configuration // ignore: cast_nullable_to_non_nullable
-              as String,
     ) as $Val);
   }
 }
@@ -153,6 +139,7 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
   @useResult
   $Res call(
       {List<Device> devices,
+      BuildMode buildMode,
       List<String> targets,
       Map<String, String> dartDefines,
       int repeat,
@@ -161,10 +148,7 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
       String? packageName,
       String? androidFlavor,
       String? bundleId,
-      String? iosFlavor,
-      String scheme,
-      String xcconfigFile,
-      String configuration});
+      String? iosFlavor});
 }
 
 /// @nodoc
@@ -179,6 +163,7 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
   @override
   $Res call({
     Object? devices = null,
+    Object? buildMode = null,
     Object? targets = null,
     Object? dartDefines = null,
     Object? repeat = null,
@@ -188,15 +173,16 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
     Object? androidFlavor = freezed,
     Object? bundleId = freezed,
     Object? iosFlavor = freezed,
-    Object? scheme = null,
-    Object? xcconfigFile = null,
-    Object? configuration = null,
   }) {
     return _then(_$_TestCommandConfig(
       devices: null == devices
           ? _value._devices
           : devices // ignore: cast_nullable_to_non_nullable
               as List<Device>,
+      buildMode: null == buildMode
+          ? _value.buildMode
+          : buildMode // ignore: cast_nullable_to_non_nullable
+              as BuildMode,
       targets: null == targets
           ? _value._targets
           : targets // ignore: cast_nullable_to_non_nullable
@@ -233,18 +219,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value.iosFlavor
           : iosFlavor // ignore: cast_nullable_to_non_nullable
               as String?,
-      scheme: null == scheme
-          ? _value.scheme
-          : scheme // ignore: cast_nullable_to_non_nullable
-              as String,
-      xcconfigFile: null == xcconfigFile
-          ? _value.xcconfigFile
-          : xcconfigFile // ignore: cast_nullable_to_non_nullable
-              as String,
-      configuration: null == configuration
-          ? _value.configuration
-          : configuration // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
@@ -254,6 +228,7 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
 class _$_TestCommandConfig implements _TestCommandConfig {
   const _$_TestCommandConfig(
       {required final List<Device> devices,
+      required this.buildMode,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
       required this.repeat,
@@ -262,10 +237,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       required this.packageName,
       required this.androidFlavor,
       required this.bundleId,
-      required this.iosFlavor,
-      required this.scheme,
-      required this.xcconfigFile,
-      required this.configuration})
+      required this.iosFlavor})
       : _devices = devices,
         _targets = targets,
         _dartDefines = dartDefines;
@@ -278,6 +250,8 @@ class _$_TestCommandConfig implements _TestCommandConfig {
     return EqualUnmodifiableListView(_devices);
   }
 
+  @override
+  final BuildMode buildMode;
   final List<String> _targets;
   @override
   List<String> get targets {
@@ -310,16 +284,10 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   final String? bundleId;
   @override
   final String? iosFlavor;
-  @override
-  final String scheme;
-  @override
-  final String xcconfigFile;
-  @override
-  final String configuration;
 
   @override
   String toString() {
-    return 'TestCommandConfig(devices: $devices, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor, scheme: $scheme, xcconfigFile: $xcconfigFile, configuration: $configuration)';
+    return 'TestCommandConfig(devices: $devices, buildMode: $buildMode, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor)';
   }
 
   @override
@@ -328,6 +296,8 @@ class _$_TestCommandConfig implements _TestCommandConfig {
         (other.runtimeType == runtimeType &&
             other is _$_TestCommandConfig &&
             const DeepCollectionEquality().equals(other._devices, _devices) &&
+            (identical(other.buildMode, buildMode) ||
+                other.buildMode == buildMode) &&
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
@@ -343,18 +313,14 @@ class _$_TestCommandConfig implements _TestCommandConfig {
             (identical(other.bundleId, bundleId) ||
                 other.bundleId == bundleId) &&
             (identical(other.iosFlavor, iosFlavor) ||
-                other.iosFlavor == iosFlavor) &&
-            (identical(other.scheme, scheme) || other.scheme == scheme) &&
-            (identical(other.xcconfigFile, xcconfigFile) ||
-                other.xcconfigFile == xcconfigFile) &&
-            (identical(other.configuration, configuration) ||
-                other.configuration == configuration));
+                other.iosFlavor == iosFlavor));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_devices),
+      buildMode,
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_dartDefines),
       repeat,
@@ -363,10 +329,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       packageName,
       androidFlavor,
       bundleId,
-      iosFlavor,
-      scheme,
-      xcconfigFile,
-      configuration);
+      iosFlavor);
 
   @JsonKey(ignore: true)
   @override
@@ -379,6 +342,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 abstract class _TestCommandConfig implements TestCommandConfig {
   const factory _TestCommandConfig(
       {required final List<Device> devices,
+      required final BuildMode buildMode,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
       required final int repeat,
@@ -387,13 +351,12 @@ abstract class _TestCommandConfig implements TestCommandConfig {
       required final String? packageName,
       required final String? androidFlavor,
       required final String? bundleId,
-      required final String? iosFlavor,
-      required final String scheme,
-      required final String xcconfigFile,
-      required final String configuration}) = _$_TestCommandConfig;
+      required final String? iosFlavor}) = _$_TestCommandConfig;
 
   @override
   List<Device> get devices;
+  @override
+  BuildMode get buildMode;
   @override
   List<String> get targets;
   @override
@@ -412,12 +375,6 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   String? get bundleId;
   @override
   String? get iosFlavor;
-  @override
-  String get scheme;
-  @override
-  String get xcconfigFile;
-  @override
-  String get configuration;
   @override
   @JsonKey(ignore: true)
   _$$_TestCommandConfigCopyWith<_$_TestCommandConfig> get copyWith =>

@@ -3,16 +3,19 @@ import 'dart:convert' show base64Encode, utf8;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
 class FlutterAppOptions {
   const FlutterAppOptions({
     required this.target,
     required this.flavor,
+    required this.buildMode,
     required this.dartDefines,
   });
 
   final String target;
   final String? flavor;
+  final BuildMode buildMode;
   final Map<String, String> dartDefines;
 
   /// Translates these options into a proper `flutter attach`.
@@ -116,7 +119,6 @@ class IOSAppOptions {
     required this.flutter,
     this.bundleId,
     required this.scheme,
-    required this.xcconfigFile,
     required this.configuration,
     required this.simulator,
   });
@@ -124,7 +126,6 @@ class IOSAppOptions {
   final FlutterAppOptions flutter;
   final String? bundleId;
   final String scheme;
-  final String xcconfigFile;
   final String configuration;
   bool simulator;
 
@@ -135,14 +136,14 @@ class IOSAppOptions {
 
   /// Translates these options into a proper flutter build invocation, which
   /// runs before xcodebuild and performs configuration.
-  List<String> toFlutterBuildInvocation() {
+  List<String> toFlutterBuildInvocation(BuildMode buildMode) {
     final cmd = [
       ...['flutter', 'build', 'ios'],
       '--no-version-check',
       ...[
         '--config-only',
         '--no-codesign',
-        '--debug',
+        '--${buildMode.name}', // for example '--debug',
         if (simulator) '--simulator',
       ],
       if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
@@ -163,7 +164,6 @@ class IOSAppOptions {
       ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
-      ...['-xcconfig', xcconfigFile],
       ...['-configuration', configuration],
       ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
       ...[

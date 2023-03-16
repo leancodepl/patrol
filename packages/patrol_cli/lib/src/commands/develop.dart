@@ -42,6 +42,7 @@ class DevelopCommand extends PatrolCommand {
 
     usesTargetOption();
     usesDeviceOption();
+    usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesLabelOption();
@@ -81,6 +82,10 @@ class DevelopCommand extends PatrolCommand {
     }
     final target = _testFinder.findTest(targets.first);
     _logger.detail('Received test target: $target');
+
+    if (boolArg('release')) {
+      throwToolExit('Cannot use release build mode with develop');
+    }
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -137,6 +142,7 @@ class DevelopCommand extends PatrolCommand {
     final flutterOpts = FlutterAppOptions(
       target: target,
       flavor: androidFlavor,
+      buildMode: buildMode,
       dartDefines: dartDefines,
     );
 
@@ -148,12 +154,8 @@ class DevelopCommand extends PatrolCommand {
     final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
       bundleId: bundleId,
-      scheme: stringArg('scheme') ?? defaultScheme,
-      xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
-      configuration: !(argResults?.wasParsed('configuration') ?? false) &&
-              (argResults?.wasParsed('flavor') ?? false)
-          ? 'Debug-${argResults!['flavor']}'
-          : stringArg('configuration') ?? defaultConfiguration,
+      scheme: buildMode.createScheme(iosFlavor),
+      configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
     );
 

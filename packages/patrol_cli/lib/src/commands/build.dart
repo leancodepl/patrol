@@ -23,6 +23,7 @@ class BuildCommand extends PatrolCommand {
         _androidTestBackend = androidTestBackend,
         _logger = logger {
     usesTargetOption();
+    usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesLabelOption();
@@ -106,6 +107,7 @@ class BuildCommand extends PatrolCommand {
     final flutterOpts = FlutterAppOptions(
       target: target,
       flavor: androidFlavor,
+      buildMode: buildMode,
       dartDefines: dartDefines,
     );
     final androidOpts = AndroidAppOptions(

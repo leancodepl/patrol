@@ -1,4 +1,5 @@
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
       test('on Windows', () {
         final flutterOptions = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
         );
@@ -29,6 +31,7 @@ void main() {
       test('on macOS', () {
         final flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
         );
@@ -57,6 +60,7 @@ void main() {
       test('on Windows', () {
         final flutterOpts = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
@@ -78,6 +82,7 @@ void main() {
       test('on macOS', () {
         final flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
@@ -104,18 +109,19 @@ void main() {
     test('correctly encodes default invocation on simulator', () {
       final flutterOpts = FlutterAppOptions(
         target: 'integration_test/app_test.dart',
+        buildMode: BuildMode.debug,
         flavor: null,
         dartDefines: {},
       );
       options = IOSAppOptions(
         flutter: flutterOpts,
         scheme: 'Runner',
-        xcconfigFile: 'Flutter/Debug.xcconfig',
         configuration: 'Debug',
         simulator: true,
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation();
+      final flutterInvocation =
+          options.toFlutterBuildInvocation(flutterOpts.buildMode);
       expect(
         flutterInvocation,
         equals([
@@ -134,7 +140,6 @@ void main() {
           ...['xcodebuild', 'build-for-testing'],
           ...['-workspace', 'Runner.xcworkspace'],
           ...['-scheme', 'Runner'],
-          ...['-xcconfig', 'Flutter/Debug.xcconfig'],
           ...['-configuration', 'Debug'],
           ...['-sdk', 'iphonesimulator'],
           ...['-destination', 'generic/platform=iOS Simulator'],
@@ -148,7 +153,8 @@ void main() {
     test('correctly encodes customized invocation on real device', () {
       final flutterOpts = FlutterAppOptions(
         target: 'integration_test/app_test.dart',
-        flavor: 'dev',
+        buildMode: BuildMode.release,
+        flavor: 'prod',
         dartDefines: {
           'EMAIL': 'user@example.com',
           'PASSWORD': 'ny4ncat',
@@ -157,20 +163,20 @@ void main() {
       );
       options = IOSAppOptions(
         flutter: flutterOpts,
-        scheme: 'dev',
-        xcconfigFile: 'Flutter/Debug.xcconfig',
-        configuration: 'Debug-dev',
+        scheme: 'prod',
+        configuration: 'Release-prod',
         simulator: false,
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation();
+      final flutterInvocation =
+          options.toFlutterBuildInvocation(flutterOpts.buildMode);
       expect(
         flutterInvocation,
         equals([
           ...['flutter', 'build', 'ios'],
           '--no-version-check',
-          ...['--config-only', '--no-codesign', '--debug'],
-          ...['--flavor', 'dev'],
+          ...['--config-only', '--no-codesign', '--release'],
+          ...['--flavor', 'prod'],
           ...['--target', 'integration_test/app_test.dart'],
           ...['--dart-define', 'EMAIL=user@example.com'],
           ...['--dart-define', 'PASSWORD=ny4ncat'],
@@ -185,9 +191,8 @@ void main() {
         equals([
           ...['xcodebuild', 'build-for-testing'],
           ...['-workspace', 'Runner.xcworkspace'],
-          ...['-scheme', 'dev'],
-          ...['-xcconfig', 'Flutter/Debug.xcconfig'],
-          ...['-configuration', 'Debug-dev'],
+          ...['-scheme', 'prod'],
+          ...['-configuration', 'Release-prod'],
           ...['-sdk', 'iphoneos'],
           ...['-destination', 'generic/platform=iOS'],
           '-quiet',

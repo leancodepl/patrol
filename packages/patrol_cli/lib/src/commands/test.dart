@@ -24,6 +24,7 @@ part 'test.freezed.dart';
 class TestCommandConfig with _$TestCommandConfig {
   const factory TestCommandConfig({
     required List<Device> devices,
+    required BuildMode buildMode,
     required List<String> targets,
     required Map<String, String> dartDefines,
     required int repeat,
@@ -35,9 +36,6 @@ class TestCommandConfig with _$TestCommandConfig {
     // iOS-only options
     required String? bundleId,
     required String? iosFlavor,
-    required String scheme,
-    required String xcconfigFile,
-    required String configuration,
   }) = _TestCommandConfig;
 }
 
@@ -64,6 +62,7 @@ class TestCommand extends PatrolCommand {
 
     usesTargetOption();
     usesDeviceOption();
+    usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesLabelOption();
@@ -160,6 +159,7 @@ class TestCommand extends PatrolCommand {
     final testConfig = TestCommandConfig(
       devices: devices,
       targets: targets,
+      buildMode: buildMode,
       dartDefines: dartDefines,
       repeat: repeatCount,
       displayLabel: displayLabel,
@@ -170,12 +170,6 @@ class TestCommand extends PatrolCommand {
       // iOS-specific options
       bundleId: bundleId,
       iosFlavor: iosFlavor,
-      scheme: stringArg('scheme') ?? defaultScheme,
-      xcconfigFile: stringArg('xcconfig') ?? defaultXCConfigFile,
-      configuration: !(argResults?.wasParsed('configuration') ?? false) &&
-              (argResults?.wasParsed('flavor') ?? false)
-          ? 'Debug-${argResults!['flavor']}'
-          : stringArg('configuration') ?? defaultConfiguration,
     );
 
     testConfig.targets.forEach(_testRunner.addTarget);
@@ -201,6 +195,7 @@ class TestCommand extends PatrolCommand {
       final flutterOpts = FlutterAppOptions(
         target: target,
         flavor: config.androidFlavor,
+        buildMode: config.buildMode,
         dartDefines: {
           ...config.dartDefines,
           if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
@@ -215,9 +210,9 @@ class TestCommand extends PatrolCommand {
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
             flutter: flutterOpts,
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
+            scheme: flutterOpts.buildMode.createScheme(config.iosFlavor),
+            configuration:
+                flutterOpts.buildMode.createConfiguration(config.iosFlavor),
             simulator: !device.real,
           );
           action = () => _iosTestBackend.build(options);
@@ -243,6 +238,7 @@ class TestCommand extends PatrolCommand {
       final flutterOpts = FlutterAppOptions(
         target: target,
         flavor: config.androidFlavor,
+        buildMode: config.buildMode,
         dartDefines: {
           ...config.dartDefines,
           if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
@@ -261,9 +257,9 @@ class TestCommand extends PatrolCommand {
         case TargetPlatform.iOS:
           final options = IOSAppOptions(
             flutter: flutterOpts,
-            scheme: config.scheme,
-            xcconfigFile: config.xcconfigFile,
-            configuration: config.configuration,
+            scheme: flutterOpts.buildMode.createScheme(config.iosFlavor),
+            configuration:
+                flutterOpts.buildMode.createConfiguration(config.iosFlavor),
             simulator: !device.real,
           );
           action = () async => _iosTestBackend.execute(options, device);

@@ -13,6 +13,37 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
 
+enum BuildMode {
+  debug,
+  profile,
+  release;
+
+  static const _defaultScheme = 'Runner';
+
+  /// Name of this build mode in the Xcode Build Configuration format.
+  ///
+  /// Flutter build mode name starts with with a lowercase letter, for example
+  /// `debug` or `release`.
+  ///
+  /// XCode Build Configuration name starts with an uppercase letter, for
+  /// example 'Debug' or 'Release'.
+  String get xcodeName => name.replaceFirst(name[0], name[0].toUpperCase());
+
+  String createScheme(String? flavor) {
+    if (flavor == null) {
+      return _defaultScheme;
+    }
+    return flavor;
+  }
+
+  String createConfiguration(String? flavor) {
+    if (flavor == null) {
+      return xcodeName;
+    }
+    return '$xcodeName-$flavor';
+  }
+}
+
 class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
@@ -47,7 +78,7 @@ class IOSTestBackend {
 
       var flutterBuildKilled = false;
       process = await _processManager.start(
-        options.toFlutterBuildInvocation(),
+        options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
       );
       scope.addDispose(() async {
@@ -149,8 +180,6 @@ class IOSTestBackend {
   }
 
   Future<void> uninstall(String appId, Device device) async {
-    _logger.info('Uninstalling $appId from ${device.name}');
-
     if (device.real) {
       // uninstall from iOS device
       await _processManager.run(
@@ -161,36 +190,30 @@ class IOSTestBackend {
         ],
         runInShell: true,
       );
+    } else {
+      // uninstall from iOS simulator
+      await _processManager.run(
+        ['xcrun', 'simctl', 'uninstall', device.id, appId],
+        runInShell: true,
+      );
+    }
 
+    // TODO: Not being removed https://github.com/leancodepl/patrol/issues/1094
+    final testApp = '$appId.RunnerUITests.xctrunner';
+    if (device.real) {
+      // uninstall from iOS device
       await _processManager.run(
         [
           'ideviceinstaller',
           ...['--udid', device.id],
-          ...['--uninstall', '$appId.RunnerUITests.xctrunner'],
+          ...['--uninstall', testApp],
         ],
         runInShell: true,
       );
     } else {
       // uninstall from iOS simulator
       await _processManager.run(
-        [
-          'xcrun',
-          'simctl',
-          'uninstall',
-          device.id,
-          appId,
-        ],
-        runInShell: true,
-      );
-      // uninstall from iOS simulator
-      await _processManager.run(
-        [
-          'xcrun',
-          'simctl',
-          'uninstall',
-          device.id,
-          '$appId.RunnerUITests.xctrunner',
-        ],
+        ['xcrun', 'simctl', 'uninstall', device.id, testApp],
         runInShell: true,
       );
     }
@@ -228,6 +251,7 @@ class IOSTestBackend {
 
   Future<String> _sdkVersion(bool real) async {
     // See the versions yourself:
+    //
     // $ xcodebuild -showsdks -json | jq ".[] | {sdkVersion, platform}"
 
     final processResult = await _processManager.run(

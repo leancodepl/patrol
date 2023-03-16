@@ -1,11 +1,12 @@
 import 'package:args/command_runner.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
 abstract class PatrolCommand extends Command<int> {
-  final defaultScheme = 'Runner';
-  final defaultXCConfigFile = 'Flutter/Debug.xcconfig';
-  final defaultConfiguration = 'Debug';
   final defaultWait = 0;
   final defaultRepeatCount = 1;
+
+  var _usesBuildOption = false;
 
   final defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '
@@ -34,6 +35,24 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Devices to run the tests on. If empty, the first device is used.',
       valueHelp: "all, emulator-5554, 'iPhone 14'",
     );
+  }
+
+  void usesBuildModeOption() {
+    _usesBuildOption = true;
+    argParser
+      ..addFlag(
+        'debug',
+        help: 'Build a debug version of your app (default mode)',
+        defaultsTo: true,
+      )
+      ..addFlag(
+        'profile',
+        help: 'Build a version of your app for performance profiling.',
+      )
+      ..addFlag(
+        'release',
+        help: 'Build a release version of your app',
+      );
   }
 
   void usesFlavorOption() {
@@ -78,27 +97,11 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesIOSOptions() {
-    argParser
-      ..addOption(
-        'bundle-id',
-        help: 'Bundle identifier of the iOS app under test.',
-        valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addOption(
-        'scheme',
-        help: '(iOS only) Xcode scheme to use',
-        defaultsTo: defaultScheme,
-      )
-      ..addOption(
-        'xcconfig',
-        help: '(iOS only) Xcode .xcconfig file to use',
-        defaultsTo: defaultXCConfigFile,
-      )
-      ..addOption(
-        'configuration',
-        help: '(iOS only) Xcode configuration to use',
-        defaultsTo: defaultConfiguration,
-      );
+    argParser.addOption(
+      'bundle-id',
+      help: 'Bundle identifier of the iOS app under test.',
+      valueHelp: 'pl.leancode.AwesomeApp',
+    );
   }
 
   // Runtime-only options
@@ -145,5 +148,24 @@ abstract class PatrolCommand extends Command<int> {
   /// Gets the parsed command-line option named [name] as `List<String>`.
   List<String> stringsArg(String name) {
     return argResults![name]! as List<String>? ?? <String>[];
+  }
+
+  BuildMode get buildMode {
+    if (!_usesBuildOption) {
+      // If this happens, it's a developer fault, not the user's.
+      throw StateError('This command does not support build mode option');
+    }
+
+    final buildModes = {
+      if (boolArg('debug')) BuildMode.debug,
+      if (boolArg('profile')) BuildMode.profile,
+      if (boolArg('release')) BuildMode.release,
+    };
+
+    if (buildModes.length > 1) {
+      throwToolExit('Only one build mode can be specified');
+    }
+
+    return buildModes.single;
   }
 }
