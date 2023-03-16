@@ -602,16 +602,8 @@ class Automator {
       block()
 
       self.springboard.activate()
-
-      // Workaround for https://github.com/leancodepl/patrol/issues/681
-      #if PATROL_ENABLED
-        self.preferences.terminate()
-      #else
-        throw PatrolError.internal(
-          "tried to call XCUIApplication.terminate, but PATROL_ENABLED is not defined. This is an error."
-        )
-      #endif
-
+      self.preferences.terminate()
+      
       // go back to the app under test
       let app = try self.getApp(withBundleId: bundleId)
       app.activate()
