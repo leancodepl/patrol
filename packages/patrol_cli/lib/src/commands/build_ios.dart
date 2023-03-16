@@ -1,10 +1,7 @@
 import 'package:path/path.dart' show basename;
-import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/commands/build_android.dart';
-import 'package:patrol_cli/src/commands/build_ios.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -12,38 +9,18 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 
-class BuildCommand extends PatrolCommand {
-  BuildCommand({
+class BuildIOSCommand extends PatrolCommand {
+  BuildIOSCommand({
     required TestFinder testFinder,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
-    required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required Logger logger,
   })  : _testFinder = testFinder,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
+        _iosTestBackend = iosTestBackend,
         _logger = logger {
-    addSubcommand(
-      BuildAndroidCommand(
-        testFinder: testFinder,
-        dartDefinesReader: dartDefinesReader,
-        pubspecReader: pubspecReader,
-        androidTestBackend: androidTestBackend,
-        logger: logger,
-      ),
-    );
-    addSubcommand(
-      BuildIOSCommand(
-        testFinder: testFinder,
-        dartDefinesReader: dartDefinesReader,
-        pubspecReader: pubspecReader,
-        iosTestBackend: iosTestBackend,
-        logger: logger,
-      ),
-    );
-
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
@@ -51,22 +28,25 @@ class BuildCommand extends PatrolCommand {
     usesLabelOption();
     usesWaitOption();
 
-    usesAndroidOptions();
     usesIOSOptions();
+    argParser.addFlag(
+      'simulator',
+      help: 'Build for simulator instead of real device.',
+    );
   }
 
   final TestFinder _testFinder;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
-  final AndroidTestBackend _androidTestBackend;
+  final IOSTestBackend _iosTestBackend;
 
   final Logger _logger;
 
   @override
-  String get name => 'build';
+  String get name => 'ios';
 
   @override
-  String get description => 'Build apps for integration testing.';
+  String get description => 'Build app for integration testing on iOS.';
 
   @override
   Future<int> run() async {
@@ -80,16 +60,11 @@ class BuildCommand extends PatrolCommand {
     _logger.detail('Received test target: $target');
 
     final config = _pubspecReader.read();
-    final androidFlavor = stringArg('flavor') ?? config.android.flavor;
-    final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
-    if (androidFlavor != null) {
-      _logger.detail('Received Android flavor: $androidFlavor');
-    }
-    if (iosFlavor != null) {
-      _logger.detail('Received iOS flavor: $iosFlavor');
+    final flavor = stringArg('flavor') ?? config.ios.flavor;
+    if (flavor != null) {
+      _logger.detail('Received iOS flavor: $flavor');
     }
 
-    final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final displayLabel = boolArg('label');
@@ -100,9 +75,7 @@ class BuildCommand extends PatrolCommand {
     };
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
-      'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
     }.withNullsRemoved();
@@ -123,18 +96,19 @@ class BuildCommand extends PatrolCommand {
 
     final flutterOpts = FlutterAppOptions(
       target: target,
-      flavor: androidFlavor,
+      flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
     );
-    final androidOpts = AndroidAppOptions(
+    final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
-      packageName: packageName,
+      scheme: flutterOpts.buildMode.createScheme(flavor),
+      configuration: flutterOpts.buildMode.createConfiguration(flavor),
+      simulator: boolArg('simulator'),
     );
-    Future<void> action() => _androidTestBackend.build(androidOpts);
 
     try {
-      await action();
+      await _iosTestBackend.build(iosOpts);
     } catch (err, st) {
       _logger
         ..err('$err')

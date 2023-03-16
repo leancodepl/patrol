@@ -73,19 +73,35 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    final androidTestBackend = AndroidTestBackend(
+      adb: Adb(),
+      processManager: _processManager,
+      platform: _platform,
+      fs: _fs,
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
+    final iosTestBackend = IOSTestBackend(
+      processManager: _processManager,
+      fs: _fs,
+      iosDeploy: IOSDeploy(
+        processManager: _processManager,
+        parentDisposeScope: _disposeScope,
+        fs: _fs,
+        logger: _logger,
+      ),
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
     addCommand(
       BuildCommand(
         testFinder: TestFinder(testDir: _fs.directory('integration_test')),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
-        androidTestBackend: AndroidTestBackend(
-          adb: Adb(),
-          processManager: _processManager,
-          platform: _platform,
-          fs: _fs,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
         logger: _logger,
       ),
     );
@@ -101,26 +117,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
-        androidTestBackend: AndroidTestBackend(
-          adb: Adb(),
-          processManager: _processManager,
-          platform: _platform,
-          fs: _fs,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        iosTestBackend: IOSTestBackend(
-          processManager: _processManager,
-          fs: _fs,
-          iosDeploy: IOSDeploy(
-            processManager: _processManager,
-            parentDisposeScope: _disposeScope,
-            fs: _fs,
-            logger: _logger,
-          ),
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
         parentDisposeScope: _disposeScope,
         logger: _logger,
         flutterTool: FlutterTool(
@@ -143,26 +141,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
-        androidTestBackend: AndroidTestBackend(
-          adb: Adb(),
-          processManager: _processManager,
-          platform: _platform,
-          fs: _fs,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        iosTestBackend: IOSTestBackend(
-          processManager: _processManager,
-          fs: _fs,
-          iosDeploy: IOSDeploy(
-            processManager: _processManager,
-            parentDisposeScope: _disposeScope,
-            fs: _fs,
-            logger: _logger,
-          ),
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
         parentDisposeScope: _disposeScope,
         logger: _logger,
       ),
