@@ -18,8 +18,6 @@ enum BuildMode {
   profile,
   release;
 
-  const BuildMode();
-
   static const _defaultScheme = 'Runner';
 
   /// Name of this build mode in the Xcode Build Configuration format.
