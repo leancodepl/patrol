@@ -1,3 +1,9 @@
+## Unreleased
+
+- Automatically infer iOS-specific build option: `scheme` and `configuration`
+  (#1090). The following options were removed from `patrol test` and `patrol
+develop` commands: `--scheme`, `--xcconfig`, `--configuration`
+
 ## 1.0.10
 
 - Fix error when scheme name is not `Runner` (#1076)
