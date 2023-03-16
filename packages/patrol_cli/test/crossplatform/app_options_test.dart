@@ -1,4 +1,5 @@
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
       test('on Windows', () {
         final flutterOptions = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
         );
@@ -29,6 +31,7 @@ void main() {
       test('on macOS', () {
         final flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
         );
@@ -57,6 +60,7 @@ void main() {
       test('on Windows', () {
         final flutterOpts = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
@@ -78,6 +82,7 @@ void main() {
       test('on macOS', () {
         final flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
@@ -104,18 +109,19 @@ void main() {
     test('correctly encodes default invocation on simulator', () {
       final flutterOpts = FlutterAppOptions(
         target: 'integration_test/app_test.dart',
+        buildMode: BuildMode.debug,
         flavor: null,
         dartDefines: {},
       );
       options = IOSAppOptions(
         flutter: flutterOpts,
         scheme: 'Runner',
-        xcconfigFile: 'Flutter/Debug.xcconfig',
         configuration: 'Debug',
         simulator: true,
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation();
+      final flutterInvocation =
+          options.toFlutterBuildInvocation(flutterOpts.buildMode);
       expect(
         flutterInvocation,
         equals([
@@ -148,6 +154,7 @@ void main() {
     test('correctly encodes customized invocation on real device', () {
       final flutterOpts = FlutterAppOptions(
         target: 'integration_test/app_test.dart',
+        buildMode: BuildMode.debug,
         flavor: 'dev',
         dartDefines: {
           'EMAIL': 'user@example.com',
@@ -158,12 +165,12 @@ void main() {
       options = IOSAppOptions(
         flutter: flutterOpts,
         scheme: 'dev',
-        xcconfigFile: 'Flutter/Debug.xcconfig',
         configuration: 'Debug-dev',
         simulator: false,
       );
 
-      final flutterInvocation = options.toFlutterBuildInvocation();
+      final flutterInvocation =
+          options.toFlutterBuildInvocation(flutterOpts.buildMode);
       expect(
         flutterInvocation,
         equals([

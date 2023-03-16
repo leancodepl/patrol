@@ -44,14 +44,6 @@ enum BuildMode {
   }
 }
 
-// 1. Simple scheme: Runner
-//
-
-// 2. Complex
-
-// 3. Very complex
-//
-
 class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
@@ -86,7 +78,7 @@ class IOSTestBackend {
 
       var flutterBuildKilled = false;
       process = await _processManager.start(
-        options.toFlutterBuildInvocation(),
+        options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
       );
       scope.addDispose(() async {
@@ -188,8 +180,6 @@ class IOSTestBackend {
   }
 
   Future<void> uninstall(String appId, Device device) async {
-    _logger.info('Uninstalling $appId from ${device.name}');
-
     if (device.real) {
       // uninstall from iOS device
       await _processManager.run(
@@ -200,36 +190,30 @@ class IOSTestBackend {
         ],
         runInShell: true,
       );
+    } else {
+      // uninstall from iOS simulator
+      await _processManager.run(
+        ['xcrun', 'simctl', 'uninstall', device.id, appId],
+        runInShell: true,
+      );
+    }
 
+    final testApp = '$appId.RunnerUITests.xctrunner';
+    if (device.real) {
+      // uninstall from iOS device
       await _processManager.run(
         [
           'ideviceinstaller',
           ...['--udid', device.id],
-          ...['--uninstall', '$appId.RunnerUITests.xctrunner'],
+          ...['--uninstall', testApp],
         ],
         runInShell: true,
       );
     } else {
       // uninstall from iOS simulator
+      // TODO: Doesn't work when flavor is not null
       await _processManager.run(
-        [
-          'xcrun',
-          'simctl',
-          'uninstall',
-          device.id,
-          appId,
-        ],
-        runInShell: true,
-      );
-      // uninstall from iOS simulator
-      await _processManager.run(
-        [
-          'xcrun',
-          'simctl',
-          'uninstall',
-          device.id,
-          '$appId.RunnerUITests.xctrunner',
-        ],
+        ['xcrun', 'simctl', 'uninstall', device.id, testApp],
         runInShell: true,
       );
     }
