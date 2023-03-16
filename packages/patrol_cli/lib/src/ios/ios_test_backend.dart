@@ -14,21 +14,22 @@ import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
 
 enum BuildMode {
-  debug('Debug'),
-  profile('Profile'),
-  release('Release');
+  debug,
+  profile,
+  release;
 
-  const BuildMode(this.name);
-
-  /// Creates a [BuildMode] from a string. Throws [StateError] if [name] isn't a
-  /// valid value.
-  factory BuildMode.fromName(String name) {
-    return values.firstWhere((value) => value.name == name);
-  }
-
-  final String name;
+  const BuildMode();
 
   static const _defaultScheme = 'Runner';
+
+  /// Name of this build mode in the Xcode Build Configuration format.
+  ///
+  /// Flutter build mode name starts with with a lowercase letter, for example
+  /// `debug` or `release`.
+  ///
+  /// XCode Build Configuration name starts with an uppercase letter, for
+  /// example 'Debug' or 'Release'.
+  String get xcodeName => name.replaceFirst(name[0], name[0].toUpperCase());
 
   String createScheme(String? flavor) {
     if (flavor == null) {
@@ -39,9 +40,9 @@ enum BuildMode {
 
   String createConfiguration(String? flavor) {
     if (flavor == null) {
-      return name;
+      return xcodeName;
     }
-    return '$name-$flavor';
+    return '$xcodeName-$flavor';
   }
 }
 

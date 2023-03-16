@@ -143,7 +143,7 @@ class IOSAppOptions {
       ...[
         '--config-only',
         '--no-codesign',
-        '--debug',
+        '--${buildMode.name}', // for example '--debug',
         if (simulator) '--simulator',
       ],
       if (flutter.flavor != null) ...['--flavor', flutter.flavor!],

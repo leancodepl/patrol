@@ -153,8 +153,8 @@ void main() {
     test('correctly encodes customized invocation on real device', () {
       final flutterOpts = FlutterAppOptions(
         target: 'integration_test/app_test.dart',
-        buildMode: BuildMode.debug,
-        flavor: 'dev',
+        buildMode: BuildMode.release,
+        flavor: 'prod',
         dartDefines: {
           'EMAIL': 'user@example.com',
           'PASSWORD': 'ny4ncat',
@@ -163,8 +163,8 @@ void main() {
       );
       options = IOSAppOptions(
         flutter: flutterOpts,
-        scheme: 'dev',
-        configuration: 'Debug-dev',
+        scheme: 'prod',
+        configuration: 'Release-prod',
         simulator: false,
       );
 
@@ -175,8 +175,8 @@ void main() {
         equals([
           ...['flutter', 'build', 'ios'],
           '--no-version-check',
-          ...['--config-only', '--no-codesign', '--debug'],
-          ...['--flavor', 'dev'],
+          ...['--config-only', '--no-codesign', '--release'],
+          ...['--flavor', 'prod'],
           ...['--target', 'integration_test/app_test.dart'],
           ...['--dart-define', 'EMAIL=user@example.com'],
           ...['--dart-define', 'PASSWORD=ny4ncat'],
@@ -191,8 +191,8 @@ void main() {
         equals([
           ...['xcodebuild', 'build-for-testing'],
           ...['-workspace', 'Runner.xcworkspace'],
-          ...['-scheme', 'dev'],
-          ...['-configuration', 'Debug-dev'],
+          ...['-scheme', 'prod'],
+          ...['-configuration', 'Release-prod'],
           ...['-sdk', 'iphoneos'],
           ...['-destination', 'generic/platform=iOS'],
           '-quiet',
