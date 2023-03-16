@@ -100,6 +100,7 @@ class BuildIOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
     );
+
     final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
       scheme: flutterOpts.buildMode.createScheme(flavor),
@@ -109,6 +110,7 @@ class BuildIOSCommand extends PatrolCommand {
 
     try {
       await _iosTestBackend.build(iosOpts);
+      _printBinaryPaths(iosOpts.simulator);
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -118,5 +120,20 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     return 0;
+  }
+
+  void _printBinaryPaths(bool simulator) {
+    // print path for 2 apps that live in build/ios_integ/Build/Products
+
+    final buildDir = simulator
+        ? 'build/ios_integ/Build/Products/Debug-iphonesimulator'
+        : 'build/ios_integ/Build/Products/Debug-iphoneos';
+
+    final appPath = '$buildDir/Runner.app';
+    final testAppPath = '$buildDir/RunnerUITests-Runner.app';
+
+    _logger
+      ..info('App path: $appPath')
+      ..info('Test app path: $testAppPath');
   }
 }
