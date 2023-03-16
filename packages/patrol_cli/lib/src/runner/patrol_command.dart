@@ -152,7 +152,8 @@ abstract class PatrolCommand extends Command<int> {
 
   BuildMode get buildMode {
     if (!_usesBuildOption) {
-      throwToolExit('This command does not support build mode option');
+      // If this happens, it's a developer fault, not the user's.
+      throw StateError('This command does not support build mode option');
     }
 
     final buildModes = {
@@ -162,7 +163,7 @@ abstract class PatrolCommand extends Command<int> {
     };
 
     if (buildModes.length > 1) {
-      throwToolExit('Only one build mode can be specified.');
+      throwToolExit('Only one build mode can be specified');
     }
 
     return buildModes.single;
