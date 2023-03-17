@@ -1,3 +1,8 @@
+## 1.0.8
+
+- Fix App Store warnings about non-public selectors from `patrol.framework`
+  (#1096)
+
 ## 1.0.7
 
 - Fix `tap()` sometimes not being able to tap on a widget that was previously
