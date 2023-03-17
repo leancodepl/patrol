@@ -3,6 +3,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
 abstract class PatrolCommand extends Command<int> {
+  /// Seconds to wait after the individual test case finishes executing.
   final defaultWait = 0;
   final defaultRepeatCount = 1;
 
