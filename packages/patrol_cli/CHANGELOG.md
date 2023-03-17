@@ -1,8 +1,9 @@
-## Unreleased
+## 1.1.0
 
-- Automatically infer iOS-specific build option: `scheme` and `configuration`
+- Automatically infer iOS-specific build options: `scheme` and `configuration`
   (#1090). The following options were removed from `patrol test` and `patrol
 develop` commands: `--scheme`, `--xcconfig`, `--configuration`
+- Add `patrol build android` and `patrol build ios` commands (#1097)
 
 ## 1.0.10
 
