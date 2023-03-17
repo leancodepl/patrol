@@ -110,7 +110,10 @@ class BuildIOSCommand extends PatrolCommand {
 
     try {
       await _iosTestBackend.build(iosOpts);
-      _printBinaryPaths(iosOpts.simulator);
+      _printBinaryPaths(
+        simulator: iosOpts.simulator,
+        buildMode: flutterOpts.buildMode.xcodeName,
+      );
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -122,12 +125,12 @@ class BuildIOSCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printBinaryPaths(bool simulator) {
+  void _printBinaryPaths({required bool simulator, required String buildMode}) {
     // print path for 2 apps that live in build/ios_integ/Build/Products
 
     final buildDir = simulator
-        ? 'build/ios_integ/Build/Products/Debug-iphonesimulator'
-        : 'build/ios_integ/Build/Products/Debug-iphoneos';
+        ? 'build/ios_integ/Build/Products/$buildMode-iphonesimulator'
+        : 'build/ios_integ/Build/Products/$buildMode-iphoneos';
 
     final appPath = '$buildDir/Runner.app';
     final testAppPath = '$buildDir/RunnerUITests-Runner.app';
