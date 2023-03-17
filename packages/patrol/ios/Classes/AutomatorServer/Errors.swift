@@ -37,3 +37,9 @@ extension PatrolError: CustomStringConvertible, GRPCStatusTransformable {
     }
   }
 }
+
+extension String.StringInterpolation {
+  mutating func appendInterpolation(format value: String) {
+    appendInterpolation("\"\(value)\"")
+  }
+}

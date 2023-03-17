@@ -8,9 +8,10 @@ import NIOPosix
 
   private static let defaultPort = 8081
 
-  private let port: Int
-
-  private let automator: Automator
+  #if PATROL_ENABLED
+    private let port: Int
+    private let automator: Automator
+  #endif
 
   @objc
   public private(set) var dartTestResults: [String: String]?
@@ -36,29 +37,29 @@ import NIOPosix
 
     #if PATROL_ENABLED
       Logger.shared.i("PATROL_ENABLED flag is defined")
+      self.port = passedPort
+      self.automator = Automator()
     #else
-      Logger.shared.i("PATROL_ENABLED flag is not defined")
+      Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
     #endif
-
-    self.port = passedPort
-    self.automator = Automator()
   }
 
   @objc public func start() async throws {
-    let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+    #if PATROL_ENABLED
+      let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+      let provider = AutomatorServer(automator: automator) { testResults in
+        Logger.shared.i("Got \(testResults.count) dart test results")
+        self.dartTestResults = testResults
+      }
 
-    let provider = AutomatorServer(automator: automator) { testResults in
-      Logger.shared.i("Got \(testResults.count) dart test results")
-      self.dartTestResults = testResults
-    }
+      let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(
+        host: "0.0.0.0", port: port
+      ).get()
 
-    let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(
-      host: "0.0.0.0", port: port
-    ).get()
+      Logger.shared.i("Server started on http://localhost:\(port)")
 
-    Logger.shared.i("Server started on http://localhost:\(port)")
-
-    try await server.onClose.get()
-    Logger.shared.i("Server stopped")
+      try await server.onClose.get()
+      Logger.shared.i("Server stopped")
+    #endif
   }
 }
