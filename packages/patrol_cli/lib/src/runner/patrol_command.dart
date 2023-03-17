@@ -3,6 +3,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
 abstract class PatrolCommand extends Command<int> {
+  /// Seconds to wait after the individual test case finishes executing.
   final defaultWait = 0;
   final defaultRepeatCount = 1;
 
@@ -43,7 +44,6 @@ abstract class PatrolCommand extends Command<int> {
       ..addFlag(
         'debug',
         help: 'Build a debug version of your app (default mode)',
-        defaultsTo: true,
       )
       ..addFlag(
         'profile',
@@ -161,6 +161,9 @@ abstract class PatrolCommand extends Command<int> {
       if (boolArg('profile')) BuildMode.profile,
       if (boolArg('release')) BuildMode.release,
     };
+    if (buildModes.isEmpty) {
+      buildModes.add(BuildMode.debug);
+    }
 
     if (buildModes.length > 1) {
       throwToolExit('Only one build mode can be specified');
