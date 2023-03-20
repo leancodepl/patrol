@@ -15,7 +15,7 @@ suits you best.
 There are many device lab providers. Below we're showing how to run Patrol tests
 on [Firebase Test Lab], because it's popular in the Flutter community, but the
 instructions should be similar for other device farms, such as [AWS Device
-Farm][aws_device_farm] or [BrowserStack][browserstack].
+Farm][aws_device_farm].
 
 <Tabs
   defaultValue="android"
@@ -25,22 +25,14 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
   ]}
 >
   <TabItem value="android">
-    To run the integration tests on Android, you need 2 apps:
+    To run the integration tests on Android, you need 2 apps: the app itself
+    (often called the "app under test") and the test intrumentation app.
 
-    - the normal apk (often called the "app under test"). To build it, run:
+    To build these apps, run:
 
-      ```
-      ./gradlew :app:assembleDebug -Ptarget="$(pwd)/../integration_test/example_test.dart"
-      ```
-
-    - the intrumentation apk. To build it, run:
-
-      ```
-      ./gradlew :app:assembleDebugAndroidTest
-      ```
-
-    You need to run the above commands from the `android` directory of your
-    Flutter project.
+    ```
+    patrol build android --target integration_test/example_test.dart
+    ```
 
     Once you have built the apks, use the [gcloud] tool to run them on Firebase
     Test Lab:
@@ -54,78 +46,55 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
         --results-dir=<RESULTS_DIRECTORY>
     ```
 
-    It can be convenient to write a utility shell script to automate this process
-    instead of having to enter these long commands every time you want to run
-    tests. In such case, you might want to take a look at Patrol example app's
+    It's convenient to create a shell script to avoid typing that long command
+    every time. You might want to take a look at Patrol example app's
     [run_android_testlab script][example_android_script].
 
   </TabItem>
   <TabItem value="ios">
 
+    To run the integration tests on iOS, you need 2 apps: the app itself
+    (often called the "app under test") and the test intrumentation app.
+
     First, build your Flutter app, choosing the integration test file as target:
 
     ```
-    flutter build ios --target integration_test/example_test.dart --debug # or --release
+    patrol build ios --target integration_test/example_test.dart
     ```
 
-    Then, build the UI testing target by running `xcodebuild` in the `ios`
-    directory:
+    `patrol build ios` outputs paths to the built app binaries, for example:
 
     ```
-    xcodebuild build-for-testing \
-      -workspace Runner.xcworkspace \
-      -scheme Runner \
-      -xcconfig Flutter/Release.xcconfig \
-      -configuration Release \
-      -derivedDataPath ../build/ios_integ \
-      -sdk iphoneos \
-      OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
+    $ patrol build ios -t integration_test/example_test.dart
+    • Building app with entrypoint example_test.dart for iOS device...
+    ✓ Completed building app with entrypoint example_test.dart for iOS device (24.8s)
+    App path: build/ios_integ/Build/Products/Debug-iphoneos/Runner.app
+    Test app path: build/ios_integ/Build/Products/Debug-iphoneos/RunnerUITests-Runner.app
     ```
 
-    If you want to test a debug version of your app, replace `xcconfig` and
-    `configuration`:
+    Firebase Test Lab requires these files to be packaged together in a zip
+    archive. To create the archive:
 
     ```
-    xcodebuild build-for-testing \
-      -workspace Runner.xcworkspace \
-      -scheme Runner \
-      -xcconfig Flutter/Debug.xcconfig \
-      -configuration Debug \
-      -derivedDataPath ../build/ios_integ \
-      -sdk iphoneos \
-      OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
+    pushd build/ios_integ/Build/Products
+    zip -r ios_tests.zip Release-iphoneos Runner_iphoneos16.2-arm64.xctestrun
+    popd
     ```
 
-    Now, go to your project's root directory, and from there go to the build
-    outputs:
+    Finally, upload the `ios_tests.zip` to Firebase Test Lab for execution:
 
     ```
-    cd build/ios_integ/Build/Products
-    ```
-
-    Create a zip archive named `ios_test.zip`. It will contain both your app
-    under test (`Runner` target) and UI test runner (`RunnerUITests` target).
-
-    ```
-    zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos15.7-arm64.xctestrun"
-    ```
-
-    And finally, upload the `ios_test.zip` to Firebase Test Lab for execution:
-
-
-    ```
-    exec gcloud firebase test ios run \
-      --test "build/ios_integ/Build/Products/ios_tests.zip" \
-      --device model=iphone8,version=15.7,locale=en_US,orientation=portrait
+    gcloud firebase test ios run \
+      --test build/ios_integ/Build/Products/ios_tests.zip \
+      --device model=iphone8,version=16.2,locale=en_US,orientation=portrait
     ```
 
     If your `.xctestrun` file has different iOS version in its name than the
     device you're running on, simply rename the `.xctestrun` so that the version
-    will match.
+    matches.
 
-    It can be convenient to write a utility shell script to automate this process
-    instead of having to enter these long commands every time you want to run
-    tests. In such case, you might want to take a look at Patrol example app's
+    It's convenient to create a shell script to avoid typing that long command
+    every time. You might want to take a look at Patrol example app's
     [run_ios_testlab script][example_ios_script].
 
   </TabItem>
@@ -137,4 +106,3 @@ Farm][aws_device_farm] or [BrowserStack][browserstack].
 [example_ios_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_ios_testlab
 [firebase test lab]: https://firebase.google.com/products/test-lab
 [aws_device_farm]: https://aws.amazon.com/device-farm
-[browserstack]: https://www.browserstack.com/app-automate

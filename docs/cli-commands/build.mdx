@@ -1,0 +1,43 @@
+# build
+
+### Synopsis
+
+Builds the app binary for integration testing.
+
+### Description
+
+`patrol build` is useful if you want to run test on CI, for example on Firebase
+Test Lab. It works the same as `patrol test`, except that it does run tests. It reads 
+
+`patrol build` builds apps in debug mode by default.
+
+<Info>
+  To run tests on a physical iOS device on a device farm, the apps have to be
+  built in release mode. To do so, pass a `--release` flag.
+</Info>
+
+### Examples
+
+**To build for Android in debug mode:**
+
+```
+patrol build android
+```
+
+or:
+
+```
+patrol build --debug
+```
+
+**To build for iOS device in release mode:**
+
+```
+patrol build ios --release
+```
+
+**To build for iOS simulator in debug mode:**
+
+```
+patrol build ios --debug
+```
