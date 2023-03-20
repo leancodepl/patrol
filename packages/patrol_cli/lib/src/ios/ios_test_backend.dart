@@ -70,7 +70,9 @@ class IOSTestBackend {
   Future<void> build(IOSAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
-      final task = _logger.task('Building $subject');
+      final task = _logger.task(
+        'Building $subject (${options.flutter.buildMode.name})',
+      );
 
       Process process;
 
@@ -144,12 +146,15 @@ class IOSTestBackend {
         iosDeployProcess = await _iosDeploy.installAndLaunch(device.id);
       }
 
-      final sdkVersion = await _sdkVersion(device.real);
+      final sdkVersion = await getSdkVersion(real: device.real);
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(
           device,
-          xcTestRunPath:
-              await _xcTestRunPath(device.real, options.scheme, sdkVersion),
+          xcTestRunPath: await xcTestRunPath(
+            real: device.real,
+            scheme: options.scheme,
+            sdkVersion: sdkVersion,
+          ),
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
@@ -219,11 +224,12 @@ class IOSTestBackend {
     }
   }
 
-  Future<String> _xcTestRunPath(
-    bool real,
-    String scheme,
-    String sdkVersion,
-  ) async {
+  Future<String> xcTestRunPath({
+    required bool real,
+    required String scheme,
+    required String sdkVersion,
+    bool absolutePath = true,
+  }) async {
     final Glob glob;
     if (real) {
       glob = Glob('${scheme}_iphoneos$sdkVersion-*.xctestrun');
@@ -231,8 +237,10 @@ class IOSTestBackend {
       glob = Glob('${scheme}_iphonesimulator$sdkVersion-*.xctestrun');
     }
 
-    const suffix = 'build/ios_integ/Build/Products';
-    final root = join(_fs.currentDirectory.absolute.path, suffix);
+    var root = 'build/ios_integ/Build/Products';
+    if (absolutePath) {
+      root = join(_fs.currentDirectory.absolute.path, root);
+    }
     _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
     final files = await glob.listFileSystem(_fs, root: root).toList();
     if (files.isEmpty) {
@@ -246,10 +254,13 @@ class IOSTestBackend {
       _logger.detail('Found ${file.absolute.path}');
     }
 
-    return files.first.absolute.path;
+    if (absolutePath) {
+      return files.first.absolute.path;
+    }
+    return files.first.path;
   }
 
-  Future<String> _sdkVersion(bool real) async {
+  Future<String> getSdkVersion({required bool real}) async {
     // See the versions yourself:
     //
     // $ xcodebuild -showsdks -json | jq ".[] | {sdkVersion, platform}"
