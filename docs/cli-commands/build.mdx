@@ -56,13 +56,19 @@ integration_test/
 ├── webview_login_test.dart
 ```
 
-<Info>Dart file must end with `_test.dart` to be considered a test</Info>
+<Info>Dart file must end with `_test.dart` to be considered to be a test.</Info>
 
-To build the app for testing on Android, you have to run `patrol build android
---target <your file>` 4 times, to get 4 different app binaries, that have to be
-separately uploaded to a device farm. This is needlessly inefficient for apps
-with many tests, but it's a design flaw in the way integration testing in
-Flutter works.
+To build the app for testing on Android, you have to run:
+
+```
+patrol build android --target <your file>
+```
+
+4 times, each time with a different `--target`, to get 4 different app binaries.
+
+These 4 different binaries are almost the same – the only difference is the
+entrypoint. This is needlessly inefficient for apps with many tests, but it's a
+design flaw in the way integration testing in Flutter works.
 
 [We know about this issue][bundling_issue] and we're aiming to fix it soon with
 an approach we call "test bundling". This will dramatically speed up testing
