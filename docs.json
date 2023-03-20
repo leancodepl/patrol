@@ -43,7 +43,14 @@
         ["update", "/cli-commands/update"]
       ]
     ],
-    ["Patrol and CI", "/ci"],
+    [
+      "Patrol and CI",
+      [
+        ["Overview", "/ci/overview"],
+        ["Platforms", "/ci/platforms"],
+        ["Firebase Test Lab", "/ci/firebase-test-lab"]
+      ]
+    ],
     ["Effective Patrol", "/effective-patrol"],
     ["Tips and tricks", "/tips-and-tricks"],
     ["Competition", "/comparison"]
