@@ -72,9 +72,6 @@ class DevelopCommand extends PatrolCommand {
   String get description => 'Develop integration tests with Hot Restart.';
 
   @override
-  bool get hidden => true;
-
-  @override
   Future<int> run() async {
     final targets = stringsArg('target');
     if (targets.isEmpty) {
