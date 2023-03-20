@@ -35,9 +35,11 @@
     [
       "CLI commands",
       [
-        ["test", "/cli-commands/test"],
+        ["build", "/cli-commands/build"],
+        ["develop", "/cli-commands/develop"],
         ["devices", "/cli-commands/devices"],
         ["doctor", "/cli-commands/doctor"],
+        ["test", "/cli-commands/test"],
         ["update", "/cli-commands/update"]
       ]
     ],
