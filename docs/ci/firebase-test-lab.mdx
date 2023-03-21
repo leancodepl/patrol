@@ -59,10 +59,11 @@ Farm][aws_device_farm].
 
     ```
     $ patrol build ios -t integration_test/example_test.dart --release
-    • Building app with entrypoint example_test.dart for iOS device...
-    ✓ Completed building app with entrypoint example_test.dart for iOS device (24.8s)
-    App path: build/ios_integ/Build/Products/Debug-iphoneos/Runner.app
-    Test app path: build/ios_integ/Build/Products/Debug-iphoneos/RunnerUITests-Runner.app
+    • Building app with entrypoint example_test.dart for iOS device (release)...
+    ✓ Completed building app with entrypoint example_test.dart for iOS device (31.5s)
+    build/ios_integ/Build/Products/Release-iphoneos/Runner.app (app under test)
+    build/ios_integ/Build/Products/Release-iphoneos/RunnerUITests-Runner.app (test instrumentation app)
+    build/ios_integ/Build/Products/Runner_iphoneos16.2-arm64.xctestrun (xctestrun file)
     ```
 
     Firebase Test Lab requires these files to be packaged together in a zip
