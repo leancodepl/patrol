@@ -41,5 +41,5 @@ class BuildCommand extends PatrolCommand {
   String get name => 'build';
 
   @override
-  String get description => 'Build apps for integration testing.';
+  String get description => 'Build app binaries for integration testing.';
 }

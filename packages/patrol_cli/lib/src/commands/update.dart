@@ -19,7 +19,7 @@ class UpdateCommand extends PatrolCommand {
   String get name => 'update';
 
   @override
-  String get description => 'Update the tool.';
+  String get description => 'Update Patrol CLI to the latest version.';
 
   @override
   Future<int> run() async {
