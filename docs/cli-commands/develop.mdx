@@ -15,17 +15,45 @@ To learn more about this command, run `patrol develop --help`.
 `patrol develop` makes the development of integration tests faster and more fun,
 thanks to Flutter's Hot Restart feature.
 
+### Caveats
 
+`patrol develop` is powerful, but it has its limitations. It's important to
+understand its limitations to write correct tests.
+
+Flutter apps consist of 2 parts: the native part and the Flutter part. **Hot
+Restart restarts only the Flutter part of your app**.
+
+When you press **R**, the Flutter part of your app is restarted – your `main()`
+function is run again.
 
 The Dart VM starts the entrypoint again.
 
-Only the "Dart side" of your app is restarted.
+It's important to note that:
 
-TODO:
+- The native part of your app is not restarted
+- The app's data is not cleared
+- The app is not uninstalled
 
-- permissions
-- file system
-- native state
+Below are a few common scenarios when state of your app will probably differ
+between the first and later Hot Restarts.
+
+**Permissions**
+
+Once granted, a permissions cannot be revoked.
+
+You have to work around this by handling both cases (of granted and not granted
+permissions) in your tests.
+
+Removing all permissions at the beginning of each test won't work - both iOS and
+Android kill the app when any permission is revoked, and when the app dies, Hot
+Restart stops.
+
+**File system**
+
+**Native state**
+
+If your app has some native code that's only run when the app is first run, it
+won't be re-executed on Hot Restarts.
 
 See also:
 
