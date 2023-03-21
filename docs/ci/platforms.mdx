@@ -1,0 +1,143 @@
+In this document we'll outline a few ways for running Patrol UI tests of Flutter
+apps.
+
+Generally, the solutions for running UI tests of mobile apps can be divided into
+2 groups:
+
+- Device labs - platforms that provide access mobile devices in the cloud. You
+  upload an app binary with tests to the device lab, which runs the tests and
+  reports the results back to you.
+
+- Traditional – containers or a VM, either managed or self-hosted. In this
+  approach, you get access to the shell, so everything is possible. You manually
+  script what you want to achieve, which is usually: installing the Android/iOS
+  SDK tools, creating a virtual device, running tests, and collecting results.
+
+There are quite a few solutions in each of these groups, and each is unique, but
+generaly, **device labs trade flexibility for ease of use**. They're a good fit
+for most apps but make certain more complicated scenarios impossible.
+
+An example of a more advanced use case that is not possible to accomplish on
+device labs is scanning a QR code. One of the apps we worked on had this
+feature, and we wanted to test it because it was critical part of the flow. When
+you have access to the shell filesystem (which you do have in the "manual"
+approach, and don't have in the "device lab" approach), you can easily replace
+the scene that is visible in the camera's viewfinder:
+
+This is not possible on device labs.
+
+# Device labs
+
+### Firebase Test Lab
+
+Firebase Test Lab is one of the most popular device labs. It is a good choice
+for most projects.
+
+**Things to keep in mind**
+
+When running on Firebase Test Lab, your app is automatically granted all
+permissions. If you want to test the flow of requesting permissions, you're out
+of luck.
+
+See also:
+
+- [Firebase Test Lab pricing]
+
+### emulator.wtf
+
+emulator.wtf is a fairly new solution created by the people at CodeMagic. It
+claims to provide a 2-5x speedup compared to Firebase Test Lab, and 4-20x
+speedup compared to spawning emulators on CI machines. It works similarly to
+Firebase Test Lab - you upload your main apk, test apk, select emulators to run
+on, and the rest is up to emulator.wtf - it runs the tests and outputs results.
+
+The emulators are indeed rock stable. Emulator.wtf automatically records videos
+from test runs, and it presents the test results nicely.
+
+It's a solid choice if you can accept that your tests will run only on Android
+emulator.
+
+Reports are available in JUnit.
+
+See also:
+
+- [emulator.wtf pricing]
+
+### Xcode Cloud
+
+[Xcode Cloud] is a CI/CD platform built into Xcode and designed expressly for
+Apple developers. It doesn't support testing on Android.
+
+Since integration tests written with Patrol are also native `XCTest`s, it should
+be possible to run Patrol on Xcode Cloud.
+
+We did not test check it yet.
+
+### Other
+
+Another popular device lab is [AWS Device Farm].
+
+If you use-case is highly specific, you might want to build an in-house device
+farm. A project that helps with this is [Simple Test Farm].
+
+# Traditional
+
+### GitHub Actions
+
+GitHub Actions is a very popular CI/CD platforms, especially among open-source
+projects thanks to unlimited minutes.
+
+Unfortunately, running Flutter integration tests on GitHub Actions is not a
+pleasant experience.
+
+**Android**
+
+We used the [ReactiveCircus/android-emulator-runner] GitHub Action to run
+Android emulator on GitHub Actions. Let us tell you this: Running an Android
+emulator on default GitHub Actions runner is a bad idea. It is slow to start and
+unstable. Apps crash randomly. And it's slow. Really, really slow. Do not do it
+unless you crave for pain. We tried to mitigate its instability by using Test
+Butler, but it comes with its own restrictions, most notably, it doesn't allow
+for Google Play Services.
+
+Just don't.
+
+**iOS**
+
+We use the [futureware-tech/simulator-action] GitHub Action to run iOS simulator
+on GitHub Actions is stable. But given that iOS simulator is just that – a
+simulator, not an emulator – the range of cases it can be used for is reduced.
+For example, there's no easy way to disable internet connection, which makes it
+very hard to test behavior of an app when offline.
+
+Bear in mind that to run an iOS simulator on GitHub Actions, you have to use a
+macOS runner. 1 minute on macos-latest counts as 10 minutes on ubuntu-latest.
+You can also use a custom runner – more on that below.
+
+Custom Runners Workflows on GitHub Actions can run on external runners, in
+addition to default runners such as ubuntu-latest and macos-latest.
+
+One example of such a custom runner provider is BuildJet. We tried running
+Android emulator on it, hoping that the performance benefits it brings would
+help with the abysmal stability, but we've found that, even though the emulator
+works faster and is more stable, it sometimes just crashes with no actionable
+error message.
+
+### Other
+
+There are many more CI/CD platforms. Some of the more prominent alternatives
+include [CircleCI], [CirrusCI], and [GitLab CI/CD]. We did not check whether
+running Flutter integration tests works fine on them, so we can't say more about
+them. If you did, we (and other Patrol users) will be happy to hear about your
+experiences!
+
+[aws device farm]: https://aws.amazon.com/device-farm
+[emulator.wtf pricing]: https://emulator.wtf/pricing
+[firebase test lab pricing]: https://firebase.google.com/docs/test-lab/usage-quotas-pricing
+[xcode cloud]: https://developer.apple.com/xcode-cloud/
+[reactivecircus/android-emulator-runner]: https://github.com/ReactiveCircus/android-emulator-runner
+[futureware-tech/simulator-action]: https://github.com/futureware-tech/simulator-action
+[simple test farm]: https://github.com/DeviceFarmer/stf
+[circleci]: https://circleci.com
+[cirrusci]: https://cirrus-ci.org
+[gitlab ci/cd]: https://docs.gitlab.com/ee/ci

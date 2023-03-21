@@ -1,21 +1,14 @@
-# Continuous integration
-
-Having tests doesn't bring you any benefits if you don't automatically verify
-that they pass. We know this too well, so we've put a lot of work into making it
-easy to run Patrol tests in a multitude of ways, so you can choose whatever
-suits you best.
-
-<Info>
-  Before you proceed with the steps listed below, make sure that you've
-  completed the [native setup] guide.
-</Info>
-
-### Run on Firebase Test Lab
+# Firebase Test Lab
 
 There are many device lab providers. Below we're showing how to run Patrol tests
 on [Firebase Test Lab], because it's popular in the Flutter community, but the
 instructions should be similar for other device farms, such as [AWS Device
 Farm][aws_device_farm].
+
+<Info>
+  Before you proceed with the steps listed below, make sure that you've
+  completed the [native setup] guide.
+</Info>
 
 <Tabs
   defaultValue="android"
@@ -65,7 +58,7 @@ Farm][aws_device_farm].
     `patrol build ios` outputs paths to the built app binaries, for example:
 
     ```
-    $ patrol build ios -t integration_test/example_test.dart
+    $ patrol build ios -t integration_test/example_test.dart --release
     • Building app with entrypoint example_test.dart for iOS device...
     ✓ Completed building app with entrypoint example_test.dart for iOS device (24.8s)
     App path: build/ios_integ/Build/Products/Debug-iphoneos/Runner.app
