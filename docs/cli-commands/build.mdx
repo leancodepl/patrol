@@ -12,6 +12,10 @@ patrol build ios
 To see all available options and flags, run `patrol build android --help` or
 `patrol build ios --help`.
 
+<Info>
+  For `patrol build` to work, you must complete [native setup](/native/setup).
+</Info>
+
 ### Description
 
 `patrol build` is useful if you want to run test on CI, for example on Firebase
@@ -80,6 +84,6 @@ design flaw in the way integration testing in Flutter works.
 
 [We know about this issue][bundling_issue] and we're aiming to fix it soon with
 an approach we call "test bundling". This will dramatically speed up testing
-large apps with many integration tests.
+apps with many integration tests.
 
 [bundling_issue]: https://github.com/leancodepl/patrol/issues/1004
