@@ -263,7 +263,8 @@ class IOSTestBackend {
   Future<String> getSdkVersion({required bool real}) async {
     // See the versions yourself:
     //
-    // $ xcodebuild -showsdks -json | jq ".[] | {sdkVersion, platform}"
+    // $ xcodebuild -showsdks -json | jq '.[] | {sdkVersion, platform} | select(.platform=="iphoneos")'
+    // $ xcodebuild -showsdks -json | jq '.[] | {sdkVersion, platform} | select(.platform=="iphonesimulator")'
 
     final processResult = await _processManager.run(
       ['xcodebuild', '-showsdks', '-json'],
