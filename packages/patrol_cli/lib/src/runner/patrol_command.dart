@@ -171,4 +171,13 @@ abstract class PatrolCommand extends Command<int> {
 
     return buildModes.single;
   }
+
+  /// The name of the command in the online docs (https://patrol.leancode.co),
+  /// if different than [name].
+  String? get docsName => name;
+
+  @override
+  String? get usageFooter {
+    return 'Read detailed docs at https://patrol.leancode.co/cli-commands/$docsName';
+  }
 }

@@ -46,6 +46,9 @@ class BuildIOSCommand extends PatrolCommand {
   String get name => 'ios';
 
   @override
+  String? get docsName => 'build';
+
+  @override
   String get description => 'Build app for integration testing on iOS.';
 
   @override
