@@ -27,7 +27,7 @@ for i in {1..10}; do patrol test --target integration_test/my_test.dart; done
 ### Inspecting native view hierarchy
 
 It's hard to tap on or enter text into a view you don't know how to refer to. In
-such situation we recommmend doing a native view hierarchy dump and finding the
+such situation we recommend doing a native view hierarchy dump and finding the
 properties of the view you want to act on.
 
 **Android**
@@ -128,7 +128,7 @@ the cause of a problem instead of ignoring it.
 That said, sometimes you do have a legitimate reason to ignore an exception.
 This can be accomplished with the help of the
 [WidgetTester.takeException()][take_exception] method, which returns the last
-exception that occured and removes it from the internal list of uncaught
+exception that occurred and removes it from the internal list of uncaught
 exceptions, so that it won't mark the test as failed. To use it, just call it
 once:
 
