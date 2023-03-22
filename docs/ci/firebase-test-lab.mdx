@@ -39,6 +39,11 @@ Farm][aws_device_farm].
         --results-dir=<RESULTS_DIRECTORY>
     ```
 
+    <Info>
+      You must [install the gcloud tool] first. [Here][gcloud_android] you can learn
+      more about all available options and flags.
+    </Info>
+
     It's convenient to create a shell script to avoid typing that long command
     every time. You might want to take a look at Patrol example app's
     [run_android_testlab script][example_android_script].
@@ -83,6 +88,11 @@ Farm][aws_device_farm].
       --device model=iphone8,version=16.2,locale=en_US,orientation=portrait
     ```
 
+    <Info>
+      You must [install the gcloud tool] first. [Here][gcloud_ios] you can learn
+      more about all available options and flags.
+    </Info>
+
     If your `.xctestrun` file has different iOS version in its name than the
     device you're running on, simply rename the `.xctestrun` so that the version
     matches.
@@ -100,3 +110,6 @@ Farm][aws_device_farm].
 [example_ios_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_ios_testlab
 [firebase test lab]: https://firebase.google.com/products/test-lab
 [aws_device_farm]: https://aws.amazon.com/device-farm
+[install the gcloud tool]: https://cloud.google.com/sdk/docs/install
+[gcloud_android]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run
+[gcloud_ios]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/ios/run
