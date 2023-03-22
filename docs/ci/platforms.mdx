@@ -17,15 +17,6 @@ There are quite a few solutions in each of these groups, and each is unique, but
 generaly, **device labs trade flexibility for ease of use**. They're a good fit
 for most apps but make certain more complicated scenarios impossible.
 
-An example of a more advanced use case that is not possible to accomplish on
-device labs is scanning a QR code. One of the apps we worked on had this
-feature, and we wanted to test it because it was critical part of the flow. When
-you have access to the shell filesystem (which you do have in the "manual"
-approach, and don't have in the "device lab" approach), you can easily replace
-the scene that is visible in the camera's viewfinder:
-
-This is not possible on device labs.
-
 # Device labs
 
 ### Firebase Test Lab
@@ -79,6 +70,19 @@ Another popular device lab is [AWS Device Farm].
 
 If you use-case is highly specific, you might want to build an in-house device
 farm. A project that helps with this is [Simple Test Farm].
+
+### Limitations
+
+We mentioned above that device labs make certain scenarios impossible to
+accomplish.
+
+An example of such scenario scanning a QR code. One of the apps we worked on had
+this feature, and we wanted to test it because it was critical part of the user
+flow. When you have access to the shell filesystem (which you do have in the
+"manual" approach, and don't have in the "device lab" approach), you can easily
+[replace the scene that is visible in the camera's viewfinder][so_viewfinder].
+
+This is no possible on device labs.
 
 # Traditional
 
@@ -140,6 +144,7 @@ happy to hear about your experiences!
 [reactivecircus/android-emulator-runner]: https://github.com/ReactiveCircus/android-emulator-runner
 [futureware-tech/simulator-action]: https://github.com/futureware-tech/simulator-action
 [simple test farm]: https://github.com/DeviceFarmer/stf
+[so_viewfinder]: https://stackoverflow.com/questions/13818389/android-emulator-camera-custom-image
 [circleci]: https://circleci.com
 [cirrusci]: https://cirrus-ci.org
 [gitlab ci/cd]: https://docs.gitlab.com/ee/ci
