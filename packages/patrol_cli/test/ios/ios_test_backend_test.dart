@@ -1,8 +1,8 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -62,34 +62,107 @@ void main() {
       );
     });
 
-    test('finds xctestrun with no arch', () async {
-      const name = 'Runner_iphoneos16.2.xctestrun';
+    group('xcTestRunPath', () {
+      @isTest
+      void testXcTestRunPath(
+        String description, {
+        String scheme = 'Runner',
+        bool simulator = false,
+        String? arch,
+      }) {
+        test(description, () async {
+          final targetPlatform = simulator ? 'iphonesimulator' : 'iphoneos';
+          var targetArch = arch;
+          if (targetArch != null) {
+            targetArch = '-$targetArch';
+          }
 
-      fs
-          .file(join('build', 'ios_integ', 'Build', 'Products', name))
-          .createSync(recursive: true);
+          final name = '${scheme}_${targetPlatform}16.2$targetArch.xctestrun';
 
-      final found = await iosTestBackend.xcTestRunPath(
-        real: true,
-        scheme: 'Runner',
-        sdkVersion: '16.2',
+          fs
+              .file('build/ios_integ/Build/Products/$name')
+              .createSync(recursive: true);
+
+          final found = await iosTestBackend.xcTestRunPath(
+            real: !simulator,
+            scheme: scheme,
+            sdkVersion: '16.2',
+          );
+
+          expect(
+            found,
+            '/example_app/build/ios_integ/Build/Products/$name',
+          );
+        });
+      }
+
+      testXcTestRunPath(
+        'finds xctestrun with no arch on iphoneos',
       );
-      expect(found, '/example_app/build/ios_integ/Build/Products/$name');
-    });
 
-    test('finds xctestrun with single arch', () async {
-      const name = 'Runner_iphoneos16.2-arm64.xctestrun';
-
-      fs
-          .file(join('build', 'ios_integ', 'Build', 'Products', name))
-          .createSync(recursive: true);
-
-      final found = await iosTestBackend.xcTestRunPath(
-        real: true,
-        scheme: 'Runner',
-        sdkVersion: '16.2',
+      testXcTestRunPath(
+        'finds xctestrun with single arch on iphoneos',
+        arch: 'arm64',
       );
-      expect(found, '/example_app/build/ios_integ/Build/Products/$name');
+
+      testXcTestRunPath(
+        'finds xctestrun with double arch on iphoneos',
+        arch: 'arm64-x86_64',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with no arch and custom scheme on iphoneos',
+        scheme: 'dev',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with single arch and custom scheme on iphoneos',
+        arch: 'arm64',
+        scheme: 'dev',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with double arch and custom scheme on iphoneos',
+        arch: 'arm64-x86_64',
+        scheme: 'dev',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with no arch on iphonesimulator',
+        simulator: true,
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with single arch on iphonesimulator',
+        arch: 'arm64',
+        simulator: true,
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with double arch on iphonesimulator',
+        arch: 'arm64-x86_64',
+        simulator: true,
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with no arch and custom scheme on iphonesimulator',
+        simulator: true,
+        scheme: 'dev',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with single arch and custom scheme on iphonesimulator',
+        arch: 'arm64',
+        simulator: true,
+        scheme: 'dev',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with double arch and custom scheme on iphonesimulator',
+        arch: 'arm64-x86_64',
+        simulator: true,
+        scheme: 'dev',
+      );
     });
   });
 }
