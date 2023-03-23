@@ -1,4 +1,4 @@
-import 'package:path/path.dart' show basename;
+import 'package:path/path.dart' show basename, join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -44,6 +44,9 @@ class BuildIOSCommand extends PatrolCommand {
 
   @override
   String get name => 'ios';
+
+  @override
+  String? get docsName => 'build';
 
   @override
   String get description => 'Build app for integration testing on iOS.';
@@ -114,6 +117,10 @@ class BuildIOSCommand extends PatrolCommand {
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,
       );
+      await _printXcTestRunPath(
+        simulator: iosOpts.simulator,
+        scheme: iosOpts.scheme,
+      );
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -128,15 +135,31 @@ class BuildIOSCommand extends PatrolCommand {
   void _printBinaryPaths({required bool simulator, required String buildMode}) {
     // print path for 2 apps that live in build/ios_integ/Build/Products
 
+    final testRoot = join('build', 'ios_integ', 'Build', 'Products');
     final buildDir = simulator
-        ? 'build/ios_integ/Build/Products/$buildMode-iphonesimulator'
-        : 'build/ios_integ/Build/Products/$buildMode-iphoneos';
+        ? join(testRoot, '$buildMode-iphonesimulator')
+        : join(testRoot, '$buildMode-iphoneos');
 
-    final appPath = '$buildDir/Runner.app';
-    final testAppPath = '$buildDir/RunnerUITests-Runner.app';
+    final appPath = join(buildDir, 'Runner.app');
+    final testAppPath = join(buildDir, 'RunnerUITests-Runner.app');
 
     _logger
-      ..info('App path: $appPath')
-      ..info('Test app path: $testAppPath');
+      ..info('$appPath (app under test)')
+      ..info('$testAppPath (test instrumentation app)');
+  }
+
+  Future<void> _printXcTestRunPath({
+    required bool simulator,
+    required String scheme,
+  }) async {
+    final sdkVersion = await _iosTestBackend.getSdkVersion(real: !simulator);
+    final xcTestRunPath = await _iosTestBackend.xcTestRunPath(
+      real: !simulator,
+      scheme: scheme,
+      sdkVersion: sdkVersion,
+      absolutePath: false,
+    );
+
+    _logger.info('$xcTestRunPath (xctestrun file)');
   }
 }

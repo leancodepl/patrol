@@ -42,6 +42,9 @@ class BuildAndroidCommand extends PatrolCommand {
   String get name => 'android';
 
   @override
+  String? get docsName => 'build';
+
+  @override
   String get description => 'Build app for integration testing on Android.';
 
   @override

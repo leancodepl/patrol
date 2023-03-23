@@ -20,7 +20,7 @@ class DoctorCommand extends PatrolCommand {
   String get name => 'doctor';
 
   @override
-  String get description => 'Show information about the installed tooling.';
+  String get description => 'Show information about installed tooling.';
 
   @override
   Future<int> run() async {

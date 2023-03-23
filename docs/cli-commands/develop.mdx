@@ -1,0 +1,85 @@
+# develop
+
+### Synopsis
+
+Develop integration tests as native tests on devices.
+
+```
+patrol develop
+```
+
+To see all available options and flags, run `patrol develop --help`.
+
+### Description
+
+`patrol develop` makes the development of integration tests faster and more fun,
+thanks to Flutter's Hot Restart feature.
+
+To run a test file with Hot Restart, specify the `--target` option:
+
+```
+patrol develop --target integration_test/example_test.dart
+```
+
+This performs a build of your app, so it's usually slow.
+
+When the build completes and the app starts, Hot Restart becomes active after a
+short while. Once it it active, type **R** to trigger a Hot Restart.
+
+### Caveats
+
+`patrol develop` is powerful, but it has some limitations. It's important to
+understand them to write correct tests.
+
+Flutter apps consist of 2 parts: the native part and the Flutter part. **Hot
+Restart restarts only the Flutter part of your app**.
+
+When you press **R**, the Flutter part of your app is restarted – your `main()`
+function is run again.
+
+It's important to note that:
+
+- The native part of your app is not restarted
+- The app's data is not cleared
+- The app is not uninstalled
+
+Below are a few common scenarios when state of your app will probably differ
+between the first and later Hot Restarts.
+
+**Permissions**
+
+Once granted, a permissions cannot be revoked.
+
+You have to work around this by handling both cases (of granted and not granted
+permissions) in your tests.
+
+Removing all permissions at the beginning of each test won't work - both iOS and
+Android kill the app when any permission is revoked, and when the app dies, Hot
+Restart stops.
+
+**File system**
+
+The files your app creates in its internal storage aren't cleared between hot
+restarts.
+
+For example, when some data is saved to SharedPreferences during the first
+restart, it will stay around in subsequent restarts (unless it's manually
+cleared).
+
+The same goes for any data the app creates during test - photos, documents, etc.
+It's your responsibility to clean them up at the right time to have a stable
+environment during `patrol develop`.
+
+**Native state**
+
+If your app has some native code that runs only when the app is first run, it
+won't be re-executed on hot restarts.
+
+These cases are quite specific and it's hard to give advice without knowing the
+context.
+
+See also:
+
+- [The difference between Hot Restart and Hot Reload in Flutter][so_question]
+
+[so_question]: https://stackoverflow.com/q/61787776/7009800

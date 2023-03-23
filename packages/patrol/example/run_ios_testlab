@@ -14,34 +14,17 @@ if [ -z "$target" ]; then
 	_usage
 	exit 1
 fi
+target_path="$(realpath "$target")"
 
+dev_target="16.2"
 product="build/ios_integ/Build/Products"
 rm -rf "$product"
 
-dev_target="16.2"
-
-flutter build ios --target "$target" --release --no-codesign
-
-
-pushd ios
-xcodebuild build-for-testing \
-	-workspace Runner.xcworkspace \
-	-scheme Runner \
-	-xcconfig Flutter/Release.xcconfig \
-	-configuration Release \
-	-sdk iphoneos \
-	-derivedDataPath ../build/ios_integ \
-	OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
-	# CODE_SIGN_IDENTITY="" \
-	# CODE_SIGNING_REQUIRED="NO" \
-	# CODE_SIGN_ENTITLEMENTS="" \
-	# CODE_SIGNING_ALLOWED="NO"
-popd
-
+flutter pub get
+patrol build ios --target "$target_path" --release --no-codesign
 
 pushd "$product"
-# mv Runner_iphoneos16.2-arm64.xctestrun Runner_iphoneos"$dev_target"-arm64.xctestrun
-zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
+zip -r ios_tests.zip Release-iphoneos "Runner_iphoneos$dev_target-arm64.xctestrun"
 popd
 
 exec gcloud firebase test ios run \

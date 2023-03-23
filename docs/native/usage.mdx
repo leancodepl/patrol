@@ -41,8 +41,12 @@ WebViews.
   use:
 
   ```dart
-  await $.native.tap(Selector(text: 'Add'), appId: 'com.apple.MobileAddressBook');
+  await $.native.tap(
+    Selector(text: 'Add'),
+    appId: 'com.apple.MobileAddressBook',
+  );
   ```
+
 </Warning>
 
 ### Notifications
@@ -63,11 +67,11 @@ You can also tap on notification by its content:
 
 ```dart
 await $.native.tapOnNotificationBySelector(
-  Selector(textContains: 'Charlie just sent you a secret message!'),
+  Selector(textContains: 'Someone liked your recent post'),
 );
 ```
 
-![Notifications test][notifications_test]
+<YouTube id="G0i6HEk0HQg" />
 
 ### Permissions
 
@@ -79,7 +83,7 @@ await $.native.grantPermissionOnlyThisTime();
 await $.native.denyPermission();
 ```
 
-![Permissions many test][permissions_many_test]
+<YouTube id="yC3sqpY5P_A" />
 
 If the permission request dialog visible is the location dialog, you can also
 select the accuracy:
@@ -89,7 +93,7 @@ await $.native.selectFineLocation();
 await $.native.selectCoarseLocation();
 ```
 
-![Permissions location test][permissions_location_test]
+<YouTube id="Wl2DyOy5e2U" />
 
 The test will fail if the permission request dialog is not visible. You can
 check if it is with:
@@ -118,7 +122,10 @@ if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
   manually:
 
   ```dart
-  await $.native.tap(Selector(text: 'Allow'), appId: 'com.apple.springboard'));
+  await $.native.tap(
+    Selector(text: 'Allow'),
+    appId: 'com.apple.springboard',
+  );
   ```
 </Warning>
 
