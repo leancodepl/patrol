@@ -1,3 +1,8 @@
+## 1.1.1
+
+- Fix bug when running on iOS (`.xctestrun` file couldn't be found) (#1111)
+- Make `patrol develop` command visible (#1104)
+
 ## 1.1.0
 
 - Automatically infer iOS-specific build options: `scheme` and `configuration`
