@@ -1,3 +1,8 @@
+## 1.1.2
+
+- Fix `patrol test`/`patrol develop` being stuck after tests finish if `adb`
+  executable is not in $PATH. Now an error is thrown (#1119)
+
 ## 1.1.1
 
 - Fix bug when running on iOS (`.xctestrun` file couldn't be found) (#1111)
