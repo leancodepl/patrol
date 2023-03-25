@@ -278,7 +278,12 @@ class TestCommand extends PatrolCommand {
           ..err(defaultFailureMessage);
         rethrow;
       } finally {
-        await finalizer?.call();
+        try {
+          await finalizer?.call();
+        } catch (err) {
+          _logger.err('Failed to call finalizer: $err');
+          rethrow;
+        }
       }
     };
   }
