@@ -7,9 +7,16 @@ abstract class AdbException implements Exception {
   final String message;
 
   @override
-  String toString() {
-    return 'AdbException: $message';
-  }
+  String toString() => 'AdbException: $message';
+}
+
+/// Indicates that `adb` executable was not found.
+class AdbExecutableNotFound extends AdbException {
+  /// Creates a new [AdbExecutableNotFound].
+  const AdbExecutableNotFound({required super.message});
+
+  @override
+  String toString() => 'AdbExecutableNotFound: $message';
 }
 
 /// Indicates that `adbd` (ADB daemon) was not running when `adb` (ADB client)
@@ -24,6 +31,9 @@ class AdbDaemonNotRunning extends AdbException {
   /// If this string occurs in `adb`'s stderr, there's a good chance that
   /// [AdbDaemonNotRunning] should be thrown.
   static const trigger = 'daemon not running; starting now at';
+
+  @override
+  String toString() => 'AdbDaemonNotRunning: $message';
 }
 
 /// Indicates that `adb install` call failed with
@@ -37,9 +47,7 @@ class AdbInstallFailedUpdateIncompatible extends AdbException {
   static const trigger = 'INSTALL_FAILED_UPDATE_INCOMPATIBLE';
 
   @override
-  String toString() {
-    return 'AdbInstallFailedUpdateIncompatible: $message';
-  }
+  String toString() => 'AdbInstallFailedUpdateIncompatible: $message';
 }
 
 /// Indicates that `adb uninstall` call failed with
@@ -53,7 +61,5 @@ class AdbDeleteFailedInternalError extends AdbException {
   static const trigger = 'DELETE_FAILED_INTERNAL_ERROR';
 
   @override
-  String toString() {
-    return 'AdbDeleteFailedInternalError: $message';
-  }
+  String toString() => 'AdbDeleteFailedInternalError: $message';
 }

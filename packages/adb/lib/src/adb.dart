@@ -20,7 +20,9 @@ class Adb {
   /// Initializes this [Adb] instance.
   ///
   /// If the ADB daemon is not running, it will be started.
-  Future<void> init() async => _ensureServerRunning();
+  Future<void> init() async {
+    await _ensureServerRunning();
+  }
 
   final AdbInternals _adbInternals;
 
@@ -230,6 +232,11 @@ class Adb {
   }
 
   Future<void> _ensureServerRunning() async {
+    try {
+      await io.Process.run('adb', []);
+    } on io.ProcessException catch (err) {
+      throw AdbExecutableNotFound(message: err.message);
+    }
     while (true) {
       final result = await io.Process.run(
         'adb',
