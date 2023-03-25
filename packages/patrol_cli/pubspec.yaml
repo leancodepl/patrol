@@ -10,7 +10,7 @@ environment:
   sdk: '>=2.18.0 <4.0.0'
 
 dependencies:
-  adb: ^0.2.4
+  adb: ^0.2.5
   ansi_styles: ^0.3.2
   args: ^2.4.0
   cli_completion: ^0.3.0
