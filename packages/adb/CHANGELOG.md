@@ -1,3 +1,7 @@
+## 0.2.5
+
+- Throw an exception if `adb` executable is not present in $PATH (#1118)
+
 ## 0.2.4+2
 
 - Fix publish workflow (#955) (#956)
