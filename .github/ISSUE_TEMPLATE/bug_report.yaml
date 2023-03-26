@@ -1,4 +1,4 @@
-name: I am having a problem while using Patrol to write tests
+name: Report a bug
 description:
   You have run into problems while installing Patrol, setting it up in your app,
   or your tests don't behave as you'd expect.
@@ -27,7 +27,18 @@ body:
   - type: textarea
     attributes:
       label: Steps to reproduce
-      description: Thoroughly explain how to reproduce the problem you're running into.
+      description: |
+        Thoroughly explain how to reproduce the problem you're running into.
+
+        In addition to the detailed step-by-step instructions, you must include
+        the device you're encountering the issue on (e.g. physical Android, iOS
+        Simulator), and the OS version (e.g. Android 9, iOS 14).
+
+        Aside from the mandatory information, include as much additional details
+        as possible to make it easier for us to understand and fix the problem.
+        Screenshots and videos are welcome.
+
+        **Issues that cannot be reliably reproduced may be closed.**
       placeholder: |
         1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
         2. Start Android emulator (Pixel 4, API 31, Google Play)
