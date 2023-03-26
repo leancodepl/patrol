@@ -30,18 +30,15 @@ body:
       description: |
         Thoroughly explain how to reproduce the problem you're running into.
 
-        In addition to the detailed step-by-step instructions, include:
-
-          - The device you encounter the issue on (e.g. physical Android, iOS
-          Simulator)
-          
-          - OS version on these devices (e.g. Android 9, iOS 14)
+        In addition to the detailed step-by-step instructions, you must include
+        the device you're encountering the issue on (e.g. physical Android, iOS
+        Simulator), and the OS version (e.g. Android 9, iOS 14).
 
         Aside from the mandatory information, include as much additional details
         as possible to make it easier for us to understand and fix the problem.
         Screenshots and videos are welcome.
 
-        **Issues that lack detailed steps to reproduce may be closed.**
+        **Issues that cannot be reliably reproduced may be closed.**
       placeholder: |
         1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
         2. Start Android emulator (Pixel 4, API 31, Google Play)
