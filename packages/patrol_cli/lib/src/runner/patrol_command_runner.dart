@@ -5,6 +5,7 @@ import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:equatable/equatable.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
@@ -31,6 +32,7 @@ import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
+  EquatableConfig.stringify = true;
   final logger = Logger();
   final runner = PatrolCommandRunner(logger: logger);
 
@@ -160,8 +162,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     );
     addCommand(
       DoctorCommand(
-        logger: _logger,
+        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         platform: _platform,
+        logger: _logger,
       ),
     );
     addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));

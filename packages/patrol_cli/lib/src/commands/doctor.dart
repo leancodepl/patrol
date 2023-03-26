@@ -3,18 +3,23 @@ import 'dart:io' as io;
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends PatrolCommand {
   DoctorCommand({
-    required Logger logger,
+    required PubspecReader pubspecReader,
     required Platform platform,
-  })  : _logger = logger,
-        _platform = platform;
+    required Logger logger,
+  })  : _pubspecReader = pubspecReader,
+        _platform = platform,
+        _logger = logger;
+
+  final PubspecReader _pubspecReader;
+  final Platform _platform;
 
   final Logger _logger;
-  final Platform _platform;
 
   @override
   String get name => 'doctor';
@@ -30,6 +35,8 @@ class DoctorCommand extends PatrolCommand {
     if (_platform.isMacOS) {
       _printIosSpecifics();
     }
+
+    _printProjectSpecifics();
 
     return 0;
   }
@@ -66,5 +73,19 @@ class DoctorCommand extends PatrolCommand {
         'Program $tool not found ${hint != null ? "(install with `$hint`)" : ""}',
       );
     }
+  }
+
+  void _printProjectSpecifics() {
+    final pubspecConfig = _pubspecReader.read();
+    _logger
+      ..info('Patrol configuration in pubspec.yaml:')
+      ..info('  Android')
+      ..info('    package_name: ${pubspecConfig.android.packageName}')
+      ..info('    app_name: ${pubspecConfig.android.appName}')
+      ..info('    flavor: ${pubspecConfig.android.flavor}')
+      ..info('  IOS')
+      ..info('    bundle_id: ${pubspecConfig.ios.bundleId}')
+      ..info('    app_name: ${pubspecConfig.ios.appName}')
+      ..info('    flavor: ${pubspecConfig.ios.flavor}');
   }
 }
