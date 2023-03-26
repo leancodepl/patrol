@@ -54,10 +54,10 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: Patrol command
+      label: Logs
       description: |
         Include the full logs of the command you're running between the lines
-        with the backticks below.
+        with the backticks below. Run the command with `--verbose` flag.
 
         If you're running more than single command, include its logs in a
         separate backticks block.
