@@ -1,0 +1,105 @@
+name: I am having a problem while using Patrol to write tests
+description:
+  You have run into problems while installing Patrol, setting it up in your app,
+  or your tests don't behave as you'd expect.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for using Patrol!
+
+        If you're looking for support, check out our docs
+        or consider asking a question on our Discussions or Stack Overflow:
+
+          - https://patrol.leancode.co
+          - https://github.com/leancodepl/patrol/discussions
+          - https://stackoverflow.com/questions/tagged/flutter-patrol
+
+        If you have found a bug or if our documentation doesn't have an answer
+        to what you're looking for, then fill out the template below.
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the [existing issues](https://github.com/leancodepl/patrol/issues)
+          required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Thoroughly explain how to reproduce the problem you're running into.
+      placeholder: |
+        1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
+        2. Start Android emulator (Pixel 4, API 31, Google Play)
+        3. Verify that the app builds fine: `flutter build apk --debug`
+        4. Run the integration test: `patrol test --target integration_test/buggy_test.dart`
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Actual results
+      description: Explain what is actually happening.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Patrol command
+      description: |
+        Include the full logs of the command you're running between the lines
+        with the backticks below.
+
+        If you're running more than single command, include its logs in a
+        separate backticks block.
+
+        If the logs are too large to be uploaded to Github, you may upload
+        them as a `txt` file or use online tools like https://pastebin.com to
+        share it.
+
+        **Do not upload screenshots of text**. Instead, use code blocks or the
+        above mentioned ways to upload logs.
+      value: |
+        <details>
+        <summary>Logs</summary>
+
+        ```
+        <!-- Replace this line with your logs. Do not remove the backticks! -->
+        ```
+
+        </details>
+  - type: textarea
+    attributes:
+      label: Patrol version
+      description: Provide version of the `patrol` package from pubspec.yaml.
+      placeholder: 'patrol: ^1.0.8'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Patrol Doctor output
+      description: Provide the full output of running `patrol doctor` in your project.
+      value: |
+        <details>
+        <summary>Patrol Doctor output</summary>
+
+        ```
+        <!-- Replace this line with your logs. Do not remove the backticks! -->
+        ```
+
+        </details>
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Flutter Doctor output
+      description: Provide the full output of running `flutter doctor --verbose`.
+      value: |
+        <details>
+        <summary>Flutter Doctor output</summary>
+
+        ```
+        <!-- Replace this line with your logs. Do not remove the backticks! -->
+        ```
+
+        </details>
+    validations:
+      required: true
