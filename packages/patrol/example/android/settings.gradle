@@ -12,19 +12,8 @@ pluginManagement {
         throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
     }
 
-    // resolutionStrategy {
-    //     eachPlugin {
-    //         logger.lifecycle("Plugin requested: $requested")
-    //         if (requested.id.id == "flutter") {
-    //             useModule("dev.flutter:flutter-gradle-plugin:1.0.0")
-    //         }
-    //     }
-    // }
-
     includeBuild("$flutterRoot/packages/flutter_tools/gradle")
 }
-
-logger.lifecycle('settings.gradle')
 
 include ":app"
 
