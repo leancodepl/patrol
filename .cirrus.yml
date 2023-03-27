@@ -1,0 +1,28 @@
+task:
+  name: Test example app on Android
+  container:
+    image: cirrusci/flutter:stable
+    cpu: 4
+    memory: 8G
+    kvm: 'true'
+  env:
+    PATH: $HOME/.pub-cache/bin:${PATH}
+    EMULATOR_API_LEVEL: '28'
+    ANDROID_ABI: 'default;x86'
+
+  pub_cache:
+    folder: ~/.pub-cache
+  setup_flutter_script: flutter precache
+  setup_patrol_cli_script:
+    - dart pub global activate --source path packages/patrol_cli && patrol
+  install_images_script: sdkmanager "system-images;android-$EMULATOR_API_LEVEL;$ANDROID_ABI"
+  install_emulator_script: sdkmanager emulator
+  create_device_script:
+    - echo no | avdmanager create avd --force -n test -k "system-images;android-$EMULATOR_API_LEVEL;$ANDROID_ABI"
+  start_emulator_background_script:
+    - $ANDROID_HOME/emulator/emulator -no-window -verbose -avd test -no-audio -no-boot-anim
+  wait_for_emulator_script: android-wait-for-emulator
+  patrol_test_script:
+    - pwd
+    - cd packages/patrol/example
+    - patrol test --verbose
