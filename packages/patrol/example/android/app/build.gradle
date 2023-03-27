@@ -1,3 +1,9 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin" version "1.0.0"
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -21,9 +27,10 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
-apply plugin: "com.android.application"
-apply plugin: "kotlin-android"
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+//apply plugin: "com.android.application"
+//apply plugin: "kotlin-android"
+//apply plugin: "flutter"
+//apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdk 33

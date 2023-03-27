@@ -1,3 +1,31 @@
+pluginManagement {
+    def localProperties = new Properties()
+    def localPropertiesFile = file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.withReader("UTF-8") { reader ->
+            localProperties.load(reader)
+        }
+    }
+
+    def flutterRoot = localProperties.getProperty("flutter.sdk")
+    if (flutterRoot == null) {
+        throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    }
+
+    // resolutionStrategy {
+    //     eachPlugin {
+    //         logger.lifecycle("Plugin requested: $requested")
+    //         if (requested.id.id == "flutter") {
+    //             useModule("dev.flutter:flutter-gradle-plugin:1.0.0")
+    //         }
+    //     }
+    // }
+
+    includeBuild("$flutterRoot/packages/flutter_tools/gradle")
+}
+
+logger.lifecycle('settings.gradle')
+
 include ":app"
 
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
