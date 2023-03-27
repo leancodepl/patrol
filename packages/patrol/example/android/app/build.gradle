@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin" version "1.0.0"
+    id "dev.flutter.flutter-gradle-plugin" version "1.0.0" apply true
 }
 
 def localProperties = new Properties()
@@ -30,7 +30,7 @@ if (flutterVersionName == null) {
 //apply plugin: "com.android.application"
 //apply plugin: "kotlin-android"
 //apply plugin: "flutter"
-//apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+// apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdk 33
@@ -82,8 +82,13 @@ android {
     }
 }
 
+logger.lifecycle("extensions: ${project.extensions}")
+logger.lifecycle("ext: ${project.ext}")
+logger.lifecycle("android: ${project.extensions.findByName("android")}")
+logger.lifecycle("flutter: ${project.extensions.findByName("flutter")}")
+
 flutter {
-    source "../.."
+    // source "../.."
 }
 
 dependencies {
