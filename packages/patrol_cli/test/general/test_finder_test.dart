@@ -207,5 +207,35 @@ void main() {
         equals(files.map((file) => join(wd.path, file))),
       );
     });
+
+    test('filters out excluded tests', () {
+      final files = [
+        'integration_test/alpha/alpha_test.dart',
+        'integration_test/alpha/bravo_test.dart',
+        'integration_test/alpha_test.dart',
+        'integration_test/bravo/bravo_test.dart',
+        'integration_test/charlie/charlie_test.dart',
+        'integration_test/zulu_test.dart',
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      final excluded = [
+        'bravo_test.dart', // not valid
+        'integration_test/alpha_test.dart',
+        'integration_test/alpha/alpha_test.dart',
+      ];
+
+      expect(
+        testFinder.findAllTests(excludes: excluded.toSet()),
+        equals([
+          '/projects/awesome_app/integration_test/alpha/bravo_test.dart',
+          '/projects/awesome_app/integration_test/bravo/bravo_test.dart',
+          '/projects/awesome_app/integration_test/charlie/charlie_test.dart',
+          '/projects/awesome_app/integration_test/zulu_test.dart',
+        ]),
+      );
+    });
   });
 }

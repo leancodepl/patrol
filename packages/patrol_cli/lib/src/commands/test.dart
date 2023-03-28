@@ -96,7 +96,7 @@ class TestCommand extends PatrolCommand {
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
-        : _testFinder.findAllTests();
+        : _testFinder.findAllTests(excludes: stringsArg('exclude').toSet());
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {

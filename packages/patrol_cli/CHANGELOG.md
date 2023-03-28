@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `--exclude` flag to `patrol test` (#1137)
+
 ## 1.1.2
 
 - Fix `patrol test`/`patrol develop` being stuck after tests finish if `adb`

@@ -60,16 +60,20 @@ class TestFinder {
 
   /// Recursively searches the `integration_test` directory and returns files
   /// ending with `_test.dart` as absolute paths.
-  List<String> findAllTests({Directory? directory}) {
+  List<String> findAllTests({
+    Directory? directory,
+    Set<String> excludes = const {},
+  }) {
     directory ??= _integrationTestDirectory;
 
     if (!directory.existsSync()) {
-      throwToolExit("Directory 'integration_test' doesn't exist");
+      throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
     return directory
         .listSync(recursive: true, followLinks: false)
         .sorted((a, b) => a.path.compareTo(b.path))
+        // Find only test files
         .where(
           (fileSystemEntity) {
             final hasSuffix = fileSystemEntity.path.endsWith('_test.dart');
@@ -77,6 +81,12 @@ class TestFinder {
             return hasSuffix && isFile;
           },
         )
+        // Filter out excluded files
+        .where((fileSystemEntity) {
+          // TODO: Doesn't handle excluded passes as absolute paths
+          final isExcluded = excludes.contains(fileSystemEntity.path);
+          return !isExcluded;
+        })
         .map((entity) => entity.absolute.path)
         .toList();
   }
