@@ -121,6 +121,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
@@ -185,7 +186,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         platform: _platform,
       ),
     );
-    addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
+    addCommand(
+      UpdateCommand(
+        pubUpdater: _pubUpdater,
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
 
     argParser
       ..addFlag(

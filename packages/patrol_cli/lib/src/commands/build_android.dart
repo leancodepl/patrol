@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -8,6 +10,7 @@ import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:usage/usage.dart';
 
 class BuildAndroidCommand extends PatrolCommand {
   BuildAndroidCommand({
@@ -15,11 +18,13 @@ class BuildAndroidCommand extends PatrolCommand {
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
+    required Analytics analytics,
     required Logger logger,
   })  : _testFinder = testFinder,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
+        _analytics = analytics,
         _logger = logger {
     usesTargetOption();
     usesBuildModeOption();
@@ -36,6 +41,7 @@ class BuildAndroidCommand extends PatrolCommand {
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
 
+  final Analytics _analytics;
   final Logger _logger;
 
   @override
@@ -49,6 +55,8 @@ class BuildAndroidCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendEvent('command', 'build android'));
+
     final targetArg = stringsArg('target');
     if (targetArg.isEmpty) {
       throwToolExit('No test target specified');
