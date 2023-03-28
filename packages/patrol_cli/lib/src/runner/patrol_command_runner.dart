@@ -56,7 +56,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
 }
 
 // The Google Analytics tracking ID.
-const _gaTrackingId = 'UA-117465969-4';
+const _gaTrackingId = 'UA-117465969-4'; // FIXME: Use the correct tracking ID
 
 // The Google Analytics Application Name.
 const _gaAppName = 'patrol-cli';
@@ -138,16 +138,17 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
-        androidTestBackend: androidTestBackend,
-        iosTestBackend: iosTestBackend,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
         flutterTool: FlutterTool(
           stdin: stdin,
           processManager: _processManager,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
+        parentDisposeScope: _disposeScope,
+        analytics: _analytics,
+        logger: _logger,
       ),
     );
 
@@ -165,6 +166,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         parentDisposeScope: _disposeScope,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
@@ -236,19 +238,23 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     try {
       if (_analytics.firstRun) {
         final trackingResponse = _logger.prompt(
-          red.wrap(
-            '''
+          '''
 +---------------------------------------------------+
 |             Patrol - Ready for action!            |
 +---------------------------------------------------+
 | We would like to collect anonymous usage data     |
-| to improve the tool. Would you like to opt-in to  |
-| help us improve? [y/N]                            |
+| to improve Patrol CLI. Would you like to opt-in   |
+| to help us improve? [y/N]                         |
 +---------------------------------------------------+\n''',
-          ),
         );
         final response = trackingResponse.toLowerCase().trim();
-        _analytics.enabled = response == 'y' || response == 'yes';
+        final analyticsEnabled = response == 'y' || response == 'yes';
+        if (analyticsEnabled) {
+          _logger.info('Analytics enabled. Thank you!');
+          _analytics.enabled = response == 'y' || response == 'yes';
+        } else {
+          _logger.info('Analytics disabled.');
+        }
       }
 
       final topLevelResults = parse(args);
