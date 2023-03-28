@@ -12,16 +12,53 @@ This is useful if, for any reason, you have to use Flutter's default
 ```dart title="integration_test/app_test.dart"
 Future<void> main() async {
   final automator = NativeAutomator(
-    packageName: 'your.app.id.on.android',
-    bundleId: 'your.app.id.on.ios',
+    config: NativeAutomatorConfig(
+      packageName: 'your.app.id.on.android',
+      bundleId: 'your.app.id.on.ios',
+    ),
   );
   await automator.configure();
 
   testWidgets(
     'test description',
     (WidgetTester tester) async {
+      await tester.tap(find.text('Sign in'))
       await automator.pressHome();
-      // more test code
+      // ...
+    },
+  );
+}
+```
+
+### setUp() and tearDown() callbacks
+
+Sometimes, you might want to perform additional clean up after the test, no
+matter if it failed or passed:
+
+```dart title="integration_test/app_test.dart"
+Future<void> main() async {
+  tearDown(() async {
+    final automator = NativeAutomator(
+      config: NativeAutomatorConfig(
+        packageName: 'your.app.id.on.android',
+        bundleId: 'your.app.id.on.ios',
+      ),
+    );
+    await automator.configure();
+    await automator.disableCellular();
+  });
+
+  patrol(
+    'test description',
+    ($) async {
+      await createApp($);
+
+      await $.native.enableCellular();
+      await $.pumpAndSettle(duration: Duration(seconds: 3));
+
+      // ...
+
+      throw Exception('test failed');
     },
   );
 }
