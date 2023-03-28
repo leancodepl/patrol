@@ -56,7 +56,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
 }
 
 // The Google Analytics tracking ID.
-const _gaTrackingId = 'UA-117465969-4'; // FIXME: Use the correct tracking ID
+const _gaTrackingId = 'UA-144186929-3'; // FIXME: Use the correct tracking ID
 
 // The Google Analytics Application Name.
 const _gaAppName = 'patrol-cli';
@@ -92,8 +92,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
-    _analytics.sendEvent('some_category', 'run');
-
     final androidTestBackend = AndroidTestBackend(
       adb: Adb(),
       processManager: _processManager,
