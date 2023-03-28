@@ -3,7 +3,7 @@ task:
   container:
     image: cirrusci/flutter:stable
     cpu: 4
-    memory: 4G
+    memory: 6G
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
