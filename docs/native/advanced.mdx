@@ -33,7 +33,7 @@ Future<void> main() async {
 ### setUp() and tearDown() callbacks
 
 Sometimes, you might want to perform additional clean up after the test, no
-matter if it failed or passed:
+matter if it failed or passed.
 
 ```dart title="integration_test/app_test.dart"
 Future<void> main() async {
@@ -48,8 +48,9 @@ Future<void> main() async {
     await automator.disableCellular();
   });
 
-  patrol(
+  patrolTest(
     'test description',
+    nativeAutomation: true,
     ($) async {
       await createApp($);
 
