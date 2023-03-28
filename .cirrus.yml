@@ -22,7 +22,9 @@ task:
   start_emulator_background_script:
     - $ANDROID_HOME/emulator/emulator -no-window -verbose -avd test -no-audio -no-boot-anim
   wait_for_emulator_script: android-wait-for-emulator
+  build_app_script:
+    - cd packages/patrol/example
+    - flutter build apk --debug
   patrol_test_script:
-    - pwd
     - cd packages/patrol/example
     - patrol test --verbose
