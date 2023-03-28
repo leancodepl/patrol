@@ -1,4 +1,4 @@
-task:
+test_android_task:
   name: Test example app on Android
   container:
     image: cirrusci/flutter:stable
@@ -8,20 +8,24 @@ task:
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
     EMULATOR_API_LEVEL: '28'
-    ANDROID_ABI: 'default;x86'
+    EMULATOR_ABI: default;x86
+    EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
 
   pub_cache:
     folder: ~/.pub-cache
-  setup_flutter_script: flutter precache
+  setup_flutter_script:
+    - flutter precache
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
-  install_images_script: sdkmanager "system-images;android-$EMULATOR_API_LEVEL;$ANDROID_ABI"
-  install_emulator_script: sdkmanager emulator
-  create_device_script:
-    - echo no | avdmanager create avd --force -n test -k "system-images;android-$EMULATOR_API_LEVEL;$ANDROID_ABI"
+  setup_emulator_script:
+    - sdkmanager --install "$EMULATOR_IMAGE"
+    - sdkmanager --install emulator
+  create_emulator_script:
+    - echo no | avdmanager create avd --force --name test_emulator --package "$EMULATOR_IMAGE"
   start_emulator_background_script:
-    - $ANDROID_HOME/emulator/emulator -no-window -verbose -avd test -no-audio -no-boot-anim
-  wait_for_emulator_script: android-wait-for-emulator
+    - $ANDROID_HOME/emulator/emulator -no-window -verbose -avd test_emulator -no-audio -no-boot-anim
+  wait_for_emulator_script:
+    - android-wait-for-emulator
   build_app_script:
     - cd packages/patrol/example
     - flutter build apk --debug
@@ -33,3 +37,29 @@ task:
       path: packages/patrol/example/android/test-results/**/connected/TEST-*.xml
       type: text/xml
       format: junit
+
+test_ios_task:
+  name: Test example app on iOS simulator
+  macos_instance:
+    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
+  env:
+    PATH: $HOME/.pub-cache/bin:${PATH}
+
+  pub_cache:
+    folder: ~/.pub-cache
+  setup_simulator_script:
+    - xcrun simctl list devicetypes
+    - xcrun simctl list runtimes
+    # create simulator
+    - udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
+    # boot simulator
+    - xcrun simctl boot "$udid"
+  setup_flutter_script:
+    - flutter channel stable
+    - flutter upgrade
+    - flutter precache
+  setup_patrol_cli_script:
+    - dart pub global activate --source path packages/patrol_cli && patrol
+  patrol_test_script:
+    - cd packages/patrol/example
+    - patrol test
