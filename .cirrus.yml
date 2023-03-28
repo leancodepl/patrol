@@ -27,4 +27,9 @@ task:
     - flutter build apk --debug
   patrol_test_script:
     - cd packages/patrol/example
-    - patrol test --verbose
+    - patrol test
+  always:
+    junit_artifacts:
+      path: packages/patrol/example/android/test-results/**/connected/TEST-*.xml
+      type: text/xml
+      format: junit
