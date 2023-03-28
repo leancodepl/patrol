@@ -1,16 +1,23 @@
+import 'dart:async';
+
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:pub_updater/pub_updater.dart';
+import 'package:usage/usage.dart';
 
 class UpdateCommand extends PatrolCommand {
   UpdateCommand({
     required PubUpdater pubUpdater,
+    required Analytics analytics,
     required Logger logger,
   })  : _pubUpdater = pubUpdater,
+        _analytics = analytics,
         _logger = logger;
 
   final PubUpdater _pubUpdater;
+
+  final Analytics _analytics;
   final Logger _logger;
 
   static const _pkg = 'patrol_cli';
@@ -23,6 +30,8 @@ class UpdateCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendEvent('command', name));
+
     Progress progress;
 
     progress = _logger.progress('Checking if newer $_pkg version is available');
