@@ -31,7 +31,14 @@ test_android_task:
     - flutter build apk --debug
   patrol_test_script:
     - cd packages/patrol/example
-    - patrol test
+    - patrol test --verbose \
+      --exclude integration_test/service_airplane_mode_test.dart `# does not suport Android` \
+      --exclude integration_test/service_bluetooth_test.dart     `# does not suport Android` \
+      --exclude webview_hackernews_test.dart on emulator-5554    `# https://github.com/leancodepl/patrol/issues/1139` \
+      --exclude webview_leancode_test.dart on emulator-5554      `# https://github.com/leancodepl/patrol/issues/1139` \
+      --exclude webview_login_test.dart on emulator-5554         `# https://github.com/leancodepl/patrol/issues/1139` \
+      --exclude webview_stackoverflow_test.dart on emulator-5554 `# https://github.com/leancodepl/patrol/issues/1139`
+
   always:
     junit_artifacts:
       path: packages/patrol/example/android/test-results/**/connected/TEST-*.xml
@@ -62,4 +69,7 @@ test_ios_task:
     - dart pub global activate --source path packages/patrol_cli && patrol
   patrol_test_script:
     - cd packages/patrol/example
-    - patrol test
+    - patrol test --verbose --device 'iPhone 14' \
+      --exclude integration_test/open_quick_settings_test.dart `# does not support iOS simulator` \
+      --exclude integration_test/service_cellular_test.dart    `# does not support iOS simulator` \
+      --exclude integration_test/service_wifi_test.dart        `# does not support iOS simulator`
