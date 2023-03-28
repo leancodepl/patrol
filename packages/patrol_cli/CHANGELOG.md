@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.3
 
 - Add `--exclude` flag to `patrol test` (#1137)
 
