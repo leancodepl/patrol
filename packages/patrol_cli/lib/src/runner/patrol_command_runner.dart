@@ -236,26 +236,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     var exitCode = 1;
     try {
-      if (_analytics.firstRun) {
-        final trackingResponse = _logger.prompt(
-          '''
-+---------------------------------------------------+
-|             Patrol - Ready for action!            |
-+---------------------------------------------------+
-| We would like to collect anonymous usage data     |
-| to improve Patrol CLI. Would you like to opt-in   |
-| to help us improve? [y/N]                         |
-+---------------------------------------------------+\n''',
-        );
-        final response = trackingResponse.toLowerCase().trim();
-        final analyticsEnabled = response == 'y' || response == 'yes';
-        if (analyticsEnabled) {
-          _logger.info('Analytics enabled. Thank you!');
-          _analytics.enabled = response == 'y' || response == 'yes';
-        } else {
-          _logger.info('Analytics disabled.');
-        }
-      }
+      _handleAnalytics();
 
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
@@ -328,6 +309,30 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
   @override
   void printUsage() => _logger.info(usage);
+
+  void _handleAnalytics() {
+    if (_analytics.firstRun) {
+      _logger.info(
+        '''
+\n
++---------------------------------------------------+
+|             Patrol - Ready for action!            |
++---------------------------------------------------+
+| We would like to collect anonymous usage data     |
+| to improve Patrol CLI. No sensitive or private    |
+| information will ever leave your machine.         |
++---------------------------------------------------+
+\n''',
+      );
+      final analyticsEnabled = _logger.confirm('Enable analytics?');
+      if (analyticsEnabled) {
+        _logger.info('Analytics enabled. Thank you!');
+        _analytics.enabled = true;
+      } else {
+        _logger.info('Analytics disabled.');
+      }
+    }
+  }
 
   bool _wantsUpdateCheck(String? commandName) {
     if (commandName == 'update' || commandName == 'doctor') {
