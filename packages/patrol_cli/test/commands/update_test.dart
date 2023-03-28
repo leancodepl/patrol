@@ -1,3 +1,4 @@
+import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -27,6 +28,7 @@ void main() {
       commandRunner = PatrolCommandRunner(
         logger: logger,
         pubUpdater: pubUpdater,
+        fs: MemoryFileSystem.test(),
       );
     });
 
