@@ -29,6 +29,7 @@ import 'package:patrol_cli/src/test_runner.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
+import 'package:usage/usage_io.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
@@ -53,6 +54,12 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
+// The Google Analytics tracking ID.
+const _gaTrackingId = 'UA-117465969-4';
+
+// The Google Analytics Application Name.
+const _gaAppName = 'patrol-cli';
+
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
     required Logger logger,
@@ -60,19 +67,28 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     FileSystem? fs,
     ProcessManager? processManager,
     Platform? platform,
-  })  : _disposeScope = DisposeScope(),
-        _platform = platform ?? const LocalPlatform(),
+    Analytics? analytics,
+  })  : _platform = platform ?? const LocalPlatform(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
         _fs = fs ?? const LocalFileSystem(),
         _processManager = processManager ??
             LoggingLocalProcessManager(
               logger: logger,
             ),
+        _analytics = analytics ??
+            AnalyticsIO(
+              _gaTrackingId,
+              _gaAppName,
+              version,
+            ),
+        _disposeScope = DisposeScope(),
         _logger = logger,
         super(
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    _analytics.sendEvent('some_category', 'run');
+
     final androidTestBackend = AndroidTestBackend(
       adb: Adb(),
       processManager: _processManager,
@@ -181,13 +197,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       );
   }
 
-  final DisposeScope _disposeScope;
+  final PubUpdater _pubUpdater;
   final Platform _platform;
   final FileSystem _fs;
   final ProcessManager _processManager;
-  final Logger _logger;
+  final Analytics _analytics;
 
-  final PubUpdater _pubUpdater;
+  final DisposeScope _disposeScope;
+  final Logger _logger;
 
   Future<void> dispose() async {
     try {
