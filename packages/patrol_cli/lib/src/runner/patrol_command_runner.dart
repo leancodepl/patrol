@@ -33,7 +33,8 @@ import 'package:usage/usage_io.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
-  final runner = PatrolCommandRunner(logger: logger);
+  const fs = LocalFileSystem();
+  final runner = PatrolCommandRunner(fs: fs, logger: logger);
 
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
@@ -62,15 +63,15 @@ const _gaAppName = 'patrol-cli';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
-    required Logger logger,
     PubUpdater? pubUpdater,
-    FileSystem? fs,
-    ProcessManager? processManager,
     Platform? platform,
+    required FileSystem fs,
+    ProcessManager? processManager,
     Analytics? analytics,
+    required Logger logger,
   })  : _platform = platform ?? const LocalPlatform(),
         _pubUpdater = pubUpdater ?? PubUpdater(),
-        _fs = fs ?? const LocalFileSystem(),
+        _fs = fs,
         _processManager = processManager ??
             LoggingLocalProcessManager(
               logger: logger,
@@ -80,6 +81,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
               _gaTrackingId,
               _gaAppName,
               version,
+              // FIXME: Create the file in XDG_CONFIG_HOME
+              // documentDirectory: fs.directory(
+              //   join('~', '.config', 'patrol_cli'),
+              // ),
             ),
         _disposeScope = DisposeScope(),
         _logger = logger,
@@ -227,8 +232,25 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   Future<int?> run(Iterable<String> args) async {
     var verbose = false;
 
-    int exitCode;
+    var exitCode = 1;
     try {
+      if (_analytics.firstRun) {
+        final trackingResponse = _logger.prompt(
+          red.wrap(
+            '''
++---------------------------------------------------+
+|             Patrol - Ready for action!            |
++---------------------------------------------------+
+| We would like to collect anonymous usage data     |
+| to improve the tool. Would you like to opt-in to  |
+| help us improve? [y/N]                            |
++---------------------------------------------------+\n''',
+          ),
+        );
+        final response = trackingResponse.toLowerCase().trim();
+        _analytics.enabled = response == 'y' || response == 'yes';
+      }
+
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
 
@@ -246,7 +268,6 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err('$err');
       }
-      exitCode = err.exitCode;
     } on ToolInterrupted catch (err, st) {
       if (verbose) {
         _logger
@@ -255,31 +276,26 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err(err.message);
       }
-      exitCode = err.exitCode;
     } on FormatException catch (err, st) {
       _logger
         ..err(err.message)
         ..err('$st')
         ..info('')
         ..info(usage);
-      exitCode = 1;
     } on UsageException catch (err) {
       _logger
         ..err(err.message)
         ..info('')
         ..info(err.usage);
-      exitCode = 1;
     } on FileSystemException catch (err, st) {
       _logger
         ..err('${err.message}: ${err.path}')
         ..err('$err')
         ..err('$st');
-      exitCode = 1;
     } catch (err, st) {
       _logger
         ..err('$err')
         ..err('$st');
-      exitCode = 1;
     }
 
     return exitCode;
