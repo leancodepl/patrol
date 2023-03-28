@@ -16,15 +16,22 @@ abstract class PatrolCommand extends Command<int> {
 
   // Common options
 
-  /// A command that expects only one target got more should throw.
+  /// A command that expects only one target but got more should throw.
   void usesTargetOption() {
-    argParser.addMultiOption(
-      'target',
-      aliases: ['targets'],
-      abbr: 't',
-      help: 'Integration test to use as entrypoint.',
-      valueHelp: 'integration_test/app_test.dart',
-    );
+    argParser
+      ..addMultiOption(
+        'target',
+        aliases: ['targets'],
+        abbr: 't',
+        help: 'Integration test target to use as entrypoint.',
+        valueHelp: 'integration_test/app_test.dart',
+      )
+      ..addMultiOption(
+        'exclude',
+        aliases: ['excludes'],
+        help: 'Integration test targets to exclude.',
+        valueHelp: 'integration_test/flaky_test.dart',
+      );
   }
 
   /// A command that expects only one device but got more should throw.
