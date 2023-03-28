@@ -15,6 +15,7 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
+import 'package:usage/usage.dart';
 
 // Note: this class is a bit sphagetti because I didn't model classes to handle
 // multiple targets. This problem will go away when #1004 is done.
@@ -49,6 +50,7 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required DisposeScope parentDisposeScope,
+    required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
@@ -57,6 +59,7 @@ class TestCommand extends PatrolCommand {
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
+        _analytics = analytics,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -83,6 +86,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
 
+  final Analytics _analytics;
   final Logger _logger;
 
   @override
@@ -93,6 +97,8 @@ class TestCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendEvent('command', name));
+
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
