@@ -63,8 +63,6 @@ test_ios_task:
     - udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
     # boot simulator
     - xcrun simctl boot "$udid"
-    # set location
-    - xcrun simctl location "$udid" set 52.17469,21.03193
     - printf "$udid" > ~/.udid
   setup_flutter_script:
     - flutter channel stable
@@ -75,6 +73,8 @@ test_ios_task:
   patrol_test_script:
     - cd packages/patrol/example
     - udid="$(cat ~/.udid)"
+    # set location
+    - xcrun simctl location "$udid" set 52.17469,21.03193
     - patrol test --verbose --device "$udid"
       --exclude integration_test/android_app_test.dart           `# Android-only`
       --exclude integration_test/swipe_test.dart                 `# does not work on iOS`
