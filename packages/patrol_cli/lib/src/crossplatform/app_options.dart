@@ -189,7 +189,7 @@ class IOSAppOptions {
       ...['-xctestrun', xcTestRunPath],
       ...[
         '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
+        'platform=${device.real ? 'iOS' : 'iOS Simulator'},id=${device.id}',
       ],
     ];
 
