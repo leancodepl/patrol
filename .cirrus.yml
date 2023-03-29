@@ -32,8 +32,8 @@ test_android_task:
   patrol_test_script:
     - cd packages/patrol/example
     - patrol test --verbose
-      --exclude integration_test/service_airplane_mode_test.dart `# does not suport Android`
-      --exclude integration_test/service_bluetooth_test.dart     `# does not suport Android`
+      --exclude integration_test/service_airplane_mode_test.dart `# does not currently suport Android`
+      --exclude integration_test/service_bluetooth_test.dart     `# does not currently suport Android`
       --exclude webview_hackernews_test.dart on emulator-5554    `# https://github.com/leancodepl/patrol/issues/1139`
       --exclude webview_leancode_test.dart on emulator-5554      `# https://github.com/leancodepl/patrol/issues/1139`
       --exclude webview_login_test.dart on emulator-5554         `# https://github.com/leancodepl/patrol/issues/1139`
@@ -61,6 +61,8 @@ test_ios_task:
     - udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
     # boot simulator
     - xcrun simctl boot "$udid"
+    # set location
+    - xcrun simctl location "$udid" set 52.17469,21.03193
     - printf "$udid" > ~/.udid
   setup_flutter_script:
     - flutter channel stable
@@ -72,7 +74,9 @@ test_ios_task:
     - cd packages/patrol/example
     - udid="$(cat ~/.udid)"
     - patrol test --verbose --device "$udid"
-      --exclude integration_test/service_airplane_mode_test.dart `# does not support iOS simulator`
-      --exclude integration_test/open_quick_settings_test.dart   `# does not support iOS simulator`
-      --exclude integration_test/service_cellular_test.dart      `# does not support iOS simulator`
-      --exclude integration_test/service_wifi_test.dart          `# does not support iOS simulator`
+      --exclude integration_test/android_app_test.dart           `# Android-only`
+      --exclude integration_test/swipe_test.dart                 `# does not work on iOS`
+      --exclude integration_test/service_airplane_mode_test.dart `# not available on iOS simulator`
+      --exclude integration_test/open_quick_settings_test.dart   `# not available on iOS simulator`
+      --exclude integration_test/service_cellular_test.dart      `# not available on iOS simulator`
+      --exclude integration_test/service_wifi_test.dart          `# not available on iOS simulator`
