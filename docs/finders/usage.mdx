@@ -145,6 +145,43 @@ visible (so you can `tap()` on it), you can scroll to it very easily:
 await $('Subscribe').scrollTo().tap();
 ```
 
+### Waiting for widgets
+
+Mobile apps often can't show content immediately - it first has to be
+fetched from the server, which takes some time. This requires you to write tests
+that don't fail as soon as some action is performed on a widget is not visible,
+but rather wait for a short time in hope that the widget will, eventually,
+become visible.
+
+Fortunately, Patrol's [tap()] and [enterText()] methods have this behavior
+built-in:
+
+```dart
+await $('Search user').enterText('Charlie Root');
+await $('Show user profile').tap();
+await $('Follow').tap();
+```
+
+In a typical app, each action in the test above would show a loading screen for
+a short while until the data is loaded.
+
+Sometimes though, you want to assert that a certain widget is visible, but take
+no further action. To accomplish this, use Patrol's [waitUntilVisible()] method
+(it's used by `tap()` and `enterText()` under the hood):
+
+```dart
+await $('Your profile').waitUntilVisible();
+await $('Log out').tap();
+```
+
+<Warning>
+  Patrol's `waitUntilVisible()` assumes that a widget is visible when it can
+  perform a hit test on it using Flutter's [hitTestable()] method. This means
+  that `waitUntilVisible()` will not work if the widget whose visibility you
+  want to assert is a descendant of a [IgnorePointer] widget. Consider using
+  [AbsorbPointer] instead.
+</Warning>
+
 ### Going deeper
 
 But hey, these were very simple examples. In real apps, unfortunately, finding
@@ -229,6 +266,12 @@ patrolTest('adds comment', (PatrolTester $) async {
 });
 ```
 
+[tap()]: https://pub.dev/documentation/patrol/latest/patrol/PatrolFinder/tap.html
+[entertext()]: https://pub.dev/documentation/patrol/latest/patrol/PatrolFinder/enterText.html
+[waituntilvisible()]: https://pub.dev/documentation/patrol/latest/patrol/PatrolFinder/waitUntilVisible.html
+[hittestable()]: https://api.flutter.dev/flutter/flutter_test/Finder/hitTestable.html
+[ignorepointer]: https://api.flutter.dev/flutter/widgets/IgnorePointer-class.html
+[absorbpointer]: https://api.flutter.dev/flutter/widgets/AbsorbPointer-class.html
 [doc]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html
 [findsnothing]: https://api.flutter.dev/flutter/flutter_test/findsNothing-constant.html
 [findsonewidget]: https://api.flutter.dev/flutter/flutter_test/findsOneWidget-constant.html
