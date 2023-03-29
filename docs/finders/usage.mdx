@@ -176,11 +176,17 @@ await $('Log out').tap();
 
 <Warning>
   Patrol's `waitUntilVisible()` assumes that a widget is visible when it can
-  perform a hit test on it using Flutter's [hitTestable()] method. This means
-  that `waitUntilVisible()` will not work if the widget (whose visibility you
-  want to assert) is a descendant of a [IgnorePointer] widget. Consider using
-  [AbsorbPointer] instead.
+  perform a hit test on it using Flutter's [hitTestable()] method.
 </Warning>
+
+This means that:
+
+- `waitUntilVisible()` will not work if the widget (whose visibility you want to
+  assert) is a descendant of [IgnorePointer] widget. Consider using
+  [AbsorbPointer] instead.
+- since `waitUntilVisible()` is used by other methods, such as `tap()`,
+  `enterText()`, and `scrollTo()` under the hood, the same restrictions apply to
+  them.
 
 ### Going deeper
 
