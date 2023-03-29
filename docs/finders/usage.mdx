@@ -41,11 +41,11 @@ For those wondering what is that `#` thing – it's a
 [Symbol](https://api.dart.dev/dart-core/Symbol-class.html)! Yes, we're Dart
 (ab)users.
 
-When the previous ways of finding widgets fail, Patrol has have an ace up its
+When all ways of finding widgets known to you fail, Patrol has an ace up its
 sleeve: the [which()] method. You can use it to find widgets by their
-properties. For example, you can:
+properties. A few examples include:
 
-- Find a text field with no text entered:
+- entering a text into a text field with no text entered:
 
   ```
   await $(#cityTextField)
@@ -53,7 +53,7 @@ properties. For example, you can:
       .enterText('Warsaw, Poland');
   ```
 
-- Assert that the icon has the correct color:
+- asserting that the icon has the correct color:
 
 ```
 await $(Icons.error)
@@ -61,12 +61,16 @@ await $(Icons.error)
     .waitUntilVisible();
 ```
 
-- Assert that the button is disabled
+- asserting that the button is disabled and has the correct color
 
   ```dart
   await $('Delete account')
-      .which<ElevatedButton>((button) => !button.enabled)
-      .tap();
+    .which<ElevatedButton>((button) => button.enabled)
+    .which<ElevatedButton>(
+      (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
+    )
+    .waitUntilVisible();
+
   ```
 
 <Info>All the types that can be passed to `$` are [listed here][doc].</Info>
