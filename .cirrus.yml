@@ -77,6 +77,7 @@ test_ios_task:
       --exclude integration_test/android_app_test.dart           `# Android-only`
       --exclude integration_test/swipe_test.dart                 `# does not work on iOS`
       --exclude integration_test/service_airplane_mode_test.dart `# not available on iOS simulator`
-      --exclude integration_test/open_quick_settings_test.dart   `# not available on iOS simulator`
+      --exclude integration_test/service_bluetooth_test.dart     `# not available on iOS simulator`
       --exclude integration_test/service_cellular_test.dart      `# not available on iOS simulator`
+      --exclude integration_test/open_quick_settings_test.dart   `# not available on iOS simulator`
       --exclude integration_test/service_wifi_test.dart          `# not available on iOS simulator`
