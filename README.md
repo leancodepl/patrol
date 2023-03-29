@@ -7,7 +7,7 @@
 
 ![Patrol promotial graphics][promo_graphics]
 
-Simple yet powerful Flutter-native UI testing framework eliminating limitations
+Simple yet powerful Flutter-native UI testing framework overcoming limitations
 of `flutter_test`, `integration_test`, and `flutter_driver`.
 
 Learn more about Patrol:
@@ -68,21 +68,57 @@ patrolTest('signs up', (PatrolTester $) async {
   await $(#passwordTextField).enterText('ny4ncat');
   await $(#termsCheckbox).tap();
   await $(#signUpButton).tap();
-  
+
   await $('Welcome, Charlie!').waitUntilVisible();
 });
 ```
 
 [Learn more about custom finders in the docs][docs_finders]!
 
+## Patrol native automation
+
+Flutter's default [integration_test] package can't interact with the OS your
+Flutter app is running on. This makes it impossible to test many critical
+business features, such as:
+
+- granting runtime permissions
+- signing into the app which through WebView or 0Auth (like Google)
+- tapping on notifications
+
+Patrol's native automation feature solves these problems:
+
+```dart
+void main() {
+  patrolTest('showtime', nativeAutomation: true, (PatrolTester $) async {
+    await $.pumpWidgetAndSettle(AwesomeApp());
+    // prepare network conditions
+    await $.native.enableCellular();
+    await $.native.disableWifi();
+
+    // toggle system theme
+    await $.native.enableDarkMode();
+
+    // handle native location permission request dialog
+    await $.native.selectFineLocation();
+    await $.native.grantPermissionWhenInUse();
+
+    // tap on the first notification
+    await $.native.openNotifications();
+    await $.native.tapOnNotificationByIndex(0);
+  });
+}
+
+```
+
 ## CLI
 
 See [packages/patrol_cli][github_patrol_cli].
 
 The CLI is needed to enable Patrol's native automation feature in integration
-tests.
+tests. It also makes development of integration tests much faster thanks to [Hot
+Restart].
 
-To run widget tests, you can simply use `flutter test`.
+To run widget tests, you can continue to use `flutter test`.
 
 ## Package
 
@@ -103,3 +139,5 @@ See [packages/patrol][github_patrol].
 [promo_graphics]: docs/assets/promo.png
 [article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
 [article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
+[integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[hot restart]: https://patrol.leancode.co/cli-commands/develop
