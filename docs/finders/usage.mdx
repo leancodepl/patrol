@@ -218,6 +218,7 @@ the descendant/ancestor relationship like above. In situations like this,
 when all ways of finding widgets known to you fail, Patrol has an ace up its
 sleeve: the [which()] method. You can use it to find widgets by their
 properties. A few examples include:
+.
 
 - entering a text into a text field with no text entered:
 
@@ -239,7 +240,7 @@ properties. A few examples include:
 
   ```dart
   await $('Delete account')
-    .which<ElevatedButton>((button) => button.enabled)
+    .which<ElevatedButton>((button) => !button.enabled)
     .which<ElevatedButton>(
       (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
     )
