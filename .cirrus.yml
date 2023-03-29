@@ -8,7 +8,7 @@ test_android_task:
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
     EMULATOR_API_LEVEL: '28'
-    EMULATOR_ABI: google_apis;x86
+    EMULATOR_ABI: google_apis_playstore;x86
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 90m
 
