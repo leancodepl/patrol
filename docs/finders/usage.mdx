@@ -163,11 +163,11 @@ await $('Follow').tap();
 ```
 
 In a typical app, each action in the test above would show a loading screen for
-a short while until the data is loaded.
+a short while until the data would be loaded.
 
-Sometimes though, you want to assert that a certain widget is visible, but take
-no further action. To accomplish this, use Patrol's [waitUntilVisible()] method
-(it's used by `tap()` and `enterText()` under the hood):
+Sometimes though, you might want to assert that a certain widget is visible, but
+take no further action. To accomplish this, use Patrol's [waitUntilVisible()]
+method (it's used by `tap()` and `enterText()` under the hood):
 
 ```dart
 await $('Your profile').waitUntilVisible();
@@ -177,8 +177,8 @@ await $('Log out').tap();
 <Warning>
   Patrol's `waitUntilVisible()` assumes that a widget is visible when it can
   perform a hit test on it using Flutter's [hitTestable()] method. This means
-  that `waitUntilVisible()` will not work if the widget whose visibility you
-  want to assert is a descendant of a [IgnorePointer] widget. Consider using
+  that `waitUntilVisible()` will not work if the widget (whose visibility you
+  want to assert) is a descendant of a [IgnorePointer] widget. Consider using
   [AbsorbPointer] instead.
 </Warning>
 
