@@ -22,7 +22,7 @@ Future<void> _requestAndGrantCameraPermission(PatrolTester $) async {
     await $('Request camera permission').tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.grantPermissionWhenInUse();
-      await $.pump();
+      await $.pumpAndSettle(duration: _timeout);
     }
   }
 
@@ -35,7 +35,7 @@ Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
     await $('Request microphone permission').tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.grantPermissionWhenInUse();
-      await $.pump();
+      await $.pumpAndSettle(duration: _timeout);
     }
   }
 
@@ -48,7 +48,7 @@ Future<void> _requestAndDenyContactsPermission(PatrolTester $) async {
     await $('Request contacts permission').tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
-      await $.pump();
+      await $.pumpAndSettle(duration: _timeout);
     }
   }
 
