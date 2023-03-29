@@ -54,13 +54,9 @@ test_ios_task:
 
   pub_cache:
     folder: ~/.pub-cache
-  setup_simulator_script:
+  list_simulators_script:
     - xcrun simctl list devicetypes
     - xcrun simctl list runtimes
-    # create simulator
-    - udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
-    # boot simulator
-    - xcrun simctl boot "$udid"
   setup_flutter_script:
     - flutter channel stable
     - flutter upgrade
