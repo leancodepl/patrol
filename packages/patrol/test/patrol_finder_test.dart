@@ -800,14 +800,21 @@ void main() {
                     Text('count: $count'),
                     const ElevatedButton(
                       onPressed: null,
-                      child: Text('Button'),
+                      child: Text('Disabled button'),
                     ),
                     ElevatedButton(
                       onPressed: () => setState(() => count++),
                       style: ElevatedButton.styleFrom(
                         textStyle: const TextStyle(fontSize: 20),
                       ),
-                      child: const Text('Button'),
+                      child: const Text('Enabled button'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => setState(() => count += 10),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(Colors.red),
+                      ),
+                      child: const Text('Enabled button with color'),
                     ),
                   ],
                 );
@@ -820,8 +827,8 @@ void main() {
       patrolTest('finds button by its active status', ($) async {
         await $.pumpWidget(app);
 
-        await $('Button')
-            .which<ElevatedButton>((button) => button.onPressed != null)
+        await $('Enabled button')
+            .which<ElevatedButton>((button) => button.enabled)
             .tap();
 
         expect($('count: 1'), findsOneWidget);
@@ -830,13 +837,26 @@ void main() {
       patrolTest('finds button by its font size', ($) async {
         await $.pumpWidget(app);
 
-        await $('Button')
+        await $('Enabled button')
             .which<ElevatedButton>(
               (button) => button.style?.textStyle?.resolve({})?.fontSize == 20,
             )
             .tap();
 
         expect($('count: 1'), findsOneWidget);
+      });
+
+      patrolTest('finds button by its active status and color', ($) async {
+        await $.pumpWidget(app);
+
+        await $('Enabled button with color')
+            .which<ElevatedButton>((button) => button.enabled)
+            .which<ElevatedButton>(
+              (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
+            )
+            .tap();
+
+        expect($('count: 10'), findsOneWidget);
       });
     });
 
