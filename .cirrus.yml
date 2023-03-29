@@ -10,6 +10,7 @@ test_android_task:
     EMULATOR_API_LEVEL: '28'
     EMULATOR_ABI: google_apis;x86
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
+  timeout_in: 90m
 
   pub_cache:
     folder: ~/.pub-cache
@@ -51,6 +52,7 @@ test_ios_task:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
+  timeout_in: 30m
 
   pub_cache:
     folder: ~/.pub-cache
