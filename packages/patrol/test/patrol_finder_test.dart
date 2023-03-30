@@ -792,34 +792,32 @@ void main() {
 
       final app = MaterialApp(
         home: Scaffold(
-          body: Center(
-            child: StatefulBuilder(
-              builder: (context, setState) {
-                return Column(
-                  children: [
-                    Text('count: $count'),
-                    const ElevatedButton(
-                      onPressed: null,
-                      child: Text('Disabled button'),
+          body: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                children: [
+                  Text('count: $count'),
+                  const ElevatedButton(
+                    onPressed: null,
+                    child: Text('Disabled button'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => count++),
+                    style: ElevatedButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 20),
                     ),
-                    ElevatedButton(
-                      onPressed: () => setState(() => count++),
-                      style: ElevatedButton.styleFrom(
-                        textStyle: const TextStyle(fontSize: 20),
-                      ),
-                      child: const Text('Enabled button'),
+                    child: const Text('Enabled button'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => setState(() => count += 10),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.red),
                     ),
-                    ElevatedButton(
-                      onPressed: () => setState(() => count += 10),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.red),
-                      ),
-                      child: const Text('Enabled button with color'),
-                    ),
-                  ],
-                );
-              },
-            ),
+                    child: const Text('Enabled button with color'),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       );
@@ -857,6 +855,47 @@ void main() {
             .tap();
 
         expect($('count: 10'), findsOneWidget);
+      });
+
+      patrolTest('takes parent finder into account', ($) async {
+        var count = 0;
+
+        await $.pumpWidget(
+          MaterialApp(
+            home: StatefulBuilder(
+              builder: (context, setState) => Column(
+                children: [
+                  Container(
+                    key: const Key('subtree1'),
+                    child: ElevatedButton(
+                      onPressed: () => setState(() => count++),
+                      child: const Text('button'),
+                    ),
+                  ),
+                  Container(
+                    key: const Key('subtree2'),
+                    child: ElevatedButton(
+                      onPressed: () => setState(() => count += 10),
+                      child: const Text('button'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        await $('subtree1')
+            .which<ElevatedButton>((button) => button.enabled)
+            .tap();
+
+        expect(count, 1);
+
+        await $('subtree2')
+            .which<ElevatedButton>((button) => button.enabled)
+            .tap();
+
+        expect(count, 11);
       });
     });
 
