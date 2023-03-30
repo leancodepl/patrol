@@ -617,14 +617,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
-  usage:
-    dependency: "direct main"
-    description:
-      name: usage
-      sha256: ccc861ca619157046d961a1d7fa21a364476c574bb8f3e90219e41b9103adee0
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
   vm_service:
     dependency: transitive
     description:

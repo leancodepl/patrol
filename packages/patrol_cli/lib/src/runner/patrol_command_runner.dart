@@ -7,6 +7,7 @@ import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -29,7 +30,6 @@ import 'package:patrol_cli/src/test_runner.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
-import 'package:usage/usage_io.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
@@ -77,9 +77,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
               logger: logger,
             ),
         _analytics = analytics ??
-            AnalyticsIO(
-              _gaTrackingId,
-              _gaAppName,
+            Analytics(
+              measurementId: _gaTrackingId,
+              appName: _gaAppName,
               version,
               // FIXME: Create the file in XDG_CONFIG_HOME
               // documentDirectory: fs.directory(

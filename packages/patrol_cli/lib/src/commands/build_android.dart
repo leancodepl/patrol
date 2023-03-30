@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -10,7 +11,6 @@ import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_finder.dart';
-import 'package:usage/usage.dart';
 
 class BuildAndroidCommand extends PatrolCommand {
   BuildAndroidCommand({

@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:pub_updater/pub_updater.dart';
-import 'package:usage/usage.dart';
 
 class UpdateCommand extends PatrolCommand {
   UpdateCommand({

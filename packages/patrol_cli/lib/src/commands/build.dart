@@ -1,3 +1,4 @@
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
@@ -7,7 +8,6 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_finder.dart';
-import 'package:usage/usage.dart';
 
 class BuildCommand extends PatrolCommand {
   BuildCommand({
