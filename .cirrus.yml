@@ -32,7 +32,7 @@ test_android_task:
     - flutter build apk --debug
   patrol_test_script:
     - cd packages/patrol/example
-    - patrol test --verbose
+    - patrol test
       --exclude integration_test/service_airplane_mode_test.dart `# does not currently suport Android`
       --exclude integration_test/service_bluetooth_test.dart     `# does not currently suport Android`
       --exclude webview_hackernews_test.dart on emulator-5554    `# https://github.com/leancodepl/patrol/issues/1139`
@@ -63,7 +63,7 @@ test_ios_task:
     - udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
     # boot simulator
     - xcrun simctl boot "$udid"
-    - printf "$udid" > ~/.udid
+    - echo "UDID=$udid" >> $CIRRUS_ENV
   setup_flutter_script:
     - flutter channel stable
     - flutter upgrade
@@ -72,10 +72,9 @@ test_ios_task:
     - dart pub global activate --source path packages/patrol_cli && patrol
   patrol_test_script:
     - cd packages/patrol/example
-    - udid="$(cat ~/.udid)"
     # set location
-    - xcrun simctl location "$udid" set 52.17469,21.03193
-    - patrol test --verbose --device "$udid"
+    - xcrun simctl location "$UDID" set 52.17469,21.03193
+    - patrol test --device "$UDID"
       --exclude integration_test/android_app_test.dart           `# Android-only`
       --exclude integration_test/swipe_test.dart                 `# does not work on iOS`
       --exclude integration_test/service_airplane_mode_test.dart `# not available on iOS simulator`
