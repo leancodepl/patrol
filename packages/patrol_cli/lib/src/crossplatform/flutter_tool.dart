@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:process/process.dart';
@@ -63,14 +64,20 @@ class FlutterTool {
         }
         _logger.detail('\t: $line');
       })
-      ..listenStdErr((l) => _logger.err('\t$l'));
+      ..listenStdErr((line) {
+        if (line.startsWith('Waiting for another flutter command')) {
+          // This is a warning that we can ignore
+          return;
+        }
+        _logger.err('\t$line');
+      });
 
     await completer.future;
 
     _stdin.listen((event) {
       final char = String.fromCharCode(event.first);
       if (char == 'r' || char == 'R') {
-        _logger.success('Triggered Hot Restart for entrypoint $target...');
+        _logger.success('Hot Restart for entrypoint ${basename(target)}...');
         process.stdin.add('R'.codeUnits);
       }
     });
