@@ -55,10 +55,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
-// The Google Analytics tracking ID.
-const _gaTrackingId = 'UA-144186929-3'; // FIXME: Use the correct tracking ID
-
-// The Google Analytics Application Name.
+const _gaTrackingId = 'G-DDNN37X40W'; // FIXME: Use correct value
+const _gaApiSecret = 'ClGQ1MTMTiO7LCR0hpCT-Q'; // FIXME: Use correct value
 const _gaAppName = 'patrol-cli';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
@@ -79,8 +77,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         _analytics = analytics ??
             Analytics(
               measurementId: _gaTrackingId,
-              appName: _gaAppName,
-              version,
+              apiSecret: _gaApiSecret,
+              // appName: _gaAppName,
+              // version: version,
               // FIXME: Create the file in XDG_CONFIG_HOME
               // documentDirectory: fs.directory(
               //   join('~', '.config', 'patrol_cli'),
