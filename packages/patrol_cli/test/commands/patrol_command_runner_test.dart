@@ -5,9 +5,12 @@ import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
+import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
+import '../ios/ios_test_backend_test.dart';
 import '../src/mocks.dart';
 
 const latestVersion = '0.0.0';
@@ -31,10 +34,13 @@ void main() {
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => version);
 
-      commandRunner = PatrolCommandRunner(
-        logger: logger,
+       commandRunner = PatrolCommandRunner(
+        platform: FakePlatform(),
+        processManager: FakeProcessManager(),
         pubUpdater: pubUpdater,
         fs: MemoryFileSystem.test(),
+        analytics: MockAnalytics(),
+        logger: logger,
       );
     });
 

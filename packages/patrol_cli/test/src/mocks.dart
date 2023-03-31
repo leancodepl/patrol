@@ -2,6 +2,7 @@ import 'dart:io' as io;
 
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart' as logger;
 import 'package:patrol_cli/src/devices.dart';
@@ -28,3 +29,20 @@ class MockDeviceFinder extends Mock implements DeviceFinder {}
 class MockAndroidTestBackend extends Mock implements AndroidTestBackend {}
 
 class MockIOSTestBackend extends Mock implements IOSTestBackend {}
+
+class MockAnalytics extends Mock implements Analytics {
+  @override
+  bool get firstRun => false;
+
+  @override
+  bool get enabled => false;
+
+  @override
+  Future<void> sendEvent(
+    String dimension,
+    String name, {
+    Map<String, Object?> eventData = const {},
+  }) async {
+    return;
+  }
+}

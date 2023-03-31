@@ -34,7 +34,20 @@ import 'package:pub_updater/pub_updater.dart';
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
   const fs = LocalFileSystem();
-  final runner = PatrolCommandRunner(fs: fs, logger: logger);
+
+  final runner = PatrolCommandRunner(
+    pubUpdater: PubUpdater(),
+    platform: const LocalPlatform(),
+    fs: fs,
+    logger: logger,
+    analytics: Analytics(
+      measurementId: _gaTrackingId,
+      apiSecret: _gaApiSecret,
+      appName: 'patrol_cli',
+      fs: fs,
+    ),
+    processManager: LoggingLocalProcessManager(logger: logger),
+  );
 
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
@@ -60,26 +73,17 @@ const _gaApiSecret = 'ClGQ1MTMTiO7LCR0hpCT-Q'; // FIXME: Use correct value
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
-    PubUpdater? pubUpdater,
-    Platform? platform,
+    required PubUpdater pubUpdater,
+    required Platform platform,
     required FileSystem fs,
-    ProcessManager? processManager,
-    Analytics? analytics,
+    required ProcessManager processManager,
+    required Analytics analytics,
     required Logger logger,
-  })  : _platform = platform ?? const LocalPlatform(),
-        _pubUpdater = pubUpdater ?? PubUpdater(),
+  })  : _platform = platform,
+        _pubUpdater = pubUpdater,
         _fs = fs,
-        _processManager = processManager ??
-            LoggingLocalProcessManager(
-              logger: logger,
-            ),
-        _analytics = analytics ??
-            Analytics(
-              measurementId: _gaTrackingId,
-              apiSecret: _gaApiSecret,
-              appName: 'patrol_cli',
-              fs: fs,
-            ),
+        _analytics = analytics,
+        _processManager = processManager,
         _disposeScope = DisposeScope(),
         _logger = logger,
         super(
