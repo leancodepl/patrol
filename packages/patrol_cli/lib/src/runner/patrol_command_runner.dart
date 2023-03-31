@@ -57,7 +57,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
 
 const _gaTrackingId = 'G-DDNN37X40W'; // FIXME: Use correct value
 const _gaApiSecret = 'ClGQ1MTMTiO7LCR0hpCT-Q'; // FIXME: Use correct value
-const _gaAppName = 'patrol-cli';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
@@ -78,6 +77,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
             Analytics(
               measurementId: _gaTrackingId,
               apiSecret: _gaApiSecret,
+              appName: 'patrol_cli',
+              fs: fs,
               // appName: _gaAppName,
               // version: version,
               // FIXME: Create the file in XDG_CONFIG_HOME
@@ -329,9 +330,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 \n''',
       );
       final analyticsEnabled = _logger.confirm('Enable analytics?');
+      _analytics.enabled = analyticsEnabled;
       if (analyticsEnabled) {
         _logger.info('Analytics enabled. Thank you!');
-        _analytics.enabled = true;
       } else {
         _logger.info('Analytics disabled.');
       }

@@ -1,16 +1,46 @@
 // ignore_for_file: implementation_imports
+import 'dart:convert';
+
+import 'package:file/file.dart';
 import 'package:unified_analytics/src/ga_client.dart';
 import 'package:unified_analytics/src/utils.dart';
+
+class AnalyticsConfig {
+  AnalyticsConfig({
+    required this.clientId,
+    required this.enabled,
+  });
+
+  AnalyticsConfig.fromJson(Map<String, dynamic> json)
+      : clientId = json['clientId'] as String,
+        enabled = json['enabled'] as bool;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'clientId': clientId,
+      'enabled': enabled,
+    };
+  }
+
+  /// UUID v4 unique for this client.
+  final String clientId;
+  final bool enabled;
+}
 
 class Analytics {
   Analytics({
     required String measurementId,
     required String apiSecret,
-  }) : _client = GAClient(
+    required this.appName,
+    required FileSystem fs,
+  })  : _fs = fs,
+        _client = GAClient(
           measurementId: measurementId,
           apiSecret: apiSecret,
         );
 
+  final String appName;
+  final FileSystem _fs;
   final GAClient _client;
 
   Future<void> sendEvent(
@@ -18,29 +48,61 @@ class Analytics {
     String name, {
     Map<String, Object?> eventData = const {},
   }) async {
-    const uuid = '3c6d9ce1-38cc-4dd0-93ae-4af7ce7a5125';
+    final uuid = _config?.clientId;
+    if (uuid == null) {
+      return;
+    }
 
-    // Construct the body of the request
     final body = _generateRequestBody(
       clientId: uuid,
       eventName: name,
       eventData: eventData,
     );
 
-    // Pass to the google analytics client to send
-    final respose = await _client.sendData(body);
-    print('response: ${respose.statusCode}');
+    await _client.sendData(body);
   }
 
-  // FIXME: Implement thi
-  bool get firstRun => false;
+  bool get firstRun => _config == null;
 
-  bool _enabled = false;
   set enabled(bool newValue) {
-    _enabled = newValue;
+    _config = AnalyticsConfig(
+      clientId: Uuid().generateV4(),
+      enabled: newValue,
+    );
   }
 
-  bool get enabled => _enabled;
+  bool get enabled => _config?.enabled ?? false;
+
+  AnalyticsConfig? get _config {
+    if (!_configFile.existsSync()) {
+      return null;
+    }
+
+    final contents = _configFile.readAsStringSync();
+    final json = jsonDecode(contents) as Map<String, dynamic>;
+    return AnalyticsConfig(
+      clientId: json['clientId'] as String,
+      enabled: json['enabled'] as bool,
+    );
+  }
+
+  set _config(AnalyticsConfig? newValue) {
+    if (newValue == null) {
+      _configFile.deleteSync();
+      return;
+    }
+
+    _configFile
+      ..createSync(recursive: true)
+      ..writeAsStringSync(jsonEncode(newValue.toJson()));
+  }
+
+  File get _configFile {
+    return getHomeDirectory(_fs)
+        .childDirectory('.config')
+        .childDirectory('patrol_cli')
+        .childFile('analytics.json');
+  }
 }
 
 /// Adapted from [generateRequestBody].
