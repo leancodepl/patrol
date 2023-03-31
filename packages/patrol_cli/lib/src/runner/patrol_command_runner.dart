@@ -79,12 +79,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
               apiSecret: _gaApiSecret,
               appName: 'patrol_cli',
               fs: fs,
-              // appName: _gaAppName,
-              // version: version,
-              // FIXME: Create the file in XDG_CONFIG_HOME
-              // documentDirectory: fs.directory(
-              //   join('~', '.config', 'patrol_cli'),
-              // ),
             ),
         _disposeScope = DisposeScope(),
         _logger = logger,
