@@ -34,7 +34,7 @@ void main() {
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => version);
 
-       commandRunner = PatrolCommandRunner(
+      commandRunner = PatrolCommandRunner(
         platform: FakePlatform(),
         processManager: FakeProcessManager(),
         pubUpdater: pubUpdater,
