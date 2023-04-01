@@ -1,7 +1,10 @@
+import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
+import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
@@ -24,9 +27,15 @@ void main() {
 
       pubUpdater = MockPubUpdater();
 
+      final analytics = MockAnalytics();
+
       commandRunner = PatrolCommandRunner(
-        logger: logger,
+        platform: FakePlatform(),
+        processManager: LocalProcessManager(),
         pubUpdater: pubUpdater,
+        fs: MemoryFileSystem.test(),
+        analytics: analytics,
+        logger: logger,
       );
     });
 

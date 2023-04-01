@@ -7,6 +7,7 @@ import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -32,7 +33,22 @@ import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
-  final runner = PatrolCommandRunner(logger: logger);
+  const fs = LocalFileSystem();
+  const platform = LocalPlatform();
+
+  final runner = PatrolCommandRunner(
+    pubUpdater: PubUpdater(),
+    platform: platform,
+    fs: fs,
+    logger: logger,
+    analytics: Analytics(
+      measurementId: _gaTrackingId,
+      apiSecret: _gaApiSecret,
+      fs: fs,
+      platform: platform,
+    ),
+    processManager: LoggingLocalProcessManager(logger: logger),
+  );
 
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
@@ -53,21 +69,23 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
+const _gaTrackingId = 'G-DDNN37X40W'; // FIXME: Use correct value
+const _gaApiSecret = 'ClGQ1MTMTiO7LCR0hpCT-Q'; // FIXME: Use correct value
+
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
+    required PubUpdater pubUpdater,
+    required Platform platform,
+    required FileSystem fs,
+    required ProcessManager processManager,
+    required Analytics analytics,
     required Logger logger,
-    PubUpdater? pubUpdater,
-    FileSystem? fs,
-    ProcessManager? processManager,
-    Platform? platform,
-  })  : _disposeScope = DisposeScope(),
-        _platform = platform ?? const LocalPlatform(),
-        _pubUpdater = pubUpdater ?? PubUpdater(),
-        _fs = fs ?? const LocalFileSystem(),
-        _processManager = processManager ??
-            LoggingLocalProcessManager(
-              logger: logger,
-            ),
+  })  : _platform = platform,
+        _pubUpdater = pubUpdater,
+        _fs = fs,
+        _analytics = analytics,
+        _processManager = processManager,
+        _disposeScope = DisposeScope(),
         _logger = logger,
         super(
           'patrol',
@@ -102,6 +120,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
@@ -117,16 +136,17 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
-        androidTestBackend: androidTestBackend,
-        iosTestBackend: iosTestBackend,
-        parentDisposeScope: _disposeScope,
-        logger: _logger,
         flutterTool: FlutterTool(
           stdin: stdin,
           processManager: _processManager,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
+        parentDisposeScope: _disposeScope,
+        analytics: _analytics,
+        logger: _logger,
       ),
     );
 
@@ -144,6 +164,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         parentDisposeScope: _disposeScope,
+        analytics: _analytics,
         logger: _logger,
       ),
     );
@@ -164,7 +185,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         platform: _platform,
       ),
     );
-    addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
+    addCommand(
+      UpdateCommand(
+        pubUpdater: _pubUpdater,
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
 
     argParser
       ..addFlag(
@@ -181,13 +208,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       );
   }
 
-  final DisposeScope _disposeScope;
+  final PubUpdater _pubUpdater;
   final Platform _platform;
   final FileSystem _fs;
   final ProcessManager _processManager;
-  final Logger _logger;
+  final Analytics _analytics;
 
-  final PubUpdater _pubUpdater;
+  final DisposeScope _disposeScope;
+  final Logger _logger;
 
   Future<void> dispose() async {
     try {
@@ -210,8 +238,10 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   Future<int?> run(Iterable<String> args) async {
     var verbose = false;
 
-    int exitCode;
+    var exitCode = 1;
     try {
+      _handleAnalytics();
+
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
 
@@ -229,7 +259,6 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err('$err');
       }
-      exitCode = err.exitCode;
     } on ToolInterrupted catch (err, st) {
       if (verbose) {
         _logger
@@ -238,31 +267,26 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       } else {
         _logger.err(err.message);
       }
-      exitCode = err.exitCode;
     } on FormatException catch (err, st) {
       _logger
         ..err(err.message)
         ..err('$st')
         ..info('')
         ..info(usage);
-      exitCode = 1;
     } on UsageException catch (err) {
       _logger
         ..err(err.message)
         ..info('')
         ..info(err.usage);
-      exitCode = 1;
     } on FileSystemException catch (err, st) {
       _logger
         ..err('${err.message}: ${err.path}')
         ..err('$err')
         ..err('$st');
-      exitCode = 1;
     } catch (err, st) {
       _logger
         ..err('$err')
         ..err('$st');
-      exitCode = 1;
     }
 
     return exitCode;
@@ -289,6 +313,30 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
   @override
   void printUsage() => _logger.info(usage);
+
+  void _handleAnalytics() {
+    if (_analytics.firstRun) {
+      _logger.info(
+        '''
+\n
++---------------------------------------------------+
+|             Patrol - Ready for action!            |
++---------------------------------------------------+
+| We would like to collect anonymous usage data     |
+| to improve Patrol CLI. No sensitive or private    |
+| information will ever leave your machine.         |
++---------------------------------------------------+
+\n''',
+      );
+      final analyticsEnabled = _logger.confirm('Enable analytics?');
+      _analytics.enabled = analyticsEnabled;
+      if (analyticsEnabled) {
+        _logger.info('Analytics enabled. Thank you!');
+      } else {
+        _logger.info('Analytics disabled.');
+      }
+    }
+  }
 
   bool _wantsUpdateCheck(String? commandName) {
     if (commandName == 'update' || commandName == 'doctor') {

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -27,6 +28,7 @@ class DevelopCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required FlutterTool flutterTool,
+    required Analytics analytics,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -37,6 +39,7 @@ class DevelopCommand extends PatrolCommand {
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _flutterTool = flutterTool,
+        _analytics = analytics,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -63,6 +66,7 @@ class DevelopCommand extends PatrolCommand {
   final IOSTestBackend _iosTestBackend;
   final FlutterTool _flutterTool;
 
+  final Analytics _analytics;
   final Logger _logger;
 
   @override
@@ -73,6 +77,8 @@ class DevelopCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendCommand(name));
+
     final targets = stringsArg('target');
     if (targets.isEmpty) {
       throwToolExit('No target provided with --target');

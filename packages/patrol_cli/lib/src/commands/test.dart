@@ -4,6 +4,7 @@ import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -49,6 +50,7 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required DisposeScope parentDisposeScope,
+    required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
@@ -57,6 +59,7 @@ class TestCommand extends PatrolCommand {
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
+        _analytics = analytics,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -83,6 +86,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
 
+  final Analytics _analytics;
   final Logger _logger;
 
   @override
@@ -93,6 +97,8 @@ class TestCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendCommand(name));
+
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
