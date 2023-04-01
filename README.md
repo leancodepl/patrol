@@ -82,8 +82,9 @@ Flutter app is running on. This makes it impossible to test many critical
 business features, such as:
 
 - granting runtime permissions
-- signing into the app which through WebView or 0Auth (like Google)
+- signing into the app which through WebView or Google Services
 - tapping on notifications
+- [much more!](https://patrol.leancode.co/native/feature-parity)
 
 Patrol's native automation feature solves these problems:
 
