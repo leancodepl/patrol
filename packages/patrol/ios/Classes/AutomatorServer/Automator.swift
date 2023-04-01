@@ -55,7 +55,7 @@
 
     // MARK: General UI interaction
 
-    func tap(on text: String, inApp bundleId: String) async throws {
+    func tap(onText text: String, inApp bundleId: String) async throws {
       try await runAction("tapping on view with text \(format: text) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         let element = app.descendants(matching: .any)[text]
@@ -72,7 +72,7 @@
       }
     }
 
-    func doubleTap(on text: String, inApp bundleId: String) async throws {
+    func doubleTap(onText text: String, inApp bundleId: String) async throws {
       try await runAction("double tapping on text \(format: text) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         let element = app.descendants(matching: .any)[text]
@@ -87,7 +87,7 @@
       }
     }
 
-    func enterText(_ data: String, by text: String, inApp bundleId: String) async throws {
+    func enterText(_ data: String, byText text: String, inApp bundleId: String) async throws {
       try await runAction(
         "entering text \(format: data) into text field with text \(text) in app \(bundleId)"
       ) {
@@ -107,7 +107,7 @@
       }
     }
 
-    func enterText(_ data: String, by index: Int, inApp bundleId: String) async throws {
+    func enterText(_ data: String, byIndex index: Int, inApp bundleId: String) async throws {
       try await runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
 
