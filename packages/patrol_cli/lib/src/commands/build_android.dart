@@ -55,7 +55,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendEvent('command', 'build_android'));
+    unawaited(_analytics.sendCommand('build_android'));
 
     final targetArg = stringsArg('target');
     if (targetArg.isEmpty) {

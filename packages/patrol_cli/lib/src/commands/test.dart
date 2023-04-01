@@ -97,7 +97,7 @@ class TestCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendEvent('command', name));
+    unawaited(_analytics.sendCommand(name));
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty

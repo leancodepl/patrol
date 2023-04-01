@@ -59,7 +59,7 @@ class BuildIOSCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendEvent('command', 'build_ios'));
+    unawaited(_analytics.sendCommand('build_ios'));
 
     final targetArg = stringsArg('target');
     if (targetArg.isEmpty) {

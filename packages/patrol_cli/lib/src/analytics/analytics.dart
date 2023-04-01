@@ -51,8 +51,8 @@ class Analytics {
   final http.Client _client;
   final String _postUrl;
 
-  Future<void> sendEvent(
-    String dimension, // FIXME: currently ignored
+  /// Sends an event to Google Analytics that command [name] run.
+  Future<void> sendCommand(
     String name, {
     Map<String, Object?> eventData = const {},
   }) async {

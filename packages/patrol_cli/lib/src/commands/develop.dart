@@ -77,7 +77,7 @@ class DevelopCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendEvent('command', name));
+    unawaited(_analytics.sendCommand(name));
 
     final targets = stringsArg('target');
     if (targets.isEmpty) {
