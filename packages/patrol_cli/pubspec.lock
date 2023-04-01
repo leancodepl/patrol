@@ -305,14 +305,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
-  intl:
-    dependency: transitive
-    description:
-      name: intl
-      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.18.0"
   io:
     dependency: transitive
     description:
@@ -625,14 +617,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
-  unified_analytics:
+  uuid:
     dependency: "direct main"
     description:
-      name: unified_analytics
-      sha256: beb5964b5c818913ac0300ad02bb4c151c0ed9a6ff7329cdc75da50debd7fd74
+      name: uuid
+      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.2"
+    version: "3.0.7"
   vm_service:
     dependency: transitive
     description:

@@ -28,7 +28,7 @@ dependencies:
   process: ^4.2.4
   pub_updater: ^0.2.4
   tuple: ^2.0.1
-  unified_analytics: ^0.1.2
+  uuid: ^3.0.7
   yaml: ^3.1.1
 dev_dependencies:
   build_runner: ^2.3.3

@@ -34,17 +34,18 @@ import 'package:pub_updater/pub_updater.dart';
 Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
   const fs = LocalFileSystem();
+  const platform = LocalPlatform();
 
   final runner = PatrolCommandRunner(
     pubUpdater: PubUpdater(),
-    platform: const LocalPlatform(),
+    platform: platform,
     fs: fs,
     logger: logger,
     analytics: Analytics(
       measurementId: _gaTrackingId,
       apiSecret: _gaApiSecret,
-      appName: 'patrol_cli',
       fs: fs,
+      platform: platform,
     ),
     processManager: LoggingLocalProcessManager(logger: logger),
   );

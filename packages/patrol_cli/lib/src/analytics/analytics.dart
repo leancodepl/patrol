@@ -2,8 +2,14 @@
 import 'dart:convert';
 
 import 'package:file/file.dart';
-import 'package:unified_analytics/src/ga_client.dart';
-import 'package:unified_analytics/src/utils.dart';
+import 'package:http/http.dart' as http;
+import 'package:patrol_cli/src/base/fs.dart';
+import 'package:platform/platform.dart';
+import 'package:uuid/uuid.dart';
+//import 'package:unified_analytics/src/ga_client.dart';
+//import 'package:unified_analytics/src/utils.dart';
+
+const _analyticsUrl = 'https://www.google-analytics.com/mp/collect';
 
 class AnalyticsConfig {
   AnalyticsConfig({
@@ -31,17 +37,19 @@ class Analytics {
   Analytics({
     required String measurementId,
     required String apiSecret,
-    required this.appName,
     required FileSystem fs,
+    required Platform platform,
   })  : _fs = fs,
-        _client = GAClient(
-          measurementId: measurementId,
-          apiSecret: apiSecret,
-        );
+        _platform = platform,
+        _client = http.Client(),
+        _postUrl =
+            '$_analyticsUrl?measurement_id=$measurementId&api_secret=$apiSecret';
 
-  final String appName;
   final FileSystem _fs;
-  final GAClient _client;
+  final Platform _platform;
+
+  final http.Client _client;
+  final String _postUrl;
 
   Future<void> sendEvent(
     String dimension, // FIXME: currently ignored
@@ -53,20 +61,26 @@ class Analytics {
       return;
     }
 
-    final body = _generateRequestBody(
-      clientId: uuid,
-      eventName: name,
-      eventData: eventData,
+    await _client.post(
+      Uri.parse(_postUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+        _generateRequestBody(
+          clientId: uuid,
+          eventName: name,
+          eventData: eventData,
+        ),
+      ),
     );
-
-    await _client.sendData(body);
   }
 
   bool get firstRun => _config == null;
 
   set enabled(bool newValue) {
     _config = AnalyticsConfig(
-      clientId: Uuid().generateV4(),
+      clientId: const Uuid().v4(),
       enabled: newValue,
     );
   }
@@ -98,14 +112,13 @@ class Analytics {
   }
 
   File get _configFile {
-    return getHomeDirectory(_fs)
+    return getHomeDirectory(_fs, _platform)
         .childDirectory('.config')
         .childDirectory('patrol_cli')
         .childFile('analytics.json');
   }
 }
 
-/// Adapted from [generateRequestBody].
 Map<String, Object?> _generateRequestBody({
   required String clientId,
   required String eventName,
