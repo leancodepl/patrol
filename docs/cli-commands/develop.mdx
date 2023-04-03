@@ -50,6 +50,12 @@ It's important to note that:
 Below are a few common scenarios when state of your app will probably differ
 between the first and later Hot Restarts.
 
+**No support for physical iOS**
+
+Patrol's Hot Restart is very unreliable when running on physical iOS devices, to
+the point that we consider it completely broken. This is unfortunate, but it's a
+[bug on the Flutter's side](https://github.com/flutter/flutter/issues/122698).
+
 **Permissions**
 
 Once granted, a permissions cannot be revoked.
