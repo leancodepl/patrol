@@ -15,7 +15,11 @@ class PatrolServer {
         server = OkHttpServerBuilder
             .forPort(port, InsecureServerCredentials.create())
             .intercept(LoggerInterceptor())
-            .addService(AutomatorServer())
+            .addService(
+                AutomatorServer(
+                    automation = Automator.instance,
+                    onTestResultsSubmitted = { testResults = it })
+            )
             .build()
     }
 
@@ -37,5 +41,9 @@ class PatrolServer {
 
     fun blockUntilShutdown() {
         server?.awaitTermination()
+    }
+
+    companion object {
+        lateinit var testResults: Map<String, String>
     }
 }
