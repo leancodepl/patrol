@@ -49,10 +49,11 @@ void patrolTest(
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
+        nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
+
         final binding = PatrolBinding.ensureInitialized();
         binding.framePolicy = framePolicy;
-
-        nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
+        binding.nativeAutomator = nativeAutomator;
         break;
       case BindingType.integrationTest:
         IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =

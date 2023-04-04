@@ -4,6 +4,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
@@ -721,6 +722,20 @@ class NativeAutomator {
         SetLocationAccuracyRequest(
           locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
         ),
+      ),
+    );
+  }
+
+  /// Submits test results to the native test runner.
+  ///
+  /// Virtual test cases are created for each key in [results] and the value is
+  /// used as the test result.
+  @internal
+  Future<void> submitTestResults(Map<String, String> results) async {
+    await _wrapRequest(
+      'submitTestResults',
+      () => _client.submitTestResults(
+        SubmitTestResultsRequest(results: results),
       ),
     );
   }

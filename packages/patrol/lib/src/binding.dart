@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:patrol/patrol.dart';
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
@@ -14,7 +15,7 @@ void _defaultPrintLogger(String message) {
 
 // copied from package:integration_test/lib/integration_test.dart
 const bool _shouldReportResultsToNative = bool.fromEnvironment(
-  'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
+  'PATROL_INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
   defaultValue: true,
 );
 
@@ -37,43 +38,33 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     tearDownAll(() async {
-      try {
-        // TODO: Use patrolChannel for Android (see https://github.com/leancodepl/patrol/issues/969)
-        if (!Platform.isIOS) {
-          return;
-        }
-
-        if (!_shouldReportResultsToNative) {
-          return;
-        }
-
-        if (_hotRestartEnabled) {
-          // Sending results ends the test, which we don't want for Hot Restart
-          return;
-        }
-
-        // TODO: Migrate communication to gRPC
-        logger('Sending Dart test results to the native side');
-        await patrolChannel.invokeMethod<void>(
-          'allTestsFinished',
-          <String, dynamic>{
-            // ignore: invalid_use_of_visible_for_testing_member
-            'results': results.map<String, dynamic>((name, result) {
-              if (result is Failure) {
-                return MapEntry<String, dynamic>(name, result.details);
-              }
-
-              return MapEntry<String, Object>(name, result);
-            }),
-          },
-        );
-      } on MissingPluginException {
-        debugPrint('''
-Warning: Patrol plugin was not detected.
-
-Thrown by PatrolBinding.
-''');
+      // TODO: Use patrolChannel for Android (see https://github.com/leancodepl/patrol/issues/969)
+      if (!Platform.isIOS) {
+        return;
       }
+
+      if (!_shouldReportResultsToNative) {
+        return;
+      }
+
+      if (_hotRestartEnabled) {
+        // Sending results ends the test, which we don't want for Hot Restart
+        return;
+      }
+
+      logger('Sending ${results.length} test results to the native side...');
+      await nativeAutomator.submitTestResults(
+        results.map((name, result) {
+          if (result is Failure) {
+            // FIXME: Remove the bang
+            return MapEntry<String, String>(name, result.details!);
+          }
+
+          // FIME: Remove the forced cast
+          return MapEntry<String, String>(name, result as String);
+        }),
+      );
+      logger('Test results sent');
     });
   }
 
@@ -88,6 +79,8 @@ Thrown by PatrolBinding.
 
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
+
+  late NativeAutomator nativeAutomator;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
