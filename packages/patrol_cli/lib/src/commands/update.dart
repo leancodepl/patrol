@@ -46,8 +46,9 @@ class UpdateCommand extends PatrolCommand {
   }
 
   Future<void> _updatePatrolCliPackage() async {
-    Progress progress;
-    progress = _logger.progress('Checking if newer $_cli version is available');
+    final progress = _logger.progress(
+      'Checking if newer $_cli version is available',
+    );
 
     final String newVersion;
     try {
@@ -60,9 +61,10 @@ class UpdateCommand extends PatrolCommand {
     if (isUpToDate) {
       progress.complete("You're on the latest $_cli version ($version)");
       return;
+    } else {
+      progress.update('Updating $_cli to version $newVersion');
     }
 
-    progress.update('Updating $_cli to version $newVersion');
     try {
       await _pubUpdater.update(packageName: _cli);
     } catch (err, st) {
@@ -87,14 +89,14 @@ class UpdateCommand extends PatrolCommand {
       throwToolExit('Failed to check if newer $_pkg version is available');
     }
 
-    progress = _logger.progress('Updating patrol package');
+    progress.update('Updating patrol package');
     final result = await _processManager.run(
       ['flutter', '--no-version-check', 'pub', 'upgrade', 'patrol'],
     );
     if (result.exitCode != 0) {
       throwToolExit('Failed to update patrol package');
     } else if (result.stdOut.contains('No dependencies changed')) {
-      progress.complete("You're on the latest patrol version");
+      progress.complete("You're on the latest patrol version ($newVersion))");
     } else {
       progress.complete('Updated $_pkg to version $newVersion');
     }
