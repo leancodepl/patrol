@@ -145,6 +145,7 @@ class TestCommand extends PatrolCommand {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
+      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};

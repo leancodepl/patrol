@@ -85,6 +85,7 @@ class BuildAndroidCommand extends PatrolCommand {
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};

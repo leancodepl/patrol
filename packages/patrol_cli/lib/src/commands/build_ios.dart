@@ -89,6 +89,7 @@ class BuildIOSCommand extends PatrolCommand {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
