@@ -22,7 +22,13 @@ class UpdateCommand extends PatrolCommand {
         _processManager = processManager,
         _fs = fs,
         _analytics = analytics,
-        _logger = logger;
+        _logger = logger {
+    argParser.addFlag(
+      'pub-upgrade',
+      defaultsTo: true,
+      help: 'Whether to upgrade the patrol package in pubspec.yaml.',
+    );
+  }
 
   final PubUpdater _pubUpdater;
   final FileSystem _fs;
@@ -84,6 +90,10 @@ class UpdateCommand extends PatrolCommand {
   }
 
   Future<void> _updatePatrolPackage() async {
+    if (!boolArg('pub-upgrade')) {
+      return;
+    }
+
     if (!existsInHierarchy(_fs, 'pubspec.yaml')) {
       return;
     }
