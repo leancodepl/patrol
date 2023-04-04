@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:file/file.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/fs.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -13,14 +15,17 @@ class UpdateCommand extends PatrolCommand {
   UpdateCommand({
     required PubUpdater pubUpdater,
     required Analytics analytics,
+    required FileSystem fs,
     required ProcessManager processManager,
     required Logger logger,
   })  : _pubUpdater = pubUpdater,
         _processManager = processManager,
+        _fs = fs,
         _analytics = analytics,
         _logger = logger;
 
   final PubUpdater _pubUpdater;
+  final FileSystem _fs;
   final ProcessManager _processManager;
 
   final Analytics _analytics;
@@ -79,8 +84,13 @@ class UpdateCommand extends PatrolCommand {
   }
 
   Future<void> _updatePatrolPackage() async {
-    Progress progress;
-    progress = _logger.progress('Checking if newer $_pkg version is available');
+    if (!existsInHierarchy(_fs, 'pubspec.yaml')) {
+      return;
+    }
+
+    final progress = _logger.progress(
+      'Checking if newer $_pkg version is available',
+    );
 
     final String newVersion;
     try {
@@ -96,7 +106,7 @@ class UpdateCommand extends PatrolCommand {
     if (result.exitCode != 0) {
       throwToolExit('Failed to update patrol package');
     } else if (result.stdOut.contains('No dependencies changed')) {
-      progress.complete("You're on the latest patrol version ($newVersion))");
+      progress.complete("You're on the latest patrol version ($newVersion)");
     } else {
       progress.complete('Updated $_pkg to version $newVersion');
     }
