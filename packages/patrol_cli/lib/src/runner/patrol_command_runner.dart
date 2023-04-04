@@ -188,6 +188,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(
       UpdateCommand(
         pubUpdater: _pubUpdater,
+        fs: _fs,
+        processManager: _processManager,
         analytics: _analytics,
         logger: _logger,
       ),

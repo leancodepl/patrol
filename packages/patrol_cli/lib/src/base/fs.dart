@@ -14,3 +14,19 @@ Directory getHomeDirectory(FileSystem fs, Platform platform) {
 
   return fs.directory(home);
 }
+
+/// Recursively checks if [filename] exists in the hierarchy of directories,
+/// starting from the current directory of [fs] and going up.
+bool existsInHierarchy(FileSystem fs, String filename) {
+  var current = fs.currentDirectory;
+  while (current.path != current.parent.path) {
+    final file = current.childFile(filename);
+    if (file.existsSync()) {
+      return true;
+    }
+
+    current = current.parent;
+  }
+
+  return false;
+}
