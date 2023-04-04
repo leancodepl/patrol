@@ -18,12 +18,18 @@ void main() {
     late Logger logger;
     late Progress progress;
     late PubUpdater pubUpdater;
+    late ProcessManager processManager;
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
       logger = MockLogger();
       progress = MockProgress();
-      when(() => logger.progress(any())).thenReturn(progress);
+      //when(() => logger.progress(any())).thenReturn(progress);
+
+      processManager = MockProcessManager();
+      when(
+        () => processManager.run(any()),
+      ).thenAnswer((_) async => FakeProcessResult());
 
       pubUpdater = MockPubUpdater();
 
@@ -31,7 +37,7 @@ void main() {
 
       commandRunner = PatrolCommandRunner(
         platform: FakePlatform(),
-        processManager: LocalProcessManager(),
+        processManager: processManager,
         pubUpdater: pubUpdater,
         fs: MemoryFileSystem.test(),
         analytics: analytics,
@@ -42,10 +48,10 @@ void main() {
     test(
       'updates when newer version exists',
       () async {
-        when(() => pubUpdater.getLatestVersion('patrol_cli'))
+        when(() => pubUpdater.getLatestVersion(any()))
             .thenAnswer((_) async => latestVersion);
 
-        when(() => pubUpdater.update(packageName: 'patrol_cli'))
+        when(() => pubUpdater.update(packageName: any(named: 'packageName')))
             .thenAnswer((_) async => FakeProcessResult());
 
         final result = await commandRunner.run(['update']);

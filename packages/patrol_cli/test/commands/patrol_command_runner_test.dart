@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
 import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
 
@@ -22,12 +23,14 @@ void main() {
   group('PatrolCommandRunner', () {
     late Logger logger;
     late PubUpdater pubUpdater;
+    late ProcessManager processManager;
 
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
       logger = MockLogger();
       pubUpdater = MockPubUpdater();
+      processManager = FakeProcessManager();
 
       when(
         () => pubUpdater.getLatestVersion(any()),
@@ -35,7 +38,7 @@ void main() {
 
       commandRunner = PatrolCommandRunner(
         platform: FakePlatform(),
-        processManager: FakeProcessManager(),
+        processManager: processManager,
         pubUpdater: pubUpdater,
         fs: MemoryFileSystem.test(),
         analytics: MockAnalytics(),
@@ -44,10 +47,6 @@ void main() {
     });
 
     test('shows update message when newer version exists', () async {
-      when(
-        () => pubUpdater.getLatestVersion(any()),
-      ).thenAnswer((_) async => latestVersion);
-
       final result = await commandRunner.run(['--version']);
       expect(result, equals(0));
       verify(() => logger.info(updatePrompt)).called(1);
