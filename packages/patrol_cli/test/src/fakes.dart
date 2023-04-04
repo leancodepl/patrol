@@ -6,13 +6,7 @@ import 'package:patrol_cli/src/devices.dart';
 
 class FakeDevice extends Fake implements Device {}
 
-class FakeProcessResult extends Fake implements ProcessResult {
-  @override
-  int get exitCode => 0;
-
-  @override
-  dynamic get stdout => '';
-}
+class FakeProcessResult extends Fake implements ProcessResult {}
 
 class FakeAndroidAppOptions extends Fake implements AndroidAppOptions {}
 
@@ -24,5 +18,4 @@ void setUpFakes() {
   registerFallbackValue(FakeDevice());
   registerFallbackValue(FakeAndroidAppOptions());
   registerFallbackValue(FakeIOSAppOptions());
-  registerFallbackValue(FakeProcessResult());
 }
