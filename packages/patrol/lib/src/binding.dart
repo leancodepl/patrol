@@ -13,7 +13,10 @@ void _defaultPrintLogger(String message) {
   print('PatrolBinding: $message');
 }
 
-// copied from package:integration_test/lib/integration_test.dart
+/// An escape hatch in if, for any reason, the test reporting has to be
+/// disabled.
+///
+/// Patrol CLI doesn't pass this dart define anywhere.
 const bool _shouldReportResultsToNative = bool.fromEnvironment(
   'PATROL_INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
   defaultValue: true,
