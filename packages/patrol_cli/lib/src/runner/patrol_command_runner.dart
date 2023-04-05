@@ -32,12 +32,14 @@ import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
+  final pubUpdater = PubUpdater();
   final logger = Logger();
   const fs = LocalFileSystem();
   const platform = LocalPlatform();
+  final processManager = LoggingLocalProcessManager(logger: logger);
 
   final runner = PatrolCommandRunner(
-    pubUpdater: PubUpdater(),
+    pubUpdater: pubUpdater,
     platform: platform,
     fs: fs,
     logger: logger,
@@ -46,8 +48,9 @@ Future<int> patrolCommandRunner(List<String> args) async {
       apiSecret: _gaApiSecret,
       fs: fs,
       platform: platform,
+      processManager: processManager,
     ),
-    processManager: LoggingLocalProcessManager(logger: logger),
+    processManager: processManager,
   );
 
   ProcessSignal.sigint.watch().listen((signal) async {
@@ -69,8 +72,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
-const _gaTrackingId = 'G-DDNN37X40W'; // FIXME: Use correct value
-const _gaApiSecret = 'ClGQ1MTMTiO7LCR0hpCT-Q'; // FIXME: Use correct value
+const _gaTrackingId = 'G-W8XN8GS5BC';
+const _gaApiSecret = 'CUIwI1nCQWGJQAK8E0AIfg';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({

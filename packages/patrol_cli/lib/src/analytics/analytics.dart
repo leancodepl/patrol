@@ -1,15 +1,15 @@
 // ignore_for_file: implementation_imports
 import 'dart:convert';
 
+import 'package:ci/ci.dart' as ci;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
+import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/fs.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:uuid/uuid.dart';
-//import 'package:unified_analytics/src/ga_client.dart';
-//import 'package:unified_analytics/src/utils.dart';
-
-const _analyticsUrl = 'https://www.google-analytics.com/mp/collect';
 
 class AnalyticsConfig {
   AnalyticsConfig({
@@ -39,17 +39,20 @@ class Analytics {
     required String apiSecret,
     required FileSystem fs,
     required Platform platform,
+    required ProcessManager processManager,
   })  : _fs = fs,
         _platform = platform,
         _client = http.Client(),
-        _postUrl =
-            '$_analyticsUrl?measurement_id=$measurementId&api_secret=$apiSecret';
+        _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
+        _flutterVersion = _getFlutterVersion(processManager);
 
   final FileSystem _fs;
   final Platform _platform;
 
   final http.Client _client;
   final String _postUrl;
+
+  final _FlutterVersion _flutterVersion;
 
   /// Sends an event to Google Analytics that command [name] run.
   Future<void> sendCommand(
@@ -66,12 +69,10 @@ class Analytics {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(
-        _generateRequestBody(
-          clientId: uuid,
-          eventName: name,
-          eventData: eventData,
-        ),
+      body: _generateRequestBody(
+        clientId: uuid,
+        eventName: name,
+        additionalEventData: eventData,
       ),
     );
   }
@@ -85,7 +86,13 @@ class Analytics {
     );
   }
 
-  bool get enabled => _config?.enabled ?? false;
+  bool get enabled {
+    if (ci.isCI) {
+      return false;
+    }
+
+    return _config?.enabled ?? false;
+  }
 
   AnalyticsConfig? get _config {
     if (!_configFile.existsSync()) {
@@ -117,20 +124,56 @@ class Analytics {
         .childDirectory('patrol_cli')
         .childFile('analytics.json');
   }
+
+  String _generateRequestBody({
+    required String clientId,
+    required String eventName,
+    required Map<String, Object?> additionalEventData,
+  }) {
+    final event = <String, Object?>{
+      'name': eventName,
+      'params': <String, Object?>{
+        // `engagement_time_msec` is required for users to be reported.
+        // See https://stackoverflow.com/q/70708893/7009800
+        'engagement_time_msec': 1,
+        'flutter_version': _flutterVersion.version,
+        'flutter_channel': _flutterVersion.channel,
+        'patrol_cli_version': version,
+        'os': _platform.operatingSystem,
+        'os_version': _platform.operatingSystemVersion,
+        'locale': _platform.localeName,
+        ...additionalEventData,
+      },
+    };
+
+    final body = <String, Object?>{
+      'client_id': clientId,
+      'events': [event],
+    };
+
+    return jsonEncode(body);
+  }
 }
 
-Map<String, Object?> _generateRequestBody({
-  required String clientId,
-  required String eventName,
-  required Map<String, Object?> eventData,
-}) {
-  return <String, Object?>{
-    'client_id': clientId,
-    'events': <Map<String, Object?>>[
-      <String, Object?>{
-        'name': eventName,
-        'params': eventData,
-      }
-    ],
-  };
+String _getAnalyticsUrl(String measurementId, String apiSecret) {
+  const url = 'https://www.google-analytics.com/mp/collect';
+  return '$url?measurement_id=$measurementId&api_secret=$apiSecret';
+}
+
+class _FlutterVersion {
+  _FlutterVersion(this.version, this.channel);
+
+  final String version;
+  final String channel;
+}
+
+_FlutterVersion _getFlutterVersion(ProcessManager processManager) {
+  final result = processManager.runSync(
+    ['flutter', '--no-version-check', '--version', '--machine'],
+  );
+
+  final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
+  final frameworkVersion = versionData['frameworkVersion'] as String;
+  final channel = versionData['channel'] as String;
+  return _FlutterVersion(frameworkVersion, channel);
 }
