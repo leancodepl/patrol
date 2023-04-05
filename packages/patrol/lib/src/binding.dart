@@ -1,3 +1,8 @@
+// We allow for using properties of IntegrationTestWidgetsFlutterBinding, which
+// are marked as @visibleForTesting but we need them (we could write our own,
+// but we're lazy and prefer to use theirs).
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +16,7 @@ void _defaultPrintLogger(String message) {
   print('PatrolBinding: $message');
 }
 
-/// An escape hatch in if, for any reason, the test reporting has to be
+/// An escape hatch if, for any reason, the test reporting has to be
 /// disabled.
 ///
 /// Patrol CLI doesn't pass this dart define anywhere.
@@ -33,7 +38,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      // ignore: invalid_use_of_visible_for_testing_member
       results[testDescription] = Failure(testDescription, details.toString());
       oldTestExceptionReporter(details, testDescription);
     };
@@ -52,12 +56,14 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       await nativeAutomator.submitTestResults(
         results.map((name, result) {
           if (result is Failure) {
-            // FIXME: Remove the bang
-            return MapEntry<String, String>(name, result.details!);
+            return MapEntry(name, result.details ?? 'No details');
           }
 
-          // FIME: Remove the forced cast
-          return MapEntry<String, String>(name, result as String);
+          if (result is String) {
+            return MapEntry(name, result);
+          }
+
+          throw StateError('result ($result) is neither a Failure or a String');
         }),
       );
       logger('Test results sent');
@@ -76,6 +82,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
+  /// The [NativeAutomator] used by this binding to report tests to the native
+  /// side.
+  ///
+  /// It's only for test reporting purposes and should not be used for anything
+  /// else.
   late NativeAutomator nativeAutomator;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
