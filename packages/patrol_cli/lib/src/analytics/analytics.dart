@@ -10,36 +10,6 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:uuid/uuid.dart';
 
-String _getAnalyticsUrl(String measurementId, String apiSecret) {
-  const url = 'https://www.google-analytics.com/mp/collect';
-  return '$url?measurement_id=$measurementId&api_secret=$apiSecret';
-}
-
-String _getFlutterVersion(ProcessManager processManager) {
-  /*
-  We run `flutter` to get its version, for example:
-  $ flutter --version --machine
-  {
-    "frameworkVersion": "3.7.9",
-    "channel": "stable",
-    "repositoryUrl": "https://github.com/flutter/flutter.git",
-    "frameworkRevision": "62bd79521d8d007524e351747471ba66696fc2d4",
-    "frameworkCommitDate": "2023-03-30 10:59:36 -0700",
-    "engineRevision": "ec975089acb540fc60752606a3d3ba809dd1528b",
-    "dartSdkVersion": "2.19.6",
-    "devToolsVersion": "2.20.1",
-    "flutterRoot": "/Users/bartek/fvm/versions/3.7.9"
-  }
-  */
-
-  final result = processManager.runSync(
-    ['flutter', '--no-version-check', '--version', '--machine'],
-  );
-
-  final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
-  return versionData['frameworkVersion'] as String;
-}
-
 class AnalyticsConfig {
   AnalyticsConfig({
     required this.clientId,
@@ -102,11 +72,8 @@ class Analytics {
         _generateRequestBody(
           clientId: uuid,
           eventName: name,
-          eventData: {
-            'client_id': uuid,
-            'flutter_version': _flutterVersion,
-            'patrol_cli_version': version,
-          },
+          flutterVersion: _flutterVersion,
+          additionalEventData: eventData,
         ),
       ),
     );
@@ -121,7 +88,13 @@ class Analytics {
     );
   }
 
-  bool get enabled => _config?.enabled ?? false;
+  bool get enabled {
+    if (_platform.environment['CI'] == '') {
+      return false;
+    }
+
+    return _config?.enabled ?? false;
+  }
 
   AnalyticsConfig? get _config {
     if (!_configFile.existsSync()) {
@@ -158,20 +131,55 @@ class Analytics {
 Map<String, Object?> _generateRequestBody({
   required String clientId,
   required String eventName,
-  required Map<String, Object?> eventData,
+  required String flutterVersion,
+  required Map<String, Object?> additionalEventData,
 }) {
+  final event = <Map<String, Object?>>[
+    <String, Object?>{
+      'name': eventName,
+      'params': <String, Object?>{
+        // `engagement_time_msec` is required for users to be reported.
+        // See https://stackoverflow.com/q/70708893/7009800
+        'engagement_time_msec': 1,
+        'flutter_version': flutterVersion,
+        'patrol_cli_version': version,
+        ...additionalEventData,
+      },
+    }
+  ];
+
   return <String, Object?>{
     'client_id': clientId,
-    'events': <Map<String, Object?>>[
-      <String, Object?>{
-        'name': eventName,
-        'params': {
-          // Required for users to be reported.
-          // See https://stackoverflow.com/q/70708893/7009800
-          'engagement_time_msec': 1,
-          ...eventData
-        },
-      }
-    ],
+    'events': [event],
   };
+}
+
+String _getAnalyticsUrl(String measurementId, String apiSecret) {
+  const url = 'https://www.google-analytics.com/mp/collect';
+  return '$url?measurement_id=$measurementId&api_secret=$apiSecret';
+}
+
+String _getFlutterVersion(ProcessManager processManager) {
+  /*
+  We run `flutter` to get its version, for example:
+  $ flutter --version --machine
+  {
+    "frameworkVersion": "3.7.9",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "62bd79521d8d007524e351747471ba66696fc2d4",
+    "frameworkCommitDate": "2023-03-30 10:59:36 -0700",
+    "engineRevision": "ec975089acb540fc60752606a3d3ba809dd1528b",
+    "dartSdkVersion": "2.19.6",
+    "devToolsVersion": "2.20.1",
+    "flutterRoot": "/Users/bartek/fvm/versions/3.7.9"
+  }
+  */
+
+  final result = processManager.runSync(
+    ['flutter', '--no-version-check', '--version', '--machine'],
+  );
+
+  final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
+  return versionData['frameworkVersion'] as String;
 }
