@@ -139,7 +139,9 @@ class Analytics {
           'engagement_time_msec': 1,
           'flutter_version': _flutterVersion,
           'patrol_cli_version': version,
-          'operating_system': _platform.operatingSystem,
+          'os': _platform.operatingSystem,
+          'os_version': _platform.operatingSystemVersion,
+          'locale': _platform.localeName,
           ...additionalEventData,
         },
       }
