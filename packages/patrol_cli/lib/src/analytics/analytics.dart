@@ -69,13 +69,10 @@ class Analytics {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(
-        _generateRequestBody(
-          clientId: uuid,
-          eventName: name,
-          flutterVersion: _flutterVersion,
-          additionalEventData: eventData,
-        ),
+      body: _generateRequestBody(
+        clientId: uuid,
+        eventName: name,
+        additionalEventData: eventData,
       ),
     );
   }
@@ -127,32 +124,34 @@ class Analytics {
         .childDirectory('patrol_cli')
         .childFile('analytics.json');
   }
-}
 
-Map<String, Object?> _generateRequestBody({
-  required String clientId,
-  required String eventName,
-  required String flutterVersion,
-  required Map<String, Object?> additionalEventData,
-}) {
-  final event = <Map<String, Object?>>[
-    <String, Object?>{
-      'name': eventName,
-      'params': <String, Object?>{
-        // `engagement_time_msec` is required for users to be reported.
-        // See https://stackoverflow.com/q/70708893/7009800
-        'engagement_time_msec': 1,
-        'flutter_version': flutterVersion,
-        'patrol_cli_version': version,
-        ...additionalEventData,
-      },
-    }
-  ];
+  String _generateRequestBody({
+    required String clientId,
+    required String eventName,
+    required Map<String, Object?> additionalEventData,
+  }) {
+    final event = <Map<String, Object?>>[
+      <String, Object?>{
+        'name': eventName,
+        'params': <String, Object?>{
+          // `engagement_time_msec` is required for users to be reported.
+          // See https://stackoverflow.com/q/70708893/7009800
+          'engagement_time_msec': 1,
+          'flutter_version': _flutterVersion,
+          'patrol_cli_version': version,
+          'operating_system': _platform.operatingSystem,
+          ...additionalEventData,
+        },
+      }
+    ];
 
-  return <String, Object?>{
-    'client_id': clientId,
-    'events': [event],
-  };
+    final body = <String, Object?>{
+      'client_id': clientId,
+      'events': [event],
+    };
+
+    return jsonEncode(body);
+  }
 }
 
 String _getAnalyticsUrl(String measurementId, String apiSecret) {
