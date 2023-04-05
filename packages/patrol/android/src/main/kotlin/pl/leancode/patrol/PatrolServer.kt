@@ -1,6 +1,7 @@
 package pl.leancode.patrol
 
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.common.util.concurrent.SettableFuture
 import io.grpc.InsecureServerCredentials
 import io.grpc.Server
 import io.grpc.okhttp.OkHttpServerBuilder
@@ -15,7 +16,12 @@ class PatrolServer {
         server = OkHttpServerBuilder
             .forPort(port, InsecureServerCredentials.create())
             .intercept(LoggerInterceptor())
-            .addService(AutomatorServer())
+            .addService(
+                AutomatorServer(
+                    automation = Automator.instance,
+                    onTestResultsSubmitted = { testResulsSettable.set(it) }
+                )
+            )
             .build()
     }
 
@@ -38,4 +44,12 @@ class PatrolServer {
     fun blockUntilShutdown() {
         server?.awaitTermination()
     }
+
+    companion object {
+        private val testResulsSettable: SettableFuture<DartTestResults> = SettableFuture.create()
+        val testResults
+            get() = testResulsSettable
+    }
 }
+
+typealias DartTestResults = Map<String, String>

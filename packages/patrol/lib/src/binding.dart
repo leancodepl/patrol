@@ -1,4 +1,7 @@
-import 'dart:io';
+// We allow for using properties of IntegrationTestWidgetsFlutterBinding, which
+// are marked as @visibleForTesting but we need them (we could write our own,
+// but we're lazy and prefer to use theirs).
+// ignore_for_file: invalid_use_of_visible_for_testing_member
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,15 +9,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:patrol/patrol.dart';
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
   print('PatrolBinding: $message');
 }
 
-// copied from package:integration_test/lib/integration_test.dart
+/// An escape hatch if, for any reason, the test reporting has to be
+/// disabled.
+///
+/// Patrol CLI doesn't pass this dart define anywhere.
 const bool _shouldReportResultsToNative = bool.fromEnvironment(
-  'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
+  'PATROL_INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
   defaultValue: true,
 );
 
@@ -31,49 +38,35 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      // ignore: invalid_use_of_visible_for_testing_member
       results[testDescription] = Failure(testDescription, details.toString());
       oldTestExceptionReporter(details, testDescription);
     };
 
     tearDownAll(() async {
-      try {
-        // TODO: Use patrolChannel for Android (see https://github.com/leancodepl/patrol/issues/969)
-        if (!Platform.isIOS) {
-          return;
-        }
-
-        if (!_shouldReportResultsToNative) {
-          return;
-        }
-
-        if (_hotRestartEnabled) {
-          // Sending results ends the test, which we don't want for Hot Restart
-          return;
-        }
-
-        // TODO: Migrate communication to gRPC
-        logger('Sending Dart test results to the native side');
-        await patrolChannel.invokeMethod<void>(
-          'allTestsFinished',
-          <String, dynamic>{
-            // ignore: invalid_use_of_visible_for_testing_member
-            'results': results.map<String, dynamic>((name, result) {
-              if (result is Failure) {
-                return MapEntry<String, dynamic>(name, result.details);
-              }
-
-              return MapEntry<String, Object>(name, result);
-            }),
-          },
-        );
-      } on MissingPluginException {
-        debugPrint('''
-Warning: Patrol plugin was not detected.
-
-Thrown by PatrolBinding.
-''');
+      if (!_shouldReportResultsToNative) {
+        return;
       }
+
+      if (_hotRestartEnabled) {
+        // Sending results ends the test, which we don't want for Hot Restart
+        return;
+      }
+
+      logger('Sending ${results.length} test results to the native side...');
+      await nativeAutomator.submitTestResults(
+        results.map((name, result) {
+          if (result is Failure) {
+            return MapEntry(name, result.details ?? 'No details');
+          }
+
+          if (result is String) {
+            return MapEntry(name, result);
+          }
+
+          throw StateError('result ($result) is neither a Failure or a String');
+        }),
+      );
+      logger('Test results sent');
     });
   }
 
@@ -88,6 +81,13 @@ Thrown by PatrolBinding.
 
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
+
+  /// The [NativeAutomator] used by this binding to report tests to the native
+  /// side.
+  ///
+  /// It's only for test reporting purposes and should not be used for anything
+  /// else.
+  late NativeAutomator nativeAutomator;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
