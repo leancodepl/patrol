@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,11 +39,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     tearDownAll(() async {
-      // TODO: Use patrolChannel for Android (see https://github.com/leancodepl/patrol/issues/969)
-      if (!Platform.isIOS) {
-        return;
-      }
-
       if (!_shouldReportResultsToNative) {
         return;
       }

@@ -5,11 +5,12 @@ import androidx.test.rule.ActivityTestRule
 import org.junit.Rule
 import org.junit.rules.TestRule
 import org.junit.runner.Description
+import org.junit.runner.Runner
 import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
 import java.util.concurrent.ExecutionException
 
-class PatrolTestRunner(private val testClass: Class<*>) {
+class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
     private val tag = "PatrolTestRunner"
 
     var rule: TestRule? = null
@@ -57,16 +58,16 @@ class PatrolTestRunner(private val testClass: Class<*>) {
             )
         }
 
-        var results: Map<String, String>? = null
-        results = try {
-            // IntegrationTestPlugin.testResults.get()
-            // Start from here:
-            PatrolServer.testResults
+        val results = try {
+            PatrolServer.testResults.get() // Wait for test results asynchronously
         } catch (e: ExecutionException) {
             throw IllegalThreadStateException("Unable to get test results")
         } catch (e: InterruptedException) {
             throw IllegalThreadStateException("Unable to get test results")
+        } catch (e: Exception) {
+            throw e // We don't know yet what to do with it now, so just rethrow it
         }
+
         for (name in results.keys) {
             val d = Description.createTestDescription(testClass, name)
             notifier.fireTestStarted(d)
