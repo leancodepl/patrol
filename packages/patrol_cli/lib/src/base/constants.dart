@@ -1,2 +1,2 @@
 /// Version of Patrol CLI. Must be kept in sync with pubspec.yaml.
-const version = '1.1.3';
+const version = '1.1.4';

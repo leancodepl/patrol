@@ -1,3 +1,10 @@
+## 1.1.4
+
+**This version requires version 1.0.9 of the `patrol` package**
+
+- Add optional telemetry (#1157), (#1182)
+- Rewrite native test reporting (#1178)
+
 ## 1.1.3
 
 - Add `--exclude` flag to `patrol test` (#1137)
