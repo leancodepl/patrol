@@ -170,22 +170,6 @@ class _FlutterVersion {
 }
 
 _FlutterVersion _getFlutterVersion(ProcessManager processManager) {
-  /*
-  We run `flutter` to get its version, for example:
-  $ flutter --version --machine
-  {
-    "frameworkVersion": "3.7.9",
-    "channel": "stable",
-    "repositoryUrl": "https://github.com/flutter/flutter.git",
-    "frameworkRevision": "62bd79521d8d007524e351747471ba66696fc2d4",
-    "frameworkCommitDate": "2023-03-30 10:59:36 -0700",
-    "engineRevision": "ec975089acb540fc60752606a3d3ba809dd1528b",
-    "dartSdkVersion": "2.19.6",
-    "devToolsVersion": "2.20.1",
-    "flutterRoot": "/Users/bartek/fvm/versions/3.7.9"
-  }
-  */
-
   final result = processManager.runSync(
     ['flutter', '--no-version-check', '--version', '--machine'],
   );
