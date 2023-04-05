@@ -72,8 +72,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
   return exitCode;
 }
 
-const _gaTrackingId = 'G-DDNN37X40W'; // FIXME: Use correct value
-const _gaApiSecret = 'ClGQ1MTMTiO7LCR0hpCT-Q'; // FIXME: Use correct value
+const _gaTrackingId = 'G-W8XN8GS5BC';
+const _gaApiSecret = 'CUIwI1nCQWGJQAK8E0AIfg';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
