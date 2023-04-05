@@ -35,6 +35,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   final logger = Logger();
   const fs = LocalFileSystem();
   const platform = LocalPlatform();
+  final processManager = LoggingLocalProcessManager(logger: logger);
 
   final runner = PatrolCommandRunner(
     pubUpdater: PubUpdater(),
@@ -46,8 +47,9 @@ Future<int> patrolCommandRunner(List<String> args) async {
       apiSecret: _gaApiSecret,
       fs: fs,
       platform: platform,
+      processManager: processManager,
     ),
-    processManager: LoggingLocalProcessManager(logger: logger),
+    processManager: processManager,
   );
 
   ProcessSignal.sigint.watch().listen((signal) async {

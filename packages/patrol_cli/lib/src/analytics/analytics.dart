@@ -5,12 +5,40 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/fs.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:platform/platform.dart';
+import 'package:process/process.dart';
 import 'package:uuid/uuid.dart';
-//import 'package:unified_analytics/src/ga_client.dart';
-//import 'package:unified_analytics/src/utils.dart';
 
-const _analyticsUrl = 'https://www.google-analytics.com/mp/collect';
+String _getAnalyticsUrl(String measurementId, String apiSecret) {
+  const url = 'https://www.google-analytics.com/mp/collect';
+  return '$url?measurement_id=$measurementId&api_secret=$apiSecret';
+}
+
+String _getFlutterVersion(ProcessManager processManager) {
+  /*
+  We run `flutter` to get its version, for example:
+  $ flutter --version --machine
+  {
+    "frameworkVersion": "3.7.9",
+    "channel": "stable",
+    "repositoryUrl": "https://github.com/flutter/flutter.git",
+    "frameworkRevision": "62bd79521d8d007524e351747471ba66696fc2d4",
+    "frameworkCommitDate": "2023-03-30 10:59:36 -0700",
+    "engineRevision": "ec975089acb540fc60752606a3d3ba809dd1528b",
+    "dartSdkVersion": "2.19.6",
+    "devToolsVersion": "2.20.1",
+    "flutterRoot": "/Users/bartek/fvm/versions/3.7.9"
+  }
+  */
+
+  final result = processManager.runSync(
+    ['flutter', '--no-version-check', '--version', '--machine'],
+  );
+
+  final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
+  return versionData['frameworkVersion'] as String;
+}
 
 class AnalyticsConfig {
   AnalyticsConfig({
@@ -40,17 +68,20 @@ class Analytics {
     required String apiSecret,
     required FileSystem fs,
     required Platform platform,
+    required ProcessManager processManager,
   })  : _fs = fs,
         _platform = platform,
         _client = http.Client(),
-        _postUrl =
-            '$_analyticsUrl?measurement_id=$measurementId&api_secret=$apiSecret';
+        _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
+        _flutterVersion = _getFlutterVersion(processManager);
 
   final FileSystem _fs;
   final Platform _platform;
 
   final http.Client _client;
   final String _postUrl;
+
+  final String _flutterVersion;
 
   /// Sends an event to Google Analytics that command [name] run.
   Future<void> sendCommand(
@@ -73,7 +104,7 @@ class Analytics {
           eventName: name,
           eventData: {
             'client_id': uuid,
-            'flutter_version': flutterVersion,
+            'flutter_version': _flutterVersion,
             'patrol_cli_version': version,
           },
         ),
@@ -129,14 +160,17 @@ Map<String, Object?> _generateRequestBody({
   required String eventName,
   required Map<String, Object?> eventData,
 }) {
-  print('eventData: $eventData');
-
   return <String, Object?>{
     'client_id': clientId,
     'events': <Map<String, Object?>>[
       <String, Object?>{
         'name': eventName,
-        'params': eventData,
+        'params': {
+          // Required for users to be reported.
+          // See https://stackoverflow.com/q/70708893/7009800
+          'engagement_time_msec': 1,
+          ...eventData
+        },
       }
     ],
   };
