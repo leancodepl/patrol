@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
+import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/fs.dart';
 import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
@@ -70,7 +71,11 @@ class Analytics {
         _generateRequestBody(
           clientId: uuid,
           eventName: name,
-          eventData: eventData,
+          eventData: {
+            'client_id': uuid,
+            'flutter_version': flutterVersion,
+            'patrol_cli_version': version,
+          },
         ),
       ),
     );
@@ -124,6 +129,8 @@ Map<String, Object?> _generateRequestBody({
   required String eventName,
   required Map<String, Object?> eventData,
 }) {
+  print('eventData: $eventData');
+
   return <String, Object?>{
     'client_id': clientId,
     'events': <Map<String, Object?>>[
