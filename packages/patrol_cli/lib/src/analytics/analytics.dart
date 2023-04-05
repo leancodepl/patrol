@@ -130,23 +130,21 @@ class Analytics {
     required String eventName,
     required Map<String, Object?> additionalEventData,
   }) {
-    final event = <Map<String, Object?>>[
-      <String, Object?>{
-        'name': eventName,
-        'params': <String, Object?>{
-          // `engagement_time_msec` is required for users to be reported.
-          // See https://stackoverflow.com/q/70708893/7009800
-          'engagement_time_msec': 1,
-          'flutter_version': _flutterVersion.version,
-          'flutter_channel': _flutterVersion.channel,
-          'patrol_cli_version': version,
-          'os': _platform.operatingSystem,
-          'os_version': _platform.operatingSystemVersion,
-          'locale': _platform.localeName,
-          ...additionalEventData,
-        },
-      }
-    ];
+    final event = <String, Object?>{
+      'name': eventName,
+      'params': <String, Object?>{
+        // `engagement_time_msec` is required for users to be reported.
+        // See https://stackoverflow.com/q/70708893/7009800
+        'engagement_time_msec': 1,
+        'flutter_version': _flutterVersion.version,
+        'flutter_channel': _flutterVersion.channel,
+        'patrol_cli_version': version,
+        'os': _platform.operatingSystem,
+        'os_version': _platform.operatingSystemVersion,
+        'locale': _platform.localeName,
+        ...additionalEventData,
+      },
+    };
 
     final body = <String, Object?>{
       'client_id': clientId,

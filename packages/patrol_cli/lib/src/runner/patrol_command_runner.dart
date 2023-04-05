@@ -32,13 +32,14 @@ import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
+  final pubUpdater = PubUpdater();
   final logger = Logger();
   const fs = LocalFileSystem();
   const platform = LocalPlatform();
   final processManager = LoggingLocalProcessManager(logger: logger);
 
   final runner = PatrolCommandRunner(
-    pubUpdater: PubUpdater(),
+    pubUpdater: pubUpdater,
     platform: platform,
     fs: fs,
     logger: logger,
