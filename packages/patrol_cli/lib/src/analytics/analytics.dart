@@ -52,7 +52,7 @@ class Analytics {
   final http.Client _client;
   final String _postUrl;
 
-  final String _flutterVersion;
+  final _FlutterVersion _flutterVersion;
 
   /// Sends an event to Google Analytics that command [name] run.
   Future<void> sendCommand(
@@ -137,7 +137,8 @@ class Analytics {
           // `engagement_time_msec` is required for users to be reported.
           // See https://stackoverflow.com/q/70708893/7009800
           'engagement_time_msec': 1,
-          'flutter_version': _flutterVersion,
+          'flutter_version': _flutterVersion.version,
+          'flutter_channel': _flutterVersion.channel,
           'patrol_cli_version': version,
           'os': _platform.operatingSystem,
           'os_version': _platform.operatingSystemVersion,
@@ -161,7 +162,14 @@ String _getAnalyticsUrl(String measurementId, String apiSecret) {
   return '$url?measurement_id=$measurementId&api_secret=$apiSecret';
 }
 
-String _getFlutterVersion(ProcessManager processManager) {
+class _FlutterVersion {
+  _FlutterVersion(this.version, this.channel);
+
+  final String version;
+  final String channel;
+}
+
+_FlutterVersion _getFlutterVersion(ProcessManager processManager) {
   /*
   We run `flutter` to get its version, for example:
   $ flutter --version --machine
@@ -183,5 +191,7 @@ String _getFlutterVersion(ProcessManager processManager) {
   );
 
   final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
-  return versionData['frameworkVersion'] as String;
+  final frameworkVersion = versionData['frameworkVersion'] as String;
+  final channel = versionData['channel'] as String;
+  return _FlutterVersion(frameworkVersion, channel);
 }
