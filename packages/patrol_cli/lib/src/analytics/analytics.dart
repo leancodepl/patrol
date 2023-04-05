@@ -1,6 +1,7 @@
 // ignore_for_file: implementation_imports
 import 'dart:convert';
 
+import 'package:ci/ci.dart' as ci;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart';
@@ -89,7 +90,7 @@ class Analytics {
   }
 
   bool get enabled {
-    if (_platform.environment['CI'] == '') {
+    if (ci.isCI) {
       return false;
     }
 
