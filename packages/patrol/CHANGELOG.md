@@ -1,3 +1,9 @@
+## 1.0.9
+
+**This version requires version 1.1.4 of the `patrol_cli` package**
+
+- Rewrite native test reporting (#1178)
+
 ## 1.0.8
 
 - Fix App Store warnings about non-public selectors from `patrol.framework`
