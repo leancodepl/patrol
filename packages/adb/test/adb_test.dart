@@ -7,12 +7,14 @@ class MockAdbInternals extends Mock implements AdbInternals {}
 
 void main() {
   group('devices()', () {
-    late AdbInternals mockAdbInternals;
+    late AdbInternals adbInternals;
     late Adb adb;
 
     setUp(() {
-      mockAdbInternals = MockAdbInternals();
-      adb = Adb(adbInternals: mockAdbInternals);
+      adbInternals = MockAdbInternals();
+      when(() => adbInternals.ensureServerRunning()).thenAnswer((_) async {});
+
+      adb = Adb(adbInternals: adbInternals);
     });
 
     test('returns correct result when no devices are attached', () async {
@@ -20,26 +22,26 @@ void main() {
 List of devices attached
 
 ''';
-      when(mockAdbInternals.devices).thenAnswer((_) async => output);
+      when(adbInternals.devices).thenAnswer((_) async => output);
 
       final devices = await adb.devices();
       expect(devices, <String>[]);
     });
 
-    test('returns correct result when 1 device are attached', () async {
+    test('returns correct result when 1 device is attached', () async {
       const output = '''
 List of devices attached
 emulator-5554	device
 
 
 ''';
-      when(mockAdbInternals.devices).thenAnswer((_) async => output);
+      when(adbInternals.devices).thenAnswer((_) async => output);
 
       final devices = await adb.devices();
       expect(devices, <String>['emulator-5554']);
     });
 
-    test('returns correct result when  devices are attached', () async {
+    test('returns correct result when devices are attached', () async {
       const output = '''
 List of devices attached
 emulator-5554	device
@@ -48,7 +50,7 @@ emulator-5557	device
 
 
 ''';
-      when(mockAdbInternals.devices).thenAnswer((_) async => output);
+      when(adbInternals.devices).thenAnswer((_) async => output);
 
       final devices = await adb.devices();
       expect(devices, <String>[
