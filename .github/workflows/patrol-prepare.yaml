@@ -126,6 +126,7 @@ jobs:
         include:
           - version: '3.3.x'
           - version: '3.7.x'
+          - channel: beta
 
     defaults:
       run:
