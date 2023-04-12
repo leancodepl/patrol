@@ -27,7 +27,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.3.3
-  leancode_lint: ^2.1.0
+  leancode_lint: ^3.0.0
 
 flutter:
   plugin:
