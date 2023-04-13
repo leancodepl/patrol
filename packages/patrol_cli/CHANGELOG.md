@@ -1,3 +1,7 @@
+## 1.1.5
+
+- Don't ask to collect analytics if running on CI (#1197)
+
 ## 1.1.4
 
 **This version requires version 1.0.9 of the `patrol` package**
