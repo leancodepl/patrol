@@ -13,7 +13,7 @@ on:
 
 jobs:
   main:
-    name: Flutter ${{ matrix.channel }}${{ matrix.version }}
+    name: Flutter ${{ matrix.version }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -22,7 +22,6 @@ jobs:
         include:
           - version: '3.3.x'
           - version: '3.7.x'
-          - channel: beta
 
     defaults:
       run:

@@ -117,7 +117,7 @@ jobs:
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
   prepare-flutter:
-    name: prepare-flutter ${{ matrix.channel }}${{ matrix.version }}
+    name: Flutter ${{ matrix.version }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -126,7 +126,6 @@ jobs:
         include:
           - version: '3.3.x'
           - version: '3.7.x'
-          - channel: beta
 
     defaults:
       run:
@@ -139,7 +138,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.channel }}
+          channel: stable
           flutter-version: ${{ matrix.version }}
 
       - name: flutter pub get
