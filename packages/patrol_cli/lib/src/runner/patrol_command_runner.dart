@@ -318,7 +318,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   void printUsage() => _logger.info(usage);
 
   void _handleAnalytics() {
-    if (_analytics.firstRun) {
+    if (_analytics.firstRun && !_analytics.isCI) {
       _logger.info(
         '''
 \n

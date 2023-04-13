@@ -86,8 +86,10 @@ class Analytics {
     );
   }
 
+  bool get isCI => ci.isCI;
+
   bool get enabled {
-    if (ci.isCI) {
+    if (isCI) {
       return false;
     }
 
