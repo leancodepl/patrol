@@ -49,7 +49,6 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: ${{ vars.SLACK_RELEASES_CHANNEL }}
           SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
           SLACK_ICON: ${{ vars.SLACK_ICON }}
           SLACK_TITLE: New patrol version
           SLACK_MESSAGE: |

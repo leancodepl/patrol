@@ -13,15 +13,15 @@ on:
 
 jobs:
   main:
-    name: Flutter ${{ matrix.channel }}${{ matrix.version }}
+    name: Flutter ${{ matrix.version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - version: '3.3.0'
-          - channel: stable
+          - version: '3.3.x'
+          - version: '3.7.x'
 
     defaults:
       run:
