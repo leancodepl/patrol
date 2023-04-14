@@ -419,6 +419,7 @@ class PatrolTester {
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    Duration dragDuration = const Duration(milliseconds: 500),
     bool? andSettle,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -428,7 +429,7 @@ class PatrolTester {
 
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-        await tester.drag(viewPatrolFinder, moveStep);
+        await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration);
         await tester.pump(duration);
         iterationsLeft -= 1;
       }
@@ -511,6 +512,7 @@ class PatrolTester {
     double delta = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    Duration scrollDuration = const Duration(milliseconds: 500),
     bool? andSettle,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -544,6 +546,7 @@ class PatrolTester {
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
+        dragDuration: scrollDuration,
         andSettle: andSettle,
       );
 
