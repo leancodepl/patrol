@@ -1,3 +1,7 @@
+## 1.1.6
+
+- Default to "Yes" when asking for telemetry (#1201)
+
 ## 1.1.5
 
 - Don't ask to collect analytics if running on CI (#1197)
