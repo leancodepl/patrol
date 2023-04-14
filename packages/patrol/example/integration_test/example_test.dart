@@ -19,4 +19,22 @@ void main() {
       expect($(#counterText).text, '2');
     },
   );
+
+  group('example group top', () {
+    // A few simple tests that do nothing
+
+    group('example group bottom', () {
+      test('example bottom test 1', () {
+        expect(1, equals(1));
+      });
+    });
+
+    test('example test 1', () {
+      expect(1, equals(1));
+    });
+
+    test('example test 2', () {
+      expect(1, equals(1));
+    });
+  });
 }
