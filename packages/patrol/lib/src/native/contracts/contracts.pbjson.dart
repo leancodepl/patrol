@@ -490,6 +490,62 @@ const Notification$json = const {
 /// Descriptor for `Notification`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List notificationDescriptor = $convert.base64Decode(
     'CgxOb3RpZmljYXRpb24SHQoHYXBwTmFtZRgBIAEoCUgAUgdhcHBOYW1liAEBEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIYCgdjb250ZW50GAMgASgJUgdjb250ZW50EhAKA3JhdxgEIAEoCVIDcmF3QgoKCF9hcHBOYW1l');
+@$core.Deprecated('Use setDartTestsRequestDescriptor instead')
+const SetDartTestsRequest$json = const {
+  '1': 'SetDartTestsRequest',
+  '2': const [
+    const {
+      '1': 'group',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.patrol.DartTestGroup',
+      '10': 'group'
+    },
+  ],
+};
+
+/// Descriptor for `SetDartTestsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List setDartTestsRequestDescriptor = $convert.base64Decode(
+    'ChNTZXREYXJ0VGVzdHNSZXF1ZXN0EisKBWdyb3VwGAEgASgLMhUucGF0cm9sLkRhcnRUZXN0R3JvdXBSBWdyb3Vw');
+@$core.Deprecated('Use dartTestGroupDescriptor instead')
+const DartTestGroup$json = const {
+  '1': 'DartTestGroup',
+  '2': const [
+    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    const {
+      '1': 'tests',
+      '3': 2,
+      '4': 3,
+      '5': 11,
+      '6': '.patrol.DartTestCase',
+      '10': 'tests'
+    },
+    const {
+      '1': 'groups',
+      '3': 3,
+      '4': 3,
+      '5': 11,
+      '6': '.patrol.DartTestGroup',
+      '10': 'groups'
+    },
+  ],
+};
+
+/// Descriptor for `DartTestGroup`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List dartTestGroupDescriptor = $convert.base64Decode(
+    'Cg1EYXJ0VGVzdEdyb3VwEhIKBG5hbWUYASABKAlSBG5hbWUSKgoFdGVzdHMYAiADKAsyFC5wYXRyb2wuRGFydFRlc3RDYXNlUgV0ZXN0cxItCgZncm91cHMYAyADKAsyFS5wYXRyb2wuRGFydFRlc3RHcm91cFIGZ3JvdXBz');
+@$core.Deprecated('Use dartTestCaseDescriptor instead')
+const DartTestCase$json = const {
+  '1': 'DartTestCase',
+  '2': const [
+    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+  ],
+};
+
+/// Descriptor for `DartTestCase`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List dartTestCaseDescriptor =
+    $convert.base64Decode('CgxEYXJ0VGVzdENhc2USEgoEbmFtZRgBIAEoCVIEbmFtZQ==');
 @$core.Deprecated('Use submitTestResultsRequestDescriptor instead')
 const SubmitTestResultsRequest$json = const {
   '1': 'SubmitTestResultsRequest',
