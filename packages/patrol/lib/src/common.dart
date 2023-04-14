@@ -4,6 +4,10 @@ import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/native/native.dart';
+import 'package:test_api/src/backend/group.dart';
+import 'package:test_api/src/backend/group_entry.dart';
+import 'package:test_api/src/backend/invoker.dart';
+import 'package:test_api/src/backend/test.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
@@ -73,6 +77,13 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
+      final invoker = Invoker.current;
+      print('DEBUG 0 after invoker: $invoker');
+
+      for (final group in Invoker.current!.liveTest.groups) {
+        _printTestEntry(group);
+      }
+
       await nativeAutomator?.configure();
 
       final patrolTester = PatrolTester(
@@ -100,4 +111,19 @@ void patrolTest(
       }
     },
   );
+}
+
+/// Prints test entry.
+///
+/// If [entry] is a group, then it's recursively printed as well.
+void _printTestEntry(GroupEntry entry, {int level = 0}) {
+  final padding = '  ' * level;
+  if (entry is Group) {
+    print('$padding Group: ${entry.name}');
+    for (final groupEntry in entry.entries) {
+      _printTestEntry(groupEntry, level: level + 1);
+    }
+  } else if (entry is Test) {
+    print('$padding Test: ${entry.name}');
+  }
 }
