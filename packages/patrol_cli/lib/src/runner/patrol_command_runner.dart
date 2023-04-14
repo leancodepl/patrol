@@ -331,7 +331,10 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 +---------------------------------------------------+
 \n''',
       );
-      final analyticsEnabled = _logger.confirm('Enable analytics?');
+      final analyticsEnabled = _logger.confirm(
+        'Enable analytics?',
+        defaultValue: true,
+      );
       _analytics.enabled = analyticsEnabled;
       if (analyticsEnabled) {
         _logger.info('Analytics enabled. Thank you!');
