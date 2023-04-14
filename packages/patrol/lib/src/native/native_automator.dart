@@ -739,4 +739,16 @@ class NativeAutomator {
       ),
     );
   }
+
+  /// Sets the Dart test group to be run by the native test runner.
+  ///
+  /// Virtual test cases are created on the native side to reproduce the
+  /// hierarchy of Dart tests
+  @internal
+  Future<void> setDartTests(DartTestGroup topLevelGroup) async {
+    await _wrapRequest(
+      'setDartTests',
+      () => _client.setDartTests(SetDartTestsRequest(group: topLevelGroup)),
+    );
+  }
 }

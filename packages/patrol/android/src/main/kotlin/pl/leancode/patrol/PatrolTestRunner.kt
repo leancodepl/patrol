@@ -6,14 +6,16 @@ import org.junit.Rule
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runner.Runner
-import org.junit.runner.notification.Failure
 import org.junit.runner.notification.RunNotifier
-import java.util.concurrent.ExecutionException
+import pl.leancode.patrol.contracts.Contracts.DartTestCase
+import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 
 class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
     private val tag = "PatrolTestRunner"
 
-    var rule: TestRule? = null
+    private val description = Description.createTestDescription(testClass, "Flutter Patrol Tests")
+
+    private lateinit var rule: TestRule
 
     init {
         // Look for an `ActivityTestRule` annotated `@Rule` and invoke `launchActivity()`
@@ -37,46 +39,58 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
         }
     }
 
-    override fun getDescription(): Description? {
-        return Description.createTestDescription(testClass, "Flutter Patrol Tests")
-    }
+    override fun getDescription(): Description = description
 
     override fun run(notifier: RunNotifier) {
-        if (rule == null) {
-            throw RuntimeException("Unable to run tests due to missing activity rule")
-        }
-
         try {
             if (rule is PatrolTestRule<*>) {
                 (rule as PatrolTestRule<*>).launchActivity(null)
             }
         } catch (e: RuntimeException) {
             Log.v(tag, "launchActivity failed, possibly because the activity was already running. $e")
-            Log.v(
-                tag,
-                "Try disabling auto-launch of the activity, e.g. ActivityTestRule<>(MainActivity.class, true, false);"
-            )
         }
 
-        val results = try {
-            PatrolServer.testResults.get() // Wait for test results asynchronously
-        } catch (e: ExecutionException) {
-            throw IllegalThreadStateException("Unable to get test results")
-        } catch (e: InterruptedException) {
-            throw IllegalThreadStateException("Unable to get test results")
-        } catch (e: Exception) {
-            throw e // We don't know yet what to do with it now, so just rethrow it
-        }
+        val dartTestGroup = PatrolServer.dartTestGroup.get() // Might throw, but we don't know what to do with it yet
 
-        for (name in results.keys) {
-            val d = Description.createTestDescription(testClass, name)
-            notifier.fireTestStarted(d)
-            val outcome = results.get(name)
-            if (outcome != "success") {
-                val dummyException = Exception(outcome)
-                notifier.fireTestFailure(Failure(d, dummyException))
-            }
-            notifier.fireTestFinished(d)
-        }
+        notifier.createVirtualTests(dartTestGroup) // Does nothing yet
+        notifier.createDescription(dartTestGroup, description)
+
+        PatrolServer.testResults.get() // Wait until tests finish, ignore results (always success)
+
+        // for (name in tests.keys) {
+        //     val d = Description.createTestDescription(testClass, name)
+        //     notifier.fireTestStarted(d)
+        //     val outcome = tests[name]
+        //     if (outcome != "success") {
+        //         val dummyException = Exception(outcome)
+        //         notifier.fireTestFailure(Failure(d, dummyException))
+        //     }
+        //     notifier.fireTestFinished(d)
+        // }
     }
+}
+
+fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description) {
+    val description = Description.createTestDescription(group.name, group.name)
+    parentDescription.addChild(description)
+    Logger.i("Added new group ${group.name} to parent group $parentDescription")
+
+    fireTestStarted(description)
+
+    group.groupsList.forEach { createDescription(group = it, parentDescription = description) }
+    group.testsList.forEach { createDescription(test = it, parentDescription = description) }
+    fireTestFinished(description)
+}
+
+fun RunNotifier.createDescription(test: DartTestCase, parentDescription: Description) {
+    val testDescription = Description.createTestDescription(test.name, test.name)
+    parentDescription.addChild(parentDescription)
+    Logger.i("Added new test ${test.name} to parent group $parentDescription")
+
+    fireTestStarted(testDescription)
+    fireTestFinished(testDescription)
+}
+
+fun RunNotifier.createVirtualTests(topLevelGroup: DartTestGroup) {
+    // TODO: Extend from Parametrized instead of Runner and create parametrized tests
 }

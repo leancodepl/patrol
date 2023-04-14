@@ -1,6 +1,7 @@
 package pl.leancode.patrol
 
 import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.DENIED
@@ -18,7 +19,8 @@ typealias Empty = Contracts.Empty
 
 class AutomatorServer(
     private val automation: Automator,
-    private val onTestResultsSubmitted: (Map<String, String>) -> Unit
+    private val onTestResultsSubmitted: (Map<String, String>) -> Unit,
+    private val onDartTestsSet: (DartTestGroup) -> Unit
 ) :
     NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
 
@@ -210,5 +212,10 @@ class AutomatorServer(
     override suspend fun submitTestResults(request: Contracts.SubmitTestResultsRequest): Empty {
         onTestResultsSubmitted(request.resultsMap)
         return empty {}
+    }
+
+    override suspend fun setDartTests(request: Contracts.SetDartTestsRequest): Empty {
+        onDartTestsSet(request.group)
+        return empty { }
     }
 }
