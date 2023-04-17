@@ -74,8 +74,10 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
 }
 
 fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description, level: Int = 0) {
-    val description = Description.createTestDescription(group.name, group.name)
-    Logger.i("${" ".repeat(level * 2)}Created new group ${group.name}")
+    val groupName = group.name.ifEmpty { "top" }
+
+    Logger.i("${" ".repeat(level * 2)}Created new group \"$groupName\"")
+    val description = Description.createSuiteDescription(groupName)
     parentDescription.addChild(description)
     // Logger.i("Added new group ${group.name} to parent group ${parentDescription}")
 
@@ -87,8 +89,8 @@ fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Descr
 }
 
 fun RunNotifier.createDescription(test: DartTestCase, parentDescription: Description, level: Int = 0) {
+    Logger.i("${" ".repeat(level * 2)}Created new test \"${test.name}\"")
     val testDescription = Description.createTestDescription(test.name, test.name)
-    Logger.i("${" ".repeat(level * 2)}Created new test ${test.name}")
     parentDescription.addChild(parentDescription)
     // Logger.i("Added new test ${test.name} to parent group $parentDescription")
 

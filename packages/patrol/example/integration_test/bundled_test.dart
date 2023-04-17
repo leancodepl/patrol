@@ -26,9 +26,12 @@ Future<void> main() async {
   // Run a single, special test to expore the hierarchy of groups and tests
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
+    print('Dart test suite hierarchy:');
     _printGroupEntry(topLevelGroup);
 
     final dartTestGroup = _createDartTestGroup(topLevelGroup);
+    print('DartTestGroup (from contracts):');
+    describe(dartTestGroup);
 
     NativeAutomator(config: NativeAutomatorConfig())
         .setDartTests(dartTestGroup);
@@ -37,17 +40,17 @@ Future<void> main() async {
   });
 
   group('permissions', () {
-    group('permissions_location_test.dart', permissions_location_test.main);
+    group('permissions_location_test', permissions_location_test.main);
 
-    group('permissions_many_test.dart', permissions_many_test.main);
+    group('permissions_many_test', permissions_many_test.main);
   });
 
   group('sign_in', () {
-    group('sign_in_facebook_test.dart', sign_in_facebook_test.main);
-    group('sign_in_google_test.dart', sign_in_google_test.main);
+    group('sign_in_facebook_test', sign_in_facebook_test.main);
+    group('sign_in_google_test', sign_in_google_test.main);
   });
 
-  group('example_test.dart', example_test.main);
+  group('example_test', example_test.main);
 
   tearDownAll(() {});
 }
@@ -73,21 +76,29 @@ void _printGroupEntry(GroupEntry entry, {int level = 0}) {
 
 /// Creates a DartTestGroup by recursively visiting subgroups of [topLevelGroup]
 /// and tests these groups contain.
-DartTestGroup _createDartTestGroup(Group topLevelGroup) {
-  final group = DartTestGroup();
-  group.name = topLevelGroup.name;
+///
+/// This function also removes parent group prefixes.
+DartTestGroup _createDartTestGroup(Group topLevelGroup, {String prefix = ''}) {
+  print('topLevelGroup.name: ${topLevelGroup.name}');
+  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
+  print('groupName: $groupName');
+  final group = DartTestGroup(name: groupName);
 
-  for (final groupEntry in topLevelGroup.entries) {
-    if (groupEntry is Group) {
-      final subgroup = _createDartTestGroup(groupEntry);
+  for (final entry in topLevelGroup.entries) {
+    if (entry is Group) {
+      final subgroup = _createDartTestGroup(entry, prefix: groupName);
       group.groups.add(subgroup);
-    } else if (groupEntry is Test) {
-      if (groupEntry.name == 'patrol_test_explorer') {
+    }
+
+    if (entry is Test) {
+      if (entry.name == 'patrol_test_explorer') {
         continue;
       }
 
-      final dartTest = DartTestCase();
-      dartTest.name = groupEntry.name;
+      print('entry.name: ${entry.name}');
+      final testName = entry.name.replaceFirst(groupName, '').trim();
+      print('testName: $testName');
+      final dartTest = DartTestCase(name: testName);
       group.tests.add(dartTest);
     }
   }
@@ -95,9 +106,20 @@ DartTestGroup _createDartTestGroup(Group topLevelGroup) {
   return group;
 }
 
-extension on DartTestGroup {
-  /// Recursively prints test groups and test cases.
-  ///
-  /// [entry] is either a [DartTestGroup] or DartTestCase.
-  void describe(dynamic entry) {}
+/// Recursively prints test groups and test cases.
+///
+/// [entry] is either a [DartTestGroup] or DartTestCase.
+void describe(DartTestGroup entry, {int level = 0}) {
+  final padding = '  ' * level;
+  print(
+    '$padding Group: ${entry.name} (${entry.groups.length} groups, ${entry.tests.length} tests)',
+  );
+  print('$padding  Groups: ${entry.groups.isEmpty ? 'none' : ''}');
+  for (final groupEntry in entry.groups) {
+    describe(groupEntry, level: level + 1);
+  }
+  print('$padding  Tests: ${entry.tests.isEmpty ? 'none' : ''}');
+  for (final test in entry.tests) {
+    print('$padding    Test: ${test.name}');
+  }
 }
