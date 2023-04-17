@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/native/native.dart';
 
@@ -51,9 +50,10 @@ void patrolTest(
       case BindingType.patrol:
         nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
 
-        final binding = PatrolBinding.ensureInitialized();
-        binding.framePolicy = framePolicy;
-        binding.nativeAutomator = nativeAutomator;
+        // FIXME: This is (temporarily?) moved to the generated bundled_test.dart
+        // final binding = PatrolBinding.ensureInitialized();
+        // binding.framePolicy = framePolicy;
+        // binding.nativeAutomator = nativeAutomator;
         break;
       case BindingType.integrationTest:
         IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
@@ -76,7 +76,7 @@ void patrolTest(
       // Here, we will delay the start of this test until the native side
       // requests its execution.
 
-      await nativeAutomator?.configure();
+      // await nativeAutomator?.configure(); // Move to bundled_test.dart
 
       final patrolTester = PatrolTester(
         tester: widgetTester,

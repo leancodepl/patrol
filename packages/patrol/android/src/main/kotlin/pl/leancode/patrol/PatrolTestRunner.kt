@@ -55,6 +55,7 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
         notifier.createVirtualTests(dartTestGroup) // Does nothing yet
         notifier.createDescription(dartTestGroup, description)
 
+
         Logger.i("Waiting for Dart tests results...")
         PatrolServer.testResults.get() // Wait until tests finish, ignore results (always success)
         Logger.i("Dart tests finished")
