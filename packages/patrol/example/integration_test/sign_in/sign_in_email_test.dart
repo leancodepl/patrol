@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 void main() {
   patrol(
-    'counter state is the same after going to Home and switching apps',
+    'signs in with email',
     ($) async {
       await createApp($);
 

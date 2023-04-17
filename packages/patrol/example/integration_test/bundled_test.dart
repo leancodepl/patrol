@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages
 
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:test_api/src/backend/group.dart';
@@ -8,17 +8,11 @@ import 'package:test_api/src/backend/test.dart';
 
 import 'common.dart';
 import 'example_test.dart' as example_test;
-import 'notifications_test.dart' as notifications_test;
-import 'permissions_many_test.dart' as permissions_many_test;
-// class PatrolTestGroup {
-//   final List<PatrolTestGroup> groups;
-// }
-
-// class PatrolTestCase {
-//   final String name;
-
-//   const PatrolTestCase(this.name);
-// }
+import 'permissions/permissions_location_test.dart'
+    as permissions_location_test;
+import 'permissions/permissions_many_test.dart' as permissions_many_test;
+import 'sign_in/sign_in_facebook_test.dart' as sign_in_facebook_test;
+import 'sign_in/sign_in_google_test.dart' as sign_in_google_test;
 
 Future<void> main() async {
   // Run a single, special test to expore the hierarchy of groups and tests
@@ -34,11 +28,18 @@ Future<void> main() async {
         .setDartTests(dartTestGroup);
   });
 
+  group('permissions', () {
+    group('permissions_location_test.dart', permissions_location_test.main);
+
+    group('permissions_many_test.dart', permissions_many_test.main);
+  });
+
+  group('sign_in', () {
+    group('sign_in_facebook_test.dart', sign_in_facebook_test.main);
+    group('sign_in_google_test.dart', sign_in_google_test.main);
+  });
+
   group('app_test.dart', example_test.main);
-
-  group('permissions_many_test.dart', permissions_many_test.main);
-
-  group('notifications_test.dart', notifications_test.main);
 }
 
 /// Prints test entry.

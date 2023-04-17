@@ -55,7 +55,9 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
         notifier.createVirtualTests(dartTestGroup) // Does nothing yet
         notifier.createDescription(dartTestGroup, description)
 
+        Logger.i("Waiting for Dart tests results...")
         PatrolServer.testResults.get() // Wait until tests finish, ignore results (always success)
+        Logger.i("Dart tests finished")
 
         // for (name in tests.keys) {
         //     val d = Description.createTestDescription(testClass, name)
@@ -70,22 +72,24 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
     }
 }
 
-fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description) {
+fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description, level: Int = 0) {
     val description = Description.createTestDescription(group.name, group.name)
+    Logger.i("${" ".repeat(level * 2)}Created new group ${group.name}")
     parentDescription.addChild(description)
-    Logger.i("Added new group ${group.name} to parent group $parentDescription")
+    // Logger.i("Added new group ${group.name} to parent group ${parentDescription}")
 
     fireTestStarted(description)
 
-    group.groupsList.forEach { createDescription(group = it, parentDescription = description) }
-    group.testsList.forEach { createDescription(test = it, parentDescription = description) }
+    group.groupsList.forEach { createDescription(group = it, parentDescription = description, level = level + 1) }
+    group.testsList.forEach { createDescription(test = it, parentDescription = description, level = level + 1) }
     fireTestFinished(description)
 }
 
-fun RunNotifier.createDescription(test: DartTestCase, parentDescription: Description) {
+fun RunNotifier.createDescription(test: DartTestCase, parentDescription: Description, level: Int = 0) {
     val testDescription = Description.createTestDescription(test.name, test.name)
+    Logger.i("${" ".repeat(level * 2)}Created new test ${test.name}")
     parentDescription.addChild(parentDescription)
-    Logger.i("Added new test ${test.name} to parent group $parentDescription")
+    // Logger.i("Added new test ${test.name} to parent group $parentDescription")
 
     fireTestStarted(testDescription)
     fireTestFinished(testDescription)
