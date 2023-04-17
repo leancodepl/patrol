@@ -74,7 +74,7 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
 }
 
 fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description, level: Int = 0) {
-    val groupName = group.name.ifEmpty { "top" }
+    val groupName = group.name.ifEmpty { "root" }
 
     Logger.i("${" ".repeat(level * 2)}Created new group \"$groupName\"")
     val description = Description.createSuiteDescription(groupName)

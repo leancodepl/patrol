@@ -1,8 +1,14 @@
+// ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, implementation_imports
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
+import 'package:patrol/src/native/contracts/contracts.pb.dart';
+import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
+import 'package:test_api/src/backend/group.dart';
+import 'package:test_api/src/backend/test.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
@@ -103,4 +109,41 @@ void patrolTest(
       }
     },
   );
+}
+
+/// Creates a DartTestGroup by recursively visiting subgroups of [topLevelGroup]
+/// and tests these groups contain.
+///
+/// This function also removes parent group prefixes.
+@internal
+DartTestGroup createDartTestGroup(
+  Group topLevelGroup, {
+  String prefix = '',
+  String fullPrefix = '',
+}) {
+  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
+  final group = DartTestGroup(name: groupName);
+
+  for (final entry in topLevelGroup.entries) {
+    if (entry is Group) {
+      final subgroup = createDartTestGroup(
+        entry,
+        prefix: groupName,
+        fullPrefix: entry.name.trim(),
+      );
+      group.groups.add(subgroup);
+    }
+
+    if (entry is Test) {
+      if (entry.name == 'patrol_test_explorer') {
+        continue;
+      }
+
+      final testName = entry.name.replaceFirst(fullPrefix, '').trim();
+      final dartTest = DartTestCase(name: testName);
+      group.tests.add(dartTest);
+    }
+  }
+
+  return group;
 }

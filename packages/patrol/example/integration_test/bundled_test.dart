@@ -20,8 +20,8 @@ Future<void> main() async {
   // Create a one-off NativeAutomator. It's responsible for:
   // * seed the native side with the Dart test suite hierarchy
   // * send test results back to the native side in its tearDownAll callback
-  final binding = PatrolBinding.ensureInitialized();
-  binding.nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  PatrolBinding.ensureInitialized().nativeAutomator =
+      NativeAutomator(config: NativeAutomatorConfig());
 
   // Run a single, special test to expore the hierarchy of groups and tests
   test('patrol_test_explorer', () {
@@ -29,7 +29,7 @@ Future<void> main() async {
     print('Dart test suite hierarchy:');
     _printGroupEntry(topLevelGroup);
 
-    final dartTestGroup = _createDartTestGroup(topLevelGroup);
+    final dartTestGroup = createDartTestGroup(topLevelGroup);
     print('DartTestGroup (from contracts):');
     describe(dartTestGroup);
 
@@ -72,38 +72,6 @@ void _printGroupEntry(GroupEntry entry, {int level = 0}) {
 
     print('$padding Test: ${entry.name}');
   }
-}
-
-/// Creates a DartTestGroup by recursively visiting subgroups of [topLevelGroup]
-/// and tests these groups contain.
-///
-/// This function also removes parent group prefixes.
-DartTestGroup _createDartTestGroup(Group topLevelGroup, {String prefix = ''}) {
-  print('topLevelGroup.name: ${topLevelGroup.name}');
-  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  print('groupName: $groupName');
-  final group = DartTestGroup(name: groupName);
-
-  for (final entry in topLevelGroup.entries) {
-    if (entry is Group) {
-      final subgroup = _createDartTestGroup(entry, prefix: groupName);
-      group.groups.add(subgroup);
-    }
-
-    if (entry is Test) {
-      if (entry.name == 'patrol_test_explorer') {
-        continue;
-      }
-
-      print('entry.name: ${entry.name}');
-      final testName = entry.name.replaceFirst(groupName, '').trim();
-      print('testName: $testName');
-      final dartTest = DartTestCase(name: testName);
-      group.tests.add(dartTest);
-    }
-  }
-
-  return group;
 }
 
 /// Recursively prints test groups and test cases.
