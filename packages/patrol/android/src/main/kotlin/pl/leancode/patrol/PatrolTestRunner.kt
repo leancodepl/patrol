@@ -7,7 +7,6 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runner.Runner
 import org.junit.runner.notification.RunNotifier
-import pl.leancode.patrol.contracts.Contracts.DartTestCase
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 
 class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
@@ -51,10 +50,7 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
         }
 
         val dartTestGroup = PatrolServer.dartTestGroup.get() // Might throw, but we don't know what to do with it yet
-
         notifier.createVirtualTests(dartTestGroup) // Does nothing yet
-        notifier.createDescription(dartTestGroup, description)
-
 
         Logger.i("Waiting for Dart tests results...")
         PatrolServer.testResults.get() // Wait until tests finish, ignore results (always success)
@@ -73,30 +69,32 @@ class PatrolTestRunner(private val testClass: Class<*>) : Runner() {
     }
 }
 
-fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description, level: Int = 0) {
+/*fun RunNotifier.createDescription(group: DartTestGroup, parentDescription: Description, level: Int = 0) {
     val groupName = group.name.ifEmpty { "root" }
 
     Logger.i("${" ".repeat(level * 2)}Created new group \"$groupName\"")
     val description = Description.createSuiteDescription(groupName)
     parentDescription.addChild(description)
-    // Logger.i("Added new group ${group.name} to parent group ${parentDescription}")
+    Logger.i("Added new group ${group.name} to parent group ${parentDescription}")
 
+    // The 2 below lines cause the test to act as if pressHome() was pressed (not good)
     fireTestStarted(description)
+    fireTestFinished(description)
 
     group.groupsList.forEach { createDescription(group = it, parentDescription = description, level = level + 1) }
     group.testsList.forEach { createDescription(test = it, parentDescription = description, level = level + 1) }
-    fireTestFinished(description)
 }
 
 fun RunNotifier.createDescription(test: DartTestCase, parentDescription: Description, level: Int = 0) {
     Logger.i("${" ".repeat(level * 2)}Created new test \"${test.name}\"")
     val testDescription = Description.createTestDescription(test.name, test.name)
     parentDescription.addChild(parentDescription)
-    // Logger.i("Added new test ${test.name} to parent group $parentDescription")
+    Logger.i("Added new test ${test.name} to parent group $parentDescription")
 
+    // The 2 below lines cause the test to act as if pressHome() was pressed (not good)
     fireTestStarted(testDescription)
     fireTestFinished(testDescription)
-}
+}*/
 
 fun RunNotifier.createVirtualTests(topLevelGroup: DartTestGroup) {
     // TODO: Extend from Parametrized instead of Runner and create parametrized tests
