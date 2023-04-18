@@ -1,3 +1,8 @@
+## 1.1.0
+
+This version marks the official release of Hot Restart. [Learn more
+here](https://leancode.co/blog/hot-restart-in-patrol-framework).
+
 ## 1.0.9
 
 **This version requires version 1.1.4 of the `patrol_cli` package**
