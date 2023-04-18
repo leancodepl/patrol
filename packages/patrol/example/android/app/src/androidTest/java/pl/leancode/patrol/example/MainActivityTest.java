@@ -11,7 +11,7 @@ import pl.leancode.patrol.PatrolTestRule;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
-    @Parameters
+    @Parameters(name = "{0}")
     public static Object[] testCases() {
         return new Object[]{"permissions_many_test.dart", "permissions_location_test.dart", "example_test.dart"};
     }
