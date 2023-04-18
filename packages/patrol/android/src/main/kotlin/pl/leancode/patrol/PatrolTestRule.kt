@@ -10,11 +10,13 @@ import kotlinx.coroutines.launch
 class PatrolTestRule<T : Activity>(activityClass: Class<T>) :
     ActivityTestRule<T>(activityClass, true, false) {
 
+    lateinit var patrolServer: PatrolServer
+
     @OptIn(DelicateCoroutinesApi::class)
     override fun launchActivity(startIntent: Intent?): T {
         Logger.i("Starting server loop...")
 
-        val patrolServer = PatrolServer()
+        patrolServer = PatrolServer()
         try {
             patrolServer.start()
         } catch (e: Exception) {

@@ -45,6 +45,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
     buildTypes {
@@ -55,6 +56,8 @@ android {
     }
 
     testOptions {
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
+
         String targetPath = findProperty("target")
         if (targetPath == null) {
             return
@@ -83,4 +86,5 @@ dependencies {
     testImplementation "junit:junit:4.13.2"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
 }
