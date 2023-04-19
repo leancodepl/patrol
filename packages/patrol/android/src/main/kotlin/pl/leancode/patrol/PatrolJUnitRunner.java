@@ -10,10 +10,16 @@ import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public static String valueFromApp;
-
     public static DartTestGroup dartTestGroup;
+
+
+    private static PatrolAppServiceClient patrolAppServiceClient;
+    private static boolean listTestsForOrchestrator;
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -26,6 +32,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         // This is only true when the Orchestrator requests a list of tests from the app during the initial run.
         String listTestsForOrchestrator = arguments.getString("listTestsForOrchestrator");
+        PatrolJUnitRunner.listTestsForOrchestrator = Objects.equals(listTestsForOrchestrator, "true");
         Logger.INSTANCE.i("PatrolJUnitRunner onCreate, exampleArg: " + exampleArg + ", listTestsForOrchestrator: " + listTestsForOrchestrator);
 
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -38,10 +45,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         instrumentation.getContext().startActivity(intent);
 
-        String target = "localhost:8082"; // TODO: Document this value better
-        ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
-        PatrolAppServiceClient client = new PatrolAppServiceClient(channel);
-        dartTestGroup = client.listDartTests();
+        // SystemClock.sleep(5 * 1000); // Make sure the app has started
 
         // This is a demo that the PatrolJUnitRunner can set values of its own static members, and these values will
         // be later picked up by the static method generating parametrized test cases in MainActivityTest.java.
@@ -50,5 +54,43 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // PatrolServer starts the NativeAutomator service
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // It will be killed once the test finishes, and for now, we're okay with this
+
+        // Lets us query Dart tests, run them, wait for them to finish, and get their results
+        String target = "0.0.0.0:2137"; // TODO: Document this value better
+        Logger.INSTANCE.i("Will start PatrolAppServiceClient on " + target);
+        ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
+        patrolAppServiceClient = new PatrolAppServiceClient(channel);
+    }
+
+    /// Sets PatrolJUnitRunner.dartTestGroup if this is the initial test run.
+    public static void setUpIfNecessary() {
+        if (listTestsForOrchestrator) {
+            try {
+                Logger.INSTANCE.i("Before waiting for appReadyFuture");
+                PatrolServer.Companion.getAppReadyFuture().get();
+                Logger.INSTANCE.i("After waiting for appReadyFuture");
+            } catch (InterruptedException | ExecutionException e) {
+                Logger.INSTANCE.e("Exception was thrown when waiting for appReady: ", e);
+                throw new RuntimeException(e);
+            }
+
+            dartTestGroup = findDartTests();
+        }
+    }
+
+    private static DartTestGroup findDartTests() {
+        DartTestGroup group;
+        while (true) {
+            try {
+                Thread.sleep(1000);
+                group = patrolAppServiceClient.listDartTests();
+                break;
+            } catch (Exception e) {
+                // TODO: Catch the specific exception type
+                Logger.INSTANCE.e("Failed to connect to PatrolAppService: " + e.getMessage(), e.getCause());
+            }
+        }
+
+        return group;
     }
 }

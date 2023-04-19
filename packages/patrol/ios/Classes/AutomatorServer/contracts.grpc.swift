@@ -435,6 +435,11 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
+  func markAppReady(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
+
   func submitTestResults(
     _ request: Patrol_SubmitTestResultsRequest,
     callOptions: CallOptions?
@@ -1004,6 +1009,24 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
+  /// Unary call to markAppReady
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to markAppReady.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func markAppReady(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.markAppReady.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makemarkAppReadyInterceptors() ?? []
+    )
+  }
+
   /// iOS 
   ///
   /// - Parameters:
@@ -1239,6 +1262,11 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
   ) -> GRPCAsyncUnaryCall<Patrol_SetLocationAccuracyRequest, Patrol_Empty>
 
   func makeDebugCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
+
+  func makeMarkAppReadyCall(
     _ request: Patrol_Empty,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
@@ -1631,6 +1659,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
+  internal func makeMarkAppReadyCall(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.markAppReady.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makemarkAppReadyInterceptors() ?? []
+    )
+  }
+
   internal func makeSubmitTestResultsCall(
     _ request: Patrol_SubmitTestResultsRequest,
     callOptions: CallOptions? = nil
@@ -2018,6 +2058,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
+  internal func markAppReady(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.markAppReady.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makemarkAppReadyInterceptors() ?? []
+    )
+  }
+
   internal func submitTestResults(
     _ request: Patrol_SubmitTestResultsRequest,
     callOptions: CallOptions? = nil
@@ -2145,6 +2197,9 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'debug'.
   func makedebugInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when invoking 'markAppReady'.
+  func makemarkAppReadyInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when invoking 'submitTestResults'.
   func makesubmitTestResultsInterceptors() -> [ClientInterceptor<Patrol_SubmitTestResultsRequest, Patrol_Empty>]
 }
@@ -2185,6 +2240,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorClientMetadata.Methods.debug,
+      Patrol_NativeAutomatorClientMetadata.Methods.markAppReady,
       Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults,
     ]
   )
@@ -2373,6 +2429,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     internal static let debug = GRPCMethodDescriptor(
       name: "debug",
       path: "/patrol.NativeAutomator/debug",
+      type: GRPCCallType.unary
+    )
+
+    internal static let markAppReady = GRPCMethodDescriptor(
+      name: "markAppReady",
+      path: "/patrol.NativeAutomator/markAppReady",
       type: GRPCCallType.unary
     )
 
@@ -2599,6 +2661,8 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
 
   /// other
   func debug(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
+  func markAppReady(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   /// iOS 
   func submitTestResults(request: Patrol_SubmitTestResultsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
@@ -2895,6 +2959,15 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.debug(request:context:)
       )
 
+    case "markAppReady":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makemarkAppReadyInterceptors() ?? [],
+        userFunction: self.markAppReady(request:context:)
+      )
+
     case "submitTestResults":
       return UnaryServerHandler(
         context: context,
@@ -3075,6 +3148,11 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
 
   /// other
   @Sendable func debug(
+    request: Patrol_Empty,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
+  @Sendable func markAppReady(
     request: Patrol_Empty,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
@@ -3384,6 +3462,15 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.debug(request:context:)
       )
 
+    case "markAppReady":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makemarkAppReadyInterceptors() ?? [],
+        wrapping: self.markAppReady(request:context:)
+      )
+
     case "submitTestResults":
       return GRPCAsyncServerHandler(
         context: context,
@@ -3527,6 +3614,10 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makedebugInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when handling 'markAppReady'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makemarkAppReadyInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when handling 'submitTestResults'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makesubmitTestResultsInterceptors() -> [ServerInterceptor<Patrol_SubmitTestResultsRequest, Patrol_Empty>]
@@ -3568,6 +3659,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorServerMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorServerMetadata.Methods.debug,
+      Patrol_NativeAutomatorServerMetadata.Methods.markAppReady,
       Patrol_NativeAutomatorServerMetadata.Methods.submitTestResults,
     ]
   )
@@ -3756,6 +3848,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let debug = GRPCMethodDescriptor(
       name: "debug",
       path: "/patrol.NativeAutomator/debug",
+      type: GRPCCallType.unary
+    )
+
+    internal static let markAppReady = GRPCMethodDescriptor(
+      name: "markAppReady",
+      path: "/patrol.NativeAutomator/markAppReady",
       type: GRPCCallType.unary
     )
 

@@ -21,14 +21,8 @@ public class PatrolAppServiceClient {
         blockingStub = PatrolAppServiceGrpc.newBlockingStub(channel);
     }
 
-    public DartTestGroup listDartTests() {
-        ListDartTestsResponse response;
-        try {
-            response = blockingStub.listDartTests(Empty.newBuilder().build());
-        } catch (StatusRuntimeException e) {
-            Logger.INSTANCE.e("RPC failed: " + e.getStatus());
-            return null;
-        }
+    public DartTestGroup listDartTests() throws StatusRuntimeException {
+        ListDartTestsResponse response = blockingStub.listDartTests(Empty.newBuilder().build());
 
         return response.getGroup();
     }

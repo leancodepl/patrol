@@ -5,7 +5,7 @@ import com.google.common.util.concurrent.SettableFuture
 import io.grpc.InsecureServerCredentials
 import io.grpc.Server
 import io.grpc.okhttp.OkHttpServerBuilder
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup
+import java.util.concurrent.Future
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
@@ -42,13 +42,18 @@ class PatrolServer {
     }
 
     companion object {
-        private val testResulsSettable: SettableFuture<DartTestResults> = SettableFuture.create()
-        val testResults
-            get() = testResulsSettable
+        val appReady: SettableFuture<Boolean> = SettableFuture.create()
+        val appReadyFuture: Future<Boolean>
+            get() = appReady
 
-        private val dartTestGroupSettable: SettableFuture<DartTestGroup> = SettableFuture.create()
-        val dartTestGroup
-            get() = dartTestGroupSettable
+        // FIXME: Remove
+        // private val testResulsSettable: SettableFuture<DartTestResults> = SettableFuture.create()
+        // val testResults
+        //     get() = testResulsSettable
+        //
+        // private val dartTestGroupSettable: SettableFuture<DartTestGroup> = SettableFuture.create()
+        // val dartTestGroup
+        //     get() = dartTestGroupSettable
     }
 }
 

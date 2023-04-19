@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'package:grpc/grpc.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
@@ -9,7 +11,8 @@ Future<void> runAppService({required DartTestGroup testGroup}) async {
   final codecRegistry = CodecRegistry();
 
   final server = Server(services, interceptors, codecRegistry);
-  await server.serve(port: 8002);
+  print('Starting PatrolAppService on port 8002...');
+  await server.serve(address: io.InternetAddress.anyIPv4, port: 2137);
 }
 
 /// Provides a gRPC service for the native side to interact with the Dart tests.

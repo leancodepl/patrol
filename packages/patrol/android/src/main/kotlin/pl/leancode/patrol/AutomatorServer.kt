@@ -201,4 +201,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         }
         return empty { }
     }
+
+    override suspend fun markAppReady(request: Contracts.Empty): Contracts.Empty {
+        Logger.i("AutomatorServer.markAppReady() RPC was received")
+        PatrolServer.appReady.set(true)
+        return empty { }
+    }
 }

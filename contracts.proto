@@ -70,6 +70,7 @@ service NativeAutomator {
 
   // other
   rpc debug(Empty) returns (Empty) {}
+  rpc markAppReady(Empty) returns (Empty) {}
 
   // iOS 
   rpc submitTestResults(SubmitTestResultsRequest) returns (Empty) {}

@@ -727,19 +727,31 @@ class NativeAutomator {
     );
   }
 
-  /// Submits test results to the native test runner.
-  ///
-  /// Virtual test cases are created for each key in [results] and the value is
-  /// used as the test result.
+  /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
+  /// requests about the structure of Dart tests.
   @internal
-  Future<void> submitTestResults(Map<String, String> results) async {
+  Future<void> markAppReady() async {
+    // FIXME: Rename to markPatrolAppServiceReady
     await _wrapRequest(
-      'submitTestResults',
-      () => _client.submitTestResults(
-        SubmitTestResultsRequest(results: results),
-      ),
+      'markAppReady',
+      () => _client.markAppReady(Empty()),
     );
   }
+
+  // FIXME: Remove
+  // /// Submits test results to the native test runner.
+  // ///
+  // /// Virtual test cases are created for each key in [results] and the value is
+  // /// used as the test result.
+  // @internal
+  // Future<void> submitTestResults(Map<String, String> results) async {
+  //   await _wrapRequest(
+  //     'submitTestResults',
+  //     () => _client.submitTestResults(
+  //       SubmitTestResultsRequest(results: results),
+  //     ),
+  //   );
+  // }
 
   // FIXME: Remove
   // /// Sets the Dart test group to be run by the native test runner.
