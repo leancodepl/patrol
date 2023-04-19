@@ -1,6 +1,7 @@
 package pl.leancode.patrol.example;
 
 import android.content.Intent;
+import android.os.SystemClock;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,11 @@ public class MainActivityTest {
     public void runDartTest() {
         Logger.INSTANCE.i("Test executed: " + dartTestName);
         // rule.getPatrolServer().Companion.getTestResults();
+
+        if (dartTestName.equals("permissions_location_test.dart")) {
+            // Demo to show that time is reported correctly in test results
+            SystemClock.sleep(5 * 1000);
+        }
     }
 
     @Rule
