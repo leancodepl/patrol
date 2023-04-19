@@ -13,6 +13,72 @@ import 'package:grpc/service_api.dart' as $grpc;
 import 'contracts.pb.dart' as $0;
 export 'contracts.pb.dart';
 
+class PatrolAppServiceClient extends $grpc.Client {
+  static final _$listDartTests =
+      $grpc.ClientMethod<$0.Empty, $0.ListDartTestsResponse>(
+          '/patrol.PatrolAppService/listDartTests',
+          ($0.Empty value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.ListDartTestsResponse.fromBuffer(value));
+  static final _$runDartTest =
+      $grpc.ClientMethod<$0.RunDartTestRequest, $0.Empty>(
+          '/patrol.PatrolAppService/runDartTest',
+          ($0.RunDartTestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+
+  PatrolAppServiceClient($grpc.ClientChannel channel,
+      {$grpc.CallOptions? options,
+      $core.Iterable<$grpc.ClientInterceptor>? interceptors})
+      : super(channel, options: options, interceptors: interceptors);
+
+  $grpc.ResponseFuture<$0.ListDartTestsResponse> listDartTests($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$listDartTests, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> runDartTest($0.RunDartTestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$runDartTest, request, options: options);
+  }
+}
+
+abstract class PatrolAppServiceBase extends $grpc.Service {
+  $core.String get $name => 'patrol.PatrolAppService';
+
+  PatrolAppServiceBase() {
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.ListDartTestsResponse>(
+        'listDartTests',
+        listDartTests_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.ListDartTestsResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.RunDartTestRequest, $0.Empty>(
+        'runDartTest',
+        runDartTest_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.RunDartTestRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+  }
+
+  $async.Future<$0.ListDartTestsResponse> listDartTests_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return listDartTests(call, await request);
+  }
+
+  $async.Future<$0.Empty> runDartTest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.RunDartTestRequest> request) async {
+    return runDartTest(call, await request);
+  }
+
+  $async.Future<$0.ListDartTestsResponse> listDartTests(
+      $grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$0.Empty> runDartTest(
+      $grpc.ServiceCall call, $0.RunDartTestRequest request);
+}
+
 class NativeAutomatorClient extends $grpc.Client {
   static final _$configure = $grpc.ClientMethod<$0.ConfigureRequest, $0.Empty>(
       '/patrol.NativeAutomator/configure',
@@ -152,11 +218,6 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/debug',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$setDartTests =
-      $grpc.ClientMethod<$0.SetDartTestsRequest, $0.Empty>(
-          '/patrol.NativeAutomator/setDartTests',
-          ($0.SetDartTestsRequest value) => value.writeToBuffer(),
-          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$submitTestResults =
       $grpc.ClientMethod<$0.SubmitTestResultsRequest, $0.Empty>(
           '/patrol.NativeAutomator/submitTestResults',
@@ -331,11 +392,6 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> debug($0.Empty request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$debug, request, options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> setDartTests($0.SetDartTestsRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$setDartTests, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> submitTestResults(
@@ -576,14 +632,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.SetDartTestsRequest, $0.Empty>(
-        'setDartTests',
-        setDartTests_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.SetDartTestsRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.SubmitTestResultsRequest, $0.Empty>(
         'submitTestResults',
         submitTestResults_Pre,
@@ -752,11 +800,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return debug(call, await request);
   }
 
-  $async.Future<$0.Empty> setDartTests_Pre($grpc.ServiceCall call,
-      $async.Future<$0.SetDartTestsRequest> request) async {
-    return setDartTests(call, await request);
-  }
-
   $async.Future<$0.Empty> submitTestResults_Pre($grpc.ServiceCall call,
       $async.Future<$0.SubmitTestResultsRequest> request) async {
     return submitTestResults(call, await request);
@@ -818,8 +861,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> setLocationAccuracy(
       $grpc.ServiceCall call, $0.SetLocationAccuracyRequest request);
   $async.Future<$0.Empty> debug($grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$0.Empty> setDartTests(
-      $grpc.ServiceCall call, $0.SetDartTestsRequest request);
   $async.Future<$0.Empty> submitTestResults(
       $grpc.ServiceCall call, $0.SubmitTestResultsRequest request);
 }

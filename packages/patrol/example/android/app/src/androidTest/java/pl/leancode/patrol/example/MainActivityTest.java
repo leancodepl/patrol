@@ -13,6 +13,7 @@ public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
         Logger.INSTANCE.i("Test cases requested, value from app: " + PatrolJUnitRunner.valueFromApp);
+        Logger.INSTANCE.i("Got DartTestGroup: " + PatrolJUnitRunner.dartTestGroup);
         return new Object[]{"my_test_1.dart", "my_test_2.dart", "my_test_3.dart"};
         // return new Object[]{"permissions_many_test.dart", "permissions_location_test.dart", "example_test.dart"};
     }

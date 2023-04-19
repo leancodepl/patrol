@@ -1,7 +1,6 @@
 package pl.leancode.patrol
 
 import pl.leancode.patrol.contracts.Contracts
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.DENIED
@@ -17,13 +16,7 @@ import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
-class AutomatorServer(
-    private val automation: Automator,
-    private val onTestResultsSubmitted: (Map<String, String>) -> Unit,
-    private val onDartTestsSet: (DartTestGroup) -> Unit
-) :
-    NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-
+class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
         return empty { }
@@ -206,16 +199,6 @@ class AutomatorServer(
             Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(request.selector.toUiSelector())
             else -> throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
-        return empty { }
-    }
-
-    override suspend fun submitTestResults(request: Contracts.SubmitTestResultsRequest): Empty {
-        onTestResultsSubmitted(request.resultsMap)
-        return empty {}
-    }
-
-    override suspend fun setDartTests(request: Contracts.SetDartTestsRequest): Empty {
-        onDartTestsSet(request.group)
         return empty { }
     }
 }

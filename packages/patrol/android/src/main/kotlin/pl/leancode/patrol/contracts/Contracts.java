@@ -8,6 +8,1596 @@ public final class Contracts {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
+  public interface ListDartTestsResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.ListDartTestsResponse)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     * @return Whether the group field is set.
+     */
+    boolean hasGroup();
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     * @return The group.
+     */
+    pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroup();
+  }
+  /**
+   * Protobuf type {@code patrol.ListDartTestsResponse}
+   */
+  public  static final class ListDartTestsResponse extends
+      com.google.protobuf.GeneratedMessageLite<
+          ListDartTestsResponse, ListDartTestsResponse.Builder> implements
+      // @@protoc_insertion_point(message_implements:patrol.ListDartTestsResponse)
+      ListDartTestsResponseOrBuilder {
+    private ListDartTestsResponse() {
+    }
+    public static final int GROUP_FIELD_NUMBER = 1;
+    private pl.leancode.patrol.contracts.Contracts.DartTestGroup group_;
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     */
+    @java.lang.Override
+    public boolean hasGroup() {
+      return group_ != null;
+    }
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroup() {
+      return group_ == null ? pl.leancode.patrol.contracts.Contracts.DartTestGroup.getDefaultInstance() : group_;
+    }
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     */
+    private void setGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+      value.getClass();
+  group_ = value;
+      
+      }
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+      value.getClass();
+  if (group_ != null &&
+          group_ != pl.leancode.patrol.contracts.Contracts.DartTestGroup.getDefaultInstance()) {
+        group_ =
+          pl.leancode.patrol.contracts.Contracts.DartTestGroup.newBuilder(group_).mergeFrom(value).buildPartial();
+      } else {
+        group_ = value;
+      }
+      
+    }
+    /**
+     * <code>.patrol.DartTestGroup group = 1;</code>
+     */
+    private void clearGroup() {  group_ = null;
+      
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code patrol.ListDartTestsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse, Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.ListDartTestsResponse)
+        pl.leancode.patrol.contracts.Contracts.ListDartTestsResponseOrBuilder {
+      // Construct using pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>.patrol.DartTestGroup group = 1;</code>
+       */
+      @java.lang.Override
+      public boolean hasGroup() {
+        return instance.hasGroup();
+      }
+      /**
+       * <code>.patrol.DartTestGroup group = 1;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroup() {
+        return instance.getGroup();
+      }
+      /**
+       * <code>.patrol.DartTestGroup group = 1;</code>
+       */
+      public Builder setGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+        copyOnWrite();
+        instance.setGroup(value);
+        return this;
+        }
+      /**
+       * <code>.patrol.DartTestGroup group = 1;</code>
+       */
+      public Builder setGroup(
+          pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
+        copyOnWrite();
+        instance.setGroup(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.patrol.DartTestGroup group = 1;</code>
+       */
+      public Builder mergeGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+        copyOnWrite();
+        instance.mergeGroup(value);
+        return this;
+      }
+      /**
+       * <code>.patrol.DartTestGroup group = 1;</code>
+       */
+      public Builder clearGroup() {  copyOnWrite();
+        instance.clearGroup();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:patrol.ListDartTestsResponse)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "group_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse> parser = PARSER;
+          if (parser == null) {
+            synchronized (pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:patrol.ListDartTestsResponse)
+    private static final pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse DEFAULT_INSTANCE;
+    static {
+      ListDartTestsResponse defaultInstance = new ListDartTestsResponse();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        ListDartTestsResponse.class, defaultInstance);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<ListDartTestsResponse> PARSER;
+
+    public static com.google.protobuf.Parser<ListDartTestsResponse> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DartTestGroupOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DartTestGroup)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestCase> 
+        getTestsList();
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    pl.leancode.patrol.contracts.Contracts.DartTestCase getTests(int index);
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    int getTestsCount();
+
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestGroup> 
+        getGroupsList();
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroups(int index);
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    int getGroupsCount();
+  }
+  /**
+   * Protobuf type {@code patrol.DartTestGroup}
+   */
+  public  static final class DartTestGroup extends
+      com.google.protobuf.GeneratedMessageLite<
+          DartTestGroup, DartTestGroup.Builder> implements
+      // @@protoc_insertion_point(message_implements:patrol.DartTestGroup)
+      DartTestGroupOrBuilder {
+    private DartTestGroup() {
+      name_ = "";
+      tests_ = emptyProtobufList();
+      groups_ = emptyProtobufList();
+    }
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.String name_;
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    @java.lang.Override
+    public java.lang.String getName() {
+      return name_;
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(name_);
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @param value The name to set.
+     */
+    private void setName(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      name_ = value;
+    }
+    /**
+     * <code>string name = 1;</code>
+     */
+    private void clearName() {
+      
+      name_ = getDefaultInstance().getName();
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @param value The bytes for name to set.
+     */
+    private void setNameBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      name_ = value.toStringUtf8();
+      
+    }
+
+    public static final int TESTS_FIELD_NUMBER = 2;
+    private com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestCase> tests_;
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestCase> getTestsList() {
+      return tests_;
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    public java.util.List<? extends pl.leancode.patrol.contracts.Contracts.DartTestCaseOrBuilder> 
+        getTestsOrBuilderList() {
+      return tests_;
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    @java.lang.Override
+    public int getTestsCount() {
+      return tests_.size();
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.patrol.contracts.Contracts.DartTestCase getTests(int index) {
+      return tests_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    public pl.leancode.patrol.contracts.Contracts.DartTestCaseOrBuilder getTestsOrBuilder(
+        int index) {
+      return tests_.get(index);
+    }
+    private void ensureTestsIsMutable() {
+      com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestCase> tmp = tests_;
+      if (!tmp.isModifiable()) {
+        tests_ =
+            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+       }
+    }
+
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    private void setTests(
+        int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
+      value.getClass();
+  ensureTestsIsMutable();
+      tests_.set(index, value);
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    private void addTests(pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
+      value.getClass();
+  ensureTestsIsMutable();
+      tests_.add(value);
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    private void addTests(
+        int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
+      value.getClass();
+  ensureTestsIsMutable();
+      tests_.add(index, value);
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    private void addAllTests(
+        java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestCase> values) {
+      ensureTestsIsMutable();
+      com.google.protobuf.AbstractMessageLite.addAll(
+          values, tests_);
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    private void clearTests() {
+      tests_ = emptyProtobufList();
+    }
+    /**
+     * <code>repeated .patrol.DartTestCase tests = 2;</code>
+     */
+    private void removeTests(int index) {
+      ensureTestsIsMutable();
+      tests_.remove(index);
+    }
+
+    public static final int GROUPS_FIELD_NUMBER = 3;
+    private com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestGroup> groups_;
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    @java.lang.Override
+    public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestGroup> getGroupsList() {
+      return groups_;
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    public java.util.List<? extends pl.leancode.patrol.contracts.Contracts.DartTestGroupOrBuilder> 
+        getGroupsOrBuilderList() {
+      return groups_;
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    @java.lang.Override
+    public int getGroupsCount() {
+      return groups_.size();
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroups(int index) {
+      return groups_.get(index);
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    public pl.leancode.patrol.contracts.Contracts.DartTestGroupOrBuilder getGroupsOrBuilder(
+        int index) {
+      return groups_.get(index);
+    }
+    private void ensureGroupsIsMutable() {
+      com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestGroup> tmp = groups_;
+      if (!tmp.isModifiable()) {
+        groups_ =
+            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+       }
+    }
+
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    private void setGroups(
+        int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+      value.getClass();
+  ensureGroupsIsMutable();
+      groups_.set(index, value);
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    private void addGroups(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+      value.getClass();
+  ensureGroupsIsMutable();
+      groups_.add(value);
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    private void addGroups(
+        int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+      value.getClass();
+  ensureGroupsIsMutable();
+      groups_.add(index, value);
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    private void addAllGroups(
+        java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestGroup> values) {
+      ensureGroupsIsMutable();
+      com.google.protobuf.AbstractMessageLite.addAll(
+          values, groups_);
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    private void clearGroups() {
+      groups_ = emptyProtobufList();
+    }
+    /**
+     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+     */
+    private void removeGroups(int index) {
+      ensureGroupsIsMutable();
+      groups_.remove(index);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.DartTestGroup prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code patrol.DartTestGroup}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          pl.leancode.patrol.contracts.Contracts.DartTestGroup, Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DartTestGroup)
+        pl.leancode.patrol.contracts.Contracts.DartTestGroupOrBuilder {
+      // Construct using pl.leancode.patrol.contracts.Contracts.DartTestGroup.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>string name = 1;</code>
+       * @return The name.
+       */
+      @java.lang.Override
+      public java.lang.String getName() {
+        return instance.getName();
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return The bytes for name.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        return instance.getNameBytes();
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setName(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setName(value);
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearName() {
+        copyOnWrite();
+        instance.clearName();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setNameBytes(value);
+        return this;
+      }
+
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      @java.lang.Override
+      public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestCase> getTestsList() {
+        return java.util.Collections.unmodifiableList(
+            instance.getTestsList());
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      @java.lang.Override
+      public int getTestsCount() {
+        return instance.getTestsCount();
+      }/**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.patrol.contracts.Contracts.DartTestCase getTests(int index) {
+        return instance.getTests(index);
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder setTests(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
+        copyOnWrite();
+        instance.setTests(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder setTests(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase.Builder builderForValue) {
+        copyOnWrite();
+        instance.setTests(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder addTests(pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
+        copyOnWrite();
+        instance.addTests(value);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder addTests(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
+        copyOnWrite();
+        instance.addTests(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder addTests(
+          pl.leancode.patrol.contracts.Contracts.DartTestCase.Builder builderForValue) {
+        copyOnWrite();
+        instance.addTests(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder addTests(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase.Builder builderForValue) {
+        copyOnWrite();
+        instance.addTests(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder addAllTests(
+          java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestCase> values) {
+        copyOnWrite();
+        instance.addAllTests(values);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder clearTests() {
+        copyOnWrite();
+        instance.clearTests();
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestCase tests = 2;</code>
+       */
+      public Builder removeTests(int index) {
+        copyOnWrite();
+        instance.removeTests(index);
+        return this;
+      }
+
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      @java.lang.Override
+      public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestGroup> getGroupsList() {
+        return java.util.Collections.unmodifiableList(
+            instance.getGroupsList());
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      @java.lang.Override
+      public int getGroupsCount() {
+        return instance.getGroupsCount();
+      }/**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroups(int index) {
+        return instance.getGroups(index);
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder setGroups(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+        copyOnWrite();
+        instance.setGroups(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder setGroups(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
+        copyOnWrite();
+        instance.setGroups(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder addGroups(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+        copyOnWrite();
+        instance.addGroups(value);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder addGroups(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
+        copyOnWrite();
+        instance.addGroups(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder addGroups(
+          pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
+        copyOnWrite();
+        instance.addGroups(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder addGroups(
+          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
+        copyOnWrite();
+        instance.addGroups(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder addAllGroups(
+          java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestGroup> values) {
+        copyOnWrite();
+        instance.addAllGroups(values);
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder clearGroups() {
+        copyOnWrite();
+        instance.clearGroups();
+        return this;
+      }
+      /**
+       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
+       */
+      public Builder removeGroups(int index) {
+        copyOnWrite();
+        instance.removeGroups(index);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:patrol.DartTestGroup)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new pl.leancode.patrol.contracts.Contracts.DartTestGroup();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "name_",
+              "tests_",
+              pl.leancode.patrol.contracts.Contracts.DartTestCase.class,
+              "groups_",
+              pl.leancode.patrol.contracts.Contracts.DartTestGroup.class,
+            };
+            java.lang.String info =
+                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0002\u0000\u0001\u0208\u0002\u001b" +
+                "\u0003\u001b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.DartTestGroup> parser = PARSER;
+          if (parser == null) {
+            synchronized (pl.leancode.patrol.contracts.Contracts.DartTestGroup.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.DartTestGroup>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:patrol.DartTestGroup)
+    private static final pl.leancode.patrol.contracts.Contracts.DartTestGroup DEFAULT_INSTANCE;
+    static {
+      DartTestGroup defaultInstance = new DartTestGroup();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DartTestGroup.class, defaultInstance);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DartTestGroup> PARSER;
+
+    public static com.google.protobuf.Parser<DartTestGroup> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DartTestCaseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.DartTestCase)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.DartTestCase}
+   */
+  public  static final class DartTestCase extends
+      com.google.protobuf.GeneratedMessageLite<
+          DartTestCase, DartTestCase.Builder> implements
+      // @@protoc_insertion_point(message_implements:patrol.DartTestCase)
+      DartTestCaseOrBuilder {
+    private DartTestCase() {
+      name_ = "";
+    }
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.String name_;
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    @java.lang.Override
+    public java.lang.String getName() {
+      return name_;
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(name_);
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @param value The name to set.
+     */
+    private void setName(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      name_ = value;
+    }
+    /**
+     * <code>string name = 1;</code>
+     */
+    private void clearName() {
+      
+      name_ = getDefaultInstance().getName();
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @param value The bytes for name to set.
+     */
+    private void setNameBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      name_ = value.toStringUtf8();
+      
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.DartTestCase prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code patrol.DartTestCase}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          pl.leancode.patrol.contracts.Contracts.DartTestCase, Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.DartTestCase)
+        pl.leancode.patrol.contracts.Contracts.DartTestCaseOrBuilder {
+      // Construct using pl.leancode.patrol.contracts.Contracts.DartTestCase.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>string name = 1;</code>
+       * @return The name.
+       */
+      @java.lang.Override
+      public java.lang.String getName() {
+        return instance.getName();
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return The bytes for name.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        return instance.getNameBytes();
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setName(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setName(value);
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearName() {
+        copyOnWrite();
+        instance.clearName();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setNameBytes(value);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:patrol.DartTestCase)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new pl.leancode.patrol.contracts.Contracts.DartTestCase();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "name_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.DartTestCase> parser = PARSER;
+          if (parser == null) {
+            synchronized (pl.leancode.patrol.contracts.Contracts.DartTestCase.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.DartTestCase>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:patrol.DartTestCase)
+    private static final pl.leancode.patrol.contracts.Contracts.DartTestCase DEFAULT_INSTANCE;
+    static {
+      DartTestCase defaultInstance = new DartTestCase();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DartTestCase.class, defaultInstance);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.DartTestCase getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DartTestCase> PARSER;
+
+    public static com.google.protobuf.Parser<DartTestCase> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface RunDartTestRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.RunDartTestRequest)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    java.lang.String getName();
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    com.google.protobuf.ByteString
+        getNameBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.RunDartTestRequest}
+   */
+  public  static final class RunDartTestRequest extends
+      com.google.protobuf.GeneratedMessageLite<
+          RunDartTestRequest, RunDartTestRequest.Builder> implements
+      // @@protoc_insertion_point(message_implements:patrol.RunDartTestRequest)
+      RunDartTestRequestOrBuilder {
+    private RunDartTestRequest() {
+      name_ = "";
+    }
+    public static final int NAME_FIELD_NUMBER = 1;
+    private java.lang.String name_;
+    /**
+     * <code>string name = 1;</code>
+     * @return The name.
+     */
+    @java.lang.Override
+    public java.lang.String getName() {
+      return name_;
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @return The bytes for name.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(name_);
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @param value The name to set.
+     */
+    private void setName(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      name_ = value;
+    }
+    /**
+     * <code>string name = 1;</code>
+     */
+    private void clearName() {
+      
+      name_ = getDefaultInstance().getName();
+    }
+    /**
+     * <code>string name = 1;</code>
+     * @param value The bytes for name to set.
+     */
+    private void setNameBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      name_ = value.toStringUtf8();
+      
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.RunDartTestRequest prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code patrol.RunDartTestRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          pl.leancode.patrol.contracts.Contracts.RunDartTestRequest, Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.RunDartTestRequest)
+        pl.leancode.patrol.contracts.Contracts.RunDartTestRequestOrBuilder {
+      // Construct using pl.leancode.patrol.contracts.Contracts.RunDartTestRequest.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>string name = 1;</code>
+       * @return The name.
+       */
+      @java.lang.Override
+      public java.lang.String getName() {
+        return instance.getName();
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return The bytes for name.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        return instance.getNameBytes();
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setName(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setName(value);
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearName() {
+        copyOnWrite();
+        instance.clearName();
+        return this;
+      }
+      /**
+       * <code>string name = 1;</code>
+       * @param value The bytes for name to set.
+       * @return This builder for chaining.
+       */
+      public Builder setNameBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setNameBytes(value);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:patrol.RunDartTestRequest)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new pl.leancode.patrol.contracts.Contracts.RunDartTestRequest();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "name_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest> parser = PARSER;
+          if (parser == null) {
+            synchronized (pl.leancode.patrol.contracts.Contracts.RunDartTestRequest.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:patrol.RunDartTestRequest)
+    private static final pl.leancode.patrol.contracts.Contracts.RunDartTestRequest DEFAULT_INSTANCE;
+    static {
+      RunDartTestRequest defaultInstance = new RunDartTestRequest();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        RunDartTestRequest.class, defaultInstance);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<RunDartTestRequest> PARSER;
+
+    public static com.google.protobuf.Parser<RunDartTestRequest> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
   public interface ConfigureRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.ConfigureRequest)
       com.google.protobuf.MessageLiteOrBuilder {
@@ -9193,1304 +10783,6 @@ public final class Contracts {
     private static volatile com.google.protobuf.Parser<Notification> PARSER;
 
     public static com.google.protobuf.Parser<Notification> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
-    }
-  }
-
-  public interface SetDartTestsRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.SetDartTestsRequest)
-      com.google.protobuf.MessageLiteOrBuilder {
-
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     * @return Whether the group field is set.
-     */
-    boolean hasGroup();
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     * @return The group.
-     */
-    pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroup();
-  }
-  /**
-   * Protobuf type {@code patrol.SetDartTestsRequest}
-   */
-  public  static final class SetDartTestsRequest extends
-      com.google.protobuf.GeneratedMessageLite<
-          SetDartTestsRequest, SetDartTestsRequest.Builder> implements
-      // @@protoc_insertion_point(message_implements:patrol.SetDartTestsRequest)
-      SetDartTestsRequestOrBuilder {
-    private SetDartTestsRequest() {
-    }
-    public static final int GROUP_FIELD_NUMBER = 1;
-    private pl.leancode.patrol.contracts.Contracts.DartTestGroup group_;
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     */
-    @java.lang.Override
-    public boolean hasGroup() {
-      return group_ != null;
-    }
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroup() {
-      return group_ == null ? pl.leancode.patrol.contracts.Contracts.DartTestGroup.getDefaultInstance() : group_;
-    }
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     */
-    private void setGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-      value.getClass();
-  group_ = value;
-      
-      }
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     */
-    @java.lang.SuppressWarnings({"ReferenceEquality"})
-    private void mergeGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-      value.getClass();
-  if (group_ != null &&
-          group_ != pl.leancode.patrol.contracts.Contracts.DartTestGroup.getDefaultInstance()) {
-        group_ =
-          pl.leancode.patrol.contracts.Contracts.DartTestGroup.newBuilder(group_).mergeFrom(value).buildPartial();
-      } else {
-        group_ = value;
-      }
-      
-    }
-    /**
-     * <code>.patrol.DartTestGroup group = 1;</code>
-     */
-    private void clearGroup() {  group_ = null;
-      
-    }
-
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
-    }
-
-    /**
-     * Protobuf type {@code patrol.SetDartTestsRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest, Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.SetDartTestsRequest)
-        pl.leancode.patrol.contracts.Contracts.SetDartTestsRequestOrBuilder {
-      // Construct using pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
-      }
-
-
-      /**
-       * <code>.patrol.DartTestGroup group = 1;</code>
-       */
-      @java.lang.Override
-      public boolean hasGroup() {
-        return instance.hasGroup();
-      }
-      /**
-       * <code>.patrol.DartTestGroup group = 1;</code>
-       */
-      @java.lang.Override
-      public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroup() {
-        return instance.getGroup();
-      }
-      /**
-       * <code>.patrol.DartTestGroup group = 1;</code>
-       */
-      public Builder setGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-        copyOnWrite();
-        instance.setGroup(value);
-        return this;
-        }
-      /**
-       * <code>.patrol.DartTestGroup group = 1;</code>
-       */
-      public Builder setGroup(
-          pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
-        copyOnWrite();
-        instance.setGroup(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>.patrol.DartTestGroup group = 1;</code>
-       */
-      public Builder mergeGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-        copyOnWrite();
-        instance.mergeGroup(value);
-        return this;
-      }
-      /**
-       * <code>.patrol.DartTestGroup group = 1;</code>
-       */
-      public Builder clearGroup() {  copyOnWrite();
-        instance.clearGroup();
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:patrol.SetDartTestsRequest)
-    }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "group_",
-            };
-            java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest> parser = PARSER;
-          if (parser == null) {
-            synchronized (pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
-
-    // @@protoc_insertion_point(class_scope:patrol.SetDartTestsRequest)
-    private static final pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest DEFAULT_INSTANCE;
-    static {
-      SetDartTestsRequest defaultInstance = new SetDartTestsRequest();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        SetDartTestsRequest.class, defaultInstance);
-    }
-
-    public static pl.leancode.patrol.contracts.Contracts.SetDartTestsRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static volatile com.google.protobuf.Parser<SetDartTestsRequest> PARSER;
-
-    public static com.google.protobuf.Parser<SetDartTestsRequest> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
-    }
-  }
-
-  public interface DartTestGroupOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.DartTestGroup)
-      com.google.protobuf.MessageLiteOrBuilder {
-
-    /**
-     * <code>string name = 1;</code>
-     * @return The name.
-     */
-    java.lang.String getName();
-    /**
-     * <code>string name = 1;</code>
-     * @return The bytes for name.
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
-
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestCase> 
-        getTestsList();
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    pl.leancode.patrol.contracts.Contracts.DartTestCase getTests(int index);
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    int getTestsCount();
-
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestGroup> 
-        getGroupsList();
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroups(int index);
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    int getGroupsCount();
-  }
-  /**
-   * Protobuf type {@code patrol.DartTestGroup}
-   */
-  public  static final class DartTestGroup extends
-      com.google.protobuf.GeneratedMessageLite<
-          DartTestGroup, DartTestGroup.Builder> implements
-      // @@protoc_insertion_point(message_implements:patrol.DartTestGroup)
-      DartTestGroupOrBuilder {
-    private DartTestGroup() {
-      name_ = "";
-      tests_ = emptyProtobufList();
-      groups_ = emptyProtobufList();
-    }
-    public static final int NAME_FIELD_NUMBER = 1;
-    private java.lang.String name_;
-    /**
-     * <code>string name = 1;</code>
-     * @return The name.
-     */
-    @java.lang.Override
-    public java.lang.String getName() {
-      return name_;
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @return The bytes for name.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(name_);
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The name to set.
-     */
-    private void setName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      name_ = value;
-    }
-    /**
-     * <code>string name = 1;</code>
-     */
-    private void clearName() {
-      
-      name_ = getDefaultInstance().getName();
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The bytes for name to set.
-     */
-    private void setNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      name_ = value.toStringUtf8();
-      
-    }
-
-    public static final int TESTS_FIELD_NUMBER = 2;
-    private com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestCase> tests_;
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    @java.lang.Override
-    public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestCase> getTestsList() {
-      return tests_;
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    public java.util.List<? extends pl.leancode.patrol.contracts.Contracts.DartTestCaseOrBuilder> 
-        getTestsOrBuilderList() {
-      return tests_;
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    @java.lang.Override
-    public int getTestsCount() {
-      return tests_.size();
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.patrol.contracts.Contracts.DartTestCase getTests(int index) {
-      return tests_.get(index);
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    public pl.leancode.patrol.contracts.Contracts.DartTestCaseOrBuilder getTestsOrBuilder(
-        int index) {
-      return tests_.get(index);
-    }
-    private void ensureTestsIsMutable() {
-      com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestCase> tmp = tests_;
-      if (!tmp.isModifiable()) {
-        tests_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
-    }
-
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    private void setTests(
-        int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
-      value.getClass();
-  ensureTestsIsMutable();
-      tests_.set(index, value);
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    private void addTests(pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
-      value.getClass();
-  ensureTestsIsMutable();
-      tests_.add(value);
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    private void addTests(
-        int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
-      value.getClass();
-  ensureTestsIsMutable();
-      tests_.add(index, value);
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    private void addAllTests(
-        java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestCase> values) {
-      ensureTestsIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, tests_);
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    private void clearTests() {
-      tests_ = emptyProtobufList();
-    }
-    /**
-     * <code>repeated .patrol.DartTestCase tests = 2;</code>
-     */
-    private void removeTests(int index) {
-      ensureTestsIsMutable();
-      tests_.remove(index);
-    }
-
-    public static final int GROUPS_FIELD_NUMBER = 3;
-    private com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestGroup> groups_;
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    @java.lang.Override
-    public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestGroup> getGroupsList() {
-      return groups_;
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    public java.util.List<? extends pl.leancode.patrol.contracts.Contracts.DartTestGroupOrBuilder> 
-        getGroupsOrBuilderList() {
-      return groups_;
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    @java.lang.Override
-    public int getGroupsCount() {
-      return groups_.size();
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    @java.lang.Override
-    public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroups(int index) {
-      return groups_.get(index);
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    public pl.leancode.patrol.contracts.Contracts.DartTestGroupOrBuilder getGroupsOrBuilder(
-        int index) {
-      return groups_.get(index);
-    }
-    private void ensureGroupsIsMutable() {
-      com.google.protobuf.Internal.ProtobufList<pl.leancode.patrol.contracts.Contracts.DartTestGroup> tmp = groups_;
-      if (!tmp.isModifiable()) {
-        groups_ =
-            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
-       }
-    }
-
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    private void setGroups(
-        int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-      value.getClass();
-  ensureGroupsIsMutable();
-      groups_.set(index, value);
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    private void addGroups(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-      value.getClass();
-  ensureGroupsIsMutable();
-      groups_.add(value);
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    private void addGroups(
-        int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-      value.getClass();
-  ensureGroupsIsMutable();
-      groups_.add(index, value);
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    private void addAllGroups(
-        java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestGroup> values) {
-      ensureGroupsIsMutable();
-      com.google.protobuf.AbstractMessageLite.addAll(
-          values, groups_);
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    private void clearGroups() {
-      groups_ = emptyProtobufList();
-    }
-    /**
-     * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-     */
-    private void removeGroups(int index) {
-      ensureGroupsIsMutable();
-      groups_.remove(index);
-    }
-
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.DartTestGroup prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
-    }
-
-    /**
-     * Protobuf type {@code patrol.DartTestGroup}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          pl.leancode.patrol.contracts.Contracts.DartTestGroup, Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.DartTestGroup)
-        pl.leancode.patrol.contracts.Contracts.DartTestGroupOrBuilder {
-      // Construct using pl.leancode.patrol.contracts.Contracts.DartTestGroup.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
-      }
-
-
-      /**
-       * <code>string name = 1;</code>
-       * @return The name.
-       */
-      @java.lang.Override
-      public java.lang.String getName() {
-        return instance.getName();
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @return The bytes for name.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        return instance.getNameBytes();
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @param value The name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setName(
-          java.lang.String value) {
-        copyOnWrite();
-        instance.setName(value);
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearName() {
-        copyOnWrite();
-        instance.clearName();
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @param value The bytes for name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setNameBytes(value);
-        return this;
-      }
-
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      @java.lang.Override
-      public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestCase> getTestsList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getTestsList());
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      @java.lang.Override
-      public int getTestsCount() {
-        return instance.getTestsCount();
-      }/**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      @java.lang.Override
-      public pl.leancode.patrol.contracts.Contracts.DartTestCase getTests(int index) {
-        return instance.getTests(index);
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder setTests(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
-        copyOnWrite();
-        instance.setTests(index, value);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder setTests(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase.Builder builderForValue) {
-        copyOnWrite();
-        instance.setTests(index,
-            builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder addTests(pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
-        copyOnWrite();
-        instance.addTests(value);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder addTests(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase value) {
-        copyOnWrite();
-        instance.addTests(index, value);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder addTests(
-          pl.leancode.patrol.contracts.Contracts.DartTestCase.Builder builderForValue) {
-        copyOnWrite();
-        instance.addTests(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder addTests(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestCase.Builder builderForValue) {
-        copyOnWrite();
-        instance.addTests(index,
-            builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder addAllTests(
-          java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestCase> values) {
-        copyOnWrite();
-        instance.addAllTests(values);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder clearTests() {
-        copyOnWrite();
-        instance.clearTests();
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestCase tests = 2;</code>
-       */
-      public Builder removeTests(int index) {
-        copyOnWrite();
-        instance.removeTests(index);
-        return this;
-      }
-
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      @java.lang.Override
-      public java.util.List<pl.leancode.patrol.contracts.Contracts.DartTestGroup> getGroupsList() {
-        return java.util.Collections.unmodifiableList(
-            instance.getGroupsList());
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      @java.lang.Override
-      public int getGroupsCount() {
-        return instance.getGroupsCount();
-      }/**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      @java.lang.Override
-      public pl.leancode.patrol.contracts.Contracts.DartTestGroup getGroups(int index) {
-        return instance.getGroups(index);
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder setGroups(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-        copyOnWrite();
-        instance.setGroups(index, value);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder setGroups(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
-        copyOnWrite();
-        instance.setGroups(index,
-            builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder addGroups(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-        copyOnWrite();
-        instance.addGroups(value);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder addGroups(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
-        copyOnWrite();
-        instance.addGroups(index, value);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder addGroups(
-          pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
-        copyOnWrite();
-        instance.addGroups(builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder addGroups(
-          int index, pl.leancode.patrol.contracts.Contracts.DartTestGroup.Builder builderForValue) {
-        copyOnWrite();
-        instance.addGroups(index,
-            builderForValue.build());
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder addAllGroups(
-          java.lang.Iterable<? extends pl.leancode.patrol.contracts.Contracts.DartTestGroup> values) {
-        copyOnWrite();
-        instance.addAllGroups(values);
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder clearGroups() {
-        copyOnWrite();
-        instance.clearGroups();
-        return this;
-      }
-      /**
-       * <code>repeated .patrol.DartTestGroup groups = 3;</code>
-       */
-      public Builder removeGroups(int index) {
-        copyOnWrite();
-        instance.removeGroups(index);
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:patrol.DartTestGroup)
-    }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new pl.leancode.patrol.contracts.Contracts.DartTestGroup();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "name_",
-              "tests_",
-              pl.leancode.patrol.contracts.Contracts.DartTestCase.class,
-              "groups_",
-              pl.leancode.patrol.contracts.Contracts.DartTestGroup.class,
-            };
-            java.lang.String info =
-                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0002\u0000\u0001\u0208\u0002\u001b" +
-                "\u0003\u001b";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.DartTestGroup> parser = PARSER;
-          if (parser == null) {
-            synchronized (pl.leancode.patrol.contracts.Contracts.DartTestGroup.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.DartTestGroup>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
-
-    // @@protoc_insertion_point(class_scope:patrol.DartTestGroup)
-    private static final pl.leancode.patrol.contracts.Contracts.DartTestGroup DEFAULT_INSTANCE;
-    static {
-      DartTestGroup defaultInstance = new DartTestGroup();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        DartTestGroup.class, defaultInstance);
-    }
-
-    public static pl.leancode.patrol.contracts.Contracts.DartTestGroup getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static volatile com.google.protobuf.Parser<DartTestGroup> PARSER;
-
-    public static com.google.protobuf.Parser<DartTestGroup> parser() {
-      return DEFAULT_INSTANCE.getParserForType();
-    }
-  }
-
-  public interface DartTestCaseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:patrol.DartTestCase)
-      com.google.protobuf.MessageLiteOrBuilder {
-
-    /**
-     * <code>string name = 1;</code>
-     * @return The name.
-     */
-    java.lang.String getName();
-    /**
-     * <code>string name = 1;</code>
-     * @return The bytes for name.
-     */
-    com.google.protobuf.ByteString
-        getNameBytes();
-  }
-  /**
-   * Protobuf type {@code patrol.DartTestCase}
-   */
-  public  static final class DartTestCase extends
-      com.google.protobuf.GeneratedMessageLite<
-          DartTestCase, DartTestCase.Builder> implements
-      // @@protoc_insertion_point(message_implements:patrol.DartTestCase)
-      DartTestCaseOrBuilder {
-    private DartTestCase() {
-      name_ = "";
-    }
-    public static final int NAME_FIELD_NUMBER = 1;
-    private java.lang.String name_;
-    /**
-     * <code>string name = 1;</code>
-     * @return The name.
-     */
-    @java.lang.Override
-    public java.lang.String getName() {
-      return name_;
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @return The bytes for name.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(name_);
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The name to set.
-     */
-    private void setName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      name_ = value;
-    }
-    /**
-     * <code>string name = 1;</code>
-     */
-    private void clearName() {
-      
-      name_ = getDefaultInstance().getName();
-    }
-    /**
-     * <code>string name = 1;</code>
-     * @param value The bytes for name to set.
-     */
-    private void setNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      name_ = value.toStringUtf8();
-      
-    }
-
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, data, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input);
-    }
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageLite.parseFrom(
-          DEFAULT_INSTANCE, input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() {
-      return (Builder) DEFAULT_INSTANCE.createBuilder();
-    }
-    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.DartTestCase prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
-    }
-
-    /**
-     * Protobuf type {@code patrol.DartTestCase}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageLite.Builder<
-          pl.leancode.patrol.contracts.Contracts.DartTestCase, Builder> implements
-        // @@protoc_insertion_point(builder_implements:patrol.DartTestCase)
-        pl.leancode.patrol.contracts.Contracts.DartTestCaseOrBuilder {
-      // Construct using pl.leancode.patrol.contracts.Contracts.DartTestCase.newBuilder()
-      private Builder() {
-        super(DEFAULT_INSTANCE);
-      }
-
-
-      /**
-       * <code>string name = 1;</code>
-       * @return The name.
-       */
-      @java.lang.Override
-      public java.lang.String getName() {
-        return instance.getName();
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @return The bytes for name.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        return instance.getNameBytes();
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @param value The name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setName(
-          java.lang.String value) {
-        copyOnWrite();
-        instance.setName(value);
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearName() {
-        copyOnWrite();
-        instance.clearName();
-        return this;
-      }
-      /**
-       * <code>string name = 1;</code>
-       * @param value The bytes for name to set.
-       * @return This builder for chaining.
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setNameBytes(value);
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:patrol.DartTestCase)
-    }
-    @java.lang.Override
-    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
-    protected final java.lang.Object dynamicMethod(
-        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
-        java.lang.Object arg0, java.lang.Object arg1) {
-      switch (method) {
-        case NEW_MUTABLE_INSTANCE: {
-          return new pl.leancode.patrol.contracts.Contracts.DartTestCase();
-        }
-        case NEW_BUILDER: {
-          return new Builder();
-        }
-        case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "name_",
-            };
-            java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
-            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
-        }
-        // fall through
-        case GET_DEFAULT_INSTANCE: {
-          return DEFAULT_INSTANCE;
-        }
-        case GET_PARSER: {
-          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.DartTestCase> parser = PARSER;
-          if (parser == null) {
-            synchronized (pl.leancode.patrol.contracts.Contracts.DartTestCase.class) {
-              parser = PARSER;
-              if (parser == null) {
-                parser =
-                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.DartTestCase>(
-                        DEFAULT_INSTANCE);
-                PARSER = parser;
-              }
-            }
-          }
-          return parser;
-      }
-      case GET_MEMOIZED_IS_INITIALIZED: {
-        return (byte) 1;
-      }
-      case SET_MEMOIZED_IS_INITIALIZED: {
-        return null;
-      }
-      }
-      throw new UnsupportedOperationException();
-    }
-
-
-    // @@protoc_insertion_point(class_scope:patrol.DartTestCase)
-    private static final pl.leancode.patrol.contracts.Contracts.DartTestCase DEFAULT_INSTANCE;
-    static {
-      DartTestCase defaultInstance = new DartTestCase();
-      // New instances are implicitly immutable so no need to make
-      // immutable.
-      DEFAULT_INSTANCE = defaultInstance;
-      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        DartTestCase.class, defaultInstance);
-    }
-
-    public static pl.leancode.patrol.contracts.Contracts.DartTestCase getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static volatile com.google.protobuf.Parser<DartTestCase> PARSER;
-
-    public static com.google.protobuf.Parser<DartTestCase> parser() {
       return DEFAULT_INSTANCE.getParserForType();
     }
   }

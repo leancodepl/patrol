@@ -3,6 +3,29 @@ package patrol;
 
 option java_package = "pl.leancode.patrol.contracts";
 
+service PatrolAppService {
+  rpc listDartTests(Empty) returns (ListDartTestsResponse) {}
+  rpc runDartTest(RunDartTestRequest) returns (Empty) {} // TODO: Decide on error reporting
+}
+
+message ListDartTestsResponse {
+  DartTestGroup group = 1;
+}
+
+message DartTestGroup {
+  string name = 1;
+  repeated DartTestCase tests = 2;
+  repeated DartTestGroup groups = 3;
+}
+
+message DartTestCase {
+  string name = 1;
+}
+
+message RunDartTestRequest {
+  string name = 1;
+}
+
 service NativeAutomator {
   rpc configure(ConfigureRequest) returns (Empty) {}
 
@@ -47,10 +70,6 @@ service NativeAutomator {
 
   // other
   rpc debug(Empty) returns (Empty) {}
-
-  rpc setDartTests(SetDartTestsRequest) returns (Empty) {
-
-  }
 
   // iOS 
   rpc submitTestResults(SubmitTestResultsRequest) returns (Empty) {}
@@ -173,20 +192,6 @@ message Notification {
   string title = 2;
   string content = 3;
   string raw = 4;
-}
-
-message SetDartTestsRequest {
-  DartTestGroup group = 1;
-}
-
-message DartTestGroup {
-  string name = 1;
-  repeated DartTestCase tests = 2;
-  repeated DartTestGroup groups = 3;
-}
-
-message DartTestCase {
-  string name = 1;
 }
 
 message SubmitTestResultsRequest {

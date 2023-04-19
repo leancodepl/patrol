@@ -17,13 +17,7 @@ class PatrolServer {
         server = OkHttpServerBuilder
             .forPort(port, InsecureServerCredentials.create())
             .intercept(LoggerInterceptor())
-            .addService(
-                AutomatorServer(
-                    automation = Automator.instance,
-                    onTestResultsSubmitted = { testResulsSettable.set(it) },
-                    onDartTestsSet = { dartTestGroupSettable.set(it) }
-                )
-            )
+            .addService(AutomatorServer(automation = Automator.instance))
             .build()
     }
 
