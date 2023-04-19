@@ -2,6 +2,7 @@ package pl.leancode.patrol
 
 import android.app.Activity
 import android.content.Intent
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
