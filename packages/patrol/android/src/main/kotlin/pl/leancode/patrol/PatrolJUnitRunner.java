@@ -63,21 +63,17 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     }
 
     /// Sets PatrolJUnitRunner.dartTestGroup if this is the initial test run.
-    public static boolean setUpIfNecessary() {
-        if (listTestsForOrchestrator) {
-            try {
-                Logger.INSTANCE.i("Before waiting for appReadyFuture");
-                PatrolServer.Companion.getAppReadyFuture().get();
-                Logger.INSTANCE.i("After waiting for appReadyFuture");
-            } catch (InterruptedException | ExecutionException e) {
-                Logger.INSTANCE.e("Exception was thrown when waiting for appReady: ", e);
-                throw new RuntimeException(e);
-            }
-
-            dartTestGroup = findDartTests();
+    public static void setUp() {
+        try {
+            Logger.INSTANCE.i("Before waiting for appReadyFuture");
+            PatrolServer.Companion.getAppReadyFuture().get();
+            Logger.INSTANCE.i("After waiting for appReadyFuture");
+        } catch (InterruptedException | ExecutionException e) {
+            Logger.INSTANCE.e("Exception was thrown when waiting for appReady: ", e);
+            throw new RuntimeException(e);
         }
 
-        return !listTestsForOrchestrator;
+        dartTestGroup = findDartTests();
     }
 
     private static DartTestGroup findDartTests() {

@@ -15,22 +15,14 @@ import java.util.Arrays;
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
-        boolean isInitialRun = PatrolJUnitRunner.setUpIfNecessary();
+        PatrolJUnitRunner.setUp();
 
         Logger.INSTANCE.i("Test cases requested, value from app: " + PatrolJUnitRunner.valueFromApp);
         Logger.INSTANCE.i("Got DartTestGroup: " + PatrolJUnitRunner.dartTestGroup);
 
         Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(PatrolJUnitRunner.dartTestGroup).toArray();
         Logger.INSTANCE.i("Got Dart test files: " + Arrays.toString(dartTestFiles));
-
-        if (!isInitialRun) {
-            return new Object[]{"huh why is it not appearing"};
-        }
-
         return dartTestFiles;
-
-        // return new Object[]{"my_test_1.dart", "my_test_2.dart", "my_test_3.dart"};
-        // return new Object[]{"permissions_many_test.dart", "permissions_location_test.dart", "example_test.dart"};
     }
 
     public MainActivityTest(String dartTestName) {
@@ -44,7 +36,7 @@ public class MainActivityTest {
         Logger.INSTANCE.i("Test executed: " + dartTestName);
         // PatrolAppService.startDartTest(dartTestName)
 
-        if (dartTestName.equals("my_test_2.dart")) {
+        if (dartTestName.equals("permissions_test.dart")) {
             // Demo to show that time is reported correctly in test results
             SystemClock.sleep(3 * 1000);
         }
