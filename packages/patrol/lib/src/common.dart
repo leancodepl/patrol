@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, implementation_imports
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
@@ -9,7 +11,6 @@ import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:test_api/src/backend/group.dart';
-import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
 /// Signature for callback to [patrolTest].
@@ -73,60 +74,56 @@ void patrolTest(
     }
   }
 
-  testWidgets(
-    description,
-    skip: skip,
-    timeout: timeout,
-    semanticsEnabled: semanticsEnabled,
-    variant: variant,
-    tags: tags,
-    (widgetTester) async {
-      if (patrolBinding != null) {
-        // The execution of this test will only proceed if the native side
-        // requests it.
+  if (patrolBinding != null) {
+    // The execution of this test will only proceed if the native side
+    // requests it.
 
-        // FIXME: Too strict assumption
-        // The assumption here is that immediate parent group of this test is a
-        // name of the Dart file. This is not always true, for example, if the
-        // patrolTest() in a Dart test file is in a group. For the initial POC
-        // it's good enough, though.
-        final fullParentGroupName = Invoker.current!.liveTest.groups.last.name;
-        print('patrolTest(): innermostGroupName: $fullParentGroupName');
-        final parentGroupName = fullParentGroupName.split(' ').last;
-        print('patrolTest(): parentGroupName: $parentGroupName');
+    // FIXME: Too strict assumption
+    // The assumption here is that immediate parent group of this test is a
+    // name of the Dart file. This is not always true, for example, if the
+    // patrolTest() in a Dart test file is in a group. For the initial POC
+    // it's good enough, though.
+    final parentGroupName = Zone.current['parentGroupName'] as String;
+    // print('patrolTest(): $parentGroupName registered');
 
-        print('patrolTest(): test $parentGroupName registered and waiting');
-        await patrolBinding.patrolAppService.waitForRunRequest(parentGroupName);
-        print('patrolTest(): test $parentGroupName received run request');
-      }
+    patrolBinding.patrolAppService.waitForRunRequest(parentGroupName).then((_) {
+      testWidgets(
+        description,
+        skip: skip,
+        timeout: timeout,
+        semanticsEnabled: semanticsEnabled,
+        variant: variant,
+        tags: tags,
+        (widgetTester) async {
+          // await nativeAutomator?.configure(); // TODO: Bring this back
 
-      // await nativeAutomator?.configure(); // Move to bundled_test.dart
+          final patrolTester = PatrolTester(
+            tester: widgetTester,
+            nativeAutomator: nativeAutomator,
+            config: config,
+          );
+          await callback(patrolTester);
 
-      final patrolTester = PatrolTester(
-        tester: widgetTester,
-        nativeAutomator: nativeAutomator,
-        config: config,
-      );
-      await callback(patrolTester);
+          // ignore: prefer_const_declarations
+          final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
+          final waitDuration = Duration(seconds: waitSeconds);
 
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
+          if (waitDuration > Duration.zero) {
+            final stopwatch = Stopwatch()..start();
+            await Future.doWhile(() async {
+              await widgetTester.pump();
+              if (stopwatch.elapsed > waitDuration) {
+                stopwatch.stop();
+                return false;
+              }
 
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
-          await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
+              return true;
+            });
           }
-
-          return true;
-        });
-      }
-    },
-  );
+        },
+      );
+    });
+  }
 }
 
 /// Creates a DartTestGroup by recursively visiting subgroups of [topLevelGroup]

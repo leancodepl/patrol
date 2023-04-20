@@ -20,7 +20,9 @@ import 'permissions/permissions_many_test.dart' as permissions_many_test;
 Future<void> main() async {
   // TODO: Create and use PatrolNativeTestService instead of NativeAutomator
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
-  final binding = PatrolBinding.ensureInitialized();
+  final patrolAppService = PatrolAppService();
+  PatrolBinding.ensureInitialized().patrolAppService = patrolAppService;
+
   // Create a PatrolAppService.
   //
   // Android Test Orchestrator, before running the tests, makes an initial run
@@ -49,17 +51,36 @@ Future<void> main() async {
   });
 
   // START: GENERATED CODE
-  group('permissions', () {
-    group('permissions_location_test.dart', permissions_location_test.main);
-    group('permissions_many_test.dart', permissions_many_test.main);
+  if (true) {
+    group('permissions', () {
+      group('permissions_location_test.dart', () {
+        runZoned(
+          permissions_location_test.main,
+          zoneValues: {'parentGroupName': 'permissions_location_test.dart'},
+        );
+      });
+      group('permissions_many_test.dart', () {
+        runZoned(
+          permissions_many_test.main,
+          zoneValues: {'parentGroupName': 'permissions_many_test.dart'},
+        );
+      });
+    });
+  }
+
+  group('example_test.dart', () {
+    runZoned(
+      example_test.main,
+      zoneValues: {'parentGroupName': 'example_test.dart'},
+    );
   });
-  group('example_test.dart', example_test.main);
+
   // END: GENERATED CODE
 
   final dartTestGroup = await testDeclarationCompleter.future;
-  final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
-  binding.patrolAppService = appService;
-  final future = runAppService(appService);
+  patrolAppService.topLevelDartTestGroup = dartTestGroup;
+
+  final future = runAppService(patrolAppService);
 
   // Until now, the PatrolJUnit runner was waiting for us (the Dart side) to
   // come alive. Now that we did, let's share this information with it.
@@ -68,7 +89,7 @@ Future<void> main() async {
   print('BUNDLED TEST: before future');
   await future;
   print('BUNDLED TEST: before runFuture');
-  await appService.runFuture;
+  await patrolAppService.runFuture;
   print('BUNDLED TEST: heading out');
 }
 
