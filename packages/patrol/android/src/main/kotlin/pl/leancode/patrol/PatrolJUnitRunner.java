@@ -15,6 +15,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     private static PatrolAppServiceClient patrolAppServiceClient;
 
     @Override
+    protected boolean shouldWaitForActivitiesToComplete() {
+        return false;
+    }
+
+    @Override
     public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
 
@@ -29,7 +34,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         String packageName = arguments.getString("packageName");
 
         Logger.INSTANCE.i("--------------------------------");
-        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate()," + "packageName: " + packageName + (Objects.equals(initialRun, "true") ? "(initial run)" : ""));
+        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate(), " + "packageName: " + packageName + (Objects.equals(initialRun, "true") ? " (initial run)" : ""));
 
         // This code is based on ActivityTestRule#launchActivity.
         // It's simpler because we don't feel the need for that much synchronization as in ActivityTestRule.

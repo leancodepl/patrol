@@ -24,9 +24,8 @@ class PatrolServer {
     private val arguments get() = InstrumentationRegistry.getArguments()
 
     fun start() {
-        Logger.i("Starting server...")
         server?.start()
-        Logger.i("Server started on http://localhost:$port")
+        Logger.i("Created and started PatrolServer, port: $port")
 
         Runtime.getRuntime().addShutdownHook(
             Thread {

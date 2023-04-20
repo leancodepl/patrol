@@ -19,8 +19,8 @@ public class PatrolAppServiceClient {
      * Construct client for accessing PatrolAppService server using the existing channel.
      */
     public PatrolAppServiceClient() {
-        String target = "localhost:21337"; // TODO: Document this value better
-        Logger.INSTANCE.i("Will start PatrolAppServiceClient on " + target);
+        String target = "localhost:8082"; // TODO: Document this value better
+        Logger.INSTANCE.i("Created PatrolAppServiceClient, target: " + target);
         ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
 
         // Passing Channels to code makes code easier to test and makes it easier to reuse Channels.

@@ -32,9 +32,6 @@ public class MainActivityTest {
     @Test
     public void runDartTest() {
         Logger.INSTANCE.i("MainActivityTest.runDartTest(): " + dartTestName);
-
-//        PatrolJUnitRunner.setUp(); // Debugging: why is this failing, while it works in testCases()???
-//
-//        PatrolJUnitRunner.runDartTest(dartTestName); // Run a test and wait for it to finish
+        PatrolJUnitRunner.runDartTest(dartTestName); // Run a test and wait for it to finish
     }
 }

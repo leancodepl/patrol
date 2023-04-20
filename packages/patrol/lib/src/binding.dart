@@ -64,18 +64,18 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         );
       }
 
-      print(
-        'PatrolBinding: test name in teardown is: ${Invoker.current!.liveTest.individualName}',
-      );
-      print(
-        'PatrolBinding: innermost group name teardown is: ${Invoker.current!.liveTest.groups.last}',
-      );
+      // FIXME: Probably too strict assumption (see also common.dart)
+      final fullParentGroupName = Invoker.current!.liveTest.groups.last.name;
+      final parentGroupName = fullParentGroupName.split(' ').last;
+
+      print('PatrolBinding.tearDown(): test: $individualTestName');
+      print('PatrolBinding.tearDown(): parent group: $parentGroupName');
 
       print('PatrolBinding: before stupid temporary wait');
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 3));
       print('PatrolBinding: after stupid temporary wait');
 
-      await patrolAppService.markDartTestAsCompleted('IDK!');
+      await patrolAppService.markDartTestAsCompleted(parentGroupName);
 
       // FIXME: Report the results back to the native side. Dilemma: long method for whole test or a callback?
       // logger('Sending ${results.length} test results to the native side...');

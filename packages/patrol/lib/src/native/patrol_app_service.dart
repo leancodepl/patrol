@@ -5,12 +5,7 @@ import 'package:grpc/grpc.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
-const _port = 21337;
-
-@internal
-PatrolAppService createAppService({required DartTestGroup testGroup}) {
-  return PatrolAppService(topLevelDartTestGroup: testGroup);
-}
+const _port = 8082;
 
 @internal
 Future<void> runAppService(PatrolAppService service) async {
@@ -21,6 +16,7 @@ Future<void> runAppService(PatrolAppService service) async {
   final server = Server(services, interceptors, codecRegistry);
   print('Starting PatrolAppService on port $_port...');
   await server.serve(address: io.InternetAddress.anyIPv4, port: _port);
+  print('PatrolAppService started on port $_port');
 }
 
 /// Provides a gRPC service for the native side to interact with the Dart tests.
@@ -39,7 +35,10 @@ class PatrolAppService extends PatrolAppServiceBase {
 
   final _runCompleter = Completer<void>();
 
+  Future<void> get runFuture => _runCompleter.future;
+
   Future<void> markDartTestAsCompleted(String completedDartTestName) async {
+    print('PatrolAppService.markDartTestAsCompleted(): $completedDartTestName');
     assert(
       _nameCompleter.isCompleted,
       'Tried to mark a test as completed, but no tests were requested to run',
