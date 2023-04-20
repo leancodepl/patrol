@@ -34,6 +34,20 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
+///
+/// ### Reporting results of bundled tests
+///
+/// This binding is also responsible for reporting the results of the tests to
+/// the native side of Patrol. It does so by registering a tearDown() callback
+/// that is executed after each test. Inside that callback, the name of the Dart
+/// test file being currently executed is retrieved.
+///
+/// At this point, the [PatrolAppService] is handling the gRPC `runDartTest()`
+/// called by the native side.
+///
+/// [PatrolBinding] submits the Dart test file name that is being currently
+/// executed to [PatrolAppService]. Once the name is submitted to it, that
+/// pending `runDartTest()` method returns.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
@@ -53,8 +67,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      final individualTestName = Invoker.current!.liveTest.individualName;
-      final isTestExplorer = individualTestName == 'patrol_test_explorer';
+      final testName = Invoker.current!.liveTest.individualName;
+      final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
         print('PatrolBinding.tearDown() called on test explorer, skipping');
         return;
@@ -66,16 +80,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
       // FIXME: Probably too strict assumption (see also common.dart)
       final fullParentGroupName = Invoker.current!.liveTest.groups.last.name;
-      final parentGroupName = fullParentGroupName.split(' ').last;
+      final groupName = fullParentGroupName.split(' ').last;
 
-      print('PatrolBinding.tearDown(): test: $individualTestName');
-      print('PatrolBinding.tearDown(): parent group: $parentGroupName');
+      print('PatrolBinding.tearDown() for test $testName in group $groupName');
 
-      print('PatrolBinding: before stupid temporary wait');
-      await Future.delayed(const Duration(seconds: 3));
-      print('PatrolBinding: after stupid temporary wait');
-
-      await patrolAppService.markDartTestAsCompleted(parentGroupName);
+      await patrolAppService.markDartTestAsCompleted(groupName);
 
       // FIXME: Report the results back to the native side. Dilemma: long method for whole test or a callback?
       // logger('Sending ${results.length} test results to the native side...');
