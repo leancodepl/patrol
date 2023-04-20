@@ -23,11 +23,11 @@ Future<void> runAppService(PatrolAppService service) async {
 @internal
 class PatrolAppService extends PatrolAppServiceBase {
   /// Creates a new [PatrolAppService].
-  PatrolAppService();
+  PatrolAppService({required this.topLevelDartTestGroup});
 
   /// The ambient test group that wraps all the other groups and tests in
   /// the bundled Dart test file.
-  late DartTestGroup topLevelDartTestGroup;
+  final DartTestGroup topLevelDartTestGroup;
 
   /// A completer that completes when the name of the Dart test file that was
   /// requested to be run by the native side.

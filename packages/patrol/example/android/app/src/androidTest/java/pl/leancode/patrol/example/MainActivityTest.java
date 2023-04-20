@@ -16,9 +16,6 @@ import static pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
-        // Unfortunately, we never get here. The app screen stays white.
-        Logger.INSTANCE.i("MainActivityTest.testCases() called");
-
         DartTestGroup dartTestGroup = PatrolJUnitRunner.setUp();
 
         Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(dartTestGroup).toArray();
