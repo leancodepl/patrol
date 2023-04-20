@@ -1,11 +1,16 @@
 package pl.leancode.patrol;
 
-import io.grpc.Channel;
+import io.grpc.Grpc;
+import io.grpc.InsecureChannelCredentials;
+import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import pl.leancode.patrol.contracts.PatrolAppServiceGrpc;
 
 import static pl.leancode.patrol.contracts.Contracts.*;
 
+/**
+ * Enables querying Dart tests, running them, waiting for them to finish, and getting their results
+ */
 public class PatrolAppServiceClient {
 
     private final PatrolAppServiceGrpc.PatrolAppServiceBlockingStub blockingStub;
@@ -13,16 +18,18 @@ public class PatrolAppServiceClient {
     /**
      * Construct client for accessing PatrolAppService server using the existing channel.
      */
-    public PatrolAppServiceClient(Channel channel) {
-        // 'channel' here is a Channel, not a ManagedChannel, so it is not this code's responsibility to
-        // shut it down.
+    public PatrolAppServiceClient() {
+        String target = "localhost:21337"; // TODO: Document this value better
+        Logger.INSTANCE.i("Will start PatrolAppServiceClient on " + target);
+        ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
 
         // Passing Channels to code makes code easier to test and makes it easier to reuse Channels.
         blockingStub = PatrolAppServiceGrpc.newBlockingStub(channel);
     }
 
     public DartTestGroup listDartTests() throws StatusRuntimeException {
-        ListDartTestsResponse response = blockingStub.listDartTests(Empty.newBuilder().build());
+        Empty request = Empty.newBuilder().build();
+        ListDartTestsResponse response = blockingStub.listDartTests(request);
 
         return response.getGroup();
     }

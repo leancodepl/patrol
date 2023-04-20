@@ -5,9 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
-import io.grpc.Grpc;
-import io.grpc.InsecureChannelCredentials;
-import io.grpc.ManagedChannel;
 import io.grpc.StatusRuntimeException;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
@@ -53,11 +50,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // It will be killed once the test finishes, and for now, we're okay with this
 
-        // Lets us query Dart tests, run them, wait for them to finish, and get their results
-        String target = "0.0.0.0:2137"; // TODO: Document this value better
-        Logger.INSTANCE.i("Will start PatrolAppServiceClient on " + target);
-        ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
-        patrolAppServiceClient = new PatrolAppServiceClient(channel);
+        patrolAppServiceClient = new PatrolAppServiceClient();
     }
 
     /// Sets PatrolJUnitRunner.dartTestGroup if this is the initial test run.
@@ -79,6 +72,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             patrolAppServiceClient.runDartTest(name);
         } catch (StatusRuntimeException e) {
             Logger.INSTANCE.e("Failed to run Dart test: " + e.getMessage(), e.getCause());
+            throw e;
         }
     }
 
