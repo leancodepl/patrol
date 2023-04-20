@@ -96,7 +96,11 @@ void patrolTest(
         print('patrolTest(): parentGroupName: $parentGroupName');
 
         print('patrolTest(): test $parentGroupName registered and waiting');
-        await patrolBinding.patrolAppService.waitForRunRequest(parentGroupName);
+        final matched = await patrolBinding.patrolAppService
+            .waitForRunRequest(parentGroupName);
+        if (!matched) {
+          return;
+        }
         print('patrolTest(): test $parentGroupName received run request');
       }
 

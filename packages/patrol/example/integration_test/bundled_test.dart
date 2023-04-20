@@ -59,17 +59,14 @@ Future<void> main() async {
   final dartTestGroup = await testDeclarationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
   binding.patrolAppService = appService;
-  final future = runAppService(appService);
+  await runAppService(appService);
 
   // Until now, the PatrolJUnit runner was waiting for us (the Dart side) to
   // come alive. Now that we did, let's share this information with it.
   await nativeAutomator.markPatrolAppServiceReady();
 
-  print('BUNDLED TEST: before future');
-  await future;
-  print('BUNDLED TEST: before runFuture');
   await appService.runFuture;
-  print('BUNDLED TEST: heading out');
+  print('End of bundled test');
 }
 
 /// Prints test entry.

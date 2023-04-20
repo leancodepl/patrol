@@ -14,7 +14,6 @@ Future<void> runAppService(PatrolAppService service) async {
   final codecRegistry = CodecRegistry();
 
   final server = Server(services, interceptors, codecRegistry);
-  print('Starting PatrolAppService on port $_port...');
   await server.serve(address: io.InternetAddress.anyIPv4, port: _port);
   print('PatrolAppService started on port $_port');
 }
@@ -47,7 +46,7 @@ class PatrolAppService extends PatrolAppServiceBase {
     final requestedDartTestName = await _nameCompleter.future;
     assert(
       requestedDartTestName == completedDartTestName,
-      'Tried to mark test $completedDartTestName as completed, but the test'
+      'Tried to mark test $completedDartTestName as completed, but the test '
       'that was most recently requested to run was $requestedDartTestName',
     );
 
@@ -56,20 +55,26 @@ class PatrolAppService extends PatrolAppServiceBase {
 
   /// This method returns once the Dart test named [name] is requested by the
   /// native side. Otherwise, it never returns.
-  Future<void> waitForRunRequest(String name) async {
+  Future<bool> waitForRunRequest(String name) async {
     print('PatrolAppService.waitUntilRunRequested(): $name registered');
     final requested = await _nameCompleter.future;
     if (requested != name) {
       print(
         'PatrolAppService.waitUntilRunRequested(): $name was not matched by requested test $requested',
       );
+      // If the requested test is not the one we're waiting for now, let's
+      // return. The next declared test will be executed, and eventually, we'll
+      // find a match.
+      return false;
 
       // If the requested test is not the one we're waiting for, it means that
       // the native test runner doesn't want to run us yet.
       // It's okay, since that other tests have registered themselves for
       // running using this method as well. Our turn will come, eventually.
-      return Completer<void>().future;
+//      return Completer<void>().future;
     }
+
+    return true;
   }
 
   @override
