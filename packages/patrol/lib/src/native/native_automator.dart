@@ -153,10 +153,10 @@ class NativeAutomator {
       _config.logger("bundleId is not set. It's recommended to set it.");
     }
 
-    _config.logger('Android app name: ${_config.androidAppName}');
-    _config.logger('iOS app name: ${_config.iosAppName}');
-    _config.logger('Android package name: ${_config.packageName}');
-    _config.logger('iOS bundle identifier: ${_config.bundleId}');
+    // _config.logger('Android app name: ${_config.androidAppName}');
+    // _config.logger('iOS app name: ${_config.iosAppName}');
+    // _config.logger('Android package name: ${_config.packageName}');
+    // _config.logger('iOS bundle identifier: ${_config.bundleId}');
 
     final channel = ClientChannel(
       _config.host,

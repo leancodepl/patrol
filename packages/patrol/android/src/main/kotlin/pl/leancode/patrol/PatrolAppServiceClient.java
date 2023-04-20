@@ -26,4 +26,9 @@ public class PatrolAppServiceClient {
 
         return response.getGroup();
     }
+
+    public Empty runDartTest(String name) throws StatusRuntimeException {
+        RunDartTestRequest request = RunDartTestRequest.newBuilder().setName(name).build();
+        return blockingStub.runDartTest(request);
+    }
 }

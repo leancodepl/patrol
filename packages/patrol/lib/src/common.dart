@@ -3,11 +3,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:test_api/src/backend/group.dart';
+import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
 /// Signature for callback to [patrolTest].
@@ -51,15 +53,15 @@ void patrolTest(
 }) {
   NativeAutomator? nativeAutomator;
 
+  PatrolBinding? patrolBinding;
+
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
         nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
 
-        // FIXME: This is (temporarily?) moved to the generated bundled_test.dart
-        // final binding = PatrolBinding.ensureInitialized();
-        // binding.framePolicy = framePolicy;
-        // binding.nativeAutomator = nativeAutomator;
+        patrolBinding = PatrolBinding.ensureInitialized();
+        patrolBinding.framePolicy = framePolicy;
         break;
       case BindingType.integrationTest:
         IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
@@ -79,8 +81,23 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      // Here, we will delay the start of this test until the native side
-      // requests its execution.
+      if (patrolBinding != null) {
+        // The execution of this test will only proceed if the native side
+        // requests it.
+
+        // FIXME: Too strict assumption
+        // The assumption here is that immediate parent group of this test is a
+        // name of the Dart file. This is not always true, for example, if the
+        // patrolTest() in a Dart test file is in a group. For the initial POC
+        // it's good enough, though.
+        final fullParentGroupName = Invoker.current!.liveTest.groups.last.name;
+        print('patrolTest(): innermostGroupName: $fullParentGroupName');
+        final parentGroupName = fullParentGroupName.split(' ').last;
+        print('patrolTest(): parentGroupName: $parentGroupName');
+
+        await patrolBinding.patrolAppService
+            .waitUntilRunRequested(parentGroupName);
+      }
 
       // await nativeAutomator?.configure(); // Move to bundled_test.dart
 

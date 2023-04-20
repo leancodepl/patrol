@@ -8,18 +8,16 @@ import androidx.test.runner.AndroidJUnitRunner;
 import io.grpc.Grpc;
 import io.grpc.InsecureChannelCredentials;
 import io.grpc.ManagedChannel;
+import io.grpc.StatusRuntimeException;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public static String valueFromApp;
     public static DartTestGroup dartTestGroup;
 
-
     private static PatrolAppServiceClient patrolAppServiceClient;
-    private static boolean listTestsForOrchestrator;
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -32,7 +30,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         // This is only true when the Orchestrator requests a list of tests from the app during the initial run.
         String listTestsForOrchestrator = arguments.getString("listTestsForOrchestrator");
-        PatrolJUnitRunner.listTestsForOrchestrator = Objects.equals(listTestsForOrchestrator, "true");
+        Logger.INSTANCE.i("--------------------------------");
         Logger.INSTANCE.i("PatrolJUnitRunner onCreate, exampleArg: " + exampleArg + ", listTestsForOrchestrator: " + listTestsForOrchestrator);
 
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -74,6 +72,14 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         }
 
         dartTestGroup = findDartTests();
+    }
+
+    public static void runDartTest(String name) {
+        try {
+            patrolAppServiceClient.runDartTest(name);
+        } catch (StatusRuntimeException e) {
+            Logger.INSTANCE.e("Failed to run Dart test: " + e.getMessage(), e.getCause());
+        }
     }
 
     private static DartTestGroup findDartTests() {

@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:test_api/src/backend/invoker.dart';
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
@@ -42,7 +43,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       oldTestExceptionReporter(details, testDescription);
     };
 
-    tearDownAll(() async {
+    tearDown(() async {
       if (!_shouldReportResultsToNative) {
         return;
       }
@@ -51,6 +52,29 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
+
+      print(
+        'PatrolBinding.tearDown() called, results count: ${results.length}, results: $results',
+      );
+
+      final individualTestName = Invoker.current!.liveTest.individualName;
+      final isTestExplorer = individualTestName == 'patrol_test_explorer';
+      if (isTestExplorer) {
+        return;
+      }
+
+      print(
+        'PatrolBinding: test name in teardown is: ${Invoker.current!.liveTest.individualName}',
+      );
+      print(
+        'PatrolBinding: innermost group name teardown is: ${Invoker.current!.liveTest.groups.last}',
+      );
+
+      print('PatrolBinding: before stupid temporary wait');
+      await Future.delayed(const Duration(seconds: 5));
+      print('PatrolBinding: after stupid temporary wait');
+
+      await patrolAppService.markDartTestAsCompleted('IDK!');
 
       // FIXME: Report the results back to the native side. Dilemma: long method for whole test or a callback?
       // logger('Sending ${results.length} test results to the native side...');
@@ -73,6 +97,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   /// Returns an instance of the [PatrolBinding], creating and initializing it
   /// if necessary.
+  ///
+  /// This method is idempotent.
   factory PatrolBinding.ensureInitialized() {
     if (_instance == null) {
       PatrolBinding();
@@ -83,12 +109,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
-  /// The [NativeAutomator] used by this binding to report tests to the native
+  /// The [PatrolAppService] used by this binding to report tests to the native
   /// side.
   ///
   /// It's only for test reporting purposes and should not be used for anything
   /// else.
-  late NativeAutomator nativeAutomator;
+  late PatrolAppService patrolAppService;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
