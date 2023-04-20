@@ -4,6 +4,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 
 private fun Contracts.Selector.isEmpty(): Boolean {
     return (
@@ -181,4 +182,22 @@ fun Contracts.Selector.toBySelector(): BySelector {
     }
 
     return bySelector
+}
+
+fun DartTestGroup.listFlatDartFiles(): List<String> {
+    val files = mutableListOf<String>()
+    for (group in groupsList) {
+        files.addAll(group.listGroups())
+    }
+    return files.filter { it.endsWith(".dart") }
+}
+
+// Recursively lists groups in this group.
+private fun DartTestGroup.listGroups(): List<String> {
+    val groups = mutableListOf<String>(this.name)
+    for (group in groupsList) {
+        groups.addAll(group.listGroups())
+    }
+
+    return groups
 }

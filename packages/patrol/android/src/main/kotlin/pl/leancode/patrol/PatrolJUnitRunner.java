@@ -63,7 +63,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     }
 
     /// Sets PatrolJUnitRunner.dartTestGroup if this is the initial test run.
-    public static void setUpIfNecessary() {
+    public static boolean setUpIfNecessary() {
         if (listTestsForOrchestrator) {
             try {
                 Logger.INSTANCE.i("Before waiting for appReadyFuture");
@@ -76,6 +76,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
             dartTestGroup = findDartTests();
         }
+
+        return !listTestsForOrchestrator;
     }
 
     private static DartTestGroup findDartTests() {

@@ -70,5 +70,14 @@ android {
         implementation "io.grpc:grpc-kotlin-stub:1.3.0"
         implementation "io.grpc:grpc-okhttp:1.49.2"
         implementation "javax.annotation:javax.annotation-api:1.3.2"
+
+        testImplementation "org.jetbrains.kotlin:kotlin-test"
+    }
+}
+
+// Test Logging
+tasks.withType(Test).configureEach {
+    testLogging {
+        events "passed", "skipped", "failed"
     }
 }

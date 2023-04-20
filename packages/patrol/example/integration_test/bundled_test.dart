@@ -51,14 +51,14 @@ Future<void> main() async {
 
   // START: GENERATED CODE
   group('permissions', () {
-    group('permissions_location_test', permissions_location_test.main);
-    group('permissions_many_test', permissions_many_test.main);
+    group('permissions_location_test.dart', permissions_location_test.main);
+    group('permissions_many_test.dart', permissions_many_test.main);
   });
   group('sign_in', () {
-    group('sign_in_facebook_test', sign_in_facebook_test.main);
-    group('sign_in_google_test', sign_in_google_test.main);
+    group('sign_in_facebook_test.dart', sign_in_facebook_test.main);
+    group('sign_in_google_test.dart', sign_in_google_test.main);
   });
-  group('example_test', example_test.main);
+  group('example_test.dart', example_test.main);
   // END: GENERATED CODE
 
   final dartTestGroup = await completer.future;
