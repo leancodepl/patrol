@@ -84,7 +84,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
       print('PatrolBinding.tearDown() for test $testName in group $groupName');
 
-      await patrolAppService.markDartTestAsCompleted(groupName);
+      final nameOfRequestedTest = await patrolAppService.nameFuture;
+      if (nameOfRequestedTest == groupName) {
+        await patrolAppService.markDartTestAsCompleted(groupName);
+      }
 
       // FIXME: Report the results back to the native side. Dilemma: long method for whole test or a callback?
       // logger('Sending ${results.length} test results to the native side...');

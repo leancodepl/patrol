@@ -32,8 +32,14 @@ class PatrolAppService extends PatrolAppServiceBase {
   /// requested to be run by the native side.
   final _nameCompleter = Completer<String>();
 
+  /// A future that completes with the name of the Dart test file that was
+  /// requested to be run.
+  Future<String> get nameFuture => _nameCompleter.future;
+
   final _runCompleter = Completer<void>();
 
+  /// A future that completes when the Dart test that was requested to be run
+  /// finishes.
   Future<void> get runFuture => _runCompleter.future;
 
   Future<void> markDartTestAsCompleted(String completedDartTestName) async {
