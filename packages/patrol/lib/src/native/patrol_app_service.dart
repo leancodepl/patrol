@@ -57,10 +57,14 @@ class PatrolAppService extends PatrolAppServiceBase {
 
   /// This method returns once the Dart test named [name] is requested by the
   /// native side. Otherwise, it never returns.
-  Future<void> waitUntilRunRequested(String name) async {
-    print('Dart test file $name registered for running');
+  Future<void> waitForRunRequest(String name) async {
+    print('PatrolAppService.waitUntilRunRequested(): $name registered');
     final requested = await _nameCompleter.future;
     if (requested != name) {
+      print(
+        'PatrolAppService.waitUntilRunRequested(): $name was not matched by requested test $requested',
+      );
+
       // If the requested test is not the one we're waiting for, it means that
       // the native test runner doesn't want to run us yet.
       // It's okay, since that other tests have registered themselves for
@@ -74,6 +78,7 @@ class PatrolAppService extends PatrolAppServiceBase {
     ServiceCall call,
     Empty request,
   ) async {
+    print('PatrolAppService.listDartTests() called');
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
@@ -82,6 +87,7 @@ class PatrolAppService extends PatrolAppServiceBase {
     ServiceCall call,
     RunDartTestRequest request,
   ) async {
+    print('PatrolAppService.runDartTest(${request.name}) called');
     // All Dart tests register themselves for running using this method.
     _nameCompleter.complete(request.name);
 

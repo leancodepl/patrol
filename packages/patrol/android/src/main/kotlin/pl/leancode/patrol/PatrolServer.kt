@@ -45,15 +45,6 @@ class PatrolServer {
         val appReady: SettableFuture<Boolean> = SettableFuture.create()
         val appReadyFuture: Future<Boolean>
             get() = appReady
-
-        // FIXME: Remove
-        // private val testResulsSettable: SettableFuture<DartTestResults> = SettableFuture.create()
-        // val testResults
-        //     get() = testResulsSettable
-        //
-        // private val dartTestGroupSettable: SettableFuture<DartTestGroup> = SettableFuture.create()
-        // val dartTestGroup
-        //     get() = dartTestGroupSettable
     }
 }
 

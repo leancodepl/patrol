@@ -19,22 +19,22 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         super.onCreate(arguments);
 
         // We override onCreate(), because we need to gather the Dart tests before the tests are run.
-
+        // By default, AndroidJUnitRunner doesn't run the app during the initial run (when it gathers the test list).
+        // But in our case, the app must be run to gather the list of tests (because the tests (the Dart ones) live in the app itself).
 
         // This is only true when the Orchestrator requests a list of tests from the app during the initial run.
         String initialRun = arguments.getString("listTestsForOrchestrator");
+
+        // This value comes from app's build.gradle. This is not ideal but works.
+        String packageName = arguments.getString("packageName");
+
         Logger.INSTANCE.i("--------------------------------");
-        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate()" + (Objects.equals(initialRun, "true") ? "initial run" : ""));
-
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-
-        // This is defined in the "patrol" section in pubspec.yaml
-        String packageName = InstrumentationRegistry.getArguments().getString("PATROL_APP_PACKAGE_NAME"); // TODO: applicationID != package name, will break when using flavors
-        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate(): packageName: " + packageName);
+        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate()," + "packageName: " + packageName + (Objects.equals(initialRun, "true") ? "(initial run)" : ""));
 
         // This code is based on ActivityTestRule#launchActivity.
         // It's simpler because we don't feel the need for that much synchronization as in ActivityTestRule.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setClassName(instrumentation.getTargetContext(), packageName + ".MainActivity"); // TODO: Some users may want to customize it
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

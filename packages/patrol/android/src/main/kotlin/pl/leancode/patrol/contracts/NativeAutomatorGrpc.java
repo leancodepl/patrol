@@ -946,23 +946,23 @@ public final class NativeAutomatorGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty,
-      pl.leancode.patrol.contracts.Contracts.Empty> getMarkAppReadyMethod;
+      pl.leancode.patrol.contracts.Contracts.Empty> getMarkPatrolAppServiceReadyMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "markAppReady",
+      fullMethodName = SERVICE_NAME + '/' + "markPatrolAppServiceReady",
       requestType = pl.leancode.patrol.contracts.Contracts.Empty.class,
       responseType = pl.leancode.patrol.contracts.Contracts.Empty.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty,
-      pl.leancode.patrol.contracts.Contracts.Empty> getMarkAppReadyMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty, pl.leancode.patrol.contracts.Contracts.Empty> getMarkAppReadyMethod;
-    if ((getMarkAppReadyMethod = NativeAutomatorGrpc.getMarkAppReadyMethod) == null) {
+      pl.leancode.patrol.contracts.Contracts.Empty> getMarkPatrolAppServiceReadyMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty, pl.leancode.patrol.contracts.Contracts.Empty> getMarkPatrolAppServiceReadyMethod;
+    if ((getMarkPatrolAppServiceReadyMethod = NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod) == null) {
       synchronized (NativeAutomatorGrpc.class) {
-        if ((getMarkAppReadyMethod = NativeAutomatorGrpc.getMarkAppReadyMethod) == null) {
-          NativeAutomatorGrpc.getMarkAppReadyMethod = getMarkAppReadyMethod =
+        if ((getMarkPatrolAppServiceReadyMethod = NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod) == null) {
+          NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod = getMarkPatrolAppServiceReadyMethod =
               io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.Empty, pl.leancode.patrol.contracts.Contracts.Empty>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "markAppReady"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "markPatrolAppServiceReady"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
@@ -972,7 +972,7 @@ public final class NativeAutomatorGrpc {
         }
       }
     }
-    return getMarkAppReadyMethod;
+    return getMarkPatrolAppServiceReadyMethod;
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
@@ -1290,9 +1290,9 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void markAppReady(pl.leancode.patrol.contracts.Contracts.Empty request,
+    public void markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getMarkAppReadyMethod(), responseObserver);
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getMarkPatrolAppServiceReadyMethod(), responseObserver);
     }
 
     /**
@@ -1525,12 +1525,12 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.patrol.contracts.Contracts.Empty>(
                   this, METHODID_DEBUG)))
           .addMethod(
-            getMarkAppReadyMethod(),
+            getMarkPatrolAppServiceReadyMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 pl.leancode.patrol.contracts.Contracts.Empty,
                 pl.leancode.patrol.contracts.Contracts.Empty>(
-                  this, METHODID_MARK_APP_READY)))
+                  this, METHODID_MARK_PATROL_APP_SERVICE_READY)))
           .addMethod(
             getSubmitTestResultsMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1824,10 +1824,10 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void markAppReady(pl.leancode.patrol.contracts.Contracts.Empty request,
+    public void markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getMarkAppReadyMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getMarkPatrolAppServiceReadyMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -2093,9 +2093,9 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public pl.leancode.patrol.contracts.Contracts.Empty markAppReady(pl.leancode.patrol.contracts.Contracts.Empty request) {
+    public pl.leancode.patrol.contracts.Contracts.Empty markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getMarkAppReadyMethod(), getCallOptions(), request);
+          getChannel(), getMarkPatrolAppServiceReadyMethod(), getCallOptions(), request);
     }
 
     /**
@@ -2391,10 +2391,10 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> markAppReady(
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> markPatrolAppServiceReady(
         pl.leancode.patrol.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getMarkAppReadyMethod(), getCallOptions()), request);
+          getChannel().newCall(getMarkPatrolAppServiceReadyMethod(), getCallOptions()), request);
     }
 
     /**
@@ -2440,7 +2440,7 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_HANDLE_PERMISSION_DIALOG = 28;
   private static final int METHODID_SET_LOCATION_ACCURACY = 29;
   private static final int METHODID_DEBUG = 30;
-  private static final int METHODID_MARK_APP_READY = 31;
+  private static final int METHODID_MARK_PATROL_APP_SERVICE_READY = 31;
   private static final int METHODID_SUBMIT_TEST_RESULTS = 32;
 
   private static final class MethodHandlers<Req, Resp> implements
@@ -2584,8 +2584,8 @@ public final class NativeAutomatorGrpc {
           serviceImpl.debug((pl.leancode.patrol.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
           break;
-        case METHODID_MARK_APP_READY:
-          serviceImpl.markAppReady((pl.leancode.patrol.contracts.Contracts.Empty) request,
+        case METHODID_MARK_PATROL_APP_SERVICE_READY:
+          serviceImpl.markPatrolAppServiceReady((pl.leancode.patrol.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_SUBMIT_TEST_RESULTS:
@@ -2648,7 +2648,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getHandlePermissionDialogMethod())
               .addMethod(getSetLocationAccuracyMethod())
               .addMethod(getDebugMethod())
-              .addMethod(getMarkAppReadyMethod())
+              .addMethod(getMarkPatrolAppServiceReadyMethod())
               .addMethod(getSubmitTestResultsMethod())
               .build();
         }

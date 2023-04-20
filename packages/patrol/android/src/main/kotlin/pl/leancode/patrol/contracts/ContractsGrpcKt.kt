@@ -289,9 +289,9 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getDebugMethod()
 
-  public val markAppReadyMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
+  public val markPatrolAppServiceReadyMethod: MethodDescriptor<Contracts.Empty, Contracts.Empty>
     @JvmStatic
-    get() = NativeAutomatorGrpc.getMarkAppReadyMethod()
+    get() = NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod()
 
   public val submitTestResultsMethod:
       MethodDescriptor<Contracts.SubmitTestResultsRequest, Contracts.Empty>
@@ -972,10 +972,10 @@ public object NativeAutomatorGrpcKt {
      *
      * @return The single response from the server.
      */
-    public suspend fun markAppReady(request: Contracts.Empty, headers: Metadata = Metadata()):
-        Contracts.Empty = unaryRpc(
+    public suspend fun markPatrolAppServiceReady(request: Contracts.Empty, headers: Metadata =
+        Metadata()): Contracts.Empty = unaryRpc(
       channel,
-      NativeAutomatorGrpc.getMarkAppReadyMethod(),
+      NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod(),
       request,
       callOptions,
       headers
@@ -1455,7 +1455,7 @@ public object NativeAutomatorGrpcKt {
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.debug is unimplemented"))
 
     /**
-     * Returns the response to an RPC for patrol.NativeAutomator.markAppReady.
+     * Returns the response to an RPC for patrol.NativeAutomator.markPatrolAppServiceReady.
      *
      * If this method fails with a [StatusException], the RPC will fail with the corresponding
      * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
@@ -1465,8 +1465,9 @@ public object NativeAutomatorGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun markAppReady(request: Contracts.Empty): Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.markAppReady is unimplemented"))
+    public open suspend fun markPatrolAppServiceReady(request: Contracts.Empty): Contracts.Empty =
+        throw
+        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.markPatrolAppServiceReady is unimplemented"))
 
     /**
      * Returns the response to an RPC for patrol.NativeAutomator.submitTestResults.
@@ -1642,8 +1643,8 @@ public object NativeAutomatorGrpcKt {
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,
-      descriptor = NativeAutomatorGrpc.getMarkAppReadyMethod(),
-      implementation = ::markAppReady
+      descriptor = NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod(),
+      implementation = ::markPatrolAppServiceReady
     ))
       .addMethod(unaryServerMethodDefinition(
       context = this.context,

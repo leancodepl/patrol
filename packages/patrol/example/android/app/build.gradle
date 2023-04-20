@@ -28,7 +28,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 android {
     compileSdk 33
 
-    namespace "pl.leancode.patrol.example"
+    def ns = "pl.leancode.patrol.example"
+    namespace = ns
 
     kotlinOptions {
         jvmTarget = "1.8"
@@ -39,13 +40,14 @@ android {
     }
 
     defaultConfig {
-        applicationId "pl.leancode.patrol.example"
+        def appId = "pl.leancode.patrol.example"
+        applicationId appId
         minSdk 26
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: "true"
+        testInstrumentationRunnerArguments clearPackageData: "true", "packageName": ns
     }
 
     buildTypes {

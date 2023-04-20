@@ -730,39 +730,10 @@ class NativeAutomator {
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
-  Future<void> markAppReady() async {
-    // FIXME: Rename to markPatrolAppServiceReady
+  Future<void> markPatrolAppServiceReady() async {
     await _wrapRequest(
-      'markAppReady',
-      () => _client.markAppReady(Empty()),
+      'markPatrolAppServiceReady',
+      () => _client.markPatrolAppServiceReady(Empty()),
     );
   }
-
-  // FIXME: Remove
-  // /// Submits test results to the native test runner.
-  // ///
-  // /// Virtual test cases are created for each key in [results] and the value is
-  // /// used as the test result.
-  // @internal
-  // Future<void> submitTestResults(Map<String, String> results) async {
-  //   await _wrapRequest(
-  //     'submitTestResults',
-  //     () => _client.submitTestResults(
-  //       SubmitTestResultsRequest(results: results),
-  //     ),
-  //   );
-  // }
-
-  // FIXME: Remove
-  // /// Sets the Dart test group to be run by the native test runner.
-  // ///
-  // /// Virtual test cases are created on the native side to reproduce the
-  // /// hierarchy of Dart tests
-  // @internal
-  // Future<void> setDartTests(DartTestGroup topLevelGroup) async {
-  //   await _wrapRequest(
-  //     'setDartTests',
-  //     () => _client.setDartTests(SetDartTestsRequest(group: topLevelGroup)),
-  //   );
-  // }
 }

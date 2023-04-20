@@ -53,14 +53,15 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      print(
-        'PatrolBinding.tearDown() called, results count: ${results.length}, results: $results',
-      );
-
       final individualTestName = Invoker.current!.liveTest.individualName;
       final isTestExplorer = individualTestName == 'patrol_test_explorer';
       if (isTestExplorer) {
+        print('PatrolBinding.tearDown() called on test explorer, skipping');
         return;
+      } else {
+        print(
+          'PatrolBinding.tearDown() called, count: ${results.length}, results: $results',
+        );
       }
 
       print(

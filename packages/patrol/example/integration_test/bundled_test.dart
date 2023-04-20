@@ -63,7 +63,7 @@ Future<void> main() async {
 
   // Until now, the PatrolJUnit runner was waiting for us (the Dart side) to
   // come alive. Now that we did, let's share this information with it.
-  await nativeAutomator.markAppReady();
+  await nativeAutomator.markPatrolAppServiceReady();
 }
 
 /// Prints test entry.

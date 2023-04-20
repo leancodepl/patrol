@@ -95,8 +95,9 @@ void patrolTest(
         final parentGroupName = fullParentGroupName.split(' ').last;
         print('patrolTest(): parentGroupName: $parentGroupName');
 
-        await patrolBinding.patrolAppService
-            .waitUntilRunRequested(parentGroupName);
+        print('patrolTest(): test $parentGroupName registered and waiting');
+        await patrolBinding.patrolAppService.waitForRunRequest(parentGroupName);
+        print('patrolTest(): test $parentGroupName received run request');
       }
 
       // await nativeAutomator?.configure(); // Move to bundled_test.dart
