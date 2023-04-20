@@ -1,6 +1,5 @@
 package pl.leancode.patrol.example;
 
-import android.os.SystemClock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -11,17 +10,16 @@ import pl.leancode.patrol.PatrolJUnitRunner;
 
 import java.util.Arrays;
 
+import static pl.leancode.patrol.contracts.Contracts.DartTestGroup;
+
 @RunWith(Parameterized.class)
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
-        PatrolJUnitRunner.setUp();
+        DartTestGroup dartTestGroup = PatrolJUnitRunner.setUp();
 
-//        Logger.INSTANCE.i("Test cases requested, value from app: " + PatrolJUnitRunner.valueFromApp);
-//        Logger.INSTANCE.i("Got DartTestGroup: " + PatrolJUnitRunner.dartTestGroup);
-
-        Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(PatrolJUnitRunner.dartTestGroup).toArray();
-        Logger.INSTANCE.i("Got Dart test files: " + Arrays.toString(dartTestFiles));
+        Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(dartTestGroup).toArray();
+        Logger.INSTANCE.i("MainActivityTest.testCases(): Got Dart test files: " + Arrays.toString(dartTestFiles));
         return dartTestFiles;
     }
 
@@ -34,14 +32,9 @@ public class MainActivityTest {
     @Test
     public void runDartTest() {
         Logger.INSTANCE.i("MainActivityTest.runDartTest(): " + dartTestName);
-        PatrolJUnitRunner.runDartTest(dartTestName);
 
-        if (dartTestName.equals("permissions_test.dart")) {
-            // Demo to show that time is reported correctly in test results
+        PatrolJUnitRunner.setUp(); // Debugging: why is this failing, while it works in testCases()???
 
-            SystemClock.sleep(3 * 1000);
-        }
-
-        // PatrolAppService.getDartTestResults()
+        PatrolJUnitRunner.runDartTest(dartTestName); // Run a test and wait for it to finish
     }
 }

@@ -45,8 +45,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-        // testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: "true", exampleArg: "example value"
+        testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
     buildTypes {

@@ -8,43 +8,37 @@ import androidx.test.runner.AndroidJUnitRunner;
 import io.grpc.StatusRuntimeException;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
-    public static String valueFromApp;
-    public static DartTestGroup dartTestGroup;
-
     private static PatrolAppServiceClient patrolAppServiceClient;
 
     @Override
     public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
 
-        // TODO: Get Dart tests only if listTestsForOrchestrator is true
+        // We override onCreate(), because we need to gather the Dart tests before the tests are run.
 
-        // This is a demo showing how arguments can be passed from Gradle
-        String exampleArg = arguments.getString("exampleArg");
 
         // This is only true when the Orchestrator requests a list of tests from the app during the initial run.
-        String listTestsForOrchestrator = arguments.getString("listTestsForOrchestrator");
+        String initialRun = arguments.getString("listTestsForOrchestrator");
         Logger.INSTANCE.i("--------------------------------");
-        Logger.INSTANCE.i("PatrolJUnitRunner onCreate, exampleArg: " + exampleArg + ", listTestsForOrchestrator: " + listTestsForOrchestrator);
+        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate()" + (Objects.equals(initialRun, "true") ? "initial run" : ""));
 
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+
+        // This is defined in the "patrol" section in pubspec.yaml
+        String packageName = InstrumentationRegistry.getArguments().getString("PATROL_APP_PACKAGE_NAME"); // TODO: applicationID != package name, will break when using flavors
+        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate(): packageName: " + packageName);
 
         // This code is based on ActivityTestRule#launchActivity.
         // It's simpler because we don't feel the need for that much synchronization as in ActivityTestRule.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClassName(instrumentation.getTargetContext(), "pl.leancode.patrol.example.MainActivity"); // FIXME: hardcoded package name
+        intent.setClassName(instrumentation.getTargetContext(), packageName + ".MainActivity"); // TODO: Some users may want to customize it
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         instrumentation.getContext().startActivity(intent);
-
-        // SystemClock.sleep(5 * 1000); // Make sure the app has started
-
-        // This is a demo that the PatrolJUnitRunner can set values of its own static members, and these values will
-        // be later picked up by the static method generating parametrized test cases in MainActivityTest.java.
-        valueFromApp = "hello! this is from app";
 
         // PatrolServer starts the NativeAutomator service
         PatrolServer patrolServer = new PatrolServer();
@@ -54,41 +48,33 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     }
 
     /// Sets PatrolJUnitRunner.dartTestGroup if this is the initial test run.
-    public static void setUp() {
+    public static DartTestGroup setUp() {
+        Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): waiting for PatrolAppService to report its readiness...");
         try {
-            Logger.INSTANCE.i("Before waiting for appReadyFuture");
             PatrolServer.Companion.getAppReadyFuture().get();
-            Logger.INSTANCE.i("After waiting for appReadyFuture");
         } catch (InterruptedException | ExecutionException e) {
             Logger.INSTANCE.e("Exception was thrown when waiting for appReady: ", e);
             throw new RuntimeException(e);
         }
 
-        dartTestGroup = findDartTests();
+        Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): PatrolAppService is ready, will ask it for Dart tests...");
+
+
+        try {
+            return patrolAppServiceClient.listDartTests();
+        } catch (StatusRuntimeException e) {
+            Logger.INSTANCE.e("PatrolJUnitRunner.setUp(): failed to list dart tests");
+            throw e;
+        }
     }
 
     public static void runDartTest(String name) {
+        Logger.INSTANCE.i("PatrolJUnitRunner.runDartTest(" + name + ")");
         try {
             patrolAppServiceClient.runDartTest(name);
         } catch (StatusRuntimeException e) {
             Logger.INSTANCE.e("Failed to run Dart test: " + e.getMessage(), e.getCause());
             throw e;
         }
-    }
-
-    private static DartTestGroup findDartTests() {
-        DartTestGroup group;
-        while (true) {
-            try {
-                Thread.sleep(1000);
-                group = patrolAppServiceClient.listDartTests();
-                break;
-            } catch (Exception e) {
-                // TODO: Catch the specific exception type
-                Logger.INSTANCE.e("Failed to connect to PatrolAppService: " + e.getMessage(), e.getCause());
-            }
-        }
-
-        return group;
     }
 }
