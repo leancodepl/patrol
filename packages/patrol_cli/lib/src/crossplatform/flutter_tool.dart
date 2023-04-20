@@ -37,6 +37,7 @@ class FlutterTool {
         ...['flutter', 'attach'],
         '--no-version-check',
         '--debug',
+        ...['--device-id', deviceId],
         if (appId != null) ...['--app-id', appId],
         ...['--target', target],
         for (final dartDefine in dartDefines.entries) ...[
