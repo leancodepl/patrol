@@ -1,3 +1,8 @@
+## 1.1.7
+
+- Fix `patrol develop` not attaching to the app on the other-than-first attached
+  device (#1210)
+
 ## 1.1.6
 
 - Default to "Yes" when asking for telemetry (#1201)
