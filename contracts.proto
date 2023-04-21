@@ -71,9 +71,6 @@ service NativeAutomator {
   // other
   rpc debug(Empty) returns (Empty) {}
   rpc markPatrolAppServiceReady(Empty) returns (Empty) {}
-
-  // iOS 
-  rpc submitTestResults(SubmitTestResultsRequest) returns (Empty) {}
 }
 
 message ConfigureRequest {
