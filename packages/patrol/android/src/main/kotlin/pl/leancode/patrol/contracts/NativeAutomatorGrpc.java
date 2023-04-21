@@ -975,36 +975,6 @@ public final class NativeAutomatorGrpc {
     return getMarkPatrolAppServiceReadyMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
-      pl.leancode.patrol.contracts.Contracts.Empty> getSubmitTestResultsMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "submitTestResults",
-      requestType = pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest.class,
-      responseType = pl.leancode.patrol.contracts.Contracts.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
-      pl.leancode.patrol.contracts.Contracts.Empty> getSubmitTestResultsMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest, pl.leancode.patrol.contracts.Contracts.Empty> getSubmitTestResultsMethod;
-    if ((getSubmitTestResultsMethod = NativeAutomatorGrpc.getSubmitTestResultsMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getSubmitTestResultsMethod = NativeAutomatorGrpc.getSubmitTestResultsMethod) == null) {
-          NativeAutomatorGrpc.getSubmitTestResultsMethod = getSubmitTestResultsMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest, pl.leancode.patrol.contracts.Contracts.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "submitTestResults"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .build();
-        }
-      }
-    }
-    return getSubmitTestResultsMethod;
-  }
-
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -1295,16 +1265,6 @@ public final class NativeAutomatorGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getMarkPatrolAppServiceReadyMethod(), responseObserver);
     }
 
-    /**
-     * <pre>
-     * iOS 
-     * </pre>
-     */
-    public void submitTestResults(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSubmitTestResultsMethod(), responseObserver);
-    }
-
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -1531,13 +1491,6 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.patrol.contracts.Contracts.Empty,
                 pl.leancode.patrol.contracts.Contracts.Empty>(
                   this, METHODID_MARK_PATROL_APP_SERVICE_READY)))
-          .addMethod(
-            getSubmitTestResultsMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest,
-                pl.leancode.patrol.contracts.Contracts.Empty>(
-                  this, METHODID_SUBMIT_TEST_RESULTS)))
           .build();
     }
   }
@@ -1829,17 +1782,6 @@ public final class NativeAutomatorGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getMarkPatrolAppServiceReadyMethod(), getCallOptions()), request, responseObserver);
     }
-
-    /**
-     * <pre>
-     * iOS 
-     * </pre>
-     */
-    public void submitTestResults(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getSubmitTestResultsMethod(), getCallOptions()), request, responseObserver);
-    }
   }
 
   /**
@@ -2096,16 +2038,6 @@ public final class NativeAutomatorGrpc {
     public pl.leancode.patrol.contracts.Contracts.Empty markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getMarkPatrolAppServiceReadyMethod(), getCallOptions(), request);
-    }
-
-    /**
-     * <pre>
-     * iOS 
-     * </pre>
-     */
-    public pl.leancode.patrol.contracts.Contracts.Empty submitTestResults(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getSubmitTestResultsMethod(), getCallOptions(), request);
     }
   }
 
@@ -2396,17 +2328,6 @@ public final class NativeAutomatorGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getMarkPatrolAppServiceReadyMethod(), getCallOptions()), request);
     }
-
-    /**
-     * <pre>
-     * iOS 
-     * </pre>
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> submitTestResults(
-        pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getSubmitTestResultsMethod(), getCallOptions()), request);
-    }
   }
 
   private static final int METHODID_CONFIGURE = 0;
@@ -2441,7 +2362,6 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_SET_LOCATION_ACCURACY = 29;
   private static final int METHODID_DEBUG = 30;
   private static final int METHODID_MARK_PATROL_APP_SERVICE_READY = 31;
-  private static final int METHODID_SUBMIT_TEST_RESULTS = 32;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2588,10 +2508,6 @@ public final class NativeAutomatorGrpc {
           serviceImpl.markPatrolAppServiceReady((pl.leancode.patrol.contracts.Contracts.Empty) request,
               (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
           break;
-        case METHODID_SUBMIT_TEST_RESULTS:
-          serviceImpl.submitTestResults((pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
-          break;
         default:
           throw new AssertionError();
       }
@@ -2649,7 +2565,6 @@ public final class NativeAutomatorGrpc {
               .addMethod(getSetLocationAccuracyMethod())
               .addMethod(getDebugMethod())
               .addMethod(getMarkPatrolAppServiceReadyMethod())
-              .addMethod(getSubmitTestResultsMethod())
               .build();
         }
       }

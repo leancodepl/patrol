@@ -439,11 +439,6 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     _ request: Patrol_Empty,
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
-
-  func submitTestResults(
-    _ request: Patrol_SubmitTestResultsRequest,
-    callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty>
 }
 
 extension Patrol_NativeAutomatorClientProtocol {
@@ -1026,24 +1021,6 @@ extension Patrol_NativeAutomatorClientProtocol {
       interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? []
     )
   }
-
-  /// iOS 
-  ///
-  /// - Parameters:
-  ///   - request: Request to send to submitTestResults.
-  ///   - callOptions: Call options.
-  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func submitTestResults(
-    _ request: Patrol_SubmitTestResultsRequest,
-    callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty> {
-    return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
-    )
-  }
 }
 
 #if compiler(>=5.6)
@@ -1270,11 +1247,6 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     _ request: Patrol_Empty,
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
-
-  func makeSubmitTestResultsCall(
-    _ request: Patrol_SubmitTestResultsRequest,
-    callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty>
 }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -1670,18 +1642,6 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? []
     )
   }
-
-  internal func makeSubmitTestResultsCall(
-    _ request: Patrol_SubmitTestResultsRequest,
-    callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty> {
-    return self.makeAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
-    )
-  }
 }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -2069,18 +2029,6 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? []
     )
   }
-
-  internal func submitTestResults(
-    _ request: Patrol_SubmitTestResultsRequest,
-    callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
-    return try await self.performAsyncUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
-      request: request,
-      callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
-    )
-  }
 }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -2199,9 +2147,6 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
 
   /// - Returns: Interceptors to use when invoking 'markPatrolAppServiceReady'.
   func makemarkPatrolAppServiceReadyInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when invoking 'submitTestResults'.
-  func makesubmitTestResultsInterceptors() -> [ClientInterceptor<Patrol_SubmitTestResultsRequest, Patrol_Empty>]
 }
 
 internal enum Patrol_NativeAutomatorClientMetadata {
@@ -2241,7 +2186,6 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorClientMetadata.Methods.debug,
       Patrol_NativeAutomatorClientMetadata.Methods.markPatrolAppServiceReady,
-      Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults,
     ]
   )
 
@@ -2435,12 +2379,6 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     internal static let markPatrolAppServiceReady = GRPCMethodDescriptor(
       name: "markPatrolAppServiceReady",
       path: "/patrol.NativeAutomator/markPatrolAppServiceReady",
-      type: GRPCCallType.unary
-    )
-
-    internal static let submitTestResults = GRPCMethodDescriptor(
-      name: "submitTestResults",
-      path: "/patrol.NativeAutomator/submitTestResults",
       type: GRPCCallType.unary
     )
   }
@@ -2663,9 +2601,6 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   func debug(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
   func markPatrolAppServiceReady(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
-
-  /// iOS 
-  func submitTestResults(request: Patrol_SubmitTestResultsRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 }
 
 extension Patrol_NativeAutomatorProvider {
@@ -2968,15 +2903,6 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.markPatrolAppServiceReady(request:context:)
       )
 
-    case "submitTestResults":
-      return UnaryServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_SubmitTestResultsRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? [],
-        userFunction: self.submitTestResults(request:context:)
-      )
-
     default:
       return nil
     }
@@ -3154,12 +3080,6 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider {
 
   @Sendable func markPatrolAppServiceReady(
     request: Patrol_Empty,
-    context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
-
-  /// iOS 
-  @Sendable func submitTestResults(
-    request: Patrol_SubmitTestResultsRequest,
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 }
@@ -3471,15 +3391,6 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: self.markPatrolAppServiceReady(request:context:)
       )
 
-    case "submitTestResults":
-      return GRPCAsyncServerHandler(
-        context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_SubmitTestResultsRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? [],
-        wrapping: self.submitTestResults(request:context:)
-      )
-
     default:
       return nil
     }
@@ -3617,10 +3528,6 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   /// - Returns: Interceptors to use when handling 'markPatrolAppServiceReady'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makemarkPatrolAppServiceReadyInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
-
-  /// - Returns: Interceptors to use when handling 'submitTestResults'.
-  ///   Defaults to calling `self.makeInterceptors()`.
-  func makesubmitTestResultsInterceptors() -> [ServerInterceptor<Patrol_SubmitTestResultsRequest, Patrol_Empty>]
 }
 
 internal enum Patrol_NativeAutomatorServerMetadata {
@@ -3660,7 +3567,6 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorServerMetadata.Methods.debug,
       Patrol_NativeAutomatorServerMetadata.Methods.markPatrolAppServiceReady,
-      Patrol_NativeAutomatorServerMetadata.Methods.submitTestResults,
     ]
   )
 
@@ -3854,12 +3760,6 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let markPatrolAppServiceReady = GRPCMethodDescriptor(
       name: "markPatrolAppServiceReady",
       path: "/patrol.NativeAutomator/markPatrolAppServiceReady",
-      type: GRPCCallType.unary
-    )
-
-    internal static let submitTestResults = GRPCMethodDescriptor(
-      name: "submitTestResults",
-      path: "/patrol.NativeAutomator/submitTestResults",
       type: GRPCCallType.unary
     )
   }

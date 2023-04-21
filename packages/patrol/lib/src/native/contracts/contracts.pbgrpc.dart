@@ -223,11 +223,6 @@ class NativeAutomatorClient extends $grpc.Client {
           '/patrol.NativeAutomator/markPatrolAppServiceReady',
           ($0.Empty value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$submitTestResults =
-      $grpc.ClientMethod<$0.SubmitTestResultsRequest, $0.Empty>(
-          '/patrol.NativeAutomator/submitTestResults',
-          ($0.SubmitTestResultsRequest value) => value.writeToBuffer(),
-          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
 
   NativeAutomatorClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -403,12 +398,6 @@ class NativeAutomatorClient extends $grpc.Client {
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$markPatrolAppServiceReady, request,
         options: options);
-  }
-
-  $grpc.ResponseFuture<$0.Empty> submitTestResults(
-      $0.SubmitTestResultsRequest request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$submitTestResults, request, options: options);
   }
 }
 
@@ -650,14 +639,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.SubmitTestResultsRequest, $0.Empty>(
-        'submitTestResults',
-        submitTestResults_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.SubmitTestResultsRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.Empty> configure_Pre($grpc.ServiceCall call,
@@ -823,11 +804,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return markPatrolAppServiceReady(call, await request);
   }
 
-  $async.Future<$0.Empty> submitTestResults_Pre($grpc.ServiceCall call,
-      $async.Future<$0.SubmitTestResultsRequest> request) async {
-    return submitTestResults(call, await request);
-  }
-
   $async.Future<$0.Empty> configure(
       $grpc.ServiceCall call, $0.ConfigureRequest request);
   $async.Future<$0.Empty> pressHome($grpc.ServiceCall call, $0.Empty request);
@@ -886,6 +862,4 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> debug($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> markPatrolAppServiceReady(
       $grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$0.Empty> submitTestResults(
-      $grpc.ServiceCall call, $0.SubmitTestResultsRequest request);
 }

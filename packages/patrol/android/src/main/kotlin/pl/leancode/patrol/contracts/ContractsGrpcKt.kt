@@ -293,11 +293,6 @@ public object NativeAutomatorGrpcKt {
     @JvmStatic
     get() = NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod()
 
-  public val submitTestResultsMethod:
-      MethodDescriptor<Contracts.SubmitTestResultsRequest, Contracts.Empty>
-    @JvmStatic
-    get() = NativeAutomatorGrpc.getSubmitTestResultsMethod()
-
   /**
    * A stub for issuing RPCs to a(n) patrol.NativeAutomator service as suspending coroutines.
    */
@@ -980,27 +975,6 @@ public object NativeAutomatorGrpcKt {
       callOptions,
       headers
     )
-
-    /**
-     * Executes this RPC and returns the response message, suspending until the RPC completes
-     * with [`Status.OK`][Status].  If the RPC completes with another status, a corresponding
-     * [StatusException] is thrown.  If this coroutine is cancelled, the RPC is also cancelled
-     * with the corresponding exception as a cause.
-     *
-     * @param request The request message to send to the server.
-     *
-     * @param headers Metadata to attach to the request.  Most users will not need this.
-     *
-     * @return The single response from the server.
-     */
-    public suspend fun submitTestResults(request: Contracts.SubmitTestResultsRequest,
-        headers: Metadata = Metadata()): Contracts.Empty = unaryRpc(
-      channel,
-      NativeAutomatorGrpc.getSubmitTestResultsMethod(),
-      request,
-      callOptions,
-      headers
-    )
   }
 
   /**
@@ -1469,21 +1443,6 @@ public object NativeAutomatorGrpcKt {
         throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.markPatrolAppServiceReady is unimplemented"))
 
-    /**
-     * Returns the response to an RPC for patrol.NativeAutomator.submitTestResults.
-     *
-     * If this method fails with a [StatusException], the RPC will fail with the corresponding
-     * [Status].  If this method fails with a [java.util.concurrent.CancellationException], the RPC
-     * will fail
-     * with status `Status.CANCELLED`.  If this method fails for any other reason, the RPC will
-     * fail with `Status.UNKNOWN` with the exception as a cause.
-     *
-     * @param request The request from the client.
-     */
-    public open suspend fun submitTestResults(request: Contracts.SubmitTestResultsRequest):
-        Contracts.Empty = throw
-        StatusException(UNIMPLEMENTED.withDescription("Method patrol.NativeAutomator.submitTestResults is unimplemented"))
-
     public final override fun bindService(): ServerServiceDefinition =
         builder(NativeAutomatorGrpc.getServiceDescriptor())
       .addMethod(unaryServerMethodDefinition(
@@ -1645,11 +1604,6 @@ public object NativeAutomatorGrpcKt {
       context = this.context,
       descriptor = NativeAutomatorGrpc.getMarkPatrolAppServiceReadyMethod(),
       implementation = ::markPatrolAppServiceReady
-    ))
-      .addMethod(unaryServerMethodDefinition(
-      context = this.context,
-      descriptor = NativeAutomatorGrpc.getSubmitTestResultsMethod(),
-      implementation = ::submitTestResults
     )).build()
   }
 }
