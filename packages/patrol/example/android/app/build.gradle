@@ -25,11 +25,11 @@ apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def packageName = "pl.leancode.patrol.example"
+
 android {
     compileSdk 33
-
-    def ns = "pl.leancode.patrol.example"
-    namespace = ns
+    namespace = packageName
 
     kotlinOptions {
         jvmTarget = "1.8"
@@ -40,14 +40,13 @@ android {
     }
 
     defaultConfig {
-        def appId = "pl.leancode.patrol.example"
-        applicationId appId
+        applicationId packageName
         minSdk 26
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-        testInstrumentationRunnerArguments clearPackageData: "true", "packageName": ns
+        testInstrumentationRunnerArguments clearPackageData: "true", "packageName": packageName
     }
 
     buildTypes {
