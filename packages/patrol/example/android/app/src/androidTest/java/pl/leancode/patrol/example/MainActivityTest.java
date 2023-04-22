@@ -11,6 +11,7 @@ import pl.leancode.patrol.PatrolJUnitRunner;
 import java.util.Arrays;
 
 import static pl.leancode.patrol.contracts.Contracts.DartTestGroup;
+import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
@@ -32,6 +33,8 @@ public class MainActivityTest {
     @Test
     public void runDartTest() {
         Logger.INSTANCE.i("MainActivityTest.runDartTest(): " + dartTestName);
-        PatrolJUnitRunner.runDartTest(dartTestName); // Run a test and wait for it to finish
+
+        // Run a test and wait for it to finish. Throws AssertionError if the test fails.
+        PatrolJUnitRunner.runDartTest(dartTestName);
     }
 }

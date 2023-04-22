@@ -9,6 +9,23 @@
 import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
+class RunDartTestResponse_Result extends $pb.ProtobufEnum {
+  static const RunDartTestResponse_Result SUCCESS = RunDartTestResponse_Result._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'SUCCESS');
+  static const RunDartTestResponse_Result SKIPPED = RunDartTestResponse_Result._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'SKIPPED');
+  static const RunDartTestResponse_Result FAILURE = RunDartTestResponse_Result._(2, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'FAILURE');
+
+  static const $core.List<RunDartTestResponse_Result> values = <RunDartTestResponse_Result> [
+    SUCCESS,
+    SKIPPED,
+    FAILURE,
+  ];
+
+  static final $core.Map<$core.int, RunDartTestResponse_Result> _byValue = $pb.ProtobufEnum.initByValue(values);
+  static RunDartTestResponse_Result? valueOf($core.int value) => _byValue[value];
+
+  const RunDartTestResponse_Result._($core.int v, $core.String n) : super(v, n);
+}
+
 class HandlePermissionRequest_Code extends $pb.ProtobufEnum {
   static const HandlePermissionRequest_Code WHILE_USING = HandlePermissionRequest_Code._(0, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'WHILE_USING');
   static const HandlePermissionRequest_Code ONLY_THIS_TIME = HandlePermissionRequest_Code._(1, const $core.bool.fromEnvironment('protobuf.omit_enum_names') ? '' : 'ONLY_THIS_TIME');

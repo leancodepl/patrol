@@ -81,6 +81,62 @@ public struct Patrol_RunDartTestRequest {
   public init() {}
 }
 
+public struct Patrol_RunDartTestResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var result: Patrol_RunDartTestResponse.Result = .success
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum Result: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case success // = 0
+    case skipped // = 1
+    case failure // = 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .success
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .success
+      case 1: self = .skipped
+      case 2: self = .failure
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .success: return 0
+      case .skipped: return 1
+      case .failure: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
+
+  public init() {}
+}
+
+#if swift(>=4.2)
+
+extension Patrol_RunDartTestResponse.Result: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static var allCases: [Patrol_RunDartTestResponse.Result] = [
+    .success,
+    .skipped,
+    .failure,
+  ]
+}
+
+#endif  // swift(>=4.2)
+
 public struct Patrol_ConfigureRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -689,6 +745,8 @@ extension Patrol_ListDartTestsResponse: @unchecked Sendable {}
 extension Patrol_DartTestGroup: @unchecked Sendable {}
 extension Patrol_DartTestCase: @unchecked Sendable {}
 extension Patrol_RunDartTestRequest: @unchecked Sendable {}
+extension Patrol_RunDartTestResponse: @unchecked Sendable {}
+extension Patrol_RunDartTestResponse.Result: @unchecked Sendable {}
 extension Patrol_ConfigureRequest: @unchecked Sendable {}
 extension Patrol_OpenAppRequest: @unchecked Sendable {}
 extension Patrol_TapOnNotificationRequest: @unchecked Sendable {}
@@ -862,6 +920,46 @@ extension Patrol_RunDartTestRequest: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension Patrol_RunDartTestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RunDartTestResponse"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "result"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularEnumField(value: &self.result) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.result != .success {
+      try visitor.visitSingularEnumField(value: self.result, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_RunDartTestResponse, rhs: Patrol_RunDartTestResponse) -> Bool {
+    if lhs.result != rhs.result {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_RunDartTestResponse.Result: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "SUCCESS"),
+    1: .same(proto: "SKIPPED"),
+    2: .same(proto: "FAILURE"),
+  ]
 }
 
 extension Patrol_ConfigureRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

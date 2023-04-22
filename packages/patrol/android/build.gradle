@@ -52,7 +52,6 @@ android {
 
     defaultConfig {
         minSdk 19
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     dependencies {

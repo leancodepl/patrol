@@ -39,7 +39,8 @@ public object PatrolAppServiceGrpcKt {
     @JvmStatic
     get() = PatrolAppServiceGrpc.getListDartTestsMethod()
 
-  public val runDartTestMethod: MethodDescriptor<Contracts.RunDartTestRequest, Contracts.Empty>
+  public val runDartTestMethod:
+      MethodDescriptor<Contracts.RunDartTestRequest, Contracts.RunDartTestResponse>
     @JvmStatic
     get() = PatrolAppServiceGrpc.getRunDartTestMethod()
 
@@ -88,7 +89,7 @@ public object PatrolAppServiceGrpcKt {
      * @return The single response from the server.
      */
     public suspend fun runDartTest(request: Contracts.RunDartTestRequest, headers: Metadata =
-        Metadata()): Contracts.Empty = unaryRpc(
+        Metadata()): Contracts.RunDartTestResponse = unaryRpc(
       channel,
       PatrolAppServiceGrpc.getRunDartTestMethod(),
       request,
@@ -129,8 +130,8 @@ public object PatrolAppServiceGrpcKt {
      *
      * @param request The request from the client.
      */
-    public open suspend fun runDartTest(request: Contracts.RunDartTestRequest): Contracts.Empty =
-        throw
+    public open suspend fun runDartTest(request: Contracts.RunDartTestRequest):
+        Contracts.RunDartTestResponse = throw
         StatusException(UNIMPLEMENTED.withDescription("Method patrol.PatrolAppService.runDartTest is unimplemented"))
 
     public final override fun bindService(): ServerServiceDefinition =

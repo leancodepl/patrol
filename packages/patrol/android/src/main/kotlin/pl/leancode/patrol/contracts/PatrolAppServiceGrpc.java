@@ -46,28 +46,28 @@ public final class PatrolAppServiceGrpc {
   }
 
   private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest,
-      pl.leancode.patrol.contracts.Contracts.Empty> getRunDartTestMethod;
+      pl.leancode.patrol.contracts.Contracts.RunDartTestResponse> getRunDartTestMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "runDartTest",
       requestType = pl.leancode.patrol.contracts.Contracts.RunDartTestRequest.class,
-      responseType = pl.leancode.patrol.contracts.Contracts.Empty.class,
+      responseType = pl.leancode.patrol.contracts.Contracts.RunDartTestResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest,
-      pl.leancode.patrol.contracts.Contracts.Empty> getRunDartTestMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest, pl.leancode.patrol.contracts.Contracts.Empty> getRunDartTestMethod;
+      pl.leancode.patrol.contracts.Contracts.RunDartTestResponse> getRunDartTestMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest, pl.leancode.patrol.contracts.Contracts.RunDartTestResponse> getRunDartTestMethod;
     if ((getRunDartTestMethod = PatrolAppServiceGrpc.getRunDartTestMethod) == null) {
       synchronized (PatrolAppServiceGrpc.class) {
         if ((getRunDartTestMethod = PatrolAppServiceGrpc.getRunDartTestMethod) == null) {
           PatrolAppServiceGrpc.getRunDartTestMethod = getRunDartTestMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest, pl.leancode.patrol.contracts.Contracts.Empty>newBuilder()
+              io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.RunDartTestRequest, pl.leancode.patrol.contracts.Contracts.RunDartTestResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "runDartTest"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
                   pl.leancode.patrol.contracts.Contracts.RunDartTestRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
+                  pl.leancode.patrol.contracts.Contracts.RunDartTestResponse.getDefaultInstance()))
               .build();
         }
       }
@@ -133,7 +133,7 @@ public final class PatrolAppServiceGrpc {
     /**
      */
     public void runDartTest(pl.leancode.patrol.contracts.Contracts.RunDartTestRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
+        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.RunDartTestResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getRunDartTestMethod(), responseObserver);
     }
 
@@ -151,7 +151,7 @@ public final class PatrolAppServiceGrpc {
             io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
                 pl.leancode.patrol.contracts.Contracts.RunDartTestRequest,
-                pl.leancode.patrol.contracts.Contracts.Empty>(
+                pl.leancode.patrol.contracts.Contracts.RunDartTestResponse>(
                   this, METHODID_RUN_DART_TEST)))
           .build();
     }
@@ -182,7 +182,7 @@ public final class PatrolAppServiceGrpc {
     /**
      */
     public void runDartTest(pl.leancode.patrol.contracts.Contracts.RunDartTestRequest request,
-        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
+        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.RunDartTestResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getRunDartTestMethod(), getCallOptions()), request, responseObserver);
     }
@@ -211,7 +211,7 @@ public final class PatrolAppServiceGrpc {
 
     /**
      */
-    public pl.leancode.patrol.contracts.Contracts.Empty runDartTest(pl.leancode.patrol.contracts.Contracts.RunDartTestRequest request) {
+    public pl.leancode.patrol.contracts.Contracts.RunDartTestResponse runDartTest(pl.leancode.patrol.contracts.Contracts.RunDartTestRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getRunDartTestMethod(), getCallOptions(), request);
     }
@@ -241,7 +241,7 @@ public final class PatrolAppServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> runDartTest(
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.RunDartTestResponse> runDartTest(
         pl.leancode.patrol.contracts.Contracts.RunDartTestRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getRunDartTestMethod(), getCallOptions()), request);
@@ -274,7 +274,7 @@ public final class PatrolAppServiceGrpc {
           break;
         case METHODID_RUN_DART_TEST:
           serviceImpl.runDartTest((pl.leancode.patrol.contracts.Contracts.RunDartTestRequest) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
+              (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.RunDartTestResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();

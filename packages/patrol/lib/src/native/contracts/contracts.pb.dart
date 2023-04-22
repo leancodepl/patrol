@@ -220,6 +220,53 @@ class RunDartTestRequest extends $pb.GeneratedMessage {
   void clearName() => clearField(1);
 }
 
+class RunDartTestResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RunDartTestResponse', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
+    ..e<RunDartTestResponse_Result>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'result', $pb.PbFieldType.OE, defaultOrMaker: RunDartTestResponse_Result.SUCCESS, valueOf: RunDartTestResponse_Result.valueOf, enumValues: RunDartTestResponse_Result.values)
+    ..hasRequiredFields = false
+  ;
+
+  RunDartTestResponse._() : super();
+  factory RunDartTestResponse({
+    RunDartTestResponse_Result? result,
+  }) {
+    final _result = create();
+    if (result != null) {
+      _result.result = result;
+    }
+    return _result;
+  }
+  factory RunDartTestResponse.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory RunDartTestResponse.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  RunDartTestResponse clone() => RunDartTestResponse()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  RunDartTestResponse copyWith(void Function(RunDartTestResponse) updates) => super.copyWith((message) => updates(message as RunDartTestResponse)) as RunDartTestResponse; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static RunDartTestResponse create() => RunDartTestResponse._();
+  RunDartTestResponse createEmptyInstance() => create();
+  static $pb.PbList<RunDartTestResponse> createRepeated() => $pb.PbList<RunDartTestResponse>();
+  @$core.pragma('dart2js:noInline')
+  static RunDartTestResponse getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<RunDartTestResponse>(create);
+  static RunDartTestResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  RunDartTestResponse_Result get result => $_getN(0);
+  @$pb.TagNumber(1)
+  set result(RunDartTestResponse_Result v) { setField(1, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasResult() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearResult() => clearField(1);
+}
+
 class ConfigureRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'ConfigureRequest', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
     ..a<$fixnum.Int64>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'findTimeoutMillis', $pb.PbFieldType.OU6, protoName: 'findTimeoutMillis', defaultOrMaker: $fixnum.Int64.ZERO)

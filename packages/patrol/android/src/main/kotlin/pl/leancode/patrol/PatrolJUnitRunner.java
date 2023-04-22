@@ -11,6 +11,8 @@ import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
+
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     private static PatrolAppServiceClient patrolAppServiceClient;
 
@@ -73,10 +75,14 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    public static void runDartTest(String name) {
+    public static RunDartTestResponse runDartTest(String name) {
         Logger.INSTANCE.i("PatrolJUnitRunner.runDartTest(" + name + ")");
         try {
-            patrolAppServiceClient.runDartTest(name);
+            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+            if (response.getResult() == RunDartTestResponse.Result.FAILURE) {
+                throw new AssertionError("Dart test failed: " + name);
+            }
+            return response;
         } catch (StatusRuntimeException e) {
             Logger.INSTANCE.e("Failed to run Dart test: " + e.getMessage(), e.getCause());
             throw e;

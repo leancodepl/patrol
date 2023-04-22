@@ -50,6 +50,27 @@ const RunDartTestRequest$json = const {
 
 /// Descriptor for `RunDartTestRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List runDartTestRequestDescriptor = $convert.base64Decode('ChJSdW5EYXJ0VGVzdFJlcXVlc3QSEgoEbmFtZRgBIAEoCVIEbmFtZQ==');
+@$core.Deprecated('Use runDartTestResponseDescriptor instead')
+const RunDartTestResponse$json = const {
+  '1': 'RunDartTestResponse',
+  '2': const [
+    const {'1': 'result', '3': 1, '4': 1, '5': 14, '6': '.patrol.RunDartTestResponse.Result', '10': 'result'},
+  ],
+  '4': const [RunDartTestResponse_Result$json],
+};
+
+@$core.Deprecated('Use runDartTestResponseDescriptor instead')
+const RunDartTestResponse_Result$json = const {
+  '1': 'Result',
+  '2': const [
+    const {'1': 'SUCCESS', '2': 0},
+    const {'1': 'SKIPPED', '2': 1},
+    const {'1': 'FAILURE', '2': 2},
+  ],
+};
+
+/// Descriptor for `RunDartTestResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List runDartTestResponseDescriptor = $convert.base64Decode('ChNSdW5EYXJ0VGVzdFJlc3BvbnNlEjoKBnJlc3VsdBgBIAEoDjIiLnBhdHJvbC5SdW5EYXJ0VGVzdFJlc3BvbnNlLlJlc3VsdFIGcmVzdWx0Ii8KBlJlc3VsdBILCgdTVUNDRVNTEAASCwoHU0tJUFBFRBABEgsKB0ZBSUxVUkUQAg==');
 @$core.Deprecated('Use configureRequestDescriptor instead')
 const ConfigureRequest$json = const {
   '1': 'ConfigureRequest',

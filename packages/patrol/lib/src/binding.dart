@@ -79,14 +79,23 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       }
 
       // FIXME: Probably too strict assumption (see also common.dart)
-      final fullParentGroupName = Invoker.current!.liveTest.groups.last.name;
+      final liveTest = Invoker.current!.liveTest;
+      final fullParentGroupName = liveTest.groups.last.name;
       final groupName = fullParentGroupName.split(' ').last;
-
-      print('PatrolBinding.tearDown() for test $testName in group $groupName');
 
       final nameOfRequestedTest = await patrolAppService.nameFuture;
       if (nameOfRequestedTest == groupName) {
-        await patrolAppService.markDartTestAsCompleted(groupName);
+        final passed = liveTest.state.result.isPassing;
+        final errors = liveTest.errors;
+        for (final error in errors) {
+          print(
+            'PatrolBinding.tearDown() error: $error, st: ${error.stackTrace}',
+          );
+        }
+        print(
+          'PatrolBinding.tearDown() for test "$testName" in group "$groupName", passed: $passed',
+        );
+        await patrolAppService.markDartTestAsCompleted(groupName, passed);
       }
 
       // FIXME: Report the results back to the native side. Dilemma: long method for whole test or a callback?

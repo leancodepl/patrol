@@ -21,10 +21,11 @@ class PatrolAppServiceClient extends $grpc.Client {
           ($core.List<$core.int> value) =>
               $0.ListDartTestsResponse.fromBuffer(value));
   static final _$runDartTest =
-      $grpc.ClientMethod<$0.RunDartTestRequest, $0.Empty>(
+      $grpc.ClientMethod<$0.RunDartTestRequest, $0.RunDartTestResponse>(
           '/patrol.PatrolAppService/runDartTest',
           ($0.RunDartTestRequest value) => value.writeToBuffer(),
-          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+          ($core.List<$core.int> value) =>
+              $0.RunDartTestResponse.fromBuffer(value));
 
   PatrolAppServiceClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -36,7 +37,8 @@ class PatrolAppServiceClient extends $grpc.Client {
     return $createUnaryCall(_$listDartTests, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.Empty> runDartTest($0.RunDartTestRequest request,
+  $grpc.ResponseFuture<$0.RunDartTestResponse> runDartTest(
+      $0.RunDartTestRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$runDartTest, request, options: options);
   }
@@ -53,14 +55,15 @@ abstract class PatrolAppServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.ListDartTestsResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.RunDartTestRequest, $0.Empty>(
-        'runDartTest',
-        runDartTest_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) =>
-            $0.RunDartTestRequest.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod(
+        $grpc.ServiceMethod<$0.RunDartTestRequest, $0.RunDartTestResponse>(
+            'runDartTest',
+            runDartTest_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $0.RunDartTestRequest.fromBuffer(value),
+            ($0.RunDartTestResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.ListDartTestsResponse> listDartTests_Pre(
@@ -68,14 +71,14 @@ abstract class PatrolAppServiceBase extends $grpc.Service {
     return listDartTests(call, await request);
   }
 
-  $async.Future<$0.Empty> runDartTest_Pre($grpc.ServiceCall call,
+  $async.Future<$0.RunDartTestResponse> runDartTest_Pre($grpc.ServiceCall call,
       $async.Future<$0.RunDartTestRequest> request) async {
     return runDartTest(call, await request);
   }
 
   $async.Future<$0.ListDartTestsResponse> listDartTests(
       $grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$0.Empty> runDartTest(
+  $async.Future<$0.RunDartTestResponse> runDartTest(
       $grpc.ServiceCall call, $0.RunDartTestRequest request);
 }
 

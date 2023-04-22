@@ -39,7 +39,7 @@ internal protocol Patrol_PatrolAppServiceClientProtocol: GRPCClient {
   func runDartTest(
     _ request: Patrol_RunDartTestRequest,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_RunDartTestRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse>
 }
 
 extension Patrol_PatrolAppServiceClientProtocol {
@@ -74,7 +74,7 @@ extension Patrol_PatrolAppServiceClientProtocol {
   internal func runDartTest(
     _ request: Patrol_RunDartTestRequest,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_RunDartTestRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse> {
     return self.makeUnaryCall(
       path: Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest.path,
       request: request,
@@ -157,7 +157,7 @@ internal protocol Patrol_PatrolAppServiceAsyncClientProtocol: GRPCClient {
   func makeRunDartTestCall(
     _ request: Patrol_RunDartTestRequest,
     callOptions: CallOptions?
-  ) -> GRPCAsyncUnaryCall<Patrol_RunDartTestRequest, Patrol_Empty>
+  ) -> GRPCAsyncUnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse>
 }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -185,7 +185,7 @@ extension Patrol_PatrolAppServiceAsyncClientProtocol {
   internal func makeRunDartTestCall(
     _ request: Patrol_RunDartTestRequest,
     callOptions: CallOptions? = nil
-  ) -> GRPCAsyncUnaryCall<Patrol_RunDartTestRequest, Patrol_Empty> {
+  ) -> GRPCAsyncUnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse> {
     return self.makeAsyncUnaryCall(
       path: Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest.path,
       request: request,
@@ -212,7 +212,7 @@ extension Patrol_PatrolAppServiceAsyncClientProtocol {
   internal func runDartTest(
     _ request: Patrol_RunDartTestRequest,
     callOptions: CallOptions? = nil
-  ) async throws -> Patrol_Empty {
+  ) async throws -> Patrol_RunDartTestResponse {
     return try await self.performAsyncUnaryCall(
       path: Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest.path,
       request: request,
@@ -247,7 +247,7 @@ internal protocol Patrol_PatrolAppServiceClientInterceptorFactoryProtocol: GRPCS
   func makelistDartTestsInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_ListDartTestsResponse>]
 
   /// - Returns: Interceptors to use when invoking 'runDartTest'.
-  func makerunDartTestInterceptors() -> [ClientInterceptor<Patrol_RunDartTestRequest, Patrol_Empty>]
+  func makerunDartTestInterceptors() -> [ClientInterceptor<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse>]
 }
 
 internal enum Patrol_PatrolAppServiceClientMetadata {
@@ -2390,7 +2390,7 @@ internal protocol Patrol_PatrolAppServiceProvider: CallHandlerProvider {
 
   func listDartTests(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_ListDartTestsResponse>
 
-  func runDartTest(request: Patrol_RunDartTestRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+  func runDartTest(request: Patrol_RunDartTestRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_RunDartTestResponse>
 }
 
 extension Patrol_PatrolAppServiceProvider {
@@ -2418,7 +2418,7 @@ extension Patrol_PatrolAppServiceProvider {
       return UnaryServerHandler(
         context: context,
         requestDeserializer: ProtobufDeserializer<Patrol_RunDartTestRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_RunDartTestResponse>(),
         interceptors: self.interceptors?.makerunDartTestInterceptors() ?? [],
         userFunction: self.runDartTest(request:context:)
       )
@@ -2445,7 +2445,7 @@ internal protocol Patrol_PatrolAppServiceAsyncProvider: CallHandlerProvider {
   @Sendable func runDartTest(
     request: Patrol_RunDartTestRequest,
     context: GRPCAsyncServerCallContext
-  ) async throws -> Patrol_Empty
+  ) async throws -> Patrol_RunDartTestResponse
 }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -2480,7 +2480,7 @@ extension Patrol_PatrolAppServiceAsyncProvider {
       return GRPCAsyncServerHandler(
         context: context,
         requestDeserializer: ProtobufDeserializer<Patrol_RunDartTestRequest>(),
-        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_RunDartTestResponse>(),
         interceptors: self.interceptors?.makerunDartTestInterceptors() ?? [],
         wrapping: self.runDartTest(request:context:)
       )
@@ -2501,7 +2501,7 @@ internal protocol Patrol_PatrolAppServiceServerInterceptorFactoryProtocol {
 
   /// - Returns: Interceptors to use when handling 'runDartTest'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makerunDartTestInterceptors() -> [ServerInterceptor<Patrol_RunDartTestRequest, Patrol_Empty>]
+  func makerunDartTestInterceptors() -> [ServerInterceptor<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse>]
 }
 
 internal enum Patrol_PatrolAppServiceServerMetadata {

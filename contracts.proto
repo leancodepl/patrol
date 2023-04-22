@@ -5,7 +5,7 @@ option java_package = "pl.leancode.patrol.contracts";
 
 service PatrolAppService {
   rpc listDartTests(Empty) returns (ListDartTestsResponse) {}
-  rpc runDartTest(RunDartTestRequest) returns (Empty) {} // TODO: Decide on error reporting
+  rpc runDartTest(RunDartTestRequest) returns (RunDartTestResponse) {}
 }
 
 message ListDartTestsResponse {
@@ -24,6 +24,16 @@ message DartTestCase {
 
 message RunDartTestRequest {
   string name = 1;
+}
+
+message RunDartTestResponse {
+  enum Result {
+    SUCCESS = 0;
+    SKIPPED = 1;
+    FAILURE = 2;
+  }
+
+  Result result = 1;
 }
 
 service NativeAutomator {

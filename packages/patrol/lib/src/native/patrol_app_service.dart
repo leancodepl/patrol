@@ -36,13 +36,18 @@ class PatrolAppService extends PatrolAppServiceBase {
   /// requested to be run.
   Future<String> get nameFuture => _nameCompleter.future;
 
-  final _runCompleter = Completer<void>();
+  final _runCompleter = Completer<bool>();
 
   /// A future that completes when the Dart test that was requested to be run
   /// finishes.
-  Future<void> get runFuture => _runCompleter.future;
+  ///
+  /// True means the test passed, false means it failed.
+  Future<bool> get runFuture => _runCompleter.future;
 
-  Future<void> markDartTestAsCompleted(String completedDartTestName) async {
+  Future<void> markDartTestAsCompleted(
+    String completedDartTestName,
+    bool passed,
+  ) async {
     print('PatrolAppService.markDartTestAsCompleted(): $completedDartTestName');
     assert(
       _nameCompleter.isCompleted,
@@ -56,7 +61,7 @@ class PatrolAppService extends PatrolAppServiceBase {
       'that was most recently requested to run was $requestedDartTestName',
     );
 
-    _runCompleter.complete();
+    _runCompleter.complete(passed);
   }
 
   /// This method returns once the Dart test named [name] is requested by the
@@ -93,7 +98,7 @@ class PatrolAppService extends PatrolAppServiceBase {
   }
 
   @override
-  Future<Empty> runDartTest(
+  Future<RunDartTestResponse> runDartTest(
     ServiceCall call,
     RunDartTestRequest request,
   ) async {
@@ -101,7 +106,12 @@ class PatrolAppService extends PatrolAppServiceBase {
     // All Dart tests register themselves for running using this method.
     _nameCompleter.complete(request.name);
 
-    await _runCompleter.future;
-    return Empty();
+    final passed = await _runCompleter.future;
+
+    return RunDartTestResponse(
+      result: passed
+          ? RunDartTestResponse_Result.SUCCESS
+          : RunDartTestResponse_Result.FAILURE,
+    );
   }
 }
