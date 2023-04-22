@@ -10,8 +10,6 @@ void main() {
 
     await $('Open location screen').scrollTo().tap();
 
-    expect(true, equals(false)); // FIXME: dummy assertion
-
     if (!await Permission.location.isGranted) {
       expect($('Permission not granted'), findsOneWidget);
       await $('Grant permission').tap();

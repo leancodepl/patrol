@@ -86,34 +86,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       final nameOfRequestedTest = await patrolAppService.nameFuture;
       if (nameOfRequestedTest == groupName) {
         final passed = liveTest.state.result.isPassing;
-        final errors = liveTest.errors;
-        for (final error in errors) {
-          print(
-            'PatrolBinding.tearDown() error: $error, st: ${error.stackTrace}',
-          );
-        }
         print(
           'PatrolBinding.tearDown() for test "$testName" in group "$groupName", passed: $passed',
         );
         await patrolAppService.markDartTestAsCompleted(groupName, passed);
       }
-
-      // FIXME: Report the results back to the native side. Dilemma: long method for whole test or a callback?
-      // logger('Sending ${results.length} test results to the native side...');
-      // await nativeAutomator.submitTestResults(
-      //   results.map((name, result) {
-      //     if (result is Failure) {
-      //       return MapEntry(name, result.details ?? 'No details');
-      //     }
-
-      //     if (result is String) {
-      //       return MapEntry(name, result);
-      //     }
-
-      //     throw StateError('result ($result) is neither a Failure or a String');
-      //   }),
-      // );
-      // logger('Test results sent');
     });
   }
 
