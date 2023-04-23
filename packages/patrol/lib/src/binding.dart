@@ -83,7 +83,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       final fullParentGroupName = liveTest.groups.last.name;
       final groupName = fullParentGroupName.split(' ').last;
 
-      final nameOfRequestedTest = await patrolAppService.nameFuture;
+      final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
       if (nameOfRequestedTest == groupName) {
         final passed = liveTest.state.result.isPassing;
         print(

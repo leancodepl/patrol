@@ -18,31 +18,31 @@ Future<void> runAppService(PatrolAppService service) async {
   print('PatrolAppService started on port $_port');
 }
 
-/// Provides a gRPC service for the native side to interact with the Dart tests.
+/// Implements a stateful gRPC service for querying and executing Dart tests.
 @internal
 class PatrolAppService extends PatrolAppServiceBase {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup});
 
-  /// The ambient test group that wraps all the other groups and tests in
-  /// the bundled Dart test file.
+  /// The ambient test group that wraps all the other groups and tests in the
+  /// bundled Dart test file.
   final DartTestGroup topLevelDartTestGroup;
 
-  /// A completer that completes when the name of the Dart test file that was
-  /// requested to be run by the native side.
-  final _nameCompleter = Completer<String>();
+  /// A completer that completes with the name of the Dart test file that was
+  /// requested to execute by the native side.
+  final _testExecutionRequested = Completer<String>();
 
   /// A future that completes with the name of the Dart test file that was
-  /// requested to be run.
-  Future<String> get nameFuture => _nameCompleter.future;
+  /// requested to execute by the native side.
+  Future<String> get testExecutionRequested => _testExecutionRequested.future;
 
-  final _runCompleter = Completer<bool>();
+  final _testExecutionCompleted = Completer<bool>();
 
-  /// A future that completes when the Dart test that was requested to be run
-  /// finishes.
+  /// A future that completes when the Dart test file (whose execution was
+  /// requested by the native side) completes.
   ///
-  /// True means the test passed, false means it failed.
-  Future<bool> get runFuture => _runCompleter.future;
+  /// Returns true if the test passed, false otherwise.
+  Future<bool> get testExecutionCompleted => _testExecutionCompleted.future;
 
   Future<void> markDartTestAsCompleted(
     String completedDartTestName,
@@ -50,39 +50,41 @@ class PatrolAppService extends PatrolAppServiceBase {
   ) async {
     print('PatrolAppService.markDartTestAsCompleted(): $completedDartTestName');
     assert(
-      _nameCompleter.isCompleted,
+      _testExecutionRequested.isCompleted,
       'Tried to mark a test as completed, but no tests were requested to run',
     );
 
-    final requestedDartTestName = await _nameCompleter.future;
+    final requestedDartTestName = await testExecutionRequested;
     assert(
       requestedDartTestName == completedDartTestName,
       'Tried to mark test $completedDartTestName as completed, but the test '
       'that was most recently requested to run was $requestedDartTestName',
     );
 
-    _runCompleter.complete(passed);
+    _testExecutionCompleted.complete(passed);
   }
 
-  /// This method returns once the Dart test named [name] is requested by the
-  /// native side. Otherwise, it never returns.
-  Future<bool> waitForRunRequest(String name) async {
-    print('PatrolAppService.waitUntilRunRequested(): $name registered');
-    final requested = await _nameCompleter.future;
-    if (requested != name) {
-      print(
-        'PatrolAppService.waitUntilRunRequested(): $name was not matched by requested test $requested',
-      );
-      // If the requested test is not the one we're waiting for now, let's
-      // return. The next declared test will be executed, and eventually, we'll
-      // find a match.
-      return false;
+  /// Returns when the native side requests execution of a Dart test file.
+  ///
+  /// The native side requests execution by RPC-ing [runDartTest] and providing
+  /// name of a Dart test file.
+  ///
+  /// Returns true if the native side requsted execution of [dartTestFile].
+  /// Returns false otherwise.
+  Future<bool> waitForRunRequest(String dartTestFile) async {
+    print('PatrolAppService.waitUntilRunRequested(): $dartTestFile registered');
 
-      // If the requested test is not the one we're waiting for, it means that
-      // the native test runner doesn't want to run us yet.
-      // It's okay, since that other tests have registered themselves for
-      // running using this method as well. Our turn will come, eventually.
-//      return Completer<void>().future;
+    final requestedDartTestFile = await testExecutionRequested;
+    if (requestedDartTestFile != dartTestFile) {
+      // If the requested Dart test file is not the one we're waiting for now,
+      // it means that dartTestFile was already executed. Return false so that
+      // callers can skip the already executed test.
+
+      print(
+        'PatrolAppService.waitUntilRunRequested(): $dartTestFile was not matched by requested test $requestedDartTestFile',
+      );
+
+      return false;
     }
 
     return true;
@@ -102,12 +104,13 @@ class PatrolAppService extends PatrolAppServiceBase {
     ServiceCall call,
     RunDartTestRequest request,
   ) async {
+    assert(_testExecutionCompleted.isCompleted == false);
+    // patrolTest() always calls this method.
+
     print('PatrolAppService.runDartTest(${request.name}) called');
-    // All Dart tests register themselves for running using this method.
-    _nameCompleter.complete(request.name);
+    _testExecutionRequested.complete(request.name);
 
-    final passed = await _runCompleter.future;
-
+    final passed = await testExecutionCompleted;
     return RunDartTestResponse(
       result: passed
           ? RunDartTestResponse_Result.SUCCESS

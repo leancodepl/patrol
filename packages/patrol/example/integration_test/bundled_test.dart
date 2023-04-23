@@ -66,6 +66,6 @@ Future<void> main() async {
   // come alive. Now that we did, let's share this information with it.
   await nativeAutomator.markPatrolAppServiceReady();
 
-  await appService.runFuture;
+  await appService.testExecutionCompleted;
   print('End of bundled test');
 }
