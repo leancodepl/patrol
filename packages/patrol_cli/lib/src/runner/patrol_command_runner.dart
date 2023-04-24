@@ -14,6 +14,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/build.dart';
+import 'package:patrol_cli/src/commands/bundle.dart';
 import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
@@ -115,9 +116,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
+
     addCommand(
       BuildCommand(
-        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        testFinder: testFinder,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
@@ -127,6 +130,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       ),
     );
 
+    addCommand(BundleCommand(testFinder: testFinder, logger: logger));
+
     addCommand(
       DevelopCommand(
         deviceFinder: DeviceFinder(
@@ -134,7 +139,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        testFinder: testFinder,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
@@ -159,7 +164,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
-        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        testFinder: testFinder,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
