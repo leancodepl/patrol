@@ -25,10 +25,11 @@ apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def packageName = "pl.leancode.patrol.example"
+
 android {
     compileSdk 33
-
-    namespace "pl.leancode.patrol.example"
+    namespace = packageName
 
     kotlinOptions {
         jvmTarget = "1.8"
@@ -39,12 +40,13 @@ android {
     }
 
     defaultConfig {
-        applicationId "pl.leancode.patrol.example"
+        applicationId packageName
         minSdk 26
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true", "packageName": packageName
     }
 
     buildTypes {
@@ -55,6 +57,8 @@ android {
     }
 
     testOptions {
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
+
         String targetPath = findProperty("target")
         if (targetPath == null) {
             return
@@ -80,7 +84,6 @@ flutter {
 }
 
 dependencies {
-    testImplementation "junit:junit:4.13.2"
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    androidTestUtil 'androidx.test:orchestrator:1.4.2'
 }

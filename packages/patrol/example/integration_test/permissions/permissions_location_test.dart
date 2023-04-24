@@ -1,6 +1,6 @@
 import 'package:permission_handler/permission_handler.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
@@ -14,12 +14,11 @@ void main() {
       expect($('Permission not granted'), findsOneWidget);
       await $('Grant permission').tap();
       if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-
-
+        await $.native.selectCoarseLocation();
+        await $.native.selectFineLocation();
+        await $.native.selectCoarseLocation();
         await $.native.selectFineLocation();
         await $.native.grantPermissionOnlyThisTime();
-
-
       }
       await $.pump();
     }

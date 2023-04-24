@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:test_api/src/backend/invoker.dart';
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
@@ -33,6 +34,20 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
+///
+/// ### Reporting results of bundled tests
+///
+/// This binding is also responsible for reporting the results of the tests to
+/// the native side of Patrol. It does so by registering a tearDown() callback
+/// that is executed after each test. Inside that callback, the name of the Dart
+/// test file being currently executed is retrieved.
+///
+/// At this point, the [PatrolAppService] is handling the gRPC `runDartTest()`
+/// called by the native side.
+///
+/// [PatrolBinding] submits the Dart test file name that is being currently
+/// executed to [PatrolAppService]. Once the name is submitted to it, that
+/// pending `runDartTest()` method returns.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Default constructor that only calls the superclass constructor.
   PatrolBinding() {
@@ -42,7 +57,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       oldTestExceptionReporter(details, testDescription);
     };
 
-    tearDownAll(() async {
+    tearDown(() async {
       if (!_shouldReportResultsToNative) {
         return;
       }
@@ -52,26 +67,37 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      logger('Sending ${results.length} test results to the native side...');
-      await nativeAutomator.submitTestResults(
-        results.map((name, result) {
-          if (result is Failure) {
-            return MapEntry(name, result.details ?? 'No details');
-          }
+      final testName = Invoker.current!.liveTest.individualName;
+      final isTestExplorer = testName == 'patrol_test_explorer';
+      if (isTestExplorer) {
+        print('PatrolBinding.tearDown() called on test explorer, skipping');
+        return;
+      } else {
+        print(
+          'PatrolBinding.tearDown() called, count: ${results.length}, results: $results',
+        );
+      }
 
-          if (result is String) {
-            return MapEntry(name, result);
-          }
+      // FIXME: Probably too strict assumption (see also common.dart)
+      final liveTest = Invoker.current!.liveTest;
+      final fullParentGroupName = liveTest.groups.last.name;
+      final groupName = fullParentGroupName.split(' ').last;
 
-          throw StateError('result ($result) is neither a Failure or a String');
-        }),
-      );
-      logger('Test results sent');
+      final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
+      if (nameOfRequestedTest == groupName) {
+        final passed = liveTest.state.result.isPassing;
+        print(
+          'PatrolBinding.tearDown() for test "$testName" in group "$groupName", passed: $passed',
+        );
+        await patrolAppService.markDartTestAsCompleted(groupName, passed);
+      }
     });
   }
 
   /// Returns an instance of the [PatrolBinding], creating and initializing it
   /// if necessary.
+  ///
+  /// This method is idempotent.
   factory PatrolBinding.ensureInitialized() {
     if (_instance == null) {
       PatrolBinding();
@@ -82,12 +108,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
-  /// The [NativeAutomator] used by this binding to report tests to the native
+  /// The [PatrolAppService] used by this binding to report tests to the native
   /// side.
   ///
   /// It's only for test reporting purposes and should not be used for anything
   /// else.
-  late NativeAutomator nativeAutomator;
+  late PatrolAppService patrolAppService;
 
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
