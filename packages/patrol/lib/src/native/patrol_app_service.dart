@@ -2,12 +2,10 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:grpc/grpc.dart';
-import 'package:meta/meta.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
 const _port = 8082;
 
-@internal
 Future<void> runAppService(PatrolAppService service) async {
   final services = [service];
   final interceptors = <Interceptor>[];
@@ -19,7 +17,6 @@ Future<void> runAppService(PatrolAppService service) async {
 }
 
 /// Implements a stateful gRPC service for querying and executing Dart tests.
-@internal
 class PatrolAppService extends PatrolAppServiceBase {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup});

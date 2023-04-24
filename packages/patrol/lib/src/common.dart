@@ -156,7 +156,6 @@ DartTestGroup createDartTestGroup(
 
   for (final entry in topLevelGroup.entries) {
     if (entry is Group) {
-      print('createDartTestGroup(): found group: ${entry.name}');
       group.groups.add(DartTestGroup(name: entry.name));
     }
 
