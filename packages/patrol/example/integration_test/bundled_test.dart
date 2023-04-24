@@ -9,7 +9,6 @@ import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED CODE
 import 'android_app_test.dart' as android_app_test;
-import 'clean_up_test.dart' as clean_up_test;
 import 'example_test.dart' as example_test;
 import 'notifications_test.dart' as notifications_test;
 import 'open_app_test.dart' as open_app_test;
@@ -57,7 +56,6 @@ Future<void> main() async {
 
   // START: GENERATED CODE
   group('android_app_test', android_app_test.main);
-  group('clean_up_test', clean_up_test.main);
   group('example_test', example_test.main);
   group('notifications_test', notifications_test.main);
   group('open_app_test', open_app_test.main);
