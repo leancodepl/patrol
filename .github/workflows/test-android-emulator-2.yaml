@@ -1,0 +1,129 @@
+name: test android emulator
+
+on:
+  workflow_dispatch:
+
+env:
+  ANDROID_IMAGE: system-images;android-31;default;x86_64
+
+jobs:
+  main:
+    name: Test on Android Emulator
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/packages/patrol/example
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Set up Java
+        run: export JAVA_HOME="$JAVA_HOME_11_X64"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Preload Flutter artifacts
+        run: flutter precache
+
+      - name: Install patrol_cli
+        run: |
+          dart pub global activate \
+            --source git https://github.com/leancodepl/patrol.git \
+            --git-path packages/patrol_cli \
+            --git-ref patrol_cli-v<your_desired_patrol_cli_version>
+
+      - name: Download TestButler
+        run: curl -f -o ~/test-butler-2.2.1.apk https://repo1.maven.org/maven2/com/linkedin/testbutler/test-butler-app/2.2.1/test-butler-app-2.2.1.apk
+
+      - name: Install ffmpeg
+        uses: FedericoCarboni/setup-ffmpeg@v2
+        id: setup-ffmpeg
+
+      - name: Install sponge
+        run: brew install sponge 1>/dev/null 2>&1
+
+      - name: Generate gradlew
+        run: |
+          flutter build apk --target lib/main_dev.dart --debug --flavor=does-not-exist &
+          buildpid="$!"
+          while [ ! -e "android/gradlew" ]; do
+              echo "waiting for gradlew to generate..."
+              sleep 2
+          done
+          kill $buildpid
+
+      - name: Install cmdline-tools
+        run: |
+          cd
+          curl -LO https://dl.google.com/android/repository/commandlinetools-mac-9477386_latest.zip
+          brew install unzip 1>/dev/null 2>&1
+          unzip commandlinetools-mac-9477386_latest.zip
+
+          mkdir ~/android-sdk
+          mkdir ~/android-sdk/cmdline-tools
+          mkdir ~/android-sdk/platforms # we just need empty folder
+          mkdir ~/android-sdk/cmdline-tools/latest
+          mv -v ~/cmdline-tools/* ~/android-sdk/cmdline-tools/latest
+
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+
+      - name: Install SDKs with sdkmanager
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "emulator" > /dev/null
+          sdkmanager "platform-tools" > /dev/null
+          sdkmanager "$ANDROID_IMAGE" > /dev/null
+          sdkmanager "build-tools;30.0.3" > /dev/null
+
+          echo "$HOME/android-sdk/emulator" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
+
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          flutter config --android-sdk "$HOME/android-sdk"
+
+      - name: Create and configure emulator
+        run: |
+          avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
+          echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "disk.dataPartition.size=6G" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.camera.back=virtualscene" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "vm.heapSize=576" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.lcd.density=440" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.lcd.height=2220" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
+
+      - name: Run emulator and tests
+        run: ${{ github.workspace }}/.github/scripts/run-emulator-and-tests.sh
+
+      - name: Upload flutter logs to artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: flutter-logs
+          path: flutter-logs
+
+      - name: Upload tests summary to artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: tests-summary
+          path: tests-summary
+
+      - name: Upload screenrecordings to artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: screenrecord.mp4
+          path: screenrecords/screenrecord.mp4
