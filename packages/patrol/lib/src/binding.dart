@@ -54,11 +54,17 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 /// pending `runDartTest()` method returns.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
+  ///
+  /// You most likely don't want to call it yourself.
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      _testResults[testDescription] =
-          Failure(testDescription, details.toString());
+      final currentDartTestFile = _currentDartTestFile;
+      if (currentDartTestFile == null) {
+        throw StateError('currentDartTestFile is null');
+      }
+
+      _testResults[currentDartTestFile] = Failure(testDescription, '$details');
       oldTestExceptionReporter(details, testDescription);
     };
 
@@ -104,8 +110,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           'tearDown(): test "$testName" in group "$_currentDartTestFile", passed: $passed',
         );
         await patrolAppService.markDartTestAsCompleted(
-          completedDartTestName: _currentDartTestFile!,
+          dartFileName: _currentDartTestFile!,
           passed: passed,
+          details: _testResults[_currentDartTestFile!] is Failure
+              ? (_testResults[_currentDartTestFile!] as Failure).details
+              : null,
         );
       }
     });

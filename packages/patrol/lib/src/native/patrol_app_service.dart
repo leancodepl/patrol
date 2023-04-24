@@ -6,6 +6,14 @@ import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
 const _port = 8082;
 
+class _TestExecutionResult {
+  const _TestExecutionResult({required this.passed, required this.details});
+
+  final bool passed;
+  final String? details;
+}
+
+/// Starts the gRPC server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
   final services = [service];
   final interceptors = <Interceptor>[];
@@ -33,19 +41,22 @@ class PatrolAppService extends PatrolAppServiceBase {
   /// requested to execute by the native side.
   Future<String> get testExecutionRequested => _testExecutionRequested.future;
 
-  final _testExecutionCompleted = Completer<bool>();
+  final _testExecutionCompleted = Completer<_TestExecutionResult>();
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
   ///
   /// Returns true if the test passed, false otherwise.
-  Future<bool> get testExecutionCompleted => _testExecutionCompleted.future;
+  Future<_TestExecutionResult> get testExecutionCompleted {
+    return _testExecutionCompleted.future;
+  }
 
   Future<void> markDartTestAsCompleted({
-    required String completedDartTestName,
+    required String dartFileName,
     required bool passed,
+    required String? details,
   }) async {
-    print('PatrolAppService.markDartTestAsCompleted(): $completedDartTestName');
+    print('PatrolAppService.markDartTestAsCompleted(): $dartFileName');
     assert(
       _testExecutionRequested.isCompleted,
       'Tried to mark a test as completed, but no tests were requested to run',
@@ -53,12 +64,14 @@ class PatrolAppService extends PatrolAppServiceBase {
 
     final requestedDartTestName = await testExecutionRequested;
     assert(
-      requestedDartTestName == completedDartTestName,
-      'Tried to mark test $completedDartTestName as completed, but the test '
+      requestedDartTestName == dartFileName,
+      'Tried to mark test $dartFileName as completed, but the test '
       'that was most recently requested to run was $requestedDartTestName',
     );
 
-    _testExecutionCompleted.complete(passed);
+    _testExecutionCompleted.complete(
+      _TestExecutionResult(passed: passed, details: details),
+    );
   }
 
   /// Returns when the native side requests execution of a Dart test file.
@@ -107,11 +120,12 @@ class PatrolAppService extends PatrolAppServiceBase {
     print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
 
-    final passed = await testExecutionCompleted;
+    final testExecutionResult = await testExecutionCompleted;
     return RunDartTestResponse(
-      result: passed
+      result: testExecutionResult.passed
           ? RunDartTestResponse_Result.SUCCESS
           : RunDartTestResponse_Result.FAILURE,
+      details: testExecutionResult.details,
     );
   }
 }

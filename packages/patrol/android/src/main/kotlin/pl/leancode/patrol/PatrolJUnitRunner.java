@@ -80,7 +80,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
             if (response.getResult() == RunDartTestResponse.Result.FAILURE) {
-                throw new AssertionError("Dart test failed: " + name);
+                throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
             return response;
         } catch (StatusRuntimeException e) {

@@ -55,8 +55,12 @@ const RunDartTestResponse$json = const {
   '1': 'RunDartTestResponse',
   '2': const [
     const {'1': 'result', '3': 1, '4': 1, '5': 14, '6': '.patrol.RunDartTestResponse.Result', '10': 'result'},
+    const {'1': 'details', '3': 2, '4': 1, '5': 9, '9': 0, '10': 'details', '17': true},
   ],
   '4': const [RunDartTestResponse_Result$json],
+  '8': const [
+    const {'1': '_details'},
+  ],
 };
 
 @$core.Deprecated('Use runDartTestResponseDescriptor instead')
@@ -70,7 +74,7 @@ const RunDartTestResponse_Result$json = const {
 };
 
 /// Descriptor for `RunDartTestResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List runDartTestResponseDescriptor = $convert.base64Decode('ChNSdW5EYXJ0VGVzdFJlc3BvbnNlEjoKBnJlc3VsdBgBIAEoDjIiLnBhdHJvbC5SdW5EYXJ0VGVzdFJlc3BvbnNlLlJlc3VsdFIGcmVzdWx0Ii8KBlJlc3VsdBILCgdTVUNDRVNTEAASCwoHU0tJUFBFRBABEgsKB0ZBSUxVUkUQAg==');
+final $typed_data.Uint8List runDartTestResponseDescriptor = $convert.base64Decode('ChNSdW5EYXJ0VGVzdFJlc3BvbnNlEjoKBnJlc3VsdBgBIAEoDjIiLnBhdHJvbC5SdW5EYXJ0VGVzdFJlc3BvbnNlLlJlc3VsdFIGcmVzdWx0Eh0KB2RldGFpbHMYAiABKAlIAFIHZGV0YWlsc4gBASIvCgZSZXN1bHQSCwoHU1VDQ0VTUxAAEgsKB1NLSVBQRUQQARILCgdGQUlMVVJFEAJCCgoIX2RldGFpbHM=');
 @$core.Deprecated('Use configureRequestDescriptor instead')
 const ConfigureRequest$json = const {
   '1': 'ConfigureRequest',
