@@ -16,12 +16,7 @@ import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
-class AutomatorServer(
-    private val automation: Automator,
-    private val onTestResultsSubmitted: (Map<String, String>) -> Unit
-) :
-    NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-
+class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
         return empty { }
@@ -207,8 +202,8 @@ class AutomatorServer(
         return empty { }
     }
 
-    override suspend fun submitTestResults(request: Contracts.SubmitTestResultsRequest): Empty {
-        onTestResultsSubmitted(request.resultsMap)
-        return empty {}
+    override suspend fun markPatrolAppServiceReady(request: Contracts.Empty): Contracts.Empty {
+        PatrolServer.appReady.set(true)
+        return empty { }
     }
 }

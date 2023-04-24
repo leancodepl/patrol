@@ -2,12 +2,12 @@ name: patrol prepare
 
 on:
   push:
-    branches: [master]
+    branches: [master, develop]
     tags-ignore: ['*']
     paths:
       - 'packages/patrol/**'
   pull_request:
-    branches: [master]
+    branches: [master, develop]
     paths:
       - 'packages/patrol/**'
 
