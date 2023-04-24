@@ -53,7 +53,7 @@ jobs:
 
       - name: Generate gradlew
         run: |
-          flutter build apk --target lib/main_dev.dart --debug --flavor=does-not-exist &
+          flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
           buildpid="$!"
           while [ ! -e "android/gradlew" ]; do
               echo "waiting for gradlew to generate..."
