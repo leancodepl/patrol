@@ -1612,6 +1612,23 @@ public final class Contracts {
      * @return The result.
      */
     pl.leancode.patrol.contracts.Contracts.RunDartTestResponse.Result getResult();
+
+    /**
+     * <code>optional string details = 2;</code>
+     * @return Whether the details field is set.
+     */
+    boolean hasDetails();
+    /**
+     * <code>optional string details = 2;</code>
+     * @return The details.
+     */
+    java.lang.String getDetails();
+    /**
+     * <code>optional string details = 2;</code>
+     * @return The bytes for details.
+     */
+    com.google.protobuf.ByteString
+        getDetailsBytes();
   }
   /**
    * Protobuf type {@code patrol.RunDartTestResponse}
@@ -1622,6 +1639,7 @@ public final class Contracts {
       // @@protoc_insertion_point(message_implements:patrol.RunDartTestResponse)
       RunDartTestResponseOrBuilder {
     private RunDartTestResponse() {
+      details_ = "";
     }
     /**
      * Protobuf enum {@code patrol.RunDartTestResponse.Result}
@@ -1721,6 +1739,7 @@ public final class Contracts {
       // @@protoc_insertion_point(enum_scope:patrol.RunDartTestResponse.Result)
     }
 
+    private int bitField0_;
     public static final int RESULT_FIELD_NUMBER = 1;
     private int result_;
     /**
@@ -1761,6 +1780,61 @@ public final class Contracts {
     private void clearResult() {
       
       result_ = 0;
+    }
+
+    public static final int DETAILS_FIELD_NUMBER = 2;
+    private java.lang.String details_;
+    /**
+     * <code>optional string details = 2;</code>
+     * @return Whether the details field is set.
+     */
+    @java.lang.Override
+    public boolean hasDetails() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional string details = 2;</code>
+     * @return The details.
+     */
+    @java.lang.Override
+    public java.lang.String getDetails() {
+      return details_;
+    }
+    /**
+     * <code>optional string details = 2;</code>
+     * @return The bytes for details.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getDetailsBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(details_);
+    }
+    /**
+     * <code>optional string details = 2;</code>
+     * @param value The details to set.
+     */
+    private void setDetails(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  bitField0_ |= 0x00000001;
+      details_ = value;
+    }
+    /**
+     * <code>optional string details = 2;</code>
+     */
+    private void clearDetails() {
+      bitField0_ = (bitField0_ & ~0x00000001);
+      details_ = getDefaultInstance().getDetails();
+    }
+    /**
+     * <code>optional string details = 2;</code>
+     * @param value The bytes for details to set.
+     */
+    private void setDetailsBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      details_ = value.toStringUtf8();
+      bitField0_ |= 0x00000001;
     }
 
     public static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse parseFrom(
@@ -1904,6 +1978,63 @@ public final class Contracts {
         return this;
       }
 
+      /**
+       * <code>optional string details = 2;</code>
+       * @return Whether the details field is set.
+       */
+      @java.lang.Override
+      public boolean hasDetails() {
+        return instance.hasDetails();
+      }
+      /**
+       * <code>optional string details = 2;</code>
+       * @return The details.
+       */
+      @java.lang.Override
+      public java.lang.String getDetails() {
+        return instance.getDetails();
+      }
+      /**
+       * <code>optional string details = 2;</code>
+       * @return The bytes for details.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getDetailsBytes() {
+        return instance.getDetailsBytes();
+      }
+      /**
+       * <code>optional string details = 2;</code>
+       * @param value The details to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDetails(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setDetails(value);
+        return this;
+      }
+      /**
+       * <code>optional string details = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearDetails() {
+        copyOnWrite();
+        instance.clearDetails();
+        return this;
+      }
+      /**
+       * <code>optional string details = 2;</code>
+       * @param value The bytes for details to set.
+       * @return This builder for chaining.
+       */
+      public Builder setDetailsBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setDetailsBytes(value);
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:patrol.RunDartTestResponse)
     }
     @java.lang.Override
@@ -1920,10 +2051,13 @@ public final class Contracts {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "result_",
+              "details_",
             };
             java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\f";
+                "\u0000\u0002\u0000\u0001\u0001\u0002\u0002\u0000\u0000\u0000\u0001\f\u0002\u1208" +
+                "\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

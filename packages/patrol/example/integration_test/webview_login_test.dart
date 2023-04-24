@@ -1,6 +1,6 @@
 import 'common.dart';
 
-void main() async {
+void main() {
   patrol('interacts with the login form website in a webview', ($) async {
     await createApp($);
 

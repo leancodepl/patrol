@@ -1,6 +1,6 @@
 import 'common.dart';
 
-Future<void> main() async {
+void main() {
   tearDown(() async {
     final automator = NativeAutomator(
       config: NativeAutomatorConfig(
