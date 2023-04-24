@@ -85,7 +85,7 @@ jobs:
       - name: Install SDKs with sdkmanager
         run: |
           java -version
-          echo "yes" | sdkmanager --licenses
+          yes | sdkmanager --licenses
           sdkmanager "emulator"
           sdkmanager "platform-tools"
           sdkmanager "$ANDROID_IMAGE"
