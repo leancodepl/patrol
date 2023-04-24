@@ -44,16 +44,22 @@ Future<void> main() async {
   });
 
   // START: GENERATED CODE
-  group('permissions', () {
-    group('permissions_location_test.dart', permissions_location_test.main);
-    group('permissions_many_1_test.dart', permissions_many_1_test.main);
-    group('permissions_many_2_test.dart', permissions_many_2_test.main);
-  });
-  group('sign_in', () {
-    group('sign_in_test.dart', sign_in_email_test.main);
-    group('sign_in_google_test.dart', sign_in_google_test.main);
-    group('sign_in_facebook_test.dart', sign_in_facebook_test.main);
-  });
+  group(
+    'permissions__permissions_location_test.dart',
+    permissions_location_test.main,
+  );
+  group(
+    'permissions__permissions_many_1_test.dart',
+    permissions_many_1_test.main,
+  );
+  group(
+    'permissions__permissions_many_2_test.dart',
+    permissions_many_2_test.main,
+  );
+  group('sign_in__sign_in_test.dart', sign_in_email_test.main);
+  group('sign_in__sign_in_google_test.dart', sign_in_google_test.main);
+  group('sign_in__sign_in_facebook_test.dart', sign_in_facebook_test.main);
+
   group('example_test.dart', example_test.main);
   // END: GENERATED CODE
 

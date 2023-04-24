@@ -82,26 +82,33 @@ void patrolTest(
     tags: tags,
     (widgetTester) async {
       if (patrolBinding != null) {
-        // The execution of this test will only proceed if the native side
-        // requests it.
+        // If Patrol's native automation feature is enabled, then the test will
+        // only execute if the native side requests it.
 
         // FIXME: Too strict assumption
-        // The assumption here is that immediate parent group of this test is a
-        // name of the Dart file. This is not always true, for example, if the
-        // patrolTest() in a Dart test file is in a group. For the initial POC
-        // it's good enough, though.
-        final fullParentGroupName = Invoker.current!.liveTest.groups.last.name;
-        print('patrolTest(): innermostGroupName: $fullParentGroupName');
-        final parentGroupName = fullParentGroupName.split(' ').last;
-        print('patrolTest(): parentGroupName: $parentGroupName');
-
-        print('patrolTest(): test $parentGroupName registered and waiting');
-        final matched = await patrolBinding.patrolAppService
+        //
+        // The assumption here is that this test doesn't have any extra parent
+        // groups.
+        // Every Dart test suite has an implict, unnamed, top-level group.
+        // An additional group is present in the bundled_test.dart, and its name
+        // is equal to the path to the Dart test file in the integration_test
+        // directory.
+        //
+        // Example: if this function is called from the Dart test file named
+        // "example_test.dart", and that file is located in the
+        // "integration_test/examples" directory, we assume that the name of the
+        // immediate parent group is "examples/example_test.dart".
+        //
+        // It's good enough for a POC.
+        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
+        print('patrolTest(): test "$parentGroupName" registered and waiting');
+        final requestedToExecute = await patrolBinding.patrolAppService
             .waitForRunRequest(parentGroupName);
-        if (!matched) {
+
+        if (!requestedToExecute) {
           return;
         }
-        print('patrolTest(): test $parentGroupName received run request');
+        print('patrolTest(): requested execution of test "$parentGroupName"');
       }
 
       // await nativeAutomator?.configure(); // Move to bundled_test.dart

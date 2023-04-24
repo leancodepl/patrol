@@ -189,7 +189,12 @@ fun DartTestGroup.listFlatDartFiles(): List<String> {
     for (group in groupsList) {
         files.addAll(group.listGroups())
     }
-    return files.filter { it.endsWith(".dart") }
+
+
+
+    return files
+        .filter { it.endsWith(".dart") }
+        .map { it.replace("/", "__") } // Slashes breaks reporting ("0 tests")
 }
 
 // Recursively lists groups in this group.
