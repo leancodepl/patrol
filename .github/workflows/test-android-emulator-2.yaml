@@ -26,7 +26,7 @@ jobs:
           lfs: true
 
       - name: Set up Java
-        run: export JAVA_HOME="$JAVA_HOME_11_X64"
+        run: export JAVA_HOME="$JAVA_HOME_17_X64"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -81,6 +81,7 @@ jobs:
 
       - name: Install SDKs with sdkmanager
         run: |
+          java -version
           echo "yes" | sdkmanager --licenses
           sdkmanager "emulator"
           sdkmanager "platform-tools"
