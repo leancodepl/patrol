@@ -1,4 +1,5 @@
-// ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, implementation_imports
+// ignore_for_file: invalid_use_of_internal_member,
+// depend_on_referenced_packages, implementation_imports
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -88,11 +89,10 @@ void patrolTest(
         // FIXME: Too strict assumption
         //
         // The assumption here is that this test doesn't have any extra parent
-        // groups.
-        // Every Dart test suite has an implict, unnamed, top-level group.
-        // An additional group is present in the bundled_test.dart, and its name
-        // is equal to the path to the Dart test file in the integration_test
-        // directory.
+        // groups. Every Dart test suite has an implict, unnamed, top-level
+        // group. An additional group is present in the bundled_test.dart, and
+        // its name is equal to the path to the Dart test file in the
+        // integration_test directory.
         //
         // Example: if this function is called from the Dart test file named
         // "example_test.dart", and that file is located in the
@@ -100,8 +100,13 @@ void patrolTest(
         // immediate parent group is "examples/example_test.dart".
         //
         // It's good enough for a POC.
-        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
+
+        final parentGroupName = Invoker.current!.liveTest.groups.last.name
+            .replaceAll(RegExp(r'\.dart$'), '')
+            .replaceAll('/', '.');
+
         print('patrolTest(): test "$parentGroupName" registered and waiting');
+
         final requestedToExecute = await patrolBinding.patrolAppService
             .waitForRunRequest(parentGroupName);
 
@@ -140,37 +145,23 @@ void patrolTest(
   );
 }
 
-/// Creates a DartTestGroup by recursively visiting subgroups of [topLevelGroup]
-/// and tests these groups contain.
-///
-/// This function also removes parent group prefixes.
+/// Creates a DartTestGroup by visiting the subgroups of [topLevelGroup].
 @internal
 DartTestGroup createDartTestGroup(
   Group topLevelGroup, {
   String prefix = '',
-  String fullPrefix = '',
 }) {
   final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
   final group = DartTestGroup(name: groupName);
 
   for (final entry in topLevelGroup.entries) {
     if (entry is Group) {
-      final subgroup = createDartTestGroup(
-        entry,
-        prefix: groupName,
-        fullPrefix: entry.name.trim(),
-      );
-      group.groups.add(subgroup);
+      print('createDartTestGroup(): found group: ${entry.name}');
+      group.groups.add(DartTestGroup(name: entry.name));
     }
 
-    if (entry is Test) {
-      if (entry.name == 'patrol_test_explorer') {
-        continue;
-      }
-
-      final testName = entry.name.replaceFirst(fullPrefix, '').trim();
-      final dartTest = DartTestCase(name: testName);
-      group.tests.add(dartTest);
+    if (entry is Test && entry.name != 'patrol_test_explorer') {
+      throw StateError('Expected group, got test: ${entry.name}');
     }
   }
 

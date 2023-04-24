@@ -37,6 +37,8 @@ Future<void> main() async {
   final testExplorationCompleter = Completer<DartTestGroup>();
 
   // Run a single, special test to expore the hierarchy of groups and tests
+  // This will break if the test order becomes randomized, since there'll be no
+  // guarantee that patrol_test_explorer will be the first to run.
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
@@ -45,22 +47,22 @@ Future<void> main() async {
 
   // START: GENERATED CODE
   group(
-    'permissions__permissions_location_test.dart',
+    'permissions.permissions_location_test',
     permissions_location_test.main,
   );
   group(
-    'permissions__permissions_many_1_test.dart',
+    'permissions.permissions_many_1_test',
     permissions_many_1_test.main,
   );
   group(
-    'permissions__permissions_many_2_test.dart',
+    'permissions.permissions_many_2_test',
     permissions_many_2_test.main,
   );
-  group('sign_in__sign_in_test.dart', sign_in_email_test.main);
-  group('sign_in__sign_in_google_test.dart', sign_in_google_test.main);
-  group('sign_in__sign_in_facebook_test.dart', sign_in_facebook_test.main);
+  group('sign_in.sign_in_test', sign_in_email_test.main);
+  group('sign_in.sign_in_google_test', sign_in_google_test.main);
+  group('sign_in.sign_in_facebook_test', sign_in_facebook_test.main);
 
-  group('example_test.dart', example_test.main);
+  group('example_test', example_test.main);
   // END: GENERATED CODE
 
   final dartTestGroup = await testExplorationCompleter.future;
