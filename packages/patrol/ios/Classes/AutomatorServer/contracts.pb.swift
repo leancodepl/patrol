@@ -88,6 +88,15 @@ public struct Patrol_RunDartTestResponse {
 
   public var result: Patrol_RunDartTestResponse.Result = .success
 
+  public var details: String {
+    get {return _details ?? String()}
+    set {_details = newValue}
+  }
+  /// Returns true if `details` has been explicitly set.
+  public var hasDetails: Bool {return self._details != nil}
+  /// Clears the value of `details`. Subsequent reads from it will return its default value.
+  public mutating func clearDetails() {self._details = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum Result: SwiftProtobuf.Enum {
@@ -122,6 +131,8 @@ public struct Patrol_RunDartTestResponse {
   }
 
   public init() {}
+
+  fileprivate var _details: String? = nil
 }
 
 #if swift(>=4.2)
@@ -926,6 +937,7 @@ extension Patrol_RunDartTestResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
   public static let protoMessageName: String = _protobuf_package + ".RunDartTestResponse"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "result"),
+    2: .same(proto: "details"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -935,20 +947,29 @@ extension Patrol_RunDartTestResponse: SwiftProtobuf.Message, SwiftProtobuf._Mess
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self.result) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._details) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.result != .success {
       try visitor.visitSingularEnumField(value: self.result, fieldNumber: 1)
     }
+    try { if let v = self._details {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Patrol_RunDartTestResponse, rhs: Patrol_RunDartTestResponse) -> Bool {
     if lhs.result != rhs.result {return false}
+    if lhs._details != rhs._details {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

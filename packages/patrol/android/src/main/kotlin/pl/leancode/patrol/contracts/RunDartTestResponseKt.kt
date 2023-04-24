@@ -38,6 +38,30 @@ public object RunDartTestResponseKt {
     public fun clearResult() {
       _builder.clearResult()
     }
+
+    /**
+     * <code>optional string details = 2;</code>
+     */
+    public var details: kotlin.String
+      @JvmName("getDetails")
+      get() = _builder.getDetails()
+      @JvmName("setDetails")
+      set(value) {
+        _builder.setDetails(value)
+      }
+    /**
+     * <code>optional string details = 2;</code>
+     */
+    public fun clearDetails() {
+      _builder.clearDetails()
+    }
+    /**
+     * <code>optional string details = 2;</code>
+     * @return Whether the details field is set.
+     */
+    public fun hasDetails(): kotlin.Boolean {
+      return _builder.hasDetails()
+    }
   }
 }
 public inline fun pl.leancode.patrol.contracts.Contracts.RunDartTestResponse.copy(block: pl.leancode.patrol.contracts.RunDartTestResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.RunDartTestResponse =

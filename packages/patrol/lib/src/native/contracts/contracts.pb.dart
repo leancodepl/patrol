@@ -223,16 +223,21 @@ class RunDartTestRequest extends $pb.GeneratedMessage {
 class RunDartTestResponse extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'RunDartTestResponse', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'patrol'), createEmptyInstance: create)
     ..e<RunDartTestResponse_Result>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'result', $pb.PbFieldType.OE, defaultOrMaker: RunDartTestResponse_Result.SUCCESS, valueOf: RunDartTestResponse_Result.valueOf, enumValues: RunDartTestResponse_Result.values)
+    ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'details')
     ..hasRequiredFields = false
   ;
 
   RunDartTestResponse._() : super();
   factory RunDartTestResponse({
     RunDartTestResponse_Result? result,
+    $core.String? details,
   }) {
     final _result = create();
     if (result != null) {
       _result.result = result;
+    }
+    if (details != null) {
+      _result.details = details;
     }
     return _result;
   }
@@ -265,6 +270,15 @@ class RunDartTestResponse extends $pb.GeneratedMessage {
   $core.bool hasResult() => $_has(0);
   @$pb.TagNumber(1)
   void clearResult() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get details => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set details($core.String v) { $_setString(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasDetails() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearDetails() => clearField(2);
 }
 
 class ConfigureRequest extends $pb.GeneratedMessage {

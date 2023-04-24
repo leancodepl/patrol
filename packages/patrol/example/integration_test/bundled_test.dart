@@ -8,14 +8,24 @@ import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED CODE
+import 'android_app_test.dart' as android_app_test;
+import 'clean_up_test.dart' as clean_up_test;
 import 'example_test.dart' as example_test;
-import 'permissions/permissions_location_test.dart'
-    as permissions_location_test;
-import 'permissions/permissions_many_1_test.dart' as permissions_many_1_test;
-import 'permissions/permissions_many_2_test.dart' as permissions_many_2_test;
-import 'sign_in/sign_in_email_test.dart' as sign_in_email_test;
-import 'sign_in/sign_in_facebook_test.dart' as sign_in_facebook_test;
-import 'sign_in/sign_in_google_test.dart' as sign_in_google_test;
+import 'notifications_test.dart' as notifications_test;
+import 'open_app_test.dart' as open_app_test;
+import 'open_quick_settings_test.dart' as open_quick_settings_test;
+import 'permissions_location_test.dart' as permissions_location_test;
+import 'permissions_many_test.dart' as permissions_many_test;
+import 'service_airplane_mode_test.dart' as service_airplane_mode_test;
+import 'service_bluetooth_test.dart' as service_bluetooth_test;
+import 'service_cellular_test.dart' as service_cellular_test;
+import 'service_dark_mode_test.dart' as service_dark_mode_test;
+import 'service_wifi_test.dart' as service_wifi_test;
+import 'swipe_test.dart' as swipe_test;
+import 'webview_hackernews_test.dart' as webview_hackernews_test;
+import 'webview_leancode_test.dart' as webview_leancode_test;
+import 'webview_login_test.dart' as webview_login_test;
+import 'webview_stackoverflow_test.dart' as webview_stackoverflow_test;
 // END: GENERATED CODE
 
 Future<void> main() async {
@@ -46,23 +56,24 @@ Future<void> main() async {
   });
 
   // START: GENERATED CODE
-  group(
-    'permissions.permissions_location_test',
-    permissions_location_test.main,
-  );
-  group(
-    'permissions.permissions_many_1_test',
-    permissions_many_1_test.main,
-  );
-  group(
-    'permissions.permissions_many_2_test',
-    permissions_many_2_test.main,
-  );
-  group('sign_in.sign_in_test', sign_in_email_test.main);
-  group('sign_in.sign_in_google_test', sign_in_google_test.main);
-  group('sign_in.sign_in_facebook_test', sign_in_facebook_test.main);
-
+  group('android_app_test', android_app_test.main);
+  group('clean_up_test', clean_up_test.main);
   group('example_test', example_test.main);
+  group('notifications_test', notifications_test.main);
+  group('open_app_test', open_app_test.main);
+  group('open_quick_settings_test', open_quick_settings_test.main);
+  group('permissions_location_test', permissions_location_test.main);
+  group('permissions_many_test', permissions_many_test.main);
+  group('service_airplane_mode_test', service_airplane_mode_test.main);
+  group('service_bluetooth_test', service_bluetooth_test.main);
+  group('service_cellular_test', service_cellular_test.main);
+  group('service_dark_mode_test', service_dark_mode_test.main);
+  group('service_wifi_test', service_wifi_test.main);
+  group('swipe_test', swipe_test.main);
+  group('webview_hackernews_test', webview_hackernews_test.main);
+  group('webview_leancode_test', webview_leancode_test.main);
+  group('webview_login_test', webview_login_test.main);
+  group('webview_stackoverflow_test', webview_stackoverflow_test.main);
   // END: GENERATED CODE
 
   final dartTestGroup = await testExplorationCompleter.future;

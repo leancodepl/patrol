@@ -101,12 +101,9 @@ void patrolTest(
         //
         // It's good enough for a POC.
 
-        final parentGroupName = Invoker.current!.liveTest.groups.last.name
-            .replaceAll(RegExp(r'\.dart$'), '')
-            .replaceAll('/', '.');
+        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
 
         print('patrolTest(): test "$parentGroupName" registered and waiting');
-
         final requestedToExecute = await patrolBinding.patrolAppService
             .waitForRunRequest(parentGroupName);
 
