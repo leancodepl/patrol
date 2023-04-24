@@ -26,10 +26,10 @@ jobs:
           lfs: true
 
       - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 11
+        run: echo "JAVA_HOME="$JAVA_HOME_11_X64"" >> $GITHUB_ENV
+
+      - name: Check Java version
+        run: java -version
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2

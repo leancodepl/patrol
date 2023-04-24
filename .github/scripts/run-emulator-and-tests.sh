@@ -12,6 +12,7 @@ while [ "`adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sle
 sleep 30
 
 record() {
+    adb root
     adb shell mkdir -p /sdcard/screenrecords
     i=0
     while [ ! -f "$HOME/adb_screenrecord.lock" ]; do
