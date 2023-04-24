@@ -41,10 +41,10 @@ class PatrolAppService extends PatrolAppServiceBase {
   /// Returns true if the test passed, false otherwise.
   Future<bool> get testExecutionCompleted => _testExecutionCompleted.future;
 
-  Future<void> markDartTestAsCompleted(
-    String completedDartTestName,
-    bool passed,
-  ) async {
+  Future<void> markDartTestAsCompleted({
+    required String completedDartTestName,
+    required bool passed,
+  }) async {
     print('PatrolAppService.markDartTestAsCompleted(): $completedDartTestName');
     assert(
       _testExecutionRequested.isCompleted,

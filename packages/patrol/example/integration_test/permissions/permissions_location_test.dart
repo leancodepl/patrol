@@ -8,6 +8,8 @@ void main() {
   patrol('accepts location permission', ($) async {
     await createApp($);
 
+    expect(true, equals(false)); // FIXME: remove this line
+
     await $('Open location screen').scrollTo().tap();
 
     if (!await Permission.location.isGranted) {

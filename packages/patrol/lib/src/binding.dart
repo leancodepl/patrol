@@ -1,7 +1,6 @@
 // We allow for using properties of IntegrationTestWidgetsFlutterBinding, which
 // are marked as @visibleForTesting but we need them (we could write our own,
 // but we're lazy and prefer to use theirs).
-// ignore_for_file: invalid_use_of_visible_for_testing_member
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+// ignore: implementation_imports, depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
+// ignore: implementation_imports, depend_on_referenced_packages
+import 'package:test_api/src/backend/live_test.dart';
+
+const _success = 'success';
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
@@ -49,13 +53,27 @@ const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 /// executed to [PatrolAppService]. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
 class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
-  /// Default constructor that only calls the superclass constructor.
+  /// Creates a new [PatrolBinding].
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      results[testDescription] = Failure(testDescription, details.toString());
+      _testResults[testDescription] =
+          Failure(testDescription, details.toString());
       oldTestExceptionReporter(details, testDescription);
     };
+
+    setUp(() {
+      if (!_shouldReportResultsToNative) {
+        return;
+      }
+
+      if (_hotRestartEnabled) {
+        // Sending results ends the test, which we don't want for Hot Restart
+        return;
+      }
+
+      _currentDartTestFile = Invoker.current!.liveTest.parentGroupName;
+    });
 
     tearDown(() async {
       if (!_shouldReportResultsToNative) {
@@ -70,26 +88,25 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       final testName = Invoker.current!.liveTest.individualName;
       final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
-        print('PatrolBinding.tearDown() called on test explorer, skipping');
         return;
       } else {
-        print(
-          'PatrolBinding.tearDown() called, count: ${results.length}, results: $results',
+        logger(
+          'tearDown(): count: ${_testResults.length}, results: $_testResults',
         );
       }
 
-      // FIXME: Probably too strict assumption (see also common.dart)
-      final liveTest = Invoker.current!.liveTest;
-      final fullParentGroupName = liveTest.groups.last.name;
-      final groupName = fullParentGroupName.split(' ').last;
+      final invoker = Invoker.current!;
 
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
-      if (nameOfRequestedTest == groupName) {
-        final passed = liveTest.state.result.isPassing;
-        print(
-          'PatrolBinding.tearDown() for test "$testName" in group "$groupName", passed: $passed',
+      if (nameOfRequestedTest == _currentDartTestFile) {
+        final passed = invoker.liveTest.state.result.isPassing;
+        logger(
+          'tearDown(): test "$testName" in group "$_currentDartTestFile", passed: $passed',
         );
-        await patrolAppService.markDartTestAsCompleted(groupName, passed);
+        await patrolAppService.markDartTestAsCompleted(
+          completedDartTestName: _currentDartTestFile!,
+          passed: passed,
+        );
       }
     });
   }
@@ -115,6 +132,20 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// else.
   late PatrolAppService patrolAppService;
 
+  /// The singleton instance of this object.
+  ///
+  /// Provides access to the features exposed by this class. The binding must be
+  /// initialized before using this getter; this is typically done by calling
+  /// [PatrolBinding.ensureInitialized].
+  static PatrolBinding get instance => BindingBase.checkInstance(_instance);
+  static PatrolBinding? _instance;
+
+  String? _currentDartTestFile;
+
+  /// Keys are the test descriptions, and values are either [_success] or
+  /// a [Failure].
+  final Map<String, Object> _testResults = <String, Object>{};
+
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
@@ -125,13 +156,23 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     _instance = this;
   }
 
-  /// The singleton instance of this object.
-  ///
-  /// Provides access to the features exposed by this class. The binding must be
-  /// initialized before using this getter; this is typically done by calling
-  /// [PatrolBinding.ensureInitialized].
-  static PatrolBinding get instance => BindingBase.checkInstance(_instance);
-  static PatrolBinding? _instance;
+  @override
+  Future<void> runTest(
+    Future<void> Function() testBody,
+    VoidCallback invariantTester, {
+    String description = '',
+    @Deprecated(
+        'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
+        'This feature was deprecated after v2.6.0-1.0.pre.')
+        Duration? timeout,
+  }) async {
+    await super.runTest(
+      testBody,
+      invariantTester,
+      description: description,
+    );
+    _testResults[description] ??= _success;
+  }
 
   @override
   void attachRootWidget(Widget rootWidget) {
@@ -163,4 +204,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       );
     }
   }
+}
+
+extension on LiveTest {
+  /// Get the direct parent group of the currently running test.
+  ///
+  /// The group's name is the name of the Dart test file the test is defined in.
+  String get parentGroupName => groups.last.name;
 }
