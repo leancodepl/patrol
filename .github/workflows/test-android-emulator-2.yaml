@@ -2,6 +2,9 @@ name: test android emulator
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - test_workflow_for_patrol_tests
 
 env:
   ANDROID_IMAGE: system-images;android-31;default;x86_64
@@ -78,11 +81,11 @@ jobs:
 
       - name: Install SDKs with sdkmanager
         run: |
-          yes | sdkmanager --licenses > /dev/null
-          sdkmanager "emulator" > /dev/null
-          sdkmanager "platform-tools" > /dev/null
-          sdkmanager "$ANDROID_IMAGE" > /dev/null
-          sdkmanager "build-tools;30.0.3" > /dev/null
+          echo "yes" | sdkmanager --licenses
+          sdkmanager "emulator"
+          sdkmanager "platform-tools"
+          sdkmanager "$ANDROID_IMAGE"
+          sdkmanager "build-tools;30.0.3"
 
           echo "$HOME/android-sdk/emulator" >> $GITHUB_PATH
           echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
