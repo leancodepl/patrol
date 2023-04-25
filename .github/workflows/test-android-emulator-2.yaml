@@ -8,6 +8,8 @@ on:
 
 env:
   ANDROID_IMAGE: system-images;android-31;default;x86_64
+  FLUTTER_ROOT: ${{ github.workspace }}/packages/patrol/example
+  PATROL_CLI_VERSION: 1.1.7
 
 jobs:
   main:
@@ -17,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ${{ github.workspace }}/packages/patrol/example
+        working-directory: $FLUTTER_ROOT
 
     steps:
       - name: Clone repository
@@ -42,7 +44,7 @@ jobs:
           dart pub global activate \
             --source git https://github.com/leancodepl/patrol.git \
             --git-path packages/patrol_cli \
-            --git-ref patrol_cli-v1.1.7
+            --git-ref patrol_cli-v$PATROL_CLI_VERSION
 
       - name: Download TestButler
         run: curl -f -o ~/test-butler-2.2.1.apk https://repo1.maven.org/maven2/com/linkedin/testbutler/test-butler-app/2.2.1/test-butler-app-2.2.1.apk
@@ -98,18 +100,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: flutter-logs
-          path: flutter-logs
+          path: $FLUTTER_ROOT/flutter-logs
 
       - name: Upload tests summary to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: tests-summary
-          path: tests-summary
+          path: $FLUTTER_ROOT/tests-summary
 
       - name: Upload screenrecordings to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: screenrecord.mp4
-          path: screenrecords/screenrecord.mp4
+          path: $FLUTTER_ROOT/screenrecords/screenrecord.mp4
