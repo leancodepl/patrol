@@ -1,5 +1,4 @@
-// ignore_for_file: invalid_use_of_internal_member,
-// depend_on_referenced_packages, implementation_imports
+// ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -99,21 +98,18 @@ void patrolTest(
         // "integration_test/examples" directory, we assume that the name of the
         // immediate parent group is "examples/example_test.dart".
         //
-        // It's good enough for a POC.
+        // It's good enough for now.
 
         final parentGroupName = Invoker.current!.liveTest.groups.last.name;
-
-        print('patrolTest(): test "$parentGroupName" registered and waiting');
         final requestedToExecute = await patrolBinding.patrolAppService
-            .waitForRunRequest(parentGroupName);
+            .waitForExecutionRequest(parentGroupName);
 
         if (!requestedToExecute) {
           return;
         }
-        print('patrolTest(): requested execution of test "$parentGroupName"');
       }
 
-      // await nativeAutomator?.configure(); // Move to bundled_test.dart
+      // await nativeAutomator?.configure(); // TODO: Move to bundled_test.dart or add again
 
       final patrolTester = PatrolTester(
         tester: widgetTester,
