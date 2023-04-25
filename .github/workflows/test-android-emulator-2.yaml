@@ -100,18 +100,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: flutter-logs
-          path: $FLUTTER_ROOT/flutter-logs
+          path: ${{ env.FLUTTER_ROOT }}/flutter-logs
 
       - name: Upload tests summary to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: tests-summary
-          path: $FLUTTER_ROOT/tests-summary
+          path: ${{ env.FLUTTER_ROOT }}/tests-summary
 
       - name: Upload screenrecordings to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: screenrecord.mp4
-          path: $FLUTTER_ROOT/screenrecords/screenrecord.mp4
+          path: ${{ env.FLUTTER_ROOT }}/screenrecords/screenrecord.mp4

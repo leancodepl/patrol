@@ -24,6 +24,12 @@ record() {
     done
 }
 
+adb shell ps | grep apps | awk '{print $9}'
+
+echo "disable googlequicksearchbox"
+
+adb shell "su root pm disable com.google.android.googlequicksearchbox"
+
 adb install ~/test-butler-2.2.1.apk
 adb shell am startservice com.linkedin.android.testbutler/com.linkedin.android.testbutler.ButlerService
 while ! adb shell ps | grep butler > /dev/null; do
