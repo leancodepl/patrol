@@ -1,3 +1,7 @@
+## 2.0.0-dev.1
+
+- Support test bundling on Android (#1205) (#1220) (#1221)
+
 ## 1.1.0
 
 This version marks the official release of Hot Restart. [Learn more
