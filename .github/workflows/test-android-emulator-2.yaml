@@ -19,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: $FLUTTER_ROOT
+        working-directory: ${{ env.FLUTTER_ROOT }}
 
     steps:
       - name: Clone repository
