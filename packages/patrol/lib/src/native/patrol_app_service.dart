@@ -92,7 +92,7 @@ class PatrolAppService extends PatrolAppServiceBase {
   /// Returns true if the native side requsted execution of [dartTestFile].
   /// Returns false otherwise.
   Future<bool> waitForExecutionRequest(String dartTestFile) async {
-    print('PatrolAppService: registerd "$dartTestFile"');
+    print('PatrolAppService: registered "$dartTestFile"');
 
     final requestedDartTestFile = await testExecutionRequested;
     if (requestedDartTestFile != dartTestFile) {
