@@ -1,3 +1,6 @@
+// ignore_for_file: avoid_print
+// TODO: Use a logger instead of print
+
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -25,6 +28,9 @@ Future<void> runAppService(PatrolAppService service) async {
 }
 
 /// Implements a stateful gRPC service for querying and executing Dart tests.
+///
+/// This is an internal class and you don't want to use it. It's public so that
+/// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceBase {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup});
@@ -51,6 +57,10 @@ class PatrolAppService extends PatrolAppServiceBase {
     return _testExecutionCompleted.future;
   }
 
+  /// Marks [dartFileName] as completed with the given [passed] status.
+  ///
+  /// If an exception was thrown during the test, [details] should contain the
+  /// useful information.
   Future<void> markDartTestAsCompleted({
     required String dartFileName,
     required bool passed,
@@ -81,8 +91,8 @@ class PatrolAppService extends PatrolAppServiceBase {
   ///
   /// Returns true if the native side requsted execution of [dartTestFile].
   /// Returns false otherwise.
-  Future<bool> waitForRunRequest(String dartTestFile) async {
-    print('PatrolAppService.waitUntilRunRequested(): $dartTestFile registered');
+  Future<bool> waitForExecutionRequest(String dartTestFile) async {
+    print('PatrolAppService: registerd "$dartTestFile"');
 
     final requestedDartTestFile = await testExecutionRequested;
     if (requestedDartTestFile != dartTestFile) {
@@ -91,11 +101,13 @@ class PatrolAppService extends PatrolAppServiceBase {
       // callers can skip the already executed test.
 
       print(
-        'PatrolAppService.waitUntilRunRequested(): $dartTestFile was not matched by requested test $requestedDartTestFile',
+        'PatrolAppService: registered test "$dartTestFile" was not matched by requested test "$requestedDartTestFile"',
       );
 
       return false;
     }
+
+    print('PatrolAppService: requested execution of test "$dartTestFile"');
 
     return true;
   }
