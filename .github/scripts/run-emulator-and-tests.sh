@@ -44,7 +44,7 @@ EXIT_CODE=0
 
 # run tests 3 times and save tests' summary
 patrol test \
-  -t /integration_test/webview_leancode_test.dart \
+  -t integration_test/webview_leancode_test.dart \
   | tee ./tests-summary || EXIT_CODE=$?
 
 # write lockfile to prevent next loop iteration
