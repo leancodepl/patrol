@@ -24,7 +24,7 @@ record() {
     done
 }
 
-adb shell ps | grep apps | awk '{print $9}'
+# adb shell ps | grep apps | awk '{print $9}'
 
 echo "disable googlequicksearchbox"
 
