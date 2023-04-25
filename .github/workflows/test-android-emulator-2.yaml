@@ -28,9 +28,6 @@ jobs:
       - name: Set up Java
         run: echo "JAVA_HOME="$JAVA_HOME_11_X64"" >> $GITHUB_ENV
 
-      - name: Check Java version
-        run: java -version
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -67,36 +64,20 @@ jobs:
           done
           kill $buildpid
 
-      - name: Install cmdline-tools
-        run: |
-          cd
-          curl -LO https://dl.google.com/android/repository/commandlinetools-mac-9477386_latest.zip
-          brew install unzip 1>/dev/null 2>&1
-          unzip commandlinetools-mac-9477386_latest.zip
-
-          mkdir ~/android-sdk
-          mkdir ~/android-sdk/cmdline-tools
-          mkdir ~/android-sdk/platforms # we just need empty folder
-          mkdir ~/android-sdk/cmdline-tools/latest
-          mv -v ~/cmdline-tools/* ~/android-sdk/cmdline-tools/latest
-
-          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-
       - name: Install SDKs with sdkmanager
         run: |
-          java -version
           yes | sdkmanager --licenses
-          sdkmanager "emulator"
-          sdkmanager "platform-tools"
+          # sdkmanager "emulator"
+          # sdkmanager "platform-tools"
           sdkmanager "$ANDROID_IMAGE"
-          sdkmanager "build-tools;30.0.3"
+          # sdkmanager "build-tools;30.0.3"
 
-          echo "$HOME/android-sdk/emulator" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
+          # echo "$HOME/android-sdk/emulator" >> $GITHUB_PATH
+          # echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          flutter config --android-sdk "$HOME/android-sdk"
+          # echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          # echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          flutter config --android-sdk "/Users/runner/Library/Android/sdk"
 
       - name: Create and configure emulator
         run: |
