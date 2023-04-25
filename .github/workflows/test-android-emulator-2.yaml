@@ -66,19 +66,14 @@ jobs:
 
       - name: Add SDKs to path
         run: |
-          echo "cmdline-tools:"
-          ls /Users/runner/Library/Android/sdk/cmdline-tools/latest
           echo "/Users/runner/Library/Android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "tools: "
-          ls /Users/runner/Library/Android/sdk/tools
           echo "/Users/runner/Library/Android/sdk/tools" >> $GITHUB_PATH
-          echo "platform-tools: "
-          ls /Users/runner/Library/Android/sdk/platform-tools
+          echo "/Users/runner/Library/Android/sdk/emulator" >> $GITHUB_PATH
           echo "/Users/runner/Library/Android/sdk/platform-tools" >> $GITHUB_PATH
 
       - name: Install SDKs with sdkmanager
         run: |
-          yes | sdkmanager --licenses
+          yes | sdkmanager --licenses > /dev/null
           # sdkmanager "emulator"
           # sdkmanager "platform-tools"
           sdkmanager "$ANDROID_IMAGE"
