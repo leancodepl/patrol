@@ -1,3 +1,7 @@
+## 1.2.0-dev.2
+
+- Fix a small typo in logs (#1229)
+
 ## 1.2.0-dev.1
 
 - Support test bundling on Android (#1205) (#1220) (#1221)
