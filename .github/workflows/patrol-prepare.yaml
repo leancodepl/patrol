@@ -145,29 +145,37 @@ jobs:
         run: flutter pub get
 
       - name: flutter test
+        if: always()
         run: flutter test --coverage
 
       - name: flutter analyze
+        if: always()
         run: flutter analyze
 
       - name: flutter format
+        if: always()
         run: flutter format --set-exit-if-changed .
 
       - name: flutter pub publish --dry-run
+        if: always()
         run: flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
+        if: always()
         working-directory: ./packages/patrol/example
         run: flutter pub get
 
       - name: flutter format (example app)
+        if: always()
         working-directory: ./packages/patrol/example
         run: flutter format --set-exit-if-changed .
 
       - name: flutter analyze (example app)
+        if: always()
         working-directory: ./packages/patrol/example
         run: flutter analyze --no-fatal-infos
 
       - name: flutter test (example app)
+        if: always()
         working-directory: ./packages/patrol/example
         run: flutter test

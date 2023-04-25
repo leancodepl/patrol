@@ -113,7 +113,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           dartFileName: _currentDartTestFile!,
           passed: passed,
           details: _testResults[_currentDartTestFile!] is Failure
-              ? (_testResults[_currentDartTestFile!] as Failure).details
+              ? (_testResults[_currentDartTestFile!] as Failure?)?.details
               : null,
         );
       }
