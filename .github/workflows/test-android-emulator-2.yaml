@@ -64,28 +64,19 @@ jobs:
           done
           kill $buildpid
 
-      - name: Add SDKs to path
+      - name: Add Android SDKs to path
         run: |
           echo "/Users/runner/Library/Android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "/Users/runner/Library/Android/sdk/tools" >> $GITHUB_PATH
           echo "/Users/runner/Library/Android/sdk/emulator" >> $GITHUB_PATH
           echo "/Users/runner/Library/Android/sdk/platform-tools" >> $GITHUB_PATH
-
-      - name: Install SDKs with sdkmanager
-        run: |
-          yes | sdkmanager --licenses > /dev/null
-          # sdkmanager "emulator"
-          # sdkmanager "platform-tools"
-          sdkmanager "$ANDROID_IMAGE"
-          # sdkmanager "build-tools;30.0.3"
-
-          # echo "$HOME/android-sdk/emulator" >> $GITHUB_PATH
-          # echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-
-          # echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          # echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           flutter config --android-sdk "/Users/runner/Library/Android/sdk"
 
+      - name: Download Android Image
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "$ANDROID_IMAGE" > /dev/null
+          
       - name: Create and configure emulator
         run: |
           avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
