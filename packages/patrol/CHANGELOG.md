@@ -1,4 +1,4 @@
-## 2.0.0-dev.1
+## 1.2.0-dev.1
 
 - Support test bundling on Android (#1205) (#1220) (#1221)
 
