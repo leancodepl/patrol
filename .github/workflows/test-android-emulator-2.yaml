@@ -103,6 +103,13 @@ jobs:
           echo "hw.lcd.height=2220" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
 
+      - name: Generate AVD snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
+        run: |
+          emulator @MyAVD -no-window -noaudio -no-boot-anim -no-snapshot-load &
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
+          adb emu kill
+
       - name: Run emulator and tests
         run: ${{ github.workspace }}/.github/scripts/run-emulator-and-tests.sh
 
