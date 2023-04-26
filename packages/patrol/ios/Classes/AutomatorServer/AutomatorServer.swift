@@ -389,17 +389,6 @@
       }
     }
 
-    func submitTestResults(
-      request: Patrol_SubmitTestResultsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Empty {
-      return try await runCatching {
-        Logger.shared.i("submitted \(request.results.count) dart test results")
-        onTestResultsSubmitted(request.results)
-        return DefaultResponse()
-      }
-    }
-
     private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
       // TODO: Use an interceptor (like on Android)
       // See: https://github.com/grpc/grpc-swift/issues/1148
@@ -411,6 +400,13 @@
       } catch let err {
         throw PatrolError.unknown(err)
       }
+    }
+
+    func markPatrolAppServiceReady(
+      request: Patrol_Empty,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> Patrol_Empty {
+      return Empty()
     }
   }
 
