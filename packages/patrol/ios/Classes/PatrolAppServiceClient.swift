@@ -13,7 +13,7 @@ import Logging
   }
 }
 
-
+// TODO: Rewrite to be blocking (we don' need for completion handlers)
 @objc public class PatrolAppServiceClient : NSObject {
     
     private let client: Patrol_PatrolAppServiceAsyncClient

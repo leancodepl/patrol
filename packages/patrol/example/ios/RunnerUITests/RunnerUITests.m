@@ -4,29 +4,29 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL success, NSString *_Nullable failureMessage);
-
-/**
- * Adapted from
- * https://github.com/flutter/flutter/blob/master/packages/integration_test/ios/Classes/FLTIntegrationTestRunner.m
- */
-@interface PatrolIntegrationTestRunner : NSObject
-/**
- * Starts dart tests and waits for results.
- *
- * @param testResult Will be called once per every completed dart test.
- */
-- (void)iterateOverTestResults:(NSDictionary<NSString *, NSString *> *)testResults
-                  withSelector:(NS_NOESCAPE PatrolIntegrationTestResults)testResult;
-
-/**
- * An appropriate XCTest method name based on the dart test name.
- *
- * Example: dart test "verify widget-ABC123" becomes "testVerifyWidgetABC123"
- */
-+ (NSString *)testCaseNameFromDartTestName:(NSString *)dartTestName;
-
-@end
+//typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL success, NSString *_Nullable failureMessage);
+//
+///**
+// * Adapted from
+// * https://github.com/flutter/flutter/blob/master/packages/integration_test/ios/Classes/FLTIntegrationTestRunner.m
+// */
+//@interface PatrolIntegrationTestRunner : NSObject
+///**
+// * Starts dart tests and waits for results.
+// *
+// * @param testResult Will be called once per every completed dart test.
+// */
+//- (void)iterateOverTestResults:(NSDictionary<NSString *, NSString *> *)testResults
+//                  withSelector:(NS_NOESCAPE PatrolIntegrationTestResults)testResult;
+//
+///**
+// * An appropriate XCTest method name based on the dart test name.
+// *
+// * Example: dart test "verify widget-ABC123" becomes "testVerifyWidgetABC123"
+// */
+//+ (NSString *)createMethodNameFromPatrolGeneratedGroup:(NSString *)dartTestGroup;
+//
+//@end
 
 @interface RunnerUITests : XCTestCase
 @end
@@ -50,7 +50,7 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
   }
                                                                                                                  
   // Run the app for the first time to gather Dart tests
-  XCUIApplication *app = [[XCUIApplication alloc] init];
+  __block XCUIApplication *app = [[XCUIApplication alloc] init];
   [app activate];
                                                                                                                  
   // Spin the runloop waiting until the app reports that it is ready to report Dart tests
@@ -65,6 +65,7 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
         }
         
         dartTestFiles = dartTests;
+        [app terminate];
     }];
     
   // Wait for Dart tests
@@ -78,27 +79,30 @@ typedef void (^PatrolIntegrationTestResults)(SEL nativeTestSelector, BOOL succes
     
     for (NSString *dartTestFile in dartTestFiles) {
         IMP runDartTestImplementation = imp_implementationWithBlock(^(id _self) {
+            XCUIApplication *app = [[XCUIApplication alloc] init];
+            [app activate];
+            
             [appServiceClient runDartTestWithName:dartTestFile
                                 completionHandler:^(RunDartTestResponse * _Nullable response, NSError * _Nullable err) {
                 XCTAssertTrue(response.passed, @"%@", response.details);
             }];
         });
         
-        class_addMethod(self, <#SEL  _Nonnull name#>, <#IMP  _Nonnull imp#>, <#const char * _Nullable types#>)
+        // class_addMethod(self, <#SEL  _Nonnull name#>, <#IMP  _Nonnull imp#>, <#const char * _Nullable types#>)
     }
                                                                                                                  
   /* Dynamically create test case methods from Dart results */
-  [testRunner iterateOverTestResults:server.dartTestResults
-                        withSelector:^(SEL testSelector, BOOL success, NSString * failureMessage) {
-                          IMP assertImplementation = imp_implementationWithBlock(^(id _self) {
-                            XCTAssertTrue(success, @"%@", failureMessage);
-                          });
-                          class_addMethod(self, testSelector, assertImplementation, "v@:");
-                          NSMethodSignature *signature = [self instanceMethodSignatureForSelector:testSelector];
-                          NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-                          invocation.selector = testSelector;
-                          [invocations addObject:invocation];
-                        }];
+//  [testRunner iterateOverTestResults:server.dartTestResults
+//                        withSelector:^(SEL testSelector, BOOL success, NSString * failureMessage) {
+//                          IMP assertImplementation = imp_implementationWithBlock(^(id _self) {
+//                            XCTAssertTrue(success, @"%@", failureMessage);
+//                          });
+//                          class_addMethod(self, testSelector, assertImplementation, "v@:");
+//                          NSMethodSignature *signature = [self instanceMethodSignatureForSelector:testSelector];
+//                          NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+//                          invocation.selector = testSelector;
+//                          [invocations addObject:invocation];
+//                        }];
                                                                                                                  
   return invocations;
 }

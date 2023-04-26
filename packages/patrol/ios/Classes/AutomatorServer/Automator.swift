@@ -1,4 +1,4 @@
-#if PATROL_ENABLED
+// #if PATROL_ENABLED
   import XCTest
 
   class Automator {
@@ -639,4 +639,4 @@
     }
   }
 
-#endif
+// #endif
