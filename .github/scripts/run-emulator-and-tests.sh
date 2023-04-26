@@ -3,7 +3,6 @@ set -euo pipefail
 
 # run emulator
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
-emulatorpid="$!"
 
 # wait for emulator to boot up
 while [ "`adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sleep 1; done
@@ -71,5 +70,6 @@ cd screenrecords
 ls | grep mp4 | sort -V | xargs -I {} echo "file {}" | sponge videos.txt
 ffmpeg -f concat -safe 0 -i videos.txt -c copy screenrecord.mp4
 
-kill $emulatorpid
+adb emu kill
+sleep 20
 exit $EXIT_CODE
