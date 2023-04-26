@@ -110,6 +110,7 @@ jobs:
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
           sleep 20
           adb emu kill
+          sleep 60
 
       - name: Run emulator and tests
         run: ${{ github.workspace }}/.github/scripts/run-emulator-and-tests.sh
