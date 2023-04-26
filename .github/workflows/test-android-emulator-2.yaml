@@ -8,7 +8,7 @@ on:
 
 env:
   ANDROID_IMAGE: system-images;android-31;default;x86_64
-  FLUTTER_PROJECT_ROOT: ${{ github.workspace }}/packages/patrol/example
+  FLUTTER_APP_ROOT: ${{ github.workspace }}/packages/patrol/example
   PATROL_CLI_VERSION: 1.1.7
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ${{ env.FLUTTER_PROJECT_ROOT }}
+        working-directory: ${{ env.FLUTTER_APP_ROOT }}
 
     steps:
       - name: Clone repository
@@ -66,7 +66,7 @@ jobs:
           done
           kill $buildpid
 
-      - name: Add Android SDKs to path
+      - name: Add Android tools to path
         run: |
           echo "/Users/runner/Library/Android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "/Users/runner/Library/Android/sdk/tools" >> $GITHUB_PATH
@@ -100,18 +100,18 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: flutter-logs
-          path: ${{ env.FLUTTER_PROJECT_ROOT }}/flutter-logs
+          path: ${{ env.FLUTTER_APP_ROOT }}/flutter-logs
 
       - name: Upload tests summary to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: tests-summary
-          path: ${{ env.FLUTTER_PROJECT_ROOT }}/tests-summary
+          path: ${{ env.FLUTTER_APP_ROOT }}/tests-summary
 
       - name: Upload screenrecordings to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: screenrecord.mp4
-          path: ${{ env.FLUTTER_PROJECT_ROOT }}/screenrecords/screenrecord.mp4
+          path: ${{ env.FLUTTER_APP_ROOT }}/screenrecords/screenrecord.mp4
