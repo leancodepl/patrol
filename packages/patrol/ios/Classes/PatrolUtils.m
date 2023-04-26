@@ -16,8 +16,6 @@
   // Split the string by dot
   NSArray<NSString *> *components = [[temp componentsSeparatedByString:@"."] mutableCopy];
 
-  NSLog(@"Components: %@", components);
-
   // Convert the filename from snake_case to camelCase
   NSMutableString *fileName = [components.lastObject mutableCopy];
   NSArray *words = [fileName componentsSeparatedByString:@"_"];

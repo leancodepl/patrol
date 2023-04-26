@@ -40,3 +40,4 @@ final class RunnerTests: XCTestCase {
         XCTAssertEqual(result, expectedOutput)
     }
 }
+

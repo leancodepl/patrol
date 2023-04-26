@@ -11,7 +11,7 @@
 
     private let onAppReady: (Bool) -> Void
 
-    init(automator: Automator, onAppReady: @escaping ([String: String]) -> Void) {
+    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
       self.automator = automator
       self.onAppReady = onAppReady
     }
