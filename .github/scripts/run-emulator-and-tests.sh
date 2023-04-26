@@ -10,6 +10,10 @@ while [ "`adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sle
 # if we screenrecord too quickly, we get: "Unable to open '/sdcard/patrol.mp4': Operation not permitted"
 # sleep 60
 
+sleep 20
+adb emu kill
+sleep 60
+
 exit 0
 
 record() {
