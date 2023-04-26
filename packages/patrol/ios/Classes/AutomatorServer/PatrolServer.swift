@@ -14,7 +14,7 @@ import NIOPosix
   #endif
 
   @objc
-  public private(set) var dartTestResults: [String: String]?
+  public private(set) var appReady = false
 
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -47,9 +47,9 @@ import NIOPosix
   @objc public func start() async throws {
     #if PATROL_ENABLED
       let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-      let provider = AutomatorServer(automator: automator) { testResults in
-        Logger.shared.i("Got \(testResults.count) dart test results")
-        self.dartTestResults = testResults
+      let provider = AutomatorServer(automator: automator) { appReady in
+        Logger.shared.i("App reported that it is ready")
+        self.appReady = appReady
       }
 
       let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(

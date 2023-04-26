@@ -9,11 +9,11 @@
   final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     private let automator: Automator
 
-    private let onTestResultsSubmitted: ([String: String]) -> Void
+    private let onAppReady: (Bool) -> Void
 
-    init(automator: Automator, onTestResultsSubmitted: @escaping ([String: String]) -> Void) {
+    init(automator: Automator, onAppReady: @escaping ([String: String]) -> Void) {
       self.automator = automator
-      self.onTestResultsSubmitted = onTestResultsSubmitted
+      self.onAppReady = onAppReady
     }
 
     func configure(
@@ -44,8 +44,7 @@
         throw PatrolError.methodNotImplemented("pressBack")
       }
     }
-
-    func pressRecentApps(
+      func pressRecentApps(
       request: Empty,
       context: GRPCAsyncServerCallContext
     ) async throws -> DefaultResponse {
@@ -406,6 +405,7 @@
       request: Patrol_Empty,
       context: GRPCAsyncServerCallContext
     ) async throws -> Patrol_Empty {
+      onAppReady(true)
       return Empty()
     }
   }

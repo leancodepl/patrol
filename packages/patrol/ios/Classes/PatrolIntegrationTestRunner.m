@@ -39,22 +39,4 @@
   }];
 }
 
-- (NSDictionary<NSString *, UIImage *> *)capturedScreenshotsByName {
-  // TODO: Implement
-
-  return [[NSDictionary alloc] init];
-}
-
-+ (NSString *)testCaseNameFromDartTestName:(NSString *)dartTestName {
-  NSString *capitalizedString = dartTestName.localizedCapitalizedString;
-
-  // Objective-C method names must be alphanumeric
-  NSCharacterSet *disallowedCharacters = NSCharacterSet.alphanumericCharacterSet.invertedSet;
-
-  // Remove disallowed characters
-  NSString *upperCamelTestName =
-      [[capitalizedString componentsSeparatedByCharactersInSet:disallowedCharacters] componentsJoinedByString:@""];
-  return [NSString stringWithFormat:@"test%@", upperCamelTestName];
-}
-
 @end
