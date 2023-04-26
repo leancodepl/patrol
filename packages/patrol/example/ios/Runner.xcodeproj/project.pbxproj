@@ -16,7 +16,7 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		983964DC2978A956007EB76F /* RunnerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 983964DB2978A956007EB76F /* RunnerUITests.m */; };
 		9862560529F9A72100B267FA /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9862560429F9A72100B267FA /* RunnerTests.swift */; };
-		98D0EC6229F9E56C002D4C07 /* TestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D0EC6129F9E56C002D4C07 /* TestTests.m */; };
+		98D0EC6229F9E56C002D4C07 /* DummyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 98D0EC6129F9E56C002D4C07 /* DummyTests.m */; };
 		FA27315210C24EEDF8E3A8C2 /* Pods_Runner_RunnerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93E89E9CC733F51B93EF71E1 /* Pods_Runner_RunnerUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -74,7 +74,7 @@
 		983964DB2978A956007EB76F /* RunnerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RunnerUITests.m; sourceTree = "<group>"; };
 		9862560229F9A72100B267FA /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9862560429F9A72100B267FA /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
-		98D0EC6129F9E56C002D4C07 /* TestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestTests.m; sourceTree = "<group>"; };
+		98D0EC6129F9E56C002D4C07 /* DummyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DummyTests.m; sourceTree = "<group>"; };
 		B447E7B3C41089DE3953018D /* Pods-Runner-RunnerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		B67A70BD9498C1A200C5D078 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -180,7 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				9862560429F9A72100B267FA /* RunnerTests.swift */,
-				98D0EC6129F9E56C002D4C07 /* TestTests.m */,
+				98D0EC6129F9E56C002D4C07 /* DummyTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -500,7 +500,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9862560529F9A72100B267FA /* RunnerTests.swift in Sources */,
-				98D0EC6229F9E56C002D4C07 /* TestTests.m in Sources */,
+				98D0EC6229F9E56C002D4C07 /* DummyTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
