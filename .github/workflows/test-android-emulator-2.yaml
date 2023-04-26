@@ -74,12 +74,23 @@ jobs:
           echo "/Users/runner/Library/Android/sdk/platform-tools" >> $GITHUB_PATH
           flutter config --android-sdk "/Users/runner/Library/Android/sdk"
 
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-1
+      
       - name: Download Android Image
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         run: |
           yes | sdkmanager --licenses > /dev/null
           sdkmanager "$ANDROID_IMAGE" > /dev/null
           
       - name: Create and configure emulator
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         run: |
           avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
           echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini

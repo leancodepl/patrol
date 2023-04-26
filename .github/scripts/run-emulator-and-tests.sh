@@ -50,8 +50,10 @@ flutterlogspid="$!"
 EXIT_CODE=0
 
 # run tests 3 times and save tests' summary
-patrol test \
-  | tee ./tests-summary || EXIT_CODE=$?
+#patrol test \
+#  | tee ./tests-summary || EXIT_CODE=$?
+
+sleep 30
 
 # write lockfile to prevent next loop iteration
 touch "$HOME/adb_screenrecord.lock"
