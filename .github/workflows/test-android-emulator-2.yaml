@@ -81,6 +81,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
+            ~/Library/Android/sdk/*
           key: avd-1
       
       - name: Download Android Image
