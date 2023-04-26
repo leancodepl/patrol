@@ -19,7 +19,8 @@
   [tests enumerateKeysAndObjectsUsingBlock:^(NSString *test, NSString *result, BOOL *stop) {
     NSString *testSelectorName = [[self class] testCaseNameFromDartTestName:test];
 
-    // Make sure that Objective-C test method names are unique after sanitization
+    // Make sure that Objective-C test method names are unique after
+    // sanitization
     if ([testCaseNames containsObject:testSelectorName]) {
       NSString *reason = [NSString
           stringWithFormat:@"Cannot test \"%@\", duplicate XCTestCase tests named %@", test, testSelectorName];
