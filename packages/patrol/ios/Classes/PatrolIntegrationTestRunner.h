@@ -1,10 +1,18 @@
 @import Foundation;
 @import ObjectiveC.runtime;
 
+// This file is a one giant macro to make the setup as easy as possible for the developer.
+// To edit it:
+//  1. Remove the trailing backslashes: $ sed 's/\\$//' ios/Classes/PatrolIntegrationTestRunner.h
+//  2. Paste its contents into the RunnerUITests.m in the RunnerUITests target
+//  3. Make the changes, make sure it works
+//  4. Re-add trailing backslashes: $ sed 's/$/\\/' ios/Classes/PatrolIntegrationTestRunner.h
+//  5. Copy the contents from RunnerUITests.m back here
+//  6. Go back to using a macro in RunnerTests.m
+
 
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
 // so it is reported as a native XCTest run result.
-// If the Flutter dart tests have captured screenshots, add them to the XCTest bundle.
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                               \
 @interface __test_class : XCTestCase\
 @end\
