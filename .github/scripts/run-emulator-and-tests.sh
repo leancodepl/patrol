@@ -4,28 +4,7 @@ set -euo pipefail
 # run emulator
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
 
-timeout=300
-start_time=$(date +%s)
-
-while true
-do
-  # Check value of sys.boot_completed using adb shell
-  boot_completed=$(adb shell getprop sys.boot_completed)
-
-  # Check if the value is 1 (boot completed)
-  if [[ $boot_completed -eq 1 ]]; then
-    echo "Boot completed"
-    break
-  fi
-
-  current_time=$(date +%s)
-  if [[ $((current_time - start_time)) -gt $timeout ]]; then
-    echo "Timeout reached"
-    break
-  fi
-
-  sleep 5
-done
+${{ github.workspace }}/.github/scripts/boot_completed_check.sh
 
 # if we screenrecord too quickly, we get: "Unable to open '/sdcard/patrol.mp4': Operation not permitted"
 sleep 30
