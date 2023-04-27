@@ -24,9 +24,11 @@ do
   # Check if timeout has been reached
   if [[ $((current_time - start_time)) -gt $timeout ]]; then
     echo "Timeout reached"
-    break
+    exit 1
   fi
 
   # Sleep for 5 seconds before checking again
   sleep 5
 done
+
+exit 0
