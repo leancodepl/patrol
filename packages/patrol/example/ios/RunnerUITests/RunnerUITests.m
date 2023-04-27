@@ -63,16 +63,22 @@
   for (NSString *dartTestFile in dartTestFiles) {
     /* Step 1 */
     IMP implementation = imp_implementationWithBlock(^(id _self) {
-      XCTAssertTrue(true, "dummy asserty");
+      XCUIApplication *app = [[XCUIApplication alloc] init];
+      [app launch];
 
-      // Temporarily commented out
-      //      XCUIApplication *app = [[XCUIApplication alloc] init];
-      //      [app launch];
-      //
-      //      [appServiceClient runDartTestWithName:dartTestFile
-      //                          completionHandler:^(RunDartTestResponse *_Nullable response, NSError *_Nullable err) {
-      //                            XCTAssertTrue(response.passed, @"%@", response.details);
-      //                          }];
+      
+      __block RunDartTestResponse *response = NULL;
+      [appServiceClient runDartTestWithName:dartTestFile
+                          completionHandler:^(RunDartTestResponse *_Nullable resp, NSError *_Nullable err) {
+        response = resp;
+                          }];
+      
+      /* Wait until Dart test finishes */
+      while (!response) {
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+      }
+      
+      XCTAssertTrue(response.passed, @"%@", response.details);
     });
     NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTestFile];
     SEL selector = NSSelectorFromString(selectorStr);
