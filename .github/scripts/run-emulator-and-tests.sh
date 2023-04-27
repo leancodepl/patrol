@@ -8,16 +8,8 @@ emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
 while [ "`adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sleep 1; done
 
 # if we screenrecord too quickly, we get: "Unable to open '/sdcard/patrol.mp4': Operation not permitted"
-# sleep 60
-
 sleep 60
-adb emu kill
-sleep 60
-
-exit 0
-
 record() {
-    adb root
     adb shell mkdir -p /sdcard/screenrecords
     i=0
     while [ ! -f "$HOME/adb_screenrecord.lock" ]; do
@@ -55,10 +47,8 @@ flutterlogspid="$!"
 EXIT_CODE=0
 
 # run tests 3 times and save tests' summary
-#patrol test \
-#  | tee ./tests-summary || EXIT_CODE=$?
-
-sleep 30
+patrol test \
+  | tee ./tests-summary || EXIT_CODE=$?
 
 # write lockfile to prevent next loop iteration
 touch "$HOME/adb_screenrecord.lock"
@@ -74,6 +64,6 @@ cd screenrecords
 ls | grep mp4 | sort -V | xargs -I {} echo "file {}" | sponge videos.txt
 ffmpeg -f concat -safe 0 -i videos.txt -c copy screenrecord.mp4
 
+# goodbye emulator :(
 adb emu kill
-sleep 20
 exit $EXIT_CODE

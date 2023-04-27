@@ -82,18 +82,20 @@ jobs:
             ~/.android/avd/*
             ~/.android/adb*
             ~/Library/Android/sdk/*
-          key: avd-1
-      
-      - name: Download Android Image
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        run: |
-          yes | sdkmanager --licenses > /dev/null
-          sdkmanager "$ANDROID_IMAGE" > /dev/null
+          key: avd-${{ env.ANDROID_IMAGE }}
           
-      - name: Create and configure emulator
+      - name: Create emulator for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         run: |
+          # Download image
+          yes > /dev/null | sdkmanager --licenses > /dev/null
+          sdkmanager "$ANDROID_IMAGE" > /dev/null
+
+          # Create
           avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
+
+          # Configure
+          echo "hw.cpu.ncore=3" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
@@ -104,9 +106,7 @@ jobs:
           echo "hw.lcd.height=2220" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
 
-      - name: Generate AVD snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        run: |
+          # Boot up and shutdown
           emulator @MyAVD -no-window -noaudio -no-boot-anim -no-snapshot-load &
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
           adb -s emulator-5554 emu kill
