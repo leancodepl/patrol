@@ -1,7 +1,6 @@
 #ifndef ParametrizedTestCase_h
 #define ParametrizedTestCase_h
 
-
 #endif /* ParametrizedTestCase_h */
 
 #import <XCTest/XCTest.h>

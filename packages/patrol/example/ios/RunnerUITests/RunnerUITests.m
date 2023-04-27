@@ -35,7 +35,8 @@
   }
 
   __block NSArray<NSString *> *dartTestFiles = NULL;
-  [appServiceClient listDartTestsWithCompletionHandler:^(NSArray<NSString *> *_Nullable dartTests, NSError *_Nullable err) {
+  [appServiceClient
+      listDartTestsWithCompletionHandler:^(NSArray<NSString *> *_Nullable dartTests, NSError *_Nullable err) {
         if (err != NULL) {
           NSLog(@"listDartTests(): failed, err: %@", err);
         }
@@ -66,18 +67,17 @@
       XCUIApplication *app = [[XCUIApplication alloc] init];
       [app launch];
 
-      
       __block RunDartTestResponse *response = NULL;
       [appServiceClient runDartTestWithName:dartTestFile
                           completionHandler:^(RunDartTestResponse *_Nullable resp, NSError *_Nullable err) {
-        response = resp;
+                            response = resp;
                           }];
-      
+
       /* Wait until Dart test finishes */
       while (!response) {
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
       }
-      
+
       XCTAssertTrue(response.passed, @"%@", response.details);
     });
     NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTestFile];

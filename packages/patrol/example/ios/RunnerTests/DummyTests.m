@@ -21,22 +21,22 @@
 
   for (int i = 0; i < dartTestFiles.count; i++) {
     /* Step 1 */
-    
+
     NSString *name = dartTestFiles[i];
-    
+
     void (^func)(DummyTests *) = ^(DummyTests *instance) {
       NSLog(@"func called!");
       XCTAssertTrue(true, "dummy assert");
     };
-    
+
     IMP implementation = imp_implementationWithBlock(func);
-    NSString *selectorStr = [ NSString stringWithFormat:@"test_%@", name];
+    NSString *selectorStr = [NSString stringWithFormat:@"test_%@", name];
     SEL selector = NSSelectorFromString(selectorStr);
 
     BOOL ok = class_addMethod([self class], selector, implementation, "v@:");
 
     /* Step 2 */
-    
+
     NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
     invocation.selector = selector;
