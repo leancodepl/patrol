@@ -4,7 +4,7 @@ set -euo pipefail
 # run emulator
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
 
-bash ${{ github.workspace }}/.github/scripts/boot_completed_check.sh
+bash ${{ github.workspace }}/.github/scripts/boot-completed-check.sh
 
 # if we screenrecord too quickly, we get: "Unable to open '/sdcard/patrol.mp4': Operation not permitted"
 sleep 30
