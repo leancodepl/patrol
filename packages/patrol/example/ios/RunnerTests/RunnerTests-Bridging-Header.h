@@ -4,3 +4,4 @@
 //
 
 #import "PatrolIntegrationTestRunner.h"
+#include "ParametrizedTestCase.h"
