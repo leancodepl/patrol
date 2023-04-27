@@ -109,7 +109,7 @@ jobs:
         run: |
           emulator @MyAVD -no-window -noaudio -no-boot-anim -no-snapshot-load &
           adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
-          sleep 20
+          sleep 60
           adb emu kill
           sleep 60
 
