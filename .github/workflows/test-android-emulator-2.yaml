@@ -44,7 +44,7 @@ jobs:
           dart pub global activate \
             --source git https://github.com/leancodepl/patrol.git \
             --git-path packages/patrol_cli \
-            --git-ref patrol_cli-v$PATROL_CLI_VERSION
+            --git-ref patrol_cli-v${{ env.PATROL_CLI_VERSION }}
 
       - name: Download TestButler
         run: curl -f -o ~/test-butler-2.2.1.apk https://repo1.maven.org/maven2/com/linkedin/testbutler/test-butler-app/2.2.1/test-butler-app-2.2.1.apk
@@ -88,11 +88,11 @@ jobs:
         run: |
           echo "Downloading Android image..."
           yes | sdkmanager --licenses > /dev/null
-          sdkmanager "$ANDROID_IMAGE" > /dev/null
+          sdkmanager "${{ env.ANDROID_IMAGE }}" > /dev/null
           echo "Done"
 
           echo "Creating emulator..."
-          avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
+          avdmanager -s create avd -n MyAVD -k "${{ env.ANDROID_IMAGE }}"
           echo "Done"
 
           echo "Configuring emulator..."

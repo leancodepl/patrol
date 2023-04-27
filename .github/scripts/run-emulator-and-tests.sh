@@ -3,11 +3,9 @@ set -euo pipefail
 
 # run emulator
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
-
-bash "${GITHUB_WORKSPACE}/.github/scripts/boot-completed-check.sh"
+bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
 
 # if we screenrecord too quickly, we get: "Unable to open '/sdcard/patrol.mp4': Operation not permitted"
-sleep 30
 record() {
     adb shell mkdir -p /sdcard/screenrecords
     i=0
