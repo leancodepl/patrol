@@ -4,11 +4,31 @@ set -euo pipefail
 # run emulator
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
 
-# wait for emulator to boot up
-while [ "`adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sleep 1; done
+timeout=300
+start_time=$(date +%s)
+
+while true
+do
+  # Check value of sys.boot_completed using adb shell
+  boot_completed=$(adb shell getprop sys.boot_completed)
+
+  # Check if the value is 1 (boot completed)
+  if [[ $boot_completed -eq 1 ]]; then
+    echo "Boot completed"
+    break
+  fi
+
+  current_time=$(date +%s)
+  if [[ $((current_time - start_time)) -gt $timeout ]]; then
+    echo "Timeout reached"
+    break
+  fi
+
+  sleep 5
+done
 
 # if we screenrecord too quickly, we get: "Unable to open '/sdcard/patrol.mp4': Operation not permitted"
-sleep 60
+sleep 30
 record() {
     adb shell mkdir -p /sdcard/screenrecords
     i=0
@@ -20,13 +40,6 @@ record() {
         i=$((i + 1))
     done
 }
-
-# adb shell ps | grep apps | awk '{print $9}'
-
-# echo "disable googlequicksearchbox"
-
-# adb shell "su root pm disable com.google.android.googlequicksearchbox"
-# adb shell "su root pm disable com.google.android.apps.messaging"
 
 adb install ~/test-butler-2.2.1.apk
 adb shell am startservice com.linkedin.android.testbutler/com.linkedin.android.testbutler.ButlerService
@@ -48,7 +61,8 @@ EXIT_CODE=0
 
 # run tests 3 times and save tests' summary
 patrol test \
-  | tee ./tests-summary || EXIT_CODE=$?
+    -t integration_test/example_test.dart \
+    | tee ./tests-summary || EXIT_CODE=$?
 
 # write lockfile to prevent next loop iteration
 touch "$HOME/adb_screenrecord.lock"
@@ -65,5 +79,5 @@ ls | grep mp4 | sort -V | xargs -I {} echo "file {}" | sponge videos.txt
 ffmpeg -f concat -safe 0 -i videos.txt -c copy screenrecord.mp4
 
 # goodbye emulator :(
-adb emu kill
+adb -s emulator-5554 emu kill
 exit $EXIT_CODE
