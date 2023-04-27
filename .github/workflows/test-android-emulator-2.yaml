@@ -7,7 +7,7 @@ on:
       - test_workflow_for_patrol_tests
 
 env:
-  ANDROID_IMAGE: system-images;android-31;default;x86_64
+  ANDROID_IMAGE: system-images;android-30;aosp_atd;x86
   FLUTTER_APP_ROOT: ${{ github.workspace }}/packages/patrol/example
   PATROL_CLI_VERSION: 1.1.7
 
@@ -88,7 +88,7 @@ jobs:
         if: steps.avd-cache.outputs.cache-hit != 'true'
         run: |
           # Download image
-          yes > /dev/null | sdkmanager --licenses > /dev/null
+          yes | sdkmanager --licenses > /dev/null
           sdkmanager "$ANDROID_IMAGE" > /dev/null
 
           # Create
