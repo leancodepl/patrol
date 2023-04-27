@@ -21,20 +21,25 @@
 
   for (int i = 0; i < dartTestFiles.count; i++) {
     /* Step 1 */
+    
     NSString *name = dartTestFiles[i];
-//    IMP implementation = imp_implementationWithBlock(^(id _self) {
-//      XCTAssertTrue(true, "dummy assert");
-//    });
-
+    
+    void (^func)(DummyTests *) = ^(DummyTests *instance) {
+      NSLog(@"func called!");
+      XCTAssertTrue(true, "dummy assert");
+    };
+    
+    IMP implementation = imp_implementationWithBlock(func);
     NSString *selectorStr = [ NSString stringWithFormat:@"test_%@", name];
     SEL selector = NSSelectorFromString(selectorStr);
 
-    BOOL ok = class_addMethod([self class], selector, (IMP) myMethodIMP, "v@:"); /* Last arg is method signature. v for void, @ for self, : for the selector */
-    NSLog(@"class_addMethod successful? %{BOOL}d", ok);
+    BOOL ok = class_addMethod([self class], selector, implementation, "v@:");
 
     /* Step 2 */
+    
     NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    invocation.selector = selector;
 
     NSLog(@"RunnerUITests.testInvocations(): selectorStr = %@", selectorStr);
 
@@ -44,11 +49,6 @@
   NSLog(@"After the loop");
 
   return invocations;
-}
-
-void myMethodIMP(id self, SEL _cmd) {
-  NSLog(@"myMethodIMP called!");
-  XCTAssertTrue(true, "dummy assert");
 }
 
 @end

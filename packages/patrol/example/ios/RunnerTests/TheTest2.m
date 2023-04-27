@@ -26,8 +26,8 @@
         };
         
         IMP implementation = imp_implementationWithBlock(block);
-        NSString *selectorName = [NSString stringWithFormat:@"test_%@", parameter];
-        SEL selector = NSSelectorFromString(selectorName);
+        NSString *selectorNameStr = [NSString stringWithFormat:@"test_%@", parameter];
+        SEL selector = NSSelectorFromString(selectorNameStr);
         class_addMethod(self, selector, implementation, "v@:");
         
         [selectors addObject:[[_QuickSelectorWrapper alloc] initWithSelector:selector]];
