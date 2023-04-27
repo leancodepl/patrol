@@ -3,5 +3,4 @@
 //  expose to Swift.
 //
 
-#include "ParametrizedTestCase.h"
 #import "PatrolIntegrationTestRunner.h"
