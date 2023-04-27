@@ -35,8 +35,7 @@
   }
 
   __block NSArray<NSString *> *dartTestFiles = NULL;
-  [appServiceClient
-      listDartTestsWithCompletionHandler:^(NSArray<NSString *> *_Nullable dartTests, NSError *_Nullable err) {
+  [appServiceClient listDartTestsWithCompletionHandler:^(NSArray<NSString *> *_Nullable dartTests, NSError *_Nullable err) {
         if (err != NULL) {
           NSLog(@"listDartTests(): failed, err: %@", err);
         }
@@ -63,7 +62,7 @@
 
   for (NSString *dartTestFile in dartTestFiles) {
     /* Step 1 */
-    IMP runDartTestImplementation = imp_implementationWithBlock(^(id _self) {
+    IMP implementation = imp_implementationWithBlock(^(id _self) {
       XCTAssertTrue(true, "dummy asserty");
 
       // Temporarily commented out
@@ -77,13 +76,12 @@
     });
     NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTestFile];
     SEL selector = NSSelectorFromString(selectorStr);
-
-    const char *s = "v@:"; /* Method signature. v for void, @ for self, : for the selector */
-    class_addMethod(self, selector, runDartTestImplementation, s);
+    class_addMethod(self, selector, implementation, "v@:");
 
     /* Step 2 */
     NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    invocation.selector = selector;
 
     NSLog(@"RunnerUITests.testInvocations(): selectorStr = %@, signature: %@", selectorStr, signature);
 
