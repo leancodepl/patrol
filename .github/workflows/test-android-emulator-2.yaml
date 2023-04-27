@@ -54,7 +54,7 @@ jobs:
         id: setup-ffmpeg
 
       - name: Install sponge
-        run: brew install sponge 1>/dev/null 2>&1
+        run: brew install sponge
 
       - name: Generate gradlew
         run: |
