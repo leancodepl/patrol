@@ -5,11 +5,6 @@
 
 @implementation PatrolUtils
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 + (NSString *)createMethodNameFromPatrolGeneratedGroup:(NSString *)dartGroupName {
   NSMutableString *temp = [NSMutableString stringWithString:dartGroupName];
 
