@@ -108,7 +108,7 @@ jobs:
           echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "Done"
 
-          echo "Booting up and shutting down emulator...""
+          echo "Booting up and shutting down emulator..."
           emulator @MyAVD -no-window -noaudio -no-boot-anim -no-snapshot-load &
           ${{ github.workspace }}/.github/scripts/boot_completed_check.sh
           adb -s emulator-5554 emu kill
