@@ -7,8 +7,6 @@
 
 @implementation RunnerUITests
 + (NSArray<NSInvocation *> *)testInvocations {
-  NSLog(@"RunnerUITests.testInvocations() called");
-
   /* Start native automation gRPC server */
   PatrolServer *server = [[PatrolServer alloc] init];
   [server startWithCompletionHandler:^(NSError *err) {
@@ -26,8 +24,7 @@
   }
 
   /* Run the app for the first time to gather Dart tests */
-  __block XCUIApplication *app = [[XCUIApplication alloc] init];
-  [app launch];
+  [[[XCUIApplication alloc] init] launch];
 
   /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */
   while (!server.appReady) {
@@ -42,11 +39,9 @@
         }
 
         dartTestFiles = dartTests;
-
-        // [app terminate];
       }];
 
-  /* Wait for Dart tests */
+  /* Spin the runloop waiting until the app reports the Dart tests it contains */
   while (!dartTestFiles) {
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
@@ -57,20 +52,27 @@
 
   /**
    * Once Dart tests are available, we:
-   *  Step 1. Dynamically add test case methods to this class. The body of these methods request execution of an
-   * individual Dart test file. Step 2. Create invocations to the generated methods and return them
+   *
+   *  Step 1. Dynamically add test case methods that request execution of an individual Dart test file.
+   *
+   *  Step 2. Create invocations to the generated methods and return them
    */
 
   for (NSString *dartTestFile in dartTestFiles) {
-    /* Step 1 */
+
+    /* Step 1 - dynamically create test cases */
+
     IMP implementation = imp_implementationWithBlock(^(id _self) {
-      XCUIApplication *app = [[XCUIApplication alloc] init];
-      [app launch];
+      [[[XCUIApplication alloc] init] launch];
 
       __block RunDartTestResponse *response = NULL;
       [appServiceClient runDartTestWithName:dartTestFile
-                          completionHandler:^(RunDartTestResponse *_Nullable resp, NSError *_Nullable err) {
-                            response = resp;
+                          completionHandler:^(RunDartTestResponse *_Nullable r, NSError *_Nullable err) {
+                            if (err != NULL) {
+                              NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTestFile, err);
+                            }
+
+                            response = r;
                           }];
 
       /* Wait until Dart test finishes */
@@ -80,16 +82,16 @@
 
       XCTAssertTrue(response.passed, @"%@", response.details);
     });
-    NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTestFile];
-    SEL selector = NSSelectorFromString(selectorStr);
+    NSString *selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTestFile];
+    SEL selector = NSSelectorFromString(selectorName);
     class_addMethod(self, selector, implementation, "v@:");
 
-    /* Step 2 */
+    /* Step 2 – create invocations to the dynamically created methods */
     NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
     invocation.selector = selector;
 
-    NSLog(@"RunnerUITests.testInvocations(): selectorStr = %@, signature: %@", selectorStr, signature);
+    NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", selectorName, signature);
 
     [invocations addObject:invocation];
   }

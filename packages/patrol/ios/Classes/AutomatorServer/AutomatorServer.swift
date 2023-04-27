@@ -44,7 +44,7 @@
         throw PatrolError.methodNotImplemented("pressBack")
       }
     }
-      func pressRecentApps(
+    func pressRecentApps(
       request: Empty,
       context: GRPCAsyncServerCallContext
     ) async throws -> DefaultResponse {
