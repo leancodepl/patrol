@@ -110,7 +110,8 @@ jobs:
 
           echo "Booting up and shutting down emulator..."
           emulator @MyAVD -no-window -noaudio -no-boot-anim -no-snapshot-load &
-          ${{ github.workspace }}/.github/scripts/boot_completed_check.sh
+          # ${{ github.workspace }}/.github/scripts/boot_completed_check.sh
+          adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'
           adb -s emulator-5554 emu kill
           echo "Done"
           sleep 10
