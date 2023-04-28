@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Set timeout to 5 minutes (in seconds)
-timeout=300
+# Set timeout to 10 minutes (in seconds)
+timeout=600
 
 # Get current timestamp
 start_time=$(date +%s)

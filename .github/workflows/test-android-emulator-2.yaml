@@ -96,7 +96,7 @@ jobs:
           echo "Done"
 
           echo "Configuring emulator..."
-          echo "hw.cpu.ncore=3" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.cpu.ncore=2" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
