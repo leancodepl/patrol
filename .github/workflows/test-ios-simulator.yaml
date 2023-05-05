@@ -56,7 +56,7 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
-      - run: patrol test -t integration_test/example_test.dart
+      - run: patrol test -t integration_test/bundled_ios_simulator_test.dart
         if: success() || failure()
         
       - name: Set job status
