@@ -26,5 +26,7 @@ exec gcloud firebase test android run \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
 	--device model=oriole,version=33,locale=en,orientation=portrait \
 	--timeout 1m \
-	--results-bucket=patrol_runs
+	--results-bucket=patrol_runs \
+	--use-orchestrator \
+	--environment-variables clearPackageData=true
 	# --device model=oriole,version=31,locale=en,orientation=portrait \
