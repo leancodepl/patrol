@@ -2,10 +2,6 @@ name: test android device
 
 on:
   workflow_dispatch:
-  # TODO: Remove run on push
-  push:
-    branches:
-      - ci/use_test_bundling
   schedule:
     - cron: '30 21 * * *'
 
@@ -69,7 +65,7 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: ${{ false }} # TODO: Change to always()
+    if: always()
 
     steps:
       - name: Set Slack message
