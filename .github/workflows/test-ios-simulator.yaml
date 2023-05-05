@@ -2,6 +2,10 @@ name: test ios simulator
 
 on:
   workflow_dispatch:
+  # TODO: Remove run on push
+  push:
+    branches:
+      - ci/use_test_bundling
   schedule:
     - cron: '0 */12 * * *'
 
@@ -52,42 +56,12 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
-      - run: patrol test -t integration_test/example_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/notifications_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/open_app_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/open_quick_settings_test.dart
-        if: success() || failure() # should work, but is empty on Simulator
-
-      - run: patrol test -t integration_test/permissions_location_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/permissions_many_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/service_cellular_test.dart
-        if: ${{ false }} # Not on Simulator
-
-      - run: patrol test -t integration_test/service_dark_mode_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/service_wifi_test.dart
-        if: ${{ false }} # Not on Simulator
-
-      - run: patrol test -t webview_hackernews_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-      - run: patrol test -t webview_leancode_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-      - run: patrol test -t webview_login_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-      - run: patrol test -t webview_stackoverflow_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-
+      - if: success() || failure()
+        run: |
+          flutter logs &
+          patrol test -t integration_test/bundled_test.dart
+          # TODO: Create specific bundled test for ios simulator
+        
       - name: Set job status
         id: set_status
         if: success() || failure()
@@ -97,7 +71,7 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: always()
+    if: ${{ false }} # TODO: Change to always()
 
     steps:
       - name: Set Slack message
