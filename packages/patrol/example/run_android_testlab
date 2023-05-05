@@ -28,5 +28,5 @@ exec gcloud firebase test android run \
 	--timeout 1m \
 	--results-bucket=patrol_runs \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true
+	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example"  
 	# --device model=oriole,version=31,locale=en,orientation=portrait \
