@@ -58,9 +58,7 @@ jobs:
 
       - if: success() || failure()
         run: |
-          flutter logs &
-          patrol test -t integration_test/bundled_test.dart
-          # TODO: Create specific bundled test for ios simulator
+          patrol test -t integration_test/bundled_ios_simulator_test.dart
         
       - name: Set job status
         id: set_status
