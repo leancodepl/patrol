@@ -48,7 +48,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
       apiSecret: _gaApiSecret,
       fs: fs,
       platform: platform,
-      processManager: processManager,
     ),
     processManager: processManager,
   );
