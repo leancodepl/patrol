@@ -1,3 +1,7 @@
+## 1.1.8
+
+- Fix analytics being always enabled (#1246)
+
 ## 1.1.7
 
 - Fix `patrol develop` not attaching to the app on the other-than-first attached
