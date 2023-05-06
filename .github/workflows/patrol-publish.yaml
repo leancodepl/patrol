@@ -56,6 +56,6 @@ jobs:
           SLACK_ICON: ${{ vars.SLACK_ICON }}
           SLACK_TITLE: New ${{ needs.publish.outputs.package_name }} version
           SLACK_MESSAGE: |
-            ${{ needs.publish.outputs.package_name }} ${{ needs.publish.outputs.package_name }} has been released 🎉
+            ${{ needs.publish.outputs.package_name }} ${{ needs.publish.outputs.package_version }} has been released 🎉
 
             See release notes <${{ needs.publish.outputs.changelog_url }}|here>
