@@ -1,5 +1,6 @@
 // ignore_for_file: implementation_imports
 import 'dart:convert';
+import 'dart:io' as io;
 
 import 'package:ci/ci.dart' as ci;
 import 'package:file/file.dart';
@@ -8,8 +9,9 @@ import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/fs.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:platform/platform.dart';
-import 'package:process/process.dart';
 import 'package:uuid/uuid.dart';
+
+typedef FlutterVersionGetter = FlutterVersion Function();
 
 class AnalyticsConfig {
   AnalyticsConfig({
@@ -39,32 +41,40 @@ class Analytics {
     required String apiSecret,
     required FileSystem fs,
     required Platform platform,
-    required ProcessManager processManager,
+    http.Client? httpClient,
+    FlutterVersionGetter getFlutterVersion = _getFlutterVersion,
   })  : _fs = fs,
         _platform = platform,
-        _client = http.Client(),
+        _httpClient = httpClient ?? http.Client(),
         _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-        _flutterVersion = _getFlutterVersion(processManager);
+        _flutterVersion = getFlutterVersion();
 
   final FileSystem _fs;
   final Platform _platform;
 
-  final http.Client _client;
+  final http.Client _httpClient;
   final String _postUrl;
 
-  final _FlutterVersion _flutterVersion;
+  final FlutterVersion _flutterVersion;
 
   /// Sends an event to Google Analytics that command [name] run.
-  Future<void> sendCommand(
+  ///
+  /// Returns true if the event was sent, false otherwise.
+  Future<bool> sendCommand(
     String name, {
     Map<String, Object?> eventData = const {},
   }) async {
     final uuid = _config?.clientId;
     if (uuid == null) {
-      return;
+      return false;
     }
 
-    await _client.post(
+    final enabled = _config?.enabled ?? false;
+    if (!enabled) {
+      return false;
+    }
+
+    await _httpClient.post(
       Uri.parse(_postUrl),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -75,6 +85,7 @@ class Analytics {
         additionalEventData: eventData,
       ),
     );
+    return true;
   }
 
   bool get firstRun => _config == null;
@@ -162,20 +173,23 @@ String _getAnalyticsUrl(String measurementId, String apiSecret) {
   return '$url?measurement_id=$measurementId&api_secret=$apiSecret';
 }
 
-class _FlutterVersion {
-  _FlutterVersion(this.version, this.channel);
+class FlutterVersion {
+  FlutterVersion(this.version, this.channel);
+
+  factory FlutterVersion.test() => FlutterVersion('1.2.3', 'stable');
 
   final String version;
   final String channel;
 }
 
-_FlutterVersion _getFlutterVersion(ProcessManager processManager) {
-  final result = processManager.runSync(
-    ['flutter', '--no-version-check', '--version', '--machine'],
+FlutterVersion _getFlutterVersion() {
+  final result = io.Process.runSync(
+    'flutter',
+    ['--no-version-check', '--version', '--machine'],
   );
 
   final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
   final frameworkVersion = versionData['frameworkVersion'] as String;
   final channel = versionData['channel'] as String;
-  return _FlutterVersion(frameworkVersion, channel);
+  return FlutterVersion(frameworkVersion, channel);
 }

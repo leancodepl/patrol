@@ -1,21 +1,19 @@
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/crossplatform/app_options.dart';
-import 'package:patrol_cli/src/devices.dart';
+import 'package:platform/platform.dart';
 
-class FakeDevice extends Fake implements Device {}
-
-class FakeProcessResult extends Fake implements ProcessResult {}
-
-class FakeAndroidAppOptions extends Fake implements AndroidAppOptions {}
-
-class FakeIOSAppOptions extends Fake implements IOSAppOptions {}
+class FakeProcessResult extends Fake implements io.ProcessResult {}
 
 void setUpFakes() {
   registerFallbackValue(Uri());
-  registerFallbackValue(<int>[]);
-  registerFallbackValue(FakeDevice());
-  registerFallbackValue(FakeAndroidAppOptions());
-  registerFallbackValue(FakeIOSAppOptions());
+}
+
+FakePlatform fakePlatform(String home) {
+  return FakePlatform(
+    environment: {'HOME': home},
+    operatingSystem: 'macos',
+    operatingSystemVersion: 'Version 13.3.1 (a) (Build 22E772610a)',
+    localeName: 'en-US',
+  );
 }
