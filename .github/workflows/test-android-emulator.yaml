@@ -46,8 +46,10 @@ jobs:
 
       - name: Install ew-cli
         run: |
-          curl https://maven.emulator.wtf/releases/ew-cli -o $HOME/ew-cli
-          chmod a+x $HOME/ew-cli
+          mkdir -p $HOME/bin
+          curl https://maven.emulator.wtf/releases/ew-cli -o $HOME/bin/ew-cli
+          chmod a+x $HOME/bin/ew-cli
+          echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
       - name: Build bundled test

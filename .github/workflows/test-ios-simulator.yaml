@@ -2,10 +2,6 @@ name: test ios simulator
 
 on:
   workflow_dispatch:
-  # TODO: Remove run on push
-  push:
-    branches:
-      - ci/use_test_bundling
   schedule:
     - cron: '0 */12 * * *'
 
