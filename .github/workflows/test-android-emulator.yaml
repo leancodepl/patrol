@@ -53,7 +53,7 @@ jobs:
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
       - name: Build bundled test
-        run: patrol build android --target integration_test/bundled_test.dart # TODO: change test file
+        run: patrol build android --target integration_test/bundled_android_device_test.dart
 
       - name: Run tests
         run: >
