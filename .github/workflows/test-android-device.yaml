@@ -80,11 +80,11 @@ jobs:
 
     steps:
       - uses: dorny/test-reporter@v1
-      with:
-        artifact: test_results
-        name: Patrol Tests
-        path: '*.xml'
-        reporter: java-junit
+        with:
+          artifact: test_results
+          name: Patrol Tests
+          path: '*.xml'
+          reporter: java-junit
 
   slack_notify:
     name: Notify on Slack
