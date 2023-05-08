@@ -76,6 +76,7 @@ jobs:
   create_report:
     name: Create test report
     runs-on: ubuntu-latest
+    needs: run_tests
     if: always()
 
     steps:
