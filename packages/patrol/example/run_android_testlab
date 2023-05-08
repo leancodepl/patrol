@@ -27,7 +27,8 @@ exec gcloud firebase test android run \
 	--device model=oriole,version=33,locale=en,orientation=portrait \
 	--timeout 10m \
 	--results-bucket=patrol_runs \
-	--results-dir=test_results \ # NOTE: results-dir should be unique per test run
+	--results-dir=test_results \
 	--use-orchestrator \
 	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example"  
+	# NOTE: results-dir should be unique per test run
 	# --device model=oriole,version=31,locale=en,orientation=portrait \
