@@ -61,18 +61,13 @@ jobs:
         run: |
           mkdir test_artifacts
           gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_artifacts"
-          echo "---"
-          ls -all
-          echo "---"
-          cd test_artifacts
-          ls -all
           
       - name: Create test report
         if: always()
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
           reporter: java-junit
 
       - uses: actions/upload-artifact@v2
