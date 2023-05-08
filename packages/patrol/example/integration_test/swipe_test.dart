@@ -13,9 +13,9 @@ void main() {
   patrol('scrolls the Settings app', ($) async {
     await createApp($);
 
-    final window = $.tester.binding.window;
-    final width = window.physicalSize.width;
-    final height = window.physicalSize.height;
+    final view = $.tester.view;
+    final width = view.physicalSize.width;
+    final height = view.physicalSize.height;
 
     await $.native.openApp(appId: appId);
 

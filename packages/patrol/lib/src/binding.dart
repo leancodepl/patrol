@@ -122,7 +122,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
             ExcludeSemantics(
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: MediaQueryData.fromWindow(window).padding.top + 4,
+                  top: MediaQueryData.fromView(platformDispatcher.implicitView!)
+                          .padding
+                          .top +
+                      4,
                   left: 4,
                 ),
                 child: const Text(
