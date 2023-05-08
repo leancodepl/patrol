@@ -57,35 +57,34 @@ jobs:
       - name: Run tests
         run: ./run_android_testlab integration_test/bundled_android_device_test.dart
 
-      - name: Print test outputs
+      - name: Get test artifacts from Google Cloud Storage
         run: |
-          cd test_results
+          mkdir test_artifacts
+          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_artifacts"
+          echo "---"
           ls -all
+          echo "---"
+          cd test_artifacts
+          ls -all
+          
+      - name: Create test report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Patrol Tests
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
+          reporter: java-junit
+
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: test_artifacts
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
       - name: Set job status
         id: set_status
         if: success() || failure()
         run: echo "status=${{ job.status }}" >> "$GITHUB_OUTPUT"
-
-      - uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: test_results
-          path: ${{ github.workspace }}/packages/patrol/example/test_results
-
-  create_report:
-    name: Create test report
-    runs-on: ubuntu-latest
-    needs: run_tests
-    if: always()
-
-    steps:
-      - uses: dorny/test-reporter@v1
-        with:
-          artifact: test_results
-          name: Patrol Tests
-          path: '*.xml'
-          reporter: java-junit
 
   slack_notify:
     name: Notify on Slack
