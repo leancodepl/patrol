@@ -57,15 +57,16 @@ jobs:
 
       - name: Run tests
         run: >
-          ew-cli \
-          --app build/app/outputs/apk/debug/app-debug.apk \
-          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-          --use-orchestrator \
-          --clear-package-data \
-          --record-video \
-          --timeout 20m \
-          --environment-variables packageName="pl.leancode.patrol.example" \
-          --outputs-dir emulatorwtf_output --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
+          ew-cli
+          --app build/app/outputs/apk/debug/app-debug.apk
+          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          --use-orchestrator
+          --clear-package-data
+          --record-video
+          --timeout 20m
+          --environment-variables packageName="pl.leancode.patrol.example"
+          --outputs-dir emulatorwtf_output
+          --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
 
       - name: Upload test outputs to artifacts
         if: always()
