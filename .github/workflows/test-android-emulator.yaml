@@ -7,17 +7,9 @@ on:
 
 jobs:
   main:
-    name: Test on Android emulator (${{ matrix.api-level }}, ${{ matrix.target}}, ${{matrix.arch}})
-    runs-on: macos-latest
+    name: Test on Android emulator
+    runs-on: ubuntu-latest
     timeout-minutes: 60
-
-    strategy:
-      fail-fast: false
-      matrix:
-        flutter-channel: [stable]
-        api-level: [28, 29, 30, 31, 33]
-        target: [google_apis]
-        arch: [x86_64]
 
     defaults:
       run:
@@ -38,34 +30,10 @@ jobs:
         with:
           generate-job-summary: false
 
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adbkey
-            ~/.android/adbkey.pub
-          key: avd-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
-
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          ram-size: 4096M
-          heap-size: 2048M
-          disk-size: 8192M
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: echo "Generated AVD snapshot for caching"
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          channel: stable
 
       - name: Preload Flutter artifacts
         run: flutter precache
@@ -76,41 +44,30 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
-      - name: Start emulator and run integration tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -wipe-data
-          disable-animations: false
-          working-directory: ${{ github.workspace }}/packages/patrol/example
-          script: >
-            adb logcat -c
+      - name: Install ew-cli
+        run: >
+          curl https://maven.emulator.wtf/releases/ew-cli -o $HOME/bin/ew-cli
+          chmod a+x $HOME/bin/ew-cli
+          echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-            adb logcat > logcat.txt &
+      - name: Build bundled test
+        run: patrol build android --target integration_test/bundled_test.dart # TODO: change test file
 
-            patrol test
-            -t integration_test/android_app_test.dart
-            -t integration_test/example_test.dart
-            -t integration_test/notifications_test.dart
-            -t integration_test/open_app_test.dart
-            -t integration_test/open_quick_settings_test.dart
-            -t integration_test/permissions_location_test.dart
-            -t integration_test/permissions_many_test.dart
-            -t integration_test/service_cellular_test.dart
-            -t integration_test/service_dark_mode_test.dart
-            -t integration_test/service_wifi_test.dart
-            -t integration_test/swipe_test.dart
+      - name: Run tests
+        run: >
+          ew-cli \
+          --app build/app/outputs/apk/debug/app-debug.apk \
+          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          --use-orchestrator \
+          --clear-package-data \
+          --record-video \
+          --timeout 20m \
+          --environment-variables packageName="pl.leancode.patrol.example" \
+          --outputs-dir emulatorwtf_output --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
 
-      - name: Upload logcat to artifacts
+      - name: Upload test outputs to artifacts
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          # FIXME: Reports and results of only the last test are uploadeds
-          name: Results for ${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
-          path: |
-            ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
-            ${{ github.workspace }}/packages/patrol/example/android/test-results
-            ${{ github.workspace }}/packages/patrol/example/android/test-reports
+          name: Results from tests
+          path: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output
