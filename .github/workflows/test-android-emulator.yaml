@@ -6,7 +6,7 @@ on:
     - cron: '0 */12 * * *'
 
 jobs:
-  main:
+  run_tests:
     name: Test on Android emulator
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -72,5 +72,20 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v3
         with:
-          name: Results from tests
+          name: emulatorwtf_output
           path: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output
+
+  create_report:
+    name: Create test report
+    runs-on: ubuntu-latest
+    needs: run_tests
+    if: always()
+
+    steps:
+      - uses: dorny/test-reporter@v1
+        with:
+          artifact: emulatorwtf_output
+          name: Patrol Tests
+          path: 'results.xml'
+          reporter: java-junit
+
