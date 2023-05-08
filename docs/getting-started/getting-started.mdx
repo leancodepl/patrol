@@ -1,23 +1,37 @@
 ---
-title: What you can use Patrol for?
+title: Getting started
 ---
 
-# What you can use Patrol for?
+# Getting started
 
 Patrol consists of 2 packages:
 
 - [patrol] – the core package
-- [patrol_cli] - the CLI app to run tests.
+- [patrol_cli] - the CLI app to run tests that use the [native automation
+  feature].
 
-There are two ways of using Patrol - creating **E2E UI tests** which contain 
-testing **native features of your app** (eg. localization permissions) or **enhancing** your experience of writing 
-**widget tests** by making use of our **custom finders**. 
+There are two ways of using Patrol:
 
-Next two sections contain steps needed to setup Patrol in your project. [Native setup] will guide you through full setup, 
-so you can run tests which use our native automation features. [Custom finders setup] is not necessary if you have already completed the native one,
-but if you haven't, it will show you what you need to do in order to use our custom finders in your widget tests.
+- creating **end-to-end UI tests** that have the ability to interact with the
+  **native features of your app** (eg. permission dialogs, notifications)
+
+- enhancing your experience of developing **widget tests** by using our **custom
+  finders**.
+
+The next two sections guide you through the setup needed to start using Patrol
+in your Flutter app project.
+
+[Native automation setup] guides you through the full setup needed to run tests
+that use the [native automation feature]. You don't need to go through this
+section if you only want to use custom finders.
+
+[Custom finders setup] is much shorter than [native automation setup], since it
+only covers the setup needed to use our [custom finders feature] in your widget
+tests. Much of what it covers is already covered in [native setup].
 
 [patrol]: https://pub.dev/packages/patrol
 [patrol_cli]: https://pub.dev/packages/patrol_cli
-[Custom finders setup]: /getting-started/custom_finders
-[Native setup]: /getting-started/native
+[custom finders setup]: /getting-started/custom_finders
+[native automation setup]: /getting-started/native
+[custom finders feature]: /finders/overview
+[native automation feature]: /native/overview
