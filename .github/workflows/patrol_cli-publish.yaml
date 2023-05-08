@@ -9,7 +9,10 @@ jobs:
     name: Publish on pub.dev
     runs-on: ubuntu-latest
     outputs:
+      package_name: ${{ steps.pub_release.outputs.package_name }}
+      package_version: ${{ steps.pub_release.outputs.package_version }}
       changelog_url: ${{ steps.pub_release.outputs.changelog_url }}
+      prerelease: ${{ steps.pub_release.outputs.prerelease }}
 
     permissions:
       id-token: write
@@ -23,6 +26,7 @@ jobs:
         working-directory: packages/patrol_cli
         run: ./check_versions
 
+      # This step adds the auth token for pub.dev
       - name: Set up Dart
         uses: dart-lang/setup-dart@v1
         with:
@@ -38,6 +42,7 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: publish
+    if: needs.publish.outputs.prerelease == 'false'
 
     steps:
       - name: Share test results on Slack
@@ -47,8 +52,8 @@ jobs:
           SLACK_CHANNEL: ${{ vars.SLACK_RELEASES_CHANNEL }}
           SLACK_USERNAME: Patrol CI on GitHub Actions
           SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: New patrol_cli version
+          SLACK_TITLE: New ${{ needs.publish.outputs.package_name }} version
           SLACK_MESSAGE: |
-            ${{ github.ref_name }} has just been released 🎉
+            ${{ needs.publish.outputs.package_name }} ${{ needs.publish.outputs.package_version }} has been released 🎉
 
             See release notes <${{ needs.publish.outputs.changelog_url }}|here>

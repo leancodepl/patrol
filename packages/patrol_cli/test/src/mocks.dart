@@ -38,10 +38,10 @@ class MockAnalytics extends Mock implements Analytics {
   bool get enabled => false;
 
   @override
-  Future<void> sendCommand(
+  Future<bool> sendCommand(
     String name, {
     Map<String, Object?> eventData = const {},
   }) async {
-    return;
+    return false;
   }
 }

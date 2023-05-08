@@ -5,7 +5,6 @@ void main() {
     await createApp($);
 
     await $.native.openQuickSettings();
-    await $.native.pressBack();
-    await $.native.pressBack();
+    await $.native.pressHome();
   });
 }
