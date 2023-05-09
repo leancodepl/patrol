@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.9
 
 - Add support for Flutter 3.10 (#1254)
 - Fix crashes on Windows (#1255)
