@@ -69,15 +69,22 @@ jobs:
           --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
         
       - name: Create test report
-        if: always()
+        if: ${{ false }}
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
           path: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output/results.xml
           reporter: java-junit
 
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure()
+        with:
+          report_paths: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output/results.xml
+          detailed_summary: true
+
       - name: Upload test outputs to artifacts
-        if: always()
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: emulatorwtf_output
