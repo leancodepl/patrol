@@ -189,16 +189,7 @@ FlutterVersion _getFlutterVersion() {
     runInShell: true,
   );
 
-  final Map<String, dynamic> versionData;
-  try {
-    versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
-  } on FormatException catch (err) {
-    print('FormatException caught! message: ${err.message}');
-    print('source: ${err.source}');
-    print('offset: ${err.offset}');
-
-    rethrow;
-  }
+  final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
 
   final frameworkVersion = versionData['frameworkVersion'] as String;
   final channel = versionData['channel'] as String;
