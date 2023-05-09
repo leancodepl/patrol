@@ -22,7 +22,10 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         flutter-version: ['3.3.x', '3.7.x']
         include:
-          - os: [ubuntu-latest, windows-latest]
+          - os: ubuntu-latest
+            flutter-version: '3.10.0-1.5.pre'
+            channel: beta
+          - os: windows-latest
             flutter-version: '3.10.0-1.5.pre'
             channel: beta
 
