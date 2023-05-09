@@ -1,3 +1,7 @@
+## Unreleased
+
+- Support test bundling on iOS (#1236)
+
 ## 1.2.0-dev.2
 
 - Fix a small typo in logs (#1229)
@@ -5,6 +9,10 @@
 ## 1.2.0-dev.1
 
 - Support test bundling on Android (#1205) (#1220) (#1221)
+
+## 1.1.1
+
+- Add support for Flutter 3.10 (#1254)
 
 ## 1.1.0
 

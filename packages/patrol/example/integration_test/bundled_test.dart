@@ -84,5 +84,4 @@ Future<void> main() async {
   await nativeAutomator.markPatrolAppServiceReady();
 
   await appService.testExecutionCompleted;
-  print('End of bundled test');
 }
