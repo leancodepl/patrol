@@ -32,7 +32,6 @@ jobs:
     defaults:
       run:
         working-directory: packages/patrol_cli
-        shell: bash # because pwsh doesn't fail on non-zero exit code
 
     steps:
       - name: Clone repository
