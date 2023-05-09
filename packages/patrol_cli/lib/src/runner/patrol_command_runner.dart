@@ -272,6 +272,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     } on FormatException catch (err, st) {
       _logger
         ..err(err.message)
+        ..err('source: ${err.source}')
         ..err('$st')
         ..info('')
         ..info(usage);

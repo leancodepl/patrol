@@ -13,17 +13,21 @@ on:
 
 jobs:
   main:
-    name: Flutter ${{ matrix.version }}
-    runs-on: ubuntu-latest
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
+        flutter-version: ['3.3.x', '3.7.x']
         include:
-          - version: '3.3.x'
-          - version: '3.7.x'
-          - channel: beta
-            version: '3.10.0-1.5.pre'
+          - os: ubuntu-latest
+            flutter-version: '3.10.0-1.5.pre'
+            channel: beta
+          - os: windows-latest
+            flutter-version: '3.10.0-1.5.pre'
+            channel: beta
 
     defaults:
       run:
@@ -37,10 +41,19 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}
-          flutter-version: ${{ matrix.version }}
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: Run flutter tool (to dismiss the first run experience)
+        run: flutter
 
       - name: dart pub get
         run: dart pub get
+
+      - name: Build executable
+        run: dart pub global activate --source path .
+
+      - name: Run executable (smoke test)
+        run: patrol
 
       - name: dart test
         run: |

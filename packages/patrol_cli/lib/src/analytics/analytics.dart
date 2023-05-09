@@ -186,6 +186,7 @@ FlutterVersion _getFlutterVersion() {
   final result = io.Process.runSync(
     'flutter',
     ['--no-version-check', '--version', '--machine'],
+    runInShell: true,
   );
 
   final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
