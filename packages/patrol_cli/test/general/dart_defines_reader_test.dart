@@ -1,6 +1,5 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:test/test.dart';
 
@@ -12,7 +11,7 @@ void main() {
 
     setUp(() {
       fs = MemoryFileSystem.test();
-      final wd = fs.directory(join('/projects', 'awesome_app'))
+      final wd = fs.directory('/projects/awesome_app')
         ..createSync(recursive: true);
       fs.currentDirectory = wd;
       reader = DartDefinesReader(projectRoot: fs.currentDirectory);

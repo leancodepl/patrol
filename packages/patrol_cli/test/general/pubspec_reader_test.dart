@@ -1,6 +1,5 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:test/test.dart';
 
@@ -13,8 +12,7 @@ version: 1.0.0+1
 
 Directory _initTestFs() {
   final fs = MemoryFileSystem.test();
-  final wd = fs.directory(join('/projects', 'awesome_app'))
-    ..createSync(recursive: true);
+  final wd = fs.directory('/projects/awesome_app')..createSync(recursive: true);
   fs.currentDirectory = wd;
   return wd;
 }

@@ -190,7 +190,6 @@ FlutterVersion _getFlutterVersion() {
   );
 
   final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
-
   final frameworkVersion = versionData['frameworkVersion'] as String;
   final channel = versionData['channel'] as String;
   return FlutterVersion(frameworkVersion, channel);
