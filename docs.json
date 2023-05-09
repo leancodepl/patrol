@@ -18,7 +18,7 @@
       "Getting started",
       [
         ["Getting started", "/getting-started/getting-started"],
-        ["Native setup", "/getting-started/native"],
+        ["Native automation setup", "/getting-started/native"],
         ["Custom finders setup", "/getting-started/custom-finders"]
       ]
     ],
