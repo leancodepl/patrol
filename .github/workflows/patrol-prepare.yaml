@@ -168,7 +168,7 @@ jobs:
 
       - name: flutter analyze (example app)
         working-directory: ./packages/patrol/example
-        run: flutter analyze --no-fatal-infos
+        run: flutter analyze
 
       - name: flutter test (example app)
         working-directory: ./packages/patrol/example
