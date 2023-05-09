@@ -82,6 +82,7 @@ jobs:
         with:
           report_paths: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output/results.xml
           detailed_summary: true
+          include_passed: true
 
       - name: Upload test outputs to artifacts
         if: success() || failure()
