@@ -43,6 +43,9 @@ jobs:
           channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.flutter-version }}
 
+      - name: Run flutter tool (to dismiss the first run experience)
+        run: flutter
+
       - name: dart pub get
         run: dart pub get
 
