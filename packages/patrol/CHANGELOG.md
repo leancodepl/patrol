@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for Flutter 3.10 (#1254)
+
 ## 1.1.0
 
 This version marks the official release of Hot Restart. [Learn more
