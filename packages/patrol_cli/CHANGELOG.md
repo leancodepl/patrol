@@ -1,3 +1,8 @@
+## 1.1.9
+
+- Add support for Flutter 3.10 (#1254)
+- Fix crashes on Windows (#1255)
+
 ## 1.1.8
 
 - Fix analytics being always enabled (#1246)
