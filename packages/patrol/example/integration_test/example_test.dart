@@ -14,7 +14,7 @@ void main() {
       await $.native.pressHome();
       await $.native.openApp();
 
-      expect($(#counterText).text, '1');
+      expect($(#counterText).text, 'fail');
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '2');
     },

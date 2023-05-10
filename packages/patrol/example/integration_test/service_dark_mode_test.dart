@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'common.dart';
 
 void main() {
@@ -8,5 +10,7 @@ void main() {
     await $.native.enableDarkMode();
     await $.native.disableDarkMode();
     await $.native.enableDarkMode();
+    await $(FloatingActionButton).tap();
+    await $(CircleAvatar).tap();
   });
 }

@@ -24,6 +24,6 @@ void main() {
     await $.native.pressHome();
     await $.native.openApp();
 
-    expect($(#counterText).text, '1');
+    expect($(#counterText).text, 'fail');
   });
 }
