@@ -54,6 +54,20 @@ jobs:
 
       - run: patrol test -t integration_test/bundled_ios_simulator_test.dart
         if: success() || failure()
+
+      - name: Find xcresult paths
+        if: success() || failure()
+        run: echo "XCRESULT_PATHS=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
+
+      - name: Print paths
+        run: echo "${{ env.XCRESULT_PATHS }}"
+
+      - name: Publish Test Report
+        uses: kishikawakatsumi/xcresulttool@v1
+        if: success() || failure()
+        with:
+          path: |
+            echo "${{ env.XCRESULT_PATHS }}"
         
       - name: Set job status
         id: set_status
