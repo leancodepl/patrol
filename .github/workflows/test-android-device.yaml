@@ -58,12 +58,13 @@ jobs:
         run: ./run_android_testlab integration_test/bundled_android_device_test.dart
 
       - name: Get test artifacts from Google Cloud Storage
+        if: success() || failure()  
         run: |
           mkdir test_artifacts
           gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_artifacts"
           
       - name: Create test report
-        if: always()
+        if: success() || failure()
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
@@ -71,7 +72,7 @@ jobs:
           reporter: java-junit
 
       - uses: actions/upload-artifact@v2
-        if: always()
+        if: success() || failure()
         with:
           name: test_artifacts
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
