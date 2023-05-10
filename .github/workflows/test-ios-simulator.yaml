@@ -67,7 +67,7 @@ jobs:
         if: success() || failure()
         with:
           path: |
-            echo "${{ env.XCRESULT_PATHS }}"
+            "${{ env.XCRESULT_PATHS }}"
         
       - name: Set job status
         id: set_status
