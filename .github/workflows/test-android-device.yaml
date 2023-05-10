@@ -68,6 +68,7 @@ jobs:
         uses: mikepenz/action-junit-report@v3
         if: success() || failure()
         with:
+          check_name: Patrol tests
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
           detailed_summary: true
           include_passed: true
