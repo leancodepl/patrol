@@ -136,7 +136,6 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.flutter-version }}
 
       - name: flutter pub get
