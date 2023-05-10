@@ -33,7 +33,6 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.channel }}
           flutter-version: ${{ matrix.flutter-version }}
 
       - name: Run flutter tool (to dismiss the first run experience)
