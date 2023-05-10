@@ -18,7 +18,7 @@ fi
 target_path="$(realpath "$target")"
 
 flutter pub get
-patrol build android --target "$target_path"
+patrol build android -t "$target_path"
 
 RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"

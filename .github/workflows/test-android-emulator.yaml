@@ -33,7 +33,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
 
       - name: Preload Flutter artifacts
         run: flutter precache
@@ -53,7 +53,7 @@ jobs:
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
       - name: Build bundled test
-        run: patrol build android --target integration_test/bundled_android_device_test.dart
+        run: patrol build android -t integration_test/bundled_android_device_test.dart
 
       - name: Run tests
         run: >
@@ -65,23 +65,32 @@ jobs:
           --record-video
           --timeout 10m
           --environment-variables packageName="pl.leancode.patrol.example"
-          --outputs-dir emulatorwtf_output
+          --outputs-dir test_artifacts
           --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: success() || failure()
         with:
-          report_paths: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output/results.xml
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
           detailed_summary: true
           include_passed: true
+
+      - name: Create test report
+        if: success() || failure()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Patrol Tests
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+          reporter: java-junit
+          fail-on-error: "false"
 
       - name: Upload test outputs to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: emulatorwtf_output
-          path: ${{ github.workspace }}/packages/patrol/example/emulatorwtf_output
+          name: Test resulsts, logs and captured video
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
       - name: Set job status
         id: set_status
@@ -92,7 +101,7 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: ${{ false }} # TODO: Change to always()
+    if: always()
 
     steps:
       - name: Set Slack message
