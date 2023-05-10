@@ -10,6 +10,8 @@ jobs:
     name: Test on Android emulator
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      status: ${{ steps.set_status.outputs.status }}
 
     defaults:
       run:
