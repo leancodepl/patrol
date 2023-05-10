@@ -85,7 +85,7 @@ jobs:
           name: Patrol Tests
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
           reporter: java-junit
-          fail-on-error: "false"
+          fail-on-error: false
 
       - name: Upload test outputs to artifacts
         if: success() || failure()

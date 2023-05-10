@@ -57,6 +57,7 @@ jobs:
       - name: Run tests
         run: ./run_android_testlab integration_test/bundled_android_device_test.dart
 
+      # RESULTS_DIR_NAME is created by run_android_testlab script
       - name: Get test artifacts from Google Cloud Storage
         if: success() || failure()  
         run: |
@@ -78,7 +79,7 @@ jobs:
           name: Patrol Tests
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
           reporter: java-junit
-          fail-on-error: "false"
+          fail-on-error: false
       
       - name: Upload test outputs to artifacts
         uses: actions/upload-artifact@v2
