@@ -98,8 +98,11 @@ jobs:
 
       - name: Set error occurred
         id: set_error
-        if: (steps.tests_step.conclusion == 'skipped') || (steps.tests_step.conclusion == 'cancelled')
-        run: echo "error_status=error" >> "$GITHUB_OUTPUT"
+        if: always()
+        run: >
+          if [[ ("${{ steps.tests_step.conclusion }} == 'skipped'") || ("${{ steps.tests_step.conclusion }} == 'cancelled'")]]; then
+            echo "error_status=error" >> "$GITHUB_OUTPUT";
+          fi;
 
   slack_notify:
     name: Notify on Slack
@@ -115,10 +118,10 @@ jobs:
           FAILURE_STATUS: ${{ needs.run_tests.outputs.failure_status }}
           ERROR_STATUS: ${{ needs.run_tests.outputs.error_status }}
         run: >
-          if [ -z "$FAILURE_STATUS" ]; then
+          if [ ! -z "$FAILURE_STATUS" ]; then
             message="There were failing tests 💥 ";
             status="failure";
-          elif [ -z "$ERROR_STATUS" ]; then
+          elif [ ! -z "$ERROR_STATUS" ]; then
             message="Something went wrong ⚠️";
             status="failure";
           else
@@ -126,6 +129,7 @@ jobs:
             status="success";
           fi;
 
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
           echo "message=$message" >> $GITHUB_OUTPUT;
           echo "url=$url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
