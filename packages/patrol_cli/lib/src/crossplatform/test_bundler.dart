@@ -50,6 +50,7 @@ Future<void> main() async {
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
+    print('dartTestGroup: \$dartTestGroup');
     testExplorationCompleter.complete(dartTestGroup);
   });
 
@@ -70,11 +71,13 @@ Future<void> main() async {
 }
 ''';
 
-    return _dartToolDirectory
+    final bundledTestFile = _dartToolDirectory
         .childDirectory('patrol_build')
         .childFile('bundled_test.dart')
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
+
+    return bundledTestFile.absolute;
   }
 
   /// Input:
