@@ -16,7 +16,7 @@ void main() {
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '2');
+      expect($(#counterText).text, '5312');
     },
   );
 }
