@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
-          name: Test resulsts, logs and captured video
+          name: Test results, logs and captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
       - name: Set job status

@@ -41,6 +41,7 @@ jobs:
         run: dart pub global activate patrol_cli
 
       - name: Start iOS simulator
+        id: start_simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: ${{ matrix.device }}
@@ -52,7 +53,23 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
-      - run: patrol test -t integration_test/bundled_ios_simulator_test.dart
+      - name: Run tests
+        run: |
+          xcrun simctl io booted recordVideo --codec=h264 recording.mp4 &
+          recordingpid="$!"
+          EXIT_CODE=0
+          patrol test -t integration_test/bundled_ios_simulator_test.dart || EXIT_CODE=$?
+          kill $recordingpid
+          exit $EXIT_CODE
+          
+      - name: Upload test outputs to artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Logs and captured video
+          path: |
+            ${{ github.workspace }}/packages/patrol/example/recording.mp4
+            ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
 
       - name: Find xcresult paths
         if: success() || failure()
