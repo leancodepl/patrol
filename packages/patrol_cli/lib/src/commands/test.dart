@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/test_bundler.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -44,6 +45,7 @@ class TestCommand extends PatrolCommand {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -53,6 +55,7 @@ class TestCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
+        _testBundler = testBundler,
         _testFinder = testFinder,
         _testRunner = testRunner,
         _dartDefinesReader = dartDefinesReader,
@@ -80,6 +83,7 @@ class TestCommand extends PatrolCommand {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
+  final TestBundler _testBundler;
   final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
@@ -108,6 +112,9 @@ class TestCommand extends PatrolCommand {
     for (final t in targets) {
       _logger.detail('Received test target: $t');
     }
+
+    _logger.detail('Bundling ${targets.length} test(s)');
+    _testBundler.createBundledTest(targets);
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;

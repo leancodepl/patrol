@@ -21,6 +21,7 @@ import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/test_bundler.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';
@@ -116,6 +117,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final testBundler = TestBundler(
+      dartToolDirectory: _fs.directory('.dart_tool'),
+    );
     final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
 
     addCommand(
@@ -164,6 +168,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
+        testBundler: testBundler,
         testFinder: testFinder,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),

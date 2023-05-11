@@ -2,12 +2,12 @@ import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 
 class TestBundler {
-  TestBundler({required Directory testDir})
-      : _integrationTestDirectory = testDir;
+  TestBundler({required Directory dartToolDirectory})
+      : _dartToolDirectory = dartToolDirectory;
 
-  final Directory _integrationTestDirectory;
+  final Directory _dartToolDirectory;
 
-  void createBundledTest(List<String> testFilePaths) {
+  File createBundledTest(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
     }
@@ -70,9 +70,11 @@ Future<void> main() async {
 }
 ''';
 
-    _integrationTestDirectory
+    return _dartToolDirectory
+        .childDirectory('patrol_build')
         .childFile('bundled_test.dart')
-        .writeAsStringSync(contents);
+      ..createSync(recursive: true)
+      ..writeAsStringSync(contents);
   }
 
   /// Input:
