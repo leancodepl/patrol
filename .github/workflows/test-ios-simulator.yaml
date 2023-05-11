@@ -57,12 +57,13 @@ jobs:
 
       - name: Run tests
         id: tests_step
-        run: >
-          if [ "${{ matrix.device }}" == "iPhone 14" ]; then
-            exit 1;
-          else 
-            exit 0;
-          fi;
+        run: |
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
+          EXIT_CODE=0
+          patrol test -t integration_test/bundled_ios_simulator_test.dart || EXIT_CODE=$?
+          kill $recordingpid
+          exit $EXIT_CODE
           
       - name: Upload test outputs to artifacts
         if: success() || failure()
