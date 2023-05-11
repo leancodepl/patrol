@@ -102,7 +102,7 @@ jobs:
         id: set_error
         if: always()
         run: >
-          if [ ("${{ steps.tests_step.conclusion }}" == "skipped") || ("${{ steps.tests_step.conclusion }}" == "cancelled") ]; then
+          if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
             echo "error_status=error" >> "$GITHUB_OUTPUT";
           fi;
 
