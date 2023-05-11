@@ -14,7 +14,6 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/commands/build.dart';
-import 'package:patrol_cli/src/commands/bundle.dart';
 import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
@@ -133,8 +132,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         logger: _logger,
       ),
     );
-
-    addCommand(BundleCommand(testFinder: testFinder, logger: logger));
 
     addCommand(
       DevelopCommand(
