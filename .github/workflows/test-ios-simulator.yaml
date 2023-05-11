@@ -55,7 +55,7 @@ jobs:
 
       - name: Run tests
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 recording.mp4 &
+          xcrun simctl io booted recordVideo --codec=h264 ${{ matrix.device }}.mp4 &
           recordingpid="$!"
           EXIT_CODE=0
           patrol test -t integration_test/bundled_ios_simulator_test.dart || EXIT_CODE=$?
@@ -66,9 +66,9 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: Logs and captured video
+          name: Logs and captured video from ${{ matrix.device }}
           path: |
-            ${{ github.workspace }}/packages/patrol/example/recording.mp4
+            ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
             ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
 
       - name: Find xcresult paths
