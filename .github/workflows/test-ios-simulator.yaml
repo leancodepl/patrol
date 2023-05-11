@@ -11,7 +11,9 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      status: ${{ steps.set_status.outputs.status }}
+      success_status: ${{ steps.set_success.outputs.success_status }}
+      failure_status: ${{ steps.set_failure.outputs.failure_status }}
+      error_status: ${{ steps.set_error.outputs.error_status }}
 
     strategy:
       fail-fast: false
@@ -54,6 +56,7 @@ jobs:
         run: xcrun simctl location booted set 52.17469,21.03193
 
       - name: Run tests
+        id: tests_step
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
@@ -83,34 +86,46 @@ jobs:
           path: |
             ${{ env.XCRESULT_PATHS }}
         
-      - name: Set job status
-        id: set_status
-        if: success() || failure()
-        run: echo "status=${{ job.status }}" >> "$GITHUB_OUTPUT"
+      - name: Set success
+        id: set_success
+        if: steps.tests_step.conclusion == 'success'
+        run: echo "success_status=success" >> "$GITHUB_OUTPUT"
+          
+      - name: Set failed
+        id: set_failure
+        if: steps.tests_step.conclusion == 'failure'
+        run: echo "failure_status=failure" >> "$GITHUB_OUTPUT"
+
+      - name: Set error occurred
+        id: set_error
+        if: (steps.tests_step.conclusion == 'skipped') || (steps.tests_step.conclusion == 'cancelled')
+        run: echo "error_status=error" >> "$GITHUB_OUTPUT"
 
   slack_notify:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: ${{ false }}
-    # Change to always()
+    if: always()
 
     steps:
       - name: Set Slack message
         id: slack_message
         env:
-          STATUS: ${{ needs.run_tests.outputs.status }}
+          SUCCESS_STATUS: ${{ needs.run_tests.outputs.success_status }}
+          FAILURE_STATUS: ${{ needs.run_tests.outputs.failure_status }}
+          ERROR_STATUS: ${{ needs.run_tests.outputs.error_status }}
         run: >
-          status="${{ env.STATUS }}"
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          message="";
-          if [ "$STATUS" = "failure" ]; then
+          if [ -z "$FAILURE_STATUS" ]; then
             message="There were failing tests 💥 ";
-          elif [ "$STATUS" = "success" ]; then
-            message="All tests have passed ✅ ";
-          else
+            status="failure";
+          elif [ -z "$ERROR_STATUS" ]; then
             message="Something went wrong ⚠️";
+            status="failure";
+          else
+            message="All tests have passed ✅ ";
+            status="success";
           fi;
+
           echo "message=$message" >> $GITHUB_OUTPUT;
           echo "url=$url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
