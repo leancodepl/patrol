@@ -11,7 +11,6 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      success_status: ${{ steps.set_success.outputs.success_status }}
       failure_status: ${{ steps.set_failure.outputs.failure_status }}
       error_status: ${{ steps.set_error.outputs.error_status }}
 
@@ -85,19 +84,11 @@ jobs:
         with:
           path: |
             ${{ env.XCRESULT_PATHS }}
-        
-      - name: Set success
-        id: set_success
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "success" ]; then
-            echo "success_status=success" >> "$GITHUB_OUTPUT";
-          fi;
           
-      - name: Set failed
+      - name: Set failure
         id: set_failure
         if: always()
-        run:  >
+        run: >
           if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
             echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
@@ -120,7 +111,6 @@ jobs:
       - name: Set Slack message
         id: slack_message
         env:
-          SUCCESS_STATUS: ${{ needs.run_tests.outputs.success_status }}
           FAILURE_STATUS: ${{ needs.run_tests.outputs.failure_status }}
           ERROR_STATUS: ${{ needs.run_tests.outputs.error_status }}
         run: >
