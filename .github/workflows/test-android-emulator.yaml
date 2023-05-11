@@ -32,10 +32,12 @@ jobs:
         with:
           generate-job-summary: false
 
+      # TODO: Change to newest stable version
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.7.12'
+          channel: 'stable'
 
       - name: Preload Flutter artifacts
         run: flutter precache
@@ -73,7 +75,7 @@ jobs:
 
       - name: Generate test report to job summary
         uses: mikepenz/action-junit-report@v3
-        if: ${{ false }}
+        if: success() || failure()
         with:
           check_name: Patrol tests
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
@@ -81,7 +83,7 @@ jobs:
           include_passed: true
 
       - name: Generate test report as check run
-        if: ${{ false }}
+        if: success() || failure()
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
