@@ -87,8 +87,11 @@ jobs:
         
       - name: Set success
         id: set_success
-        if: steps.tests_step.conclusion == 'success'
-        run: echo "success_status=success" >> "$GITHUB_OUTPUT"
+        if: always()
+        run: >
+          if [ "${{ steps.tests_step.conclusion }}" == "success" ]; then
+            echo "success_status=success" >> "$GITHUB_OUTPUT";
+          fi;
           
       - name: Set failed
         id: set_failure
