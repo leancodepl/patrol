@@ -10,6 +10,10 @@
 
 - Support test bundling on Android (#1205) (#1220) (#1221)
 
+## 1.1.2
+
+- Fix crashing when using Gradle 8 (#1262)
+
 ## 1.1.1
 
 - Add support for Flutter 3.10 (#1254)
