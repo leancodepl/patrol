@@ -68,8 +68,8 @@ jobs:
         with:
           name: "Logs and captured video from ${{ matrix.device }}"
           path: |
-            '${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4'
-            '~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log'
+            ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
+            ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
 
       - name: Find xcresult paths
         if: success() || failure()
