@@ -310,15 +310,16 @@ class PatrolFinder extends MatchFinder {
         matchRoot: true,
         of: finder,
         matching: find.byWidgetPredicate((widget) {
-          if (widget is T &&
-              find
-                  .descendant(of: finder, matching: find.byWidget(widget))
-                  .evaluate()
-                  .isEmpty &&
-              find
-                  .ancestor(of: finder, matching: find.byWidget(widget))
-                  .evaluate()
-                  .isEmpty) {
+          final foundWidget = find.byWidget(widget);
+          final isNotAboveFoundWidget = find
+              .ancestor(of: finder, matching: foundWidget)
+              .evaluate()
+              .isEmpty;
+          final isNotBelowFoundWidget = find
+              .descendant(of: finder, matching: foundWidget)
+              .evaluate()
+              .isEmpty;
+          if (widget is T && isNotBelowFoundWidget && isNotAboveFoundWidget) {
             return predicate(widget);
           } else {
             return false;
