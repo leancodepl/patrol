@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -15,6 +14,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 
@@ -22,6 +22,7 @@ class DevelopCommand extends PatrolCommand {
   DevelopCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -33,6 +34,7 @@ class DevelopCommand extends PatrolCommand {
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
+        _testBundler = testBundler,
         _testRunner = testRunner,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
@@ -59,6 +61,7 @@ class DevelopCommand extends PatrolCommand {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
+  final TestBundler _testBundler;
   final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
@@ -89,6 +92,9 @@ class DevelopCommand extends PatrolCommand {
     if (boolArg('release')) {
       throwToolExit('Cannot use release build mode with develop');
     }
+
+    final testBundle = _testBundler.createTestBundle([target]);
+    _logger.detail('Bundled test target $target in ${testBundle.path}');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -121,7 +127,7 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      if (displayLabel) 'PATROL_TEST_LABEL': testBundle.basename,
       // develop-specific
       ...{'PATROL_HOT_RESTART': 'true'},
     }.withNullsRemoved();
@@ -141,7 +147,7 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
-      target: target,
+      target: testBundle.path,
       flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
