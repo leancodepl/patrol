@@ -871,7 +871,7 @@ void main() {
         expect($('count: 10'), findsOneWidget);
       });
 
-      patrolTest('finds 2 buttons by its inactive status', ($) async {
+      patrolTest('finds 2 buttons by their inactive status', ($) async {
         await $.pumpWidget(app);
 
         expect(
