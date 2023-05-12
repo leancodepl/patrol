@@ -125,6 +125,15 @@ jobs:
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.x'
+
+      - name: Generate iOS build files
+        working-directory: packages/patrol/example
+        run: flutter build ios --config-only
+
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
