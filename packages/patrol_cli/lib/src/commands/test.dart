@@ -18,8 +18,8 @@ import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 
-// Note: this class is a bit sphagetti because I didn't model classes to handle
-// multiple targets. This problem will go away when #1004 is done.
+// TODO(bartekpacia): Find and remove unnecessary code after #1004 is done.
+
 part 'test.freezed.dart';
 
 @freezed

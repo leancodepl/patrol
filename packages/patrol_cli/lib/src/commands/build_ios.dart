@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:path/path.dart' show basename, join;
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
