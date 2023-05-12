@@ -56,7 +56,7 @@ void _test(Platform platform) {
     });
 
     test('throws ArgumentError when no tests are given', () {
-      expect(() => testBundler.createBundledTest([]), throwsArgumentError);
+      expect(() => testBundler.createTestBundle([]), throwsArgumentError);
     });
 
     test('generates imports from relative paths', () {

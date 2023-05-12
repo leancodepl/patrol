@@ -9,7 +9,7 @@ class TestBundler {
   final Directory _projectRoot;
   final FileSystem _fs;
 
-  File createBundledTest(List<String> testFilePaths) {
+  File createTestBundle(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
     }

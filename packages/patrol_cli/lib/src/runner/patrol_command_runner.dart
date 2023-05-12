@@ -119,9 +119,16 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     final testBundler = TestBundler(projectRoot: _fs.currentDirectory);
     final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
 
+    final deviceFinder = DeviceFinder(
+      processManager: _processManager,
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
     addCommand(
       BuildCommand(
         testFinder: testFinder,
+        testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
@@ -133,11 +140,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       DevelopCommand(
-        deviceFinder: DeviceFinder(
-          processManager: _processManager,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        deviceFinder: deviceFinder,
         testFinder: testFinder,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
@@ -158,11 +161,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       TestCommand(
-        deviceFinder: DeviceFinder(
-          processManager: _processManager,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        deviceFinder: deviceFinder,
         testBundler: testBundler,
         testFinder: testFinder,
         testRunner: TestRunner(),
@@ -178,20 +177,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       DevicesCommand(
-        deviceFinder: DeviceFinder(
-          processManager: _processManager,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        deviceFinder: deviceFinder,
         logger: _logger,
       ),
     );
+
     addCommand(
       DoctorCommand(
         logger: _logger,
         platform: _platform,
       ),
     );
+
     addCommand(
       UpdateCommand(
         pubUpdater: _pubUpdater,

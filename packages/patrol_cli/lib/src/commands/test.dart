@@ -113,9 +113,8 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
-    final bundledTestFile = _testBundler.createBundledTest(targets);
-    _logger
-        .detail('Bundled ${targets.length} test(s) in ${bundledTestFile.path}');
+    final testBundle = _testBundler.createTestBundle(targets);
+    _logger.detail('Bundled ${targets.length} test(s) in ${testBundle.path}');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -173,7 +172,7 @@ class TestCommand extends PatrolCommand {
 
     final testConfig = TestCommandConfig(
       devices: devices,
-      targets: [bundledTestFile.path],
+      targets: [testBundle.path],
       buildMode: buildMode,
       dartDefines: dartDefines,
       repeat: repeatCount,
@@ -187,7 +186,7 @@ class TestCommand extends PatrolCommand {
       iosFlavor: iosFlavor,
     );
 
-    _testRunner.addTarget(bundledTestFile.path);
+    _testRunner.addTarget(testBundle.path);
     testConfig.devices.forEach(_testRunner.addDevice);
     _testRunner
       ..repeats = testConfig.repeat
