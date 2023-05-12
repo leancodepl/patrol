@@ -11,7 +11,6 @@ import pl.leancode.patrol.PatrolJUnitRunner;
 import java.util.Arrays;
 
 import static pl.leancode.patrol.contracts.Contracts.DartTestGroup;
-import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
