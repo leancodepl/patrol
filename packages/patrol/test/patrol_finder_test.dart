@@ -827,7 +827,7 @@ void main() {
       patrolTest('finds button by its active status', ($) async {
         await $.pumpWidget(app);
 
-        await $('Enabled button')
+        await $(ElevatedButton)
             .which<ElevatedButton>((button) => button.enabled)
             .tap();
 
@@ -837,7 +837,7 @@ void main() {
       patrolTest('finds button by its font size', ($) async {
         await $.pumpWidget(app);
 
-        await $('Enabled button')
+        await $(ElevatedButton)
             .which<ElevatedButton>(
               (button) => button.style?.textStyle?.resolve({})?.fontSize == 20,
             )
@@ -849,7 +849,7 @@ void main() {
       patrolTest('finds button by its active status and color', ($) async {
         await $.pumpWidget(app);
 
-        await $('Enabled button with color')
+        await $(ElevatedButton)
             .which<ElevatedButton>((button) => button.enabled)
             .which<ElevatedButton>(
               (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
