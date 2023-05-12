@@ -72,7 +72,7 @@ jobs:
         working-directory: packages/patrol/example
         run: flutter build apk --debug --flavor=does-not-exist || true
 
-      - name: Run tests
+      - name: Run unit tests
         if: success() || failure()
         run: ./gradlew :patrol:testDebug
 
@@ -124,6 +124,26 @@ jobs:
       - name: clang-format
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
+
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: iPhone 14
+          os: iOS
+          os_version: 16.2
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Run unit tests
+        working-directory: packages/patrol/example/ios
+        run: |
+          xcodebuild test \
+            -workspace Runner.xcworkspace \
+            -scheme 'Runner tests' \
+            -configuration Debug \
+            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -derivedDataPath ../build/ios_unit
+            -quiet \
 
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}
