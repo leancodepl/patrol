@@ -56,9 +56,9 @@ Future<void> main() async {
 
   final testExplorationCompleter = Completer<DartTestGroup>();
 
-  // Run a single, special test to expore the hierarchy of groups and tests This
-  // will break if the test order becomes randomized, since there'll be no
-  // guarantee that patrol_test_explorer will be the first to run.
+  // A special test to expore the hierarchy of groups and tests. This test must
+  // be the first to run. If not, the native side won't any tests.
+  // See also: https://github.com/dart-lang/test/issues/1998
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
@@ -74,8 +74,9 @@ Future<void> main() async {
   binding.patrolAppService = appService;
   await runAppService(appService);
 
-  // Until now, the PatrolJUnit runner was waiting for us (the Dart side) to
-  // come alive. Now that we did, let's share this information with it.
+  // Until now, the native test runner was waiting for us, the Dart side, to
+  // come alive. Now that we did, let's tell it that we're ready to be asked
+  // about Dart tests.
   await nativeAutomator.markPatrolAppServiceReady();
 
   await appService.testExecutionCompleted;
