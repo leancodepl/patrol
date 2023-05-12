@@ -13,11 +13,10 @@ Directory _initTestFs(FileSystem fs) {
 
 void main() {
   group('TestBundler', () {
-    late FileSystem fs;
     late TestBundler testBundler;
 
     setUp(() {
-      fs = MemoryFileSystem.test();
+      final fs = MemoryFileSystem.test();
       final projectRootDir = _initTestFs(fs);
       testBundler = TestBundler(projectRoot: projectRootDir);
     });
@@ -60,30 +59,38 @@ import 'example/example_test.dart' as example__example_test;
 ''');
     });
 
-//     test('generates groups code', () {
-//       // given
-//       final tests = [
-//         'example_test.dart',
-//         'login_test.dart',
-//         'permissions/permissions_location_test.dart'
-//       ];
+    test('generates groups from relative paths', () {
+      // given
+      final tests = [
+        'integration_test/example_test.dart',
+        'integration_test/example/example_test.dart',
+      ];
 
-//       final testFilePaths = tests.map((fileName) {
-//         final file = fs.directory('integration_test').childFile(fileName)
-//           ..createSync(recursive: true);
+      // when
+      final groupsCode = testBundler.generateGroupsCode(tests);
 
-//         return file.path;
-//       }).toList();
+      /// then
+      expect(groupsCode, '''
+group('example_test', example_test.main);
+group('example.example_test', example__example_test.main);
+''');
+    });
 
-//       // when
-//       final groupsCode = testBundler.generateGroupsCode(testFilePaths);
+    test('generates groups from absolute paths', () {
+      // given
+      final tests = [
+        '/Users/charlie/awesome_app/integration_test/example_test.dart',
+        '/Users/charlie/awesome_app/integration_test/example/example_test.dart',
+      ];
 
-//       /// then
-//       expect(groupsCode, '''
-// group('example_test', example_test.main);
-// group('login_test', login_test.main);
-// group('permissions.permissions_location_test.dart);
-// ''');
-//     });
+      // when
+      final groupsCode = testBundler.generateGroupsCode(tests);
+
+      /// then
+      expect(groupsCode, '''
+group('example_test', example_test.main);
+group('example.example_test', example__example_test.main);
+''');
+    });
   });
 }

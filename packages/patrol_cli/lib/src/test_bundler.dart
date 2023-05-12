@@ -111,28 +111,8 @@ Future<void> main() async {
   String generateImports(List<String> testFilePaths) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      var relativeTestFilePath = testFilePath.replaceAll(
-        _projectRoot.childDirectory('integration_test').absolute.path,
-        '',
-      );
-
-      if (relativeTestFilePath.startsWith('integration_test')) {
-        relativeTestFilePath = relativeTestFilePath.replaceFirst(
-          'integration_test',
-          '',
-        );
-      }
-
-      if (relativeTestFilePath.startsWith('/')) {
-        relativeTestFilePath = relativeTestFilePath.substring(1);
-      }
-
-      var testName = relativeTestFilePath
-          .replaceFirst('integration_test/', '')
-          .replaceAll('/', '__');
-
-      testName = testName.substring(0, testName.length - 5);
-
+      final relativeTestFilePath = _normalizeTestPath(testFilePath);
+      final testName = _createTestName(relativeTestFilePath);
       imports.add("import '$relativeTestFilePath' as $testName;\n");
     }
 
@@ -160,10 +140,41 @@ Future<void> main() async {
   String generateGroupsCode(List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
-      final testFileName = testFilePath.split('/').last;
-      final testName = testFileName.split('.').first;
-      groups.add("group('$testName', $testName.main);");
+      final relativeTestFilePath = _normalizeTestPath(testFilePath);
+      final testName = _createTestName(relativeTestFilePath);
+      final groupName = testName.replaceAll('__', '.');
+      final testEntrypoint = '$testName.main';
+      groups.add("group('$groupName', $testEntrypoint);\n");
     }
-    return groups.join('\n');
+    return groups.join();
+  }
+
+  String _normalizeTestPath(String testFilePath) {
+    var relativeTestFilePath = testFilePath.replaceAll(
+      _projectRoot.childDirectory('integration_test').absolute.path,
+      '',
+    );
+
+    if (relativeTestFilePath.startsWith('integration_test')) {
+      relativeTestFilePath = relativeTestFilePath.replaceFirst(
+        'integration_test',
+        '',
+      );
+    }
+
+    if (relativeTestFilePath.startsWith('/')) {
+      relativeTestFilePath = relativeTestFilePath.substring(1);
+    }
+
+    return relativeTestFilePath;
+  }
+
+  String _createTestName(String relativeTestFilePath) {
+    var testName = relativeTestFilePath
+        .replaceFirst('integration_test/', '')
+        .replaceAll('/', '__');
+
+    testName = testName.substring(0, testName.length - 5);
+    return testName;
   }
 }
