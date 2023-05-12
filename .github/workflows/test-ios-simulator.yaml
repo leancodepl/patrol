@@ -41,6 +41,15 @@ jobs:
       - name: Set up Patrol CLI
         run: dart pub global activate patrol_cli
 
+      - name: Set up bluepill
+        run: brew install bluepill
+
+      - name: Build test
+        run: patrol build ios -t integration_test/bundled_ios_simulator_test.dart
+
+      - name: Run tests
+        run: bluepill --xctestrun-path ./SampleAppTest_iphonesimulator10.3-x86_64.xctestrun -o ./output/
+
       - name: Start iOS simulator
         id: start_simulator
         uses: futureware-tech/simulator-action@v2
@@ -105,7 +114,8 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: always()
+    if: ${{ false }}
+    # Change to always()
 
     steps:
       - name: Set Slack message
