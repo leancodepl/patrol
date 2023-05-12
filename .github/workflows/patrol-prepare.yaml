@@ -14,6 +14,7 @@ on:
 jobs:
   prepare-android-on-windows:
     runs-on: windows-latest
+    name: Android on Windows
 
     defaults:
       run:
@@ -52,6 +53,7 @@ jobs:
 
   prepare-android-on-linux:
     runs-on: ubuntu-latest
+    name: Android on Linux
 
     defaults:
       run:
@@ -70,20 +72,27 @@ jobs:
         working-directory: packages/patrol/example
         run: flutter build apk --debug --flavor=does-not-exist || true
 
+      - name: Run tests
+        if: success() || failure()
+        run: ./gradlew :patrol:testDebug
+
       - name: ktlint check
+        if: success() || failure()
         run: ./gradlew :patrol:ktlintCheck
 
       - name: ktlint format
+        if: success() || failure()
         run: ./gradlew :patrol:ktlintFormat
 
-      - name: Build app with Gradle
+      - name: Build example app with Gradle
         run: ./gradlew :app:assembleDebug
 
-      - name: Build app with Flutter tool
+      - name: Build example app with Flutter tool
         run: flutter build apk --debug
 
   prepare-ios:
     runs-on: macos-latest
+    name: iOS on macOS
 
     defaults:
       run:
