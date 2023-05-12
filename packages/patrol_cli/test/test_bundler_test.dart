@@ -1,27 +1,9 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
-
-extension PlatformX on Platform {
-  FileSystemStyle get fileSystemStyle {
-    return isWindows ? FileSystemStyle.windows : FileSystemStyle.posix;
-  }
-
-  String get home {
-    final envVars = environment;
-    if (isMacOS) {
-      return envVars['HOME']!;
-    } else if (isLinux) {
-      return envVars['HOME']!;
-    } else if (isWindows) {
-      return envVars['UserProfile']!;
-    } else {
-      throw StateError('Unsupported platform: $operatingSystem');
-    }
-  }
-}
 
 Platform _initFakePlatform(String platform) {
   switch (platform) {

@@ -6,7 +6,7 @@ import 'package:ci/ci.dart' as ci;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart';
-import 'package:patrol_cli/src/base/fs.dart';
+import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
@@ -132,7 +132,8 @@ class Analytics {
   }
 
   File get _configFile {
-    return getHomeDirectory(_fs, _platform)
+    return _fs
+        .directory(_platform.home)
         .childDirectory('.config')
         .childDirectory('patrol_cli')
         .childFile('analytics.json');
