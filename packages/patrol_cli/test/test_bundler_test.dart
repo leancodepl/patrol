@@ -1,23 +1,84 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/test_bundler.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
-Directory _initTestFs(FileSystem fs) {
-  final wd = fs.directory('/Users/charlie/awesome_app')
-    ..createSync(recursive: true);
-  fs.currentDirectory = wd;
+extension PlatformX on Platform {
+  path.Style get pathStyle => operatingSystem == Platform.windows
+      ? path.Style.windows
+      : path.Style.posix;
+
+  FileSystemStyle get fileSystemStyle {
+    return isWindows ? FileSystemStyle.windows : FileSystemStyle.posix;
+  }
+
+  String get home {
+    final envVars = environment;
+    if (isMacOS) {
+      return envVars['HOME']!;
+    } else if (isLinux) {
+      return envVars['HOME']!;
+    } else if (isWindows) {
+      return envVars['UserProfile']!;
+    } else {
+      throw StateError('Unsupported platform: $operatingSystem');
+    }
+  }
+}
+
+Platform _initFakePlatform(String platform) {
+  switch (platform) {
+    case 'macos':
+      return FakePlatform(
+        operatingSystem: Platform.macOS,
+        environment: {'HOME': '/home/charlie'},
+      );
+    case 'linux':
+      return FakePlatform(
+        operatingSystem: Platform.linux,
+        environment: {'HOME': '/home/charlie'},
+      );
+    case 'windows':
+      return FakePlatform(
+        operatingSystem: Platform.windows,
+        environment: {'UserProfile': r'C:\Users\charlie'},
+      );
+    default:
+      throw StateError('Unsupported platform: $platform');
+  }
+}
+
+Directory _initFakeFs(FileSystem fs, Platform platform) {
+  final pathContext = path.Context(style: platform.pathStyle);
+
+  // Create home directory
+  fs.directory(pathContext.join(platform.home)).createSync();
+  fs.currentDirectory = platform.home;
+
+  final projectRootDir = fs
+      .directory(pathContext.join(platform.home, 'awesome_app'))
+    ..createSync();
+  fs.currentDirectory = projectRootDir;
   fs.directory('integration_test').createSync();
-  return wd;
+  return projectRootDir;
 }
 
 void main() {
-  group('TestBundler', () {
+  _test(_initFakePlatform(Platform.macOS));
+  _test(_initFakePlatform(Platform.windows));
+}
+
+void _test(Platform platform) {
+  final pathContext = path.Context(style: platform.pathStyle);
+
+  group('(${platform.operatingSystem}) TestBundler', () {
     late TestBundler testBundler;
 
     setUp(() {
-      final fs = MemoryFileSystem.test();
-      final projectRootDir = _initTestFs(fs);
+      final fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
+      final projectRootDir = _initFakeFs(fs, platform);
       testBundler = TestBundler(projectRoot: projectRootDir);
     });
 
@@ -28,8 +89,8 @@ void main() {
     test('generates imports from relative paths', () {
       // given
       final tests = [
-        'integration_test/example_test.dart',
-        'integration_test/example/example_test.dart',
+        pathContext.join('integration_test', 'example_test.dart'),
+        pathContext.join('integration_test', 'example', 'example_test.dart'),
       ];
 
       // when
@@ -45,8 +106,18 @@ import 'example/example_test.dart' as example__example_test;
     test('generates imports from absolute paths', () {
       // given
       final tests = [
-        '/Users/charlie/awesome_app/integration_test/example_test.dart',
-        '/Users/charlie/awesome_app/integration_test/example/example_test.dart',
+        pathContext.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example_test.dart',
+        ),
+        pathContext.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example/example_test.dart',
+        ),
       ];
 
       // when
@@ -62,8 +133,8 @@ import 'example/example_test.dart' as example__example_test;
     test('generates groups from relative paths', () {
       // given
       final tests = [
-        'integration_test/example_test.dart',
-        'integration_test/example/example_test.dart',
+        pathContext.join('integration_test', 'example_test.dart'),
+        pathContext.join('integration_test', 'example/example_test.dart'),
       ];
 
       // when
@@ -79,8 +150,18 @@ group('example.example_test', example__example_test.main);
     test('generates groups from absolute paths', () {
       // given
       final tests = [
-        '/Users/charlie/awesome_app/integration_test/example_test.dart',
-        '/Users/charlie/awesome_app/integration_test/example/example_test.dart',
+        pathContext.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example_test.dart',
+        ),
+        pathContext.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example/example_test.dart',
+        ),
       ];
 
       // when
