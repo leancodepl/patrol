@@ -2,10 +2,10 @@ import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 
 class TestBundler {
-  TestBundler({required Directory dartToolDirectory})
-      : _dartToolDirectory = dartToolDirectory;
+  TestBundler({required Directory projectRoot})
+      : _integrationTestDir = projectRoot.childDirectory('integration_test');
 
-  final Directory _dartToolDirectory;
+  final Directory _integrationTestDir;
 
   File createBundledTest(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
@@ -50,7 +50,6 @@ Future<void> main() async {
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
-    print('dartTestGroup: \$dartTestGroup');
     testExplorationCompleter.complete(dartTestGroup);
   });
 
@@ -71,9 +70,9 @@ Future<void> main() async {
 }
 ''';
 
-    final bundledTestFile = _dartToolDirectory
-        .childDirectory('patrol_build')
-        .childFile('bundled_test.dart')
+    // This file must not end with "_test.dart", otherwise it'll be picked up
+    // when finding tests to bundle.
+    final bundledTestFile = _integrationTestDir.childFile('test_bundle.dart')
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 

@@ -116,9 +116,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    final testBundler = TestBundler(
-      dartToolDirectory: _fs.directory('.dart_tool'),
-    );
+    final testBundler = TestBundler(projectRoot: _fs.currentDirectory);
     final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
 
     addCommand(
