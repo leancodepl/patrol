@@ -181,6 +181,36 @@ class PatrolTester {
     );
   }
 
+  /// Calls [WidgetTester.pumpAndSettle] but if it times out, only message about
+  /// it is logged. It prevents from failing tests when you expect eg. an
+  /// infinite animation to appear.
+  ///
+  /// See [WidgetTester.pumpAndSettle].
+  Future<void> pumpAndMaybeSettle({
+    Duration duration = const Duration(milliseconds: 100),
+    EnginePhase phase = EnginePhase.sendSemanticsUpdate,
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
+    // var iteration = 100;
+    // while (tester.hasRunningAnimations && iteration > 0) {
+    //   await pump(const Duration(milliseconds: 50));
+    //   iteration--;
+    // }
+    // if (iteration <= 0) {
+    //   print('pumpAndMaybeSettle timed out');
+    // }
+    try {
+      await tester.pumpAndSettle(duration, phase, timeout);
+    } catch (e) {
+      if (e is FlutterError && e.message == 'pumpAndSettle timed out') {
+        // ignore: avoid_print
+        print('pumpAndMaybeSettle timed out');
+      } else {
+        rethrow;
+      }
+    }
+  }
+
   /// Pumps [widget] and then calls [WidgetTester.pumpAndSettle].
   ///
   /// This is a convenience method combining [WidgetTester.pumpWidget] and
@@ -567,10 +597,8 @@ class PatrolTester {
     final settle = andSettle ?? config.andSettle;
     if (settle) {
       final timeout = settleTimeout ?? config.settleTimeout;
-      await tester.pumpAndSettle(
-        const Duration(milliseconds: 100),
-        EnginePhase.sendSemanticsUpdate,
-        timeout,
+      await pumpAndMaybeSettle(
+        timeout: timeout,
       );
     } else {
       await tester.pump();
