@@ -20,7 +20,7 @@ import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
-import 'package:patrol_cli/src/crossplatform/test_bundler.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_deploy.dart';

@@ -2,10 +2,9 @@ import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 
 class TestBundler {
-  TestBundler({required Directory projectRoot})
-      : _integrationTestDir = projectRoot.childDirectory('integration_test');
+  TestBundler({required Directory projectRoot}) : _projectRoot = projectRoot;
 
-  final Directory _integrationTestDir;
+  final Directory _projectRoot;
 
   File createBundledTest(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
@@ -13,7 +12,8 @@ class TestBundler {
     }
 
     final contents = '''
-// ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, directives_ordering
+// ignore_for_file: invalid_use_of_internal_member,
+// depend_on_referenced_packages, directives_ordering
 
 import 'dart:async';
 
@@ -32,20 +32,29 @@ Future<void> main() async {
   final binding = PatrolBinding.ensureInitialized();
   // Create a PatrolAppService.
   //
-  // Android Test Orchestrator, before running the tests, makes an initial run
-  // to gather the tests that it will later run. The native side of Patrol
-  // (specifically: PatrolJUnitRunner class) is hooked into the Android Test
-  // Orchestrator lifecycle and knows when that initial run happens. When it
-  // does, PatrolJUnitRunner makes an RPC call to PatrolAppService and asks it
-  // for the list of Dart tests.
+  // When running on Android, the Android Test Orchestrator, before running the
+  // tests, makes an initial run to gather the tests that it will later run. The
+  // native side of Patrol (specifically: PatrolJUnitRunner class) is hooked
+  // into the Android Test Orchestrator lifecycle and knows when that initial
+  // run happens. When it does, PatrolJUnitRunner makes an RPC call to
+  // PatrolAppService and asks it for the list of Dart tests.
+  //
+  // When running on iOS, the native side of Patrol (specifically: the
+  // PATROL_INTEGRATION_TEST_IOS_RUNNER macro) makes an RPC call to
+  // PatrolAppSevice and asks it for the list of Dart tests.
+  //
+  // Once the native runner have the list of Dart tests, it dynamically creates
+  // native test method from them. On Android, this is done using Parametrized
+  // JUnit runner. On iOS, new test case methods are swizzled taking advantage
+  // of the very dynamic nature of Objective-C runtime.
   //
   // These Dart tests are later called by the single JUnit test that is
   // parametrized with the gathered Dart tests.
 
   final testExplorationCompleter = Completer<DartTestGroup>();
 
-  // Run a single, special test to expore the hierarchy of groups and tests
-  // This will break if the test order becomes randomized, since there'll be no
+  // Run a single, special test to expore the hierarchy of groups and tests This
+  // will break if the test order becomes randomized, since there'll be no
   // guarantee that patrol_test_explorer will be the first to run.
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
@@ -72,7 +81,9 @@ Future<void> main() async {
 
     // This file must not end with "_test.dart", otherwise it'll be picked up
     // when finding tests to bundle.
-    final bundledTestFile = _integrationTestDir.childFile('test_bundle.dart')
+    final bundledTestFile = _projectRoot
+        .childDirectory('integration_test')
+        .childFile('test_bundle.dart')
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
@@ -83,26 +94,49 @@ Future<void> main() async {
   ///
   /// ```dart
   /// [
-  ///   'integration_test/permissions/permissions_location_test.dart',
   ///   'integration_test/example_test.dart',
+  ///   'integration_test/permissions/permissions_location_test.dart',
+  ///   '/Users/charlie/awesome_app/integration_test/app_test.dart',
   /// ]
   /// ```
   /// Output:
   /// ```dart
   /// '''
-  /// import 'permissions/permissions_location_test.dart' as permissions_location_test;
   /// import 'example_test.dart' as example_test;
+  /// import 'permissions/permissions_location_test.dart' as permissions__permissions_location_test;
+  /// import 'integration_test/app_test.dart' as app_test;
   /// '''
   /// ```
   @visibleForTesting
   String generateImports(List<String> testFilePaths) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      final testFileName = testFilePath.split('/').last;
-      final testName = testFileName.split('.').first;
-      imports.add("import '$testFilePath' as $testName;");
+      var relativeTestFilePath = testFilePath.replaceAll(
+        _projectRoot.childDirectory('integration_test').absolute.path,
+        '',
+      );
+
+      if (relativeTestFilePath.startsWith('integration_test')) {
+        relativeTestFilePath = relativeTestFilePath.replaceFirst(
+          'integration_test',
+          '',
+        );
+      }
+
+      if (relativeTestFilePath.startsWith('/')) {
+        relativeTestFilePath = relativeTestFilePath.substring(1);
+      }
+
+      var testName = relativeTestFilePath
+          .replaceFirst('integration_test/', '')
+          .replaceAll('/', '__');
+
+      testName = testName.substring(0, testName.length - 5);
+
+      imports.add("import '$relativeTestFilePath' as $testName;\n");
     }
-    return imports.join('\n');
+
+    return imports.join();
   }
 
   /// Input:
