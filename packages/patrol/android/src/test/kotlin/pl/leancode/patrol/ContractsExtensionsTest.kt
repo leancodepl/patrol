@@ -8,7 +8,7 @@ import kotlin.test.assertContentEquals
 
 class DartTestGroupExtensionsTest {
     @Test
-    fun `listDartFilesFlat() litmus tes`() {
+    fun `listDartFilesFlat() litmus test`() {
         // given
         val dartTestGroup = dartTestGroup {
             name = "root"

@@ -91,7 +91,7 @@ jobs:
         run: flutter build apk --debug
 
   prepare-ios:
-    runs-on: macos-latest
+    runs-on: macos-13
     name: iOS on macOS
 
     defaults:
@@ -139,10 +139,11 @@ jobs:
         run: |
           xcodebuild test \
             -workspace Runner.xcworkspace \
-            -scheme 'Runner tests' \
+            -scheme Runner \
+            -only-testing RunnerTests \
             -configuration Debug \
             -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
-            -derivedDataPath ../build/ios_unit
+            -derivedDataPath ../build/ios_unit \
             -quiet \
 
   prepare-flutter:
