@@ -2,9 +2,12 @@ import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 
 class TestBundler {
-  TestBundler({required Directory projectRoot}) : _projectRoot = projectRoot;
+  TestBundler({required Directory projectRoot})
+      : _projectRoot = projectRoot,
+        _fs = projectRoot.fileSystem;
 
   final Directory _projectRoot;
+  final FileSystem _fs;
 
   File createBundledTest(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
@@ -149,6 +152,8 @@ Future<void> main() async {
     return groups.join();
   }
 
+  /// Normalizes [testFilePath] so that it always starts with
+  /// 'integration_test'.
   String _normalizeTestPath(String testFilePath) {
     var relativeTestFilePath = testFilePath.replaceAll(
       _projectRoot.childDirectory('integration_test').absolute.path,
@@ -162,16 +167,17 @@ Future<void> main() async {
       );
     }
 
-    if (relativeTestFilePath.startsWith('/')) {
+    if (relativeTestFilePath.startsWith(_fs.path.separator)) {
       relativeTestFilePath = relativeTestFilePath.substring(1);
     }
 
-    return relativeTestFilePath;
+    // Dart source code uses forward slash.
+    return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
   }
 
   String _createTestName(String relativeTestFilePath) {
     var testName = relativeTestFilePath
-        .replaceFirst('integration_test/', '')
+        .replaceFirst('integration_test${_fs.path.separator}', '')
         .replaceAll('/', '__');
 
     testName = testName.substring(0, testName.length - 5);
