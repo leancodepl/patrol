@@ -13,8 +13,13 @@ on:
 
 jobs:
   prepare-android-on-windows:
-    runs-on: windows-latest
-    name: Android on Windows
+    runs-on: ${{ matrix.os }}
+    name: Android on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
 
     defaults:
       run:
@@ -27,7 +32,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.7.x'
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -52,8 +57,13 @@ jobs:
         run: flutter build apk --debug
 
   prepare-android-on-linux:
-    runs-on: ubuntu-latest
-    name: Android on Linux
+    runs-on: ${{ matrix.os }}
+    name: Android on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
 
     defaults:
       run:
@@ -66,7 +76,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.7.x'
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
@@ -91,8 +101,13 @@ jobs:
         run: flutter build apk --debug
 
   prepare-ios:
-    runs-on: macos-latest
-    name: iOS on macOS
+    runs-on: ${{ matrix.os }}
+    name: iOS on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
 
     defaults:
       run:
@@ -126,7 +141,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.x'
+          flutter-version: '3.7.x'
 
       - name: Generate iOS build files
         working-directory: packages/patrol/example
@@ -178,37 +193,37 @@ jobs:
         run: flutter pub get
 
       - name: flutter test
-        if: always()
+        if: success() || failure()
         run: flutter test --coverage
 
       - name: flutter analyze
-        if: always()
+        if: success() || failure()
         run: flutter analyze
 
       - name: dart format
-        if: always()
+        if: success() || failure()
         run: dart format --set-exit-if-changed .
 
       - name: flutter pub publish --dry-run
-        if: always()
+        if: success() || failure()
         run: flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
-        if: always()
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter pub get
 
       - name: dart format (example app)
-        if: always()
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: dart format --set-exit-if-changed .
 
       - name: flutter analyze (example app)
-        if: always()
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter analyze
 
       - name: flutter test (example app)
-        if: always()
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter test
