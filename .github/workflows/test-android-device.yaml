@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.7.12']
+        flutter-version: ['3.7.x']
 
     defaults:
       run:
@@ -63,14 +63,14 @@ jobs:
 
       - name: patrol build android
         run: |
-          patrol build android
-          --exclude integration_test/permissions_location_test.dart
-          --exclude integration_test/service_airplane_mode_test.dart
-          --exclude integration_test/service_bluetooth_test.dart
-          --exclude integration_test/webview_hackernews_test.dart
-          --exclude integration_test/webview_leancode_test.dart
-          --exclude integration_test/webview_login_test.dart
-          --exclude integration_test/webview_stackoverflow_test.dart
+          patrol build android \
+            --exclude integration_test/permissions_location_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/webview_hackernews_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         run: ./run_android_testlab

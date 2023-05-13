@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.7.12']
+        flutter-version: ['3.7.x']
 
     defaults:
       run:
@@ -73,18 +73,18 @@ jobs:
             --exclude integration_test/webview_stackoverflow_test.dart
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
-        run: >
-          ew-cli
-          --app build/app/outputs/apk/debug/app-debug.apk
-          --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-          --num-shards 10
-          --use-orchestrator
-          --clear-package-data
-          --record-video
-          --timeout 10m
-          --environment-variables packageName="pl.leancode.patrol.example"
-          --outputs-dir test_artifacts
-          --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
+        run: |
+          ew-cli \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --num-shards 3 \
+            --use-orchestrator \
+            --clear-package-data \
+            --record-video \
+            --timeout 10m \
+            --environment-variables packageName="pl.leancode.patrol.example" \
+            --outputs-dir test_artifacts \
+            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
 
       - name: Generate test report to job summary
         uses: mikepenz/action-junit-report@v3
