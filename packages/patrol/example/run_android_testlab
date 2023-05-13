@@ -2,23 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-_usage() {
-	printf "usage: ./run_android_testlab <target>\n"
-	printf "\tfor example:\n"
-	printf "\t\$ ./run_android_testlab integration_test/app_test.dart\n"
-}
-
-target="${1:-}"
-
-if [ -z "$target" ]; then
-	_usage
-	exit 1
-fi
-
-target_path="$(realpath "$target")"
-
-flutter pub get
-patrol build android -t "$target_path"
+# This script assumes that APKs are already built.
 
 RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"

@@ -7,11 +7,16 @@ on:
 
 jobs:
   run_tests:
-    name: Test on Android device on Firebase Test Lab
+    name: ${{ matrix.flutter-version }} on Firebase Test Lab
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
       status: ${{ steps.set_status.outputs.status }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.7.12']
 
     defaults:
       run:
@@ -40,32 +45,43 @@ jobs:
         with:
           generate-job-summary: false
 
-      # TODO: Change to newest stable version
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.12'
-          channel: 'stable'
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
 
       - name: Set up Patrol CLI
-        run: dart pub global activate patrol_cli
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
-      - name: Run tests
-        run: ./run_android_testlab integration_test/bundled_android_device_test.dart
+      - name: patrol build android
+        run: |
+          patrol build android
+          --exclude integration_test/permissions_location_test.dart
+          --exclude integration_test/service_airplane_mode_test.dart
+          --exclude integration_test/service_bluetooth_test.dart
+          --exclude integration_test/webview_hackernews_test.dart
+          --exclude integration_test/webview_leancode_test.dart
+          --exclude integration_test/webview_login_test.dart
+          --exclude integration_test/webview_stackoverflow_test.dart
+
+      - name: Upload APKs to Firebase Test Lab and wait for tests to finish
+        run: ./run_android_testlab
 
       # RESULTS_DIR_NAME is created by run_android_testlab script
       - name: Get test artifacts from Google Cloud Storage
-        if: success() || failure()  
+        if: success() || failure()
         run: |
           mkdir "test_artifacts"
           gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_artifacts"
-          
+
       - name: Generate test report to job summary
         uses: mikepenz/action-junit-report@v3
         if: success() || failure()
@@ -74,7 +90,7 @@ jobs:
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
           detailed_summary: true
           include_passed: true
-      
+
       - name: Generate test report as check run
         if: success() || failure()
         uses: dorny/test-reporter@v1
@@ -83,7 +99,7 @@ jobs:
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
           reporter: java-junit
           fail-on-error: false
-      
+
       - name: Upload test outputs to artifacts
         uses: actions/upload-artifact@v2
         if: success() || failure()
@@ -100,8 +116,7 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: ${{ false }}
-    # Change to always()
+    if: ${{ always() }}
 
     steps:
       - name: Set Slack message
