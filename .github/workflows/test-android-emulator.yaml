@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: ${{ matrix.flutter-version }} on emulator.wtf
+    name: Flutter ${{ matrix.flutter-version }} on emulator.wtf
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -63,14 +63,14 @@ jobs:
 
       - name: patrol build android
         run: |
-          patrol build android
-          --exclude integration_test/permissions_location_test.dart
-          --exclude integration_test/service_airplane_mode_test.dart
-          --exclude integration_test/service_bluetooth_test.dart
-          --exclude integration_test/webview_hackernews_test.dart
-          --exclude integration_test/webview_leancode_test.dart
-          --exclude integration_test/webview_login_test.dart
-          --exclude integration_test/webview_stackoverflow_test.dart
+          patrol build android \
+            --exclude integration_test/permissions_location_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/webview_hackernews_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         run: >
@@ -120,7 +120,7 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: ${{ always() }}
+    if: ${{ false }}
 
     steps:
       - name: Set Slack message
