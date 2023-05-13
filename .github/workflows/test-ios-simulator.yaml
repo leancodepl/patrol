@@ -40,7 +40,8 @@ jobs:
         run: flutter precache
 
       - name: Set up Patrol CLI
-        run: dart pub global activate patrol_cli
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
       # - name: Set up Bluepill
       #   run: brew install bluepill
