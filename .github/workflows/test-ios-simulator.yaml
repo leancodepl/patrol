@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: Test on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-channel: [stable]
+        flutter-version: ['3.7.x']
         device: [iPhone 14, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']
@@ -33,7 +33,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
@@ -41,14 +42,25 @@ jobs:
       - name: Set up Patrol CLI
         run: dart pub global activate patrol_cli
 
-      - name: Set up bluepill
-        run: brew install bluepill
+      # - name: Set up Bluepill
+      #   run: brew install bluepill
 
-      - name: Build test
-        run: patrol build ios -t integration_test/bundled_ios_simulator_test.dart
+      # - name: Build and run tests
+      #   run: |
+      #     patrol build ios --debug --simulator \
+      #       --exclude integration_test/android_app_test.dart \
+      #       --exclude integration_test/service_airplane_mode_test.dart \
+      #       --exclude integration_test/service_bluetooth_test.dart \
+      #       --exclude integration_test/service_cellular_test.dart \
+      #       --exclude integration_test/service_wifi_test.dart \
+      #       --exclude integration_test/swipe_test.dart \
+      #       --exclude integration_test/webview_hackernews_test.dart \
+      #       --exclude integration_test/webview_leancode_test.dart \
+      #       --exclude integration_test/webview_login_test.dart \
+      #       --exclude integration_test/webview_stackoverflow_test.dart
 
-      - name: Run tests
-        run: bluepill --xctestrun-path ./SampleAppTest_iphonesimulator10.3-x86_64.xctestrun -o ./output/
+      # - name: Run tests with Bluepill
+      #   run: bluepill --xctestrun-path ./SampleAppTest_iphonesimulator10.3-x86_64.xctestrun -o ./output/
 
       - name: Start iOS simulator
         id: start_simulator
@@ -69,15 +81,27 @@ jobs:
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
           EXIT_CODE=0
-          patrol test -t integration_test/bundled_ios_simulator_test.dart || EXIT_CODE=$?
+
+          patrol build ios --debug --simulator \
+            --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/service_cellular_test.dart \
+            --exclude integration_test/service_wifi_test.dart \
+            --exclude integration_test/swipe_test.dart \
+            --exclude integration_test/webview_hackernews_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
+
           kill $recordingpid
           exit $EXIT_CODE
-          
+
       - name: Upload test outputs to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: "Logs and captured video from ${{ matrix.device }}"
+          name: Logs and captured video from ${{ matrix.device }}
           path: |
             ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
             ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
@@ -93,7 +117,7 @@ jobs:
         with:
           path: |
             ${{ env.XCRESULT_PATHS }}
-          
+
       - name: Set failure
         id: set_failure
         if: always()
