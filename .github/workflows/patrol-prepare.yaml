@@ -91,7 +91,7 @@ jobs:
         run: flutter build apk --debug
 
   prepare-ios:
-    runs-on: macos-13
+    runs-on: macos-latest
     name: iOS on macOS
 
     defaults:

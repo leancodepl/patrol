@@ -8,7 +8,7 @@ on:
 jobs:
   run_tests:
     name: Test on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 60
     outputs:
       status: ${{ steps.set_status.outputs.status }}

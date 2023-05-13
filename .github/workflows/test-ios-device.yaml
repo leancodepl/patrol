@@ -8,7 +8,7 @@ on:
 jobs:
   main:
     name: Test on iOS device on Firebase Test Lab
-    runs-on: macos-13
+    runs-on: macos-latest
     timeout-minutes: 60
 
     defaults:
