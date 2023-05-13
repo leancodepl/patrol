@@ -1,26 +1,27 @@
 import 'dart:async';
 
-import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
-import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildAndroidCommand extends PatrolCommand {
   BuildAndroidCommand({
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required Analytics analytics,
     required Logger logger,
   })  : _testFinder = testFinder,
+        _testBundler = testBundler,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
@@ -37,6 +38,7 @@ class BuildAndroidCommand extends PatrolCommand {
   }
 
   final TestFinder _testFinder;
+  final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
@@ -57,14 +59,18 @@ class BuildAndroidCommand extends PatrolCommand {
   Future<int> run() async {
     unawaited(_analytics.sendCommand('build_android'));
 
-    final targetArg = stringsArg('target');
-    if (targetArg.isEmpty) {
-      throwToolExit('No test target specified');
-    } else if (targetArg.length > 1) {
-      throwToolExit('Only one test target can be specified');
+    final target = stringsArg('target');
+    final targets = target.isNotEmpty
+        ? _testFinder.findTests(target)
+        : _testFinder.findAllTests(excludes: stringsArg('exclude').toSet());
+
+    _logger.detail('Received ${targets.length} test target(s)');
+    for (final t in targets) {
+      _logger.detail('Received test target: $t');
     }
-    final target = _testFinder.findTest(targetArg.single);
-    _logger.detail('Received test target: $target');
+
+    final testBundle = _testBundler.createTestBundle(targets);
+    _logger.detail('Bundled ${targets.length} test(s) in ${testBundle.path}');
 
     final config = _pubspecReader.read();
     final flavor = stringArg('flavor') ?? config.android.flavor;
@@ -84,7 +90,7 @@ class BuildAndroidCommand extends PatrolCommand {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
-      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      if (displayLabel) 'PATROL_TEST_LABEL': testBundle.basename,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
@@ -103,7 +109,7 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
-      target: target,
+      target: testBundle.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
