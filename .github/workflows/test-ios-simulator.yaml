@@ -89,7 +89,6 @@ jobs:
             --exclude integration_test/service_cellular_test.dart \
             --exclude integration_test/service_wifi_test.dart \
             --exclude integration_test/swipe_test.dart \
-            --exclude integration_test/webview_hackernews_test.dart \
             --exclude integration_test/webview_leancode_test.dart \
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
