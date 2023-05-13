@@ -72,8 +72,7 @@ void _test(Platform platform) {
       /// then
       expect(imports, '''
 import 'example_test.dart' as example_test;
-import 'example/example_test.dart' as example__example_test;
-''');
+import 'example/example_test.dart' as example__example_test;''');
     });
 
     test('generates imports from absolute paths', () {
@@ -99,8 +98,7 @@ import 'example/example_test.dart' as example__example_test;
       /// then
       expect(imports, '''
 import 'example_test.dart' as example_test;
-import 'example/example_test.dart' as example__example_test;
-''');
+import 'example/example_test.dart' as example__example_test;''');
     });
 
     test('generates groups from relative paths', () {
@@ -116,8 +114,7 @@ import 'example/example_test.dart' as example__example_test;
       /// then
       expect(groupsCode, '''
 group('example_test', example_test.main);
-group('example.example_test', example__example_test.main);
-''');
+group('example.example_test', example__example_test.main);''');
     });
 
     test('generates groups from absolute paths', () {
@@ -143,8 +140,7 @@ group('example.example_test', example__example_test.main);
       /// then
       expect(groupsCode, '''
 group('example_test', example_test.main);
-group('example.example_test', example__example_test.main);
-''');
+group('example.example_test', example__example_test.main);''');
     });
   });
 }

@@ -66,7 +66,7 @@ Future<void> main() async {
   });
 
   // START: GENERATED CODE
-  ${generateGroupsCode(testFilePaths)}
+${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED CODE
 
   final dartTestGroup = await testExplorationCompleter.future;
@@ -117,10 +117,10 @@ Future<void> main() async {
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(testFilePath);
       final testName = _createTestName(relativeTestFilePath);
-      imports.add("import '$relativeTestFilePath' as $testName;\n");
+      imports.add("import '$relativeTestFilePath' as $testName;");
     }
 
-    return imports.join();
+    return imports.join('\n');
   }
 
   /// Input:
@@ -148,9 +148,9 @@ Future<void> main() async {
       final testName = _createTestName(relativeTestFilePath);
       final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';
-      groups.add("group('$groupName', $testEntrypoint);\n");
+      groups.add("group('$groupName', $testEntrypoint);");
     }
-    return groups.join();
+    return groups.join('\n');
   }
 
   /// Normalizes [testFilePath] so that it always starts with
