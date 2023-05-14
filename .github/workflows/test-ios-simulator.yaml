@@ -79,7 +79,7 @@ jobs:
           --device "${{ matrix.device }}"
           --headless
           --num-sims 2
-          --runtime "${{ matrix.os_version }}"
+          --runtime "iOS ${{ matrix.os_version }}"
           --videos-directory "videos"
           --unsafe-skip-xcode-version-check
 
