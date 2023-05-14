@@ -59,11 +59,8 @@ jobs:
           --exclude integration_test/webview_login_test.dart \
           --exclude integration_test/webview_stackoverflow_test.dart
 
-      - name: Print xctestrun path in Example app
-        run: |
-          XCTESTRUN_PATH=$(find build/ios_integ/Build/Products -name "*.xctestrun")
-          echo "$XCTESTRUN_PATH"
-          echo "XCTESTRUN_PATH=$(find build/ios_integ/Build/Products -name "*.xctestrun")" >> $GITHUB_ENV
+      - name: Find xctestrun path
+        run: echo "XCTESTRUN_PATH=$(find build/ios_integ/Build/Products -name "*.xctestrun")" >> $GITHUB_ENV
 
       - name: Run tests with Bluepill
         run: >
@@ -72,13 +69,17 @@ jobs:
           --output-dir "output_logs"
           --device "${{ matrix.device }}"
           --headless
-          --num-sims 2
+          --num-sims 4
           --runtime "${{ matrix.os }} ${{ matrix.os_version }}"
           --videos-directory "videos"
           --unsafe-skip-xcode-version-check
 
       # - name: Set simulator location
       #   run: xcrun simctl location booted set 52.17469,21.03193
+
+      - name: Find logs paths
+        if: success() || failure()
+        run: echo LOGS_PATHS=$(find ~/Documents/work/patrol/patrol/packages/patrol/example/output_logs -name "*.log") >> $GITHUB_ENV
 
       - name: Upload test outputs to artifacts
         if: success() || failure()
@@ -88,7 +89,7 @@ jobs:
           path: |
             ${{ github.workspace }}/packages/patrol/example/output_logs
             ${{ github.workspace }}/packages/patrol/example/videos
-            ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
+            ${{ env.LOGS_PATHS }}
 
       - name: Find xcresult paths
         if: success() || failure()
@@ -99,7 +100,7 @@ jobs:
         if: success() || failure()
         with:
           check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/output_logs/BP-1/TEST-RunnerUITests-1-results.xml
+          report_paths: ${{ github.workspace }}/packages/patrol/example/output_logs/TEST-FinalReport.xml
           detailed_summary: true
           include_passed: true
 
@@ -108,13 +109,13 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/output_logs/BP-1/TEST-RunnerUITests-1-results.xml
+          path: ${{ github.workspace }}/packages/patrol/example/output_logs/TEST-FinalReport.xml
           reporter: java-junit
           fail-on-error: false
       
         # should work for more than one path but not sure :)
       - name: Publish Test Report
-        if: success() || failure()
+        if: false
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           path: |
