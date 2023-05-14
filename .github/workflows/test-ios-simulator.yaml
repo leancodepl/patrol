@@ -74,13 +74,13 @@ jobs:
       - name: Run tests with Bluepill
         run: >
           bluepill
-          --xctestrun-path ${{ env.XCTESTRUN_PATH }}
-          --output-dir output_logs
-          --device ${{ matrix.device }}
+          --xctestrun-path "${{ env.XCTESTRUN_PATH }}""
+          --output-dir "output_logs"
+          --device "${{ matrix.device }}""
           --headless
           --num-sims 2
-          --runtime ${{ matrix.os_version }}
-          --videos-directory videos
+          --runtime "${{ matrix.os_version }}""
+          --videos-directory "videos"
 
       # - name: Set simulator location
       #   run: xcrun simctl location booted set 52.17469,21.03193
