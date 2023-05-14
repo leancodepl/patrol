@@ -33,16 +33,8 @@ jobs:
       - name: Switch Xcode version
         run: |
           xcode-select --print-path
-          sudo xcode-select -v
           sudo xcode-select --switch /Applications/Xcode_14.0.1.app/Contents/Developer
-          sudo xcode-select -v
-      
-      - name: Switch Xcode version in other way
-        env:
-          DEVELOPER_DIR: /Applications/Xcode_14.0.1.app/Contents/Developer
-        run: |
           xcode-select --print-path
-          sudo xcode-select -v
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
