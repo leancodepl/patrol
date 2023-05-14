@@ -33,7 +33,7 @@ jobs:
       - name: Switch Xcode version
         run: |
           sudo xcode-select -v
-          sudo xcode-select --switch /Applications/Xcode_14.0.1.app/Contents/Developer
+          sudo xcode-select --switch /Applications/Xcode_14.0.1.app
           sudo xcode-select -v
 
       - name: Set up Flutter
