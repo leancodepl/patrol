@@ -69,7 +69,7 @@ jobs:
           --output-dir "output_logs"
           --device "${{ matrix.device }}"
           --headless
-          --num-sims 4
+          --num-sims 3
           --runtime "${{ matrix.os }} ${{ matrix.os_version }}"
           --videos-directory "videos"
           --unsafe-skip-xcode-version-check
@@ -79,7 +79,7 @@ jobs:
 
       - name: Find logs paths
         if: success() || failure()
-        run: echo LOGS_PATHS=$(find ~/Documents/work/patrol/patrol/packages/patrol/example/output_logs -name "*.log") >> $GITHUB_ENV
+        run: echo LOGS_PATHS=$(find ${{ github.workspace }}/packages/patrol/example/output_logs -name "*.log") >> $GITHUB_ENV
 
       - name: Upload test outputs to artifacts
         if: success() || failure()
