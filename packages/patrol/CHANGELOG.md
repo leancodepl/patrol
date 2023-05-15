@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `which()` not taking previous finder(s) into account (#1271)
+
 ## 1.1.2
 
 - Fix crashing when using Gradle 8 (#1262)
