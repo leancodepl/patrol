@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix build with Android Gradle Plugin v8 (#1276)
+
 ## 1.1.3
 
 - Fix `which()` not taking previous finder(s) into account (#1271)
