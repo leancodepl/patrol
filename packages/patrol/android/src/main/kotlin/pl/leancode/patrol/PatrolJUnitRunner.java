@@ -1,3 +1,7 @@
+// Terminology note:
+// "Run a test" is used interchangeably with "execute a test".
+// "Run a Dart test" is used interchangeably with "request execution of a Dart test" and "execute Dart test".
+
 package pl.leancode.patrol;
 
 import android.app.Instrumentation;
@@ -28,7 +32,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         // We need to know what Dart tests exist before we can request their execution.
         // To gather the Dart tests, we need to run the app during the Orchestrator's initial run.
-        // But by default, AndroidJUnitRunner doesn't run the app during the initial run, when it gathers the test tests to execute.
+        // But by default, AndroidJUnitRunner doesn't run the app during the initial run, when it gathers the ests to execute.
         // That's why we override this onCreate().
 
         // This is only true when the Orchestrator requests a list of tests from the app during the initial run.
