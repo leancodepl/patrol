@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.4
 
 - Fix build with Android Gradle Plugin v8 (#1276)
 
