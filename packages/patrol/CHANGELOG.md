@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.3
 
 - Fix `which()` not taking previous finder(s) into account (#1271)
 
