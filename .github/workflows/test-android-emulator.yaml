@@ -117,7 +117,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: Test report, logs and captured video
+          name: Test report, logs and captured videos
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
       - name: Check if failed test occured

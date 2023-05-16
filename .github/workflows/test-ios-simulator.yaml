@@ -77,6 +77,15 @@ jobs:
           kill $recordingpid
           exit $EXIT_CODE
 
+      - name: Publish test report to summary
+        if: success() || failure()
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          title: "Patrol tests"
+          upload-bundles: "never"
+          path: |
+            ${{ env.XCRESULT_PATH }}
+
       - name: Find xcresult path
         if: success() || failure()
         run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
@@ -102,13 +111,6 @@ jobs:
         with:
           name: Captured video from ${{ matrix.device }}
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
-
-      - name: Publish test report to summary
-        if: success() || failure()
-        uses: kishikawakatsumi/xcresulttool@v1
-        with:
-          path: |
-            ${{ env.XCRESULT_PATH }}
 
       - name: Check if failed test occured
         id: set_failure
