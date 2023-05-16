@@ -43,43 +43,59 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      - name: Set up Bluepill
-        run: brew install bluepill
+      # - name: Set up Bluepill
+      #   run: brew install bluepill
 
-      - name: Build tests
+      # - name: Build and run tests
+      #   run: |
+      #     patrol build ios --debug --simulator \
+      #       --exclude integration_test/android_app_test.dart \
+      #       --exclude integration_test/service_airplane_mode_test.dart \
+      #       --exclude integration_test/service_bluetooth_test.dart \
+      #       --exclude integration_test/service_cellular_test.dart \
+      #       --exclude integration_test/service_wifi_test.dart \
+      #       --exclude integration_test/swipe_test.dart \
+      #       --exclude integration_test/webview_hackernews_test.dart \
+      #       --exclude integration_test/webview_leancode_test.dart \
+      #       --exclude integration_test/webview_login_test.dart \
+      #       --exclude integration_test/webview_stackoverflow_test.dart
+
+      # - name: Run tests with Bluepill
+      #   run: bluepill --xctestrun-path ./SampleAppTest_iphonesimulator10.3-x86_64.xctestrun -o ./output/
+
+      - name: Start iOS simulator
+        id: start_simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: ${{ matrix.device }}
+          os: ${{ matrix.os }}
+          os_version: ${{ matrix.os_version }}
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Set simulator location
+        run: xcrun simctl location booted set 52.17469,21.03193
+
+      - name: Run tests
+        id: tests_step
         run: |
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
+          EXIT_CODE=0
+
           patrol build ios --debug --simulator \
-          --exclude integration_test/android_app_test.dart \
-          --exclude integration_test/service_airplane_mode_test.dart \
-          --exclude integration_test/service_bluetooth_test.dart \
-          --exclude integration_test/service_cellular_test.dart \
-          --exclude integration_test/service_wifi_test.dart \
-          --exclude integration_test/swipe_test.dart \
-          --exclude integration_test/webview_leancode_test.dart \
-          --exclude integration_test/webview_login_test.dart \
-          --exclude integration_test/webview_stackoverflow_test.dart
+            --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/service_cellular_test.dart \
+            --exclude integration_test/service_wifi_test.dart \
+            --exclude integration_test/swipe_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
 
-      - name: Find xctestrun path
-        run: echo "XCTESTRUN_PATH=$(find build/ios_integ/Build/Products -name "*.xctestrun")" >> $GITHUB_ENV
-
-      - name: Run tests with Bluepill
-        run: >
-          bluepill
-          --xctestrun-path "${{ env.XCTESTRUN_PATH }}"
-          --output-dir "output_logs"
-          --device "${{ matrix.device }}"
-          --headless
-          --num-sims 3
-          --runtime "${{ matrix.os }} ${{ matrix.os_version }}"
-          --videos-directory "videos"
-          --unsafe-skip-xcode-version-check
-
-      # - name: Set simulator location
-      #   run: xcrun simctl location booted set 52.17469,21.03193
-
-      - name: Find logs paths
-        if: success() || failure()
-        run: echo LOGS_PATHS=$(find ${{ github.workspace }}/packages/patrol/example/output_logs -name "*.log") >> $GITHUB_ENV
+          kill $recordingpid
+          exit $EXIT_CODE
 
       - name: Upload test outputs to artifacts
         if: success() || failure()
@@ -87,35 +103,16 @@ jobs:
         with:
           name: Logs and captured video from ${{ matrix.device }}
           path: |
-            ${{ github.workspace }}/packages/patrol/example/output_logs
-            ${{ github.workspace }}/packages/patrol/example/videos
-            ${{ env.LOGS_PATHS }}
+            ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
+            ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
 
       - name: Find xcresult paths
         if: success() || failure()
         run: echo "XCRESULT_PATHS=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
-      - name: Generate test report to job summary
-        uses: mikepenz/action-junit-report@v3
-        if: success() || failure()
-        with:
-          check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/output_logs/TEST-FinalReport.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Generate test report as check run
-        if: success() || failure()
-        uses: dorny/test-reporter@v1
-        with:
-          name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/output_logs/TEST-FinalReport.xml
-          reporter: java-junit
-          fail-on-error: false
-      
-        # should work for more than one path but not sure :)
+      # should work for more than one path but not sure :)
       - name: Publish Test Report
-        if: false
+        if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           path: |
