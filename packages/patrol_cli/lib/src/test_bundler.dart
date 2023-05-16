@@ -27,9 +27,9 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
-// START: GENERATED CODE
+// START: GENERATED TEST IMPORTS
 ${generateImports(testFilePaths)}
-// END: GENERATED CODE
+// END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
@@ -80,9 +80,9 @@ Future<void> main() async {
     testExplorationCompleter.complete(dartTestGroup);
   });
 
-  // START: GENERATED CODE
+  // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
-  // END: GENERATED CODE
+  // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
