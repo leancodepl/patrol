@@ -78,18 +78,18 @@ jobs:
         run: ./run_android_testlab
 
       # RESULTS_DIR_NAME is created by run_android_testlab script
-      - name: Get test artifacts from Google Cloud Storage
+      - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
-          mkdir "test_artifacts"
-          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_artifacts"
+          mkdir "test_outputs"
+          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_outputs"
 
       - name: Generate test report to job summary
         uses: mikepenz/action-junit-report@v3
         if: success() || failure()
         with:
           check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
           detailed_summary: true
           include_passed: true
 
@@ -98,18 +98,39 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/test_result_1.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
           reporter: java-junit
           fail-on-error: false
 
-      - name: Upload test outputs to artifacts
+      - name: Upload XML test report to artifacts
         uses: actions/upload-artifact@v2
         if: success() || failure()
         with:
-          name: Test results, logs and captured video
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
+          name: XML test report
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
 
-      - name: Set failure
+      - name:  Upload captured video to artifacts
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: Captured video
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
+
+      - name: Upload test cases to artifacts
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: Test cases (logcat and captured video per test target)
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_cases
+
+      - name: Upload device logs to artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Logs (logcat)
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/logcat
+
+      - name: Check if failed test occured
         id: set_failure
         if: always()
         run: >
@@ -117,7 +138,7 @@ jobs:
             echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
-      - name: Set error occurred
+      - name: Check if error during run occurred
         id: set_error
         if: always()
         run: >

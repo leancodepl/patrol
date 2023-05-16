@@ -106,14 +106,21 @@ jobs:
           reporter: java-junit
           fail-on-error: false
 
+      - name: Upload XML test report to artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: XML test report
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+
       - name: Upload test outputs to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: Test results, logs and captured video
+          name: Test report, logs and captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
-      - name: Set failure
+      - name: Check if failed test occured
         id: set_failure
         if: always()
         run: >
@@ -121,7 +128,7 @@ jobs:
             echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
-      - name: Set error occurred
+      - name: Check if error during run occurred
         id: set_error
         if: always()
         run: >
