@@ -18,8 +18,6 @@ class TestBundler {
 // GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
 // ignore_for_file: type=lint
 
-//
-
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -32,9 +30,6 @@ ${generateImports(testFilePaths)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
-  final binding = PatrolBinding.ensureInitialized();
-  
   // This is the entrypoint of the bundled Dart test.
   //
   // Its responsibilies are:
@@ -67,6 +62,8 @@ Future<void> main() async {
   // test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
+  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  final binding = PatrolBinding.ensureInitialized();
   final testExplorationCompleter = Completer<DartTestGroup>();
 
   // A special test to expore the hierarchy of groups and tests. This is a 
