@@ -5,8 +5,8 @@
   "elements": [
     {
       "type": "text",
-      "version": 71,
-      "versionNonce": 1303173421,
+      "version": 72,
+      "versionNonce": 76759331,
       "isDeleted": false,
       "id": "5mnp2KhXIb2xL4Us43HT8",
       "fillStyle": "hachure",
@@ -25,7 +25,7 @@
       "groupIds": [],
       "roundness": null,
       "boundElements": [],
-      "updated": 1684240682729,
+      "updated": 1684241835799,
       "link": null,
       "locked": false,
       "fontSize": 28,
@@ -40,8 +40,8 @@
     },
     {
       "type": "text",
-      "version": 1264,
-      "versionNonce": 1983384323,
+      "version": 1266,
+      "versionNonce": 929834413,
       "isDeleted": false,
       "id": "SvsLNu6-gkXGiI3sKhaLh",
       "fillStyle": "hachure",
@@ -54,13 +54,13 @@
       "y": 808.9890069872608,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 1231.2786865234375,
+      "width": 1231.2789306640625,
       "height": 192,
       "seed": 313092781,
       "groupIds": [],
       "roundness": null,
       "boundElements": [],
-      "updated": 1684240682729,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -75,8 +75,8 @@
     },
     {
       "type": "image",
-      "version": 269,
-      "versionNonce": 828660397,
+      "version": 270,
+      "versionNonce": 1628706723,
       "isDeleted": false,
       "id": "rsOTtqax0Fv4loU5VIPQW",
       "fillStyle": "hachure",
@@ -104,7 +104,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684240682729,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "status": "saved",
@@ -116,8 +116,8 @@
     },
     {
       "type": "arrow",
-      "version": 345,
-      "versionNonce": 1508278403,
+      "version": 346,
+      "versionNonce": 2073356301,
       "isDeleted": false,
       "id": "qWZRzZNMj2Bhr7_kXHQ7i",
       "fillStyle": "hachure",
@@ -138,7 +138,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240708263,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -163,8 +163,8 @@
     },
     {
       "type": "arrow",
-      "version": 558,
-      "versionNonce": 1388215565,
+      "version": 559,
+      "versionNonce": 1654074179,
       "isDeleted": false,
       "id": "ssFpY4sWff06EJmkAiFVs",
       "fillStyle": "hachure",
@@ -185,7 +185,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240682729,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -214,8 +214,8 @@
     },
     {
       "type": "text",
-      "version": 915,
-      "versionNonce": 1566921581,
+      "version": 916,
+      "versionNonce": 1438042851,
       "isDeleted": false,
       "id": "briaFexE338nUg_-JP6EO",
       "fillStyle": "hachure",
@@ -239,7 +239,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684240682729,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -254,8 +254,8 @@
     },
     {
       "type": "arrow",
-      "version": 1853,
-      "versionNonce": 1100611469,
+      "version": 2709,
+      "versionNonce": 1683586637,
       "isDeleted": false,
       "id": "Ht_bOiX7fnLF54h7w01gq",
       "fillStyle": "hachure",
@@ -264,26 +264,30 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -826.1273953277181,
-      "y": 137.68861714964302,
+      "x": -792.5457265132854,
+      "y": 118.84593415162345,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 151.26849937659506,
-      "height": 86.99772321381718,
+      "width": 254.9371876729722,
+      "height": 135.6324886694058,
       "seed": 949135939,
       "groupIds": [],
       "roundness": {
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240897578,
+      "updated": 1684241921935,
       "link": null,
       "locked": false,
-      "startBinding": null,
+      "startBinding": {
+        "elementId": "9B-Fykh8Jan2xYI2PJq5w",
+        "focus": -0.6564477889693591,
+        "gap": 12.281569855083944
+      },
       "endBinding": {
         "elementId": "4Xarv_xGOcYo75uhrRidW",
-        "focus": -0.3835130087488308,
-        "gap": 9.51561422607324
+        "focus": -0.08585254580196024,
+        "gap": 8.56522762813512
       },
       "lastCommittedPoint": null,
       "startArrowhead": null,
@@ -294,15 +298,15 @@
           0
         ],
         [
-          -151.26849937659506,
-          -86.99772321381718
+          -254.9371876729722,
+          -135.6324886694058
         ]
       ]
     },
     {
       "type": "text",
-      "version": 331,
-      "versionNonce": 412979459,
+      "version": 405,
+      "versionNonce": 424070477,
       "isDeleted": false,
       "id": "4Xarv_xGOcYo75uhrRidW",
       "fillStyle": "hachure",
@@ -311,11 +315,11 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -1161.1181588528896,
-      "y": 17.1752797097526,
-      "strokeColor": "#000000",
+      "x": -1246.7496021518582,
+      "y": -49.35178214591747,
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
-      "width": 199.9398193359375,
+      "width": 292.2597351074219,
       "height": 24,
       "seed": 590566765,
       "groupIds": [],
@@ -326,23 +330,23 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684240910924,
+      "updated": 1684241899595,
       "link": "https://github.com/leancodepl/patrol/blob/develop/packages/patrol_cli/lib/src/test_bundler.dart",
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "code that does this",
+      "text": "code that generates this file",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "code that does this",
+      "originalText": "code that generates this file",
       "lineHeight": 1.2,
       "baseline": 17
     },
     {
       "type": "arrow",
-      "version": 254,
-      "versionNonce": 1326217005,
+      "version": 255,
+      "versionNonce": 1295363619,
       "isDeleted": false,
       "id": "0XynHUnwBOmtjxiT19Wsx",
       "fillStyle": "hachure",
@@ -363,7 +367,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240696335,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -388,8 +392,8 @@
     },
     {
       "type": "text",
-      "version": 143,
-      "versionNonce": 1701779661,
+      "version": 145,
+      "versionNonce": 215873933,
       "isDeleted": false,
       "id": "LGEI8IeZYM_Y3bDl_oPUO",
       "fillStyle": "hachure",
@@ -400,7 +404,7 @@
       "angle": 0,
       "x": -1372.6498435718331,
       "y": 173.58950169128877,
-      "strokeColor": "#000000",
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 199.93975830078125,
       "height": 24,
@@ -413,7 +417,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684240696000,
+      "updated": 1684241835800,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol_cli/lib/src/test_bundler.dart#L70-L79",
       "locked": false,
       "fontSize": 20,
@@ -428,8 +432,8 @@
     },
     {
       "type": "arrow",
-      "version": 666,
-      "versionNonce": 1544883853,
+      "version": 669,
+      "versionNonce": 859959747,
       "isDeleted": false,
       "id": "Ttf9XcUGrAOSXF_hhCBGn",
       "fillStyle": "hachure",
@@ -439,18 +443,18 @@
       "opacity": 100,
       "angle": 0,
       "x": -823.4621860235706,
-      "y": 685.6903003079099,
+      "y": 685.6786402191074,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 322.14528515521204,
-      "height": 84.98424458193676,
+      "width": 322.18996399411424,
+      "height": 85.16739311655579,
       "seed": 883362863,
       "groupIds": [],
       "roundness": {
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -472,15 +476,15 @@
           0
         ],
         [
-          -322.14528515521204,
-          -84.98424458193676
+          -322.18996399411424,
+          -85.16739311655579
         ]
       ]
     },
     {
       "type": "text",
-      "version": 212,
-      "versionNonce": 1894626541,
+      "version": 215,
+      "versionNonce": 38060387,
       "isDeleted": false,
       "id": "z_gM8je8ZLOxaoT5QYMVQ",
       "fillStyle": "hachure",
@@ -490,8 +494,8 @@
       "opacity": 100,
       "angle": 0,
       "x": -1426.412144103748,
-      "y": 565.0958181806502,
-      "strokeColor": "#000000",
+      "y": 564.8582215311657,
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 270.5796813964844,
       "height": 25,
@@ -504,7 +508,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/lib/src/common.dart#L105",
       "locked": false,
       "fontSize": 20,
@@ -519,8 +523,8 @@
     },
     {
       "type": "arrow",
-      "version": 152,
-      "versionNonce": 77762381,
+      "version": 153,
+      "versionNonce": 1938595075,
       "isDeleted": false,
       "id": "LUM5E1xzuJ1-WpENu2uaC",
       "fillStyle": "hachure",
@@ -541,7 +545,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -566,8 +570,8 @@
     },
     {
       "type": "text",
-      "version": 83,
-      "versionNonce": 1435311533,
+      "version": 85,
+      "versionNonce": 311952547,
       "isDeleted": false,
       "id": "coKR06G4B4DXtjvazuFlD",
       "fillStyle": "hachure",
@@ -578,7 +582,7 @@
       "angle": 0,
       "x": -1165.2294645824763,
       "y": 798.0662304146929,
-      "strokeColor": "#000000",
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 28.719970703125,
       "height": 25,
@@ -591,7 +595,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/android/src/main/kotlin/pl/leancode/patrol/PatrolJUnitRunner.java#L30",
       "locked": false,
       "fontSize": 20,
@@ -606,8 +610,8 @@
     },
     {
       "type": "arrow",
-      "version": 643,
-      "versionNonce": 1250997059,
+      "version": 644,
+      "versionNonce": 1229939053,
       "isDeleted": false,
       "id": "-OugWG16W5Maq5db4oPP6",
       "fillStyle": "hachure",
@@ -628,7 +632,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -653,8 +657,8 @@
     },
     {
       "type": "text",
-      "version": 71,
-      "versionNonce": 1786336877,
+      "version": 73,
+      "versionNonce": 1055094755,
       "isDeleted": false,
       "id": "b0UvopgihJRRxL0Uz6l4-",
       "fillStyle": "hachure",
@@ -665,7 +669,7 @@
       "angle": 0,
       "x": 548.1608550706968,
       "y": 109.2915282139677,
-      "strokeColor": "#000000",
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 259.39971923828125,
       "height": 25,
@@ -673,7 +677,7 @@
       "groupIds": [],
       "roundness": null,
       "boundElements": [],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/contracts.proto#L6-L9",
       "locked": false,
       "fontSize": 20,
@@ -688,8 +692,8 @@
     },
     {
       "type": "arrow",
-      "version": 131,
-      "versionNonce": 356471523,
+      "version": 154,
+      "versionNonce": 756722637,
       "isDeleted": false,
       "id": "-_jHhffqtQdZ6aOMI_Cof",
       "fillStyle": "hachure",
@@ -702,19 +706,23 @@
       "y": 649.1681678974804,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 653.7679549334795,
-      "height": 102.94799175838921,
+      "width": 650.5906031293559,
+      "height": 100.99439677799967,
       "seed": 1222285613,
       "groupIds": [],
       "roundness": {
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684240682730,
+      "updated": 1684241835800,
       "link": null,
       "locked": false,
       "startBinding": null,
-      "endBinding": null,
+      "endBinding": {
+        "elementId": "ilHaGGKz2P-k1p_RMQbAk",
+        "focus": -0.15050850061355342,
+        "gap": 9.223256881991915
+      },
       "lastCommittedPoint": null,
       "startArrowhead": null,
       "endArrowhead": "arrow",
@@ -724,15 +732,15 @@
           0
         ],
         [
-          653.7679549334795,
-          -102.94799175838921
+          650.5906031293559,
+          -100.99439677799967
         ]
       ]
     },
     {
       "type": "text",
-      "version": 60,
-      "versionNonce": 1597898957,
+      "version": 101,
+      "versionNonce": 1209041795,
       "isDeleted": false,
       "id": "ilHaGGKz2P-k1p_RMQbAk",
       "fillStyle": "hachure",
@@ -741,17 +749,22 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": 631.2059135030316,
-      "y": 527.619777202921,
-      "strokeColor": "#000000",
+      "x": 638.772762729836,
+      "y": 528.2278635431271,
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 46.27995300292969,
       "height": 25,
       "seed": 969378147,
       "groupIds": [],
       "roundness": null,
-      "boundElements": [],
-      "updated": 1684240682730,
+      "boundElements": [
+        {
+          "id": "-_jHhffqtQdZ6aOMI_Cof",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684241835800,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/lib/src/binding.dart#L112",
       "locked": false,
       "fontSize": 20,
@@ -766,8 +779,8 @@
     },
     {
       "type": "text",
-      "version": 345,
-      "versionNonce": 849139213,
+      "version": 370,
+      "versionNonce": 1318924333,
       "isDeleted": false,
       "id": "PvAYtlidsFZ-yVa0Kmyks",
       "fillStyle": "hachure",
@@ -776,8 +789,8 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -806.3156749262646,
-      "y": -39.76068073950661,
+      "x": -806.5532715757491,
+      "y": -39.998277388991156,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
       "width": 674.0994262695312,
@@ -786,23 +799,23 @@
       "groupIds": [],
       "roundness": null,
       "boundElements": [],
-      "updated": 1684240884775,
+      "updated": 1684241835801,
       "link": null,
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "Assume that a device is connected.\nAssume that there are 2 tests in the \"integration_test\" directory:\n    - login_test.dart\n    - register_test.dart",
+      "text": "Assume that a device is connected.\nAssume that there are 2 tests in the \"integration_test\" directory:\n    - notifications_test.dart\n    - permissions_location_test.dart",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "Assume that a device is connected.\nAssume that there are 2 tests in the \"integration_test\" directory:\n    - login_test.dart\n    - register_test.dart",
+      "originalText": "Assume that a device is connected.\nAssume that there are 2 tests in the \"integration_test\" directory:\n    - notifications_test.dart\n    - permissions_location_test.dart",
       "lineHeight": 1.25,
       "baseline": 93
     },
     {
       "type": "text",
-      "version": 36,
-      "versionNonce": 1121160995,
+      "version": 78,
+      "versionNonce": 851805539,
       "isDeleted": false,
       "id": "tBAWfgFqIciVhsYx0gnWL",
       "fillStyle": "hachure",
@@ -811,18 +824,23 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -1158.158849781908,
-      "y": 49.99694926327288,
-      "strokeColor": "#000000",
+      "x": -1218.2708021014955,
+      "y": 64.84069926327288,
+      "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 150.2398681640625,
       "height": 25,
       "seed": 447514093,
       "groupIds": [],
       "roundness": null,
-      "boundElements": [],
-      "updated": 1684240969119,
-      "link": "",
+      "boundElements": [
+        {
+          "id": "TsPHIiFue0vuA3YxCZeLT",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684241901063,
+      "link": "https://gist.github.com/bartekpacia/642f043bfbb938126f587f3ebfd5c6ac",
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
@@ -833,6 +851,101 @@
       "originalText": "generated code",
       "lineHeight": 1.25,
       "baseline": 18
+    },
+    {
+      "type": "text",
+      "version": 506,
+      "versionNonce": 9864173,
+      "isDeleted": false,
+      "id": "9B-Fykh8Jan2xYI2PJq5w",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": -780.2641566582014,
+      "y": 109.33669711471157,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 957.279296875,
+      "height": 125,
+      "seed": 1020836973,
+      "groupIds": [],
+      "roundness": null,
+      "boundElements": [
+        {
+          "id": "Ht_bOiX7fnLF54h7w01gq",
+          "type": "arrow"
+        },
+        {
+          "id": "TsPHIiFue0vuA3YxCZeLT",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684241921934,
+      "link": null,
+      "locked": false,
+      "fontSize": 20,
+      "fontFamily": 1,
+      "text": "1. Patrol CLI generates the \"bundled_test.dart\" file by walking the \"integration_test\" directory.\n2. Two apps are built and installed onto the device:\n    - app under test (the Flutter app), with \"bundled_test.dart\" as entrypoint\n    - instrumentation app\n",
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "1. Patrol CLI generates the \"bundled_test.dart\" file by walking the \"integration_test\" directory.\n2. Two apps are built and installed onto the device:\n    - app under test (the Flutter app), with \"bundled_test.dart\" as entrypoint\n    - instrumentation app\n",
+      "lineHeight": 1.25,
+      "baseline": 118
+    },
+    {
+      "type": "arrow",
+      "version": 837,
+      "versionNonce": 512634029,
+      "isDeleted": false,
+      "id": "TsPHIiFue0vuA3YxCZeLT",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "angle": 0,
+      "x": -787.8350329468611,
+      "y": 138.70983666302058,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "width": 265.10953608247416,
+      "height": 53.71602336133812,
+      "seed": 1895972419,
+      "groupIds": [],
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1684241921936,
+      "link": null,
+      "locked": false,
+      "startBinding": {
+        "elementId": "9B-Fykh8Jan2xYI2PJq5w",
+        "focus": -0.41000624021726995,
+        "gap": 7.570876288659633
+      },
+      "endBinding": {
+        "elementId": "tBAWfgFqIciVhsYx0gnWL",
+        "focus": -0.38326371489058975,
+        "gap": 15.086364908097721
+      },
+      "lastCommittedPoint": null,
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -265.10953608247416,
+          -53.71602336133812
+        ]
+      ]
     }
   ],
   "appState": {
