@@ -1,3 +1,7 @@
+// Terminology note:
+// "Run a test" is used interchangeably with "execute a test".
+// "Run a Dart test" is used interchangeably with "request execution of a Dart test" and "execute Dart test".
+
 package pl.leancode.patrol;
 
 import android.app.Instrumentation;
@@ -8,6 +12,7 @@ import androidx.test.runner.AndroidJUnitRunner;
 import io.grpc.StatusRuntimeException;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -25,9 +30,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
 
-        // We override onCreate(), because we need to gather the Dart tests before the tests are run.
-        // By default, AndroidJUnitRunner doesn't run the app during the initial run (when it gathers the test list).
-        // But in our case, the app must be run to gather the list of tests (because the tests (the Dart ones) live in the app itself).
+        // We need to know what Dart tests exist before we can request their execution.
+        // To gather the Dart tests, we need to run the app during the Orchestrator's initial run.
+        // But by default, AndroidJUnitRunner doesn't run the app during the initial run, when it gathers the tests to execute.
+        // That's why we override this onCreate().
 
         // This is only true when the Orchestrator requests a list of tests from the app during the initial run.
         String initialRun = arguments.getString("listTestsForOrchestrator");
@@ -39,7 +45,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i("PatrolJUnitRunner.onCreate(), " + "packageName: " + packageName + (Objects.equals(initialRun, "true") ? " (initial run)" : ""));
 
         // This code is based on ActivityTestRule#launchActivity.
-        // It's simpler because we don't feel the need for that much synchronization as in ActivityTestRule.
+        // It's simpler because we don't have the need for that much synchronization.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -47,44 +53,66 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         instrumentation.getContext().startActivity(intent);
 
-        // PatrolServer starts the NativeAutomator service
         PatrolServer patrolServer = new PatrolServer();
-        patrolServer.start(); // It will be killed once the test finishes, and for now, we're okay with this
+        patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
 
         patrolAppServiceClient = new PatrolAppServiceClient();
     }
 
-    /// Sets PatrolJUnitRunner.dartTestGroup if this is the initial test run.
-    public static DartTestGroup setUp() {
-        Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): waiting for PatrolAppService to report its readiness...");
+    /**
+     * <p>
+     * Waits until PatrolAppService, running in the Dart side of the app, reports that it's ready to be asked about
+     * the list of Dart tests.
+     * </p>
+     *
+     * <p>
+     * PatrolAppService becomes ready once the Dart test "patrol_test_explorer" finishes running.
+     * </p>
+     */
+    public static void waitForPatrolAppService() {
+        final String TAG = "PatrolJUnitRunner.setUp(): ";
+
         try {
+            Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
             PatrolServer.Companion.getAppReadyFuture().get();
         } catch (InterruptedException | ExecutionException e) {
-            Logger.INSTANCE.e("Exception was thrown when waiting for appReady: ", e);
+            Logger.INSTANCE.e(TAG + "Exception was thrown when waiting for appReady: ", e);
             throw new RuntimeException(e);
         }
 
-        Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): PatrolAppService is ready, will ask it for Dart tests...");
+        Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
+    }
 
+    public static Object[] listDartTests() {
+        final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
-            return patrolAppServiceClient.listDartTests();
+            final DartTestGroup dartTestGroup = patrolAppServiceClient.listDartTests();
+            Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(dartTestGroup).toArray();
+            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestFiles));
+            return dartTestFiles;
         } catch (StatusRuntimeException e) {
-            Logger.INSTANCE.e("PatrolJUnitRunner.setUp(): failed to list dart tests");
+            Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw e;
         }
     }
 
+    /**
+     * Requests execution of a Dart test and waits for it to finish.
+     * Throws AssertionError if the test fails.
+     */
     public static RunDartTestResponse runDartTest(String name) {
-        Logger.INSTANCE.i("PatrolJUnitRunner.runDartTest(" + name + ")");
+        final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
+
         try {
+            Logger.INSTANCE.i(TAG + "Requested execution");
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
             if (response.getResult() == RunDartTestResponse.Result.FAILURE) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
             return response;
         } catch (StatusRuntimeException e) {
-            Logger.INSTANCE.e("Failed to run Dart test: " + e.getMessage(), e.getCause());
+            Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
             throw e;
         }
     }
