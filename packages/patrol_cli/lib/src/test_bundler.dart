@@ -16,7 +16,7 @@ class TestBundler {
 
     final contents = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, invalid_use_of_internal_member
 
 import 'dart:async';
 
@@ -43,11 +43,12 @@ Future<void> main() async {
   // native side of Patrol (specifically: PatrolJUnitRunner class) is hooked
   // into the Android Test Orchestrator lifecycle and knows when that initial
   // run happens. When it does, PatrolJUnitRunner makes an RPC call to
-  // PatrolAppService and asks it for the list of Dart tests.
+  // PatrolAppService and asks it for Dart tests.
   //
   // When running on iOS, the native side of Patrol (specifically: the
-  // PATROL_INTEGRATION_TEST_IOS_RUNNER macro) makes an RPC call to
-  // PatrolAppSevice and asks it for the list of Dart tests.
+  // PATROL_INTEGRATION_TEST_IOS_RUNNER macro) makes an initial run to gather
+  // the tests that it will later run (same as the Android). During that initial
+  // run, it makes an RPC call to PatrolAppSevice and asks it for Dart tests.
   //
   // Once the native runner has the list of Dart tests, it dynamically creates
   // native test cases from them. On Android, this is done using the
