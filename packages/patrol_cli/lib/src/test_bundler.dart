@@ -38,10 +38,10 @@ Future<void> main() async {
   // This is the entrypoint of the bundled Dart test.
   //
   // Its responsibilies are:
-  //  * Run a special Dart test that explores the hierarchy of groups and tests,
-  //    so it can...
-  //  * ... host a service that the native side of Patrol uses to get the list
-  //    of Dart tests, and to request execution of a specific Dart test.
+  //  * Running a special Dart test that runs before all the other tests and
+  //    explores the hierarchy of groups and tests.
+  //  * Hosting a PatrolAppService, which the native side of Patrol uses to get
+  //    the Dart tests, and to request execution of a specific Dart test.
   //
   // When running on Android, the Android Test Orchestrator, before running the
   // tests, makes an initial run to gather the tests that it will later run. The
