@@ -137,18 +137,31 @@ jobs:
           master_error_status: ${{ needs.run_tests.outputs.master_error_status }}
           develop_error_status: ${{ needs.run_tests.outputs.develop_error_status }}
         run: >
-          failure_status=$"${{ matrix.branch }}_failure_status"
-          error_status=$"${{ matrix.branch }}_error_status"
-
-          if [ ! -z "$failure_status" ]; then
-            message="There were failing tests on ${{ matrix.branch }} 💥 ";
-            status="failure";
-          elif [ ! -z "$error_status" ]; then
-            message="Something went wrong on ${{ matrix.branch }} ⚠️";
-            status="failure";
+          if [ "${{ matrix.branch }}" == "master" ]; then
+            if [ ! -z "$master_failure_status" ]; then
+              message="There were failing tests on ${{ matrix.branch }} 💥 ";
+              status="failure";
+            elif [ ! -z "$master_error_status" ]; then
+              message="Something went wrong on ${{ matrix.branch }} ⚠️";
+              status="failure";
+            else
+              message="All tests have passed on ${{ matrix.branch }} ✅ ";
+              status="success";
+            fi;
+          elif [ "${{ matrix.branch }}" == "develop" ]; then
+            if [ ! -z "$develop_failure_status" ]; then
+              message="There were failing tests on ${{ matrix.branch }} 💥 ";
+              status="failure";
+            elif [ ! -z "$develop_error_status" ]; then
+              message="Something went wrong on ${{ matrix.branch }} ⚠️";
+              status="failure";
+            else
+              message="All tests have passed on ${{ matrix.branch }} ✅ ";
+              status="success";
+            fi;
           else
-            message="All tests have passed on ${{ matrix.branch }} ✅ ";
-            status="success";
+            message="Something went wrong with retrieving status ⚠️";
+            status="failure";
           fi;
 
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
