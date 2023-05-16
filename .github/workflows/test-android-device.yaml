@@ -103,21 +103,21 @@ jobs:
           fail-on-error: false
 
       - name: Upload XML test report to artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: XML test report
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
 
       - name:  Upload captured video to artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: Captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
 
       - name: Upload test cases to artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: Test cases (logcat and captured video per test target)
