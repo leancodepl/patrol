@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
+    name: "[${{ matrix.branch }}] Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}"
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
@@ -66,7 +66,7 @@ jobs:
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
 
-          patrol build ios --debug --simulator \
+          patrol test \
             --exclude integration_test/android_app_test.dart \
             --exclude integration_test/service_airplane_mode_test.dart \
             --exclude integration_test/service_bluetooth_test.dart \
@@ -90,7 +90,6 @@ jobs:
         if: success() || failure()
         run: echo "XCRESULT_PATHS=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
-      # should work for more than one path but not sure :)
       - name: Publish Test Report
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
@@ -145,10 +144,10 @@ jobs:
               status="success";
             fi;
           elif [ "${{ matrix.branch }}" == "develop" ]; then
-            if [ ! -z "$master_failure_status" ]; then
+            if [ ! -z "$develop_failure_status" ]; then
               message="There were failing tests on ${{ matrix.branch }} 💥 ";
               status="failure";
-            elif [ ! -z "$master_error_status" ]; then
+            elif [ ! -z "$develop_error_status" ]; then
               message="Something went wrong on ${{ matrix.branch }} ⚠️";
               status="failure";
             else
