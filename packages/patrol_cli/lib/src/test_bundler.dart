@@ -30,10 +30,16 @@ ${generateImports(testFilePaths)}
 // END: GENERATED CODE
 
 Future<void> main() async {
-  // TODO: Create and use PatrolNativeTestService instead of NativeAutomator
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   final binding = PatrolBinding.ensureInitialized();
-  // Create a PatrolAppService.
+  
+  // This is the entrypoint of the bundled Dart test.
+  //
+  // Its responsibilies are:
+  //  * Run a special Dart test that explores the hierarchy of groups and tests,
+  //    so it can...
+  //  * ... host a service that the native side of Patrol uses to get the list
+  //    of Dart tests, and to request execution of a specific Dart test.
   //
   // When running on Android, the Android Test Orchestrator, before running the
   // tests, makes an initial run to gather the tests that it will later run. The
@@ -46,19 +52,26 @@ Future<void> main() async {
   // PATROL_INTEGRATION_TEST_IOS_RUNNER macro) makes an RPC call to
   // PatrolAppSevice and asks it for the list of Dart tests.
   //
-  // Once the native runner have the list of Dart tests, it dynamically creates
-  // native test method from them. On Android, this is done using Parametrized
-  // JUnit runner. On iOS, new test case methods are swizzled taking advantage
-  // of the very dynamic nature of Objective-C runtime.
+  // Once the native runner has the list of Dart tests, it dynamically creates
+  // native test cases from them. On Android, this is done using the
+  // Parametrized JUnit runner. On iOS, new test case methods are swizzled into
+  // the RunnerUITests class, taking advantage of the very dynamic nature of
+  // Objective-C runtime.
   //
-  // These Dart tests are later called by the single JUnit test that is
-  // parametrized with the gathered Dart tests.
+  // Execution of these dynamically created native test cases is then fully
+  // managed by the underlying native test framework (JUnit on Android, XCTest
+  // on iOS).
+  // The native test cases do only one thing - request execution of the Dart
+  // test (out of which they had been created) and wait for it to complete.
+  // The result of running the Dart test is the result of the native test case.
 
   final testExplorationCompleter = Completer<DartTestGroup>();
 
-  // A special test to expore the hierarchy of groups and tests. This test must
-  // be the first to run. If not, the native side won't any tests.
-  // See also: https://github.com/dart-lang/test/issues/1998
+  // A special test to expore the hierarchy of groups and tests. This is a 
+  // hack around https://github.com/dart-lang/test/issues/1998.
+  //
+  // This test must be the first to run. If not, the native side likely won't
+  // receive any tests, and everything will fall apart.
   test('patrol_test_explorer', () {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);

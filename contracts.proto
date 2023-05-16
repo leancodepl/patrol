@@ -81,6 +81,8 @@ service NativeAutomator {
 
   // other
   rpc debug(Empty) returns (Empty) {}
+
+  // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   rpc markPatrolAppServiceReady(Empty) returns (Empty) {}
 }
 
