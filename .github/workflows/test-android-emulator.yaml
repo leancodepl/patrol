@@ -149,10 +149,10 @@ jobs:
           failure_status: ${{ needs.run_tests.outputs.failure_status }}
           error_status: ${{ needs.run_tests.outputs.error_status }}
         run: >
-          if [ ! -z "$master_failure_status" ]; then
+          if [ ! -z "$failure_status" ]; then
             message="There were failing tests 💥 ";
             status="failure";
-          elif [ ! -z "$master_error_status" ]; then
+          elif [ ! -z "$error_status" ]; then
             message="Something went wrong ⚠️";
             status="failure";
           else
