@@ -108,7 +108,7 @@ jobs:
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           path: |
-            ${{ env.XCRESULT_PATHS }}
+            ${{ env.XCRESULT_PATH }}
 
       - name: Check if failed test occured
         id: set_failure
