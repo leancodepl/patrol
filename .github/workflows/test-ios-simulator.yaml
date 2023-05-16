@@ -7,16 +7,17 @@ on:
 
 jobs:
   run_tests:
-    name: Test on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
+    name: "Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}"
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      status: ${{ steps.set_status.outputs.status }}
+      failure_status: ${{ steps.set_failure.outputs.failure_status }}
+      error_status: ${{ steps.set_error.outputs.error_status }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-channel: [stable]
+        flutter-version: ['3.7.x']
         device: [iPhone 14, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']
@@ -32,15 +33,18 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
 
       - name: Set up Patrol CLI
-        run: dart pub global activate patrol_cli
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
       - name: Start iOS simulator
+        id: start_simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: ${{ matrix.device }}
@@ -52,69 +56,103 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
-      - run: patrol test -t integration_test/example_test.dart
+      - name: Run tests
+        id: tests_step
+        run: |
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
+          EXIT_CODE=0
+
+          patrol test \
+            --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/service_cellular_test.dart \
+            --exclude integration_test/service_wifi_test.dart \
+            --exclude integration_test/swipe_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
+
+          kill $recordingpid
+          exit $EXIT_CODE
+
+      - name: Publish test report to summary
         if: success() || failure()
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          title: "Patrol tests"
+          upload-bundles: "never"
+          path: |
+            ${{ env.XCRESULT_PATH }}
 
-      - run: patrol test -t integration_test/notifications_test.dart
+      - name: Find xcresult path
         if: success() || failure()
+        run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
-      - run: patrol test -t integration_test/open_app_test.dart
+      - name: Upload XCRESULT test report to artifacts
         if: success() || failure()
-
-      - run: patrol test -t integration_test/open_quick_settings_test.dart
-        if: success() || failure() # should work, but is empty on Simulator
-
-      - run: patrol test -t integration_test/permissions_location_test.dart
+        uses: actions/upload-artifact@v3
+        with:
+          name: XCRESULT test report from ${{ matrix.device }}
+          path: |
+            ${{ env.XCRESULT_PATH }}
+      
+      - name: Upload simulator logs to artifacts
         if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Logs from ${{ matrix.device }}
+          path: ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
 
-      - run: patrol test -t integration_test/permissions_many_test.dart
+      - name: Upload captured video to artifacts
         if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Captured video from ${{ matrix.device }}
+          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
-      - run: patrol test -t integration_test/service_cellular_test.dart
-        if: ${{ false }} # Not on Simulator
+      - name: Check if failed test occured
+        id: set_failure
+        if: always()
+        run: >
+          if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
+            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
+          fi;
 
-      - run: patrol test -t integration_test/service_dark_mode_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/service_wifi_test.dart
-        if: ${{ false }} # Not on Simulator
-
-      - run: patrol test -t webview_hackernews_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-      - run: patrol test -t webview_leancode_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-      - run: patrol test -t webview_login_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-      - run: patrol test -t webview_stackoverflow_test.dart
-        if: ${{ false }} # https://github.com/leancodepl/patrol/issues/1139
-
-      - name: Set job status
-        id: set_status
-        if: success() || failure()
-        run: echo "status=${{ job.status }}" >> "$GITHUB_OUTPUT"
+      - name: Check if error during run occurred
+        id: set_error
+        if: always()
+        run: >
+          if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
+            echo "error_status=error" >> "$GITHUB_OUTPUT";
+          fi;
 
   slack_notify:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: run_tests
-    if: always()
+    if: ${{ always() }}
 
     steps:
       - name: Set Slack message
         id: slack_message
         env:
-          STATUS: ${{ needs.run_tests.outputs.status }}
+          failure_status: ${{ needs.run_tests.outputs.failure_status }}
+          error_status: ${{ needs.run_tests.outputs.error_status }}
         run: >
-          status="${{ env.STATUS }}"
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          message="";
-          if [ "$STATUS" = "failure" ]; then
+          if [ ! -z "$failure_status" ]; then
             message="There were failing tests 💥 ";
-          elif [ "$STATUS" = "success" ]; then
-            message="All tests have passed ✅ ";
-          else
+            status="failure";
+          elif [ ! -z "$error_status" ]; then
             message="Something went wrong ⚠️";
+            status="failure";
+          else
+            message="All tests have passed ✅ ";
+            status="success";
           fi;
+
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
           echo "message=$message" >> $GITHUB_OUTPUT;
           echo "url=$url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
