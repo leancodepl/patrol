@@ -15,8 +15,10 @@ class TestBundler {
     }
 
     final contents = '''
-// ignore_for_file: invalid_use_of_internal_member,
-// depend_on_referenced_packages, directives_ordering
+// GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
+// ignore_for_file: type=lint
+
+//
 
 import 'dart:async';
 
