@@ -7,19 +7,16 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on emulator.wtf
+    name: "Flutter ${{ matrix.flutter-version }} on emulator.wtf"
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      master_failure_status: ${{ steps.set_failure.outputs.master_failure_status }}
-      develop_failure_status: ${{ steps.set_failure.outputs.develop_failure_status }}
-      master_error_status: ${{ steps.set_error.outputs.master_error_status }}
-      develop_error_status: ${{ steps.set_error.outputs.develop_error_status }}
+      failure_status: ${{ steps.set_failure.outputs.failure_status }}
+      error_status: ${{ steps.set_error.outputs.error_status }}
 
     strategy:
       fail-fast: false
       matrix:
-        branch: [master, develop]
         flutter-version: ['3.7.x']
 
     defaults:
@@ -29,8 +26,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ matrix.branch }}
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -123,7 +118,7 @@ jobs:
         if: always()
         run: >
           if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
-            echo "${{ matrix.branch }}_failure_status=failure" >> "$GITHUB_OUTPUT";
+            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
       - name: Set error occurred
@@ -131,7 +126,7 @@ jobs:
         if: always()
         run: >
           if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
-            echo "${{ matrix.branch }}_error_status=error" >> "$GITHUB_OUTPUT";
+            echo "error_status=error" >> "$GITHUB_OUTPUT";
           fi;
 
   slack_notify:
@@ -139,45 +134,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: run_tests
     if: ${{ always() }}
-    strategy:
-      fail-fast: false
-      matrix:
-        branch: [master, develop]
 
     steps:
       - name: Set Slack message
         id: slack_message
         env:
-          master_failure_status: ${{ needs.run_tests.outputs.master_failure_status }}
-          develop_failure_status: ${{ needs.run_tests.outputs.develop_failure_status }}
-          master_error_status: ${{ needs.run_tests.outputs.master_error_status }}
-          develop_error_status: ${{ needs.run_tests.outputs.develop_error_status }}
+          failure_status: ${{ needs.run_tests.outputs.failure_status }}
+          error_status: ${{ needs.run_tests.outputs.error_status }}
         run: >
-          if [ "${{ matrix.branch }}" == "master" ]; then
-            if [ ! -z "$master_failure_status" ]; then
-              message="There were failing tests on ${{ matrix.branch }} 💥 ";
-              status="failure";
-            elif [ ! -z "$master_error_status" ]; then
-              message="Something went wrong on ${{ matrix.branch }} ⚠️";
-              status="failure";
-            else
-              message="All tests have passed on ${{ matrix.branch }} ✅ ";
-              status="success";
-            fi;
-          elif [ "${{ matrix.branch }}" == "develop" ]; then
-            if [ ! -z "$develop_failure_status" ]; then
-              message="There were failing tests on ${{ matrix.branch }} 💥 ";
-              status="failure";
-            elif [ ! -z "$develop_error_status" ]; then
-              message="Something went wrong on ${{ matrix.branch }} ⚠️";
-              status="failure";
-            else
-              message="All tests have passed on ${{ matrix.branch }} ✅ ";
-              status="success";
-            fi;
-          else
-            message="Something went wrong with retrieving status ⚠️";
+          if [ ! -z "$master_failure_status" ]; then
+            message="There were failing tests 💥 ";
             status="failure";
+          elif [ ! -z "$master_error_status" ]; then
+            message="Something went wrong ⚠️";
+            status="failure";
+          else
+            message="All tests have passed ✅ ";
+            status="success";
           fi;
 
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
