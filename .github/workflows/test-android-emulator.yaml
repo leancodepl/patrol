@@ -88,7 +88,7 @@ jobs:
             --outputs-dir test_artifacts \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
 
-      - name: Generate test report to job summary
+      - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
         if: success() || failure()
         with:

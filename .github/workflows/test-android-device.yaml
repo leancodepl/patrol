@@ -84,7 +84,7 @@ jobs:
           mkdir "test_outputs"
           gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_outputs"
 
-      - name: Generate test report to job summary
+      - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
         if: success() || failure()
         with:
