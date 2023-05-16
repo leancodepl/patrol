@@ -5,8 +5,8 @@
   "elements": [
     {
       "type": "text",
-      "version": 111,
-      "versionNonce": 169171957,
+      "version": 112,
+      "versionNonce": 423890075,
       "isDeleted": false,
       "id": "5mnp2KhXIb2xL4Us43HT8",
       "fillStyle": "hachure",
@@ -25,7 +25,7 @@
       "groupIds": [],
       "roundness": null,
       "boundElements": [],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "fontSize": 36,
@@ -40,8 +40,8 @@
     },
     {
       "type": "text",
-      "version": 1345,
-      "versionNonce": 689005147,
+      "version": 1472,
+      "versionNonce": 931689019,
       "isDeleted": false,
       "id": "SvsLNu6-gkXGiI3sKhaLh",
       "fillStyle": "hachure",
@@ -65,23 +65,23 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684246154807,
+      "updated": 1684251121376,
       "link": null,
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "- On Android, the \"instrumentation app\" and the \"app under test\" run in the same process (same address space, same PID).\n  If the \"app under test\" crashes, it brings down the \"instrumentation app\" with it.\n  That's the problem Android Test Orchestrator solves by running in a separate process.\n    \n\n- On iOS, the \"instrumentation app\" runs in a separate process, so the concept of \"orchestrator\" is not needed.\n    If the \"app under test crashes\", the test is marked as failed and the \"instrumentation app\" executes the next test.",
+      "text": "- On Android, the \"instrumentation app\" and the \"app under test\" run in the same process (same address space, same PID).\n  If the \"app under test\" crashes, it brings down the \"instrumentation app\" with it.\n  That's the problem Android Test Orchestrator by running in a separate process.\n    \n\n- On iOS, the \"instrumentation app\" runs in a separate process, so the concept of \"orchestrator\" is not needed.\n    If the \"app under test crashes\", the test is marked as failed and the \"instrumentation app\" executes the next test.",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "- On Android, the \"instrumentation app\" and the \"app under test\" run in the same process (same address space, same PID).\n  If the \"app under test\" crashes, it brings down the \"instrumentation app\" with it.\n  That's the problem Android Test Orchestrator solves by running in a separate process.\n    \n\n- On iOS, the \"instrumentation app\" runs in a separate process, so the concept of \"orchestrator\" is not needed.\n    If the \"app under test crashes\", the test is marked as failed and the \"instrumentation app\" executes the next test.",
+      "originalText": "- On Android, the \"instrumentation app\" and the \"app under test\" run in the same process (same address space, same PID).\n  If the \"app under test\" crashes, it brings down the \"instrumentation app\" with it.\n  That's the problem Android Test Orchestrator by running in a separate process.\n    \n\n- On iOS, the \"instrumentation app\" runs in a separate process, so the concept of \"orchestrator\" is not needed.\n    If the \"app under test crashes\", the test is marked as failed and the \"instrumentation app\" executes the next test.",
       "lineHeight": 1.2,
       "baseline": 161
     },
     {
       "type": "image",
-      "version": 274,
-      "versionNonce": 1599083861,
+      "version": 275,
+      "versionNonce": 65913147,
       "isDeleted": false,
       "id": "rsOTtqax0Fv4loU5VIPQW",
       "fillStyle": "hachure",
@@ -109,7 +109,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "status": "saved",
@@ -121,8 +121,8 @@
     },
     {
       "type": "arrow",
-      "version": 450,
-      "versionNonce": 1661624059,
+      "version": 703,
+      "versionNonce": 1406431963,
       "isDeleted": false,
       "id": "qWZRzZNMj2Bhr7_kXHQ7i",
       "fillStyle": "hachure",
@@ -132,18 +132,18 @@
       "opacity": 100,
       "angle": 0,
       "x": -817.3318419774764,
-      "y": 1018.3751225830422,
+      "y": 1018.7996505680759,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
       "width": 258.05749139350837,
-      "height": 67.54091731112544,
+      "height": 67.38922069199441,
       "seed": 1170302627,
       "groupIds": [],
       "roundness": {
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684246154807,
+      "updated": 1684251121378,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -166,14 +166,14 @@
         ],
         [
           -258.05749139350837,
-          67.54091731112544
+          67.38922069199441
         ]
       ]
     },
     {
       "type": "arrow",
-      "version": 563,
-      "versionNonce": 598516405,
+      "version": 564,
+      "versionNonce": 616030683,
       "isDeleted": false,
       "id": "ssFpY4sWff06EJmkAiFVs",
       "fillStyle": "hachure",
@@ -194,7 +194,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -223,8 +223,8 @@
     },
     {
       "type": "text",
-      "version": 920,
-      "versionNonce": 887869211,
+      "version": 921,
+      "versionNonce": 211025237,
       "isDeleted": false,
       "id": "briaFexE338nUg_-JP6EO",
       "fillStyle": "hachure",
@@ -248,7 +248,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -263,8 +263,8 @@
     },
     {
       "type": "arrow",
-      "version": 2827,
-      "versionNonce": 1003521045,
+      "version": 2828,
+      "versionNonce": 884272763,
       "isDeleted": false,
       "id": "Ht_bOiX7fnLF54h7w01gq",
       "fillStyle": "hachure",
@@ -285,7 +285,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -314,8 +314,8 @@
     },
     {
       "type": "text",
-      "version": 409,
-      "versionNonce": 175715259,
+      "version": 410,
+      "versionNonce": 1345555125,
       "isDeleted": false,
       "id": "4Xarv_xGOcYo75uhrRidW",
       "fillStyle": "hachure",
@@ -339,7 +339,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": "https://github.com/leancodepl/patrol/blob/develop/packages/patrol_cli/lib/src/test_bundler.dart",
       "locked": false,
       "fontSize": 20,
@@ -354,99 +354,8 @@
     },
     {
       "type": "arrow",
-      "version": 300,
-      "versionNonce": 1185971451,
-      "isDeleted": false,
-      "id": "0XynHUnwBOmtjxiT19Wsx",
-      "fillStyle": "hachure",
-      "strokeWidth": 1,
-      "strokeStyle": "solid",
-      "roughness": 1,
-      "opacity": 100,
-      "angle": 0,
-      "x": -777.9430379992989,
-      "y": 224.37331619611058,
-      "strokeColor": "#000000",
-      "backgroundColor": "transparent",
-      "width": 384.57063873637617,
-      "height": 33.45772697887912,
-      "seed": 1613701581,
-      "groupIds": [],
-      "roundness": {
-        "type": 2
-      },
-      "boundElements": [],
-      "updated": 1684247431747,
-      "link": null,
-      "locked": false,
-      "startBinding": {
-        "elementId": "xA9-AQyEyzrlvWNwfROaV",
-        "focus": 0.2999332307885442,
-        "gap": 4.146741167460561
-      },
-      "endBinding": {
-        "elementId": "LGEI8IeZYM_Y3bDl_oPUO",
-        "focus": -0.20637726933067174,
-        "gap": 10.346640405724429
-      },
-      "lastCommittedPoint": null,
-      "startArrowhead": null,
-      "endArrowhead": "arrow",
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          -384.57063873637617,
-          -33.45772697887912
-        ]
-      ]
-    },
-    {
-      "type": "text",
-      "version": 150,
-      "versionNonce": 514015323,
-      "isDeleted": false,
-      "id": "LGEI8IeZYM_Y3bDl_oPUO",
-      "fillStyle": "hachure",
-      "strokeWidth": 1,
-      "strokeStyle": "solid",
-      "roughness": 1,
-      "opacity": 100,
-      "angle": 0,
-      "x": -1372.8000754421807,
-      "y": 173.58950169128877,
-      "strokeColor": "#364fc7",
-      "backgroundColor": "transparent",
-      "width": 199.93975830078125,
-      "height": 24,
-      "seed": 1867212749,
-      "groupIds": [],
-      "roundness": null,
-      "boundElements": [
-        {
-          "id": "0XynHUnwBOmtjxiT19Wsx",
-          "type": "arrow"
-        }
-      ],
-      "updated": 1684247431747,
-      "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol_cli/lib/src/test_bundler.dart#L70-L79",
-      "locked": false,
-      "fontSize": 20,
-      "fontFamily": 1,
-      "text": "code that does this",
-      "textAlign": "left",
-      "verticalAlign": "top",
-      "containerId": null,
-      "originalText": "code that does this",
-      "lineHeight": 1.2,
-      "baseline": 17
-    },
-    {
-      "type": "arrow",
-      "version": 673,
-      "versionNonce": 479478485,
+      "version": 674,
+      "versionNonce": 1895943099,
       "isDeleted": false,
       "id": "Ttf9XcUGrAOSXF_hhCBGn",
       "fillStyle": "hachure",
@@ -467,7 +376,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -496,8 +405,8 @@
     },
     {
       "type": "text",
-      "version": 219,
-      "versionNonce": 1474674939,
+      "version": 220,
+      "versionNonce": 1906188661,
       "isDeleted": false,
       "id": "z_gM8je8ZLOxaoT5QYMVQ",
       "fillStyle": "hachure",
@@ -521,7 +430,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/lib/src/common.dart#L105",
       "locked": false,
       "fontSize": 20,
@@ -536,8 +445,8 @@
     },
     {
       "type": "arrow",
-      "version": 157,
-      "versionNonce": 1393500213,
+      "version": 158,
+      "versionNonce": 400989275,
       "isDeleted": false,
       "id": "LUM5E1xzuJ1-WpENu2uaC",
       "fillStyle": "hachure",
@@ -558,7 +467,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -583,8 +492,8 @@
     },
     {
       "type": "text",
-      "version": 89,
-      "versionNonce": 18475419,
+      "version": 90,
+      "versionNonce": 883174101,
       "isDeleted": false,
       "id": "coKR06G4B4DXtjvazuFlD",
       "fillStyle": "hachure",
@@ -608,7 +517,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570672,
+      "updated": 1684250828404,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/android/src/main/kotlin/pl/leancode/patrol/PatrolJUnitRunner.java#L30",
       "locked": false,
       "fontSize": 20,
@@ -623,8 +532,8 @@
     },
     {
       "type": "arrow",
-      "version": 2006,
-      "versionNonce": 1676685493,
+      "version": 2007,
+      "versionNonce": 1999132923,
       "isDeleted": false,
       "id": "-OugWG16W5Maq5db4oPP6",
       "fillStyle": "hachure",
@@ -645,7 +554,7 @@
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684246264926,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "startBinding": null,
@@ -670,8 +579,8 @@
     },
     {
       "type": "text",
-      "version": 275,
-      "versionNonce": 2114775163,
+      "version": 276,
+      "versionNonce": 820119605,
       "isDeleted": false,
       "id": "b0UvopgihJRRxL0Uz6l4-",
       "fillStyle": "hachure",
@@ -695,7 +604,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684246264926,
+      "updated": 1684250828404,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/contracts.proto#L6-L9",
       "locked": false,
       "fontSize": 20,
@@ -710,8 +619,8 @@
     },
     {
       "type": "arrow",
-      "version": 158,
-      "versionNonce": 1605523189,
+      "version": 470,
+      "versionNonce": 1279885723,
       "isDeleted": false,
       "id": "-_jHhffqtQdZ6aOMI_Cof",
       "fillStyle": "hachure",
@@ -720,25 +629,25 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -21.04109728151178,
-      "y": 649.1681678974804,
+      "x": 116.6413257050483,
+      "y": 744.3281121806299,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 650.5906031293559,
-      "height": 100.99439677799967,
+      "width": 201.29303838232795,
+      "height": 79.44436035499211,
       "seed": 1222285613,
       "groupIds": [],
       "roundness": {
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684245570673,
+      "updated": 1684250828404,
       "link": null,
       "locked": false,
       "startBinding": null,
       "endBinding": {
         "elementId": "ilHaGGKz2P-k1p_RMQbAk",
-        "focus": -0.15050850061355342,
+        "focus": 0.19914361799513752,
         "gap": 9.223256881991915
       },
       "lastCommittedPoint": null,
@@ -750,15 +659,15 @@
           0
         ],
         [
-          650.5906031293559,
-          -100.99439677799967
+          201.29303838232795,
+          -79.44436035499211
         ]
       ]
     },
     {
       "type": "text",
-      "version": 105,
-      "versionNonce": 1819967195,
+      "version": 165,
+      "versionNonce": 406665621,
       "isDeleted": false,
       "id": "ilHaGGKz2P-k1p_RMQbAk",
       "fillStyle": "hachure",
@@ -767,8 +676,8 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": 638.772762729836,
-      "y": 528.2278635431271,
+      "x": 327.15762096936817,
+      "y": 643.9189545078524,
       "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
       "width": 46.27995300292969,
@@ -782,7 +691,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570673,
+      "updated": 1684250828404,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/lib/src/binding.dart#L112",
       "locked": false,
       "fontSize": 20,
@@ -797,8 +706,8 @@
     },
     {
       "type": "text",
-      "version": 427,
-      "versionNonce": 227913813,
+      "version": 428,
+      "versionNonce": 8164923,
       "isDeleted": false,
       "id": "PvAYtlidsFZ-yVa0Kmyks",
       "fillStyle": "hachure",
@@ -817,7 +726,7 @@
       "groupIds": [],
       "roundness": null,
       "boundElements": [],
-      "updated": 1684245570673,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -832,8 +741,8 @@
     },
     {
       "type": "text",
-      "version": 82,
-      "versionNonce": 68938619,
+      "version": 153,
+      "versionNonce": 405215195,
       "isDeleted": false,
       "id": "tBAWfgFqIciVhsYx0gnWL",
       "fillStyle": "hachure",
@@ -842,11 +751,11 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -1218.2708021014955,
-      "y": 64.84069926327288,
+      "x": -1337.8294342835381,
+      "y": 80.77074720784873,
       "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
-      "width": 150.2398681640625,
+      "width": 354.19970703125,
       "height": 25,
       "seed": 447514093,
       "groupIds": [],
@@ -857,23 +766,23 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570673,
+      "updated": 1684250909652,
       "link": "https://gist.github.com/bartekpacia/642f043bfbb938126f587f3ebfd5c6ac",
       "locked": false,
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "generated code",
+      "text": "generated \"bundled_test.dart\" code",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "generated code",
+      "originalText": "generated \"bundled_test.dart\" code",
       "lineHeight": 1.25,
       "baseline": 18
     },
     {
       "type": "text",
-      "version": 544,
-      "versionNonce": 1283906997,
+      "version": 545,
+      "versionNonce": 849614555,
       "isDeleted": false,
       "id": "9B-Fykh8Jan2xYI2PJq5w",
       "fillStyle": "hachure",
@@ -901,7 +810,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684245570673,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "fontSize": 20,
@@ -916,8 +825,8 @@
     },
     {
       "type": "arrow",
-      "version": 955,
-      "versionNonce": 1244054555,
+      "version": 1096,
+      "versionNonce": 550331515,
       "isDeleted": false,
       "id": "TsPHIiFue0vuA3YxCZeLT",
       "fillStyle": "hachure",
@@ -926,19 +835,19 @@
       "roughness": 1,
       "opacity": 100,
       "angle": 0,
-      "x": -787.9827770700815,
-      "y": 138.47763543114078,
+      "x": -787.9827770700816,
+      "y": 144.02940959232777,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
-      "width": 264.9617919592538,
-      "height": 53.521883143205244,
+      "width": 181.4819551420827,
+      "height": 33.06719615098106,
       "seed": 1895972419,
       "groupIds": [],
       "roundness": {
         "type": 2
       },
       "boundElements": [],
-      "updated": 1684245570673,
+      "updated": 1684250909652,
       "link": null,
       "locked": false,
       "startBinding": {
@@ -960,8 +869,8 @@
           0
         ],
         [
-          -264.9617919592538,
-          -53.521883143205244
+          -181.4819551420827,
+          -33.06719615098106
         ]
       ]
     },
@@ -983,11 +892,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1255378709,
-      "version": 115,
-      "versionNonce": 1672175381,
+      "version": 116,
+      "versionNonce": 22184827,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684245570673,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "text": "Build phase",
@@ -1018,16 +927,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1253405403,
-      "version": 99,
-      "versionNonce": 427340917,
+      "version": 101,
+      "versionNonce": 545634357,
       "isDeleted": false,
-      "boundElements": [
-        {
-          "id": "0XynHUnwBOmtjxiT19Wsx",
-          "type": "arrow"
-        }
-      ],
-      "updated": 1684245570673,
+      "boundElements": [],
+      "updated": 1684250901304,
       "link": null,
       "locked": false,
       "text": "Test discovery phase",
@@ -1043,8 +947,8 @@
     {
       "id": "eJtjxIKJajEwVSlnf6RPb",
       "type": "text",
-      "x": -787.3234329428097,
-      "y": 555.7404033193378,
+      "x": -784.6735370217855,
+      "y": 633.6319207227834,
       "width": 300.5518798828125,
       "height": 35,
       "angle": 0,
@@ -1058,11 +962,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1579076699,
-      "version": 62,
-      "versionNonce": 1997137781,
+      "version": 143,
+      "versionNonce": 950880021,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684246237404,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "text": "Test execution phase",
@@ -1079,9 +983,9 @@
       "id": "n4hTveJCw01uaedWCwZth",
       "type": "text",
       "x": -770.9957797891938,
-      "y": 340.3884375217817,
+      "y": 340.22819019341074,
       "width": 1021.7391967773438,
-      "height": 175,
+      "height": 250,
       "angle": 0,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
@@ -1093,26 +997,34 @@
       "groupIds": [],
       "roundness": null,
       "seed": 2011749627,
-      "version": 1540,
-      "versionNonce": 92685243,
+      "version": 2367,
+      "versionNonce": 1174248565,
       "isDeleted": false,
       "boundElements": [
         {
           "id": "UvOPQVntbuy5VX8O0p6Av",
           "type": "arrow"
+        },
+        {
+          "id": "6tJ24qNhtt5S0LnxG0oH6",
+          "type": "arrow"
+        },
+        {
+          "id": "wD0gzz2FJ9KZIgxy2qJNR",
+          "type": "arrow"
         }
       ],
-      "updated": 1684247575739,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
-      "text": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where the involvement of Patrol CLI ends)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests() RPC\n5. ",
+      "text": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where the involvement of Patrol CLI ends)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests()\n5. \"Instrumentation app\" gets the Dart tests by RPCing PatrolAppService.listDartTests()\n6. Native test cases are dynamically created from the Dart tests.\n   The native test, once run, only calls PatrolAppService.runDartTest()\n   and waits until the Dart test finishes to complete with the appropriate result.",
       "fontSize": 20,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
-      "baseline": 168,
+      "baseline": 243,
       "containerId": null,
-      "originalText": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where the involvement of Patrol CLI ends)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests() RPC\n5. ",
+      "originalText": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where the involvement of Patrol CLI ends)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests()\n5. \"Instrumentation app\" gets the Dart tests by RPCing PatrolAppService.listDartTests()\n6. Native test cases are dynamically created from the Dart tests.\n   The native test, once run, only calls PatrolAppService.runDartTest()\n   and waits until the Dart test finishes to complete with the appropriate result.",
       "lineHeight": 1.25
     },
     {
@@ -1133,11 +1045,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1835093755,
-      "version": 344,
-      "versionNonce": 775452789,
+      "version": 345,
+      "versionNonce": 1641246203,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684245619422,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "text": "During this phase the \"instrumentation app\" gathers tests from the \"app under test\"\nso it can run them later in the test execution phase.",
@@ -1153,8 +1065,8 @@
     {
       "id": "nF9I7ViYuzDI9BmyMe5QH",
       "type": "text",
-      "x": -786.5311244200462,
-      "y": 601.9880964650587,
+      "x": -783.881228499022,
+      "y": 679.8796138685043,
       "width": 758.0792846679688,
       "height": 50,
       "angle": 0,
@@ -1168,12 +1080,12 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1095546293,
-      "version": 403,
-      "versionNonce": 589358395,
+      "version": 487,
+      "versionNonce": 986314395,
       "isDeleted": false,
-      "boundElements": null,
-      "updated": 1684247410186,
-      "link": null,
+      "boundElements": [],
+      "updated": 1684250828405,
+      "link": "",
       "locked": false,
       "text": "During this phase, every test is executed in a completely new app process.\nThis prevents fatal crashes in the app from interfering with the test suite.",
       "fontSize": 20,
@@ -1203,11 +1115,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1888182837,
-      "version": 32,
-      "versionNonce": 1229392277,
+      "version": 33,
+      "versionNonce": 669684885,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684246160691,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "text": "Differences between platforms",
@@ -1223,10 +1135,10 @@
     {
       "id": "UvOPQVntbuy5VX8O0p6Av",
       "type": "arrow",
-      "x": -776.1916777162628,
-      "y": 440.3776161440157,
-      "width": 261.59020716358054,
-      "height": 117.26182528896908,
+      "x": -788.5420323367082,
+      "y": 422.6907379116739,
+      "width": 251.06106081988105,
+      "height": 49.69305905459885,
       "angle": 0,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
@@ -1240,11 +1152,11 @@
         "type": 2
       },
       "seed": 403725045,
-      "version": 247,
-      "versionNonce": 405996155,
+      "version": 2076,
+      "versionNonce": 287730491,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684247626133,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
       "points": [
@@ -1253,20 +1165,20 @@
           0
         ],
         [
-          -261.59020716358054,
-          -117.26182528896908
+          -251.06106081988105,
+          -49.69305905459885
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "n4hTveJCw01uaedWCwZth",
-        "focus": -0.7638128770163541,
-        "gap": 5.195897927069041
+        "focus": -0.2744282670490824,
+        "gap": 17.546252547514428
       },
       "endBinding": {
         "elementId": "406-Q2dT7P5aVOFKukI6Z",
-        "focus": -1.2800142907393162,
-        "gap": 7.699832108481132
+        "focus": -0.9909328786307687,
+        "gap": 8.646608092563383
       },
       "startArrowhead": null,
       "endArrowhead": "arrow"
@@ -1274,9 +1186,9 @@
     {
       "id": "Rajh79rc2vaj_BnwkGgAs",
       "type": "text",
-      "x": -1294.7069627636583,
-      "y": 305.94353240483935,
-      "width": 107.43992614746094,
+      "x": -1304.6275143817115,
+      "y": 349.28188313112236,
+      "width": 248.1917724609375,
       "height": 20,
       "angle": 0,
       "strokeColor": "#000000",
@@ -1289,28 +1201,28 @@
       "groupIds": [],
       "roundness": null,
       "seed": 800926069,
-      "version": 352,
-      "versionNonce": 914134907,
+      "version": 518,
+      "versionNonce": 1261779445,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684247631040,
+      "updated": 1684250828405,
       "link": null,
       "locked": false,
-      "text": "This is hacky.",
+      "text": "\"patrol_test_explorer\" is hack.",
       "fontSize": 16,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
       "baseline": 14,
       "containerId": null,
-      "originalText": "This is hacky.",
+      "originalText": "\"patrol_test_explorer\" is hack.",
       "lineHeight": 1.25
     },
     {
       "id": "406-Q2dT7P5aVOFKukI6Z",
       "type": "text",
-      "x": -1294.9673646722613,
-      "y": 325.91593376243975,
+      "x": -1273.8495852823557,
+      "y": 370.99312656199777,
       "width": 225.59988403320312,
       "height": 20,
       "angle": 0,
@@ -1324,8 +1236,8 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1566531125,
-      "version": 143,
-      "versionNonce": 2052110005,
+      "version": 208,
+      "versionNonce": 424365019,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1333,7 +1245,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684247628625,
+      "updated": 1684250828405,
       "link": "https://github.com/dart-lang/test/issues/1998",
       "locked": false,
       "text": "See this issue to learn more",
@@ -1344,6 +1256,346 @@
       "baseline": 14,
       "containerId": null,
       "originalText": "See this issue to learn more",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "6tJ24qNhtt5S0LnxG0oH6",
+      "type": "arrow",
+      "x": -87.37668287690158,
+      "y": 531.8619239080501,
+      "width": 200.07805970357072,
+      "height": 23.474990448950052,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": {
+        "type": 2
+      },
+      "seed": 2136010133,
+      "version": 615,
+      "versionNonce": 1760362677,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684250828405,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          200.07805970357072,
+          23.474990448950052
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": null,
+      "endBinding": {
+        "elementId": "XoaXkc5EkIeecXTwZ6LTm",
+        "focus": -0.36143777548199846,
+        "gap": 15.453839284173
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "2I1z07RN_VliP7ADINeg_",
+      "type": "text",
+      "x": 121.87835268911158,
+      "y": 535.6137425960573,
+      "width": 596.57568359375,
+      "height": 20,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 521071829,
+      "version": 370,
+      "versionNonce": 686313755,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684250828405,
+      "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/example/android/app/src/androidTest/java/pl/leancode/patrol/example/MainActivityTest.java",
+      "locked": false,
+      "text": "Android: test cases are created by the Parametrized JUnit runner is used",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 14,
+      "containerId": null,
+      "originalText": "Android: test cases are created by the Parametrized JUnit runner is used",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "XoaXkc5EkIeecXTwZ6LTm",
+      "type": "text",
+      "x": 128.15521611084216,
+      "y": 563.3948274914502,
+      "width": 530.127685546875,
+      "height": 20,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 1783791413,
+      "version": 223,
+      "versionNonce": 1968513557,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "6tJ24qNhtt5S0LnxG0oH6",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684250828405,
+      "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/ios/Classes/PatrolIntegrationTestRunner.h#L96-L107",
+      "locked": false,
+      "text": "iOS: test cases are dynamically swizzled into the class at runtime",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 14,
+      "containerId": null,
+      "originalText": "iOS: test cases are dynamically swizzled into the class at runtime",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "wD0gzz2FJ9KZIgxy2qJNR",
+      "type": "arrow",
+      "x": -788.7421383629953,
+      "y": 427.7846766281325,
+      "width": 254.28914752463083,
+      "height": 130.96583853357038,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": {
+        "type": 2
+      },
+      "seed": 61455835,
+      "version": 209,
+      "versionNonce": 289187413,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684250839401,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -254.28914752463083,
+          -130.96583853357038
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "n4hTveJCw01uaedWCwZth",
+        "focus": -0.6053063106183852,
+        "gap": 17.746358573801444
+      },
+      "endBinding": {
+        "elementId": "-QqKbye1ovWiXPG-nlj1K",
+        "focus": -0.5727171180130495,
+        "gap": 7.345579552345839
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "-QqKbye1ovWiXPG-nlj1K",
+      "type": "text",
+      "x": -1263.949373388282,
+      "y": 269.4732585422163,
+      "width": 223.96780395507812,
+      "height": 20,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 1120605499,
+      "version": 71,
+      "versionNonce": 1809781685,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "wD0gzz2FJ9KZIgxy2qJNR",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684250841275,
+      "link": "https://gist.github.com/bartekpacia/642f043bfbb938126f587f3ebfd5c6ac#file-test_bundle-dart-L54-L63",
+      "locked": false,
+      "text": "\"patrol_test_explorer\" code",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 14,
+      "containerId": null,
+      "originalText": "\"patrol_test_explorer\" code",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "RCvFqA0yOREMqEjcFFkfI",
+      "type": "arrow",
+      "x": 104.61697693035285,
+      "y": 1020.8923557577681,
+      "width": 567.8160316427095,
+      "height": 69.68168494335771,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": {
+        "type": 2
+      },
+      "seed": 706827739,
+      "version": 393,
+      "versionNonce": 1576907317,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684251086438,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          567.8160316427095,
+          69.68168494335771
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": null,
+      "endBinding": {
+        "elementId": "W4m77blWXf7mbheTspRHW",
+        "focus": -0.7492702408550578,
+        "gap": 14.183186198554267
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "W4m77blWXf7mbheTspRHW",
+      "type": "text",
+      "x": 686.6161947716166,
+      "y": 1050.139983823406,
+      "width": 669.7276000976562,
+      "height": 60,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 1663196661,
+      "version": 415,
+      "versionNonce": 1111166715,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "RCvFqA0yOREMqEjcFFkfI",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684251086436,
+      "link": null,
+      "locked": false,
+      "text": "Actually, when running tests with ATO on Android, there are 4 APKs involved, not 2.\nBut this is an implementation detail and definitely out of scope of this document.\n",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 54,
+      "containerId": null,
+      "originalText": "Actually, when running tests with ATO on Android, there are 4 APKs involved, not 2.\nBut this is an implementation detail and definitely out of scope of this document.\n",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "WpbYje2OCeTYBtb3b7y9K",
+      "type": "text",
+      "x": 692.1154506046846,
+      "y": 1111.3586654717355,
+      "width": 565.519775390625,
+      "height": 20,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 181160053,
+      "version": 109,
+      "versionNonce": 48877781,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "RCvFqA0yOREMqEjcFFkfI",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684251059148,
+      "link": "https://medium.com/stepstone-tech/android-test-orchestrator-unmasked-83b8879928fa",
+      "locked": false,
+      "text": "To learn more about how ATO works internally, check out this article. ",
+      "fontSize": 16,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 14,
+      "containerId": null,
+      "originalText": "To learn more about how ATO works internally, check out this article. ",
       "lineHeight": 1.25
     }
   ],
