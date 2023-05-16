@@ -65,6 +65,8 @@ jobs:
         id: tests_step
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
+          EXIT_CODE=0
 
           patrol test \
             --exclude integration_test/android_app_test.dart \
@@ -75,7 +77,10 @@ jobs:
             --exclude integration_test/swipe_test.dart \
             --exclude integration_test/webview_leancode_test.dart \
             --exclude integration_test/webview_login_test.dart \
-            --exclude integration_test/webview_stackoverflow_test.dart
+            --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
+
+          kill $recordingpid
+          exit $EXIT_CODE
 
       - name: Upload test outputs to artifacts
         if: success() || failure()
