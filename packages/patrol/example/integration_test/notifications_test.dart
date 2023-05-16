@@ -23,6 +23,7 @@ void main() {
       );
 
       await $('Tapped notification with ID: 1').waitUntilVisible();
+      await $('blah blah').waitUntilVisible();
     },
   );
 }
