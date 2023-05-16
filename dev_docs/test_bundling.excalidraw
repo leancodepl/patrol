@@ -1018,9 +1018,9 @@
       "id": "n4hTveJCw01uaedWCwZth",
       "type": "text",
       "x": -770.9957797891938,
-      "y": 340.22819019341074,
+      "y": 340.118409598923,
       "width": 998.2791748046875,
-      "height": 250,
+      "height": 275,
       "angle": 0,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
@@ -1032,8 +1032,8 @@
       "groupIds": [],
       "roundness": null,
       "seed": 2011749627,
-      "version": 2425,
-      "versionNonce": 890303675,
+      "version": 2577,
+      "versionNonce": 1184768309,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1049,17 +1049,17 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684255566719,
+      "updated": 1684255977923,
       "link": null,
       "locked": false,
-      "text": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where Patrol CLI's involvement ends)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests()\n5. \"Instrumentation app\" gets the Dart tests by RPCing PatrolAppService.listDartTests()\n6. Native test cases are dynamically created from the Dart tests.\n   The native test, once run, only calls PatrolAppService.runDartTest()\n   and waits until the Dart test finishes to complete with the appropriate result.",
+      "text": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where Patrol CLI's involvement ends.)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests()\n5. \"Instrumentation app\" gets the Dart tests by RPCing PatrolAppService.listDartTests().\n    It receives 2 Dart tests: \"notifications_test\" and \"permission_location_test\"\n6. Native test cases are dynamically created from the Dart tests.\n   The native test, once run, only calls PatrolAppService.runDartTest()\n   and waits until the Dart test finishes to complete with the appropriate result.",
       "fontSize": 20,
       "fontFamily": 1,
       "textAlign": "left",
       "verticalAlign": "top",
-      "baseline": 243,
+      "baseline": 268,
       "containerId": null,
-      "originalText": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where Patrol CLI's involvement ends)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests()\n5. \"Instrumentation app\" gets the Dart tests by RPCing PatrolAppService.listDartTests()\n6. Native test cases are dynamically created from the Dart tests.\n   The native test, once run, only calls PatrolAppService.runDartTest()\n   and waits until the Dart test finishes to complete with the appropriate result.",
+      "originalText": "1. Patrol CLI starts the \"instrumentation app\" (btw, this is where Patrol CLI's involvement ends.)\n2. The \"instrumentation app\" runs the \"app under test\" (whose entrypoint is \"bundled_test.dart\")\n    and waits until PatrolAppService, running inside \"app under test\", is ready to report Dart tests.\n3. Inside the \"app under test\", the special \"patrol_test_explorer\" runs to find the tests.\n4. Once the \"patrol_test_explorer\" finishes running, all the tests it found are available\n   to the native side via PatrolAppService.listDartTests()\n5. \"Instrumentation app\" gets the Dart tests by RPCing PatrolAppService.listDartTests().\n    It receives 2 Dart tests: \"notifications_test\" and \"permission_location_test\"\n6. Native test cases are dynamically created from the Dart tests.\n   The native test, once run, only calls PatrolAppService.runDartTest()\n   and waits until the Dart test finishes to complete with the appropriate result.",
       "lineHeight": 1.25
     },
     {
@@ -1170,10 +1170,10 @@
     {
       "id": "UvOPQVntbuy5VX8O0p6Av",
       "type": "arrow",
-      "x": -788.5420323367083,
-      "y": 423.37655706462806,
-      "width": 251.06106081988094,
-      "height": 50.35344410317418,
+      "x": -785.9689193175457,
+      "y": 436.21426395041703,
+      "width": 238.80117319619376,
+      "height": 3.6743845961542547,
       "angle": 0,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
@@ -1187,11 +1187,11 @@
         "type": 2
       },
       "seed": 403725045,
-      "version": 2174,
-      "versionNonce": 619085973,
+      "version": 2636,
+      "versionNonce": 823014037,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684255566719,
+      "updated": 1684255977924,
       "link": null,
       "locked": false,
       "points": [
@@ -1200,19 +1200,19 @@
           0
         ],
         [
-          -251.06106081988094,
-          -50.35344410317418
+          -238.80117319619376,
+          -3.6743845961542547
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "n4hTveJCw01uaedWCwZth",
-        "focus": -0.2744282670490824,
-        "gap": 17.546252547514428
+        "focus": 0.2307036934265842,
+        "gap": 14.973139528351908
       },
       "endBinding": {
         "elementId": "406-Q2dT7P5aVOFKukI6Z",
-        "focus": -0.9909328786307687,
+        "focus": -0.8953556565172319,
         "gap": 8.646608092563383
       },
       "startArrowhead": null,
@@ -1221,8 +1221,8 @@
     {
       "id": "Rajh79rc2vaj_BnwkGgAs",
       "type": "text",
-      "x": -1304.6275143817115,
-      "y": 349.28188313112236,
+      "x": -1289.7945137388617,
+      "y": 409.4675250927645,
       "width": 248.1917724609375,
       "height": 20,
       "angle": 0,
@@ -1236,11 +1236,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 800926069,
-      "version": 536,
-      "versionNonce": 1664040763,
+      "version": 597,
+      "versionNonce": 1924651963,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684255566719,
+      "updated": 1684255793074,
       "link": null,
       "locked": false,
       "text": "\"patrol_test_explorer\" is hack.",
@@ -1256,8 +1256,8 @@
     {
       "id": "406-Q2dT7P5aVOFKukI6Z",
       "type": "text",
-      "x": -1273.8495852823557,
-      "y": 370.99312656199777,
+      "x": -1259.016584639506,
+      "y": 431.1787685236399,
       "width": 225.59988403320312,
       "height": 20,
       "angle": 0,
@@ -1271,8 +1271,8 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1566531125,
-      "version": 226,
-      "versionNonce": 433300981,
+      "version": 287,
+      "versionNonce": 437326197,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1280,7 +1280,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684255566719,
+      "updated": 1684255793074,
       "link": "https://github.com/dart-lang/test/issues/1998",
       "locked": false,
       "text": "See this issue to learn more",
@@ -1296,10 +1296,10 @@
     {
       "id": "6tJ24qNhtt5S0LnxG0oH6",
       "type": "arrow",
-      "x": -87.37668287690158,
-      "y": 531.8619239080501,
-      "width": 200.07805970357072,
-      "height": 23.474990448950052,
+      "x": -81.36539948545217,
+      "y": 552.1172594031201,
+      "width": 220.67423092786052,
+      "height": 5.650780340842061,
       "angle": 0,
       "strokeColor": "#000000",
       "backgroundColor": "transparent",
@@ -1313,11 +1313,11 @@
         "type": 2
       },
       "seed": 2136010133,
-      "version": 633,
-      "versionNonce": 1949232251,
+      "version": 754,
+      "versionNonce": 856655541,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684255566719,
+      "updated": 1684255960732,
       "link": null,
       "locked": false,
       "points": [
@@ -1326,15 +1326,15 @@
           0
         ],
         [
-          200.07805970357072,
-          23.474990448950052
+          220.67423092786052,
+          5.650780340842061
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": null,
       "endBinding": {
         "elementId": "XoaXkc5EkIeecXTwZ6LTm",
-        "focus": -0.36143777548199846,
+        "focus": 0.9601590765789876,
         "gap": 15.453839284173
       },
       "startArrowhead": null,
@@ -1343,8 +1343,8 @@
     {
       "id": "2I1z07RN_VliP7ADINeg_",
       "type": "text",
-      "x": 121.87835268911158,
-      "y": 535.6137425960573,
+      "x": 147.6204322026449,
+      "y": 526.4291888787152,
       "width": 596.57568359375,
       "height": 20,
       "angle": 0,
@@ -1358,11 +1358,11 @@
       "groupIds": [],
       "roundness": null,
       "seed": 521071829,
-      "version": 388,
-      "versionNonce": 1541434549,
+      "version": 475,
+      "versionNonce": 2040213,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684255566719,
+      "updated": 1684255963332,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/example/android/app/src/androidTest/java/pl/leancode/patrol/example/MainActivityTest.java",
       "locked": false,
       "text": "Android: test cases are created by the Parametrized JUnit runner is used",
@@ -1378,8 +1378,8 @@
     {
       "id": "XoaXkc5EkIeecXTwZ6LTm",
       "type": "text",
-      "x": 128.15521611084216,
-      "y": 563.3948274914502,
+      "x": 147.48242447287487,
+      "y": 570.8834324408416,
       "width": 530.127685546875,
       "height": 20,
       "angle": 0,
@@ -1393,8 +1393,8 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1783791413,
-      "version": 241,
-      "versionNonce": 573678875,
+      "version": 306,
+      "versionNonce": 646918779,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1402,7 +1402,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684255566719,
+      "updated": 1684255960732,
       "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/ios/Classes/PatrolIntegrationTestRunner.h#L96-L107",
       "locked": false,
       "text": "iOS: test cases are dynamically swizzled into the class at runtime",
@@ -1418,10 +1418,10 @@
     {
       "id": "wD0gzz2FJ9KZIgxy2qJNR",
       "type": "arrow",
-      "x": -788.7421383629953,
-      "y": 422.803986196016,
-      "width": 254.72490379927694,
-      "height": 125.98514810145389,
+      "x": -785.9332582741467,
+      "y": 434.5906526621917,
+      "width": 240.69328310094488,
+      "height": 79.18179948745973,
       "angle": 0,
       "strokeColor": "#364fc7",
       "backgroundColor": "transparent",
@@ -1435,11 +1435,11 @@
         "type": 2
       },
       "seed": 61455835,
-      "version": 326,
-      "versionNonce": 1016351163,
+      "version": 804,
+      "versionNonce": 1781864437,
       "isDeleted": false,
       "boundElements": null,
-      "updated": 1684255566719,
+      "updated": 1684255977924,
       "link": null,
       "locked": false,
       "points": [
@@ -1448,20 +1448,20 @@
           0
         ],
         [
-          -254.72490379927694,
-          -125.98514810145389
+          -240.69328310094488,
+          -79.18179948745973
         ]
       ],
       "lastCommittedPoint": null,
       "startBinding": {
         "elementId": "n4hTveJCw01uaedWCwZth",
-        "focus": -0.5733816081831011,
-        "gap": 17.746358573801558
+        "focus": -0.4179268840790088,
+        "gap": 14.937478484952862
       },
       "endBinding": {
         "elementId": "-QqKbye1ovWiXPG-nlj1K",
-        "focus": -0.5554205908309867,
-        "gap": 7.345579552345839
+        "focus": -0.4407592524739309,
+        "gap": 5.74995267087354
       },
       "startArrowhead": null,
       "endArrowhead": "arrow"
@@ -1469,8 +1469,8 @@
     {
       "id": "-QqKbye1ovWiXPG-nlj1K",
       "type": "text",
-      "x": -1263.949373388282,
-      "y": 269.4732585422163,
+      "x": -1249.2423861792302,
+      "y": 329.65890050385843,
       "width": 223.96780395507812,
       "height": 20,
       "angle": 0,
@@ -1484,8 +1484,8 @@
       "groupIds": [],
       "roundness": null,
       "seed": 1120605499,
-      "version": 89,
-      "versionNonce": 1023050613,
+      "version": 151,
+      "versionNonce": 1855613179,
       "isDeleted": false,
       "boundElements": [
         {
@@ -1493,7 +1493,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1684255566719,
+      "updated": 1684255793074,
       "link": "https://gist.github.com/bartekpacia/642f043bfbb938126f587f3ebfd5c6ac#file-test_bundle-dart-L54-L63",
       "locked": false,
       "text": "\"patrol_test_explorer\" code",
@@ -2288,6 +2288,215 @@
       "baseline": 18,
       "containerId": null,
       "originalText": "iOS runDartTest() invocation",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "0pDGbu7E4ymOgK3MP1iWY",
+      "type": "arrow",
+      "x": 202.13059393388886,
+      "y": 343.45482601096455,
+      "width": 185.32548361332073,
+      "height": 82.73550765785103,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": {
+        "type": 2
+      },
+      "seed": 206792219,
+      "version": 58,
+      "versionNonce": 157452411,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684255724158,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          185.32548361332073,
+          -82.73550765785103
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": null,
+      "endBinding": {
+        "elementId": "JyZQfpbCp_4sNZUueTs0l",
+        "focus": 0.7321530909818292,
+        "gap": 5.05732328013454
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "JyZQfpbCp_4sNZUueTs0l",
+      "type": "text",
+      "x": 392.5134008273441,
+      "y": 221.03322892322288,
+      "width": 514.01953125,
+      "height": 50,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 954402293,
+      "version": 175,
+      "versionNonce": 1439548245,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "0pDGbu7E4ymOgK3MP1iWY",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684255724158,
+      "link": null,
+      "locked": false,
+      "text": "Patrol CLI's process still runs, but it's only waiting\nfor the native test tooling to finish running.",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 43,
+      "containerId": null,
+      "originalText": "Patrol CLI's process still runs, but it's only waiting\nfor the native test tooling to finish running.",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "hfLPEBNX8q2QcJGM0XOcP",
+      "type": "arrow",
+      "x": -735.1722458231507,
+      "y": 401.1724848486121,
+      "width": 217.65194831294457,
+      "height": 164.48924419668452,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": {
+        "type": 2
+      },
+      "seed": 256163029,
+      "version": 294,
+      "versionNonce": 898190299,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684255888405,
+      "link": "",
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -217.65194831294457,
+          -164.48924419668452
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": null,
+      "endBinding": {
+        "elementId": "BZrNyS5yHRqafdt9bF6V1",
+        "focus": -0.8169655070169856,
+        "gap": 13.874266205038282
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "BZrNyS5yHRqafdt9bF6V1",
+      "type": "text",
+      "x": -1336.900676926734,
+      "y": 201.420713144576,
+      "width": 374.73968505859375,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 1417254485,
+      "version": 287,
+      "versionNonce": 1175927285,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "hfLPEBNX8q2QcJGM0XOcP",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1684255888405,
+      "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/ios/Classes/PatrolIntegrationTestRunner.h#L41-L44",
+      "locked": false,
+      "text": "Waiting for PatrolAppService iOS code",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 18,
+      "containerId": null,
+      "originalText": "Waiting for PatrolAppService iOS code",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "3rr3bkhE3qpPhjRByHqqt",
+      "type": "text",
+      "x": -1368.7117895730448,
+      "y": 240.10610450212374,
+      "width": 412.95965576171875,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "roundness": null,
+      "seed": 1783861275,
+      "version": 230,
+      "versionNonce": 1302745371,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1684255892713,
+      "link": "https://github.com/leancodepl/patrol/blob/64f6ba87601bbf2462f0c2f58b375b3d081eb71c/packages/patrol/example/android/app/src/androidTest/java/pl/leancode/patrol/example/MainActivityTest.java#L13",
+      "locked": false,
+      "text": "Waiting for PatrolAppService Android code",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 18,
+      "containerId": null,
+      "originalText": "Waiting for PatrolAppService Android code",
       "lineHeight": 1.25
     }
   ],
