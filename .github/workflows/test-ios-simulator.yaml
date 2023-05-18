@@ -11,7 +11,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      status: ${{ steps.set_status.outputs.status }}
+      failure_status: ${{ steps.set_failure.outputs.failure_status }}
+      error_status: ${{ steps.set_error.outputs.error_status }}
 
     strategy:
       fail-fast: false
@@ -61,13 +62,9 @@ jobs:
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
           
-          sleep 20
+          sleep 30
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
-          xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
-          activitypid="$!"
-          xcrun simctl spawn booted log stream --type trace --color none > trace_simulator_logs.txt &
-          tracepid="$!"
 
           patrol test \
             --exclude integration_test/android_app_test.dart \
@@ -82,8 +79,6 @@ jobs:
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
-          kill -SIGINT $activitypid
-          kill -SIGINT $tracepid
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> $GITHUB_ENV
           exit $TESTS_EXIT_CODE
 
@@ -114,8 +109,6 @@ jobs:
           name: Logs from ${{ matrix.device }}
           path: |
             ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
-            ${{ github.workspace }}/packages/patrol/example/activity_simulator_logs.txt
-            ${{ github.workspace }}/packages/patrol/example/trace_simulator_logs.txt
 
       - name: Upload captured video to artifacts
         if: success() || failure()
@@ -129,9 +122,9 @@ jobs:
         if: always()
         run: >
           if [ -z ${{ env.TESTS_EXIT_CODE }} ]; then
-            echo "status=error" >> "$GITHUB_OUTPUT";
+            echo "error_status=error" >> "$GITHUB_OUTPUT";
           elif [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
-            echo "status=failure" >> "$GITHUB_OUTPUT";
+            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
   slack_notify:
@@ -144,11 +137,12 @@ jobs:
       - name: Set Slack message
         id: slack_message
         env:
-          status: ${{ needs.run_tests.outputs.status }}
+          failure_status: ${{ needs.run_tests.outputs.failure_status }}
+          error_status: ${{ needs.run_tests.outputs.error_status }}
         run: >
-          if [ "$error_status" == "error" ]; then
+          if [ ! -z "$error_status" ]; then
             message="Something went wrong ⚠️";
-          elif [ "$status" == "failure" ]; then
+          elif [ ! -z "$failure_status" ]; then
             message="There were failing tests 💥 ";
           else
             message="All tests have passed ✅ ";
