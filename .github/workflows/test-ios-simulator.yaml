@@ -61,7 +61,8 @@ jobs:
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
-
+          
+          sleep 20
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
           xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
@@ -156,7 +157,7 @@ jobs:
           if [ ! -z "$failure_status" ]; then
             message="There were failing tests 💥 ";
             status="failure";
-          elif [ ! -z "$error_status" ]; then
+          if [ ! -z "$error_status" ]; then
             message="Something went wrong ⚠️";
             status="failure";
           else
