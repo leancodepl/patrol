@@ -1,1 +1,2 @@
-Open the `.excelidraw` files by uploading them to https://excalidraw.com
+The `.svg` file has embedded `.excelidraw` file. To edit, open the `.svg` on
+https://excalidraw.com.
