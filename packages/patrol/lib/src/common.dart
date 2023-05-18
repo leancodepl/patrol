@@ -12,6 +12,8 @@ import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
+import 'constants.dart' as constants;
+
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 
@@ -81,7 +83,7 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      if (patrolBinding != null) {
+      if (patrolBinding != null && !constants.hotRestartEnabled) {
         // If Patrol's native automation feature is enabled, then this test will
         // be executed only if the native side requested it to be executed.
         // Otherwise, it returns early.

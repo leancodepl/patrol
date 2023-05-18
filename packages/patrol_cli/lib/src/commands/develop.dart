@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -85,16 +86,16 @@ class DevelopCommand extends PatrolCommand {
     final targets = stringsArg('target');
     if (targets.isEmpty) {
       throwToolExit('No target provided with --target');
+    } else if (targets.length > 1) {
+      throwToolExit('Only one target can be provided with --target');
     }
+
     final target = _testFinder.findTest(targets.first);
     _logger.detail('Received test target: $target');
 
     if (boolArg('release')) {
       throwToolExit('Cannot use release build mode with develop');
     }
-
-    final testBundle = _testBundler.createTestBundle([target]);
-    _logger.detail('Bundled test target $target in ${testBundle.path}');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -127,7 +128,7 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-      if (displayLabel) 'PATROL_TEST_LABEL': testBundle.basename,
+      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
       // develop-specific
       ...{'PATROL_HOT_RESTART': 'true'},
     }.withNullsRemoved();
@@ -147,7 +148,7 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
-      target: testBundle.path,
+      target: target,
       flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
