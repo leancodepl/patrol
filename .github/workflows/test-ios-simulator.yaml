@@ -59,9 +59,17 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mov" &
           recordingpid="$!"
-          EXIT_CODE=0
+
+          xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
+          logpid="$!"
+          xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
+          activitypid="$!"
+          xcrun simctl spawn booted log stream --type trace --color none > trace_simulator_logs.txt &
+          tracepid="$!"
+
+          TESTS_EXIT_CODE=0
 
           patrol test \
             --exclude integration_test/android_app_test.dart \
@@ -72,11 +80,18 @@ jobs:
             --exclude integration_test/swipe_test.dart \
             --exclude integration_test/webview_leancode_test.dart \
             --exclude integration_test/webview_login_test.dart \
-            --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
+            --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
           kill $recordingpid
-          exit $EXIT_CODE
+          kill $logpid
+          kill $activitypid
+          kill $tracepid
+          exit $TESTS_EXIT_CODE
 
+      - name: Find xcresult path
+        if: success() || failure()
+        run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
+      
       - name: Publish test report to summary
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
@@ -85,11 +100,7 @@ jobs:
           upload-bundles: "never"
           path: |
             ${{ env.XCRESULT_PATH }}
-
-      - name: Find xcresult path
-        if: success() || failure()
-        run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
-
+     
       - name: Upload XCRESULT test report to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
