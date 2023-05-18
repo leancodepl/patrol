@@ -86,7 +86,7 @@ jobs:
           kill $logpid
           kill $activitypid
           kill $tracepid
-          echo "TESTS_EXIT_CODE"=$TESTS_EXIT_CODE >> $GITHUB_ENV
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> $GITHUB_ENV
           echo "code: $TESTS_EXIT_CODE"
           exit $TESTS_EXIT_CODE
 
