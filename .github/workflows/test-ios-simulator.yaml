@@ -114,7 +114,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Logs from ${{ matrix.device }}
-          path: ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
+          path: |
+            ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
+            ${{ github.workspace }}/packages/patrol/example/activity_simulator_logs.txt
+            ${{ github.workspace }}/packages/patrol/example/trace_simulator_logs.txt
 
       - name: Upload captured video to artifacts
         if: success() || failure()
