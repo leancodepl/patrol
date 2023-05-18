@@ -105,9 +105,8 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: XCRESULT test report from ${{ matrix.device }}
-          path: |
-            ${{ env.XCRESULT_PATH }}
+          name: Test reportfrom ${{ matrix.device }}.xcresult
+          path: ${{ env.XCRESULT_PATH }}
       
       - name: Upload simulator logs to artifacts
         if: success() || failure()
@@ -124,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Captured video from ${{ matrix.device }}
-          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
+          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mov
 
       - name: Check if failed test occured
         id: set_failure
