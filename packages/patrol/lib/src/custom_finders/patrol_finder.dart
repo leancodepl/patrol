@@ -199,13 +199,15 @@ class PatrolFinder extends MatchFinder {
   ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap({
-    bool? andSettle,
+    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    SettleBehavior? settleBehavior,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
     await tester.tap(
       this,
       andSettle: andSettle,
+      settleBehavior: settleBehavior,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -238,7 +240,8 @@ class PatrolFinder extends MatchFinder {
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
-    bool? andSettle,
+    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    SettleBehavior? settleBehavior,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
@@ -246,6 +249,7 @@ class PatrolFinder extends MatchFinder {
       this,
       text,
       andSettle: andSettle,
+      settleBehavior: settleBehavior,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -266,7 +270,8 @@ class PatrolFinder extends MatchFinder {
     double step = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    bool? andSettle,
+    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    SettleBehavior? settleBehavior,
   }) {
     return tester.scrollUntilVisible(
       finder: finder,
@@ -275,6 +280,7 @@ class PatrolFinder extends MatchFinder {
       maxScrolls: maxScrolls,
       duration: duration,
       andSettle: andSettle,
+      settleBehavior: settleBehavior,
     );
   }
 
@@ -459,12 +465,14 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// Same as [PatrolFinder.tap], but on a [PatrolFinder] which is not yet
   /// visible.
   Future<void> tap({
-    bool? andSettle,
+    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    SettleBehavior? settleBehavior,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).tap(
       andSettle: andSettle,
+      settleBehavior: settleBehavior,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
@@ -474,13 +482,15 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// visible.
   Future<void> enterText(
     String text, {
-    bool? andSettle,
+    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    SettleBehavior? settleBehavior,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).enterText(
       text,
       andSettle: andSettle,
+      settleBehavior: settleBehavior,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
