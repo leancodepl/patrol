@@ -82,10 +82,9 @@ void patrolTest(
     tags: tags,
     (widgetTester) async {
       if (patrolBinding != null) {
-        // If Patrol's native automation feature is enabled, then the test will
-        // only execute if the native side requests it.
-
-        // FIXME: Too strict assumption
+        // If Patrol's native automation feature is enabled, then this test will
+        // be executed only if the native side requested it to be executed.
+        // Otherwise, it returns early.
         //
         // The assumption here is that this test doesn't have any extra parent
         // groups. Every Dart test suite has an implict, unnamed, top-level
@@ -93,12 +92,12 @@ void patrolTest(
         // its name is equal to the path to the Dart test file in the
         // integration_test directory.
         //
+        // In other words, the developer cannot use `group()` in the tests.
+        //
         // Example: if this function is called from the Dart test file named
         // "example_test.dart", and that file is located in the
         // "integration_test/examples" directory, we assume that the name of the
-        // immediate parent group is "examples/example_test.dart".
-        //
-        // It's good enough for now.
+        // immediate parent group is "examples.example_test".
 
         final parentGroupName = Invoker.current!.liveTest.groups.last.name;
         final requestedToExecute = await patrolBinding.patrolAppService
@@ -107,9 +106,9 @@ void patrolTest(
         if (!requestedToExecute) {
           return;
         }
-      }
 
-      // await nativeAutomator?.configure(); // TODO: Move to bundled_test.dart or add again
+        await nativeAutomator?.configure();
+      }
 
       final patrolTester = PatrolTester(
         tester: widgetTester,

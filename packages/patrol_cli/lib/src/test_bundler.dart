@@ -15,8 +15,8 @@ class TestBundler {
     }
 
     final contents = '''
-// ignore_for_file: invalid_use_of_internal_member,
-// depend_on_referenced_packages, directives_ordering
+// GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
+// ignore_for_file: type=lint, invalid_use_of_internal_member
 
 import 'dart:async';
 
@@ -25,32 +25,30 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
-// START: GENERATED CODE
+// START: GENERATED TEST IMPORTS
 ${generateImports(testFilePaths)}
-// END: GENERATED CODE
+// END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
-  final binding = PatrolBinding.ensureInitialized();
-  
   // This is the entrypoint of the bundled Dart test.
   //
   // Its responsibilies are:
-  //  * Run a special Dart test that explores the hierarchy of groups and tests,
-  //    so it can...
-  //  * ... host a service that the native side of Patrol uses to get the list
-  //    of Dart tests, and to request execution of a specific Dart test.
+  //  * Running a special Dart test that runs before all the other tests and
+  //    explores the hierarchy of groups and tests.
+  //  * Hosting a PatrolAppService, which the native side of Patrol uses to get
+  //    the Dart tests, and to request execution of a specific Dart test.
   //
   // When running on Android, the Android Test Orchestrator, before running the
   // tests, makes an initial run to gather the tests that it will later run. The
   // native side of Patrol (specifically: PatrolJUnitRunner class) is hooked
   // into the Android Test Orchestrator lifecycle and knows when that initial
   // run happens. When it does, PatrolJUnitRunner makes an RPC call to
-  // PatrolAppService and asks it for the list of Dart tests.
+  // PatrolAppService and asks it for Dart tests.
   //
   // When running on iOS, the native side of Patrol (specifically: the
-  // PATROL_INTEGRATION_TEST_IOS_RUNNER macro) makes an RPC call to
-  // PatrolAppSevice and asks it for the list of Dart tests.
+  // PATROL_INTEGRATION_TEST_IOS_RUNNER macro) makes an initial run to gather
+  // the tests that it will later run (same as the Android). During that initial
+  // run, it makes an RPC call to PatrolAppSevice and asks it for Dart tests.
   //
   // Once the native runner has the list of Dart tests, it dynamically creates
   // native test cases from them. On Android, this is done using the
@@ -65,6 +63,8 @@ Future<void> main() async {
   // test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
+  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  final binding = PatrolBinding.ensureInitialized();
   final testExplorationCompleter = Completer<DartTestGroup>();
 
   // A special test to expore the hierarchy of groups and tests. This is a 
@@ -78,9 +78,9 @@ Future<void> main() async {
     testExplorationCompleter.complete(dartTestGroup);
   });
 
-  // START: GENERATED CODE
+  // START: GENERATED TEST GROUPS
 ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
-  // END: GENERATED CODE
+  // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
