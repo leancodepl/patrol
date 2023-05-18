@@ -88,7 +88,7 @@ jobs:
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
         with:
-          title: "Patrol tests"
+          title: "Patrol tests from ${{ matrix.device }}"
           upload-bundles: "never"
           path: |
             ${{ env.XCRESULT_PATH }}
@@ -114,7 +114,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: Captured video from ${{ matrix.device }}
+          name: Captured video from ${{ matrix.device }}.mov
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mov
 
       - name: Check if failed test occured
