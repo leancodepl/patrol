@@ -60,10 +60,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     setUp(() {
-      if (!constants.shouldReportResultsToNative) {
-        return;
-      }
-
       if (constants.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
@@ -73,10 +69,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (!constants.shouldReportResultsToNative) {
-        return;
-      }
-
       if (constants.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
