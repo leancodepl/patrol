@@ -59,7 +59,8 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
-          xcrun simctl io booted recordVideo "${{ matrix.device }}.mov" &
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
 
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
@@ -78,6 +79,8 @@ jobs:
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
+          pkill -SIGINT $recordingpid
+          echo "TESTS_EXIT_CODE"=$TESTS_EXIT_CODE >> $GITHUB_ENV
           exit $TESTS_EXIT_CODE
 
       - name: Find xcresult path
@@ -115,13 +118,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Captured video from ${{ matrix.device }}.mov
-          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mov
+          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
       - name: Check if failed test occured
         id: set_failure
         if: always()
         run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
+          if [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
             echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
@@ -129,7 +132,7 @@ jobs:
         id: set_error
         if: always()
         run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
+          if [ "${{ steps.tests_step.conclusion }}" == "failure" ] || [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
             echo "error_status=error" >> "$GITHUB_OUTPUT";
           fi;
 
