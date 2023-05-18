@@ -63,8 +63,11 @@ jobs:
           recordingpid="$!"
 
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
+          logpid="$!"
           xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
+          activitypid="$!"
           xcrun simctl spawn booted log stream --type trace --color none > trace_simulator_logs.txt &
+          tracepid="$!"
 
           TESTS_EXIT_CODE=0
 
@@ -79,8 +82,12 @@ jobs:
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
-          pkill -SIGINT $recordingpid
+          kill -SIGINT $recordingpid
+          kill $logpid
+          kill $activitypid
+          kill $tracepid
           echo "TESTS_EXIT_CODE"=$TESTS_EXIT_CODE >> $GITHUB_ENV
+          echo "code: $TESTS_EXIT_CODE"
           exit $TESTS_EXIT_CODE
 
       - name: Find xcresult path
@@ -117,7 +124,7 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: Captured video from ${{ matrix.device }}.mov
+          name: Captured video from ${{ matrix.device }}.mp4
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
       - name: Check if failed test occured
