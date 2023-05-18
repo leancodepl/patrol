@@ -192,7 +192,7 @@ class PatrolTester {
   }
 
   /// Calls [WidgetTester.pumpAndSettle] but if it times out, only message about
-  /// it is logged. It prevents from failing tests when you expect eg. an
+  /// it is logged. It prevents the tests from failing when you expect e.g. an
   /// infinite animation to appear.
   ///
   /// See [WidgetTester.pumpAndSettle].
