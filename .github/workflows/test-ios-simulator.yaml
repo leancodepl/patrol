@@ -69,8 +69,6 @@ jobs:
           xcrun simctl spawn booted log stream --type trace --color none > trace_simulator_logs.txt &
           tracepid="$!"
 
-          TESTS_EXIT_CODE=0
-
           patrol test \
             --exclude integration_test/android_app_test.dart \
             --exclude integration_test/service_airplane_mode_test.dart \
@@ -83,11 +81,10 @@ jobs:
             --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
-          kill $logpid
-          kill $activitypid
-          kill $tracepid
+          kill -SIGINT $logpid
+          kill -SIGINT $activitypid
+          kill -SIGINT $tracepid
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> $GITHUB_ENV
-          echo "code: $TESTS_EXIT_CODE"
           exit $TESTS_EXIT_CODE
 
       - name: Find xcresult path
@@ -98,7 +95,7 @@ jobs:
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
         with:
-          title: "Patrol tests from ${{ matrix.device }}"
+          title: "Patrol tests on ${{ matrix.device }}"
           upload-bundles: "never"
           path: |
             ${{ env.XCRESULT_PATH }}
