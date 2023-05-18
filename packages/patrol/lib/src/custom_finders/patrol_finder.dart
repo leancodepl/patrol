@@ -240,7 +240,7 @@ class PatrolFinder extends MatchFinder {
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior instead') bool? andSettle,
     SettleBehavior? settleBehavior,
     Duration? visibleTimeout,
     Duration? settleTimeout,
