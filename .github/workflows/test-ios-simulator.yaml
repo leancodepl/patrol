@@ -11,8 +11,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_failure.outputs.failure_status }}
-      error_status: ${{ steps.set_error.outputs.error_status }}
+      failure_status: ${{ steps.set_status.outputs.failure_status }}
+      error_status: ${{ steps.set_status.outputs.error_status }}
 
     strategy:
       fail-fast: false
