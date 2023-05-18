@@ -4,7 +4,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
@@ -22,10 +21,6 @@ void _defaultPrintLogger(String message) {
   // ignore: avoid_print
   print('PatrolBinding: $message');
 }
-
-/// The method channel used to report the results of the tests to the underlying
-/// platform's testing framework (JUnit on Android and XCTest on iOS).
-const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
