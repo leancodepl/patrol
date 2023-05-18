@@ -11,8 +11,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_failure.outputs.failure_status }}
-      error_status: ${{ steps.set_error.outputs.error_status }}
+      status: ${{ steps.set_status.outputs.status }}
 
     strategy:
       fail-fast: false
@@ -62,7 +61,7 @@ jobs:
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
           
-          sleep 120
+          sleep 20
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
           xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
@@ -125,20 +124,14 @@ jobs:
           name: Captured video from ${{ matrix.device }}.mp4
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
-      - name: Check if failed test occured
-        id: set_failure
+      - name: Check if error or failed test occured during run
+        id: set_status
         if: always()
         run: >
-          if [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
-            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
-          fi;
-
-      - name: Check if error during run occurred
-        id: set_error
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "failure" ] || [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
-            echo "error_status=error" >> "$GITHUB_OUTPUT";
+          if [ -z ${{ env.TESTS_EXIT_CODE }} ]; then
+            echo "status=error" >> "$GITHUB_OUTPUT";
+          elif [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
+            echo "status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
   slack_notify:
@@ -151,15 +144,12 @@ jobs:
       - name: Set Slack message
         id: slack_message
         env:
-          failure_status: ${{ needs.run_tests.outputs.failure_status }}
-          error_status: ${{ needs.run_tests.outputs.error_status }}
+          status: ${{ needs.run_tests.outputs.status }}
         run: >
-          if [ ! -z "$failure_status" ]; then
-            message="There were failing tests 💥 ";
-            status="failure";
-          if [ ! -z "$error_status" ]; then
+          if [ "$error_status" == "error" ]; then
             message="Something went wrong ⚠️";
-            status="failure";
+          elif [ "$status" == "failure" ]; then
+            message="There were failing tests 💥 ";
           else
             message="All tests have passed ✅ ";
             status="success";
