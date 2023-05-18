@@ -62,7 +62,7 @@ jobs:
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
           
-          sleep 20
+          sleep 120
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
           xcrun simctl spawn booted log stream --type activity --color none > activity_simulator_logs.txt &
