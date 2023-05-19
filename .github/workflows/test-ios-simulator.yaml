@@ -11,8 +11,8 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_failure.outputs.failure_status }}
-      error_status: ${{ steps.set_error.outputs.error_status }}
+      failure_status: ${{ steps.set_status.outputs.failure_status }}
+      error_status: ${{ steps.set_status.outputs.error_status }}
 
     strategy:
       fail-fast: false
@@ -61,8 +61,11 @@ jobs:
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
-          EXIT_CODE=0
-
+          
+          xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
+          logpid="$!"
+          
+          TESTS_EXIT_CODE=0
           patrol test \
             --exclude integration_test/android_app_test.dart \
             --exclude integration_test/service_airplane_mode_test.dart \
@@ -72,60 +75,56 @@ jobs:
             --exclude integration_test/swipe_test.dart \
             --exclude integration_test/webview_leancode_test.dart \
             --exclude integration_test/webview_login_test.dart \
-            --exclude integration_test/webview_stackoverflow_test.dart || EXIT_CODE=$?
+            --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
-          kill $recordingpid
-          exit $EXIT_CODE
-
-      - name: Publish test report to summary
-        if: success() || failure()
-        uses: kishikawakatsumi/xcresulttool@v1
-        with:
-          title: "Patrol tests"
-          upload-bundles: "never"
-          path: |
-            ${{ env.XCRESULT_PATH }}
+          kill -SIGINT $recordingpid
+          kill -SIGINT $logpid
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> $GITHUB_ENV
+          exit $TESTS_EXIT_CODE
 
       - name: Find xcresult path
         if: success() || failure()
         run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
-
-      - name: Upload XCRESULT test report to artifacts
+      
+      - name: Publish test report to summary
+        if: success() || failure()
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          title: Patrol tests on ${{ matrix.device }}
+          upload-bundles: never
+          path: |
+            ${{ env.XCRESULT_PATH }}
+     
+      - name: Upload XCRESULT test result to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: XCRESULT test report from ${{ matrix.device }}
-          path: |
-            ${{ env.XCRESULT_PATH }}
+          name: Test result from ${{ matrix.device }}.xcresult
+          path: ${{ env.XCRESULT_PATH }}
       
       - name: Upload simulator logs to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: Logs from ${{ matrix.device }}
-          path: ~/Library/Logs/CoreSimulator/${{ steps.start_simulator.outputs.udid }}/system.log
+          path: |
+            ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
 
       - name: Upload captured video to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: Captured video from ${{ matrix.device }}
+          name: Captured video from ${{ matrix.device }}.mp4
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
-      - name: Check if failed test occured
-        id: set_failure
+      - name: Check if error or failed test occured during run
+        id: set_status
         if: always()
         run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
-            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
-          fi;
-
-      - name: Check if error during run occurred
-        id: set_error
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
+          if [ -z ${{ env.TESTS_EXIT_CODE }} ]; then
             echo "error_status=error" >> "$GITHUB_OUTPUT";
+          elif [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
+            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
           fi;
 
   slack_notify:
@@ -141,15 +140,21 @@ jobs:
           failure_status: ${{ needs.run_tests.outputs.failure_status }}
           error_status: ${{ needs.run_tests.outputs.error_status }}
         run: >
+          if [ ! -z "$error_status" ]; then
+            message="Something went wrong ⚠️ ";
+            status="failure";
+          fi;
           if [ ! -z "$failure_status" ]; then
-            message="There were failing tests 💥 ";
-            status="failure";
-          elif [ ! -z "$error_status" ]; then
-            message="Something went wrong ⚠️";
-            status="failure";
-          else
-            message="All tests have passed ✅ ";
-            status="success";
+            if [ ! -z "$message" ]; then
+              message+=" and there were failing tests 💥 ";
+            else
+              message+="There were failing tests 💥 ";
+              status="failure";
+            fi;
+          fi;
+          if [ -z "$message" ]; then
+              message="All tests have passed ✅ ";
+              status="success";
           fi;
 
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
