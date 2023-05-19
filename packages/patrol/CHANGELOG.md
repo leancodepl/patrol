@@ -10,6 +10,14 @@
 
 - Support test bundling on Android (#1205) (#1220) (#1221)
 
+## 1.1.4
+
+- Fix build with Android Gradle Plugin v8 (#1276)
+
+## 1.1.3
+
+- Fix `which()` not taking previous finder(s) into account (#1271)
+
 ## 1.1.2
 
 - Fix crashing when using Gradle 8 (#1262)

@@ -306,13 +306,22 @@ class PatrolFinder extends MatchFinder {
   /// * [CommonFinders.byWidgetPredicate]
   PatrolFinder which<T extends Widget>(bool Function(T widget) predicate) {
     return PatrolFinder(
-      finder: find.byWidgetPredicate((widget) {
-        if (widget is T) {
+      finder: find.descendant(
+        matchRoot: true,
+        of: this,
+        matching: find.byWidgetPredicate((widget) {
+          if (widget is! T) {
+            return false;
+          }
+          final foundWidgets = evaluate().map(
+            (e) => e.widget,
+          );
+          if (!foundWidgets.contains(widget)) {
+            return false;
+          }
           return predicate(widget);
-        } else {
-          return false;
-        }
-      }),
+        }),
+      ),
       tester: tester,
     );
   }
