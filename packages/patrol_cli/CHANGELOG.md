@@ -1,3 +1,8 @@
+## 1.1.10
+
+- Fix `dart pub global activate patrol_cli` failing because of transitive
+  dependency not following semver (#1290)
+
 ## 1.1.9
 
 - Add support for Flutter 3.10 (#1254)
