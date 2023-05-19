@@ -938,7 +938,7 @@ void main() {
       });
     });
 
-    group('pumpAndMaybeSettle()', () {
+    group('pumpAndTrySettle()', () {
       late int count;
       late int state;
 
@@ -1009,7 +1009,7 @@ void main() {
           ($) async {
         await $.pumpWidget(appWithInfiniteAnimation);
 
-        await $(ElevatedButton).tap(settleBehavior: SettleBehavior.maybeSettle);
+        await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
 
         expect($('count: 1'), findsOneWidget);
       });
@@ -1018,7 +1018,7 @@ void main() {
         await $.pumpWidgetAndSettle(appWithAnimationOnTap);
 
         await $(ElevatedButton).tap(
-          settleBehavior: SettleBehavior.maybeSettle,
+          settlePolicy: SettlePolicy.trySettle,
           settleTimeout: Duration(seconds: 10),
         );
 
@@ -1028,7 +1028,7 @@ void main() {
       patrolTest('is not used by default', ($) async {
         await $.pumpWidget(appWithInfiniteAnimation);
 
-        await $.pumpAndMaybeSettle();
+        await $.pumpAndTrySettle();
 
         await expectLater(
           () => $(ElevatedButton).tap(),
