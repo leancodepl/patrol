@@ -4,7 +4,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
@@ -14,27 +13,14 @@ import 'package:test_api/src/backend/invoker.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
 import 'package:test_api/src/backend/live_test.dart';
 
+import 'constants.dart' as constants;
+
 const _success = 'success';
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
   print('PatrolBinding: $message');
 }
-
-/// An escape hatch if, for any reason, the test reporting has to be
-/// disabled.
-///
-/// Patrol CLI doesn't pass this dart define anywhere.
-const bool _shouldReportResultsToNative = bool.fromEnvironment(
-  'PATROL_INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE',
-  defaultValue: true,
-);
-
-const bool _hotRestartEnabled = bool.fromEnvironment('PATROL_HOT_RESTART');
-
-/// The method channel used to report the results of the tests to the underlying
-/// platform's testing framework (JUnit on Android and XCTest on iOS).
-const patrolChannel = MethodChannel('pl.leancode.patrol/main');
 
 /// Binding that enables some of Patrol's custom functionality, such as tapping
 /// on WebViews during a test.
@@ -60,20 +46,16 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTestFile = _currentDartTestFile;
-      if (currentDartTestFile == null) {
-        throw StateError('currentDartTestFile is null');
+      if (currentDartTestFile != null) {
+        assert(!constants.hotRestartEnabled);
+        _testResults[currentDartTestFile] =
+            Failure(testDescription, '$details');
+        oldTestExceptionReporter(details, testDescription);
       }
-
-      _testResults[currentDartTestFile] = Failure(testDescription, '$details');
-      oldTestExceptionReporter(details, testDescription);
     };
 
     setUp(() {
-      if (!_shouldReportResultsToNative) {
-        return;
-      }
-
-      if (_hotRestartEnabled) {
+      if (constants.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
@@ -82,11 +64,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (!_shouldReportResultsToNative) {
-        return;
-      }
-
-      if (_hotRestartEnabled) {
+      if (constants.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
