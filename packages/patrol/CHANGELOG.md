@@ -1,3 +1,7 @@
+## 2.0.0-dev.1
+
+- Backport changes from `master` (#1293)
+
 ## 1.2.0-dev.3
 
 - Support test bundling on iOS (#1236)
