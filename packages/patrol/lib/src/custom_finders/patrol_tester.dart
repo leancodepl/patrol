@@ -195,7 +195,7 @@ class PatrolTester {
   /// It prevents the tests from failing when you expect e.g. an
   /// infinite animation to appear.
   ///
-  /// See [WidgetTester.pumpAndSettle].
+  /// See also [WidgetTester.pumpAndSettle].
   Future<void> pumpAndMaybeSettle({
     Duration duration = const Duration(milliseconds: 100),
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
