@@ -1028,8 +1028,6 @@ void main() {
       patrolTest('is not used by default', ($) async {
         await $.pumpWidget(appWithInfiniteAnimation);
 
-        await $.pumpAndTrySettle();
-
         await expectLater(
           () => $(ElevatedButton).tap(),
           throwsFlutterError,
