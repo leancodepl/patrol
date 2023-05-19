@@ -5,7 +5,6 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 abstract class PatrolCommand extends Command<int> {
   /// Seconds to wait after the individual test case finishes executing.
   final defaultWait = 0;
-  final defaultRepeatCount = 1;
 
   var _usesBuildOption = false;
 
@@ -112,15 +111,6 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   // Runtime-only options
-
-  void usesRepeatOption() {
-    argParser.addOption(
-      'repeat',
-      abbr: 'n',
-      help: 'Repeat the test n times.',
-      defaultsTo: '$defaultRepeatCount',
-    );
-  }
 
   void usesUninstallOption() {
     argParser.addFlag(

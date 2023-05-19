@@ -20,7 +20,6 @@ mixin _$TestCommandConfig {
   BuildMode get buildMode => throw _privateConstructorUsedError;
   List<String> get targets => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
-  int get repeat => throw _privateConstructorUsedError;
   bool get displayLabel => throw _privateConstructorUsedError;
   bool get uninstall =>
       throw _privateConstructorUsedError; // Android-only options
@@ -46,7 +45,6 @@ abstract class $TestCommandConfigCopyWith<$Res> {
       BuildMode buildMode,
       List<String> targets,
       Map<String, String> dartDefines,
-      int repeat,
       bool displayLabel,
       bool uninstall,
       String? packageName,
@@ -72,7 +70,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
     Object? buildMode = null,
     Object? targets = null,
     Object? dartDefines = null,
-    Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
     Object? packageName = freezed,
@@ -97,10 +94,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      repeat: null == repeat
-          ? _value.repeat
-          : repeat // ignore: cast_nullable_to_non_nullable
-              as int,
       displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
@@ -142,7 +135,6 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
       BuildMode buildMode,
       List<String> targets,
       Map<String, String> dartDefines,
-      int repeat,
       bool displayLabel,
       bool uninstall,
       String? packageName,
@@ -166,7 +158,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
     Object? buildMode = null,
     Object? targets = null,
     Object? dartDefines = null,
-    Object? repeat = null,
     Object? displayLabel = null,
     Object? uninstall = null,
     Object? packageName = freezed,
@@ -191,10 +182,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      repeat: null == repeat
-          ? _value.repeat
-          : repeat // ignore: cast_nullable_to_non_nullable
-              as int,
       displayLabel: null == displayLabel
           ? _value.displayLabel
           : displayLabel // ignore: cast_nullable_to_non_nullable
@@ -231,7 +218,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       required this.buildMode,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
-      required this.repeat,
       required this.displayLabel,
       required this.uninstall,
       required this.packageName,
@@ -269,8 +255,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   }
 
   @override
-  final int repeat;
-  @override
   final bool displayLabel;
   @override
   final bool uninstall;
@@ -287,7 +271,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 
   @override
   String toString() {
-    return 'TestCommandConfig(devices: $devices, buildMode: $buildMode, targets: $targets, dartDefines: $dartDefines, repeat: $repeat, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor)';
+    return 'TestCommandConfig(devices: $devices, buildMode: $buildMode, targets: $targets, dartDefines: $dartDefines, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor)';
   }
 
   @override
@@ -301,7 +285,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
-            (identical(other.repeat, repeat) || other.repeat == repeat) &&
             (identical(other.displayLabel, displayLabel) ||
                 other.displayLabel == displayLabel) &&
             (identical(other.uninstall, uninstall) ||
@@ -323,7 +306,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       buildMode,
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_dartDefines),
-      repeat,
       displayLabel,
       uninstall,
       packageName,
@@ -345,7 +327,6 @@ abstract class _TestCommandConfig implements TestCommandConfig {
       required final BuildMode buildMode,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
-      required final int repeat,
       required final bool displayLabel,
       required final bool uninstall,
       required final String? packageName,
@@ -361,8 +342,6 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   List<String> get targets;
   @override
   Map<String, String> get dartDefines;
-  @override
-  int get repeat;
   @override
   bool get displayLabel;
   @override
