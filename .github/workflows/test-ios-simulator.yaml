@@ -139,12 +139,20 @@ jobs:
           error_status: ${{ needs.run_tests.outputs.error_status }}
         run: >
           if [ ! -z "$error_status" ]; then
-            message="Something went wrong ⚠️";
-          elif [ ! -z "$failure_status" ]; then
-            message="There were failing tests 💥 ";
-          else
-            message="All tests have passed ✅ ";
-            status="success";
+            message="Something went wrong ⚠️ ";
+            status="failure";
+          fi;
+          if [ ! -z "$failure_status" ]; then
+            if [ ! -z "$message" ]; then
+              message+=" and there were failing tests 💥 ";
+            else
+              message+="There were failing tests 💥 ";
+              status="failure";
+            fi;
+          fi;
+          if [ -z "$message" ]; then
+              message="All tests have passed ✅ ";
+              status="success";
           fi;
 
           url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
