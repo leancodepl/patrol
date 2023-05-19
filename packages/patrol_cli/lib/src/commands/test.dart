@@ -29,7 +29,6 @@ class TestCommandConfig with _$TestCommandConfig {
     required BuildMode buildMode,
     required List<String> targets,
     required Map<String, String> dartDefines,
-    required int repeat,
     required bool displayLabel,
     required bool uninstall,
     // Android-only options
@@ -75,7 +74,6 @@ class TestCommand extends PatrolCommand {
     usesWaitOption();
 
     usesUninstallOption();
-    usesRepeatOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -136,11 +134,8 @@ class TestCommand extends PatrolCommand {
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final wait = intArg('wait') ?? defaultWait;
-    final repeatCount = intArg('repeat') ?? defaultRepeatCount;
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
-
-    _logger.info('Every test target will be run $repeatCount time(s)');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -175,7 +170,6 @@ class TestCommand extends PatrolCommand {
       targets: [testBundle.path],
       buildMode: buildMode,
       dartDefines: dartDefines,
-      repeat: repeatCount,
       displayLabel: displayLabel,
       uninstall: uninstall,
       // Android-specific options
@@ -189,7 +183,6 @@ class TestCommand extends PatrolCommand {
     _testRunner.addTarget(testBundle.path);
     testConfig.devices.forEach(_testRunner.addDevice);
     _testRunner
-      ..repeats = testConfig.repeat
       ..builder = _builderFor(testConfig)
       ..executor = _executorFor(testConfig);
 
