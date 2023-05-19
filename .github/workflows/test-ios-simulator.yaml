@@ -88,8 +88,8 @@ jobs:
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
         with:
-          title: "Patrol tests on ${{ matrix.device }}"
-          upload-bundles: "never"
+          title: Patrol tests on ${{ matrix.device }}
+          upload-bundles: never
           path: |
             ${{ env.XCRESULT_PATH }}
      
