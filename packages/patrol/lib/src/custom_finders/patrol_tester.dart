@@ -644,7 +644,9 @@ class PatrolTester {
   }
 }
 
-/// Defines which pump method should be used.
+/// Specifies how methods such as [PatrolTester.tap] or [PatrolTester.enterText] handle pumping, i.e rendering new frames.
+///
+/// It's usually useful when dealing with situations involving finite and infinite animations.
 enum SettlePolicy {
   /// When pumping should be performed, [PatrolTester.pump] will be called.
   none,
