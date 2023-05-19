@@ -173,5 +173,5 @@ class FakeIOSDeploy extends Fake implements IOSDeploy {}
 
 class FakeLogger extends Fake implements Logger {
   @override
-  void detail(String? message) {}
+  void detail(String? message, {LogStyle? style}) {}
 }
