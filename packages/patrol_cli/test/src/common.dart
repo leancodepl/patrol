@@ -1,3 +1,4 @@
+import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
@@ -25,4 +26,12 @@ Platform initFakePlatform(String platform, {String user = 'charlie'}) {
     default:
       throw StateError('Unsupported platform: $platform');
   }
+}
+
+extension DirectoryX on Directory {
+  /// Shorthand for [Directory.childDirectory].
+  Directory dir(String basename) => childDirectory(basename);
+
+  /// Shorthand for [Directory.childFile].
+  File file(String basename) => childFile(basename);
 }
