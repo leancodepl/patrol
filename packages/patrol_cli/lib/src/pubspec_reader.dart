@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:file/file.dart';
-import 'package:path/path.dart' show join;
 import 'package:yaml/yaml.dart';
 
 class PatrolPubspecConfig with EquatableMixin {
@@ -66,7 +65,7 @@ class PubspecReader {
   final FileSystem _fs;
 
   PatrolPubspecConfig read() {
-    final filePath = join(_projectRoot.path, 'pubspec.yaml');
+    final filePath = _fs.path.join(_projectRoot.path, 'pubspec.yaml');
     final file = _fs.file(filePath);
 
     if (!file.existsSync()) {
