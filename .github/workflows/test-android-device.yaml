@@ -43,7 +43,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-channel: 'stable'
+          channel: 'stable'
           flutter-version: '3.7.x'
 
       - name: Preload Flutter artifacts
