@@ -43,7 +43,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-channel: 'stable'
+          flutter-version: '3.7.x'
 
       - name: Preload Flutter artifacts
         run: flutter precache
