@@ -66,6 +66,8 @@ class PatrolTesterConfig {
       existsTimeout: existsTimeout ?? this.existsTimeout,
       visibleTimeout: visibleTimeout ?? this.visibleTimeout,
       settleTimeout: settleTimeout ?? this.settleTimeout,
+      // TODO: remove after andSettle is removed
+      // ignore: deprecated_member_use_from_same_package
       andSettle: andSettle ?? this.andSettle,
       settlePolicy: settlePolicy ?? this.settlePolicy,
     );
