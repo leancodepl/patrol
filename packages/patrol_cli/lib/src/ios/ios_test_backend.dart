@@ -141,10 +141,10 @@ class IOSTestBackend {
       final task = _logger.task('Running $subject');
 
       Process? iosDeployProcess;
-      if (device.real) {
-        _logger.detail('Executing on physical iOS device using ios-deploy...');
-        iosDeployProcess = await _iosDeploy.installAndLaunch(device.id);
-      }
+      // if (device.real) {
+      //   _logger.detail('Executing on physical iOS device using ios-deploy...');
+      //   iosDeployProcess = await _iosDeploy.installAndLaunch(device.id);
+      // }
 
       final sdkVersion = await getSdkVersion(real: device.real);
       final process = await _processManager.start(
