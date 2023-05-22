@@ -1005,14 +1005,22 @@ void main() {
       );
 
       patrolTest(
-          "doesn't throw an exception when trying to settle an infinite amimation",
-          ($) async {
-        await $.pumpWidget(appWithInfiniteAnimation);
+        "doesn't throw an exception when trying to settle an infinite animation",
+        ($) async {
+          await $.pumpWidget(appWithInfiniteAnimation);
 
-        await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
+          // 10 seconds is verbatim here to guard against changing the default
+          final end = $.tester.binding.clock.now().add(Duration(seconds: 10));
 
-        expect($('count: 1'), findsOneWidget);
-      });
+          await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
+
+          // Verify that the default timeout has passed
+          final now = $.tester.binding.clock.now();
+          expect(now.isAfter(end), true);
+
+          expect($('count: 1'), findsOneWidget);
+        },
+      );
 
       patrolTest('settles when there is short animation', ($) async {
         await $.pumpWidgetAndSettle(appWithAnimationOnTap);
