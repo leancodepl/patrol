@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-channel: [stable]
+        flutter-version: [3.7.x]
         api-level: [28, 29, 30, 31, 33]
         target: [google_apis]
         arch: [x86_64]
@@ -65,7 +65,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-version: ${{ matrix.flutter-version }}
 
       - name: Preload Flutter artifacts
         run: flutter precache
