@@ -72,6 +72,14 @@ class IOSTestBackend {
 
       Process process;
 
+      final isRealDevice = !options.simulator;
+      final isReleaseMode = options.flutter.buildMode == BuildMode.release;
+      if (isRealDevice && !isReleaseMode) {
+        throwToolExit(
+          'Running on physical iOS devices is possible only in release mode',
+        );
+      }
+
       // flutter build ios --config-only
 
       var flutterBuildKilled = false;
