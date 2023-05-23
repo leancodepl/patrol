@@ -90,7 +90,7 @@ class BuildAndroidCommand extends PatrolCommand {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
-      if (displayLabel) 'PATROL_TEST_LABEL': testBundle.basename,
+      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 

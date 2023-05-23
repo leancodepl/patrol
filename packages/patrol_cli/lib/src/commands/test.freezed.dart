@@ -20,7 +20,6 @@ mixin _$TestCommandConfig {
   BuildMode get buildMode => throw _privateConstructorUsedError;
   List<String> get targets => throw _privateConstructorUsedError;
   Map<String, String> get dartDefines => throw _privateConstructorUsedError;
-  bool get displayLabel => throw _privateConstructorUsedError;
   bool get uninstall =>
       throw _privateConstructorUsedError; // Android-only options
   String? get packageName => throw _privateConstructorUsedError;
@@ -45,7 +44,6 @@ abstract class $TestCommandConfigCopyWith<$Res> {
       BuildMode buildMode,
       List<String> targets,
       Map<String, String> dartDefines,
-      bool displayLabel,
       bool uninstall,
       String? packageName,
       String? androidFlavor,
@@ -70,7 +68,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
     Object? buildMode = null,
     Object? targets = null,
     Object? dartDefines = null,
-    Object? displayLabel = null,
     Object? uninstall = null,
     Object? packageName = freezed,
     Object? androidFlavor = freezed,
@@ -94,10 +91,6 @@ class _$TestCommandConfigCopyWithImpl<$Res, $Val extends TestCommandConfig>
           ? _value.dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      displayLabel: null == displayLabel
-          ? _value.displayLabel
-          : displayLabel // ignore: cast_nullable_to_non_nullable
-              as bool,
       uninstall: null == uninstall
           ? _value.uninstall
           : uninstall // ignore: cast_nullable_to_non_nullable
@@ -135,7 +128,6 @@ abstract class _$$_TestCommandConfigCopyWith<$Res>
       BuildMode buildMode,
       List<String> targets,
       Map<String, String> dartDefines,
-      bool displayLabel,
       bool uninstall,
       String? packageName,
       String? androidFlavor,
@@ -158,7 +150,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
     Object? buildMode = null,
     Object? targets = null,
     Object? dartDefines = null,
-    Object? displayLabel = null,
     Object? uninstall = null,
     Object? packageName = freezed,
     Object? androidFlavor = freezed,
@@ -182,10 +173,6 @@ class __$$_TestCommandConfigCopyWithImpl<$Res>
           ? _value._dartDefines
           : dartDefines // ignore: cast_nullable_to_non_nullable
               as Map<String, String>,
-      displayLabel: null == displayLabel
-          ? _value.displayLabel
-          : displayLabel // ignore: cast_nullable_to_non_nullable
-              as bool,
       uninstall: null == uninstall
           ? _value.uninstall
           : uninstall // ignore: cast_nullable_to_non_nullable
@@ -218,7 +205,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       required this.buildMode,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
-      required this.displayLabel,
       required this.uninstall,
       required this.packageName,
       required this.androidFlavor,
@@ -255,8 +241,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
   }
 
   @override
-  final bool displayLabel;
-  @override
   final bool uninstall;
 // Android-only options
   @override
@@ -271,7 +255,7 @@ class _$_TestCommandConfig implements _TestCommandConfig {
 
   @override
   String toString() {
-    return 'TestCommandConfig(devices: $devices, buildMode: $buildMode, targets: $targets, dartDefines: $dartDefines, displayLabel: $displayLabel, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor)';
+    return 'TestCommandConfig(devices: $devices, buildMode: $buildMode, targets: $targets, dartDefines: $dartDefines, uninstall: $uninstall, packageName: $packageName, androidFlavor: $androidFlavor, bundleId: $bundleId, iosFlavor: $iosFlavor)';
   }
 
   @override
@@ -285,8 +269,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
             const DeepCollectionEquality().equals(other._targets, _targets) &&
             const DeepCollectionEquality()
                 .equals(other._dartDefines, _dartDefines) &&
-            (identical(other.displayLabel, displayLabel) ||
-                other.displayLabel == displayLabel) &&
             (identical(other.uninstall, uninstall) ||
                 other.uninstall == uninstall) &&
             (identical(other.packageName, packageName) ||
@@ -306,7 +288,6 @@ class _$_TestCommandConfig implements _TestCommandConfig {
       buildMode,
       const DeepCollectionEquality().hash(_targets),
       const DeepCollectionEquality().hash(_dartDefines),
-      displayLabel,
       uninstall,
       packageName,
       androidFlavor,
@@ -327,7 +308,6 @@ abstract class _TestCommandConfig implements TestCommandConfig {
       required final BuildMode buildMode,
       required final List<String> targets,
       required final Map<String, String> dartDefines,
-      required final bool displayLabel,
       required final bool uninstall,
       required final String? packageName,
       required final String? androidFlavor,
@@ -342,8 +322,6 @@ abstract class _TestCommandConfig implements TestCommandConfig {
   List<String> get targets;
   @override
   Map<String, String> get dartDefines;
-  @override
-  bool get displayLabel;
   @override
   bool get uninstall;
   @override // Android-only options
