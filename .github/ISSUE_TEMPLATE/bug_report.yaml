@@ -28,7 +28,8 @@ body:
     attributes:
       label: Steps to reproduce
       description: |
-        Thoroughly explain how to reproduce the problem you're running into.
+        Create a [minimal, reproducible example] that demonstrates the problem
+        and thoroughly explain how to reproduce the problem you're running into.
 
         In addition to the detailed step-by-step instructions, you must include
         the device you're encountering the issue on (e.g. physical Android, iOS
@@ -38,7 +39,9 @@ body:
         as possible to make it easier for us to understand and fix the problem.
         Screenshots and videos are welcome.
 
-        **Issues that cannot be reliably reproduced may be closed.**
+        **Issues that cannot be reliably reproduced will be closed.**
+
+        [minimal, reproducible example]: https://stackoverflow.com/help/minimal-reproducible-example
       placeholder: |
         1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
         2. Start Android emulator (Pixel 4, API 31, Google Play)
@@ -57,7 +60,7 @@ body:
       label: Logs
       description: |
         Include the full logs of the command you're running between the lines
-        with the backticks below. Run the command with `--verbose` flag.
+        with the backticks below. Run the command with the `--verbose` flag.
 
         If you're running more than single command, include its logs in a
         separate backticks block.
@@ -68,6 +71,9 @@ body:
 
         **Do not upload screenshots of text**. Instead, use code blocks or the
         above mentioned ways to upload logs.
+
+        **Make sure the logs are well formatted**. If you post garbled logs, we
+        won't be able to help you and the issue will be closed.**
       value: |
         <details>
         <summary>Logs</summary>
@@ -80,14 +86,20 @@ body:
   - type: textarea
     attributes:
       label: Patrol version
-      description: Provide version of the `patrol` package from pubspec.yaml.
+      description: |
+        Provide version of the `patrol` package from pubspec.yaml.
+
+        **Use the Preview button above  to make sure the formatting is correct.**
       placeholder: 'patrol: ^1.0.8'
     validations:
       required: true
   - type: textarea
     attributes:
       label: Patrol Doctor output
-      description: Provide the full output of running `patrol doctor` in your project.
+      description: |
+        Provide the full output of running `patrol doctor` in your project.
+
+        **Use the Preview button above to make sure the formatting is correct.**
       value: |
         <details>
         <summary>Patrol Doctor output</summary>
@@ -102,7 +114,10 @@ body:
   - type: textarea
     attributes:
       label: Flutter Doctor output
-      description: Provide the full output of running `flutter doctor --verbose`.
+      description: |
+        Provide the full output of running `flutter doctor --verbose`.
+
+        **Use the Preview button above to make sure the formatting is correct.**
       value: |
         <details>
         <summary>Flutter Doctor output</summary>
