@@ -73,7 +73,7 @@ body:
         above mentioned ways to upload logs.
 
         **Make sure the logs are well formatted**. If you post garbled logs, we
-        won't be able to help you and the issue will be closed.**
+        won't be able to help you and the issue will be closed.
       value: |
         <details>
         <summary>Logs</summary>
@@ -86,20 +86,14 @@ body:
   - type: textarea
     attributes:
       label: Patrol version
-      description: |
-        Provide version of the `patrol` package from pubspec.yaml.
-
-        **Use the Preview button above  to make sure the formatting is correct.**
+      description: Provide version of the `patrol` package from pubspec.yaml.
       placeholder: 'patrol: ^1.0.8'
     validations:
       required: true
   - type: textarea
     attributes:
       label: Patrol Doctor output
-      description: |
-        Provide the full output of running `patrol doctor` in your project.
-
-        **Use the Preview button above to make sure the formatting is correct.**
+      description: Provide the full output of running `patrol doctor` in your project.
       value: |
         <details>
         <summary>Patrol Doctor output</summary>
@@ -114,10 +108,7 @@ body:
   - type: textarea
     attributes:
       label: Flutter Doctor output
-      description: |
-        Provide the full output of running `flutter doctor --verbose`.
-
-        **Use the Preview button above to make sure the formatting is correct.**
+      description: Provide the full output of running `flutter doctor --verbose`.
       value: |
         <details>
         <summary>Flutter Doctor output</summary>
@@ -129,3 +120,15 @@ body:
         </details>
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: |
+        Now that you've filled all the required information above, you may
+        create the issue.
+
+        **Please check the formatting after creating the issue**. If your issue
+        contains garbled code and logs, it will be closed.
+
+        Try reading your issue as if you were seeing it for the first time. Does
+        it read well? Is it easy to understand? Is the formatting correct? If
+        not, edit it.
