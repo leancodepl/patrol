@@ -1,7 +1,11 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
+
+import '../src/common.dart';
 
 const _pubspecBase = '''
 name: example
@@ -10,23 +14,23 @@ publish_to: none
 version: 1.0.0+1
 ''';
 
-Directory _initTestFs() {
-  final fs = MemoryFileSystem.test();
-  final wd = fs.directory('/projects/awesome_app')..createSync(recursive: true);
-  fs.currentDirectory = wd;
-  return wd;
+void main() {
+  _test(initFakePlatform(Platform.macOS));
+  _test(initFakePlatform(Platform.windows));
 }
 
-void main() {
+void _test(Platform platform) {
   group('PubspecReader', () {
     late PubspecReader reader;
     late FileSystem fs;
 
     setUp(() {
-      final projectRoot = _initTestFs();
-      fs = projectRoot.fileSystem;
+      fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
+      final wd = fs.directory(fs.path.join('projects', 'awesome_app'))
+        ..createSync(recursive: true);
+      fs.currentDirectory = wd;
 
-      reader = PubspecReader(projectRoot: projectRoot);
+      reader = PubspecReader(projectRoot: fs.currentDirectory);
     });
 
     group('read()', () {

@@ -1,17 +1,26 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../src/common.dart';
+
 void main() {
+  _test(initFakePlatform(Platform.macOS));
+  _test(initFakePlatform(Platform.windows));
+}
+
+void _test(Platform platform) {
   late FileSystem fs;
 
   group('DartDefinesReader', () {
     late DartDefinesReader reader;
 
     setUp(() {
-      fs = MemoryFileSystem.test();
-      final wd = fs.directory('/projects/awesome_app')
+      fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
+      final wd = fs.directory(fs.path.join('projects', 'awesome_app'))
         ..createSync(recursive: true);
       fs.currentDirectory = wd;
       reader = DartDefinesReader(projectRoot: fs.currentDirectory);

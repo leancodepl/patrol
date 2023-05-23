@@ -5,27 +5,7 @@ import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
-Platform _initFakePlatform(String platform) {
-  switch (platform) {
-    case 'macos':
-      return FakePlatform(
-        operatingSystem: Platform.macOS,
-        environment: {'HOME': '/home/charlie'},
-      );
-    case 'linux':
-      return FakePlatform(
-        operatingSystem: Platform.linux,
-        environment: {'HOME': '/home/charlie'},
-      );
-    case 'windows':
-      return FakePlatform(
-        operatingSystem: Platform.windows,
-        environment: {'UserProfile': r'C:\Users\charlie'},
-      );
-    default:
-      throw StateError('Unsupported platform: $platform');
-  }
-}
+import 'src/common.dart';
 
 Directory _initFakeFs(FileSystem fs, Platform platform) {
   // Create home directory
@@ -40,8 +20,8 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
 }
 
 void main() {
-  _test(_initFakePlatform(Platform.macOS));
-  _test(_initFakePlatform(Platform.windows));
+  _test(initFakePlatform(Platform.macOS));
+  _test(initFakePlatform(Platform.windows));
 }
 
 void _test(Platform platform) {
