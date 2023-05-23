@@ -1,10 +1,20 @@
+import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../src/common.dart';
 import '../src/fixtures.dart';
 
 void main() {
+  _test(initFakePlatform(Platform.macOS));
+  _test(initFakePlatform(Platform.windows));
+}
+
+final _path = path.Context(style: path.Style.posix);
+
+void _test(Platform platform) {
   group('AndroidAppOptions', () {
     late AndroidAppOptions options;
 
@@ -140,7 +150,7 @@ void main() {
           ]),
         );
 
-        final xcodebuildInvocation = options.buildForTestingInvocation();
+        final xcodebuildInvocation = options.buildForTestingInvocation(_path);
 
         expect(
           xcodebuildInvocation,
@@ -221,7 +231,7 @@ void main() {
             ]),
           );
 
-          final xcodebuildInvocation = options.buildForTestingInvocation();
+          final xcodebuildInvocation = options.buildForTestingInvocation(_path);
 
           expect(
             xcodebuildInvocation,

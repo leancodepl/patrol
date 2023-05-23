@@ -1,7 +1,7 @@
 import 'dart:convert' show base64Encode, utf8;
 
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' show basename;
+import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 
@@ -45,7 +45,9 @@ class AndroidAppOptions {
   final FlutterAppOptions flutter;
   final String? packageName;
 
-  String get description => 'apk with entrypoint ${basename(flutter.target)}';
+  String get description {
+    return 'apk with entrypoint ${path.basename(flutter.target)}';
+  }
 
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
     return _toGradleInvocation(
@@ -131,7 +133,7 @@ class IOSAppOptions {
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
-    return 'app with entrypoint ${basename(flutter.target)} for iOS $platform';
+    return 'app with entrypoint ${path.basename(flutter.target)} for iOS $platform';
   }
 
   /// Translates these options into a proper flutter build invocation, which
@@ -159,7 +161,7 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild build-for-testing`
   /// invocation.
-  List<String> buildForTestingInvocation() {
+  List<String> buildForTestingInvocation(path.Context pathContext) {
     final cmd = [
       ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
@@ -171,7 +173,7 @@ class IOSAppOptions {
         'generic/platform=${simulator ? 'iOS Simulator' : 'iOS'}',
       ],
       '-quiet',
-      ...['-derivedDataPath', '../build/ios_integ'],
+      ...['-derivedDataPath', pathContext.join('..', 'build', 'ios_integ')],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
 

@@ -3,12 +3,23 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
 
+import '../src/common.dart';
+
 void main() {
+  _testBuildMode();
+
+  _testIOSTestBackend(initFakePlatform(Platform.macOS));
+  _testIOSTestBackend(initFakePlatform(Platform.windows));
+}
+
+void _testBuildMode() {
   group('BuildMode', () {
     test('infers build options in debug mode when flavor is null', () {
       const buildMode = BuildMode.debug;
@@ -42,25 +53,28 @@ void main() {
       expect(buildMode.createScheme(flavor), 'prod');
     });
   });
+}
 
-  group('IOSTestBackend', () {
+void _testIOSTestBackend(Platform platform) {
+  group('(${platform.operatingSystem}) IOSTestBackend', () {
     late IOSTestBackend iosTestBackend;
     late FileSystem fs;
 
-    setUp(() {
-      fs = MemoryFileSystem.test();
-      fs.directory('example_app').createSync();
-      fs.currentDirectory = 'example_app';
-
-      iosTestBackend = IOSTestBackend(
-        processManager: FakeProcessManager(),
-        fs: fs,
-        parentDisposeScope: DisposeScope(),
-        logger: FakeLogger(),
-      );
-    });
-
     group('xcTestRunPath', () {
+      setUp(() {
+        fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
+        final wd = fs.directory(fs.path.join('projects', 'awesome_app'))
+          ..createSync(recursive: true);
+        fs.currentDirectory = wd;
+
+        iosTestBackend = IOSTestBackend(
+          processManager: FakeProcessManager(),
+          fs: fs,
+          parentDisposeScope: DisposeScope(),
+          logger: FakeLogger(),
+        );
+      });
+
       @isTest
       void testXcTestRunPath(
         String description, {
@@ -69,6 +83,8 @@ void main() {
         String? arch,
       }) {
         test(description, () async {
+          final wd = fs.currentDirectory.absolute.path;
+
           final targetPlatform = simulator ? 'iphonesimulator' : 'iphoneos';
           var targetArch = arch;
           if (targetArch != null) {
@@ -77,9 +93,14 @@ void main() {
 
           final name = '${scheme}_${targetPlatform}16.2$targetArch.xctestrun';
 
+          final pth =
+              fs.path.join(wd, 'build', 'ios_integ', 'Build', 'Products', name);
           fs
-              .file('build/ios_integ/Build/Products/$name')
+              .file(
+                pth,
+              )
               .createSync(recursive: true);
+          print('created file at $pth');
 
           final found = await iosTestBackend.xcTestRunPath(
             real: !simulator,
@@ -89,7 +110,7 @@ void main() {
 
           expect(
             found,
-            '/example_app/build/ios_integ/Build/Products/$name',
+            fs.path.join(wd, 'build', 'ios_integ', 'Build', 'Products', name),
           );
         });
       }
@@ -169,5 +190,7 @@ class FakeProcessManager extends Fake implements ProcessManager {}
 
 class FakeLogger extends Fake implements Logger {
   @override
-  void detail(String? message) {}
+  void detail(String? message) {
+    print(message);
+  }
 }

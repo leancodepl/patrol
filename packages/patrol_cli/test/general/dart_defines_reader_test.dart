@@ -15,7 +15,7 @@ void main() {
 void _test(Platform platform) {
   late FileSystem fs;
 
-  group('DartDefinesReader', () {
+  group('(${platform.operatingSystem}) DartDefinesReader', () {
     late DartDefinesReader reader;
 
     setUp(() {

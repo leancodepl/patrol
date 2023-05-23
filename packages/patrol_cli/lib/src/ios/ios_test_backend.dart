@@ -4,7 +4,6 @@ import 'dart:io' show Process;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -107,7 +106,7 @@ class IOSTestBackend {
       // xcodebuild build-for-testing
 
       process = await _processManager.start(
-        options.buildForTestingInvocation(),
+        options.buildForTestingInvocation(_fs.path),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
       )
@@ -228,9 +227,9 @@ class IOSTestBackend {
     final targetPlatform = real ? 'iphoneos' : 'iphonesimulator';
     final glob = Glob('${scheme}_$targetPlatform$sdkVersion*.xctestrun');
 
-    var root = 'build/ios_integ/Build/Products';
+    var root = _fs.path.join('build', 'ios_integ', 'Build', 'Products');
     if (absolutePath) {
-      root = join(_fs.currentDirectory.absolute.path, root);
+      root = _fs.path.join(_fs.currentDirectory.absolute.path, root);
     }
     _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
     final files = await glob.listFileSystem(_fs, root: root).toList();
