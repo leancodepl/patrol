@@ -22,7 +22,6 @@ import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -106,12 +105,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     final iosTestBackend = IOSTestBackend(
       processManager: _processManager,
       fs: _fs,
-      iosDeploy: IOSDeploy(
-        processManager: _processManager,
-        parentDisposeScope: _disposeScope,
-        fs: _fs,
-        logger: _logger,
-      ),
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );

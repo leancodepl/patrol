@@ -1,6 +1,3 @@
-@import Foundation;
-@import ObjectiveC.runtime;
-
 // This file is a one giant macro to make the setup as easy as possible for the developer.
 // To edit it:
 //  1. Remove the trailing backslashes: $ sed 's/\\$//' ios/Classes/PatrolIntegrationTestRunner.h
