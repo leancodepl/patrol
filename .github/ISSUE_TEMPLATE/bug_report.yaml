@@ -15,17 +15,16 @@ body:
           - https://github.com/leancodepl/patrol/discussions
           - https://stackoverflow.com/questions/tagged/flutter-patrol
 
+        Please search the [existing issues] to see if an issue already exists
+        for the bug you encountered.
+
         ---
 
-        If you have found a bug or if our documentation doesn't have an answer
-        to what you're looking for, then fill out the template below.
-  - type: checkboxes
-    attributes:
-      label: Is there an existing issue for this?
-      description: Please search to see if an issue already exists for the bug you encountered.
-      options:
-        - label: I have searched the [existing issues](https://github.com/leancodepl/patrol/issues)
-          required: true
+        If you are sure that you have found a bug that hasn't been reported yet,
+        or if our documentation doesn't have an answer to what you're looking
+        for, then fill out the template below.
+
+        [existing issues]: https://github.com/leancodepl/patrol/issues
   - type: textarea
     attributes:
       label: Steps to reproduce
