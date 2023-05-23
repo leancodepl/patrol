@@ -15,6 +15,8 @@ body:
           - https://github.com/leancodepl/patrol/discussions
           - https://stackoverflow.com/questions/tagged/flutter-patrol
 
+        ---
+
         If you have found a bug or if our documentation doesn't have an answer
         to what you're looking for, then fill out the template below.
   - type: checkboxes
@@ -28,8 +30,11 @@ body:
     attributes:
       label: Steps to reproduce
       description: |
-        Create a [minimal, reproducible example] that demonstrates the problem
-        and thoroughly explain how to reproduce the problem you're running into.
+        Create a [minimal, reproducible example] that:
+
+        1. Demonstrates the problem
+        2. Explains how to reproduce the problem with the detailed step-by-step
+        instructions
 
         In addition to the detailed step-by-step instructions, you must include
         the device you're encountering the issue on (e.g. physical Android, iOS
@@ -39,7 +44,7 @@ body:
         as possible to make it easier for us to understand and fix the problem.
         Screenshots and videos are welcome.
 
-        **Issues that cannot be reliably reproduced will be closed.**
+        **Issues that cannot be reproduced will be closed.**
 
         [minimal, reproducible example]: https://stackoverflow.com/help/minimal-reproducible-example
       placeholder: |
@@ -123,10 +128,11 @@ body:
   - type: markdown
     attributes:
       value: |
+        ---
         Now that you've filled all the required information above, you may
         create the issue.
 
-        **Please check the formatting after creating the issue**. If your issue
+        **Please check how your issue looks like after creating it**. If it
         contains garbled code and logs, it will be closed.
 
         Try reading your issue as if you were seeing it for the first time. Does
