@@ -1,4 +1,4 @@
-## Unreleased
+## 2.0.0-dev.2
 
 - Fix test bundling not working on physical iOS devices (works only with `patrol
 test --release`) (#1303)
