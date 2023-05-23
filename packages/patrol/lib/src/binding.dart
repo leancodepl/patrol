@@ -163,6 +163,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   @override
   void attachRootWidget(Widget rootWidget) {
+    assert(_currentDartTestFile != null);
+
     const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
     if (testLabel.isEmpty) {
       super.attachRootWidget(RepaintBoundary(child: rootWidget));
@@ -179,10 +181,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
                   top: MediaQueryData.fromWindow(window).padding.top + 4,
                   left: 4,
                 ),
-                child: const Text(
-                  testLabel,
+                child: Text(
+                  _currentDartTestFile!,
                   textDirection: TextDirection.ltr,
-                  style: TextStyle(color: Colors.red),
+                  style: const TextStyle(color: Colors.red),
                 ),
               ),
             ),
