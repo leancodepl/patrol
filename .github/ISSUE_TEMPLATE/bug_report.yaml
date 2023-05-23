@@ -128,11 +128,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        --- 
+        ---
         Now that you've filled all the required information above, you may
         create the issue.
 
-        **Please check the formatting after creating the issue**. If your issue
+        **Please check how your issue looks like after creating it**. If it
         contains garbled code and logs, it will be closed.
 
         Try reading your issue as if you were seeing it for the first time. Does
