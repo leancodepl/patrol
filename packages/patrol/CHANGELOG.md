@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix test bundling not working on physical iOS devices (works only with `patrol
+test --release`) (#1303)
+
 ## 2.0.0-dev.1
 
 - Backport changes from `master` (#1293)
