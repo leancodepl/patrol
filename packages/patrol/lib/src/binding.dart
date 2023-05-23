@@ -151,7 +151,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     @Deprecated(
         'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
         'This feature was deprecated after v2.6.0-1.0.pre.')
-        Duration? timeout,
+    Duration? timeout,
   }) async {
     await super.runTest(
       testBody,
@@ -165,8 +165,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   void attachRootWidget(Widget rootWidget) {
     assert(_currentDartTestFile != null);
 
-    const testLabel = String.fromEnvironment('PATROL_TEST_LABEL');
-    if (testLabel.isEmpty) {
+    const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
+    if (!testLabelEnabled) {
       super.attachRootWidget(RepaintBoundary(child: rootWidget));
     } else {
       super.attachRootWidget(

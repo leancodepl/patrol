@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -29,7 +28,6 @@ class TestCommandConfig with _$TestCommandConfig {
     required BuildMode buildMode,
     required List<String> targets,
     required Map<String, String> dartDefines,
-    required bool displayLabel,
     required bool uninstall,
     // Android-only options
     required String? packageName,
@@ -148,6 +146,7 @@ class TestCommand extends PatrolCommand {
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -170,7 +169,6 @@ class TestCommand extends PatrolCommand {
       targets: [testBundle.path],
       buildMode: buildMode,
       dartDefines: dartDefines,
-      displayLabel: displayLabel,
       uninstall: uninstall,
       // Android-specific options
       packageName: packageName,
@@ -203,10 +201,7 @@ class TestCommand extends PatrolCommand {
         target: target,
         flavor: config.androidFlavor,
         buildMode: config.buildMode,
-        dartDefines: {
-          ...config.dartDefines,
-          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-        },
+        dartDefines: config.dartDefines,
       );
 
       switch (device.targetPlatform) {
@@ -246,10 +241,7 @@ class TestCommand extends PatrolCommand {
         target: target,
         flavor: config.androidFlavor,
         buildMode: config.buildMode,
-        dartDefines: {
-          ...config.dartDefines,
-          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-        },
+        dartDefines: config.dartDefines,
       );
 
       switch (device.targetPlatform) {
