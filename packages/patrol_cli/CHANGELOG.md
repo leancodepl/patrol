@@ -1,3 +1,11 @@
+## Unreleased
+
+- Fix test bundling not working on physical iOS devices (works only with `patrol
+test --release`) (#1303)
+
+- Fix test label (red text in the upper left corner) of the current test being
+  always `test_bundle.dart` (#1306)
+
 ## 2.0.0-dev.1
 
 - Add test bundling (#1004)
