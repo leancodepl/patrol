@@ -13,6 +13,7 @@ class PatrolTesterConfig {
     this.visibleTimeout = const Duration(seconds: 10),
     this.settleTimeout = const Duration(seconds: 10),
     @Deprecated('Use settleBeahvior argument instead') this.andSettle = true,
+    // TODO: change default to trySettle
     this.settlePolicy = SettlePolicy.settle,
   });
 
@@ -646,16 +647,22 @@ class PatrolTester {
   }
 }
 
-/// Specifies how methods such as [PatrolTester.tap] or [PatrolTester.enterText] handle pumping, i.e rendering new frames.
+/// Specifies how methods such as [PatrolTester.tap] or [PatrolTester.enterText] handle pumping, i.e. rendering new frames.
 ///
 /// It's usually useful when dealing with situations involving finite and infinite animations.
 enum SettlePolicy {
-  /// When pumping should be performed, [PatrolTester.pump] will be called.
+  /// [PatrolTester.pump] is used when pumping.
+  ///
+  /// This renders a single frame. If some animations are currently working, they will move forward by a single frame.
   noSettle,
 
-  /// When pumping should be performed, [PatrolTester.pumpAndSettle] will be called.
+  /// [PatrolTester.pumpAndSettle] is used when pumping.
+  ///
+  /// This keeps on rendering new frames until there are no frames pending or timeout is reached. Throws an exception if timeout has been reached.
   settle,
 
-  /// When pumping should be performed, [PatrolTester.pumpAndTrySettle] will be called.
+  /// [PatrolTester.pumpAndTrySettle] is used when pumping.
+  ///
+  /// This keeps on rendering new frames until there are no frames pending or timeout is reached. Doesn't throw an exception if timeout has been reached.
   trySettle,
 }
