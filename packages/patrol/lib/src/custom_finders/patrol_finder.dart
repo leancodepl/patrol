@@ -206,7 +206,7 @@ class PatrolFinder extends MatchFinder {
   }) async {
     await tester.tap(
       this,
-      settlePolicy: _choosesettlePolicy(andSettle, settlePolicy),
+      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -247,7 +247,7 @@ class PatrolFinder extends MatchFinder {
     await tester.enterText(
       this,
       text,
-      settlePolicy: _choosesettlePolicy(andSettle, settlePolicy),
+      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -277,7 +277,7 @@ class PatrolFinder extends MatchFinder {
       delta: step,
       maxScrolls: maxScrolls,
       duration: duration,
-      settlePolicy: _choosesettlePolicy(andSettle, settlePolicy),
+      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
     );
   }
 
@@ -468,7 +468,7 @@ extension ActionCombiner on Future<PatrolFinder> {
     Duration? settleTimoeut,
   }) async {
     await (await this).tap(
-      settlePolicy: _choosesettlePolicy(andSettle, settlePolicy),
+      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
@@ -485,14 +485,14 @@ extension ActionCombiner on Future<PatrolFinder> {
   }) async {
     await (await this).enterText(
       text,
-      settlePolicy: _choosesettlePolicy(andSettle, settlePolicy),
+      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
   }
 }
 
-SettlePolicy? _choosesettlePolicy(
+SettlePolicy? _chooseSettlePolicy(
   bool? andSettle,
   SettlePolicy? settlePolicy,
 ) {
