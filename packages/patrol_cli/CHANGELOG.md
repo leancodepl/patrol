@@ -10,6 +10,10 @@ test --release`) (#1303)
 
 - Add test bundling (#1004)
 
+## 1.1.11
+
+- Deprecate running test on many devices simultaneously (#1318)
+
 ## 1.1.10
 
 - Fix `dart pub global activate patrol_cli` failing because of transitive

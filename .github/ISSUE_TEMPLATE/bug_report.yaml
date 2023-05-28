@@ -15,20 +15,25 @@ body:
           - https://github.com/leancodepl/patrol/discussions
           - https://stackoverflow.com/questions/tagged/flutter-patrol
 
-        If you have found a bug or if our documentation doesn't have an answer
-        to what you're looking for, then fill out the template below.
-  - type: checkboxes
-    attributes:
-      label: Is there an existing issue for this?
-      description: Please search to see if an issue already exists for the bug you encountered.
-      options:
-        - label: I have searched the [existing issues](https://github.com/leancodepl/patrol/issues)
-          required: true
+        Please search the [existing issues] to see if an issue already exists
+        for the bug you encountered.
+
+        ---
+
+        If you are sure that you have found a bug that hasn't been reported yet,
+        or if our documentation doesn't have an answer to what you're looking
+        for, then fill out the template below.
+
+        [existing issues]: https://github.com/leancodepl/patrol/issues
   - type: textarea
     attributes:
       label: Steps to reproduce
       description: |
-        Thoroughly explain how to reproduce the problem you're running into.
+        Create a [minimal, reproducible example] that:
+
+        1. Demonstrates the problem
+        2. Explains how to reproduce the problem with the detailed step-by-step
+        instructions
 
         In addition to the detailed step-by-step instructions, you must include
         the device you're encountering the issue on (e.g. physical Android, iOS
@@ -38,7 +43,9 @@ body:
         as possible to make it easier for us to understand and fix the problem.
         Screenshots and videos are welcome.
 
-        **Issues that cannot be reliably reproduced may be closed.**
+        **Issues that cannot be reproduced will be closed.**
+
+        [minimal, reproducible example]: https://stackoverflow.com/help/minimal-reproducible-example
       placeholder: |
         1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
         2. Start Android emulator (Pixel 4, API 31, Google Play)
@@ -57,7 +64,7 @@ body:
       label: Logs
       description: |
         Include the full logs of the command you're running between the lines
-        with the backticks below. Run the command with `--verbose` flag.
+        with the backticks below. Run the command with the `--verbose` flag.
 
         If you're running more than single command, include its logs in a
         separate backticks block.
@@ -68,6 +75,9 @@ body:
 
         **Do not upload screenshots of text**. Instead, use code blocks or the
         above mentioned ways to upload logs.
+
+        **Make sure the logs are well formatted**. If you post garbled logs, we
+        won't be able to help you and the issue will be closed.
       value: |
         <details>
         <summary>Logs</summary>
@@ -114,3 +124,16 @@ body:
         </details>
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        Now that you've filled all the required information above, you may
+        create the issue.
+
+        **Please check how your issue looks like after creating it**. If it
+        contains garbled code and logs, it will be closed.
+
+        Try reading your issue as if you were seeing it for the first time. Does
+        it read well? Is it easy to understand? Is the formatting correct? If
+        not, edit it.
