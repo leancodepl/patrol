@@ -128,6 +128,13 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received device: ${device.resolvedName}');
     }
 
+    if (devices.length > 1) {
+      _logger.warn('''
+Running on multiple devices is deprecated and will be removed in the future.
+See https://github.com/leancodepl/patrol/issues/1316 to learn more.
+''');
+    }
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 

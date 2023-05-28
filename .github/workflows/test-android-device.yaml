@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: "Flutter ${{ matrix.flutter-version }} on Firebase Test Lab"
+    name: Flutter ${{ matrix.flutter-version }} on Firebase Test Lab
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
@@ -109,7 +109,7 @@ jobs:
           name: XML test report
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
 
-      - name:  Upload captured video to artifacts
+      - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
