@@ -481,7 +481,7 @@ class PatrolTester {
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 1000),
+    Duration dragDuration = const Duration(milliseconds: 2000),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     SettlePolicy? settlingBetweenDragsPolicy = SettlePolicy.noSettle,
@@ -489,7 +489,7 @@ class PatrolTester {
     return TestAsyncUtils.guard(() async {
       var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
-      viewPatrolFinder = (await viewPatrolFinder.waitUntilVisible()).first;
+      viewPatrolFinder = viewPatrolFinder.hitTestable().first;
       final settle = chooseSettlePolicy(
         andSettle: andSettle,
         settlePolicy: settlePolicy,
@@ -506,7 +506,10 @@ class PatrolTester {
       }
 
       if (iterationsLeft <= 0) {
-        throw Exception();
+        throw WaitUntilVisibleTimeoutException(
+          finder: finder.hitTestable(),
+          duration: duration,
+        );
       }
 
       await _performPump(
@@ -603,18 +606,20 @@ class PatrolTester {
       finder: scrollable,
       tester: this,
     ).waitUntilVisible();
+    AxisDirection direction;
     if (scrollDirection == null) {
       if (scrollable.evaluate().first.widget is Scrollable) {
-        scrollDirection =
-            tester.firstWidget<Scrollable>(scrollable).axisDirection;
+        direction = tester.firstWidget<Scrollable>(scrollable).axisDirection;
       } else {
-        scrollDirection = AxisDirection.down;
+        direction = AxisDirection.down;
       }
+    } else {
+      direction = scrollDirection;
     }
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
       Offset moveStep;
-      switch (scrollDirection!) {
+      switch (direction) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;

@@ -452,7 +452,7 @@ void main() {
         await tester.dragUntilVisible(
           finder: find.text('some text'),
           view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
+          moveStep: const Offset(0, -16),
         );
 
         expect(find.text('some text').hitTestable(), findsOneWidget);
@@ -494,7 +494,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('top text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
           final initialScrollPosition = tester.tester
               .firstWidget<Scrollable>(find.byType(Scrollable))
@@ -505,7 +505,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           final finalScrollPosition = tester.tester
@@ -529,7 +529,7 @@ void main() {
               home: Column(
                 children: [
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    //scrollDirection: Axis.horizontal,
                     child: Column(
                       children: const [
                         Text('text 1'),
@@ -538,7 +538,7 @@ void main() {
                     ),
                   ),
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
+                    //scrollDirection: Axis.horizontal,
                     child: Column(
                       children: const [Text('text 2')],
                     ),
@@ -554,7 +554,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -563,7 +563,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 2'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -619,7 +619,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(-16, 0),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -632,7 +632,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 2'),
             view: find.byType(Scrollable).at(1),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(-16, 0),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
