@@ -28,7 +28,8 @@ jobs:
          
       - name: Run fastlane match
         uses: maierj/fastlane-action@v3.0.0
-        env: 
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_USERNAME: ${{ secrets.GIT_CERTS_USERNAME }}
           GIT_TOKEN: ${{ secrets.CERTS_PERSONAL_ACCESS_TOKEN }}
         with:
