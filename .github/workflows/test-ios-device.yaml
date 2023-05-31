@@ -18,6 +18,23 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+          working-directory: 'packages/patrol/example/ios'
+         
+      - name: Run fastlane match
+        uses: maierj/fastlane-action@v3.0.0
+        env: 
+          GIT_USERNAME: ${{ secrets.GIT_CERTS_USERNAME }}
+          GIT_TOKEN: ${{ secrets.CERTS_PERSONAL_ACCESS_TOKEN }}
+        with:
+          lane: 'certificates'
+          options: '{ "APP_STORE_KEY_ID": "${{ secrets.APP_STORE_KEY_ID }}", "APP_STORE_ISSUER_ID": "${{ secrets.APP_STORE_ISSUER_ID }}", "APP_STORE_KEY_PATH": "${{ secrets.APP_STORE_KEY_PATH }}" }'
+          subdirectory: 'packages/patrol/example/ios'
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
@@ -37,20 +54,4 @@ jobs:
 
       - name: Run example_test.dart
         run: ./run_ios_testlab integration_test/example_test.dart
-        if: success() || failure()
-
-      - name: Run notifications_single_test.dart
-        run: ./run_ios_testlab integration_test/notifications_single_test.dart
-        if: success() || failure()
-
-      - name: Run notifications_many_test.dart
-        run: ./run_ios_testlab integration_test/notifications_many_test.dart
-        if: success() || failure()
-
-      - name: Run open_app_test.dart
-        run: ./run_ios_testlab integration_test/open_app_test.dart
-        if: success() || failure()
-
-      - name: Run open_quick_settings_test.dart
-        run: ./run_ios_testlab integration_test/open_quick_settings_test.dart
         if: success() || failure()

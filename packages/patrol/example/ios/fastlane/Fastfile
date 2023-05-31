@@ -25,6 +25,6 @@ platform :ios do
       in_house: false,
     )
 
-    match(app_identifier: ["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"])
+    match(type: "development", readonly: is_ci, app_identifier: ["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"])
   end
 end
