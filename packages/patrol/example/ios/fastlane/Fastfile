@@ -22,19 +22,7 @@ platform :ios do
     )
 
     automatic_code_signing(
-      use_automatic_signing: false,
-    )
-
-    update_project_provisioning(
-      profile: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
-      build_configuration: "Release",
-      target_filter: "Runner",
-    )
-
-    update_project_provisioning(
-      profile: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
-      build_configuration: "Release",
-      target_filter: "RunnerUITests",
+      use_automatic_signing: true,
     )
   end
 end
