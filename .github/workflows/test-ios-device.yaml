@@ -74,7 +74,7 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Build tests
-        run: patrol build ios --release --no-codesign
+        run: patrol build ios --release
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
