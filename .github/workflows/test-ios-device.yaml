@@ -69,6 +69,10 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
       - name: Build tests
         run: patrol build ios --release --no-codesign
 
