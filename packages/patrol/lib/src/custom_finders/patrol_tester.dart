@@ -481,10 +481,9 @@ class PatrolTester {
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 2000),
+    Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
-    SettlePolicy? settlingBetweenDragsPolicy = SettlePolicy.noSettle,
   }) {
     return TestAsyncUtils.guard(() async {
       var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
@@ -499,7 +498,7 @@ class PatrolTester {
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
         await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration);
         await _performPump(
-          settlePolicy: settlingBetweenDragsPolicy,
+          settlePolicy: settle,
           settleTimeout: config.settleTimeout,
         );
         iterationsLeft -= 1;
@@ -511,11 +510,6 @@ class PatrolTester {
           duration: duration,
         );
       }
-
-      await _performPump(
-        settlePolicy: settle,
-        settleTimeout: config.settleTimeout,
-      );
 
       return PatrolFinder(finder: finder.hitTestable().first, tester: this);
     });
