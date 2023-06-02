@@ -17,6 +17,7 @@ platform :ios do
     match(
       type: "development",
       git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
+      git_basic_authorization: ENV["GIT_AUTHORIZATION"],
       readonly: is_ci,
       app_identifier: ["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"]
     )

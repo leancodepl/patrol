@@ -49,7 +49,7 @@ jobs:
           APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
           APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
-        run: fastlane ios certificates
+        run: bundle exec fastlane ios certificates
          
       - name: Run fastlane match2
         if: false
