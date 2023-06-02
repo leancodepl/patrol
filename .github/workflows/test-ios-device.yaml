@@ -30,6 +30,9 @@ jobs:
           bundler-cache: true
           working-directory: 'packages/patrol/example/ios'
 
+      - name: Set up fastlane
+        run: brew install fastlane
+
       - name: Run fastlane match
         working-directory: packages/patrol/example/ios
         run: fastlane certificates "APP_STORE_KEY_ID":"${{ secrets.APP_STORE_KEY_ID }}" "APP_STORE_ISSUER_ID":"${{ secrets.APP_STORE_ISSUER_ID }}" "APP_STORE_KEY":"${{ secrets.APP_STORE_KEY }}"
