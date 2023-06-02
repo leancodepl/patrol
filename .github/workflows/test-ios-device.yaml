@@ -35,7 +35,7 @@ jobs:
 
       - name: Run fastlane match
         working-directory: packages/patrol/example/ios
-        run: fastlane certificates "APP_STORE_KEY_ID":"${{ secrets.APP_STORE_KEY_ID }}" "APP_STORE_ISSUER_ID":"${{ secrets.APP_STORE_ISSUER_ID }}" "APP_STORE_KEY":"${{ secrets.APP_STORE_KEY }}"
+        run: fastlane ios certificates "APP_STORE_KEY_ID":"${{ secrets.APP_STORE_KEY_ID }}" "APP_STORE_ISSUER_ID":"${{ secrets.APP_STORE_ISSUER_ID }}" "APP_STORE_KEY":"${{ secrets.APP_STORE_KEY }}"
          
       - name: Run fastlane match2
         if: false
