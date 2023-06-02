@@ -34,7 +34,6 @@ jobs:
         run: brew install fastlane
 
       - name: Set GIT_AUTHORIZATION variable
-        if: false
         env:
           GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
           GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
@@ -53,21 +52,6 @@ jobs:
           APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
           APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
         run: bundle exec fastlane ios certificates
-         
-      - name: Run fastlane match2
-        if: false
-        uses: maierj/fastlane-action@v3.0.0
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
-          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
-          APP_STORE_KEY_ID": ${{ secrets.APP_STORE_KEY_ID }}
-          APP_STORE_ISSUER_ID": ${{ secrets.APP_STORE_ISSUER_ID }}
-          APP_STORE_KEY": ${{ secrets.APP_STORE_KEY }}
-        with:
-          lane: 'certificates'
-          options: '{ "APP_STORE_KEY_ID": "${{ secrets.APP_STORE_KEY_ID }}", "APP_STORE_ISSUER_ID": "${{ secrets.APP_STORE_ISSUER_ID }}", "APP_STORE_KEY": "${{ secrets.APP_STORE_KEY }}" }'
-          subdirectory: 'packages/patrol/example/ios'
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
@@ -85,6 +69,9 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: Run example_test.dart
-        run: ./run_ios_testlab integration_test/example_test.dart
-        if: success() || failure()
+      - name: Build tests
+        run: patrol build ios --release --no-codesign
+
+      - name: Upload APKs to Firebase Test Lab and wait for tests to finish
+        id: tests_step
+        run: ./run_ios_testlab
