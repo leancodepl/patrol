@@ -20,5 +20,19 @@ platform :ios do
       readonly: is_ci,
       app_identifier: ["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"]
     )
+
+    automatic_code_signing(
+      use_automatic_signing: false,
+    )
+
+    update_project_provisioning(
+      profile: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
+      build_configuration: "Release",
+    )
+
+    update_project_provisioning(
+      profile: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
+      build_configuration: "Release", 
+    )
   end
 end
