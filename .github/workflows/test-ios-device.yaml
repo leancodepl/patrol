@@ -30,11 +30,11 @@ jobs:
         uses: maierj/fastlane-action@v3.0.0
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_USERNAME: ${{ secrets.GIT_CERTS_USERNAME }}
-          GIT_TOKEN: ${{ secrets.CERTS_PERSONAL_ACCESS_TOKEN }}
+          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
+          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
         with:
           lane: 'certificates'
-          options: '{ "APP_STORE_KEY_ID": "${{ secrets.APP_STORE_KEY_ID }}", "APP_STORE_ISSUER_ID": "${{ secrets.APP_STORE_ISSUER_ID }}", "APP_STORE_KEY_PATH": "${{ secrets.APP_STORE_KEY_PATH }}" }'
+          options: '{ "APP_STORE_KEY_ID": "${{ secrets.APP_STORE_KEY_ID }}", "APP_STORE_ISSUER_ID": "${{ secrets.APP_STORE_ISSUER_ID }}", "APP_STORE_KEY": "${{ secrets.APP_STORE_KEY }}" }'
           subdirectory: 'packages/patrol/example/ios'
 
       - name: Authenticate to Google Cloud
