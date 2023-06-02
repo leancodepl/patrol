@@ -28,11 +28,13 @@ platform :ios do
     update_project_provisioning(
       profile: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
       build_configuration: "Release",
+      target_filter: "Runner",
     )
 
     update_project_provisioning(
       profile: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
-      build_configuration: "Release", 
+      build_configuration: "Release",
+      target_filter: "RunnerUITests",
     )
   end
 end
