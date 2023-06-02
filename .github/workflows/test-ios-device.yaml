@@ -39,9 +39,9 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
           GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
-          APP_STORE_KEY_ID": ${{ secrets.APP_STORE_KEY_ID }}
-          APP_STORE_ISSUER_ID": ${{ secrets.APP_STORE_ISSUER_ID }}
-          APP_STORE_KEY": ${{ secrets.APP_STORE_KEY }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
         run: fastlane ios certificates
          
       - name: Run fastlane match2
