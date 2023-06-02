@@ -4,13 +4,13 @@ default_platform(:ios)
 
 platform :ios do
   desc "Signs app on CI"
-  lane :certificates do
+  lane :certificates do |options|
     setup_ci if ENV['CI']
 
     app_store_connect_api_key(
-      key_id: ENV["APP_STORE_KEY_ID"],
-      issuer_id: ENV["APP_STORE_ISSUER_ID"],
-      key_content: ENV["APP_STORE_KEY"],
+      key_id: options[:APP_STORE_KEY_ID],
+      issuer_id: options[:APP_STORE_ISSUER_ID],
+      key_content: options[:APP_STORE_KEY],
       in_house: false,
     )
 
