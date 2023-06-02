@@ -1,5 +1,4 @@
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
+update_fastlane
 
 default_platform(:ios)
 
@@ -7,7 +6,7 @@ platform :ios do
   desc "Signs app on CI"
   lane :certificates do
     setup_ci if ENV['CI']
-    
+
     app_store_connect_api_key(
       key_id: ENV["APP_STORE_KEY_ID"],
       issuer_id: ENV["APP_STORE_ISSUER_ID"],
