@@ -73,6 +73,7 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Set iphoneos target to 16.3
+        working-directory: packages/patrol/example/ios
         run: |
           xcodebuild -showBuildSettings | grep IPHONEOS_DEPLOYMENT_TARGET
           echo "IPHONEOS_DEPLOYMENT_TARGET=16.3" >> "$GITHUB_ENV"
