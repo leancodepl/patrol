@@ -45,8 +45,6 @@ jobs:
       - name: Run fastlane match
         working-directory: packages/patrol/example/ios
         env:
-          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
-          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_AUTHORIZATION: ${{ env.GIT_AUTHORIZATION }}
           APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}

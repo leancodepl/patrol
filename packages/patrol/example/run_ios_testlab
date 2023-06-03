@@ -5,7 +5,7 @@ RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
 dev_target="16.3"
-product="build/ios_integ/Build/Products"
+product="build/ios_integ/Build/Products/Release-iphoneos"
 
 pushd "$product"
 zip -r ios_tests.zip "Runner_iphoneos$dev_target-arm64.xctestrun"
