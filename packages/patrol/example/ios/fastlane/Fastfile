@@ -21,8 +21,32 @@ platform :ios do
       app_identifier: ["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"]
     )
 
-    automatic_code_signing(
-      use_automatic_signing: true,
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      targets: ["Runner"],
+      code_sign_identity: "iPhone Developer",
+      profile_name: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
+    )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      targets: ["RunnerUITests"],
+      code_sign_identity: "iPhone Developer",
+      profile_name: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
+    )
+
+    update_project_provisioning(
+      profile: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
+      build_configuration: "Release",
+      target_filter: "Example",
+      code_sign_identity: "iPhone Developer",
+    )
+
+    update_project_provisioning(
+      profile: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
+      build_configuration: "Release",
+      target_filter: "RunnerUITests",
+      code_sign_identity: "iPhone Developer",
     )
   end
 end
