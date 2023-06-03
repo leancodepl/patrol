@@ -18,6 +18,10 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+
+      - name: Add current platform to Gemfile
+        working-directory: packages/patrol/example/ios
+        run: bundle lock --add-platform ruby
         
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -25,10 +29,6 @@ jobs:
           ruby-version: "3.0"
           bundler-cache: true
           working-directory: packages/patrol/example/ios
-
-      - name: Add current platform to Gemfile
-        working-directory: packages/patrol/example/ios
-        run: bundle lock --add-platform ${{ runner.os }}
 
       - name: Set up fastlane
         working-directory: packages/patrol/example/ios
