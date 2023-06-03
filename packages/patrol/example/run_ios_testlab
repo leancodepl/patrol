@@ -6,7 +6,6 @@ echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
 dev_target="16.2"
 product="build/ios_integ/Build/Products"
-rm -rf "$product"
 
 pushd "$product"
 zip -r ios_tests.zip Release-iphoneos "Runner_iphoneos$dev_target-arm64.xctestrun"
