@@ -14,7 +14,6 @@ popd
 exec gcloud firebase test ios run \
 	--type xctest \
 	--test "$product/ios_tests.zip" \
-	--xctestrun-file "build/ios_integ/Build/Products/Runner_iphoneos$dev_target-arm64.xctestrun" \
 	--device model=iphone11pro,version="$dev_target",locale=en_US,orientation=portrait \
 	--timeout 20m \
 	--results-bucket="patrol_runs" \
