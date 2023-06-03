@@ -40,7 +40,7 @@ platform :ios do
     update_project_provisioning(
       profile: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
       build_configuration: "Release",
-      target_filter: "Example",
+      target_filter: "^Runner$", # Exact match to target name "Runner"
       code_signing_identity: "iPhone Developer",
     )
 
