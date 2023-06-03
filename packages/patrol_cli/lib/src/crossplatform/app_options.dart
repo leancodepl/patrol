@@ -171,7 +171,6 @@ class IOSAppOptions {
         'generic/platform=${simulator ? 'iOS Simulator' : 'iOS'}',
       ],
       '-quiet',
-      '-allowProvisioningUpdates',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
