@@ -18,37 +18,15 @@ platform :ios do
       type: "development",
       git_basic_authorization: ENV["GIT_AUTHORIZATION"],
       readonly: is_ci,
-      app_identifier: ["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"]
+      app_identifier: ["pl.leancode.patrol.*"]
     )
 
     update_code_signing_settings(
       use_automatic_signing: false,
-      targets: ["Runner"],
+      targets: ["Runner", "RunnerUITests"],
       build_configurations: ["Release"],
       code_sign_identity: "iPhone Developer",
-      profile_name: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
-    )
-
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      targets: ["RunnerUITests"],
-      build_configurations: ["Release"],
-      code_sign_identity: "iPhone Developer",
-      profile_name: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
-    )
-
-    update_project_provisioning(
-      profile: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
-      build_configuration: "Release",
-      target_filter: "^Runner$", # Exact match to target name "Runner"
-      code_signing_identity: "iPhone Developer",
-    )
-
-    update_project_provisioning(
-      profile: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
-      build_configuration: "Release",
-      target_filter: "RunnerUITests",
-      code_signing_identity: "iPhone Developer",
+      profile_uuid: ENV["sigh_pl.leancode.patrol.*_development"],
     )
   end
 end
