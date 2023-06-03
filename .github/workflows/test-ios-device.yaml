@@ -61,6 +61,9 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
+      - name: Preload Flutter artifacts
+        run: gcloud firebase test ios models list
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
