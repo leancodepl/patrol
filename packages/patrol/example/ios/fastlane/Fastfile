@@ -24,7 +24,7 @@ platform :ios do
     update_code_signing_settings(
       use_automatic_signing: false,
       targets: ["Runner"],
-      build_configurations: ["Release"]
+      build_configurations: ["Release"],
       code_sign_identity: "iPhone Developer",
       profile_name: ENV["sigh_pl.leancode.patrol.Example_development_profile-path"],
     )
@@ -32,7 +32,7 @@ platform :ios do
     update_code_signing_settings(
       use_automatic_signing: false,
       targets: ["RunnerUITests"],
-      build_configurations: ["Release"]
+      build_configurations: ["Release"],
       code_sign_identity: "iPhone Developer",
       profile_name: ENV["sigh_pl.leancode.patrol.Example.RunnerUITests_development_profile-path"],
     )
