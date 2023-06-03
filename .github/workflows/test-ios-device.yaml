@@ -18,20 +18,21 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: Add current platform
-        working-directory: packages/patrol/example/ios
-        run: bundle lock --add-platform x86_64-darwin-20
         
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: "3.0"
           bundler-cache: true
-          working-directory: 'packages/patrol/example/ios'
+          working-directory: packages/patrol/example/ios
+
+      - name: Add current platform to Gemfile
+        working-directory: packages/patrol/example/ios
+        run: bundle lock --add-platform ${{ runner.os }}
 
       - name: Set up fastlane
-        run: brew install fastlane
+        working-directory: packages/patrol/example/ios
+        run: bundle install
 
       - name: Set GIT_AUTHORIZATION variable
         env:
@@ -60,9 +61,6 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-
-      - name: Preload Flutter artifacts
-        run: gcloud firebase test ios models list
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
