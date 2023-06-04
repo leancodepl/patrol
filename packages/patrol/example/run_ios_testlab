@@ -7,9 +7,10 @@ echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 product="build/ios_integ/Build/Products"
 
 pushd "$product"
-ls -all
-echo "------"
-zip -r ios_tests.zip Release-iphoneos "Runner_iphoneos16.2-arm64.xctestrun"
+zip -r ios_tests.zip \
+	Release-iphoneos/Runner.app \
+	Release-iphoneos/RunnerUITests-Runner.app \
+	Runner_iphoneos16.2-arm64.xctestrun
 popd
 
 exec gcloud firebase test ios run \

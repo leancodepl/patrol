@@ -21,10 +21,6 @@ jobs:
 
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
-        run: xcodebuild -showsdks -json
-
-      - name: Add current platform to Gemfile
-        working-directory: packages/patrol/example/ios
         run: bundle lock --add-platform ruby
         
       - name: Set up Ruby
@@ -79,6 +75,56 @@ jobs:
       - name: Build tests
         run: patrol build ios --release
 
+      - name: List devices capacities
+        run: gcloud firebase test ios list-device-capacities
+
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
         run: ./run_ios_testlab
+
+        # RESULTS_DIR_NAME is created by run_android_testlab script
+      - name: Get test outputs from Google Cloud Storage
+        if: success() || failure()
+        run: |
+          mkdir "test_outputs"
+          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/iphone11pro-16.3-en_US-portrait/*" "test_outputs"
+
+      - name: Publish test report to summary
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure()
+        with:
+          check_name: Patrol tests
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          detailed_summary: true
+          include_passed: true
+
+      - name: Generate test report as check run
+        if: success() || failure()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Patrol Tests
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: Upload XML test report to artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: XML test report
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+
+      - name: Upload test cases to artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: Test cases (logcat and captured video per test target)
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_cases
+
+      - name: Upload captured video to artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: Captured video
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
+          
