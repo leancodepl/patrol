@@ -21,6 +21,10 @@ jobs:
 
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
+        run: xcodebuild -showsdks -json
+
+      - name: Add current platform to Gemfile
+        working-directory: packages/patrol/example/ios
         run: bundle lock --add-platform ruby
         
       - name: Set up Ruby
@@ -71,12 +75,6 @@ jobs:
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
-
-      - name: Set iphoneos target to 16.3
-        working-directory: packages/patrol/example/ios
-        run: |
-          xcodebuild -showBuildSettings | grep IPHONEOS_DEPLOYMENT_TARGET
-          echo "IPHONEOS_DEPLOYMENT_TARGET=16.3" >> "$GITHUB_ENV"
 
       - name: Build tests
         run: patrol build ios --release

@@ -5,13 +5,12 @@ RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
 dev_target="16.3"
-product="build/ios_integ/Build/Products/Release-iphoneos"
-
-xcodebuild -showBuildSettings | grep IPHONEOS_DEPLOYMENT_TARGET
+product="build/ios_integ/Build/Products"
 
 pushd "$product"
 ls -all
-zip -r ios_tests.zip "Runner_iphoneos$dev_target-arm64.xctestrun"
+echo "------"
+zip -r ios_tests.zip Release-iphoneos "Runner_iphoneos$dev_target-arm64.xctestrun"
 popd
 
 exec gcloud firebase test ios run \
