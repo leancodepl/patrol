@@ -4,19 +4,10 @@ set -euo pipefail
 RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
-product="build/ios_integ/Build/Products"
-
-pushd "$product"
-zip -r ios_tests.zip \
-	Release-iphoneos/Runner.app \
-	Release-iphoneos/RunnerUITests-Runner.app \
-	Runner_iphoneos16.2-arm64.xctestrun
-popd
-
 exec gcloud firebase test ios run \
 	--type xctest \
-	--test "$product/ios_tests.zip" \
+	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model=iphone11pro,version="16.3",locale=en_US,orientation=portrait \
-	--timeout 20m \
+	--timeout 10m \
 	--results-bucket="patrol_runs" \
 	--results-dir="$RESULTS_DIR_NAME"

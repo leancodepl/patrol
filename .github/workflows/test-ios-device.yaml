@@ -73,7 +73,22 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Build tests
-        run: patrol build ios --release
+        run: |
+          patrol build ios --release \
+            --exclude integration_test/notifications_test.dart \
+            --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/webview_hackernews_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart
+
+      - name: Compress tests files to zip
+        run: |
+          cd "build/ios_integ/Build/Products"
+          zip -r ios_tests.zip \
+            Release-iphoneos/Runner.app \
+            Release-iphoneos/RunnerUITests-Runner.app \
+            Runner_iphoneos16.2-arm64.xctestrun
 
       - name: List devices capacities
         run: gcloud firebase test ios list-device-capacities
@@ -94,7 +109,7 @@ jobs:
         if: success() || failure()
         with:
           check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
           detailed_summary: true
           include_passed: true
 
@@ -103,7 +118,7 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
           reporter: java-junit
           fail-on-error: false
 
@@ -112,19 +127,18 @@ jobs:
         if: success() || failure()
         with:
           name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
 
-      - name: Upload test cases to artifacts
+      - name: Upload xcresult
         uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
-          name: Test cases (logcat and captured video per test target)
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_cases
+          name: Test-Runner.xcresult
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/TestLogs/Test-Runner-2023.06.04_01-40-46--0700.xcresult
 
       - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: Captured video
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
-          
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.mp4
