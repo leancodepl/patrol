@@ -75,10 +75,10 @@ jobs:
       - name: Build tests
         run: |
           patrol build ios --release \
-            --include integration_test/example_test.dart \
-            --include integration_test/open_app_test.dart \
-            --include integration_test/permissions_many_test.dart \
-            --include integration_test/service_dark_mode_test.dart 
+            --target integration_test/example_test.dart \
+            --target integration_test/open_app_test.dart \
+            --target integration_test/permissions_many_test.dart \
+            --target integration_test/service_dark_mode_test.dart
 
       - name: Compress test files to zip
         run: |
