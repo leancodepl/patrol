@@ -129,14 +129,6 @@ jobs:
           name: Logs (logcat)
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/logcat
 
-      - name: Check if failed test occured
-        id: set_failure
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
-            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
-          fi;
-
   call_send_slack_message:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
