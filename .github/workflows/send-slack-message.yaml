@@ -9,7 +9,6 @@ on:
 
 jobs:
   send_slack_message:
-    name: Send Slack message
     runs-on: ubuntu-latest
     timeout-minutes: 5
 

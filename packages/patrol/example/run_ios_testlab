@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+exit 1 # TODO remove
+
 RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
