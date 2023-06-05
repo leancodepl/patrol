@@ -10,8 +10,6 @@ jobs:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device-model }} iOS ${{ matrix.device-version }} on FTL
     runs-on: macos-latest
     timeout-minutes: 60
-    outputs:
-      TESTS_EXIT_CODE: ${{ steps.set_status.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
@@ -34,7 +32,7 @@ jobs:
 
       - name: exit 1
         run: |
-          echo "${{ needs.set_status.outputs.TESTS_EXIT_CODE }}"
+          echo "The exit code is ${{ needs.run_tests.outputs.set_status.outputs.TESTS_EXIT_CODE }}"
           exit 1
 
       - name: Add current platform to Gemfile
@@ -161,4 +159,4 @@ jobs:
     needs: run_tests
     if: always()
     with:
-      TESTS_EXIT_CODE: ${{ needs.set_status.outputs.TESTS_EXIT_CODE }}
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.set_status.outputs.TESTS_EXIT_CODE }}
