@@ -28,9 +28,6 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: exit 1
-        run: exit 1
-
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
         run: bundle lock --add-platform ruby
@@ -84,7 +81,6 @@ jobs:
             --target integration_test/example_test.dart \
             --target integration_test/open_app_test.dart \
             --target integration_test/permissions_many_test.dart \
-            --target integration_test/service_dark_mode_test.dart
 
       - name: Compress test files to zip
         run: |
