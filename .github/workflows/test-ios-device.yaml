@@ -97,6 +97,9 @@ jobs:
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
+        env:
+          DEVICE_MODEL: ${{ matrix.device-model }}
+          DEVICE_VERSION: ${{ matrix.device-version }}
         run: ./run_ios_testlab
 
         # RESULTS_DIR_NAME is created by run_android_testlab script

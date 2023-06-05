@@ -8,7 +8,7 @@ TESTS_EXIT_CODE=0
 exec gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
-	--device model="${{ matrix.device-model }}",version="${{ matrix.device-version }}",locale=en_US,orientation=portrait \
+	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en_US,orientation=portrait \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
 	--results-dir="$RESULTS_DIR_NAME" || TESTS_EXIT_CODE=$?
