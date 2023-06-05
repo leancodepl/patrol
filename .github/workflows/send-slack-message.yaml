@@ -5,7 +5,7 @@ on:
     inputs:
       TESTS_EXIT_CODE:
         required: false
-        type: number
+        type: string
 
 jobs:
   send_slack_message:
