@@ -26,14 +26,14 @@ jobs:
         working-directory: packages/patrol/example
 
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+        
       - name: set output
         run: echo "TESTS_EXIT_CODE=1" >> "$GITHUB_OUTPUT"
 
       - name: exit 1
         run: exit 1
-
-      - name: Clone repository
-        uses: actions/checkout@v3
 
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
