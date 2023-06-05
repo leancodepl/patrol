@@ -34,19 +34,12 @@ jobs:
         working-directory: packages/patrol/example/ios
         run: bundle install
 
-      - name: Set GIT_AUTHORIZATION variable
-        env:
-          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
-          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
-        run: | 
-          GIT_AUTHORIZATION="$(echo -n $GIT_USERNAME:$GIT_TOKEN | base64)"
-          echo "GIT_AUTHORIZATION=$GIT_AUTHORIZATION" >> $GITHUB_ENV
-
       - name: Run fastlane match
         working-directory: packages/patrol/example/ios
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          GIT_AUTHORIZATION: ${{ env.GIT_AUTHORIZATION }}
+          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
+          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
           APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
           APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}

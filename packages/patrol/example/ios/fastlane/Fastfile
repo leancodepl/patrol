@@ -1,6 +1,6 @@
-# update_fastlane
-
 default_platform(:ios)
+
+git_authorization = "#{ENV["GIT_USERNAME"]}:#{ENV["GIT_TOKEN"]}"
 
 platform :ios do
   desc "Signs app on CI"
@@ -16,8 +16,7 @@ platform :ios do
 
     match(
       type: "development",
-      git_basic_authorization: ENV["GIT_AUTHORIZATION"],
-      readonly: is_ci,
+      git_basic_authorization: Base64.strict_encode64(git_authorization),
       app_identifier: ["pl.leancode.patrol.*"]
     )
 
@@ -25,7 +24,6 @@ platform :ios do
       use_automatic_signing: false,
       targets: ["Runner", "RunnerUITests"],
       build_configurations: ["Release"],
-      code_sign_identity: "iPhone Developer",
       profile_uuid: ENV["sigh_pl.leancode.patrol.*_development"],
     )
   end
