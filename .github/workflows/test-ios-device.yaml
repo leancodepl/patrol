@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: '30 21 * * *'
 
+env:
+  TESTS_EXIT_CODE: ''
+
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device-model }} iOS ${{ matrix.device-version }} on FTL
