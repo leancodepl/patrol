@@ -159,5 +159,5 @@ jobs:
     needs: run_tests
     if: always()
     with:
-      TESTS_EXIT_CODE: ${{ needs.run_tests.steps.set_status.outputs.TESTS_EXIT_CODE }}
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
     secrets: inherit
