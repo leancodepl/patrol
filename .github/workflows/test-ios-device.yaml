@@ -160,3 +160,4 @@ jobs:
     if: always()
     with:
       TESTS_EXIT_CODE: 1
+    secrets: inherit
