@@ -10,6 +10,8 @@ jobs:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device-model }} iOS ${{ matrix.device-version }} on FTL
     runs-on: macos-latest
     timeout-minutes: 60
+    outputs:
+      TESTS_EXIT_CODE: ${{ steps.set_status.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
@@ -108,9 +110,6 @@ jobs:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}
         run: ./run_ios_testlab
-
-      - name: Print exit code
-        run: echo "${{ env.TESTS_EXIT_CODE }}"
 
         # RESULTS_DIR_NAME is created by run_android_testlab script
       - name: Get test outputs from Google Cloud Storage
