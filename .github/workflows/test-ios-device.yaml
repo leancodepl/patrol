@@ -32,7 +32,7 @@ jobs:
 
       - name: exit 1
         run: |
-          echo "The exit code is ${{ needs.run_tests.outputs.set_status.outputs.TESTS_EXIT_CODE }}"
+          echo "The exit code is ${{ steps.set_status.outputs.TESTS_EXIT_CODE }}"
           exit 1
 
       - name: Add current platform to Gemfile
@@ -159,5 +159,5 @@ jobs:
     needs: run_tests
     if: always()
     with:
-      TESTS_EXIT_CODE: 1
+      TESTS_EXIT_CODE: ${{ needs.run_tests.steps.set_status.outputs.TESTS_EXIT_CODE }}
     secrets: inherit
