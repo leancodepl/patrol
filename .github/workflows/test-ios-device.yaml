@@ -11,8 +11,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_status.outputs.failure_status }}
-      error_status: ${{ steps.set_status.outputs.error_status }}
+      TESTS_EXIT_CODE: ${{ steps.set_status.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
@@ -28,8 +27,9 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-        
+
       - name: set output
+        id: set_status
         run: echo "TESTS_EXIT_CODE=1" >> "$GITHUB_OUTPUT"
 
       - name: exit 1
