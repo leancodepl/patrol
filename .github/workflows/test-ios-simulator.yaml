@@ -11,8 +11,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_status.outputs.failure_status }}
-      error_status: ${{ steps.set_status.outputs.error_status }}
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
@@ -79,7 +78,7 @@ jobs:
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
-          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> $GITHUB_ENV
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
       - name: Find xcresult path
@@ -117,61 +116,11 @@ jobs:
           name: Captured video from ${{ matrix.device }}.mp4
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
-      - name: Check if error or failed test occured during run
-        id: set_status
-        if: always()
-        run: >
-          if [ -z ${{ env.TESTS_EXIT_CODE }} ]; then
-            echo "error_status=error" >> "$GITHUB_OUTPUT";
-          elif [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
-            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
-          fi;
-
-  slack_notify:
+  call_send_slack_message:
     name: Notify on Slack
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: ${{ always() }}
-
-    steps:
-      - name: Set Slack message
-        id: slack_message
-        env:
-          failure_status: ${{ needs.run_tests.outputs.failure_status }}
-          error_status: ${{ needs.run_tests.outputs.error_status }}
-        run: >
-          if [ ! -z "$error_status" ]; then
-            message="Something went wrong ⚠️ ";
-            status="failure";
-          fi;
-          if [ ! -z "$failure_status" ]; then
-            if [ ! -z "$message" ]; then
-              message+=" and there were failing tests 💥 ";
-            else
-              message+="There were failing tests 💥 ";
-              status="failure";
-            fi;
-          fi;
-          if [ -z "$message" ]; then
-              message="All tests have passed ✅ ";
-              status="success";
-          fi;
-
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          echo "message=$message" >> $GITHUB_OUTPUT;
-          echo "url=$url" >> $GITHUB_OUTPUT;
-          echo "status=$status" >> $GITHUB_OUTPUT;
-
-      - name: Share test results on Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ vars.SLACK_STATUS_CHANNEL }}
-          SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
-          SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: Test status (iOS Simulator)
-          SLACK_MESSAGE: |
-            ${{ steps.slack_message.outputs.message }}
-
-            See workflow run <${{ steps.slack_message.outputs.url }}|here>
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+    secrets: inherit

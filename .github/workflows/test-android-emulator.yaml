@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_failure.outputs.failure_status }}
-      error_status: ${{ steps.set_error.outputs.error_status }}
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
@@ -76,6 +75,7 @@ jobs:
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
         run: |
+          TESTS_EXIT_CODE=0
           ew-cli \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
@@ -87,6 +87,9 @@ jobs:
             --environment-variables packageName="pl.leancode.patrol.example" \
             --outputs-dir test_artifacts \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
+
+            echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+            exit $TESTS_EXIT_CODE
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
@@ -120,61 +123,11 @@ jobs:
           name: Test report, logs and captured videos
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
-      - name: Check if failed test occured
-        id: set_failure
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
-            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
-          fi;
-
-      - name: Check if error during run occurred
-        id: set_error
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
-            echo "error_status=error" >> "$GITHUB_OUTPUT";
-          fi;
-
-  slack_notify:
+  call_send_slack_message:
     name: Notify on Slack
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: ${{ always() }}
-
-    steps:
-      - name: Set Slack message
-        id: slack_message
-        env:
-          failure_status: ${{ needs.run_tests.outputs.failure_status }}
-          error_status: ${{ needs.run_tests.outputs.error_status }}
-        run: >
-          if [ ! -z "$failure_status" ]; then
-            message="There were failing tests 💥 ";
-            status="failure";
-          elif [ ! -z "$error_status" ]; then
-            message="Something went wrong ⚠️";
-            status="failure";
-          else
-            message="All tests have passed ✅ ";
-            status="success";
-          fi;
-
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          echo "message=$message" >> $GITHUB_OUTPUT;
-          echo "url=$url" >> $GITHUB_OUTPUT;
-          echo "status=$status" >> $GITHUB_OUTPUT;
-
-      - name: Share test results on Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ vars.SLACK_STATUS_CHANNEL }}
-          SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
-          SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: Test status (Android emulator on emulator.wtf)
-          SLACK_MESSAGE: |
-            ${{ steps.slack_message.outputs.message }}
-
-            See workflow run <${{ steps.slack_message.outputs.url }}|here>
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+    secrets: inherit

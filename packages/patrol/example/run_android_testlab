@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")"
-
-# This script assumes that APKs are already built.
 
 RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
+TESTS_EXIT_CODE=0
 exec gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
@@ -16,5 +14,7 @@ exec gcloud firebase test android run \
 	--results-bucket="patrol_runs" \
 	--results-dir="$RESULTS_DIR_NAME" \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example"  
-	# --device model=oriole,version=31,locale=en,orientation=portrait \
+	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example" || TESTS_EXIT_CODE=$?
+
+echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+exit $TESTS_EXIT_CODE
