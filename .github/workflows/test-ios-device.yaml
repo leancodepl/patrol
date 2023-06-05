@@ -6,10 +6,20 @@ on:
     - cron: '30 21 * * *'
 
 jobs:
-  main:
-    name: Test on iOS device on Firebase Test Lab
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device-model }} iOS ${{ matrix.device-version }} on FTL
     runs-on: macos-latest
     timeout-minutes: 60
+    outputs:
+      failure_status: ${{ steps.set_status.outputs.failure_status }}
+      error_status: ${{ steps.set_status.outputs.error_status }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.7.x']
+        device-model: ['iphone11pro']
+        device-version: ['16.3']
 
     defaults:
       run:
@@ -56,7 +66,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
@@ -93,7 +104,7 @@ jobs:
         if: success() || failure()
         run: |
           mkdir "test_outputs"
-          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/iphone11pro-16.3-en_US-portrait/*" "test_outputs"
+          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/${{ matrix.device-model }}-${{ matrix.device-version }}-en_US-portrait/*" "test_outputs"
 
       - name: Find xcresult path
         if: success() || failure()
@@ -103,7 +114,7 @@ jobs:
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
         with:
-          title: Patrol tests on Iphone 11 Pro iOS 16.3
+          title: Patrol tests on ${{ matrix.device-model }} iOS ${{ matrix.device-version }}
           upload-bundles: never
           path: |
             ${{ env.XCRESULT_PATH }}
@@ -128,3 +139,62 @@ jobs:
         with:
           name: Captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.mp4
+
+      - name: Check if error or failed test occured during run
+        id: set_status
+        if: always()
+        run: >
+          if [ -z ${{ env.TESTS_EXIT_CODE }} ]; then
+            echo "error_status=error" >> "$GITHUB_OUTPUT";
+          elif [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
+            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
+          fi;
+
+  slack_notify:
+    name: Notify on Slack
+    runs-on: ubuntu-latest
+    needs: run_tests
+    if: ${{ always() }}
+
+    steps:
+      - name: Set Slack message
+        id: slack_message
+        env:
+          failure_status: ${{ needs.run_tests.outputs.failure_status }}
+          error_status: ${{ needs.run_tests.outputs.error_status }}
+        run: >
+          if [ ! -z "$error_status" ]; then
+            message="Something went wrong ⚠️ ";
+            status="failure";
+          fi;
+          if [ ! -z "$failure_status" ]; then
+            if [ ! -z "$message" ]; then
+              message+=" and there were failing tests 💥 ";
+            else
+              message+="There were failing tests 💥 ";
+              status="failure";
+            fi;
+          fi;
+          if [ -z "$message" ]; then
+              message="All tests have passed ✅ ";
+              status="success";
+          fi;
+
+          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
+          echo "message=$message" >> $GITHUB_OUTPUT;
+          echo "url=$url" >> $GITHUB_OUTPUT;
+          echo "status=$status" >> $GITHUB_OUTPUT;
+
+      - name: Share test results on Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: ${{ vars.SLACK_STATUS_CHANNEL }}
+          SLACK_USERNAME: Patrol CI on GitHub Actions
+          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
+          SLACK_ICON: ${{ vars.SLACK_ICON }}
+          SLACK_TITLE: Test status (iOS device on Firebase Test Lab)
+          SLACK_MESSAGE: |
+            ${{ steps.slack_message.outputs.message }}
+
+            See workflow run <${{ steps.slack_message.outputs.url }}|here>

@@ -4,10 +4,14 @@ set -euo pipefail
 RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
+TESTS_EXIT_CODE=0
 exec gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
-	--device model=iphone11pro,version="16.3",locale=en_US,orientation=portrait \
+	--device model="${{ matrix.device-model }}",version="${{ matrix.device-version }}",locale=en_US,orientation=portrait \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
-	--results-dir="$RESULTS_DIR_NAME"
+	--results-dir="$RESULTS_DIR_NAME" || TESTS_EXIT_CODE=$?
+
+echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> $GITHUB_ENV
+exit $TESTS_EXIT_CODE
