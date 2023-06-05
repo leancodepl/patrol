@@ -14,4 +14,5 @@ exec gcloud firebase test ios run \
 	--results-dir="$RESULTS_DIR_NAME" || TESTS_EXIT_CODE=$?
 
 echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_ENV"
+echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
 exit $TESTS_EXIT_CODE

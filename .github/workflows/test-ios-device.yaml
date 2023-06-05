@@ -154,4 +154,4 @@ jobs:
     uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
     with:
-      tests_exit_code: ${{ env.TESTS_EXIT_CODE }}
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
