@@ -428,29 +428,36 @@ class PatrolTester {
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
-      final viewPatrolFinder = PatrolFinder(finder: view, tester: this);
+      var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
-
-      var iterationsLeft = maxIteration;
-      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-        await tester.drag(view, moveStep);
-        await tester.pump(duration);
-        iterationsLeft -= 1;
-      }
-      await Scrollable.ensureVisible(tester.firstElement(finder));
-
+      viewPatrolFinder = viewPatrolFinder.hitTestable().first;
       final settle = chooseSettlePolicy(
         andSettle: andSettle,
         settlePolicy: settlePolicy,
       );
-      await _performPump(
-        settlePolicy: settle,
-        settleTimeout: config.settleTimeout,
-      );
+
+      var iterationsLeft = maxIteration;
+      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+        await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration);
+        await _performPump(
+          settlePolicy: settle,
+          settleTimeout: config.settleTimeout,
+        );
+        iterationsLeft -= 1;
+      }
+
+      if (iterationsLeft <= 0) {
+        throw WaitUntilExistsTimeoutException(
+          finder: finder,
+          // TODO: set reasonable duration
+          duration: duration,
+        );
+      }
 
       return PatrolFinder(finder: finder, tester: this);
     });
@@ -507,6 +514,7 @@ class PatrolTester {
       if (iterationsLeft <= 0) {
         throw WaitUntilVisibleTimeoutException(
           finder: finder.hitTestable(),
+          // TODO: set reasonable duration
           duration: duration,
         );
       }
@@ -530,6 +538,7 @@ class PatrolTester {
     AxisDirection scrollDirection = AxisDirection.down,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
@@ -568,6 +577,7 @@ class PatrolTester {
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
+        dragDuration: dragDuration,
         settlePolicy: settle,
       );
 
@@ -590,6 +600,7 @@ class PatrolTester {
     AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
@@ -638,6 +649,7 @@ class PatrolTester {
         moveStep: moveStep,
         maxIteration: maxScrolls,
         duration: duration,
+        dragDuration: dragDuration,
         settlePolicy: settle,
       );
 
