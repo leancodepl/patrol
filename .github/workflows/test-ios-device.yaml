@@ -109,6 +109,7 @@ jobs:
           gsutil -m cp -r "$GSUTIL_PATH/TestLogs/*" "test_outputs"
           gsutil -m cp -r "$GSUTIL_PATH/*.xml" "test_outputs"
           gsutil -m cp -r "$GSUTIL_PATH/*.mp4" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/*.txt" "test_outputs"
 
       - name: Find xcresult path
         if: success() || failure()
@@ -143,6 +144,13 @@ jobs:
         with:
           name: Captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.mp4
+
+      - name: Upload device logs to artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Device logs
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.txt
 
   call_send_slack_message:
     name: Notify on Slack
