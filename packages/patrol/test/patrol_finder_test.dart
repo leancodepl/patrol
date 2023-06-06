@@ -507,7 +507,7 @@ void main() {
 
           await expectLater(
             $('three').scrollTo,
-            throwsStateError,
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );
@@ -763,7 +763,7 @@ void main() {
 
           await expectLater(
             $('index: 100').scrollTo,
-            throwsA(isA<StateError>()),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
           expect($('index: 100').hitTestable(), findsNothing);
         },

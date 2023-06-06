@@ -255,7 +255,7 @@ void main() {
               view: find.byType(Scrollable),
               moveStep: const Offset(0, 16),
             ),
-            throwsStateError,
+            throwsA(isA<WaitUntilExistsTimeoutException>()),
           );
         },
       );
@@ -296,14 +296,12 @@ void main() {
                         return const CircularProgressIndicator();
                       }
 
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const Text('top text'),
-                            SizedBox(height: constraints.maxHeight * 2),
-                            const Text('bottom text'),
-                          ],
-                        ),
+                      return ListView(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight * 2),
+                          const Text('bottom text'),
+                        ],
                       );
                     },
                   );
@@ -318,8 +316,11 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('top text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
+          expect(find.text('top text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsNothing);
+
           final initialScrollPosition = tester.tester
               .firstWidget<Scrollable>(find.byType(Scrollable))
               .controller
@@ -329,7 +330,7 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           final finalScrollPosition = tester.tester
@@ -339,7 +340,8 @@ void main() {
               .pixels;
 
           expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsOneWidget);
+          expect(find.text('bottom text').hitTestable(), findsNothing);
           expect(initialScrollPosition, isZero);
           expect(finalScrollPosition, isPositive);
         },
@@ -431,7 +433,7 @@ void main() {
               view: find.byType(Scrollable),
               moveStep: const Offset(0, 16),
             ),
-            throwsStateError,
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );
@@ -715,7 +717,7 @@ void main() {
 
           await expectLater(
             () => tester.scrollUntilExists(finder: find.text('three')),
-            throwsStateError,
+            throwsA(isA<WaitUntilExistsTimeoutException>()),
           );
         },
       );
@@ -851,14 +853,12 @@ void main() {
                         return const CircularProgressIndicator();
                       }
 
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const Text('top text'),
-                            SizedBox(height: constraints.maxHeight),
-                            const Text('bottom text'),
-                          ],
-                        ),
+                      return ListView(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight),
+                          const Text('bottom text'),
+                        ],
                       );
                     },
                   );
@@ -871,10 +871,13 @@ void main() {
           expect(find.text('bottom text').hitTestable(), findsNothing);
 
           await tester.scrollUntilExists(finder: find.text('top text'));
+          expect(find.text('top text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsNothing);
           await tester.scrollUntilExists(finder: find.text('bottom text'));
 
           expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsOneWidget);
+          expect(find.text('bottom text').hitTestable(), findsNothing);
         },
       );
 
@@ -885,16 +888,14 @@ void main() {
             MaterialApp(
               home: LayoutBuilder(
                 builder: (_, constraints) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const Text('top text'),
-                        SizedBox(height: constraints.maxHeight),
-                        const Text('bottom text'),
-                        SizedBox(height: constraints.maxHeight),
-                        const Text('bottom text'),
-                      ],
-                    ),
+                  return ListView(
+                    children: [
+                      const Text('top text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                    ],
                   );
                 },
               ),
@@ -902,12 +903,12 @@ void main() {
           );
 
           expect(find.text('top text').hitTestable(), findsOneWidget);
-          expect(find.text('bottom text').hitTestable(), findsNothing);
+          expect(find.text('bottom text'), findsNothing);
 
           await tester.scrollUntilExists(finder: find.text('bottom text'));
 
           expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsOneWidget);
         },
       );
 
