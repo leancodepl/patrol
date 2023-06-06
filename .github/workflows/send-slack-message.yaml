@@ -17,8 +17,6 @@ jobs:
 
     steps:
       - name: Check if error or failed test occured during run
-        id: set_status
-        if: always()
         run: >
           if [ -z ${{ inputs.TESTS_EXIT_CODE }} ]; then
             echo "error_status=error" >> "$GITHUB_ENV";
