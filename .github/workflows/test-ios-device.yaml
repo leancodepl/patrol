@@ -93,9 +93,6 @@ jobs:
             Release-iphoneos/RunnerUITests-Runner.app \
             Runner_iphoneos16.2-arm64.xctestrun
 
-      - name: List devices capacities
-        run: gcloud firebase test ios list-device-capacities
-
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
         env:
@@ -107,12 +104,15 @@ jobs:
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
+          GSUTIL_PATH="gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/${{ matrix.device-model }}-${{ matrix.device-version }}-en_US-portrait"
           mkdir "test_outputs"
-          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/${{ matrix.device-model }}-${{ matrix.device-version }}-en_US-portrait/*" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/TestLogs/*" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/*.xml" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/*.mp4" "test_outputs"
 
       - name: Find xcresult path
         if: success() || failure()
-        run: echo "XCRESULT_PATH=$(find ${{ github.workspace }}/packages/patrol/example/test_outputs/TestLogs -name "*.xcresult" -type d)" >> $GITHUB_ENV
+        run: echo "XCRESULT_PATH=$(find ${{ github.workspace }}/packages/patrol/example/test_outputs -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
       - name: Publish test report to summary
         if: success() || failure()
@@ -135,7 +135,7 @@ jobs:
         if: success() || failure()
         with:
           name: Test-Runner.xcresult
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/TestLogs/*.xcresult
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xcresult
 
       - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
