@@ -3,6 +3,9 @@ name: send slack message
 on:
   workflow_call:
     inputs:
+      WORKFLOW_FRIENDLY_NAME:
+        required: true
+        type: string
       TESTS_EXIT_CODE:
         required: false
         type: string
@@ -13,11 +16,6 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: exit with TESTS_EXIT_CODE # TODO: remove
-        run: |
-          echo "TESTS_EXIT_CODE=${{ inputs.TESTS_EXIT_CODE }}"
-          exit 1
-
       - name: Check if error or failed test occured during run
         id: set_status
         if: always()
@@ -61,7 +59,7 @@ jobs:
           SLACK_USERNAME: Patrol CI on GitHub Actions
           SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
           SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: Test status (iOS device on Firebase Test Lab)
+          SLACK_TITLE: ${{ inputs.WORKFLOW_FRIENDLY_NAME }}
           SLACK_MESSAGE: |
             ${{ steps.slack_message.outputs.message }}
 

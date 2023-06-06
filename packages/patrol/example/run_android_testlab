@@ -5,7 +5,7 @@ RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
 echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
 TESTS_EXIT_CODE=0
-exec gcloud firebase test android run \
+gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \

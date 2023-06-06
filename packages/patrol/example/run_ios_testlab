@@ -13,6 +13,5 @@ gcloud firebase test ios run \
 	--results-bucket="patrol_runs" \
 	--results-dir="$RESULTS_DIR_NAME" || TESTS_EXIT_CODE=$?
 
-echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE"
 echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
 exit $TESTS_EXIT_CODE
