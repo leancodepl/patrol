@@ -28,6 +28,14 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      - name: exit 1
+        id: tests_step
+        # run: ./run_ios_testlab
+        run: |
+          TESTS_EXIT_CODE=1
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit 1
+        
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
         run: bundle lock --add-platform ruby
@@ -94,7 +102,7 @@ jobs:
         run: gcloud firebase test ios list-device-capacities
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
-        id: tests_step
+        # id: tests_step
         env:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}

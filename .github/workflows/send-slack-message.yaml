@@ -13,6 +13,11 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: exit with TESTS_EXIT_CODE
+        run: |
+          echo "TESTS_EXIT_CODE=${{ inputs.TESTS_EXIT_CODE }}"
+          exit 1
+
       - name: Check if error or failed test occured during run
         id: set_status
         if: always()
