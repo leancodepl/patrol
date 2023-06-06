@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       TESTS_EXIT_CODE:
-        required: false
+        required: true
         type: string
 
 jobs:
