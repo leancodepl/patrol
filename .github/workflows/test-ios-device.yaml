@@ -29,7 +29,9 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - run: |
+      - name: test
+        id: tests_step
+        run: |
           exit 1 || true
           echo "TESTS_EXIT_CODE=$?" >> "$GITHUB_OUTPUT"
 
@@ -100,7 +102,7 @@ jobs:
             Runner_iphoneos16.2-arm64.xctestrun
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
-        id: tests_step
+        # id: tests_step
         env:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}
