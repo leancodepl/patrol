@@ -84,8 +84,8 @@ jobs:
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
-          mkdir "test_outputs"
-          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_outputs"
+          mkdir test_outputs
+          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" test_outputs
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3

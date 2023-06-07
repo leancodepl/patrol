@@ -5,9 +5,6 @@ on:
   schedule:
     - cron: '30 21 * * *'
 
-env:
-  WORKFLOW_FRIENDLY_NAME: Test status (iOS device on Firebase Test Lab)
-
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device-model }} iOS ${{ matrix.device-version }} on FTL
@@ -15,7 +12,6 @@ jobs:
     timeout-minutes: 60
     outputs:
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: ${{ env.WORKFLOW_FRIENDLY_NAME }}
 
     strategy:
       fail-fast: false
@@ -39,7 +35,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0"
+          ruby-version: "3.2"
           bundler-cache: true
           working-directory: packages/patrol/example/ios
 
@@ -92,7 +88,7 @@ jobs:
 
       - name: Compress test files to zip
         run: |
-          cd "build/ios_integ/Build/Products"
+          cd build/ios_integ/Build/Products
           zip -r ios_tests.zip \
             Release-iphoneos/Runner.app \
             Release-iphoneos/RunnerUITests-Runner.app \
@@ -105,7 +101,7 @@ jobs:
           DEVICE_VERSION: ${{ matrix.device-version }}
         run: ./run_ios_testlab
 
-        # RESULTS_DIR_NAME is created by run_android_testlab script
+        # RESULTS_DIR_NAME is created by run_ios_testlab script
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
@@ -164,5 +160,5 @@ jobs:
     if: always()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: "Filip is :gigachad:"
+      WORKFLOW_NAME: ${{ needs.run_tests }}
     secrets: inherit

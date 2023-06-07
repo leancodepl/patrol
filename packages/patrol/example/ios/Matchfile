@@ -1,8 +1,4 @@
 git_url("https://github.com/leancodepl/certificates")
-
 storage_mode("git")
-
-type("development") # The default type, can be: appstore, adhoc, enterprise or development
-
+type("development")
 app_identifier(["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"])
-# username("user@fastlane.tools") # Your Apple Developer Portal username
