@@ -5,17 +5,14 @@ on:
   schedule:
     - cron: '0 */12 * * *'
 
-env:
-  WORKFLOW_FRIENDLY_NAME: Test status (iOS simulator)
-
 jobs:
   run_tests:
     name: "Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}"
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
+      SLACK_MESSAGE_TITLE: iOS simulator
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: ${{ env.WORKFLOW_FRIENDLY_NAME }}
 
     strategy:
       fail-fast: false
@@ -127,5 +124,5 @@ jobs:
     if: always()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: ${{ needs.run_tests.outputs.WORKFLOW_FRIENDLY_NAME }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
     secrets: inherit
