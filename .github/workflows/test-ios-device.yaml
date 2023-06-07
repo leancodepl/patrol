@@ -37,15 +37,14 @@ jobs:
           DEVICE_VERSION: ${{ matrix.device-version }}
         run: |
           set +e
-          
+
           export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
           echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
           { ./run_ios_testlab; TESTS_EXIT_CODE=$?; }
 
-          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
-          exit TESTS_EXIT_CODE
+          exit $TESTS_EXIT_CODE
         
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
