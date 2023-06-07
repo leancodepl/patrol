@@ -160,5 +160,5 @@ jobs:
     if: always()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: ${{ github.job.run_tests.name }}
+      WORKFLOW_NAME: ${{ github.job.run_tests.name }}
     secrets: inherit
