@@ -28,16 +28,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: test
-        id: tests_step
-        shell: bash
-        run: |
-          exit 1 || true
-          echo "TESTS_EXIT_CODE=$?"
-          echo "TESTS_EXIT_CODE=$?" >> "$GITHUB_OUTPUT"
-
-      - run: exit 1
         
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
@@ -104,13 +94,19 @@ jobs:
             Runner_iphoneos16.2-arm64.xctestrun
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
-        # id: tests_step
+        id: tests_step
         env:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}
-        run: ./run_ios_testlab
+        run: |
+          RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
+          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
-        # RESULTS_DIR_NAME is created by run_ios_testlab script
+          { ./run_ios_testlab; TESTS_EXIT_CODE=$?; }
+
+          echo "TESTS_EXIT_CODE=$?"
+          echo "TESTS_EXIT_CODE=$?" >> "$GITHUB_OUTPUT"
+
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
