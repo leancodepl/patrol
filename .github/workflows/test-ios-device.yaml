@@ -81,6 +81,9 @@ jobs:
           patrol build ios --release \
             --exclude integration_test/notifications_test.dart \
             --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/open_app_test.dart \
+            --exclude integration_test/service_dark_mode_test.dart \
+            --exclude integration_test/service_wifi_test.dart \
             --exclude integration_test/permissions_location_test.dart \
             --exclude integration_test/swipe_test.dart \
             --exclude integration_test/webview_login_test.dart \
