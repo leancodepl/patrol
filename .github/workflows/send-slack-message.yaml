@@ -8,7 +8,6 @@ on:
         type: string
       TESTS_EXIT_CODE:
         required: true
-        type: string
 
 jobs:
   send_slack_message:
@@ -16,6 +15,8 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      # Error means that something went wrong during workflow
+      # and because of that tests didn't run, so exit code isn't set
       - name: Check if error or failed test occured during run
         run: >
           if [ -z ${{ inputs.TESTS_EXIT_CODE }} ]; then
