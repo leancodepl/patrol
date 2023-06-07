@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-exit 10
-
-# Set DEVICE_MODEL, DEVICE_VERSION and RESULTS_DIR_NAME variables
+# Set DEVICE_MODEL, DEVICE_VERSION and RESULTS_DIR_NAME variables before
 # --test path has also ios_tests.zip prepared before
 
 exec gcloud firebase test ios run \

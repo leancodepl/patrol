@@ -5,17 +5,14 @@ on:
   schedule:
     - cron: '30 21 * * *'
 
-env:
-  WORKFLOW_FRIENDLY_NAME: Test status (Android device on Firebase Test Lab)
-
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on Firebase Test Lab
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
+      SLACK_MESSAGE_TITLE: Android device on Firebase Test Lab
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: ${{ env.WORKFLOW_FRIENDLY_NAME }}
 
     strategy:
       fail-fast: false
@@ -78,9 +75,19 @@ jobs:
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
-        run: ./run_android_testlab
+        shell: bash
+        run: |
+          set +e
 
-      # RESULTS_DIR_NAME is created by run_android_testlab script
+          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
+          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
+
+          ./run_android_testlab
+
+          TESTS_EXIT_CODE=$?
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
@@ -140,5 +147,5 @@ jobs:
     if: always()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_FRIENDLY_NAME: ${{ needs.run_tests.outputs.WORKFLOW_FRIENDLY_NAME }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
     secrets: inherit

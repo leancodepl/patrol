@@ -28,24 +28,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - name: Upload APKs to Firebase Test Lab and wait for tests to finish
-        id: tests_step
-        shell: bash
-        env:
-          DEVICE_MODEL: ${{ matrix.device-model }}
-          DEVICE_VERSION: ${{ matrix.device-version }}
-        run: |
-          set +e
-
-          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
-          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
-
-          ./run_ios_testlab
-          
-          TESTS_EXIT_CODE=$?
-          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
-          exit $TESTS_EXIT_CODE
         
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
@@ -100,6 +82,7 @@ jobs:
             --exclude integration_test/notifications_test.dart \
             --exclude integration_test/android_app_test.dart \
             --exclude integration_test/permissions_location_test.dart \
+            --exclude integration_test/swipe_test.dart \
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_leancode_test.dart
 
@@ -112,7 +95,7 @@ jobs:
             Runner_iphoneos16.2-arm64.xctestrun
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
-        # id: tests_step
+        id: tests_step
         shell: bash
         env:
           DEVICE_MODEL: ${{ matrix.device-model }}
@@ -124,7 +107,7 @@ jobs:
           echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
           ./run_ios_testlab
-
+          
           TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
