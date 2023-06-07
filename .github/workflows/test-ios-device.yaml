@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 60
     outputs:
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ github.job.run_tests.name }}
 
     strategy:
       fail-fast: false
@@ -80,9 +81,7 @@ jobs:
           patrol build ios --release \
             --exclude integration_test/notifications_test.dart \
             --exclude integration_test/android_app_test.dart \
-            --exclude integration_test/service_dark_mode_test.dart \
             --exclude integration_test/permissions_location_test.dart \
-            --exclude integration_test/swipe_test.dart \
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_leancode_test.dart \
 
@@ -160,5 +159,5 @@ jobs:
     if: always()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
-      WORKFLOW_NAME: ${{ github.job.run_tests.name }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
     secrets: inherit

@@ -3,7 +3,7 @@ name: send slack message
 on:
   workflow_call:
     inputs:
-      WORKFLOW_NAME:
+      SLACK_MESSAGE_TITLE:
         required: true
         type: string
       TESTS_EXIT_CODE:
@@ -57,7 +57,7 @@ jobs:
           SLACK_USERNAME: Patrol CI on GitHub Actions
           SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
           SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: ${{ inputs.WORKFLOW_NAME }}
+          SLACK_TITLE: ${{ inputs.SLACK_MESSAGE_TITLE }}
           SLACK_MESSAGE: |
             ${{ steps.slack_message.outputs.message }}
 
