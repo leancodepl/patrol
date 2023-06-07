@@ -31,8 +31,10 @@ jobs:
 
       - name: test
         id: tests_step
+        shell: bash
         run: |
           exit 1 || true
+          echo "TESTS_EXIT_CODE=$?"
           echo "TESTS_EXIT_CODE=$?" >> "$GITHUB_OUTPUT"
 
       - run: exit 1
