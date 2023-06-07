@@ -28,10 +28,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
-
-      - run: |
-          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
-          echo "RESULTS_DIR_NAME set to $RESULTS_DIR_NAME"
         
       - name: Add current platform to Gemfile
         working-directory: packages/patrol/example/ios
@@ -104,12 +100,13 @@ jobs:
           DEVICE_VERSION: ${{ matrix.device-version }}
         run: |
           export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
-          echo "RESULTS_DIR_NAME set to $RESULTS_DIR_NAME"
+          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
           { ./run_ios_testlab; TESTS_EXIT_CODE=$?; }
 
           echo "TESTS_EXIT_CODE=$?"
           echo "TESTS_EXIT_CODE=$?" >> "$GITHUB_OUTPUT"
+          exit TESTS_EXIT_CODE
 
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()

@@ -4,7 +4,7 @@ set -euo pipefail
 # Set DEVICE_MODEL, DEVICE_VERSION and RESULTS_DIR_NAME variables
 # --test path has also ios_tests.zip prepared before
 
-exec gcloud firebase test ios run \
+gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en_US,orientation=portrait \
