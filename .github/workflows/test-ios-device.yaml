@@ -31,6 +31,7 @@ jobs:
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
+        shell: bash
         env:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}
