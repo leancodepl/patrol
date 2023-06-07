@@ -30,8 +30,8 @@ jobs:
 
       - name: Create slack message title var
         run: |
-          echo "SLACK_MESSAGE_TITLE=${{ github.job.name }}"
-          echo "SLACK_MESSAGE_TITLE=${{ github.job.name }}" >> "$GITHUB_OUTPUT"
+          echo "SLACK_MESSAGE_TITLE=${{ github.job }}"
+          echo "SLACK_MESSAGE_TITLE=${{ github.job }}" >> "$GITHUB_OUTPUT"
           exit 1
         
       - name: Add current platform to Gemfile
