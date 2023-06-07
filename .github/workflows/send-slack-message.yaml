@@ -8,6 +8,7 @@ on:
         type: string
       TESTS_EXIT_CODE:
         required: true
+        type: number
 
 jobs:
   send_slack_message:
