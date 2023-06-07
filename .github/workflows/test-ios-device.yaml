@@ -36,6 +36,8 @@ jobs:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}
         run: |
+          set +e
+          
           export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
           echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
