@@ -75,10 +75,8 @@ jobs:
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
-        shell: bash
         run: |
-          set +e
-
+          TESTS_EXIT_CODE=0
           ew-cli \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
@@ -89,9 +87,8 @@ jobs:
             --timeout 10m \
             --environment-variables packageName="pl.leancode.patrol.example" \
             --outputs-dir test_artifacts \
-            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
+            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video || TESTS_EXIT_CODE=$?
 
-          TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 

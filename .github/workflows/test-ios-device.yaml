@@ -99,19 +99,16 @@ jobs:
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
-        shell: bash
         env:
           DEVICE_MODEL: ${{ matrix.device-model }}
           DEVICE_VERSION: ${{ matrix.device-version }}
         run: |
-          set +e
-
           export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
           echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
-          ./run_ios_testlab
+          TESTS_EXIT_CODE=0
+          ./run_ios_testlab || TESTS_EXIT_CODE=$?
           
-          TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
