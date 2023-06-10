@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Set DEVICE_MODEL, DEVICE_VERSION and RESULTS_DIR_NAME variables before
-# --test path has also ios_tests.zip prepared before
+# This script requires following environment variables to be set:
+# * DEVICE_MODEL (for example: "iphone11pro")
+# * DEVICE_VERSION (for example: "16.3")
+# * RESULTS_DIR_NAME (for example: "$(date +"%Y-%m-%d_%H:%M:%S")" - it should be unique)
+
+# And ios_tests.zip containing the iOS app and XCTest files
 
 exec gcloud firebase test ios run \
 	--type xctest \

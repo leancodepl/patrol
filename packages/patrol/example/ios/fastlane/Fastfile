@@ -1,9 +1,9 @@
 default_platform(:ios)
 
 git_authorization = "#{ENV.fetch("GIT_USERNAME")}:#{ENV.fetch("GIT_TOKEN")}"
-key_id = "#{ENV.fetch("APP_STORE_KEY_ID")}"
-issuer_id = "#{ENV.fetch("APP_STORE_ISSUER_ID")}"
-key_content = "#{ENV.fetch("APP_STORE_KEY")}"
+key_id = ENV.fetch("APP_STORE_KEY_ID")
+issuer_id = ENV.fetch("APP_STORE_ISSUER_ID")
+key_content = ENV.fetch("APP_STORE_KEY")
 
 platform :ios do
   desc "Signs app on CI"

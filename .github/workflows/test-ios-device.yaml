@@ -93,9 +93,8 @@ jobs:
         run: |
           cd build/ios_integ/Build/Products
           zip -r ios_tests.zip \
-            Release-iphoneos/Runner.app \
-            Release-iphoneos/RunnerUITests-Runner.app \
-            Runner_iphoneos16.2-arm64.xctestrun
+            Release-iphoneos/*.app \
+            *.xctestrun
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
