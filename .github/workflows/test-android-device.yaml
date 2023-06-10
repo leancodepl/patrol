@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      failure_status: ${{ steps.set_failure.outputs.failure_status }}
-      error_status: ${{ steps.set_error.outputs.error_status }}
+      SLACK_MESSAGE_TITLE: Android device on Firebase Test Lab
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
@@ -75,14 +75,21 @@ jobs:
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
-        run: ./run_android_testlab
+        run: |
+          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
+          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
-      # RESULTS_DIR_NAME is created by run_android_testlab script
+          TESTS_EXIT_CODE=0
+          ./run_android_testlab || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
       - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
         run: |
-          mkdir "test_outputs"
-          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" "test_outputs"
+          mkdir test_outputs
+          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" test_outputs
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
@@ -130,61 +137,12 @@ jobs:
           name: Logs (logcat)
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/logcat
 
-      - name: Check if failed test occured
-        id: set_failure
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "failure" ]; then
-            echo "failure_status=failure" >> "$GITHUB_OUTPUT";
-          fi;
-
-      - name: Check if error during run occurred
-        id: set_error
-        if: always()
-        run: >
-          if [ "${{ steps.tests_step.conclusion }}" == "skipped" ] || [ "${{ steps.tests_step.conclusion }}" == "cancelled" ]; then
-            echo "error_status=error" >> "$GITHUB_OUTPUT";
-          fi;
-
-  slack_notify:
+  call_send_slack_message:
     name: Notify on Slack
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: ${{ always() }}
-
-    steps:
-      - name: Set Slack message
-        id: slack_message
-        env:
-          failure_status: ${{ needs.run_tests.outputs.failure_status }}
-          error_status: ${{ needs.run_tests.outputs.error_status }}
-        run: >
-          if [ ! -z "$failure_status" ]; then
-            message="There were failing tests 💥 ";
-            status="failure";
-          elif [ ! -z "$error_status" ]; then
-            message="Something went wrong ⚠️";
-            status="failure";
-          else
-            message="All tests have passed on ✅ ";
-            status="success";
-          fi;
-
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          echo "message=$message" >> $GITHUB_OUTPUT;
-          echo "url=$url" >> $GITHUB_OUTPUT;
-          echo "status=$status" >> $GITHUB_OUTPUT;
-
-      - name: Share test results on Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ vars.SLACK_STATUS_CHANNEL }}
-          SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
-          SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: Test status (Android device on Firebase Test Lab)
-          SLACK_MESSAGE: |
-            ${{ steps.slack_message.outputs.message }}
-
-            See workflow run <${{ steps.slack_message.outputs.url }}|here>
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit
