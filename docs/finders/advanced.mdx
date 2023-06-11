@@ -146,8 +146,9 @@ await $('Delete account').scrollTo().tap();
 
 And here's how `scrollTo()` works:
 
-1. Waits for at least 1 `[Scrollable]` widget to become visible
-2. Scrolls this `Scrollable` widget in its scrolling direction until the target
+1. Waits for at least 1 [Scrollable] widget (or whatever you provided in 
+   `view` argument) to become visible
+2. Scrolls this widget in its scrolling direction until the target
    widget becomes visible
 3. If the target widget becomes visible within timeout, it finishes, otherwise
    it throws an exception
@@ -157,12 +158,12 @@ important thing to keep in mind when using `scrollTo()`:
 
 **`scrollTo()`, by default, scrolls the first `Scrollable` widget**
 
-This default is reasonable and what you want most of the time. Unfortunately, it
-can sometimes cause problems in more complicated UIs, where there are more than
-a single `Scrollable` widget visible at the same time. In such cases we strongly
-recommend to explicitly specify the `Scrollable` that `scrollTo()` should
-scroll, to avoid the problem of the target widget never becoming visible because
-the wrong scrollable was scrolled.
+This default is reasonable and what you want most of the time. Unfortunately,
+this behavior can sometimes cause problems in more complicated UIs, where more
+than a single `Scrollable` widget is visible at the same time. In such cases we
+strongly recommend explicitly specifying the `view` that `scrollTo()`
+should scroll, to avoid the problem of the target widget never becoming visible
+because the wrong widget was scrolled.
 
 To demonstrate this problem, let's consider this very simple app:
 
