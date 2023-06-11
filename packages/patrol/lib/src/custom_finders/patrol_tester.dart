@@ -401,33 +401,41 @@ class PatrolTester {
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
   /// existing widget.
   ///
-  /// Between each drag, advances the clock by [duration].
-  ///
-  /// This method automatically calls [WidgetTester.pumpAndSettle] or
-  /// [WidgetTester.pump] after the drag is complete. If you want to override
-  /// this behavior to not call [WidgetTester.pumpAndSettle], set [andSettle] to
-  /// false.
+  /// Between each drag, calls [pump], [pumpAndSettle] or [pumpAndTrySettle],
+  /// depending on chosen [settlePolicy].
   ///
   /// This is a reimplementation of [WidgetController.dragUntilVisible] that
   /// differs from the original in the following ways:
   ///
-  ///  * has a better name
+  ///  * scrolls until until [finder] finds at least one *existing* widget
   ///
   ///  * waits until [view] is visible
   ///
-  ///  * uses [WidgetController.firstElement] instead of
-  ///    [WidgetController.element], which avoids [StateError] being thrown in
-  ///    situations when [finder] finds more than 1 visible widget
+  ///  * if the [view] finder finds more than 1 widget, it scrolls the first one
+  ///    instead of throwing a [StateError]
+  ///
+  ///  * if the [finder] finder finds more than 1 widget, it scrolls to the
+  ///    first one instead of throwing a [StateError]
+  ///
+  ///  * can drag any widget, not only a [Scrollable]
+  ///
+  ///  * performed drag is slower (it takes some time to performe dragging
+  ///    gesture, half a second by default)
+  ///
+  ///  * you can configure, which version of pumping is performed between
+  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]).
   ///
   /// See also:
   ///  * [PatrolTester.config.andSettle], which controls the default behavior if
   ///    [andSettle] is null
+  ///  * [PatrolTester.dragUntilVisible], which scrolls to visible widget,
+  ///    not only existing one.
   Future<PatrolFinder> dragUntilExists({
     required Finder finder,
     required Finder view,
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
-    Duration duration = const Duration(milliseconds: 50),
+    Duration pumpDuration = const Duration(milliseconds: 50),
     Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
@@ -455,7 +463,7 @@ class PatrolTester {
         throw WaitUntilExistsTimeoutException(
           finder: finder,
           // TODO: set reasonable duration
-          duration: duration,
+          duration: pumpDuration,
         );
       }
 
@@ -466,28 +474,37 @@ class PatrolTester {
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
   /// visible widget.
   ///
-  /// Between each drag, advances the clock by [duration].
+  /// Between each drag, calls [pump], [pumpAndSettle] or [pumpAndTrySettle],
+  /// depending on chosen [settlePolicy].
   ///
   /// This is a reimplementation of [WidgetController.dragUntilVisible] that
   /// differs from the original in the following ways:
-  ///
-  ///  * actually scrolls until [finder] finds at least one *visible* widget,
-  ///    not an *existing* widget.
   ///
   ///  * waits until [view] is visible
   ///
   ///  * if the [view] finder finds more than 1 widget, it scrolls the first one
   ///    instead of throwing a [StateError]
   ///
-  ///  * uses [WidgetController.firstElement] instead of
-  ///    [WidgetController.element], which avoids [StateError] being thrown in
-  ///    situations when [finder] finds more than 1 visible widget
+  ///  * if the [finder] finder finds more than 1 widget, it scrolls to the
+  ///    first one instead of throwing a [StateError]
+  ///
+  ///  * can drag any widget, not only a [Scrollable]
+  ///
+  ///  * performed drag is slower (it takes some time to performe dragging
+  ///    gesture, half a second by default)
+  ///
+  ///  * you can configure, which version of pumping is performed between
+  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]).
+  ///
+  /// See also:
+  ///  * [PatrolTester.dragUntilExists], which scrolls to existing widget,
+  ///    not a visible one.
   Future<PatrolFinder> dragUntilVisible({
     required Finder finder,
     required Finder view,
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
-    Duration duration = const Duration(milliseconds: 50),
+    Duration pumpDuration = const Duration(milliseconds: 50),
     Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
@@ -515,7 +532,7 @@ class PatrolTester {
         throw WaitUntilVisibleTimeoutException(
           finder: finder.hitTestable(),
           // TODO: set reasonable duration
-          duration: duration,
+          duration: pumpDuration,
         );
       }
 
@@ -523,17 +540,16 @@ class PatrolTester {
     });
   }
 
-  /// Scrolls [scrollable] in its scrolling direction until this finders finds
+  /// Scrolls [view] in its scrolling direction until this finders finds
   /// at least one existing widget.
   ///
-  /// If [scrollable] is null, it defaults to the first found [Scrollable].
+  /// If [view] is null, it defaults to the first found [Scrollable].
   ///
   /// See also:
-  ///  - [PatrolTester.scrollUntilVisible], which this method wraps and gives it
-  ///    a better name
+  ///  - [PatrolTester.scrollUntilVisible].
   Future<PatrolFinder> scrollUntilExists({
     required Finder finder,
-    Finder? scrollable,
+    Finder? view,
     double delta = defaultScrollDelta,
     AxisDirection scrollDirection = AxisDirection.down,
     int maxScrolls = defaultScrollMaxIteration,
@@ -543,16 +559,16 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
-    scrollable ??= find.byType(Scrollable);
+    view ??= find.byType(Scrollable);
 
     final scrollablePatrolFinder = await PatrolFinder(
-      finder: scrollable,
+      finder: view,
       tester: this,
     ).waitUntilVisible();
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
       Offset moveStep;
-      switch (tester.firstWidget<Scrollable>(scrollable!).axisDirection) {
+      switch (tester.firstWidget<Scrollable>(view!).axisDirection) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;
@@ -576,7 +592,7 @@ class PatrolTester {
         view: scrollablePatrolFinder.first,
         moveStep: moveStep,
         maxIteration: maxScrolls,
-        duration: duration,
+        pumpDuration: duration,
         dragDuration: dragDuration,
         settlePolicy: settle,
       );
@@ -585,17 +601,19 @@ class PatrolTester {
     });
   }
 
-  /// Scrolls [scrollable] in its scrolling direction until this finders finds
+  /// Scrolls [view] in [scrollDirection] until this finders finds
   /// at least one existing widget.
   ///
-  /// If [scrollable] is null, it defaults to the first found [Scrollable].
+  /// If [view] is null, it defaults to the first found [Scrollable].
   ///
   /// This is a reimplementation of [WidgetController.scrollUntilVisible] that
-  /// actually scrolls until [finder] finds at least one *visible* widget, not
-  /// *existing* widget.
+  /// doesn't throw when [finder] finds more than one widget.
+  ///
+  /// See also:
+  ///  - [PatrolTester.scrollUntilExists].
   Future<PatrolFinder> scrollUntilVisible({
     required Finder finder,
-    Finder? scrollable,
+    Finder? view,
     double delta = defaultScrollDelta,
     AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
@@ -606,15 +624,15 @@ class PatrolTester {
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
 
-    scrollable ??= find.byType(Scrollable);
+    view ??= find.byType(Scrollable);
     final scrollablePatrolFinder = await PatrolFinder(
-      finder: scrollable,
+      finder: view,
       tester: this,
     ).waitUntilVisible();
     AxisDirection direction;
     if (scrollDirection == null) {
-      if (scrollable.evaluate().first.widget is Scrollable) {
-        direction = tester.firstWidget<Scrollable>(scrollable).axisDirection;
+      if (view.evaluate().first.widget is Scrollable) {
+        direction = tester.firstWidget<Scrollable>(view).axisDirection;
       } else {
         direction = AxisDirection.down;
       }
@@ -648,7 +666,7 @@ class PatrolTester {
         view: scrollablePatrolFinder.first,
         moveStep: moveStep,
         maxIteration: maxScrolls,
-        duration: duration,
+        pumpDuration: duration,
         dragDuration: dragDuration,
         settlePolicy: settle,
       );
