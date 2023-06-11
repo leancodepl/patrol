@@ -81,6 +81,50 @@ You can also change the timeout ad-hoc:
 await $(#addComment).tap(findTimeout: Duration(seconds: 30));
 ```
 
+### You gotta pump it up! But which one to use?
+
+Pumpimg is a mechanism provided by Flutter's engine that help us determine, 
+if we can execute the next action during the test. It is an equivalent 
+of what a human tester would do while testing an app - they would wait until 
+app's state stabilizes after they've done something. For example, we tap on a button
+and we get redirected to another screen, but the data which should be shown there 
+have not benn yet loaded. In such a case, a human tester waits, until some loader 
+or other animation finishes. Pumping mechanism does exactly this - it renders 
+consecutive frames on the screen for some defined time. Well, exactly? In most cases 
+we don't know in advance, for how much time we should pump new frames. We want to do it 
+as long as there are some new frames to show. Here comes `pumpAndSettle` to give us a 
+helping hand.
+
+`pumpAndSettle` method is called by default in Patrol inside all actions 
+that we can perform while testing - tapping, scrolling, entering text. 
+You can change that by setting `settlePolicy` argument, available in 
+most of Patrol's methods. You can use it to change the default, which 
+is `pumpAndSettle`, to either `pump` or `pumpAndTrySettle`. Yes, there is third 
+method for pumping, accessible only in Patrol. How is it different from other ones?
+
+`pumpAndTrySettle` is pretty much like `pumpAndSettle`, the only difference is 
+that `pumpAndSettle` throws an exception, if there were still new frames to render 
+after sonme defined timeout, while `pumpAndTrySettle` does not. That's why it 
+has `try` in it's name.
+
+When to use this new pumping method? Let us picture a scenario, in which 
+we have to deal with some animations. Let's say, that your app has some 
+endless animations, e.g. on a homescreen, to keep user's attention. 
+You'd like to wait for some things to happen, but using `pumoAndSettle`, 
+you'll keep getting an exception, because after some time, defined by 
+`timeout`, there will be still new frames to render. On the other hand, 
+you still want to pump frames for some time - if you didn't, the screen 
+you want to interact with might not be rendered yet, or it would have some 
+widgets missing or data not yet loaded.
+
+So, we decided to add a way to try settle - pump frames for some time 
+(10 seconds by default), but if after that time there is still something 
+new to render - do nothing and continue the test.
+
+We recommend using `pumpAndTrySettle`, because it works with both kinds 
+of animations - finite and infinite. This settle policy will be new 
+default in our framework.
+
 ### How does `scrollTo()` work?
 
 The `scrollTo()` method is simple to use, yet very powerful. Here's how you use
