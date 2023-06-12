@@ -10,6 +10,23 @@ Unfortunately, some breaking changes couldn't be avoided, but they're rather
 minor and mostly concern boilerplate and configuration files. The good news is
 that code of tests written in Dart stays the same (with some exceptions).
 
+## Common
+
+- Update the dependency in `pubspec.yaml`:
+
+  ```yaml
+  dev_dependencies:
+    patrol: ^2.0.0
+  ```
+
+- Make sure you're using the newest version of Patrol CLI. It should begin with
+  v2:
+
+  ```console
+  $ patrol --version
+  patrol_cli v2.0.0
+  ```
+
 ## Android
 
 ### MainActivityTest.java
@@ -52,26 +69,34 @@ public class MainActivityTest {
 
 A few changes are also needed in **app-level build.gradle**:
 
-```diff title="android/app/build.gradle"
- android {
-   // ...
-   defaultConfig {
-     //...
--    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-+    testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-   }
+```groovy title="android/app/build.gradle"
+android {
+  // ...
+  defaultConfig {
+    //...
+    testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+  }
 
-+  testOptions {
-+    execution "ANDROIDX_TEST_ORCHESTRATOR"
-+  }
- }
+  // ...
 
- dependencies {
-+  androidTestUtil "androidx.test:orchestrator:1.4.2"
- }
+  testOptions {
+    execution "ANDROIDX_TEST_ORCHESTRATOR"
+  }
+}
+
+dependencies {
+  androidTestUtil "androidx.test:orchestrator:1.4.2"
+}
 ```
 
-If you had `testImplementation "junit:junit:4.13.2"` or similar, it should be
-removed.
+If you had `testImplementation "junit:junit:4.13.2"` (or similar) in
+`dependencies` block, it should be removed.
 
 ## iOS
+
+## Caveats
+
+There are a few, and all are kept track of in [this issue]. We intent to fix all
+of them in future releases.
+
+[this issue]: https://github.com/leancodepl/patrol/issues/1341
