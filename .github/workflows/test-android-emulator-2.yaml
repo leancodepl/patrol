@@ -9,12 +9,12 @@ on:
 env:
   ANDROID_IMAGE: system-images;android-30;aosp_atd;x86
   FLUTTER_APP_ROOT: ${{ github.workspace }}/packages/patrol/example
-  PATROL_CLI_VERSION: 1.1.7
 
 jobs:
   main:
     name: Test on Android Emulator
-    runs-on: macos-latest
+    runs-on:
+      labels: ubuntu-latest-4-cores
     timeout-minutes: 60
 
     defaults:
@@ -35,16 +35,19 @@ jobs:
         with:
           channel: stable
           cache: true
+        
+      - name: Enable KVM group perms
+        run: |
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
 
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: Install patrol_cli
-        run: |
-          dart pub global activate \
-            --source git https://github.com/leancodepl/patrol.git \
-            --git-path packages/patrol_cli \
-            --git-ref patrol_cli-v${{ env.PATROL_CLI_VERSION }}
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
       - name: Download TestButler
         run: curl -f -o ~/test-butler-2.2.1.apk https://repo1.maven.org/maven2/com/linkedin/testbutler/test-butler-app/2.2.1/test-butler-app-2.2.1.apk
@@ -96,7 +99,7 @@ jobs:
           echo "Done"
 
           echo "Configuring emulator..."
-          echo "hw.cpu.ncore=1" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.cpu.ncore=2" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
@@ -113,6 +116,9 @@ jobs:
           bash ${{ github.workspace }}/.github/scripts/boot-completed-check.sh
           adb -s emulator-5554 emu kill
           echo "Done"
+
+      - name: Check HVM
+        run: emulator -accel-check
 
       - name: Run emulator and tests
         run: ${{ github.workspace }}/.github/scripts/run-emulator-and-tests.sh

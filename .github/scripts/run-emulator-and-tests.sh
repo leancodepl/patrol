@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # run emulator
-emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim &
+emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on &
 bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
 
 adb install ~/test-butler-2.2.1.apk
