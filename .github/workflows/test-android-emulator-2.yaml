@@ -14,7 +14,7 @@ jobs:
   main:
     name: Test on Android Emulator
     runs-on:
-      labels: ubuntu-latest-m
+      labels: ubuntu-latest-4
     timeout-minutes: 60
 
     defaults:
@@ -57,7 +57,7 @@ jobs:
         id: setup-ffmpeg
 
       - name: Install sponge
-        run: brew install sponge
+        run: sudo apt-get install moreutils
 
       - name: Generate gradlew
         run: |
@@ -71,10 +71,10 @@ jobs:
 
       - name: Add Android tools to path
         run: |
-          echo "/Users/runner/Library/Android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "/Users/runner/Library/Android/sdk/emulator" >> $GITHUB_PATH
-          echo "/Users/runner/Library/Android/sdk/platform-tools" >> $GITHUB_PATH
-          flutter config --android-sdk "/Users/runner/Library/Android/sdk"
+          echo "/usr/local/lib/android/sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "/usr/local/lib/android/sdk/emulator" >> $GITHUB_PATH
+          echo "/usr/local/lib/android/sdk/platform-tools" >> $GITHUB_PATH
+          flutter config --android-sdk "/usr/local/lib/android/sdk"
 
       - name: AVD cache
         uses: actions/cache@v3
@@ -83,7 +83,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-            ~/Library/Android/sdk/*
+            ~/lib/android/sdk/*
           key: avd-${{ env.ANDROID_IMAGE }}
           
       - name: Create emulator for caching
