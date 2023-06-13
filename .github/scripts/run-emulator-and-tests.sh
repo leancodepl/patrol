@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # run emulator
-emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on &
+emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on -timezone Europe/Paris &
 bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
 
 # record in background
