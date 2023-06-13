@@ -165,7 +165,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   void attachRootWidget(Widget rootWidget) {
     assert(
       (_currentDartTestFile != null) != (constants.hotRestartEnabled),
-      '_currentDartTestFile must be null during Hot Restart',
+      '_currentDartTestFile can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
