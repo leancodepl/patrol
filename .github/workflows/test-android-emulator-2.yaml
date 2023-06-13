@@ -7,7 +7,7 @@ on:
       - test_workflow_for_patrol_tests
 
 env:
-  ANDROID_IMAGE: system-images;android-30;aosp_atd;x86
+  ANDROID_IMAGE: system-images;android-34;google_apis;x86_64
   FLUTTER_APP_ROOT: ${{ github.workspace }}/packages/patrol/example
 
 jobs:
@@ -65,14 +65,7 @@ jobs:
         run: sudo apt-get install moreutils
 
       - name: Generate gradlew
-        run: |
-          flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
-          buildpid="$!"
-          while [ ! -e "android/gradlew" ]; do
-              echo "waiting for gradlew to generate..."
-              sleep 2
-          done
-          kill $buildpid
+        run: flutter build apk --debug --flavor=does-not-exist || true
 
       - name: Add Android tools to path
         run: |
@@ -121,9 +114,6 @@ jobs:
           bash ${{ github.workspace }}/.github/scripts/boot-completed-check.sh
           adb -s emulator-5554 emu kill
           echo "Done"
-
-      - name: Check HVM
-        run: emulator -accel-check
 
       - name: Run emulator and tests
         run: ${{ github.workspace }}/.github/scripts/run-emulator-and-tests.sh
