@@ -10,6 +10,7 @@ import pl.leancode.patrol.PatrolJUnitRunner;
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
+        PatrolJUnitRunner.setUp(MainActivity.class);
         PatrolJUnitRunner.waitForPatrolAppService();
         return PatrolJUnitRunner.listDartTests();
     }
