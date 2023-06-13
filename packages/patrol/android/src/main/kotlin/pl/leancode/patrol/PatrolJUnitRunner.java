@@ -1,6 +1,6 @@
 // Terminology note:
 // "Run a test" is used interchangeably with "execute a test".
-// "Run a Dart test" is used interchangeably with "request execution of a Dart test" and "execute Dart test".
+// "Run a Dart test" is used interchangeably with "request execution of a Dart test" and "execute a Dart test".
 // "ATO" is short for "Android Test Orchestrator".
 
 package pl.leancode.patrol;

@@ -59,6 +59,7 @@
       ]
     ],
     ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"]
+    ["Tips and tricks", "/tips-and-tricks"],
+    ["Migration guide for v2", "/migration_guide_v2"]
   ]
 }
