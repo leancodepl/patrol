@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -267,6 +270,12 @@ class PatrolTester {
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) {
+    if (Platform.isIOS && kReleaseMode) {
+      // Fix for enterText() not working in release mode on real iOS devices.
+      // See https://github.com/flutter/flutter/pull/89703
+      tester.testTextInput.register();
+    }
+
     return TestAsyncUtils.guard(() async {
       final resolvedFinder = await waitUntilVisible(
         finder,
