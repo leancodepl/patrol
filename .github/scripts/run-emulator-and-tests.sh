@@ -27,6 +27,8 @@ flutterlogspid="$!"
 
 EXIT_CODE=0
 
+adb emu geo fix -74.0060 40.7128
+
 # run tests 3 times and save tests' summary
 patrol test --verbose \
     --exclude integration_test/permissions_location_test.dart \
