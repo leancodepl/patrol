@@ -2,9 +2,6 @@ name: test android emulator 2
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - test_workflow_for_patrol_tests
 
 env:
   ANDROID_IMAGE: system-images;android-34;google_apis;x86_64
@@ -53,9 +50,6 @@ jobs:
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
-
-      - name: Download TestButler
-        run: curl -f -o ~/test-butler-2.2.1.apk https://repo1.maven.org/maven2/com/linkedin/testbutler/test-butler-app/2.2.1/test-butler-app-2.2.1.apk
 
       - name: Install ffmpeg
         uses: FedericoCarboni/setup-ffmpeg@v2

@@ -5,14 +5,6 @@ set -euo pipefail
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on &
 bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
 
-adb install ~/test-butler-2.2.1.apk
-adb shell am startservice com.linkedin.android.testbutler/com.linkedin.android.testbutler.ButlerService
-while ! adb shell ps | grep butler > /dev/null; do
-    sleep 1
-    echo "Waiting for test butler to start..."
-done
-echo "Started Test Butler"
-
 # record in background
 record() {
     adb shell mkdir -p /sdcard/screenrecords
