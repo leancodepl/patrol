@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  ANDROID_IMAGE: system-images;android-34;google_apis;x86_64
+  ANDROID_IMAGE: system-images;android-33;google_apis;x86_64
   FLUTTER_APP_ROOT: ${{ github.workspace }}/packages/patrol/example
 
 jobs:
