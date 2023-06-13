@@ -5,11 +5,7 @@ set -euo pipefail
 emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on &
 bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
 
-adb root
-adb shell setprop persist.sys.timezone "America/Los_Angeles"
-adb shell reboot
-sleep 1
-bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
+adb shell service call alarm 3 s16 America/Las_Angeles
 
 # record in background
 record() {
