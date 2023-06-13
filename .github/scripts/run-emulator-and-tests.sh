@@ -37,7 +37,13 @@ EXIT_CODE=0
 
 # run tests 3 times and save tests' summary
 patrol test \
-    -t integration_test/android_app_test.dart \
+    --exclude integration_test/permissions_location_test.dart \
+    --exclude integration_test/service_airplane_mode_test.dart \
+    --exclude integration_test/service_bluetooth_test.dart \
+    --exclude integration_test/webview_hackernews_test.dart \
+    --exclude integration_test/webview_leancode_test.dart \
+    --exclude integration_test/webview_login_test.dart \
+    --exclude integration_test/webview_stackoverflow_test.dart \
     | tee ./tests-summary || EXIT_CODE=$?
 
 # write lockfile to prevent next loop iteration
