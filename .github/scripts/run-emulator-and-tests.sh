@@ -2,7 +2,13 @@
 set -euo pipefail
 
 # run emulator
-emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on -timezone America/Los_Angeles -change-language English -change-country USA -change-locale en_US &
+emulator @MyAVD -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on &
+bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
+
+adb root
+adb shell setprop persist.sys.timezone "America/Los_Angeles"
+adb shell reboot
+sleep 1
 bash "$GITHUB_WORKSPACE/.github/scripts/boot-completed-check.sh"
 
 # record in background
@@ -26,8 +32,6 @@ flutter logs | tee ./flutter-logs &
 flutterlogspid="$!"
 
 EXIT_CODE=0
-
-adb emu geo fix -74.0060 40.7128
 
 # run tests 3 times and save tests' summary
 patrol test --verbose \
