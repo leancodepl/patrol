@@ -48,6 +48,7 @@ import pl.leancode.patrol.PatrolJUnitRunner;
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
+        PatrolJUnitRunner.setUp(MainActivity.class);
         PatrolJUnitRunner.waitForPatrolAppService();
         return PatrolJUnitRunner.listDartTests();
     }
@@ -89,6 +90,22 @@ dependencies {
 }
 ```
 
+<Info>
+  To achieve full isolation between test runs, enable the `clearPackageOption`:
+
+  ```groovy title="android/app/build.gradle"
+  defaultConfig {
+    //...
+    testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+    testInstrumentationRunnerArguments clearPackageData: "true"
+  }
+  ```
+
+  This will clear the app's data and permissions before each test run.
+  Unfortunately, no equivalent feature is available on iOS.
+
+</Info>
+
 If you had `testImplementation "junit:junit:4.13.2"` (or similar) in
 `dependencies` block, it should be removed.
 
@@ -103,7 +120,8 @@ integration_test/test_bundle.dart
 
 ## iOS
 
-On iOS, only one line has to be added in a single file:
+On iOS, only one line has to be added in the `RunnerUITests.m` file. Simply copy
+and paste these contents:
 
 ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
 @import XCTest;
