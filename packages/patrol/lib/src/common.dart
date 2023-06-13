@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
@@ -69,7 +70,7 @@ void patrolTest(
     description,
     skip: skip,
     timeout: timeout,
-    semanticsEnabled: semanticsEnabled,
+    semanticsEnabled: false,
     variant: variant,
     tags: tags,
     (widgetTester) async {
@@ -81,6 +82,7 @@ void patrolTest(
         config: config,
       );
       await callback(patrolTester);
+
 
       // ignore: prefer_const_declarations
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
