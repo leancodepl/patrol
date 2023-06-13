@@ -77,6 +77,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         title: Text(widget.title),
       ),
       body: ListView(
+        padding: EdgeInsets.all(8),
         key: const Key('listViewKey'),
         children: [
           const Text(
@@ -87,6 +88,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             key: const Key('counterText'),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
+          const TextField(
+            key: Key('textField'),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'You have entered this text',
+            ),
+          ),
+          SizedBox(height: 8),
           Container(
             key: const Key('box1'),
             color: Theme.of(context).colorScheme.background,
