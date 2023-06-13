@@ -1,3 +1,10 @@
+## 2.0.0-dev.3
+
+- Fix Hot Restart (#1347)
+- Fix `enterText()` not working on physical iOS devices (#1349)
+- **Breaking:** Change `MainActivityTest.java` template. Thanks to this change,
+  ap's package name no longer has to be passed in manually (#1348)
+
 ## 2.0.0-dev.2
 
 - Fix test bundling not working on physical iOS devices (works only with `patrol
