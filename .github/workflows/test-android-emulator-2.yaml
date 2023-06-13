@@ -14,7 +14,7 @@ jobs:
   main:
     name: Test on Android Emulator
     runs-on:
-      labels: ubuntu-latest-4-cores-wrong
+      labels: ubuntu-20.04-4core
     timeout-minutes: 60
 
     defaults:
