@@ -796,8 +796,20 @@ void main() {
             child: StatefulBuilder(
               builder: (context, setState) {
                 return Column(
+                  key: Key('column'),
                   children: [
+                    Row(
+                      children: [
+                        Column(
+                          children: [],
+                        ),
+                      ],
+                    ),
                     Text('count: $count'),
+                    const ElevatedButton(
+                      onPressed: null,
+                      child: Text('Disabled button'),
+                    ),
                     const ElevatedButton(
                       onPressed: null,
                       child: Text('Disabled button'),
@@ -827,7 +839,7 @@ void main() {
       patrolTest('finds button by its active status', ($) async {
         await $.pumpWidget(app);
 
-        await $('Enabled button')
+        await $(ElevatedButton)
             .which<ElevatedButton>((button) => button.enabled)
             .tap();
 
@@ -837,7 +849,7 @@ void main() {
       patrolTest('finds button by its font size', ($) async {
         await $.pumpWidget(app);
 
-        await $('Enabled button')
+        await $(ElevatedButton)
             .which<ElevatedButton>(
               (button) => button.style?.textStyle?.resolve({})?.fontSize == 20,
             )
@@ -849,7 +861,7 @@ void main() {
       patrolTest('finds button by its active status and color', ($) async {
         await $.pumpWidget(app);
 
-        await $('Enabled button with color')
+        await $(ElevatedButton)
             .which<ElevatedButton>((button) => button.enabled)
             .which<ElevatedButton>(
               (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
@@ -857,6 +869,37 @@ void main() {
             .tap();
 
         expect($('count: 10'), findsOneWidget);
+      });
+
+      patrolTest('finds 2 buttons by their inactive status', ($) async {
+        await $.pumpWidget(app);
+
+        expect(
+          $(ElevatedButton).which<ElevatedButton>((button) => !button.enabled),
+          findsNWidgets(2),
+        );
+      });
+
+      patrolTest('finds zero widgets if type does not match', ($) async {
+        await $.pumpWidget(app);
+
+        expect(
+          $(#column).which<ElevatedButton>((button) => !button.enabled),
+          findsNothing,
+        );
+      });
+
+      patrolTest(
+          'finds one widget if there are 2 widgets of the same type in the subtree',
+          ($) async {
+        await $.pumpWidget(app);
+
+        expect(
+          $(#column).which<Column>(
+            (column) => column.mainAxisAlignment == MainAxisAlignment.start,
+          ),
+          findsOneWidget,
+        );
       });
     });
 

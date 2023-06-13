@@ -1,12 +1,27 @@
 package pl.leancode.patrol.example;
 
-import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.leancode.patrol.PatrolTestRule;
-import pl.leancode.patrol.PatrolTestRunner;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import pl.leancode.patrol.PatrolJUnitRunner;
 
-@RunWith(PatrolTestRunner.class)
+@RunWith(Parameterized.class)
 public class MainActivityTest {
-    @Rule
-    public PatrolTestRule<MainActivity> rule = new PatrolTestRule<>(MainActivity.class);
+    @Parameters(name = "{0}")
+    public static Object[] testCases() {
+        PatrolJUnitRunner.waitForPatrolAppService();
+        return PatrolJUnitRunner.listDartTests();
+    }
+
+    public MainActivityTest(String dartTestName) {
+        this.dartTestName = dartTestName;
+    }
+
+    private final String dartTestName;
+
+    @Test
+    public void runDartTest() {
+        PatrolJUnitRunner.runDartTest(dartTestName);
+    }
 }

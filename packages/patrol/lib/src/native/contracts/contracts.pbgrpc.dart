@@ -13,6 +13,75 @@ import 'package:grpc/service_api.dart' as $grpc;
 import 'contracts.pb.dart' as $0;
 export 'contracts.pb.dart';
 
+class PatrolAppServiceClient extends $grpc.Client {
+  static final _$listDartTests =
+      $grpc.ClientMethod<$0.Empty, $0.ListDartTestsResponse>(
+          '/patrol.PatrolAppService/listDartTests',
+          ($0.Empty value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.ListDartTestsResponse.fromBuffer(value));
+  static final _$runDartTest =
+      $grpc.ClientMethod<$0.RunDartTestRequest, $0.RunDartTestResponse>(
+          '/patrol.PatrolAppService/runDartTest',
+          ($0.RunDartTestRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) =>
+              $0.RunDartTestResponse.fromBuffer(value));
+
+  PatrolAppServiceClient($grpc.ClientChannel channel,
+      {$grpc.CallOptions? options,
+      $core.Iterable<$grpc.ClientInterceptor>? interceptors})
+      : super(channel, options: options, interceptors: interceptors);
+
+  $grpc.ResponseFuture<$0.ListDartTestsResponse> listDartTests($0.Empty request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$listDartTests, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.RunDartTestResponse> runDartTest(
+      $0.RunDartTestRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$runDartTest, request, options: options);
+  }
+}
+
+abstract class PatrolAppServiceBase extends $grpc.Service {
+  $core.String get $name => 'patrol.PatrolAppService';
+
+  PatrolAppServiceBase() {
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.ListDartTestsResponse>(
+        'listDartTests',
+        listDartTests_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
+        ($0.ListDartTestsResponse value) => value.writeToBuffer()));
+    $addMethod(
+        $grpc.ServiceMethod<$0.RunDartTestRequest, $0.RunDartTestResponse>(
+            'runDartTest',
+            runDartTest_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $0.RunDartTestRequest.fromBuffer(value),
+            ($0.RunDartTestResponse value) => value.writeToBuffer()));
+  }
+
+  $async.Future<$0.ListDartTestsResponse> listDartTests_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return listDartTests(call, await request);
+  }
+
+  $async.Future<$0.RunDartTestResponse> runDartTest_Pre($grpc.ServiceCall call,
+      $async.Future<$0.RunDartTestRequest> request) async {
+    return runDartTest(call, await request);
+  }
+
+  $async.Future<$0.ListDartTestsResponse> listDartTests(
+      $grpc.ServiceCall call, $0.Empty request);
+  $async.Future<$0.RunDartTestResponse> runDartTest(
+      $grpc.ServiceCall call, $0.RunDartTestRequest request);
+}
+
 class NativeAutomatorClient extends $grpc.Client {
   static final _$configure = $grpc.ClientMethod<$0.ConfigureRequest, $0.Empty>(
       '/patrol.NativeAutomator/configure',
@@ -152,10 +221,10 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/debug',
       ($0.Empty value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
-  static final _$submitTestResults =
-      $grpc.ClientMethod<$0.SubmitTestResultsRequest, $0.Empty>(
-          '/patrol.NativeAutomator/submitTestResults',
-          ($0.SubmitTestResultsRequest value) => value.writeToBuffer(),
+  static final _$markPatrolAppServiceReady =
+      $grpc.ClientMethod<$0.Empty, $0.Empty>(
+          '/patrol.NativeAutomator/markPatrolAppServiceReady',
+          ($0.Empty value) => value.writeToBuffer(),
           ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
 
   NativeAutomatorClient($grpc.ClientChannel channel,
@@ -328,10 +397,10 @@ class NativeAutomatorClient extends $grpc.Client {
     return $createUnaryCall(_$debug, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.Empty> submitTestResults(
-      $0.SubmitTestResultsRequest request,
+  $grpc.ResponseFuture<$0.Empty> markPatrolAppServiceReady($0.Empty request,
       {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$submitTestResults, request, options: options);
+    return $createUnaryCall(_$markPatrolAppServiceReady, request,
+        options: options);
   }
 }
 
@@ -566,13 +635,12 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.SubmitTestResultsRequest, $0.Empty>(
-        'submitTestResults',
-        submitTestResults_Pre,
+    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
+        'markPatrolAppServiceReady',
+        markPatrolAppServiceReady_Pre,
         false,
         false,
-        ($core.List<$core.int> value) =>
-            $0.SubmitTestResultsRequest.fromBuffer(value),
+        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
   }
 
@@ -734,9 +802,9 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return debug(call, await request);
   }
 
-  $async.Future<$0.Empty> submitTestResults_Pre($grpc.ServiceCall call,
-      $async.Future<$0.SubmitTestResultsRequest> request) async {
-    return submitTestResults(call, await request);
+  $async.Future<$0.Empty> markPatrolAppServiceReady_Pre(
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
+    return markPatrolAppServiceReady(call, await request);
   }
 
   $async.Future<$0.Empty> configure(
@@ -795,6 +863,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $async.Future<$0.Empty> setLocationAccuracy(
       $grpc.ServiceCall call, $0.SetLocationAccuracyRequest request);
   $async.Future<$0.Empty> debug($grpc.ServiceCall call, $0.Empty request);
-  $async.Future<$0.Empty> submitTestResults(
-      $grpc.ServiceCall call, $0.SubmitTestResultsRequest request);
+  $async.Future<$0.Empty> markPatrolAppServiceReady(
+      $grpc.ServiceCall call, $0.Empty request);
 }

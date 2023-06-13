@@ -9,11 +9,11 @@
   final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     private let automator: Automator
 
-    private let onTestResultsSubmitted: ([String: String]) -> Void
+    private let onAppReady: (Bool) -> Void
 
-    init(automator: Automator, onTestResultsSubmitted: @escaping ([String: String]) -> Void) {
+    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
       self.automator = automator
-      self.onTestResultsSubmitted = onTestResultsSubmitted
+      self.onAppReady = onAppReady
     }
 
     func configure(
@@ -44,7 +44,6 @@
         throw PatrolError.methodNotImplemented("pressBack")
       }
     }
-
     func pressRecentApps(
       request: Empty,
       context: GRPCAsyncServerCallContext
@@ -389,17 +388,6 @@
       }
     }
 
-    func submitTestResults(
-      request: Patrol_SubmitTestResultsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Empty {
-      return try await runCatching {
-        Logger.shared.i("submitted \(request.results.count) dart test results")
-        onTestResultsSubmitted(request.results)
-        return DefaultResponse()
-      }
-    }
-
     private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
       // TODO: Use an interceptor (like on Android)
       // See: https://github.com/grpc/grpc-swift/issues/1148
@@ -411,6 +399,14 @@
       } catch let err {
         throw PatrolError.unknown(err)
       }
+    }
+
+    func markPatrolAppServiceReady(
+      request: Patrol_Empty,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> Patrol_Empty {
+      onAppReady(true)
+      return Empty()
     }
   }
 

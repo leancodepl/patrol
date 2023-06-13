@@ -1,5 +1,4 @@
 import 'package:file/file.dart';
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/extensions/core.dart';
 
 class DartDefinesReader {
@@ -14,7 +13,7 @@ class DartDefinesReader {
   Map<String, String> fromCli({required List<String> args}) => _parse(args);
 
   Map<String, String> fromFile() {
-    final filePath = join(_projectRoot.path, '.patrol.env');
+    final filePath = _fs.path.join(_projectRoot.path, '.patrol.env');
     final file = _fs.file(filePath);
 
     if (!file.existsSync()) {

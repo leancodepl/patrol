@@ -14,7 +14,14 @@
   },
   "sidebar": [
     ["About", "/"],
-    ["Getting started", "/getting-started"],
+    [
+      "Getting started",
+      [
+        ["Getting started", "/getting-started/getting-started"],
+        ["Native automation setup", "/getting-started/native"],
+        ["Custom finders setup", "/getting-started/custom-finders"]
+      ]
+    ],
     [
       "Custom finders",
       [
@@ -27,7 +34,6 @@
       "Native automation",
       [
         ["Overview", "/native/overview"],
-        ["Setup", "/native/setup"],
         ["Usage", "/native/usage"],
         ["Advanced", "/native/advanced"],
         ["Feature parity", "/native/feature-parity"]

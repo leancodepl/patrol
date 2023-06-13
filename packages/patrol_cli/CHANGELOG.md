@@ -1,3 +1,33 @@
+## 2.0.0-dev.2
+
+- Fix test bundling not working on physical iOS devices (works only with `patrol
+test --release`) (#1303)
+
+- Fix test label (red text in the upper left corner) of the current test being
+  always `test_bundle.dart` (#1306)
+
+## 2.0.0-dev.1
+
+- Add test bundling (#1004)
+
+## 1.1.11
+
+- Deprecate running test on many devices simultaneously (#1318)
+
+## 1.1.10
+
+- Fix `dart pub global activate patrol_cli` failing because of transitive
+  dependency not following semver (#1290)
+
+## 1.1.9
+
+- Add support for Flutter 3.10 (#1254)
+- Fix crashes on Windows (#1255)
+
+## 1.1.8
+
+- Fix analytics being always enabled (#1246)
+
 ## 1.1.7
 
 - Fix `patrol develop` not attaching to the app on the other-than-first attached

@@ -9,7 +9,7 @@
 #endif
 
 @implementation PatrolPlugin
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
++ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   [SwiftPatrolPlugin registerWithRegistrar:registrar];
 }
 @end

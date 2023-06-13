@@ -1,0 +1,9 @@
+include: package:leancode_lint/analysis_options.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: false
+
+analyzer:
+  errors:
+    deprecated_member_use: ignore # TODO: Remove after deprections are fixed

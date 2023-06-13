@@ -14,6 +14,399 @@ import 'contracts.pbenum.dart';
 
 export 'contracts.pbenum.dart';
 
+class ListDartTestsResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'ListDartTestsResponse',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOM<DartTestGroup>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'group',
+        subBuilder: DartTestGroup.create)
+    ..hasRequiredFields = false;
+
+  ListDartTestsResponse._() : super();
+  factory ListDartTestsResponse({
+    DartTestGroup? group,
+  }) {
+    final _result = create();
+    if (group != null) {
+      _result.group = group;
+    }
+    return _result;
+  }
+  factory ListDartTestsResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory ListDartTestsResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  ListDartTestsResponse clone() =>
+      ListDartTestsResponse()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  ListDartTestsResponse copyWith(
+          void Function(ListDartTestsResponse) updates) =>
+      super.copyWith((message) => updates(message as ListDartTestsResponse))
+          as ListDartTestsResponse; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static ListDartTestsResponse create() => ListDartTestsResponse._();
+  ListDartTestsResponse createEmptyInstance() => create();
+  static $pb.PbList<ListDartTestsResponse> createRepeated() =>
+      $pb.PbList<ListDartTestsResponse>();
+  @$core.pragma('dart2js:noInline')
+  static ListDartTestsResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<ListDartTestsResponse>(create);
+  static ListDartTestsResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  DartTestGroup get group => $_getN(0);
+  @$pb.TagNumber(1)
+  set group(DartTestGroup v) {
+    setField(1, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasGroup() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearGroup() => clearField(1);
+  @$pb.TagNumber(1)
+  DartTestGroup ensureGroup() => $_ensure(0);
+}
+
+class DartTestGroup extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'DartTestGroup',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'name')
+    ..pc<DartTestCase>(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'tests',
+        $pb.PbFieldType.PM,
+        subBuilder: DartTestCase.create)
+    ..pc<DartTestGroup>(
+        3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'groups',
+        $pb.PbFieldType.PM,
+        subBuilder: DartTestGroup.create)
+    ..hasRequiredFields = false;
+
+  DartTestGroup._() : super();
+  factory DartTestGroup({
+    $core.String? name,
+    $core.Iterable<DartTestCase>? tests,
+    $core.Iterable<DartTestGroup>? groups,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    if (tests != null) {
+      _result.tests.addAll(tests);
+    }
+    if (groups != null) {
+      _result.groups.addAll(groups);
+    }
+    return _result;
+  }
+  factory DartTestGroup.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory DartTestGroup.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  DartTestGroup clone() => DartTestGroup()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  DartTestGroup copyWith(void Function(DartTestGroup) updates) =>
+      super.copyWith((message) => updates(message as DartTestGroup))
+          as DartTestGroup; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static DartTestGroup create() => DartTestGroup._();
+  DartTestGroup createEmptyInstance() => create();
+  static $pb.PbList<DartTestGroup> createRepeated() =>
+      $pb.PbList<DartTestGroup>();
+  @$core.pragma('dart2js:noInline')
+  static DartTestGroup getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DartTestGroup>(create);
+  static DartTestGroup? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.List<DartTestCase> get tests => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.List<DartTestGroup> get groups => $_getList(2);
+}
+
+class DartTestCase extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'DartTestCase',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'name')
+    ..hasRequiredFields = false;
+
+  DartTestCase._() : super();
+  factory DartTestCase({
+    $core.String? name,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    return _result;
+  }
+  factory DartTestCase.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory DartTestCase.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  DartTestCase clone() => DartTestCase()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  DartTestCase copyWith(void Function(DartTestCase) updates) =>
+      super.copyWith((message) => updates(message as DartTestCase))
+          as DartTestCase; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static DartTestCase create() => DartTestCase._();
+  DartTestCase createEmptyInstance() => create();
+  static $pb.PbList<DartTestCase> createRepeated() =>
+      $pb.PbList<DartTestCase>();
+  @$core.pragma('dart2js:noInline')
+  static DartTestCase getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<DartTestCase>(create);
+  static DartTestCase? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+}
+
+class RunDartTestRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'RunDartTestRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOS(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'name')
+    ..hasRequiredFields = false;
+
+  RunDartTestRequest._() : super();
+  factory RunDartTestRequest({
+    $core.String? name,
+  }) {
+    final _result = create();
+    if (name != null) {
+      _result.name = name;
+    }
+    return _result;
+  }
+  factory RunDartTestRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory RunDartTestRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  RunDartTestRequest clone() => RunDartTestRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  RunDartTestRequest copyWith(void Function(RunDartTestRequest) updates) =>
+      super.copyWith((message) => updates(message as RunDartTestRequest))
+          as RunDartTestRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static RunDartTestRequest create() => RunDartTestRequest._();
+  RunDartTestRequest createEmptyInstance() => create();
+  static $pb.PbList<RunDartTestRequest> createRepeated() =>
+      $pb.PbList<RunDartTestRequest>();
+  @$core.pragma('dart2js:noInline')
+  static RunDartTestRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RunDartTestRequest>(create);
+  static RunDartTestRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get name => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set name($core.String v) {
+    $_setString(0, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasName() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearName() => clearField(1);
+}
+
+class RunDartTestResponse extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'RunDartTestResponse',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..e<RunDartTestResponse_Result>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'result',
+        $pb.PbFieldType.OE,
+        defaultOrMaker: RunDartTestResponse_Result.SUCCESS,
+        valueOf: RunDartTestResponse_Result.valueOf,
+        enumValues: RunDartTestResponse_Result.values)
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'details')
+    ..hasRequiredFields = false;
+
+  RunDartTestResponse._() : super();
+  factory RunDartTestResponse({
+    RunDartTestResponse_Result? result,
+    $core.String? details,
+  }) {
+    final _result = create();
+    if (result != null) {
+      _result.result = result;
+    }
+    if (details != null) {
+      _result.details = details;
+    }
+    return _result;
+  }
+  factory RunDartTestResponse.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory RunDartTestResponse.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  RunDartTestResponse clone() => RunDartTestResponse()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  RunDartTestResponse copyWith(void Function(RunDartTestResponse) updates) =>
+      super.copyWith((message) => updates(message as RunDartTestResponse))
+          as RunDartTestResponse; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static RunDartTestResponse create() => RunDartTestResponse._();
+  RunDartTestResponse createEmptyInstance() => create();
+  static $pb.PbList<RunDartTestResponse> createRepeated() =>
+      $pb.PbList<RunDartTestResponse>();
+  @$core.pragma('dart2js:noInline')
+  static RunDartTestResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<RunDartTestResponse>(create);
+  static RunDartTestResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  RunDartTestResponse_Result get result => $_getN(0);
+  @$pb.TagNumber(1)
+  set result(RunDartTestResponse_Result v) {
+    setField(1, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasResult() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearResult() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get details => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set details($core.String v) {
+    $_setString(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasDetails() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearDetails() => clearField(2);
+}
+
 class ConfigureRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')

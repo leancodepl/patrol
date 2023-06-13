@@ -1,3 +1,43 @@
+## 2.0.0-dev.2
+
+- Fix test bundling not working on physical iOS devices (works only with `patrol
+test --release`) (#1303)
+
+- Fix test label (red text in the upper left corner) of the current test being
+  always `test_bundle.dart` (#1306)
+
+## 2.0.0-dev.1
+
+- Backport changes from `master` (#1293)
+
+## 1.2.0-dev.3
+
+- Support test bundling on iOS (#1236)
+
+## 1.2.0-dev.2
+
+- Fix a small typo in logs (#1229)
+
+## 1.2.0-dev.1
+
+- Support test bundling on Android (#1205) (#1220) (#1221)
+
+## 1.1.4
+
+- Fix build with Android Gradle Plugin v8 (#1276)
+
+## 1.1.3
+
+- Fix `which()` not taking previous finder(s) into account (#1271)
+
+## 1.1.2
+
+- Fix crashing when using Gradle 8 (#1262)
+
+## 1.1.1
+
+- Add support for Flutter 3.10 (#1254)
+
 ## 1.1.0
 
 This version marks the official release of Hot Restart. [Learn more

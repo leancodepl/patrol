@@ -1,9 +1,18 @@
+// ignore_for_file: invalid_use_of_internal_member, implementation_imports
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/custom_finders/patrol_tester.dart';
+import 'package:patrol/src/native/contracts/contracts.pb.dart';
+import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
+import 'package:test_api/src/backend/group.dart';
+import 'package:test_api/src/backend/invoker.dart';
+import 'package:test_api/src/backend/test.dart';
+
+import 'constants.dart' as constants;
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
@@ -46,14 +55,15 @@ void patrolTest(
 }) {
   NativeAutomator? nativeAutomator;
 
+  PatrolBinding? patrolBinding;
+
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
         nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
 
-        final binding = PatrolBinding.ensureInitialized();
-        binding.framePolicy = framePolicy;
-        binding.nativeAutomator = nativeAutomator;
+        patrolBinding = PatrolBinding.ensureInitialized();
+        patrolBinding.framePolicy = framePolicy;
         break;
       case BindingType.integrationTest:
         IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
@@ -73,7 +83,34 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      await nativeAutomator?.configure();
+      if (patrolBinding != null && !constants.hotRestartEnabled) {
+        // If Patrol's native automation feature is enabled, then this test will
+        // be executed only if the native side requested it to be executed.
+        // Otherwise, it returns early.
+        //
+        // The assumption here is that this test doesn't have any extra parent
+        // groups. Every Dart test suite has an implict, unnamed, top-level
+        // group. An additional group is present in the bundled_test.dart, and
+        // its name is equal to the path to the Dart test file in the
+        // integration_test directory.
+        //
+        // In other words, the developer cannot use `group()` in the tests.
+        //
+        // Example: if this function is called from the Dart test file named
+        // "example_test.dart", and that file is located in the
+        // "integration_test/examples" directory, we assume that the name of the
+        // immediate parent group is "examples.example_test".
+
+        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
+        final requestedToExecute = await patrolBinding.patrolAppService
+            .waitForExecutionRequest(parentGroupName);
+
+        if (!requestedToExecute) {
+          return;
+        }
+
+        await nativeAutomator?.configure();
+      }
 
       final patrolTester = PatrolTester(
         tester: widgetTester,
@@ -100,4 +137,26 @@ void patrolTest(
       }
     },
   );
+}
+
+/// Creates a DartTestGroup by visiting the subgroups of [topLevelGroup].
+@internal
+DartTestGroup createDartTestGroup(
+  Group topLevelGroup, {
+  String prefix = '',
+}) {
+  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
+  final group = DartTestGroup(name: groupName);
+
+  for (final entry in topLevelGroup.entries) {
+    if (entry is Group) {
+      group.groups.add(DartTestGroup(name: entry.name));
+    }
+
+    if (entry is Test && entry.name != 'patrol_test_explorer') {
+      throw StateError('Expected group, got test: ${entry.name}');
+    }
+  }
+
+  return group;
 }
