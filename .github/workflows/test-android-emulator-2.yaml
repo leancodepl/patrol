@@ -17,6 +17,11 @@ jobs:
       labels: ubuntu-latest-4
     timeout-minutes: 60
 
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.7.x']
+
     defaults:
       run:
         working-directory: ${{ env.FLUTTER_APP_ROOT }}
@@ -33,7 +38,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ matrix.flutter-version }}
           cache: true
         
       - name: Enable KVM group perms
