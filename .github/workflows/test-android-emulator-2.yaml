@@ -59,7 +59,14 @@ jobs:
         run: sudo apt-get install moreutils
 
       - name: Generate gradlew
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: |
+          flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
+          buildpid="$!"
+          while [ ! -e "android/gradlew" ]; do
+              echo "waiting for gradlew to generate..."
+              sleep 2
+          done
+          kill $buildpid
 
       - name: Add Android tools to path
         run: |
@@ -73,9 +80,9 @@ jobs:
         id: avd-cache
         with:
           path: |
-            /usr/local/.android/avd/*
-            /usr/local/.android/adb*
-            /usr/local/lib/android/sdk/system-images/*
+            ~/.android/avd/*
+            ~/.android/adb*
+            ~/lib/android/sdk/system-images/*
           key: avd-${{ env.ANDROID_IMAGE }}
           
       - name: Create emulator for caching
@@ -91,16 +98,16 @@ jobs:
           echo "Done"
 
           echo "Configuring emulator..."
-          echo "hw.cpu.ncore=2" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.gpu.enabled=yes" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.gpu.mode=swiftshader_indirect" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.ramSize=4096" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "disk.dataPartition.size=6G" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.camera.back=virtualscene" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "vm.heapSize=576" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.lcd.density=440" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.lcd.height=2220" >> /usr/local/.android/avd/MyAVD.avd/config.ini
-          echo "hw.lcd.width=1080" >> /usr/local/.android/avd/MyAVD.avd/config.ini
+          echo "hw.cpu.ncore=2" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "disk.dataPartition.size=6G" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.camera.back=virtualscene" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "vm.heapSize=576" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.lcd.density=440" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.lcd.height=2220" >> ~/.android/avd/MyAVD.avd/config.ini
+          echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
           echo "Done"
 
           echo "Booting up and shutting down emulator..."
