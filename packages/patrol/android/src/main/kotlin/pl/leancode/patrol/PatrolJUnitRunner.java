@@ -71,7 +71,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
 
-        patrolAppServiceClient = new PatrolAppServiceClient();
+        patrolAppServiceClient = createAppServiceClient();
+    }
+
+    public PatrolAppServiceClient createAppServiceClient() {
+        return new PatrolAppServiceClient();
     }
 
     /**
