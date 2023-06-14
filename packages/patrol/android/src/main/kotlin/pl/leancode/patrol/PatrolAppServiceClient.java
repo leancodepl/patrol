@@ -15,15 +15,16 @@ public class PatrolAppServiceClient {
 
     private final PatrolAppServiceGrpc.PatrolAppServiceBlockingStub blockingStub;
 
-    /**
-     * Construct client for accessing PatrolAppService server using the existing channel.
-     */
     public PatrolAppServiceClient() {
         String target = "localhost:8082"; // TODO: Document this value better
+        Logger.INSTANCE.i("Created PatrolAppServiceClient with default target: " + target);
+        ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
+        blockingStub = PatrolAppServiceGrpc.newBlockingStub(channel);
+    }
+
+    public PatrolAppServiceClient(String target) {
         Logger.INSTANCE.i("Created PatrolAppServiceClient, target: " + target);
         ManagedChannel channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
-
-        // Passing Channels to code makes code easier to test and makes it easier to reuse Channels.
         blockingStub = PatrolAppServiceGrpc.newBlockingStub(channel);
     }
 
