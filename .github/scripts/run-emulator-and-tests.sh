@@ -30,8 +30,7 @@ flutterlogspid="$!"
 EXIT_CODE=0
 
 # run tests 3 times and save tests' summary
-patrol test --verbose \
-    --exclude integration_test/permissions_location_test.dart \
+patrol test \
     --exclude integration_test/service_airplane_mode_test.dart \
     --exclude integration_test/service_bluetooth_test.dart \
     --exclude integration_test/webview_hackernews_test.dart \
