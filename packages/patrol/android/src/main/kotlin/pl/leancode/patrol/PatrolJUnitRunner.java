@@ -24,7 +24,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  * </p>
  */
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
-    private static PatrolAppServiceClient patrolAppServiceClient;
+    public static PatrolAppServiceClient patrolAppServiceClient;
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -70,13 +70,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
-
-        patrolAppServiceClient = new PatrolAppServiceClient();
     }
 
     /**
      * <p>
-     * Waits until PatrolAppService, running in the Dart side of the app, reports 
+     * Waits until PatrolAppService, running in the Dart side of the app, reports
      * that it's ready to be asked about the list of Dart tests.
      * </p>
      *
