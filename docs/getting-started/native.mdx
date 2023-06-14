@@ -144,6 +144,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       ```java title="MainActivityTest.java"
       package pl.leancode.patrol.example; // replace "pl.leancode.patrol.example" with your app's package
 
+      import androidx.test.platform.app.InstrumentationRegistry;
       import org.junit.Test;
       import org.junit.runner.RunWith;
       import org.junit.runners.Parameterized;
@@ -154,9 +155,10 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       public class MainActivityTest {
           @Parameters(name = "{0}")
           public static Object[] testCases() {
-              PatrolJUnitRunner.setUp(MainActivity.class);
-              PatrolJUnitRunner.waitForPatrolAppService();
-              return PatrolJUnitRunner.listDartTests();
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.setUp(MainActivity.class);
+              instrumentation.waitForPatrolAppService();
+              return instrumentation.listDartTests();
           }
 
           public MainActivityTest(String dartTestName) {
@@ -167,7 +169,8 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
           @Test
           public void runDartTest() {
-              PatrolJUnitRunner.runDartTest(dartTestName);
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.runDartTest(dartTestName);
           }
       }
       ```

@@ -24,7 +24,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  * </p>
  */
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
-    public static PatrolAppServiceClient patrolAppServiceClient;
+    public PatrolAppServiceClient patrolAppServiceClient;
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -56,7 +56,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * The app must also be run, and queried for Dart tests That's what this method does.
      * </p>
      */
-    public static void setUp(Class<?> activityClass) {
+    public void setUp(Class<?> activityClass) {
         Logger.INSTANCE.i("PatrolJUnitRunner.setUp(): activityClass = " + activityClass.getCanonicalName());
 
         // This code launches the app under test. It's based on ActivityTestRule#launchActivity.
@@ -70,6 +70,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
+
+        patrolAppServiceClient = new PatrolAppServiceClient();
     }
 
     /**
@@ -82,7 +84,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * PatrolAppService becomes ready once the special Dart test named "patrol_test_explorer" finishes running.
      * </p>
      */
-    public static void waitForPatrolAppService() {
+    public void waitForPatrolAppService() {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
         try {
@@ -96,7 +98,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
     }
 
-    public static Object[] listDartTests() {
+    public Object[] listDartTests() {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
@@ -114,7 +116,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Requests execution of a Dart test and waits for it to finish.
      * Throws AssertionError if the test fails.
      */
-    public static RunDartTestResponse runDartTest(String name) {
+    public RunDartTestResponse runDartTest(String name) {
         final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
 
         try {
