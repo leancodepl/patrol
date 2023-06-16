@@ -23,7 +23,6 @@ void patrol(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: _nativeAutomatorConfig,
-    semanticsEnabled: false,
     nativeAutomation: true,
     skip: skip,
     callback,
