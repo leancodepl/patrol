@@ -1,4 +1,4 @@
-## Unreleased
+## 1.1.5
 
 - Fix tests failing when using native automation on Android + Flutter 3.10
   (#1352)
