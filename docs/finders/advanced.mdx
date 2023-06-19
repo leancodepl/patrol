@@ -105,9 +105,13 @@ await $('Confirm').tap(settlePolicy: SettlePolicy.pump);
 ```
 
 `SettlePolicy` is an `enum` with 3 values. The default is `SettlePolicy.settle`
-but you can change it to `pump` or `trySettle`. While `settle` and `pump` simply
-refer to Flutter's built-in methods, `trySettle` is available only in Patrol.
-How is it different from other ones?
+but you can change it to `pump` or `trySettle`. Those values map to methods like this:
+ - `noSettle` -> `pump()`,
+ - `trySettle` -> `pumpAndTrySettle()`,
+ - `settle` -> `pumpAndSettle()`.
+
+While `settle` and `pump` simply refer to Flutter's built-in methods,
+`trySettle` is available only in Patrol. How is it different from other ones?
 
 `pumpAndTrySettle()` is pretty much like `pumpAndSettle()`, the only difference
 is that `pumpAndSettle()` throws an exception, if there were still new frames to
