@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Introduce `SettlePolicy` (#1285)
+- Rework scrolling (#1325)
 
 ## 2.0.0-dev.5
 
