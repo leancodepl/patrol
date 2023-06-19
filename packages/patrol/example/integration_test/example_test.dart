@@ -21,7 +21,7 @@ void main() {
       await $(FloatingActionButton).tap();
 
       expect($(#counterText).text, '2');
-      expect($('Hello, Flutter!'), findsOneWidget);
+      expect($('Hello, Flutter! FOO'), findsOneWidget);
     },
   );
 }
