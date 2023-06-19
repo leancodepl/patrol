@@ -490,7 +490,7 @@ class PatrolTester {
   ///
   ///  * can drag any widget, not only a [Scrollable]
   ///
-  ///  * performed drag is slower (it takes some time to performe dragging
+  ///  * performed drag is slower (it takes some time to perform dragging
   ///    gesture, half a second by default)
   ///
   ///  * you can configure, which version of pumping is performed between

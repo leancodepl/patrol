@@ -531,7 +531,6 @@ void main() {
               home: Column(
                 children: [
                   SingleChildScrollView(
-                    //scrollDirection: Axis.horizontal,
                     child: Column(
                       children: const [
                         Text('text 1'),
@@ -540,7 +539,6 @@ void main() {
                     ),
                   ),
                   SingleChildScrollView(
-                    //scrollDirection: Axis.horizontal,
                     child: Column(
                       children: const [Text('text 2')],
                     ),
