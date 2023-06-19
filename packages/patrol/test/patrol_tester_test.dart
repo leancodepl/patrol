@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/custom_finders/exceptions.dart';
+import 'package:patrol/src/custom_finders/patrol_tester.dart';
 
 void main() {
   group('PatrolTester', () {
@@ -934,6 +935,111 @@ void main() {
 
         expect($('top text').visible, false);
         expect($('bottom text').visible, true);
+      });
+    });
+
+    group('pumpAndTrySettle()', () {
+      late int count;
+      late int state;
+
+      setUp(() {
+        count = 0;
+        state = 0;
+      });
+
+      final appWithInfiniteAnimation = MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    CircularProgressIndicator(),
+                    Text('count: $count'),
+                    ElevatedButton(
+                      onPressed: () => setState(() => count++),
+                      style: ElevatedButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: const Text('Enabled button'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final appWithAnimationOnTap = MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    Text('count: $count'),
+                    ElevatedButton(
+                      onPressed: () => setState(() {
+                        state = 1;
+                        Timer(Duration(seconds: 5), () {
+                          setState(() {
+                            state = 0;
+                            count++;
+                          });
+                        });
+                      }),
+                      style: ElevatedButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: state != 0
+                          ? CircularProgressIndicator()
+                          : const Text('Enabled button'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      patrolTest(
+        "doesn't throw an exception when trying to settle an infinite animation",
+        ($) async {
+          await $.pumpWidget(appWithInfiniteAnimation);
+
+          // 10 seconds is verbatim here to guard against changing the default
+          final end = $.tester.binding.clock.now().add(Duration(seconds: 10));
+
+          await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
+
+          // Verify that the default timeout has passed
+          final now = $.tester.binding.clock.now();
+          expect(now.isAfter(end), true);
+
+          expect($('count: 1'), findsOneWidget);
+        },
+      );
+
+      patrolTest('settles when there is short animation', ($) async {
+        await $.pumpWidgetAndSettle(appWithAnimationOnTap);
+
+        await $(ElevatedButton).tap(
+          settlePolicy: SettlePolicy.trySettle,
+          settleTimeout: Duration(seconds: 10),
+        );
+
+        expect($('count: 1'), findsOneWidget);
+      });
+
+      patrolTest('is not used by default', ($) async {
+        await $.pumpWidget(appWithInfiniteAnimation);
+
+        await expectLater(
+          () => $(ElevatedButton).tap(),
+          throwsFlutterError,
+        );
       });
     });
   });
