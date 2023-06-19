@@ -8,6 +8,8 @@ void main() {
     ($) async {
       await createApp($);
 
+      throw Exception('This is an exception!');
+
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 

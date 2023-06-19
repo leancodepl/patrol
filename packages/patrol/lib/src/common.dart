@@ -144,6 +144,8 @@ void patrolTest(
           return true;
         });
       }
+
+      print('DEBUG_PATROL end of test');
     },
   );
 }
