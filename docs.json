@@ -14,7 +14,7 @@
   },
   "sidebar": [
     ["About", "/"],
-    ["Patrol 2.0 is here!", "/patrol_v2"],
+    ["Patrol 2.0 is here!", "/v2"],
     [
       "Getting started",
       [
