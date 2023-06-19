@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix tests failing when using native automation on Android + Flutter 3.10
+  (#1352)
+
 ## 1.1.4
 
 - Fix build with Android Gradle Plugin v8 (#1276)
