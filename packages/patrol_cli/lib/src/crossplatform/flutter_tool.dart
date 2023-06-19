@@ -36,6 +36,8 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
   }) async {
+    _enableInteractiveMode();
+
     await Future.wait<void>([
       logs(deviceId),
       attach(
@@ -73,6 +75,19 @@ class FlutterTool {
       )
         ..disposedBy(scope);
 
+      _stdin.listen((event) {
+        final char = String.fromCharCode(event.first);
+        if (char == 'r' || char == 'R') {
+          if (!_hotRestartActive) {
+            _logger.warn('Hot Restart: not attached to the app yet!');
+            return;
+          }
+
+          _logger.success('Hot Restart for entrypoint ${basename(target)}...');
+          process.stdin.add('R'.codeUnits);
+        }
+      }).disposedBy(scope);
+
       final completer = Completer<void>();
       scope.addDispose(() async {
         if (!completer.isCompleted) {
@@ -88,7 +103,6 @@ class FlutterTool {
             'Hot Restart: attached to the app (press "r" to restart)',
           );
           _hotRestartActive = true;
-          _enableInteractiveMode();
 
           if (!_logsActive) {
             _logger.warn('Hot Restart: logs are not connected yet');
@@ -107,14 +121,6 @@ class FlutterTool {
       }).disposedBy(scope);
 
       await completer.future;
-
-      _stdin.listen((event) {
-        final char = String.fromCharCode(event.first);
-        if (char == 'r' || char == 'R') {
-          _logger.success('Hot Restart for entrypoint ${basename(target)}...');
-          process.stdin.add('R'.codeUnits);
-        }
-      }).disposedBy(scope);
     });
   }
 
