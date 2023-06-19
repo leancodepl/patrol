@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
@@ -233,17 +232,12 @@ class DevelopCommand extends PatrolCommand {
     try {
       final future = action();
 
-      await Future.wait<void>([
-        _flutterTool.logs(device.id),
-        _flutterTool.attach(
-          deviceId: device.id,
-          target: flutterOpts.target,
-          appId: appId,
-          dartDefines: flutterOpts.dartDefines,
-        )
-      ]);
-
-      _enableInteractiveMode();
+      await _flutterTool.attachForHotRestart(
+        deviceId: device.id,
+        target: flutterOpts.target,
+        appId: appId,
+        dartDefines: flutterOpts.dartDefines,
+      );
 
       await future;
     } catch (err, st) {
@@ -261,14 +255,4 @@ class DevelopCommand extends PatrolCommand {
       }
     }
   }
-}
-
-void _enableInteractiveMode() {
-  // Prevents keystrokes from being printed automatically. Needs to be
-  // disabled for lineMode to be disabled too.
-  stdin.echoMode = false;
-
-  // Causes the stdin stream to provide the input as soon as it arrives (one
-  // key press at a time).
-  stdin.lineMode = false;
 }
