@@ -14,6 +14,7 @@
   },
   "sidebar": [
     ["About", "/"],
+    ["Patrol 2.0 is here!", "/patrol_v2"],
     [
       "Getting started",
       [
@@ -59,7 +60,6 @@
       ]
     ],
     ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"],
-    ["Migration guide for v2", "/migration_guide_v2"]
+    ["Tips and tricks", "/tips-and-tricks"]
   ]
 }
