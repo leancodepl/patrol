@@ -261,32 +261,36 @@ class PatrolFinder extends MatchFinder {
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
-  /// Scrolls [scrollable] in its scrolling direction until this finders finds
+  /// Scrolls [view] in [scrollDirection] until this finders finds
   /// at least one visible widget.
   ///
-  /// It also ensures that [scrollable] is visible, by calling
+  /// It also ensures that [view] is visible, by calling
   /// [PatrolFinder.waitUntilVisible].
   ///
   /// See also:
   ///  - [PatrolTester.scrollUntilVisible], which this method wraps
   Future<PatrolFinder> scrollTo({
-    Finder? scrollable,
+    Finder? view,
     double step = defaultScrollDelta,
+    AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
+    Duration dragDuration = const Duration(milliseconds: 500),
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return tester.scrollUntilVisible(
       finder: finder,
-      scrollable: scrollable,
+      view: view,
       delta: step,
+      scrollDirection: scrollDirection,
       maxScrolls: maxScrolls,
       duration: duration,
       settlePolicy: chooseSettlePolicy(
         andSettle: andSettle,
         settlePolicy: settlePolicy,
       ),
+      dragDuration: dragDuration,
     );
   }
 
