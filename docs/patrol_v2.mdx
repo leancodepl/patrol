@@ -1,10 +1,30 @@
 ---
-title: V2 migration guide
+title: Patrol 2.0 is here
 ---
 
-# Migration guide to v2
+# Patrol 2.0 is here!
 
-Patrol v2 is the new major version Patrol. It contains a few breaking changes.
+Patrol 2.0 is the new major version Patrol.
+
+- **Advanced test bundling** feature provides deep and seamless integration with
+  existing Android and iOS testing tools. It also fixes some long-standing
+  Flutter issues:
+
+  - [#115751](https://github.com/flutter/flutter/issues/115751)
+  - [#101296](https://github.com/flutter/flutter/issues/101296)
+  - [#117386](https://github.com/flutter/flutter/issues/117386)
+
+  **This is huge** (even though it may not look like it at first glance). To
+  learn more, read [the in-depth technical article][patrol_v2_article]
+  explaining the nuts and bolts.
+
+- **Improved scrolling and pumping** makes methods such as `tap()`,
+  `enterText()`, and `scrollTo()` more reliable and easier to use. For example,
+  they no longer throw an error if there's an infinite animation.
+
+# Migration guide
+
+Patrol 2.0 contains a few breaking changes.
 
 Fortunately, they're small and mostly touch only boilerplate and configuration
 files. The code of tests written in Dart stays the same (with some minor
@@ -100,8 +120,8 @@ dependencies {
 }
 ```
 
-<Info>
-  To achieve full isolation between test runs, enable the `clearPackageOption`:
+<Info> To achieve full isolation between test runs, enable the
+`clearPackageData` option:
 
 ```groovy title="android/app/build.gradle"
 defaultConfig {
@@ -140,3 +160,4 @@ There are a few, and all are kept track of in [this issue]. We intent to fix all
 of them in future releases.
 
 [this issue]: https://github.com/leancodepl/patrol/issues/1341
+[patrol_v2_article]: https://leancode.pl/blog/patrol-2-0-is-here
