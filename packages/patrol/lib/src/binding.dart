@@ -43,7 +43,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     tearDownAll(() async {
-      print('DEBUG_PATROL_3: tearDownAll started');
       if (!_shouldReportResultsToNative) {
         return;
       }
@@ -68,7 +67,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         }),
       );
       logger('Test results sent');
-      print('DEBUG_PATROL_3: tearDownAll finished');
     });
   }
 

@@ -11,7 +11,6 @@ void main() {
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 
-      print('DEBUG_PATROL: Will call native methods');
       await $.native.pressHome();
       await $.native.openApp();
 
