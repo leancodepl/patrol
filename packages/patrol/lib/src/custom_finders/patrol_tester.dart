@@ -12,8 +12,8 @@ class PatrolTesterConfig {
     this.existsTimeout = const Duration(seconds: 10),
     this.visibleTimeout = const Duration(seconds: 10),
     this.settleTimeout = const Duration(seconds: 10),
-    @Deprecated('Use settleBeahvior argument instead') this.andSettle = true,
-    // TODO: change default to trySettle
+    @Deprecated('Use settleBehavior argument instead') this.andSettle = true,
+    // TODO: change default to trySettle, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
     this.settlePolicy = SettlePolicy.settle,
   });
 
@@ -46,7 +46,7 @@ class PatrolTesterConfig {
   final bool andSettle;
 
   /// Defines which pump method should be called after actions such as
-  /// [PatrolFinder.tap] and [PatrolFinder].
+  /// [PatrolTester.tap], [PatrolTester.enterText], and [PatrolFinder.scrollTo].
   ///
   /// See [SettlePolicy] for more information.
   final SettlePolicy settlePolicy;
@@ -57,7 +57,7 @@ class PatrolTesterConfig {
     Duration? existsTimeout,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     String? appName,
     String? packageName,
@@ -67,7 +67,7 @@ class PatrolTesterConfig {
       existsTimeout: existsTimeout ?? this.existsTimeout,
       visibleTimeout: visibleTimeout ?? this.visibleTimeout,
       settleTimeout: settleTimeout ?? this.settleTimeout,
-      // TODO: remove after andSettle is removed
+      // TODO: remove after andSettle is removed, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
       // ignore: deprecated_member_use_from_same_package
       andSettle: andSettle ?? this.andSettle,
       settlePolicy: settlePolicy ?? this.settlePolicy,
@@ -194,9 +194,9 @@ class PatrolTester {
     );
   }
 
-  /// Calls [WidgetTester.pumpAndSettle] but it doesn't throw if it times out.
-  /// It prevents the tests from failing when you expect e.g. an
-  /// infinite animation to appear.
+  /// Calls [WidgetTester.pumpAndSettle] but doesn't throw if it times out.
+  /// It prevents the test from failing when there's e.g. an
+  /// infinite animation.
   ///
   /// See also [WidgetTester.pumpAndSettle].
   Future<void> pumpAndTrySettle({
@@ -259,7 +259,7 @@ class PatrolTester {
   ///  - [WidgetController.tap]
   Future<void> tap(
     Finder finder, {
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -270,7 +270,10 @@ class PatrolTester {
         timeout: visibleTimeout,
       );
       await tester.tap(resolvedFinder.first);
-      final settle = _chooseSettlePolicy(andSettle, settlePolicy);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
       await _performPump(
         settlePolicy: settle,
         settleTimeout: settleTimeout,
@@ -306,7 +309,7 @@ class PatrolTester {
   Future<void> enterText(
     Finder finder,
     String text, {
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -323,7 +326,10 @@ class PatrolTester {
         timeout: visibleTimeout,
       );
       await tester.enterText(resolvedFinder.first, text);
-      final settle = _chooseSettlePolicy(andSettle, settlePolicy);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
       await _performPump(
         settlePolicy: settle,
         settleTimeout: settleTimeout,
@@ -422,7 +428,7 @@ class PatrolTester {
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -437,7 +443,10 @@ class PatrolTester {
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
-      final settle = _chooseSettlePolicy(andSettle, settlePolicy);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
       await _performPump(
         settlePolicy: settle,
         settleTimeout: config.settleTimeout,
@@ -472,7 +481,7 @@ class PatrolTester {
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -488,7 +497,10 @@ class PatrolTester {
       }
       await Scrollable.ensureVisible(tester.firstElement(finder));
 
-      final settle = _chooseSettlePolicy(andSettle, settlePolicy);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
       await _performPump(
         settlePolicy: settle,
         settleTimeout: config.settleTimeout,
@@ -512,7 +524,7 @@ class PatrolTester {
     double delta = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -540,7 +552,10 @@ class PatrolTester {
           break;
       }
 
-      final settle = _chooseSettlePolicy(andSettle, settlePolicy);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
       final resolvedFinder = await dragUntilExists(
         finder: finder,
         view: scrollablePatrolFinder.first,
@@ -568,7 +583,7 @@ class PatrolTester {
     double delta = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -596,7 +611,10 @@ class PatrolTester {
           break;
       }
 
-      final settle = _chooseSettlePolicy(andSettle, settlePolicy);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
       final resolvedFinder = await dragUntilVisible(
         finder: finder,
         view: scrollablePatrolFinder.first,
@@ -628,37 +646,20 @@ class PatrolTester {
       await tester.pump();
     }
   }
-
-  SettlePolicy? _chooseSettlePolicy(
-    bool? andSettle,
-    SettlePolicy? settlePolicy,
-  ) {
-    SettlePolicy? settle;
-    if (andSettle == null) {
-      settle = settlePolicy;
-    } else {
-      if (andSettle) {
-        settle = SettlePolicy.settle;
-      } else {
-        settle = SettlePolicy.noSettle;
-      }
-    }
-    return settle;
-  }
 }
 
-/// Specifies how methods such as [PatrolTester.tap] or [PatrolTester.enterText] handle pumping, i.e. rendering new frames.
+/// Specifies how methods such as [PatrolTester.tap] or [PatrolTester.enterText] perform pumping, i.e. rendering new frames.
 ///
-/// It's usually useful when dealing with situations involving finite and infinite animations.
+/// It's useful when dealing with situations involving finite and infinite animations.
 enum SettlePolicy {
   /// [PatrolTester.pump] is used when pumping.
   ///
-  /// This renders a single frame. If some animations are currently working, they will move forward by a single frame.
+  /// This renders a single frame. If some animations are currently in progress, they will move forward by a single frame.
   noSettle,
 
   /// [PatrolTester.pumpAndSettle] is used when pumping.
   ///
-  /// This keeps on rendering new frames until there are no frames pending or timeout is reached. Throws an exception if timeout has been reached.
+  /// This keeps on rendering new frames until there are no frames pending or timeout is reached. Throws a [FlutterError] if timeout has been reached.
   settle,
 
   /// [PatrolTester.pumpAndTrySettle] is used when pumping.

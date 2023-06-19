@@ -199,14 +199,17 @@ class PatrolFinder extends MatchFinder {
   ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap({
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
     await tester.tap(
       this,
-      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -247,7 +250,10 @@ class PatrolFinder extends MatchFinder {
     await tester.enterText(
       this,
       text,
-      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -268,7 +274,7 @@ class PatrolFinder extends MatchFinder {
     double step = defaultScrollDelta,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return tester.scrollUntilVisible(
@@ -277,7 +283,10 @@ class PatrolFinder extends MatchFinder {
       delta: step,
       maxScrolls: maxScrolls,
       duration: duration,
-      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
     );
   }
 
@@ -462,13 +471,16 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// Same as [PatrolFinder.tap], but on a [PatrolFinder] which is not yet
   /// visible.
   Future<void> tap({
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).tap(
-      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
@@ -478,33 +490,19 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// visible.
   Future<void> enterText(
     String text, {
-    @Deprecated('Use settleBeahvior argument instead') bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).enterText(
       text,
-      settlePolicy: _chooseSettlePolicy(andSettle, settlePolicy),
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
   }
-}
-
-SettlePolicy? _chooseSettlePolicy(
-  bool? andSettle,
-  SettlePolicy? settlePolicy,
-) {
-  SettlePolicy? settle;
-  if (andSettle == null) {
-    settle = settlePolicy;
-  } else {
-    if (andSettle) {
-      settle = SettlePolicy.settle;
-    } else {
-      settle = SettlePolicy.noSettle;
-    }
-  }
-  return settle;
 }
