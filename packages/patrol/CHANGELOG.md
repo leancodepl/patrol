@@ -1,3 +1,7 @@
+## 2.0.0-dev.5
+
+- Backport changes from the `master` branch (#1372)
+
 ## 2.0.0-dev.4
 
 - Don't abuse static fields and methods in `PatrolJUnitRunner` (#1354)
@@ -33,6 +37,11 @@ test --release`) (#1303)
 ## 1.2.0-dev.1
 
 - Support test bundling on Android (#1205) (#1220) (#1221)
+
+## 1.1.5
+
+- Fix tests failing when using native automation on Android + Flutter 3.10
+  (#1352)
 
 ## 1.1.4
 
