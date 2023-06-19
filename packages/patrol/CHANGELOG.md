@@ -1,3 +1,7 @@
+## Unreleased
+
+- Introduce `SettlePolicy` (#1285)
+
 ## 2.0.0-dev.5
 
 - Backport changes from the `master` branch (#1372)
