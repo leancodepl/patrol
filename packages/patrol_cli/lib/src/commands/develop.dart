@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -27,6 +26,7 @@ class DevelopCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required FlutterTool flutterTool,
+    required Analytics analytics,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -37,6 +37,7 @@ class DevelopCommand extends PatrolCommand {
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _flutterTool = flutterTool,
+        _analytics = analytics,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -63,6 +64,7 @@ class DevelopCommand extends PatrolCommand {
   final IOSTestBackend _iosTestBackend;
   final FlutterTool _flutterTool;
 
+  final Analytics _analytics;
   final Logger _logger;
 
   @override
@@ -73,10 +75,15 @@ class DevelopCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendCommand(name));
+
     final targets = stringsArg('target');
     if (targets.isEmpty) {
       throwToolExit('No target provided with --target');
+    } else if (targets.length > 1) {
+      throwToolExit('Only one target can be provided with --target');
     }
+
     final target = _testFinder.findTest(targets.first);
     _logger.detail('Received test target: $target');
 
@@ -114,12 +121,10 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
-      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       // develop-specific
-      ...{
-        'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-        'PATROL_HOT_RESTART': 'true',
-      },
+      ...{'PATROL_HOT_RESTART': 'true'},
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -227,17 +232,12 @@ class DevelopCommand extends PatrolCommand {
     try {
       final future = action();
 
-      await Future.wait<void>([
-        _flutterTool.logs(device.id),
-        _flutterTool.attach(
-          deviceId: device.id,
-          target: flutterOpts.target,
-          appId: appId,
-          dartDefines: flutterOpts.dartDefines,
-        )
-      ]);
-
-      _enableInteractiveMode();
+      await _flutterTool.attachForHotRestart(
+        deviceId: device.id,
+        target: flutterOpts.target,
+        appId: appId,
+        dartDefines: flutterOpts.dartDefines,
+      );
 
       await future;
     } catch (err, st) {
@@ -255,14 +255,4 @@ class DevelopCommand extends PatrolCommand {
       }
     }
   }
-}
-
-void _enableInteractiveMode() {
-  // Prevents keystrokes from being printed automatically. Needs to be
-  // disabled for lineMode to be disabled too.
-  stdin.echoMode = false;
-
-  // Causes the stdin stream to provide the input as soon as it arrives (one
-  // key press at a time).
-  stdin.lineMode = false;
 }

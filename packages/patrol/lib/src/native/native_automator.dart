@@ -4,6 +4,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
@@ -136,6 +137,7 @@ class NativeAutomatorConfig {
 ///
 /// Communicates over gRPC with the native automation server running on the
 /// target device.
+// TODO: Rename to NativeAutomatorClient
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
   NativeAutomator({required NativeAutomatorConfig config})
@@ -151,10 +153,10 @@ class NativeAutomator {
       _config.logger("bundleId is not set. It's recommended to set it.");
     }
 
-    _config.logger('Android app name: ${_config.androidAppName}');
-    _config.logger('iOS app name: ${_config.iosAppName}');
-    _config.logger('Android package name: ${_config.packageName}');
-    _config.logger('iOS bundle identifier: ${_config.bundleId}');
+    // _config.logger('Android app name: ${_config.androidAppName}');
+    // _config.logger('iOS app name: ${_config.iosAppName}');
+    // _config.logger('Android package name: ${_config.packageName}');
+    // _config.logger('iOS bundle identifier: ${_config.bundleId}');
 
     final channel = ClientChannel(
       _config.host,
@@ -722,6 +724,16 @@ class NativeAutomator {
           locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
         ),
       ),
+    );
+  }
+
+  /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
+  /// requests about the structure of Dart tests.
+  @internal
+  Future<void> markPatrolAppServiceReady() async {
+    await _wrapRequest(
+      'markPatrolAppServiceReady',
+      () => _client.markPatrolAppServiceReady(Empty()),
     );
   }
 }

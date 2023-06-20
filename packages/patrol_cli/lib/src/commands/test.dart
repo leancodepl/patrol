@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:path/path.dart' show basename;
+import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -13,11 +13,12 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 
-// Note: this class is a bit sphagetti because I didn't model classes to handle
-// multiple targets. This problem will go away when #1004 is done.
+// TODO(bartekpacia): Find and remove unnecessary code after #1004 is done.
+
 part 'test.freezed.dart';
 
 @freezed
@@ -27,8 +28,6 @@ class TestCommandConfig with _$TestCommandConfig {
     required BuildMode buildMode,
     required List<String> targets,
     required Map<String, String> dartDefines,
-    required int repeat,
-    required bool displayLabel,
     required bool uninstall,
     // Android-only options
     required String? packageName,
@@ -43,20 +42,24 @@ class TestCommand extends PatrolCommand {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required DisposeScope parentDisposeScope,
+    required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
+        _testBundler = testBundler,
         _testFinder = testFinder,
         _testRunner = testRunner,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
+        _analytics = analytics,
         _logger = logger {
     _testRunner.disposedBy(parentDisposeScope);
 
@@ -69,7 +72,6 @@ class TestCommand extends PatrolCommand {
     usesWaitOption();
 
     usesUninstallOption();
-    usesRepeatOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -77,12 +79,14 @@ class TestCommand extends PatrolCommand {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
+  final TestBundler _testBundler;
   final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
 
+  final Analytics _analytics;
   final Logger _logger;
 
   @override
@@ -93,6 +97,8 @@ class TestCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    unawaited(_analytics.sendCommand(name));
+
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target)
@@ -102,6 +108,9 @@ class TestCommand extends PatrolCommand {
     for (final t in targets) {
       _logger.detail('Received test target: $t');
     }
+
+    final testBundle = _testBundler.createTestBundle(targets);
+    _logger.detail('Bundled ${targets.length} test(s) in ${testBundle.path}');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -119,15 +128,19 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received device: ${device.resolvedName}');
     }
 
+    if (devices.length > 1) {
+      _logger.warn('''
+Running on multiple devices is deprecated and will be removed in the future.
+See https://github.com/leancodepl/patrol/issues/1316 to learn more.
+''');
+    }
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final wait = intArg('wait') ?? defaultWait;
-    final repeatCount = intArg('repeat') ?? defaultRepeatCount;
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
-
-    _logger.info('Every test target will be run $repeatCount time(s)');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -139,6 +152,8 @@ class TestCommand extends PatrolCommand {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
+      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -158,11 +173,9 @@ class TestCommand extends PatrolCommand {
 
     final testConfig = TestCommandConfig(
       devices: devices,
-      targets: targets,
+      targets: [testBundle.path],
       buildMode: buildMode,
       dartDefines: dartDefines,
-      repeat: repeatCount,
-      displayLabel: displayLabel,
       uninstall: uninstall,
       // Android-specific options
       packageName: packageName,
@@ -172,10 +185,9 @@ class TestCommand extends PatrolCommand {
       iosFlavor: iosFlavor,
     );
 
-    testConfig.targets.forEach(_testRunner.addTarget);
+    _testRunner.addTarget(testBundle.path);
     testConfig.devices.forEach(_testRunner.addDevice);
     _testRunner
-      ..repeats = testConfig.repeat
       ..builder = _builderFor(testConfig)
       ..executor = _executorFor(testConfig);
 
@@ -196,10 +208,7 @@ class TestCommand extends PatrolCommand {
         target: target,
         flavor: config.androidFlavor,
         buildMode: config.buildMode,
-        dartDefines: {
-          ...config.dartDefines,
-          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-        },
+        dartDefines: config.dartDefines,
       );
 
       switch (device.targetPlatform) {
@@ -239,10 +248,7 @@ class TestCommand extends PatrolCommand {
         target: target,
         flavor: config.androidFlavor,
         buildMode: config.buildMode,
-        dartDefines: {
-          ...config.dartDefines,
-          if (config.displayLabel) 'PATROL_TEST_LABEL': basename(target)
-        },
+        dartDefines: config.dartDefines,
       );
 
       switch (device.targetPlatform) {

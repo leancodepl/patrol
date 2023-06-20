@@ -187,6 +187,7 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
+      ...['-only-testing', 'RunnerUITests'],
       ...[
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},id=${device.id}',

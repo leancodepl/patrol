@@ -1,28 +1,8 @@
+---
+title: Tips and tricks
+---
+
 # Tips and tricks
-
-### Running a test many times
-
-Sometimes, you might want to run a test many times. Patrol makes this easy:
-
-```console
-patrol test --target integration_test/my_test.dart --repeat 10
-```
-
-You can also use the one-liners below, but keep in mind that they build and test
-the app 10 times, while `patrol test --repeat 10` builds every test target only
-once and run it 10 times.
-
-**Bash**
-
-```console
-for i in {1..10}; do patrol test --target integration_test/my_test.dart; done
-```
-
-**PowerShell**
-
-```powershell
-1..10 | ForEach-Object { patrol test --target integration_test/my_test.dart }
-```
 
 ### Inspecting native view hierarchy
 
@@ -183,51 +163,9 @@ See also:
 
 - [Patrol issue #628]
 
-### Bundling many tests into a single app binary
-
-A new application binary (`.apk` for Android and `.app` for iOS) is built for
-every Dart test file in the `integration_test` directory. This is [slow and
-suboptimal][114541_comment], but there's a workaround that makes it possible to
-bundle many tests into a single application binary.
-
-Let's say that you have 2 tests: `add_comment_test.dart` and
-`follow_user_test.dart`. To bundle these tests:
-
-1. Create a third file with any name of your choice, e.g `bundled_test.dart`.
-2. Import and run the 2 tests from `bundled_test.dart`:
-
-   ```dart
-   import 'add_comment_test.dart' as add_comment_test;
-   import 'follow_user_test.dart' as follow_user_test;
-
-   void main() {
-     group('bundled tests', () {
-       add_comment_test.main();
-       follow_user_test.main();
-     });
-   }
-   ```
-
-Now you can run the `bundled_test.dart`:
-
-```
-patrol test --target integration_test/bundled_test.dart
-```
-
-This builds the application binary once, saving you some time.
-
-Bear in mind that this can increase test flakiness since many test run in the
-single app. Normally, the app in reinstalled and its data is cleared between
-tests, which prevents many issues.
-
-See also:
-
-- [Flutter issue #115751](https://github.com/flutter/flutter/issues/115751)
-
 [patrol issue #628]: https://github.com/leancodepl/patrol/issues/628
 [geolocator]: https://pub.dev/packages/geolocator
 [idb]: https://github.com/facebook/idb
 [settings_screenshot]: https://user-images.githubusercontent.com/10289319/194897313-849b8b84-df7a-4bf3-9b06-bb2782876d03.png
 [take_exception]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/takeException.html
 [55870]: https://github.com/flutter/flutter/issues/55870
-[114541_comment]: https://github.com/flutter/flutter/issues/114541#issuecomment-1301094425

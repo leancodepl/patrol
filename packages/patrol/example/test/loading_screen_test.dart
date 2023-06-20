@@ -9,7 +9,7 @@ void main() {
 
     final helloText = $('Hello');
     await helloText.waitUntilVisible();
-    await helloText.tap(andSettle: false);
+    await helloText.tap(settlePolicy: SettlePolicy.noSettle);
     expect(helloText, findsOneWidget);
   });
 

@@ -6,6 +6,7 @@
   "logo": "/assets/favicon-light.png",
   "logoDark": "/assets/favicon-dark.png",
   "socialPreview": "https://raw.githubusercontent.com/leancodepl/patrol/master/docs/assets/preview.jpg",
+  "googleAnalytics": "G-2REFSQEXJZ",
   "docsearch": {
     "appId": "HFSGK31MT8",
     "apiKey": "4d41430f0f5928c58db0acfdace04a8b",
@@ -13,7 +14,15 @@
   },
   "sidebar": [
     ["About", "/"],
-    ["Getting started", "/getting-started"],
+    ["Patrol 2.0 is here!", "/v2"],
+    [
+      "Getting started",
+      [
+        ["Getting started", "/getting-started/getting-started"],
+        ["Native automation setup", "/getting-started/native"],
+        ["Custom finders setup", "/getting-started/custom-finders"]
+      ]
+    ],
     [
       "Custom finders",
       [
@@ -26,7 +35,6 @@
       "Native automation",
       [
         ["Overview", "/native/overview"],
-        ["Setup", "/native/setup"],
         ["Usage", "/native/usage"],
         ["Advanced", "/native/advanced"],
         ["Feature parity", "/native/feature-parity"]

@@ -4,7 +4,6 @@ import 'package:file/memory.dart';
 import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
@@ -56,7 +55,6 @@ void main() {
       iosTestBackend = IOSTestBackend(
         processManager: FakeProcessManager(),
         fs: fs,
-        iosDeploy: FakeIOSDeploy(),
         parentDisposeScope: DisposeScope(),
         logger: FakeLogger(),
       );
@@ -168,8 +166,6 @@ void main() {
 }
 
 class FakeProcessManager extends Fake implements ProcessManager {}
-
-class FakeIOSDeploy extends Fake implements IOSDeploy {}
 
 class FakeLogger extends Fake implements Logger {
   @override

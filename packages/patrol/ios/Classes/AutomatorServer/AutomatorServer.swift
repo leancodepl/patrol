@@ -9,11 +9,11 @@
   final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
     private let automator: Automator
 
-    private let onTestResultsSubmitted: ([String: String]) -> Void
+    private let onAppReady: (Bool) -> Void
 
-    init(automator: Automator, onTestResultsSubmitted: @escaping ([String: String]) -> Void) {
+    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
       self.automator = automator
-      self.onTestResultsSubmitted = onTestResultsSubmitted
+      self.onAppReady = onAppReady
     }
 
     func configure(
@@ -44,7 +44,6 @@
         throw PatrolError.methodNotImplemented("pressBack")
       }
     }
-
     func pressRecentApps(
       request: Empty,
       context: GRPCAsyncServerCallContext
@@ -100,7 +99,10 @@
       context: GRPCAsyncServerCallContext
     ) async throws -> DefaultResponse {
       return try await runCatching {
-        try await automator.tap(on: request.selector.text, inApp: request.appID)
+        try await automator.tap(
+          onText: request.selector.text,
+          inApp: request.appID
+        )
         return DefaultResponse()
       }
     }
@@ -110,7 +112,10 @@
       context: GRPCAsyncServerCallContext
     ) async throws -> DefaultResponse {
       return try await runCatching {
-        try await automator.doubleTap(on: request.selector.text, inApp: request.appID)
+        try await automator.doubleTap(
+          onText: request.selector.text,
+          inApp: request.appID
+        )
         return DefaultResponse()
       }
     }
@@ -122,9 +127,17 @@
       return try await runCatching {
         switch request.findBy {
         case .index(let index):
-          try await automator.enterText(request.data, by: Int(index), inApp: request.appID)
+          try await automator.enterText(
+            request.data,
+            byIndex: Int(index),
+            inApp: request.appID
+          )
         case .selector(let selector):
-          try await automator.enterText(request.data, by: selector.text, inApp: request.appID)
+          try await automator.enterText(
+            request.data,
+            byText: selector.text,
+            inApp: request.appID
+          )
         default:
           throw PatrolError.internal("enterText(): neither index nor selector are set")
         }
@@ -375,27 +388,25 @@
       }
     }
 
-    func submitTestResults(
-      request: Patrol_SubmitTestResultsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Empty {
-      return try await runCatching {
-        Logger.shared.i("submitted \(request.results.count) dart test results")
-        onTestResultsSubmitted(request.results)
-        return DefaultResponse()
-      }
-    }
-
     private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
       // TODO: Use an interceptor (like on Android)
       // See: https://github.com/grpc/grpc-swift/issues/1148
       do {
         return try await block()
       } catch let err as PatrolError {
+        Logger.shared.e(err.description)
         throw err
       } catch let err {
         throw PatrolError.unknown(err)
       }
+    }
+
+    func markPatrolAppServiceReady(
+      request: Patrol_Empty,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> Patrol_Empty {
+      onAppReady(true)
+      return Empty()
     }
   }
 

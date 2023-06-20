@@ -1,3 +1,7 @@
+---
+title: Native - usage
+---
+
 # Usage
 
 Once set up, interacting with the native UI using Patrol is very easy!
@@ -40,12 +44,12 @@ WebViews.
   identifier. For example, to tap on the plus button in the iPhone contacts app,
   use:
 
-  ```dart
-  await $.native.tap(
-    Selector(text: 'Add'),
-    appId: 'com.apple.MobileAddressBook',
-  );
-  ```
+```dart
+await $.native.tap(
+  Selector(text: 'Add'),
+  appId: 'com.apple.MobileAddressBook',
+);
+```
 
 </Warning>
 
@@ -118,15 +122,16 @@ if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
   English (preferably US). That's because there's no way to refer to a specific
   view in a language-independent way (like resourceId on Android).
 
-  If you want to handle permissions on iOS device with non-English locale, do it
-  manually:
+If you want to handle permissions on iOS device with non-English locale, do it
+manually:
 
-  ```dart
-  await $.native.tap(
-    Selector(text: 'Allow'),
-    appId: 'com.apple.springboard',
-  );
-  ```
+```dart
+await $.native.tap(
+  Selector(text: 'Allow'),
+  appId: 'com.apple.springboard',
+);
+```
+
 </Warning>
 
 ### More resources

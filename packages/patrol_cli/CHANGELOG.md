@@ -1,3 +1,45 @@
+## Unreleased
+
+[Patrol 2.0 is released!](https://leancode.co/blog)
+
+## 1.1.11
+
+- Deprecate running test on many devices simultaneously (#1318)
+
+## 1.1.10
+
+- Fix `dart pub global activate patrol_cli` failing because of transitive
+  dependency not following semver (#1290)
+
+## 1.1.9
+
+- Add support for Flutter 3.10 (#1254)
+- Fix crashes on Windows (#1255)
+
+## 1.1.8
+
+- Fix analytics being always enabled (#1246)
+
+## 1.1.7
+
+- Fix `patrol develop` not attaching to the app on the other-than-first attached
+  device (#1210)
+
+## 1.1.6
+
+- Default to "Yes" when asking for telemetry (#1201)
+
+## 1.1.5
+
+- Don't ask to collect analytics if running on CI (#1197)
+
+## 1.1.4
+
+**This version requires version 1.0.9 of the `patrol` package**
+
+- Add optional telemetry (#1157), (#1182)
+- Rewrite native test reporting (#1178)
+
 ## 1.1.3
 
 - Add `--exclude` flag to `patrol test` (#1137)

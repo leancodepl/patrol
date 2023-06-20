@@ -1,35 +1,40 @@
+---
+title: Native - featury parity
+---
+
 # Feature parity
 
 Here you can see what you can already do with Patrol, and what is yet to be
 implemented. We hope that it will help you evaluate Patrol.
 
-We strive for high feature parity across iOS and Android, but unfortunately it's
+We strive for high feature parity across iOS and Android, but in some cases it's
 impossible to reach 100%.
 
-| **Feature**                 | **Android**   | **iOS**       |
-| --------------------------- | ------------- | ------------- |
-| [Press home]                | ✅            | ✅            |
-| [Press back]                | ✅            | ❌ (no API)   |
-| [Open any app]              | ✅            | ✅            |
-| [Open notifications]        | ✅            | ✅            |
-| [Tap on notification]       | ✅            | ✅            |
-| [Open quick settings]       | ✅            | ✅            |
-| [Toggle dark mode]          | ✅            | ✅            |
-| [Toggle airplane mode]      | ❌            | ✅            |
-| [Toggle cellular]           | ✅            | ✅            |
-| [Toggle Wi-Fi]              | ✅            | ✅            |
-| [Toggle Bluetooth]          | ❌ see [#282] | ✅            |
-| Toggle location             | ❌ see [#283] | ❌ see [#326] |
-| [Tap]                       | ✅            | ✅            |
-| [Double tap]                | ✅            | ✅            |
-| [Enter text]                | ✅            | ✅            |
-| [Handle permission dialogs] | ✅            | ✅            |
-| Interact with WebView       | ⚠️ see [#244] | ✅            |
+| **Feature**                 | **Android**    | **iOS**       |
+| --------------------------- | -------------- | ------------- |
+| [Press home]                | ✅             | ✅            |
+| [Press back]                | ✅             | ❌ (no API)   |
+| [Open any app]              | ✅             | ✅            |
+| [Open notifications]        | ✅             | ✅            |
+| [Tap on notification]       | ✅             | ✅            |
+| [Open quick settings]       | ✅             | ✅            |
+| [Toggle dark mode]          | ✅             | ✅            |
+| [Toggle airplane mode]      | ✅ see [#1359] | ✅            |
+| [Toggle cellular]           | ✅             | ✅            |
+| [Toggle Wi-Fi]              | ✅             | ✅            |
+| [Toggle Bluetooth]          | ✅ see [#282]  | ✅            |
+| Toggle location             | ✅ see [#283]  | ✅ see [#326] |
+| [Tap]                       | ✅             | ✅            |
+| [Double tap]                | ✅             | ✅            |
+| [Enter text]                | ✅             | ✅            |
+| [Handle permission dialogs] | ✅             | ✅            |
+| Interact with WebView       | ⚠️ see [#244]  | ✅            |
 
 [#244]: https://github.com/leancodepl/patrol/issues/244
 [#282]: https://github.com/leancodepl/patrol/issues/282
 [#283]: https://github.com/leancodepl/patrol/issues/283
 [#326]: https://github.com/leancodepl/patrol/issues/326
+[#1359]: https://github.com/leancodepl/patrol/issues/1359
 [press home]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/pressHome.html
 [press back]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/pressBack.html
 [open any app]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openApp.html
