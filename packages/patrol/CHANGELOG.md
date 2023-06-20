@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `patrol develop` not reporting test failures (#1370)
+
 ## 2.0.0-dev.6
 
 - Introduce `SettlePolicy` (#1285)
