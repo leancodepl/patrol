@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: "Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}"
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
@@ -61,10 +61,10 @@ jobs:
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
           recordingpid="$!"
-          
+
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
-          
+
           TESTS_EXIT_CODE=0
           patrol test \
             --exclude integration_test/android_app_test.dart \
@@ -85,7 +85,7 @@ jobs:
       - name: Find xcresult path
         if: success() || failure()
         run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
-      
+
       - name: Publish test report to summary
         if: success() || failure()
         uses: kishikawakatsumi/xcresulttool@v1
@@ -94,14 +94,14 @@ jobs:
           upload-bundles: never
           path: |
             ${{ env.XCRESULT_PATH }}
-     
+
       - name: Upload XCRESULT test result to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: Test result from ${{ matrix.device }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
-      
+
       - name: Upload simulator logs to artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
