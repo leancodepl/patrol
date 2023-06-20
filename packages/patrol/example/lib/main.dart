@@ -231,18 +231,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           TextButton(
             onPressed: () async => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView (login form)',
-                  url:
-                      'https://joyful-noise-staging.joyful-noise.link/users/sign_in',
-                ),
-              ),
-            ),
-            child: const Text('Open webview (login form)'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
                 builder: (_) => const PermissionsScreen(),
               ),
             ),
