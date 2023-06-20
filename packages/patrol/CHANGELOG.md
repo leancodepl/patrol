@@ -1,4 +1,4 @@
-## Unreleased
+## 2.0.0-dev.7
 
 - Fix `patrol develop` not reporting test failures (#1370)
 
