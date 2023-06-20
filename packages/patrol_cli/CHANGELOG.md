@@ -1,21 +1,6 @@
-## 2.0.0-dev.3
+## Unreleased
 
-- Fix `patrol develop` not responding correctly to SIGINT when running tests on
-  iOS simulator (#1365)
-- Fix `patrol develop` requiring Enter to be pressed after "R" to trigger Hot
-  Restart when running tests on iOS simulator (#1365)
-
-## 2.0.0-dev.2
-
-- Fix test bundling not working on physical iOS devices (works only with `patrol
-test --release`) (#1303)
-
-- Fix test label (red text in the upper left corner) of the current test being
-  always `test_bundle.dart` (#1306)
-
-## 2.0.0-dev.1
-
-- Add test bundling (#1004)
+[Patrol 2.0 is released!](https://leancode.co/blog)
 
 ## 1.1.11
 

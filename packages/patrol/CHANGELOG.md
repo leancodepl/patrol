@@ -1,51 +1,10 @@
-## 2.0.0-dev.7
+## Unreleased
 
-- Fix `patrol develop` not reporting test failures (#1370)
+[Patrol 2.0 is released!](https://leancode.co/blog).
 
-## 2.0.0-dev.6
-
-- Introduce `SettlePolicy` (#1285)
-- Rework scrolling (#1325)
-
-## 2.0.0-dev.5
-
-- Backport changes from the `master` branch (#1372)
-
-## 2.0.0-dev.4
-
-- Don't abuse static fields and methods in `PatrolJUnitRunner` (#1354)
-- **Breaking:** Change `MainActivityTest.java` template (#1354)
-
-## 2.0.0-dev.3
-
-- Fix Hot Restart (#1347)
-- Fix `enterText()` not working on physical iOS devices (#1349)
-- **Breaking:** Change `MainActivityTest.java` template. Thanks to this change,
-  app's package name no longer has to be passed in manually (#1348)
-
-## 2.0.0-dev.2
-
-- Fix test bundling not working on physical iOS devices (works only with `patrol
-test --release`) (#1303)
-
-- Fix test label (red text in the upper left corner) of the current test being
-  always `test_bundle.dart` (#1306)
-
-## 2.0.0-dev.1
-
-- Backport changes from `master` (#1293)
-
-## 1.2.0-dev.3
-
-- Support test bundling on iOS (#1236)
-
-## 1.2.0-dev.2
-
-- Fix a small typo in logs (#1229)
-
-## 1.2.0-dev.1
-
-- Support test bundling on Android (#1205) (#1220) (#1221)
+- Test bundling
+- Improved pumping and settling
+- Improved scrolling
 
 ## 1.1.5
 
