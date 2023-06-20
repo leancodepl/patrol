@@ -50,8 +50,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         assert(!constants.hotRestartEnabled);
         _testResults[currentDartTestFile] =
             Failure(testDescription, '$details');
-        oldTestExceptionReporter(details, testDescription);
       }
+      oldTestExceptionReporter(details, testDescription);
     };
 
     setUp(() {
