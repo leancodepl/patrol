@@ -7,7 +7,7 @@ test_android_task:
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
-    EMULATOR_API_LEVEL: '34'
+    EMULATOR_API_LEVEL: '33'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 60m
@@ -48,6 +48,7 @@ test_android_task:
   patrol_test_script: |
     cd packages/patrol/example
     patrol test \
+      --verbose \
       --exclude integration_test/service_airplane_mode_test.dart \
       --exclude integration_test/service_bluetooth_test.dart \
       --exclude webview_hackernews_test.dart on emulator-5554 \
