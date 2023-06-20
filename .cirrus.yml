@@ -31,7 +31,7 @@ test_android_task:
     - sdkmanager --install "$EMULATOR_IMAGE"
     - sdkmanager --install emulator
   create_emulator_script: |
-    avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
+    avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
     echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
     echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
     echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
