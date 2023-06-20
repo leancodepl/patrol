@@ -22,6 +22,8 @@ void main() {
 
       expect($(#counterText).text, '2');
       expect($('Hello, Flutter!'), findsOneWidget);
+
+      await $('EXAMPLE_KEY: at the bottom').scrollTo().tap();
     },
   );
 }

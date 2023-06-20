@@ -236,6 +236,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
             child: const Text('Open permissions screen'),
           ),
+          for (var i = 0; i < 20; i++)
+            ListTile(
+              key: Key('listTile$i'),
+              title: Text('List tile $i'),
+            ),
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
         ],
       ),
