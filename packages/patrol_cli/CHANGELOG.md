@@ -1,3 +1,10 @@
+## 2.0.0-dev.3
+
+- Fix `patrol develop` not responding correctly to SIGINT when running tests on
+  iOS simulator (#1365)
+- Fix `patrol develop` requiring Enter to be pressed after "R" to trigger Hot
+  Restart when running tests on iOS simulator (#1365)
+
 ## 2.0.0-dev.2
 
 - Fix test bundling not working on physical iOS devices (works only with `patrol
