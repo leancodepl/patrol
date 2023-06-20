@@ -27,7 +27,6 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdk 33
-
     namespace "pl.leancode.patrol.example"
 
     kotlinOptions {
@@ -44,7 +43,8 @@ android {
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
     buildTypes {
@@ -55,23 +55,7 @@ android {
     }
 
     testOptions {
-        String targetPath = findProperty("target")
-        if (targetPath == null) {
-            return
-        }
-
-        // Flutter tool sets target as relative path, e.g "lib/main.dart"
-        boolean relative = targetPath.startsWith("integration_test${File.separator}")
-        // Other tools (e.g Patrol) set target as absolute path, e.g "/home/charlie/my_app/lib/main.dart"
-        boolean absolute = targetPath.contains("${File.separator}integration_test${File.separator}")
-        if (relative || absolute) {
-            targetPath = targetPath.substring(0, targetPath.length() - 5) // remove ".dart" from the end
-            String result = targetPath.split("integration_test", 2)[1]
-            result = result.substring(1) // remove path separator from the beginning
-
-            reportDir = rootDir.path + File.separator + "test-reports" + File.separator + result
-            resultsDir = rootDir.path + File.separator + "test-results" + File.separator + result
-        }
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
     }
 }
 
@@ -80,7 +64,6 @@ flutter {
 }
 
 dependencies {
-    testImplementation "junit:junit:4.13.2"
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    androidTestUtil "androidx.test:orchestrator:1.4.2"
 }

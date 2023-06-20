@@ -1,3 +1,11 @@
+## Unreleased
+
+[Patrol 2.0 is released!](https://leancode.co/blog).
+
+- Test bundling
+- Improved pumping and settling
+- Improved scrolling
+
 ## 1.1.5
 
 - Fix tests failing when using native automation on Android + Flutter 3.10

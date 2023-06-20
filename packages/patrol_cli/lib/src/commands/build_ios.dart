@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:path/path.dart' show basename, join;
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
-import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -10,17 +9,20 @@ import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildIOSCommand extends PatrolCommand {
   BuildIOSCommand({
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required IOSTestBackend iosTestBackend,
     required Analytics analytics,
     required Logger logger,
   })  : _testFinder = testFinder,
+        _testBundler = testBundler,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _iosTestBackend = iosTestBackend,
@@ -41,6 +43,7 @@ class BuildIOSCommand extends PatrolCommand {
   }
 
   final TestFinder _testFinder;
+  final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final IOSTestBackend _iosTestBackend;
@@ -61,14 +64,18 @@ class BuildIOSCommand extends PatrolCommand {
   Future<int> run() async {
     unawaited(_analytics.sendCommand('build_ios'));
 
-    final targetArg = stringsArg('target');
-    if (targetArg.isEmpty) {
-      throwToolExit('No test target specified');
-    } else if (targetArg.length > 1) {
-      throwToolExit('Only one test target can be specified');
+    final target = stringsArg('target');
+    final targets = target.isNotEmpty
+        ? _testFinder.findTests(target)
+        : _testFinder.findAllTests(excludes: stringsArg('exclude').toSet());
+
+    _logger.detail('Received ${targets.length} test target(s)');
+    for (final t in targets) {
+      _logger.detail('Received test target: $t');
     }
-    final target = _testFinder.findTest(targetArg.single);
-    _logger.detail('Received test target: $target');
+
+    final testBundle = _testBundler.createTestBundle(targets);
+    _logger.detail('Bundled ${targets.length} test(s) in ${testBundle.path}');
 
     final config = _pubspecReader.read();
     final flavor = stringArg('flavor') ?? config.ios.flavor;
@@ -88,7 +95,7 @@ class BuildIOSCommand extends PatrolCommand {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_IOS_APP_NAME': config.ios.appName,
-      if (displayLabel) 'PATROL_TEST_LABEL': basename(target),
+      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
@@ -107,7 +114,7 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
-      target: target,
+      target: testBundle.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,

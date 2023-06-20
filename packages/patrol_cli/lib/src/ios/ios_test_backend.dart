@@ -10,7 +10,6 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:process/process.dart';
 
 enum BuildMode {
@@ -48,12 +47,10 @@ class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
     required FileSystem fs,
-    required IOSDeploy iosDeploy,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
         _fs = fs,
-        _iosDeploy = iosDeploy,
         _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -63,7 +60,6 @@ class IOSTestBackend {
 
   final ProcessManager _processManager;
   final FileSystem _fs;
-  final IOSDeploy _iosDeploy;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -75,6 +71,14 @@ class IOSTestBackend {
       );
 
       Process process;
+
+      final isRealDevice = !options.simulator;
+      final isReleaseMode = options.flutter.buildMode == BuildMode.release;
+      if (isRealDevice && !isReleaseMode) {
+        throwToolExit(
+          'Running on physical iOS devices is possible only in release mode',
+        );
+      }
 
       // flutter build ios --config-only
 
@@ -140,12 +144,6 @@ class IOSTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
 
-      Process? iosDeployProcess;
-      if (device.real) {
-        _logger.detail('Executing on physical iOS device using ios-deploy...');
-        iosDeployProcess = await _iosDeploy.installAndLaunch(device.id);
-      }
-
       final sdkVersion = await getSdkVersion(real: device.real);
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(
@@ -164,9 +162,6 @@ class IOSTestBackend {
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
-      // Tests have finished now, kill the app under test
-      iosDeployProcess?.stdin.writeln('kill');
-      iosDeployProcess?.kill(); // kill it with fire
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');

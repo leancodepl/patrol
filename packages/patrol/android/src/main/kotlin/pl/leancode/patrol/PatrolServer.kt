@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.SettableFuture
 import io.grpc.InsecureServerCredentials
 import io.grpc.Server
 import io.grpc.okhttp.OkHttpServerBuilder
+import java.util.concurrent.Future
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
@@ -16,21 +17,15 @@ class PatrolServer {
         server = OkHttpServerBuilder
             .forPort(port, InsecureServerCredentials.create())
             .intercept(LoggerInterceptor())
-            .addService(
-                AutomatorServer(
-                    automation = Automator.instance,
-                    onTestResultsSubmitted = { testResulsSettable.set(it) }
-                )
-            )
+            .addService(AutomatorServer(automation = Automator.instance))
             .build()
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()
 
     fun start() {
-        Logger.i("Starting server...")
         server?.start()
-        Logger.i("Server started on http://localhost:$port")
+        Logger.i("Created and started PatrolServer, port: $port")
 
         Runtime.getRuntime().addShutdownHook(
             Thread {
@@ -46,9 +41,9 @@ class PatrolServer {
     }
 
     companion object {
-        private val testResulsSettable: SettableFuture<DartTestResults> = SettableFuture.create()
-        val testResults
-            get() = testResulsSettable
+        val appReady: SettableFuture<Boolean> = SettableFuture.create()
+        val appReadyFuture: Future<Boolean>
+            get() = appReady
     }
 }
 

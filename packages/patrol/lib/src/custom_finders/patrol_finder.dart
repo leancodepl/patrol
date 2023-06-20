@@ -199,13 +199,17 @@ class PatrolFinder extends MatchFinder {
   ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap({
-    bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
     await tester.tap(
       this,
-      andSettle: andSettle,
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -238,14 +242,18 @@ class PatrolFinder extends MatchFinder {
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
-    bool? andSettle,
+    @Deprecated('Use settlePolicy instead') bool? andSettle,
+    SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
     await tester.enterText(
       this,
       text,
-      andSettle: andSettle,
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -253,28 +261,36 @@ class PatrolFinder extends MatchFinder {
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
-  /// Scrolls [scrollable] in its scrolling direction until this finders finds
+  /// Scrolls [view] in [scrollDirection] until this finders finds
   /// at least one visible widget.
   ///
-  /// It also ensures that [scrollable] is visible, by calling
+  /// It also ensures that [view] is visible, by calling
   /// [PatrolFinder.waitUntilVisible].
   ///
   /// See also:
   ///  - [PatrolTester.scrollUntilVisible], which this method wraps
   Future<PatrolFinder> scrollTo({
-    Finder? scrollable,
+    Finder? view,
     double step = defaultScrollDelta,
+    AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
     Duration duration = const Duration(milliseconds: 50),
-    bool? andSettle,
+    Duration dragDuration = const Duration(milliseconds: 500),
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    SettlePolicy? settlePolicy,
   }) {
     return tester.scrollUntilVisible(
       finder: finder,
-      scrollable: scrollable,
+      view: view,
       delta: step,
+      scrollDirection: scrollDirection,
       maxScrolls: maxScrolls,
       duration: duration,
-      andSettle: andSettle,
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
+      dragDuration: dragDuration,
     );
   }
 
@@ -459,12 +475,16 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// Same as [PatrolFinder.tap], but on a [PatrolFinder] which is not yet
   /// visible.
   Future<void> tap({
-    bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).tap(
-      andSettle: andSettle,
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
@@ -474,13 +494,17 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// visible.
   Future<void> enterText(
     String text, {
-    bool? andSettle,
+    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).enterText(
       text,
-      andSettle: andSettle,
+      settlePolicy: chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      ),
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );

@@ -7,11 +7,13 @@ import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildCommand extends PatrolCommand {
   BuildCommand({
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
@@ -22,6 +24,7 @@ class BuildCommand extends PatrolCommand {
     addSubcommand(
       BuildAndroidCommand(
         testFinder: testFinder,
+        testBundler: testBundler,
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         androidTestBackend: androidTestBackend,
@@ -32,6 +35,7 @@ class BuildCommand extends PatrolCommand {
     addSubcommand(
       BuildIOSCommand(
         testFinder: testFinder,
+        testBundler: testBundler,
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         iosTestBackend: iosTestBackend,

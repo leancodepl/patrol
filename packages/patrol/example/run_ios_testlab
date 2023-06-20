@@ -1,36 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")"
 
-_usage() {
-	printf "usage: ./run_ios_testlab <target>\n"
-	printf "\tfor example:\n"
-	printf "\t\$ ./run_ios_testlab integration_test/app_test.dart\n"
-}
+# This script requires following environment variables to be set:
+# * DEVICE_MODEL (for example: "iphone11pro")
+# * DEVICE_VERSION (for example: "16.3")
+# * RESULTS_DIR_NAME (for example: "$(date +"%Y-%m-%d_%H:%M:%S")" - it should be unique)
 
-target="${1:-}"
-
-if [ -z "$target" ]; then
-	_usage
-	exit 1
-fi
-target_path="$(realpath "$target")"
-
-dev_target="16.2"
-product="build/ios_integ/Build/Products"
-rm -rf "$product"
-
-flutter pub get
-patrol build ios --target "$target_path" --release --no-codesign
-
-pushd "$product"
-zip -r ios_tests.zip Release-iphoneos "Runner_iphoneos$dev_target-arm64.xctestrun"
-popd
+# And ios_tests.zip containing the iOS app and XCTest files
 
 exec gcloud firebase test ios run \
 	--type xctest \
-	--test "$product/ios_tests.zip" \
-	--device model=iphone8,version="$dev_target",locale=en_US,orientation=portrait \
-	--timeout 1m \
-	--results-bucket=patrol_runs \
-	--results-dir=runs
+	--test "build/ios_integ/Build/Products/ios_tests.zip" \
+	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en_US,orientation=portrait \
+	--timeout 10m \
+	--results-bucket="patrol_runs" \
+	--results-dir="$RESULTS_DIR_NAME"

@@ -2,18 +2,24 @@ name: patrol prepare
 
 on:
   push:
-    branches: [master]
+    branches: [master, develop]
     tags-ignore: ['*']
     paths:
       - 'packages/patrol/**'
   pull_request:
-    branches: [master]
+    branches: [master, develop]
     paths:
       - 'packages/patrol/**'
 
 jobs:
   prepare-android-on-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    name: Android on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
 
     defaults:
       run:
@@ -26,7 +32,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.7.x'
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -51,7 +57,13 @@ jobs:
         run: flutter build apk --debug
 
   prepare-android-on-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    name: Android on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
 
     defaults:
       run:
@@ -64,26 +76,38 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.7.x'
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
         run: flutter build apk --debug --flavor=does-not-exist || true
 
+      - name: Run unit tests
+        if: success() || failure()
+        run: ./gradlew :patrol:testDebug
+
       - name: ktlint check
+        if: success() || failure()
         run: ./gradlew :patrol:ktlintCheck
 
       - name: ktlint format
+        if: success() || failure()
         run: ./gradlew :patrol:ktlintFormat
 
-      - name: Build app with Gradle
+      - name: Build example app with Gradle
         run: ./gradlew :app:assembleDebug
 
-      - name: Build app with Flutter tool
+      - name: Build example app with Flutter tool
         run: flutter build apk --debug
 
   prepare-ios:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
+    name: iOS on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
 
     defaults:
       run:
@@ -93,14 +117,12 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
-      - name: brew update
-        run: brew update
-
-      - name: brew install swift-format
-        run: brew install swift-format
-
-      - name: brew install clang-format
-        run: brew install clang-format
+      - name: Install tools
+        run: |
+          brew update
+          brew install swift-format
+          brew install clang-format
+          brew install xcbeautify
 
       # Disabled because of generated protobuf code
       #- name: swift-format lint
@@ -116,6 +138,35 @@ jobs:
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.7.x'
+
+      - name: Generate iOS build files
+        working-directory: packages/patrol/example
+        run: flutter build ios --config-only --simulator
+
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: iPhone 14
+          os: iOS
+          os_version: 16.2
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Run unit tests
+        working-directory: packages/patrol/example/ios
+        run: |
+          xcodebuild test \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -only-testing RunnerTests \
+            -configuration Debug \
+            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -derivedDataPath ../build/ios_unit | xcbeautify
+
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
@@ -123,7 +174,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.3.x', '3.7.x', '3.10.x']
+        flutter-version: ['3.3.x', '3.7.x', '3.10.0']
 
     defaults:
       run:
@@ -142,29 +193,37 @@ jobs:
         run: flutter pub get
 
       - name: flutter test
+        if: success() || failure()
         run: flutter test --coverage
 
       - name: flutter analyze
+        if: success() || failure()
         run: flutter analyze
 
       - name: dart format
+        if: success() || failure()
         run: dart format --set-exit-if-changed .
 
       - name: flutter pub publish --dry-run
+        if: success() || failure()
         run: flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter pub get
 
       - name: dart format (example app)
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: dart format --set-exit-if-changed .
 
       - name: flutter analyze (example app)
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter analyze
 
       - name: flutter test (example app)
+        if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter test

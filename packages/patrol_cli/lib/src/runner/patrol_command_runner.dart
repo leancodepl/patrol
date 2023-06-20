@@ -22,9 +22,9 @@ import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_cli/src/ios/ios_deploy.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 import 'package:platform/platform.dart';
@@ -105,19 +105,23 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     final iosTestBackend = IOSTestBackend(
       processManager: _processManager,
       fs: _fs,
-      iosDeploy: IOSDeploy(
-        processManager: _processManager,
-        parentDisposeScope: _disposeScope,
-        fs: _fs,
-        logger: _logger,
-      ),
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
+    final testBundler = TestBundler(projectRoot: _fs.currentDirectory);
+    final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
+
+    final deviceFinder = DeviceFinder(
+      processManager: _processManager,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
 
     addCommand(
       BuildCommand(
-        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        testFinder: testFinder,
+        testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
@@ -129,12 +133,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       DevelopCommand(
-        deviceFinder: DeviceFinder(
-          processManager: _processManager,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        deviceFinder: deviceFinder,
+        testFinder: testFinder,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
@@ -154,12 +154,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       TestCommand(
-        deviceFinder: DeviceFinder(
-          processManager: _processManager,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
-        testFinder: TestFinder(testDir: _fs.directory('integration_test')),
+        deviceFinder: deviceFinder,
+        testBundler: testBundler,
+        testFinder: testFinder,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
@@ -173,20 +170,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       DevicesCommand(
-        deviceFinder: DeviceFinder(
-          processManager: _processManager,
-          parentDisposeScope: _disposeScope,
-          logger: _logger,
-        ),
+        deviceFinder: deviceFinder,
         logger: _logger,
       ),
     );
+
     addCommand(
       DoctorCommand(
         logger: _logger,
         platform: _platform,
       ),
     );
+
     addCommand(
       UpdateCommand(
         pubUpdater: _pubUpdater,

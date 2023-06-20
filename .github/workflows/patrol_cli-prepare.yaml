@@ -2,12 +2,12 @@ name: patrol_cli prepare
 
 on:
   push:
-    branches: [master]
+    branches: [master, develop]
     tags-ignore: ['*']
     paths:
       - 'packages/patrol_cli/**'
   pull_request:
-    branches: [master]
+    branches: [master, develop]
     paths:
       - 'packages/patrol_cli/**'
 
@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        flutter-version: ['3.3.x', '3.7.x', '3.10.x']
+        flutter-version: ['3.3.x', '3.7.x', '3.10.0']
 
     defaults:
       run:

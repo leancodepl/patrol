@@ -52,7 +52,6 @@ class DoctorCommand extends PatrolCommand {
   void _printIosSpecifics() {
     _checkIfToolInstalled('xcodebuild');
     _checkIfToolInstalled('ideviceinstaller', 'brew install ideviceinstaller');
-    _checkIfToolInstalled('ios-deploy', 'brew install ios-deploy');
   }
 
   void _checkIfToolInstalled(String tool, [String? hint]) {

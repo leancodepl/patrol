@@ -6,18 +6,18 @@ on:
     - cron: '0 */12 * * *'
 
 jobs:
-  main:
-    name: Test on Android emulator (${{ matrix.api-level }}, ${{ matrix.target}}, ${{matrix.arch}})
-    runs-on: macos-latest
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} on emulator.wtf
+    runs-on: ubuntu-latest
     timeout-minutes: 60
+    outputs:
+      SLACK_MESSAGE_TITLE: Android emulator.wtf
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: [3.7.x]
-        api-level: [28, 29, 30, 31, 33]
-        target: [google_apis]
-        arch: [x86_64]
+        flutter-version: ['3.7.x']
 
     defaults:
       run:
@@ -38,79 +38,98 @@ jobs:
         with:
           generate-job-summary: false
 
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adbkey
-            ~/.android/adbkey.pub
-          key: avd-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
-
-      - name: Create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          ram-size: 4096M
-          heap-size: 2048M
-          disk-size: 8192M
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: echo "Generated AVD snapshot for caching"
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
 
       - name: Set up Patrol CLI
-        run: dart pub global activate patrol_cli
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
-      - name: Start emulator and run integration tests
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: Install ew-cli
+        run: |
+          mkdir -p "$HOME/bin"
+          curl "https://maven.emulator.wtf/releases/ew-cli" -o "$HOME/bin/ew-cli"
+          chmod a+x "$HOME/bin/ew-cli"
+          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
+
+      - name: patrol build android
+        run: |
+          patrol build android \
+            --exclude integration_test/permissions_location_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/webview_hackernews_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart
+
+      - name: Upload APKs to emulator.wtf and wait for tests to finish
+        id: tests_step
+        run: |
+          TESTS_EXIT_CODE=0
+          ew-cli \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --num-shards 3 \
+            --use-orchestrator \
+            --clear-package-data \
+            --record-video \
+            --timeout 10m \
+            --environment-variables packageName="pl.leancode.patrol.example" \
+            --outputs-dir test_artifacts \
+            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      - name: Publish test report to summary
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure()
         with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -wipe-data
-          disable-animations: false
-          working-directory: ${{ github.workspace }}/packages/patrol/example
-          script: >
-            adb logcat -c
+          check_name: Patrol tests
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+          detailed_summary: true
+          include_passed: true
 
-            adb logcat > logcat.txt &
+      - name: Generate test report as check run
+        if: success() || failure()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Patrol Tests
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+          reporter: java-junit
+          fail-on-error: false
 
-            patrol test
-            -t integration_test/android_app_test.dart
-            -t integration_test/example_test.dart
-            -t integration_test/notifications_test.dart
-            -t integration_test/open_app_test.dart
-            -t integration_test/open_quick_settings_test.dart
-            -t integration_test/permissions_location_test.dart
-            -t integration_test/permissions_many_test.dart
-            -t integration_test/service_cellular_test.dart
-            -t integration_test/service_dark_mode_test.dart
-            -t integration_test/service_wifi_test.dart
-            -t integration_test/swipe_test.dart
-
-      - name: Upload logcat to artifacts
-        if: always()
+      - name: Upload XML test report to artifacts
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          # FIXME: Reports and results of only the last test are uploadeds
-          name: Results for ${{ matrix.api-level }}-${{ matrix.target}}-${{matrix.arch}}.txt
-          path: |
-            ${{ github.workspace }}/packages/patrol/example/android/logcat.txt
-            ${{ github.workspace }}/packages/patrol/example/android/test-results
-            ${{ github.workspace }}/packages/patrol/example/android/test-reports
+          name: XML test report
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+
+      - name: Upload test outputs to artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test report, logs and captured videos
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit

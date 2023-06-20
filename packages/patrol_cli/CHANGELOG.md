@@ -1,3 +1,7 @@
+## Unreleased
+
+[Patrol 2.0 is released!](https://leancode.co/blog)
+
 ## 1.1.11
 
 - Deprecate running test on many devices simultaneously (#1318)

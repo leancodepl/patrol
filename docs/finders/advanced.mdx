@@ -81,6 +81,60 @@ You can also change the timeout ad-hoc:
 await $(#addComment).tap(findTimeout: Duration(seconds: 30));
 ```
 
+### You gotta pump it up! But which one to use?
+
+In Flutter, "pumping" means rendering frames to the screen.
+
+If there are no frames to pump, no animations are pending, which usually means
+that the next action during the test can be executed. It is an equivalent of
+what a human tester would do while testing an app - they would wait until the
+app's state stabilizes after they've done something. For example, they tap on a
+button and get redirected to another screen, but the data that will be shown
+there hasn't been loaded yet. In such a case, a human tester waits until a
+loader (or other animation) finishes. Pumping mechanism does exactly this - it
+renders consecutive frames on the screen. For how long, exactly? Usually, we
+want to pump frames as long as they come. That's what [`pumpAndSettle()`] does.
+
+`pumpAndSettle()` method is called by default inside all actions that can be
+performed while testing - tapping, scrolling, entering text, and so on. You can
+change that by setting the `settlePolicy` argument:
+
+```dart
+await $('Delete account').tap(settlePolicy: SettlePolicy.settle);
+await $('Confirm').tap(settlePolicy: SettlePolicy.pump);
+```
+
+`SettlePolicy` is an `enum` with 3 values. The default is `SettlePolicy.settle`
+but you can change it to `pump` or `trySettle`. Those values map to methods like this:
+ - `noSettle` -> `pump()`,
+ - `trySettle` -> `pumpAndTrySettle()`,
+ - `settle` -> `pumpAndSettle()`.
+
+While `settle` and `pump` simply refer to Flutter's built-in methods,
+`trySettle` is available only in Patrol. How is it different from other ones?
+
+`pumpAndTrySettle()` is pretty much like `pumpAndSettle()`, the only difference
+is that `pumpAndSettle()` throws an exception, if there were still new frames to
+render after sonme defined timeout, while `pumpAndTrySettle()` does not. That's
+why it has "`try`" in it's name.
+
+When to use this new pumping method? Let us picture a scenario, in which we have
+to deal with some animations. Let's say, that your app has some endless
+animations, e.g. on a homescreen, to keep user's attention. You'd like to wait
+for some things to happen, but using `pumoAndSettle`, you'll keep getting an
+exception, because after some time, defined by `timeout`, there will be still
+new frames to render. On the other hand, you still want to pump frames for some
+time - if you didn't, the screen you want to interact with might not be rendered
+yet, or it would have some widgets missing or data not yet loaded.
+
+So, we decided to add a way to try settle - pump frames for some time (10
+seconds by default), but if after that time there is still something new to
+render - do nothing and continue the test.
+
+We recommend using `pumpAndTrySettle()`, because it works with both kinds of
+animations - finite and infinite. This settle policy will be new default in
+future Patrol releases.
+
 ### How does `scrollTo()` work?
 
 The `scrollTo()` method is simple to use, yet very powerful. Here's how you use
@@ -92,8 +146,9 @@ await $('Delete account').scrollTo().tap();
 
 And here's how `scrollTo()` works:
 
-1. Waits for at least 1 [Scrollable] widget to become visible
-2. Scrolls this `Scrollable` widget in its scrolling direction until the target
+1. Waits for at least 1 [Scrollable] widget (or whatever you provided in 
+   `view` argument) to become visible
+2. Scrolls this widget in its scrolling direction until the target
    widget becomes visible
 3. If the target widget becomes visible within timeout, it finishes, otherwise
    it throws an exception
@@ -101,14 +156,14 @@ And here's how `scrollTo()` works:
 Most of the time, you use `scrollTo()` and it just works, but there's 1
 important thing to keep in mind when using `scrollTo()`:
 
-**scrollTo by default scrolls the first Scrollable widget**
+**`scrollTo()`, by default, scrolls the first `Scrollable` widget**
 
 This default is reasonable and what you want most of the time. Unfortunately,
 this behavior can sometimes cause problems in more complicated UIs, where more
 than a single `Scrollable` widget is visible at the same time. In such cases we
-strongly recommend explicitly specifying the `Scrollable` that `scrollTo()`
+strongly recommend explicitly specifying the `view` that `scrollTo()`
 should scroll, to avoid the problem of the target widget never becoming visible
-because the wrong scrollable was scrolled.
+because the wrong widget was scrolled.
 
 To demonstrate this problem, let's consider this very simple app:
 
@@ -175,3 +230,4 @@ problem](https://github.com/flutter/flutter/issues/88762).
 
 [listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
 [scrollable]: https://api.flutter.dev/flutter/widgets/Scrollable-class.html
+[pumpAndSettle()]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html
