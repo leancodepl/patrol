@@ -2,43 +2,58 @@ test_android_task:
   name: Test example app on Android
   container:
     image: cirrusci/flutter:stable
-    cpu: 4
-    memory: 6G
+    cpu: 8
+    memory: 32G
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
-    EMULATOR_API_LEVEL: '28'
-    EMULATOR_ABI: google_apis_playstore;x86
+    EMULATOR_API_LEVEL: '34'
+    EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
-  timeout_in: 90m
+  timeout_in: 60m
 
   pub_cache:
     folder: ~/.pub-cache
   setup_flutter_script:
     - flutter precache
+  generate_gradlew_script: |
+    cd packages/patrol/example
+    flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
+    buildpid="$!"
+    while [ ! -e "android/gradlew" ]; do
+        echo "waiting for gradlew to generate..."
+        sleep 2
+    done
+    kill $buildpid
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_emulator_script:
     - sdkmanager --install "$EMULATOR_IMAGE"
     - sdkmanager --install emulator
-  create_emulator_script:
-    - echo no | avdmanager create avd --force --name test_emulator --package "$EMULATOR_IMAGE"
+  create_emulator_script: |
+    avdmanager -s create avd -n MyAVD -k "$ANDROID_IMAGE"
+    echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "disk.dataPartition.size=6G" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "hw.camera.back=virtualscene" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "vm.heapSize=576" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "hw.lcd.density=440" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "hw.lcd.height=2220" >> ~/.android/avd/MyAVD.avd/config.ini
+    echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
   start_emulator_background_script:
-    - $ANDROID_HOME/emulator/emulator -no-window -verbose -avd test_emulator -no-audio -no-boot-anim
+    - $ANDROID_HOME/emulator/emulator @MyAVD -verbose -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on
   wait_for_emulator_script:
     - android-wait-for-emulator
-  build_app_script:
-    - cd packages/patrol/example
-    - flutter build apk --debug
-  patrol_test_script:
-    - cd packages/patrol/example
-    - patrol test
-      --exclude integration_test/service_airplane_mode_test.dart `# does not currently suport Android`
-      --exclude integration_test/service_bluetooth_test.dart     `# does not currently suport Android`
-      --exclude webview_hackernews_test.dart on emulator-5554    `# https://github.com/leancodepl/patrol/issues/1139`
-      --exclude webview_leancode_test.dart on emulator-5554      `# https://github.com/leancodepl/patrol/issues/1139`
-      --exclude webview_login_test.dart on emulator-5554         `# https://github.com/leancodepl/patrol/issues/1139`
-      --exclude webview_stackoverflow_test.dart on emulator-5554 `# https://github.com/leancodepl/patrol/issues/1139`
+  patrol_test_script: |
+    cd packages/patrol/example
+    patrol test \
+      --exclude integration_test/service_airplane_mode_test.dart \
+      --exclude integration_test/service_bluetooth_test.dart \
+      --exclude webview_hackernews_test.dart on emulator-5554 \
+      --exclude webview_leancode_test.dart on emulator-5554 \
+      --exclude webview_login_test.dart on emulator-5554 \
+      --exclude webview_stackoverflow_test.dart
 
   always:
     junit_artifacts:
