@@ -8,8 +8,6 @@ void main() {
     ($) async {
       await createApp($);
 
-      throw Exception('This is an exception!');
-
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
 
@@ -23,7 +21,7 @@ void main() {
       await $(FloatingActionButton).tap();
 
       expect($(#counterText).text, '2');
-      expect($('Hello, Flutter! FOO'), findsOneWidget);
+      expect($('Hello, Flutter!'), findsOneWidget);
     },
   );
 }

@@ -55,11 +55,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     };
 
     setUp(() {
-      final invoker = Invoker.current!;
-      print(
-        'DEBUG_PATROL: setUp() for ${invoker.liveTest.individualName}: ${invoker.liveTest.state.result}',
-      );
-
       if (constants.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
@@ -69,11 +64,6 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      final invoker = Invoker.current!;
-      print(
-        'DEBUG_PATROL: tearDown() for ${invoker.liveTest.individualName}: ${invoker.liveTest.state.result}\n test_results: $_testResults',
-      );
-
       if (constants.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
@@ -88,6 +78,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           'tearDown(): count: ${_testResults.length}, results: $_testResults',
         );
       }
+
+      final invoker = Invoker.current!;
 
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
       if (nameOfRequestedTest == _currentDartTestFile) {
