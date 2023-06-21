@@ -7,9 +7,10 @@ test_android_task:
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
-    EMULATOR_API_LEVEL: '33'
+    EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
+    EMULATOR_CONFIG_PATH: ~/.android/avd/MyAVD.avd/config.ini
   timeout_in: 60m
 
   pub_cache:
@@ -32,29 +33,23 @@ test_android_task:
     - sdkmanager --install emulator
   create_emulator_script: |
     avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
-    echo "hw.gpu.enabled=yes" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "hw.gpu.mode=swiftshader_indirect" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "hw.ramSize=4096" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "disk.dataPartition.size=6G" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "hw.camera.back=virtualscene" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "vm.heapSize=576" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "hw.lcd.density=440" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "hw.lcd.height=2220" >> ~/.android/avd/MyAVD.avd/config.ini
-    echo "hw.lcd.width=1080" >> ~/.android/avd/MyAVD.avd/config.ini
+    cat << EOF >> $EMULATOR_CONFIG_PATH
+    hw.gpu.enabled=yes
+    hw.gpu.mode=swiftshader_indirect
+    hw.ramSize=4096
+    disk.dataPartition.size=6G
+    vm.heapSize=576
+    hw.lcd.density=440
+    hw.lcd.height=2220
+    hw.lcd.width=1080
+    EOF
   start_emulator_background_script:
-    - $ANDROID_HOME/emulator/emulator @MyAVD -verbose -no-snapshot-save -no-window -noaudio -no-boot-anim -gpu auto -accel on
+    - $ANDROID_HOME/emulator/emulator @MyAVD -verbose -no-snapshot-save -no-window -noaudio -no-boot-anim -accel on
   wait_for_emulator_script:
     - android-wait-for-emulator
-  patrol_test_script: |
+  patrol_develop_script: |
     cd packages/patrol/example
-    patrol test \
-      --verbose \
-      --exclude integration_test/service_airplane_mode_test.dart \
-      --exclude integration_test/service_bluetooth_test.dart \
-      --exclude webview_hackernews_test.dart on emulator-5554 \
-      --exclude webview_leancode_test.dart on emulator-5554 \
-      --exclude webview_login_test.dart on emulator-5554 \
-      --exclude webview_stackoverflow_test.dart
+    # dart run patrol_develop_test.dart
 
   always:
     junit_artifacts:
