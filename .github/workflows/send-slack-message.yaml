@@ -7,7 +7,13 @@ on:
         required: true
         type: string
       TESTS_EXIT_CODE:
-        required: true
+        required: false
+        type: string
+      FAILURE_STATUS:
+        required: false
+        type: string
+      ERROR_STATUS:
+        required: false
         type: string
 
 jobs:
@@ -20,9 +26,9 @@ jobs:
       # and because of that tests didn't run, so TESTS_EXIT_CODE isn't set
       - name: Check if error or failed test occured during run
         run: >
-          if [ -z ${{ inputs.TESTS_EXIT_CODE }} ]; then
+          if [ -z ${{ inputs.TESTS_EXIT_CODE }} ] || [ -n ${{ inputs.ERROR_STATUS }} ]; then
             echo "error_status=error" >> "$GITHUB_ENV";
-          elif [ ! ${{ inputs.TESTS_EXIT_CODE }} == 0 ]; then
+          elif [ ! ${{ inputs.TESTS_EXIT_CODE }} == 0 ] || [ -n ${{ inputs.FAILURE_STATUS }} ]; then
             echo "failure_status=failure" >> "$GITHUB_ENV";
           fi;
 
