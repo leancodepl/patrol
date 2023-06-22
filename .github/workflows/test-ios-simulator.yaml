@@ -81,7 +81,7 @@ jobs:
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
-          echo "TESTS_EXIT_CODE=1" >> "$GITHUB_ENV" "$GITHUB_OUTPUT"
+          echo "TESTS_EXIT_CODE=1" >> {"$GITHUB_ENV","$GITHUB_OUTPUT"}
           exit 1
 
       - name: Check if something went wrong
