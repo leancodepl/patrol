@@ -6,7 +6,7 @@ void main() async {
 
   Future<void> swapTestFiles() async {
     const correctTestFilePath = 'integration_test/example_test.dart';
-    const fakeTestFilePath = 'fake_example_test.dart';
+    const fakeTestFilePath = 'integration_test/example_test_fake.dart';
 
     final correctTestFile = File(correctTestFilePath);
     final fakeTestFile = File(fakeTestFilePath);

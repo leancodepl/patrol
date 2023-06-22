@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'integration_test/common.dart';
+import 'common.dart';
 
 void main() {
   patrol(
