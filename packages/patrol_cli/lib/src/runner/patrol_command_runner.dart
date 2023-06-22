@@ -53,9 +53,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
   );
 
   ProcessSignal.sigint.watch().listen((signal) async {
-    print(
-      'mamy to wairaiceadsjadjasdkjas jkhdkjasdjasdk jasjk kjdaasjkd kajs kjdska',
-    );
     logger.detail('Caught SIGINT, exiting...');
     await runner.dispose().onError((err, st) {
       logger

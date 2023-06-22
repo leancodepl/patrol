@@ -36,7 +36,9 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
   }) async {
-    _enableInteractiveMode();
+    if (io.stdin.hasTerminal) {
+      _enableInteractiveMode();
+    }
 
     await Future.wait<void>([
       logs(deviceId),
@@ -177,11 +179,11 @@ class FlutterTool {
   void _enableInteractiveMode() {
     // Prevents keystrokes from being printed automatically. Needs to be
     // disabled for lineMode to be disabled too.
-    //io.stdin.echoMode = false;
+    io.stdin.echoMode = false;
 
     // Causes the stdin stream to provide the input as soon as it arrives (one
     // key press at a time).
-    //io.stdin.lineMode = false;
+    io.stdin.lineMode = false;
 
     _logger.detail('Interactive shell mode enabled.');
   }

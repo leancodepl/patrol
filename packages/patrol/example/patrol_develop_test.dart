@@ -1,23 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' show join;
+
 void main() async {
+  var isFirstTestPassed = false;
   var isReloaded = false;
+  Timer? inactivityTimer;
+  final output = StringBuffer();
 
-  Future<void> swapTestFiles() async {
-    const correctTestFilePath = 'integration_test/example_test.dart';
-    const fakeTestFilePath = 'integration_test/example_test_fake.dart';
-
-    final correctTestFile = File(correctTestFilePath);
-    final fakeTestFile = File(fakeTestFilePath);
-
-    if (correctTestFile.existsSync() && correctTestFile.existsSync()) {
-      correctTestFile.deleteSync();
-      fakeTestFile.renameSync(correctTestFilePath);
-    } else {
-      print('One or both files do not exist.');
-    }
-  }
+  final runningTestFilePath = join('integration_test', 'example_test.dart');
+  final testFileToSwapPath = join('integration_test', 'example_test_fake.dart');
+  final runningTestFile = File(runningTestFilePath);
+  final testFileToSwap = File(testFileToSwapPath);
 
   final process = await Process.start(
     'patrol',
@@ -26,28 +22,44 @@ void main() async {
 
   process.stderr.transform(utf8.decoder).listen(print);
 
-  final subscription = process.stdout.transform(utf8.decoder).listen((data) {
+  process.stdout.transform(utf8.decoder).listen((data) async {
     print(data);
+    output.write(data);
+    final stringOutput = output.toString();
 
-    if (isReloaded && data.contains('cos tam ze test sfailowal')) {
-      sleep(Duration(seconds: 2));
-      print('killing');
-      // TODO: tu trzeba zabic grupe procesow i zakonczyc suba
+    if (isFirstTestPassed == false &&
+        stringOutput.contains('All tests passed')) {
+      isFirstTestPassed = true;
     }
 
-    if (data
-        .contains('Hot Restart: attached to the app (press "r" to restart)')) {
-      sleep(Duration(seconds: 2));
-      swapTestFiles(); // await
-      sleep(Duration(seconds: 2));
-      print("Pressing 'r' and then Enter key");
-      process.stdin.writeln('r\n');
-      //process.stdin.add('R'.codeUnits);
+    if (isFirstTestPassed &&
+        isReloaded == false &&
+        stringOutput.contains('press "r" to restart')) {
+      runningTestFile.writeAsStringSync(testFileToSwap.readAsStringSync());
+      process.stdin.add('R'.codeUnits);
       isReloaded = true;
     }
-  });
 
-  // Wait for the command to complete
-  final exitCode = await process.exitCode;
-  print('Command exited with code $exitCode exitCode');
+    if (isFirstTestPassed &&
+        isReloaded &&
+        stringOutput.contains('Some tests failed')) {
+      print(
+        'example_test_fake was successfully restarted as example_test and it has failed as expected',
+      );
+      print('Exiting with exit code 0');
+      // TODO: kill `patrol develop` process and its children
+      exit(0);
+    }
+
+    inactivityTimer?.cancel();
+    inactivityTimer = Timer(Duration(minutes: 1), () {
+      print('isFirstTestPassed: $isFirstTestPassed');
+      print('isReloaded: $isReloaded');
+      print('Running file:');
+      print(runningTestFile.readAsStringSync());
+      print('End of the running file');
+      print('One minute of inactivity, exiting with exit code 1');
+      exit(1);
+    });
+  });
 }
