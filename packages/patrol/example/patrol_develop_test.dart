@@ -52,14 +52,24 @@ void main() async {
     }
 
     inactivityTimer?.cancel();
-    inactivityTimer = Timer(Duration(minutes: 1), () {
-      print('isFirstTestPassed: $isFirstTestPassed');
-      print('isReloaded: $isReloaded');
-      print('Running file:');
-      print(runningTestFile.readAsStringSync());
-      print('End of the running file');
-      print('One minute of inactivity, exiting with exit code 1');
-      exit(1);
-    });
+
+    if (stringOutput.contains('Completed building apk')) {
+      inactivityTimer = Timer(Duration(minutes: 1), () {
+        print('One minute of inactivity, something went wrong...');
+        print('isFirstTestPassed: $isFirstTestPassed');
+        print('isReloaded: $isReloaded');
+        print('Running file:');
+        print(runningTestFile.readAsStringSync());
+        print('End of the running file');
+        print('Exiting with exit code 1');
+        exit(1);
+      });
+    } else {
+      inactivityTimer = Timer(Duration(minutes: 10), () {
+        print('Ten minutes of inactivity, something went wrong...');
+        print('Exiting with exit code 1');
+        exit(1);
+      });
+    }
   });
 }
