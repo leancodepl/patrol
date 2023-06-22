@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 60
     outputs:
       SLACK_MESSAGE_TITLE: iOS simulator
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
 
@@ -80,7 +81,7 @@ jobs:
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
-          echo "TESTS_EXIT_CODE=1" >> "$GITHUB_ENV"
+          echo "TESTS_EXIT_CODE=1" >> "$GITHUB_ENV" "$GITHUB_OUTPUT"
           exit 1
 
       - name: Check if something went wrong
@@ -134,6 +135,7 @@ jobs:
     needs: run_tests
     if: always()
     with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
