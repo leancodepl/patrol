@@ -4,6 +4,21 @@ import 'dart:io';
 void main() async {
   var isReloaded = false;
 
+  Future<void> swapTestFiles() async {
+    const correctTestFilePath = 'integration_test/example_test.dart';
+    const fakeTestFilePath = 'fake_example_test.dart';
+
+    final correctTestFile = File(correctTestFilePath);
+    final fakeTestFile = File(fakeTestFilePath);
+
+    if (correctTestFile.existsSync() && correctTestFile.existsSync()) {
+      correctTestFile.deleteSync();
+      fakeTestFile.renameSync(correctTestFilePath);
+    } else {
+      print('One or both files do not exist.');
+    }
+  }
+
   final process = await Process.start(
     'patrol',
     ['develop', '--target', 'integration_test/example_test.dart'],
@@ -22,6 +37,7 @@ void main() async {
     if (data
         .contains('Hot Restart: attached to the app (press "r" to restart)')) {
       sleep(Duration(seconds: 2));
+      swapTestFiles(); // await
       print("Pressing 'r' and then Enter key");
       process.stdin.writeln('r\n');
       //process.stdin.add('R'.codeUnits);
