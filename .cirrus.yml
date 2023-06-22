@@ -10,7 +10,6 @@ test_android_task:
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
-    EMULATOR_CONFIG_PATH: ~/.android/avd/MyAVD.avd/config.ini
   timeout_in: 60m
 
   pub_cache:
@@ -33,7 +32,7 @@ test_android_task:
     - sdkmanager --install emulator
   create_emulator_script: |
     avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
-    cat << EOF >> $EMULATOR_CONFIG_PATH
+    cat << EOF >> ~/.android/avd/MyAVD.avd/config.ini
     hw.gpu.enabled=yes
     hw.gpu.mode=swiftshader_indirect
     hw.ramSize=4096
@@ -49,7 +48,7 @@ test_android_task:
     - android-wait-for-emulator
   patrol_develop_script: |
     cd packages/patrol/example
-    # dart run patrol_develop_test.dart
+    dart run patrol_develop_test.dart
 
   always:
     junit_artifacts:
