@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter-version: ['3.7.x']
-        device: [iPhone 14, iPad (9th generation)]
+        device: [iPhone 15, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']
 
