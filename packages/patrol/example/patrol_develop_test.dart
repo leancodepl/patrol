@@ -29,26 +29,23 @@ void main() async {
   final subscription = process.stdout.transform(utf8.decoder).listen((data) {
     print(data);
 
-    if (isReloaded && data.contains('All tests passed!')) {
+    if (isReloaded && data.contains('cos tam ze test sfailowal')) {
       sleep(Duration(seconds: 2));
       print('killing');
+      // TODO: tu trzeba zabic grupe procesow i zakonczyc suba
     }
 
     if (data
         .contains('Hot Restart: attached to the app (press "r" to restart)')) {
       sleep(Duration(seconds: 2));
       swapTestFiles(); // await
+      sleep(Duration(seconds: 2));
       print("Pressing 'r' and then Enter key");
       process.stdin.writeln('r\n');
       //process.stdin.add('R'.codeUnits);
       isReloaded = true;
     }
   });
-
-  // if (isReloaded) {
-  //   await subscription.cancel();
-  //   process.kill();
-  // }
 
   // Wait for the command to complete
   final exitCode = await process.exitCode;
