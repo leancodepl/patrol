@@ -1,7 +1,7 @@
 test_android_task:
   name: Test `patrol develop` on Linux
   container:
-    image: cirrusci/flutter:stable
+    image: ghcr.io/cirruslabs/flutter:stable
     cpu: 8
     memory: 32G
     kvm: 'true'
