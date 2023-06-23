@@ -68,6 +68,7 @@ test_ios_task:
     flutter channel stable
     flutter upgrade
     flutter precache
+    flutter pub get
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   patrol_test_script: |
