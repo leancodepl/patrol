@@ -1,6 +1,8 @@
 package pl.leancode.patrol
 
+import android.app.Instrumentation
 import android.app.UiAutomation
+import android.content.Context
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -50,9 +52,19 @@ private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
 class Automator private constructor() {
     private var timeoutMillis: Long = 10_000
 
-    fun configure(waitForSelectorTimeout: Long) {
-        val configurator = Configurator.getInstance()
+    private lateinit var instrumentation: Instrumentation
+    private lateinit var configurator: Configurator
+    private lateinit var uiDevice: UiDevice
+    private lateinit var targetContext: Context
 
+    fun initialize() {
+        instrumentation = InstrumentationRegistry.getInstrumentation()
+        targetContext = instrumentation.targetContext
+        configurator = Configurator.getInstance()
+        uiDevice = UiDevice.getInstance(instrumentation)
+    }
+
+    fun configure(waitForSelectorTimeout: Long) {
         timeoutMillis = waitForSelectorTimeout
         configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
@@ -70,12 +82,6 @@ class Automator private constructor() {
         Logger.i("\ttoolType: ${configurator.toolType}")
         Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
-
-    private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
-
-    private val uiDevice get() = UiDevice.getInstance(instrumentation)
-
-    private val targetContext get() = instrumentation.targetContext
 
     private fun executeShellCommand(cmd: String) {
         uiDevice.executeShellCommand(cmd)
