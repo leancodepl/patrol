@@ -78,7 +78,7 @@ test_windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   env:
-    PATH: "%USERPROFILE%\\flutter\\bin;%USERPROFILE%\\android-sdk\\cmdline-tools\\latest\\bin;%USERPROFILE%\\android-sdk\\emulator;%USERPROFILE%\\android-sdk\\platform-tools;%PATH%"
+    PATH: "%USERPROFILE%\\flutter\\flutter\\bin;%USERPROFILE%\\android-sdk\\cmdline-tools\\latest\\bin;%USERPROFILE%\\android-sdk\\emulator;%USERPROFILE%\\android-sdk\\platform-tools;%PATH%"
     EMULATOR_CONFIG_PATH: "%USERPROFILE%\\.android\\avd\\MyAVD.avd\\config.ini"
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
@@ -86,8 +86,10 @@ test_windows_task:
   timeout_in: 30m
 
   setup_flutter_script: |
-    cd
     git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter
+    echo "------"
+    cd
+    echo "------"
     flutter precache
     flutter --version
   generate_gradlew_script: |
