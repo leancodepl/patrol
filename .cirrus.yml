@@ -1,5 +1,5 @@
 test_android_task:
-  name: Test example app on Android
+  name: Test `patrol develop` on Linux
   container:
     image: cirrusci/flutter:stable
     cpu: 8
@@ -10,7 +10,7 @@ test_android_task:
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
-  timeout_in: 60m
+  timeout_in: 30m
 
   pub_cache:
     folder: ~/.pub-cache
@@ -27,9 +27,9 @@ test_android_task:
     kill $buildpid
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
-  setup_emulator_script:
-    - sdkmanager --install "$EMULATOR_IMAGE"
-    - sdkmanager --install emulator
+  setup_emulator_script: |
+    sdkmanager --install "$EMULATOR_IMAGE"
+    sdkmanager --install emulator
   create_emulator_script: |
     avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
     cat << EOF >> ~/.android/avd/MyAVD.avd/config.ini
@@ -51,14 +51,8 @@ test_android_task:
     cd packages/patrol/example
     dart run patrol_develop_test.dart
 
-  always:
-    junit_artifacts:
-      path: packages/patrol/example/android/test-results/**/connected/TEST-*.xml
-      type: text/xml
-      format: junit
-
 test_ios_task:
-  name: Test example app on iOS simulator
+  name: Test `patrol develop` on macOS
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
@@ -67,29 +61,15 @@ test_ios_task:
 
   pub_cache:
     folder: ~/.pub-cache
-  setup_simulator_script:
-    - xcrun simctl list devicetypes
-    - xcrun simctl list runtimes
-    # create simulator
-    - udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
-    # boot simulator
-    - xcrun simctl boot "$udid"
-    - echo "UDID=$udid" >> $CIRRUS_ENV
-  setup_flutter_script:
-    - flutter channel stable
-    - flutter upgrade
-    - flutter precache
+  setup_simulator_script: |
+    udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
+    xcrun simctl boot "$udid"
+  setup_flutter_script: |
+    flutter channel stable
+    flutter upgrade
+    flutter precache
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
-  patrol_test_script:
-    - cd packages/patrol/example
-    # set location
-    - xcrun simctl location "$UDID" set 52.17469,21.03193
-    - patrol test --device "$UDID"
-      --exclude integration_test/android_app_test.dart           `# Android-only`
-      --exclude integration_test/swipe_test.dart                 `# does not work on iOS`
-      --exclude integration_test/service_airplane_mode_test.dart `# not available on iOS simulator`
-      --exclude integration_test/service_bluetooth_test.dart     `# not available on iOS simulator`
-      --exclude integration_test/service_cellular_test.dart      `# not available on iOS simulator`
-      --exclude integration_test/open_quick_settings_test.dart   `# not available on iOS simulator`
-      --exclude integration_test/service_wifi_test.dart          `# not available on iOS simulator`
+  patrol_test_script: |
+    cd packages/patrol/example
+    dart run patrol_develop_test.dart
