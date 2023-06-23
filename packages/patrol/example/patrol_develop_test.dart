@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 
-void main() async {
+void main(List<String> args) async {
   var isFirstTestPassed = false;
   var isReloaded = false;
   Timer? inactivityTimer;
@@ -17,7 +17,7 @@ void main() async {
 
   final process = await Process.start(
     'patrol',
-    ['develop', '--target', 'integration_test/example_test.dart'],
+    ['develop', '--target', 'integration_test/example_test.dart', ...args],
   );
 
   process.stderr.transform(utf8.decoder).listen(print);
@@ -53,7 +53,7 @@ void main() async {
 
     inactivityTimer?.cancel();
 
-    if (stringOutput.contains('Completed building apk')) {
+    if (stringOutput.contains('Completed building')) {
       inactivityTimer = Timer(Duration(minutes: 1), () {
         print('One minute of inactivity, something went wrong...');
         print('isFirstTestPassed: $isFirstTestPassed');
