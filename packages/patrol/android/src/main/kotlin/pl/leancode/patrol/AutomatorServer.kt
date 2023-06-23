@@ -1,22 +1,19 @@
 package pl.leancode.patrol
 
-import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
-import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.DENIED
-import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.ONLY_THIS_TIME
-import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.FINE
-import pl.leancode.patrol.contracts.NativeAutomatorGrpcKt
-import pl.leancode.patrol.contracts.empty
-import pl.leancode.patrol.contracts.getNativeViewsResponse
-import pl.leancode.patrol.contracts.getNotificationsResponse
-import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
 class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
+
+    override suspend fun initialize(request: Empty): Empty {
+        automation.initialize()
+        return empty { }
+    }
+
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
         return empty { }
@@ -52,7 +49,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         return empty { }
     }
 
-    override suspend fun closeNotifications(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun closeNotifications(request: Empty): Empty {
         automation.closeNotifications()
         return empty { }
     }
@@ -202,7 +199,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         return empty { }
     }
 
-    override suspend fun markPatrolAppServiceReady(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun markPatrolAppServiceReady(request: Empty): Empty {
         PatrolServer.appReady.set(true)
         return empty { }
     }
