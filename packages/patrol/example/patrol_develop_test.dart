@@ -46,6 +46,7 @@ void main() {
   final process = await Process.start(
     'patrol',
     ['develop', '--target', 'integration_test/example_test.dart', ...args],
+    runInShell: true,
   );
 
   process.stderr.transform(utf8.decoder).listen(print);

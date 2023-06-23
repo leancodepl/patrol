@@ -98,15 +98,7 @@ test_windows_task:
     flutter --version
   generate_gradlew_script: |
     cd packages\\patrol\\example
-    start /B cmd /C "flutter build apk --target lib\\main.dart --debug --flavor=does-not-exist"
-    :loop
-    timeout /T 2 /NOBREAK >NUL
-    if exist android\\gradlew (
-        taskkill /F /IM flutter.bat >NUL
-        exit /B 0
-    ) else (
-        goto loop
-    )
+    flutter build apk --debug --flavor=does-not-exist || echo Ignoring errors
   setup_patrol_cli_script:
     - dart pub global activate --source path packages\\patrol_cli && patrol
   setup_emulator_script: |
@@ -122,10 +114,10 @@ test_windows_task:
     sdkmanager --install emulator
   create_emulator_script: |
     avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
-    echo hw.cpu.ncore=4 >> "$EMULATOR_CONFIG_PATH"
+    echo hw.cpu.ncore=1 >> "$EMULATOR_CONFIG_PATH"
     echo hw.gpu.enabled=yes >> "$EMULATOR_CONFIG_PATH"
     echo hw.gpu.mode=swiftshader_indirect >> "$EMULATOR_CONFIG_PATH"
-    echo hw.ramSize=4096 >> "$EMULATOR_CONFIG_PATH"
+    echo hw.ramSize=2048 >> "$EMULATOR_CONFIG_PATH"
     echo disk.dataPartition.size=6G >> "$EMULATOR_CONFIG_PATH"
     echo vm.heapSize=576 >> "$EMULATOR_CONFIG_PATH"
     echo hw.lcd.density=440 >> "$EMULATOR_CONFIG_PATH"
