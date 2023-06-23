@@ -1,4 +1,4 @@
-test_android_task:
+test_linux_task:
   name: Test `patrol develop` on Linux
   container:
     image: ghcr.io/cirruslabs/flutter:stable
@@ -51,7 +51,7 @@ test_android_task:
     cd packages/patrol/example
     dart run patrol_develop_test.dart
 
-test_ios_task:
+test_macos_task:
   name: Test `patrol develop` on macOS
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
@@ -71,4 +71,65 @@ test_ios_task:
   patrol_test_script: |
     cd packages/patrol/example
     flutter pub get
+    dart run patrol_develop_test.dart
+
+test_windows_task:
+  name: Test `patrol develop` on Windows
+  windows_container:
+    image: cirrusci/windowsservercore:2019
+  env:
+    PATH: "%USERPROFILE%\flutter\bin;%USERPROFILE%\android-sdk\cmdline-tools\latest\bin;%USERPROFILE%\android-sdk\emulator;%USERPROFILE%\android-sdk\platform-tools;%PATH%"
+    EMULATOR_CONFIG_PATH: "%USERPROFILE%\.android\avd\MyAVD.avd\config.ini"
+    EMULATOR_API_LEVEL: '34'
+    EMULATOR_ABI: google_apis_playstore;x86_64
+    EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
+  timeout_in: 30m
+
+  setup_flutter_script: |
+    cd
+    git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter
+    flutter precache
+    flutter --version
+  generate_gradlew_script: |
+    cd packages\patrol\example
+    start /B cmd /C "flutter build apk --target lib\main.dart --debug --flavor=does-not-exist"
+    :loop
+    timeout /T 2 /NOBREAK >NUL
+    if exist android\gradlew (
+        taskkill /F /IM flutter.bat >NUL
+        exit /B 0
+    ) else (
+        goto loop
+    )
+  setup_patrol_cli_script:
+    - dart pub global activate --source path packages\patrol_cli && patrol
+  setup_emulator_script: |
+    certutil -urlcache -split -f "https://dl.google.com/android/repository/commandlinetools-win-9477386_latest.zip" cmdline-tools.zip
+    tar -xf cmdline-tools.zip
+    mkdir %USERPROFILE%\android-sdk
+    mkdir %USERPROFILE%\android-sdk\cmdline-tools
+    mkdir %USERPROFILE%\android-sdk\platforms
+    mkdir %USERPROFILE%\android-sdk\cmdline-tools\latest
+    move /Y %USERPROFILE%\cmdline-tools\* %USERPROFILE%\android-sdk\cmdline-tools\latest
+
+    sdkmanager --install "$EMULATOR_IMAGE"
+    sdkmanager --install emulator
+  create_emulator_script: |
+    avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
+    echo hw.cpu.ncore=4 >> "$EMULATOR_CONFIG_PATH"
+    echo hw.gpu.enabled=yes >> "$EMULATOR_CONFIG_PATH"
+    echo hw.gpu.mode=swiftshader_indirect >> "$EMULATOR_CONFIG_PATH"
+    echo hw.ramSize=4096 >> "$EMULATOR_CONFIG_PATH"
+    echo disk.dataPartition.size=6G >> "$EMULATOR_CONFIG_PATH"
+    echo vm.heapSize=576 >> "$EMULATOR_CONFIG_PATH"
+    echo hw.lcd.density=440 >> "$EMULATOR_CONFIG_PATH"
+    echo hw.lcd.height=2220 >> "$EMULATOR_CONFIG_PATH"
+    echo hw.lcd.width=1080 >> "$EMULATOR_CONFIG_PATH"
+
+  start_emulator_background_script:
+    - emulator @MyAVD -verbose -no-snapshot-save -no-window -noaudio -no-boot-anim -accel on
+  wait_for_emulator_script:
+    - android-wait-for-emulator
+  patrol_develop_script: |
+    cd packages\patrol\example
     dart run patrol_develop_test.dart
