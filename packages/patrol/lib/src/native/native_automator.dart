@@ -204,6 +204,20 @@ class NativeAutomator {
     }
   }
 
+  /// Initializes the native automator.
+  ///
+  /// This is required only on Android. It's used to initialize UiAutomation before the
+  /// Dart test starts.
+  ///
+  /// See also:
+  ///  * https://github.com/flutter/flutter/issues/129231
+  Future<void> initialize() async {
+    await _wrapRequest(
+      'initialize',
+      () => _client.initialize(Empty()),
+    );
+  }
+
   /// Configures the native automator.
   ///
   /// Must be called before using any native features.
