@@ -103,6 +103,10 @@ test_windows_task:
     mkdir "%CIRRUS_WORKING_DIR%\\android-sdk\\platforms"
     mkdir "%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest"
     move /Y "%CIRRUS_WORKING_DIR%\\cmdline-tools\\*" "%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest"
+    echo "-----"
+    echo "%PATH%"
+    echo "-----"
+    dir "%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest\\bin"
 
     sdkmanager --install "$EMULATOR_IMAGE"
     sdkmanager --install emulator
