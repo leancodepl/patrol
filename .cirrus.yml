@@ -98,7 +98,7 @@ test_windows_task:
     flutter --version
   generate_gradlew_script: |
     cd packages\\patrol\\example
-    flutter build apk --debug --flavor=does-not-exist || echo Ignoring errors
+    flutter build apk --debug --flavor=does-not-exist || exit /b 0
   setup_patrol_cli_script:
     - dart pub global activate --source path packages\\patrol_cli && patrol
   setup_emulator_script: |
