@@ -78,7 +78,7 @@ test_windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   env:
-    PATH: "%CIRRUS_WORKING_DIR%\\flutter\\flutter\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\emulator;%CIRRUS_WORKING_DIR%\\android-sdk\\platform-tools;%PATH%"
+    PATH: "%CIRRUS_WORKING_DIR%\\flutter\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\emulator;%CIRRUS_WORKING_DIR%\\android-sdk\\platform-tools;%PATH%"
     EMULATOR_CONFIG_PATH: "%CIRRUS_WORKING_DIR%\\.android\\avd\\MyAVD.avd\\config.ini"
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
