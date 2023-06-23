@@ -1,9 +1,18 @@
 package pl.leancode.patrol
 
+import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
+import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.DENIED
+import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.ONLY_THIS_TIME
+import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.FINE
+import pl.leancode.patrol.contracts.NativeAutomatorGrpcKt
+import pl.leancode.patrol.contracts.empty
+import pl.leancode.patrol.contracts.getNativeViewsResponse
+import pl.leancode.patrol.contracts.getNotificationsResponse
+import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 

@@ -206,8 +206,10 @@ class NativeAutomator {
 
   /// Initializes the native automator.
   ///
-  /// This is required only on Android. It's used to initialize UiAutomation before the
-  /// Dart test starts.
+  /// It's used to initialize android.app.UiAutomation before Flutter tests
+  /// start running.
+  ///
+  /// It's a no-op on iOS.
   ///
   /// See also:
   ///  * https://github.com/flutter/flutter/issues/129231

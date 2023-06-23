@@ -70,7 +70,7 @@ class Automator private constructor() {
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
 
-        Configurator.getInstance().uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
+        configurator.uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
 
         Logger.i("Timeout: $timeoutMillis ms")
         Logger.i("Android UiAutomator configuration:")
