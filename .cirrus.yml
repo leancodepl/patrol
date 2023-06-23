@@ -78,7 +78,9 @@ test_windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   env:
-    PATH: "%CIRRUS_WORKING_DIR%\\flutter\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\emulator;%CIRRUS_WORKING_DIR%\\android-sdk\\platform-tools;%PATH%"
+    ANDROID_SDK_ROOT: "%CIRRUS_WORKING_DIR%\\android-sdk"
+    ANDROID_HOME: "%CIRRUS_WORKING_DIR%\\android-sdk"
+    PATH: "%USERPROFILE%\\AppData\\Local\\Pub\\Cache\\bin;%CIRRUS_WORKING_DIR%\\flutter\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\emulator;%CIRRUS_WORKING_DIR%\\android-sdk\\platform-tools;%PATH%"
     EMULATOR_CONFIG_PATH: "%CIRRUS_WORKING_DIR%\\.android\\avd\\MyAVD.avd\\config.ini"
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
@@ -86,16 +88,8 @@ test_windows_task:
   timeout_in: 30m
 
   setup_flutter_script: |
-    echo "%CIRRUS_WORKING_DIR%"
-    echo "------"
-    echo "%HOME%"
-    echo "------"
     git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter
-    echo "------"
-    dir
-    echo "------"
     flutter precache
-    flutter --version
   generate_gradlew_script: |
     cd packages\\patrol\\example
     flutter build apk --debug --flavor=does-not-exist || exit /b 0
