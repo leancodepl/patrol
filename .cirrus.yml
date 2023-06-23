@@ -15,7 +15,6 @@ test_android_task:
   pub_cache:
     folder: ~/.pub-cache
   setup_flutter_script: |
-    flutter upgrade
     flutter precache
     flutter --version
   generate_gradlew_script: |
@@ -65,9 +64,7 @@ test_ios_task:
   pub_cache:
     folder: ~/.pub-cache
   setup_simulator_script: |
-    udid=$(xcrun simctl create "iPhone 14" com.apple.CoreSimulator.SimDeviceType.iPhone-14 com.apple.CoreSimulator.SimRuntime.iOS-16-4)
-    xcrun simctl boot "$udid"
-    echo "UDID=$udid" >> $CIRRUS_ENV
+    xcrun simctl boot "iPhone 14 Pro Max"
   setup_flutter_script: |
     flutter channel stable
     flutter upgrade
@@ -78,4 +75,4 @@ test_ios_task:
   patrol_test_script: |
     cd packages/patrol/example
     flutter pub get
-    dart run patrol_develop_test.dart --device "$UDID"
+    dart run patrol_develop_test.dart
