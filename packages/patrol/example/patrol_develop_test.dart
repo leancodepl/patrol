@@ -10,10 +10,38 @@ void main(List<String> args) async {
   Timer? inactivityTimer;
   final output = StringBuffer();
 
+  const failingTestString = r'''
+import 'package:flutter/material.dart';
+
+import 'common.dart';
+
+void main() {
+  patrol(
+    'This test is used to `test patrol develop`',
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+
+      await $(#textField).enterText('Hello, Flutter!');
+      expect($('Hello, Flutter!'), findsOneWidget);
+
+      await $.native.pressHome();
+      await $.native.openApp();
+
+      expect($(#counterText).text, '1');
+      await $(FloatingActionButton).tap();
+
+      expect($(#counterText).text, '2');
+      expect($('Hello, fail here!'), findsOneWidget);
+    },
+  );
+}
+''';
+
   final runningTestFilePath = join('integration_test', 'example_test.dart');
-  final testFileToSwapPath = join('integration_test', 'example_test_fake.dart');
   final runningTestFile = File(runningTestFilePath);
-  final testFileToSwap = File(testFileToSwapPath);
 
   final process = await Process.start(
     'patrol',
@@ -35,7 +63,7 @@ void main(List<String> args) async {
     if (isFirstTestPassed &&
         isReloaded == false &&
         stringOutput.contains('press "r" to restart')) {
-      runningTestFile.writeAsStringSync(testFileToSwap.readAsStringSync());
+      runningTestFile.writeAsStringSync(failingTestString);
       process.stdin.add('R'.codeUnits);
       isReloaded = true;
     }

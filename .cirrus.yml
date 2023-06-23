@@ -14,17 +14,14 @@ test_android_task:
 
   pub_cache:
     folder: ~/.pub-cache
-  setup_flutter_script:
-    - flutter precache
+  setup_flutter_script: |
+    flutter channel stable
+    flutter upgrade
+    flutter precache
+    flutter --version
   generate_gradlew_script: |
     cd packages/patrol/example
-    flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
-    buildpid="$!"
-    while [ ! -e "android/gradlew" ]; do
-        echo "waiting for gradlew to generate..."
-        sleep 2
-    done
-    kill $buildpid
+    flutter build apk --target lib/main.dart --debug --flavor=does-not-exist & until [ -e "android/gradlew" ]; do sleep 2; done; kill $!
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_emulator_script: |
@@ -69,6 +66,7 @@ test_ios_task:
     flutter channel stable
     flutter upgrade
     flutter precache
+    flutter --version
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   patrol_test_script: |

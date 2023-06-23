@@ -4,7 +4,7 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'counter state is the same after going to Home and switching apps',
+    'This test is used to `test patrol develop`',
     ($) async {
       await createApp($);
 
@@ -21,7 +21,7 @@ void main() {
       await $(FloatingActionButton).tap();
 
       expect($(#counterText).text, '2');
-      expect($('Hello, Flutter!'), findsOneWidget);
+      expect($('Hello, fail here!'), findsOneWidget);
     },
   );
 }
