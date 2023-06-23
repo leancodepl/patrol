@@ -78,8 +78,8 @@ test_windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   env:
-    PATH: "%USERPROFILE%\flutter\bin;%USERPROFILE%\android-sdk\cmdline-tools\latest\bin;%USERPROFILE%\android-sdk\emulator;%USERPROFILE%\android-sdk\platform-tools;%PATH%"
-    EMULATOR_CONFIG_PATH: "%USERPROFILE%\.android\avd\MyAVD.avd\config.ini"
+    PATH: "%USERPROFILE%\\flutter\\bin;%USERPROFILE%\\android-sdk\\cmdline-tools\\latest\\bin;%USERPROFILE%\\android-sdk\\emulator;%USERPROFILE%\\android-sdk\\platform-tools;%PATH%"
+    EMULATOR_CONFIG_PATH: "%USERPROFILE%\\.android\\avd\\MyAVD.avd\\config.ini"
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
@@ -91,26 +91,26 @@ test_windows_task:
     flutter precache
     flutter --version
   generate_gradlew_script: |
-    cd packages\patrol\example
-    start /B cmd /C "flutter build apk --target lib\main.dart --debug --flavor=does-not-exist"
+    cd packages\\patrol\\example
+    start /B cmd /C "flutter build apk --target lib\\main.dart --debug --flavor=does-not-exist"
     :loop
     timeout /T 2 /NOBREAK >NUL
-    if exist android\gradlew (
+    if exist android\\gradlew (
         taskkill /F /IM flutter.bat >NUL
         exit /B 0
     ) else (
         goto loop
     )
   setup_patrol_cli_script:
-    - dart pub global activate --source path packages\patrol_cli && patrol
+    - dart pub global activate --source path packages\\patrol_cli && patrol
   setup_emulator_script: |
     certutil -urlcache -split -f "https://dl.google.com/android/repository/commandlinetools-win-9477386_latest.zip" cmdline-tools.zip
     tar -xf cmdline-tools.zip
-    mkdir %USERPROFILE%\android-sdk
-    mkdir %USERPROFILE%\android-sdk\cmdline-tools
-    mkdir %USERPROFILE%\android-sdk\platforms
-    mkdir %USERPROFILE%\android-sdk\cmdline-tools\latest
-    move /Y %USERPROFILE%\cmdline-tools\* %USERPROFILE%\android-sdk\cmdline-tools\latest
+    mkdir %USERPROFILE%\\android-sdk
+    mkdir %USERPROFILE%\\android-sdk\\cmdline-tools
+    mkdir %USERPROFILE%\\android-sdk\\platforms
+    mkdir %USERPROFILE%\\android-sdk\\cmdline-tools\\latest
+    move /Y %USERPROFILE%\\cmdline-tools\\* %USERPROFILE%\\android-sdk\\cmdline-tools\\latest
 
     sdkmanager --install "$EMULATOR_IMAGE"
     sdkmanager --install emulator
@@ -131,5 +131,5 @@ test_windows_task:
   wait_for_emulator_script:
     - android-wait-for-emulator
   patrol_develop_script: |
-    cd packages\patrol\example
+    cd packages\\patrol\\example
     dart run patrol_develop_test.dart
