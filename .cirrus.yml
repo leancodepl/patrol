@@ -6,14 +6,11 @@ test_android_task:
     memory: 32G
     kvm: 'true'
   env:
-    PATH: $HOME/.pub-cache/bin:${PATH}
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 30m
 
-  pub_cache:
-    folder: ~/.pub-cache
   setup_flutter_script: |
     flutter precache
     flutter --version
@@ -57,8 +54,6 @@ test_ios_task:
   name: Test `patrol develop` on macOS
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
-  env:
-    PATH: $HOME/.pub-cache/bin:${PATH}
   timeout_in: 30m
 
   pub_cache:
