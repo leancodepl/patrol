@@ -86,9 +86,11 @@ test_windows_task:
   timeout_in: 30m
 
   setup_flutter_script: |
+    echo "%USERPROFILE%"
+    echo "------"
     git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter
     echo "------"
-    cd
+    dir
     echo "------"
     flutter precache
     flutter --version
