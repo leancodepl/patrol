@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' show join;
+import 'package:path/path.dart';
 
 void main() async {
   var isFirstTestPassed = false;
