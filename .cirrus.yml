@@ -78,15 +78,17 @@ test_windows_task:
   windows_container:
     image: cirrusci/windowsservercore:2019
   env:
-    PATH: "%USERPROFILE%\\flutter\\flutter\\bin;%USERPROFILE%\\android-sdk\\cmdline-tools\\latest\\bin;%USERPROFILE%\\android-sdk\\emulator;%USERPROFILE%\\android-sdk\\platform-tools;%PATH%"
-    EMULATOR_CONFIG_PATH: "%USERPROFILE%\\.android\\avd\\MyAVD.avd\\config.ini"
+    PATH: "%CIRRUS_WORKING_DIR%\\flutter\\flutter\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest\\bin;%CIRRUS_WORKING_DIR%\\android-sdk\\emulator;%CIRRUS_WORKING_DIR%\\android-sdk\\platform-tools;%PATH%"
+    EMULATOR_CONFIG_PATH: "%CIRRUS_WORKING_DIR%\\.android\\avd\\MyAVD.avd\\config.ini"
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 30m
 
   setup_flutter_script: |
-    echo "%USERPROFILE%"
+    echo "%CIRRUS_WORKING_DIR%"
+    echo "------"
+    echo "%HOME%"
     echo "------"
     git clone https://github.com/flutter/flutter.git --depth 1 -b stable flutter
     echo "------"
@@ -110,11 +112,11 @@ test_windows_task:
   setup_emulator_script: |
     certutil -urlcache -split -f "https://dl.google.com/android/repository/commandlinetools-win-9477386_latest.zip" cmdline-tools.zip
     tar -xf cmdline-tools.zip
-    mkdir %USERPROFILE%\\android-sdk
-    mkdir %USERPROFILE%\\android-sdk\\cmdline-tools
-    mkdir %USERPROFILE%\\android-sdk\\platforms
-    mkdir %USERPROFILE%\\android-sdk\\cmdline-tools\\latest
-    move /Y %USERPROFILE%\\cmdline-tools\\* %USERPROFILE%\\android-sdk\\cmdline-tools\\latest
+    mkdir %CIRRUS_WORKING_DIR%\\android-sdk
+    mkdir %CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools
+    mkdir %CIRRUS_WORKING_DIR%\\android-sdk\\platforms
+    mkdir %CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest
+    move /Y %CIRRUS_WORKING_DIR%\\cmdline-tools\\* %CIRRUS_WORKING_DIR%\\android-sdk\\cmdline-tools\\latest
 
     sdkmanager --install "$EMULATOR_IMAGE"
     sdkmanager --install emulator
