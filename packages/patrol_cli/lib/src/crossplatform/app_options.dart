@@ -190,7 +190,7 @@ class IOSAppOptions {
       ...['-only-testing', 'RunnerUITests'],
       ...[
         '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator'},id=${device.id}',
+        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
     ];
 

@@ -20,7 +20,7 @@ void main() {
         await $.native.selectFineLocation();
         await $.native.grantPermissionOnlyThisTime();
       }
-      await $.pumpAndSettle(duration: _timeout);
+      await $.pump();
     }
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
