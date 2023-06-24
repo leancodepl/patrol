@@ -83,10 +83,6 @@ abstract class PatrolAppServiceBase extends $grpc.Service {
 }
 
 class NativeAutomatorClient extends $grpc.Client {
-  static final _$initialize = $grpc.ClientMethod<$0.Empty, $0.Empty>(
-      '/patrol.NativeAutomator/initialize',
-      ($0.Empty value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$configure = $grpc.ClientMethod<$0.ConfigureRequest, $0.Empty>(
       '/patrol.NativeAutomator/configure',
       ($0.ConfigureRequest value) => value.writeToBuffer(),
@@ -235,11 +231,6 @@ class NativeAutomatorClient extends $grpc.Client {
       {$grpc.CallOptions? options,
       $core.Iterable<$grpc.ClientInterceptor>? interceptors})
       : super(channel, options: options, interceptors: interceptors);
-
-  $grpc.ResponseFuture<$0.Empty> initialize($0.Empty request,
-      {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$initialize, request, options: options);
-  }
 
   $grpc.ResponseFuture<$0.Empty> configure($0.ConfigureRequest request,
       {$grpc.CallOptions? options}) {
@@ -417,13 +408,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $core.String get $name => 'patrol.NativeAutomator';
 
   NativeAutomatorServiceBase() {
-    $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
-        'initialize',
-        initialize_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
-        ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.ConfigureRequest, $0.Empty>(
         'configure',
         configure_Pre,
@@ -660,11 +644,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         ($0.Empty value) => value.writeToBuffer()));
   }
 
-  $async.Future<$0.Empty> initialize_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
-    return initialize(call, await request);
-  }
-
   $async.Future<$0.Empty> configure_Pre($grpc.ServiceCall call,
       $async.Future<$0.ConfigureRequest> request) async {
     return configure(call, await request);
@@ -828,7 +807,6 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return markPatrolAppServiceReady(call, await request);
   }
 
-  $async.Future<$0.Empty> initialize($grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> configure(
       $grpc.ServiceCall call, $0.ConfigureRequest request);
   $async.Future<$0.Empty> pressHome($grpc.ServiceCall call, $0.Empty request);

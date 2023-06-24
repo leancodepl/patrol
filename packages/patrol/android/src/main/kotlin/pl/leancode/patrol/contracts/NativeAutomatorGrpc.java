@@ -15,36 +15,6 @@ public final class NativeAutomatorGrpc {
   public static final String SERVICE_NAME = "patrol.NativeAutomator";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty,
-      pl.leancode.patrol.contracts.Contracts.Empty> getInitializeMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "initialize",
-      requestType = pl.leancode.patrol.contracts.Contracts.Empty.class,
-      responseType = pl.leancode.patrol.contracts.Contracts.Empty.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty,
-      pl.leancode.patrol.contracts.Contracts.Empty> getInitializeMethod() {
-    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty, pl.leancode.patrol.contracts.Contracts.Empty> getInitializeMethod;
-    if ((getInitializeMethod = NativeAutomatorGrpc.getInitializeMethod) == null) {
-      synchronized (NativeAutomatorGrpc.class) {
-        if ((getInitializeMethod = NativeAutomatorGrpc.getInitializeMethod) == null) {
-          NativeAutomatorGrpc.getInitializeMethod = getInitializeMethod =
-              io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.Empty, pl.leancode.patrol.contracts.Contracts.Empty>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "initialize"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
-              .build();
-        }
-      }
-    }
-    return getInitializeMethod;
-  }
-
   private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.ConfigureRequest,
       pl.leancode.patrol.contracts.Contracts.Empty> getConfigureMethod;
 
@@ -1055,13 +1025,6 @@ public final class NativeAutomatorGrpc {
 
     /**
      */
-    public void initialize(pl.leancode.patrol.contracts.Contracts.Empty request,
-        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getInitializeMethod(), responseObserver);
-    }
-
-    /**
-     */
     public void configure(pl.leancode.patrol.contracts.Contracts.ConfigureRequest request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getConfigureMethod(), responseObserver);
@@ -1296,9 +1259,6 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
-     * <pre>
-     * TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-     * </pre>
      */
     public void markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
@@ -1307,13 +1267,6 @@ public final class NativeAutomatorGrpc {
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
-          .addMethod(
-            getInitializeMethod(),
-            io.grpc.stub.ServerCalls.asyncUnaryCall(
-              new MethodHandlers<
-                pl.leancode.patrol.contracts.Contracts.Empty,
-                pl.leancode.patrol.contracts.Contracts.Empty>(
-                  this, METHODID_INITIALIZE)))
           .addMethod(
             getConfigureMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1554,14 +1507,6 @@ public final class NativeAutomatorGrpc {
     protected NativeAutomatorStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NativeAutomatorStub(channel, callOptions);
-    }
-
-    /**
-     */
-    public void initialize(pl.leancode.patrol.contracts.Contracts.Empty request,
-        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getInitializeMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1831,9 +1776,6 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
-     * <pre>
-     * TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-     * </pre>
      */
     public void markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request,
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
@@ -1854,13 +1796,6 @@ public final class NativeAutomatorGrpc {
     protected NativeAutomatorBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NativeAutomatorBlockingStub(channel, callOptions);
-    }
-
-    /**
-     */
-    public pl.leancode.patrol.contracts.Contracts.Empty initialize(pl.leancode.patrol.contracts.Contracts.Empty request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getInitializeMethod(), getCallOptions(), request);
     }
 
     /**
@@ -2099,9 +2034,6 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
-     * <pre>
-     * TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-     * </pre>
      */
     public pl.leancode.patrol.contracts.Contracts.Empty markPatrolAppServiceReady(pl.leancode.patrol.contracts.Contracts.Empty request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
@@ -2121,14 +2053,6 @@ public final class NativeAutomatorGrpc {
     protected NativeAutomatorFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new NativeAutomatorFutureStub(channel, callOptions);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> initialize(
-        pl.leancode.patrol.contracts.Contracts.Empty request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getInitializeMethod(), getCallOptions()), request);
     }
 
     /**
@@ -2398,9 +2322,6 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
-     * <pre>
-     * TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-     * </pre>
      */
     public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> markPatrolAppServiceReady(
         pl.leancode.patrol.contracts.Contracts.Empty request) {
@@ -2409,39 +2330,38 @@ public final class NativeAutomatorGrpc {
     }
   }
 
-  private static final int METHODID_INITIALIZE = 0;
-  private static final int METHODID_CONFIGURE = 1;
-  private static final int METHODID_PRESS_HOME = 2;
-  private static final int METHODID_PRESS_BACK = 3;
-  private static final int METHODID_PRESS_RECENT_APPS = 4;
-  private static final int METHODID_DOUBLE_PRESS_RECENT_APPS = 5;
-  private static final int METHODID_OPEN_APP = 6;
-  private static final int METHODID_OPEN_QUICK_SETTINGS = 7;
-  private static final int METHODID_GET_NATIVE_VIEWS = 8;
-  private static final int METHODID_TAP = 9;
-  private static final int METHODID_DOUBLE_TAP = 10;
-  private static final int METHODID_ENTER_TEXT = 11;
-  private static final int METHODID_SWIPE = 12;
-  private static final int METHODID_ENABLE_AIRPLANE_MODE = 13;
-  private static final int METHODID_DISABLE_AIRPLANE_MODE = 14;
-  private static final int METHODID_ENABLE_WI_FI = 15;
-  private static final int METHODID_DISABLE_WI_FI = 16;
-  private static final int METHODID_ENABLE_CELLULAR = 17;
-  private static final int METHODID_DISABLE_CELLULAR = 18;
-  private static final int METHODID_ENABLE_BLUETOOTH = 19;
-  private static final int METHODID_DISABLE_BLUETOOTH = 20;
-  private static final int METHODID_ENABLE_DARK_MODE = 21;
-  private static final int METHODID_DISABLE_DARK_MODE = 22;
-  private static final int METHODID_OPEN_NOTIFICATIONS = 23;
-  private static final int METHODID_CLOSE_NOTIFICATIONS = 24;
-  private static final int METHODID_CLOSE_HEADS_UP_NOTIFICATION = 25;
-  private static final int METHODID_GET_NOTIFICATIONS = 26;
-  private static final int METHODID_TAP_ON_NOTIFICATION = 27;
-  private static final int METHODID_IS_PERMISSION_DIALOG_VISIBLE = 28;
-  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 29;
-  private static final int METHODID_SET_LOCATION_ACCURACY = 30;
-  private static final int METHODID_DEBUG = 31;
-  private static final int METHODID_MARK_PATROL_APP_SERVICE_READY = 32;
+  private static final int METHODID_CONFIGURE = 0;
+  private static final int METHODID_PRESS_HOME = 1;
+  private static final int METHODID_PRESS_BACK = 2;
+  private static final int METHODID_PRESS_RECENT_APPS = 3;
+  private static final int METHODID_DOUBLE_PRESS_RECENT_APPS = 4;
+  private static final int METHODID_OPEN_APP = 5;
+  private static final int METHODID_OPEN_QUICK_SETTINGS = 6;
+  private static final int METHODID_GET_NATIVE_VIEWS = 7;
+  private static final int METHODID_TAP = 8;
+  private static final int METHODID_DOUBLE_TAP = 9;
+  private static final int METHODID_ENTER_TEXT = 10;
+  private static final int METHODID_SWIPE = 11;
+  private static final int METHODID_ENABLE_AIRPLANE_MODE = 12;
+  private static final int METHODID_DISABLE_AIRPLANE_MODE = 13;
+  private static final int METHODID_ENABLE_WI_FI = 14;
+  private static final int METHODID_DISABLE_WI_FI = 15;
+  private static final int METHODID_ENABLE_CELLULAR = 16;
+  private static final int METHODID_DISABLE_CELLULAR = 17;
+  private static final int METHODID_ENABLE_BLUETOOTH = 18;
+  private static final int METHODID_DISABLE_BLUETOOTH = 19;
+  private static final int METHODID_ENABLE_DARK_MODE = 20;
+  private static final int METHODID_DISABLE_DARK_MODE = 21;
+  private static final int METHODID_OPEN_NOTIFICATIONS = 22;
+  private static final int METHODID_CLOSE_NOTIFICATIONS = 23;
+  private static final int METHODID_CLOSE_HEADS_UP_NOTIFICATION = 24;
+  private static final int METHODID_GET_NOTIFICATIONS = 25;
+  private static final int METHODID_TAP_ON_NOTIFICATION = 26;
+  private static final int METHODID_IS_PERMISSION_DIALOG_VISIBLE = 27;
+  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 28;
+  private static final int METHODID_SET_LOCATION_ACCURACY = 29;
+  private static final int METHODID_DEBUG = 30;
+  private static final int METHODID_MARK_PATROL_APP_SERVICE_READY = 31;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2460,10 +2380,6 @@ public final class NativeAutomatorGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_INITIALIZE:
-          serviceImpl.initialize((pl.leancode.patrol.contracts.Contracts.Empty) request,
-              (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
-          break;
         case METHODID_CONFIGURE:
           serviceImpl.configure((pl.leancode.patrol.contracts.Contracts.ConfigureRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
@@ -2617,7 +2533,6 @@ public final class NativeAutomatorGrpc {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .addMethod(getInitializeMethod())
               .addMethod(getConfigureMethod())
               .addMethod(getPressHomeMethod())
               .addMethod(getPressBackMethod())

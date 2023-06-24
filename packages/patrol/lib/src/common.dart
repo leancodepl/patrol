@@ -110,6 +110,12 @@ void patrolTest(
         }
       }
 
+      widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
+        // This callback is empty on purpose. It's a workaround for tests
+        // failing on Android since Flutter 3.10.
+        //
+        // See https://github.com/flutter/flutter/issues/129231
+      };
       await nativeAutomator?.configure();
 
       final patrolTester = PatrolTester(
