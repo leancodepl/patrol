@@ -55,7 +55,7 @@ public final class Contracts {
     private void setGroup(pl.leancode.patrol.contracts.Contracts.DartTestGroup value) {
       value.getClass();
   group_ = value;
-      
+
       }
     /**
      * <code>.patrol.DartTestGroup group = 1;</code>
@@ -70,13 +70,13 @@ public final class Contracts {
       } else {
         group_ = value;
       }
-      
+
     }
     /**
      * <code>.patrol.DartTestGroup group = 1;</code>
      */
     private void clearGroup() {  group_ = null;
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
@@ -129,10 +129,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -385,7 +387,7 @@ public final class Contracts {
      * <code>string name = 1;</code>
      */
     private void clearName() {
-      
+
       name_ = getDefaultInstance().getName();
     }
     /**
@@ -396,7 +398,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       name_ = value.toStringUtf8();
-      
+
     }
 
     public static final int TESTS_FIELD_NUMBER = 2;
@@ -637,10 +639,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.DartTestGroup parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1074,7 +1078,7 @@ public final class Contracts {
      * <code>string name = 1;</code>
      */
     private void clearName() {
-      
+
       name_ = getDefaultInstance().getName();
     }
     /**
@@ -1085,7 +1089,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       name_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseFrom(
@@ -1138,10 +1142,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.DartTestCase parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1366,7 +1372,7 @@ public final class Contracts {
      * <code>string name = 1;</code>
      */
     private void clearName() {
-      
+
       name_ = getDefaultInstance().getName();
     }
     /**
@@ -1377,7 +1383,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       name_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseFrom(
@@ -1430,10 +1436,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.RunDartTestRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1772,13 +1780,13 @@ public final class Contracts {
      */
     private void setResult(pl.leancode.patrol.contracts.Contracts.RunDartTestResponse.Result value) {
       result_ = value.getNumber();
-      
+
     }
     /**
      * <code>.patrol.RunDartTestResponse.Result result = 1;</code>
      */
     private void clearResult() {
-      
+
       result_ = 0;
     }
 
@@ -1887,10 +1895,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2154,7 +2164,7 @@ public final class Contracts {
      * <code>uint64 findTimeoutMillis = 1;</code>
      */
     private void clearFindTimeoutMillis() {
-      
+
       findTimeoutMillis_ = 0L;
     }
 
@@ -2208,10 +2218,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.ConfigureRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.ConfigureRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2415,7 +2427,7 @@ public final class Contracts {
      * <code>string appId = 1;</code>
      */
     private void clearAppId() {
-      
+
       appId_ = getDefaultInstance().getAppId();
     }
     /**
@@ -2426,7 +2438,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       appId_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.OpenAppRequest parseFrom(
@@ -2479,10 +2491,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.OpenAppRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.OpenAppRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2866,10 +2880,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3092,6 +3108,7 @@ public final class Contracts {
    * <pre>
    * We're defining our own Empty instead of using google.protobuf.Empty because
    * the Dart plugin can't easily generate it.
+   *
    * See:
    *  * https://github.com/google/protobuf.dart/issues/170
    * </pre>
@@ -3155,10 +3172,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.Empty parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.Empty parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3190,6 +3209,7 @@ public final class Contracts {
      * <pre>
      * We're defining our own Empty instead of using google.protobuf.Empty because
      * the Dart plugin can't easily generate it.
+     *
      * See:
      *  * https://github.com/google/protobuf.dart/issues/170
      * </pre>
@@ -3342,10 +3362,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3518,7 +3540,7 @@ public final class Contracts {
      * <code>string appId = 1;</code>
      */
     private void clearAppId() {
-      
+
       appId_ = getDefaultInstance().getAppId();
     }
     /**
@@ -3529,7 +3551,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       appId_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.DarkModeRequest parseFrom(
@@ -3582,10 +3604,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.DarkModeRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.DarkModeRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3797,7 +3821,7 @@ public final class Contracts {
     private void setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
       value.getClass();
   selector_ = value;
-      
+
       }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -3812,13 +3836,13 @@ public final class Contracts {
       } else {
         selector_ = value;
       }
-      
+
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
     private void clearSelector() {  selector_ = null;
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest parseFrom(
@@ -3871,10 +3895,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4210,10 +4236,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4496,10 +4524,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4785,10 +4815,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5067,7 +5099,7 @@ public final class Contracts {
     private void setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
       value.getClass();
   selector_ = value;
-      
+
       }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -5082,13 +5114,13 @@ public final class Contracts {
       } else {
         selector_ = value;
       }
-      
+
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
     private void clearSelector() {  selector_ = null;
-      
+
     }
 
     public static final int APPID_FIELD_NUMBER = 2;
@@ -5124,7 +5156,7 @@ public final class Contracts {
      * <code>string appId = 2;</code>
      */
     private void clearAppId() {
-      
+
       appId_ = getDefaultInstance().getAppId();
     }
     /**
@@ -5135,7 +5167,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       appId_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.TapRequest parseFrom(
@@ -5188,10 +5220,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.TapRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.TapRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5545,7 +5579,7 @@ public final class Contracts {
      * <code>string data = 1;</code>
      */
     private void clearData() {
-      
+
       data_ = getDefaultInstance().getData();
     }
     /**
@@ -5556,7 +5590,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       data_ = value.toStringUtf8();
-      
+
     }
 
     public static final int APPID_FIELD_NUMBER = 2;
@@ -5592,7 +5626,7 @@ public final class Contracts {
      * <code>string appId = 2;</code>
      */
     private void clearAppId() {
-      
+
       appId_ = getDefaultInstance().getAppId();
     }
     /**
@@ -5603,7 +5637,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       appId_ = value.toStringUtf8();
-      
+
     }
 
     public static final int INDEX_FIELD_NUMBER = 3;
@@ -5744,10 +5778,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.EnterTextRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.EnterTextRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6141,7 +6177,7 @@ public final class Contracts {
      * <code>float startX = 1;</code>
      */
     private void clearStartX() {
-      
+
       startX_ = 0F;
     }
 
@@ -6167,7 +6203,7 @@ public final class Contracts {
      * <code>float startY = 2;</code>
      */
     private void clearStartY() {
-      
+
       startY_ = 0F;
     }
 
@@ -6193,7 +6229,7 @@ public final class Contracts {
      * <code>float endX = 3;</code>
      */
     private void clearEndX() {
-      
+
       endX_ = 0F;
     }
 
@@ -6219,7 +6255,7 @@ public final class Contracts {
      * <code>float endY = 4;</code>
      */
     private void clearEndY() {
-      
+
       endY_ = 0F;
     }
 
@@ -6245,7 +6281,7 @@ public final class Contracts {
      * <code>uint32 steps = 5;</code>
      */
     private void clearSteps() {
-      
+
       steps_ = 0;
     }
 
@@ -6282,7 +6318,7 @@ public final class Contracts {
      * <code>string appId = 6;</code>
      */
     private void clearAppId() {
-      
+
       appId_ = getDefaultInstance().getAppId();
     }
     /**
@@ -6293,7 +6329,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       appId_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.SwipeRequest parseFrom(
@@ -6346,10 +6382,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.SwipeRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.SwipeRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6815,13 +6853,13 @@ public final class Contracts {
      */
     private void setCode(pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code value) {
       code_ = value.getNumber();
-      
+
     }
     /**
      * <code>.patrol.HandlePermissionRequest.Code code = 1;</code>
      */
     private void clearCode() {
-      
+
       code_ = 0;
     }
 
@@ -6875,10 +6913,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7186,13 +7226,13 @@ public final class Contracts {
      */
     private void setLocationAccuracy(pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy value) {
       locationAccuracy_ = value.getNumber();
-      
+
     }
     /**
      * <code>.patrol.SetLocationAccuracyRequest.LocationAccuracy locationAccuracy = 1;</code>
      */
     private void clearLocationAccuracy() {
-      
+
       locationAccuracy_ = 0;
     }
 
@@ -7246,10 +7286,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7453,7 +7495,7 @@ public final class Contracts {
      * <code>uint64 timeoutMillis = 1;</code>
      */
     private void clearTimeoutMillis() {
-      
+
       timeoutMillis_ = 0L;
     }
 
@@ -7507,10 +7549,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7696,7 +7740,7 @@ public final class Contracts {
      * <code>bool visible = 1;</code>
      */
     private void clearVisible() {
-      
+
       visible_ = false;
     }
 
@@ -7750,10 +7794,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8754,10 +8800,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.Selector parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.Selector parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -9607,6 +9655,7 @@ public final class Contracts {
   /**
    * <pre>
    * Represents a native UI control.
+   *
    * On Android, this is `android.view.View`.
    * </pre>
    *
@@ -9658,7 +9707,7 @@ public final class Contracts {
      * <code>string className = 1;</code>
      */
     private void clearClassName() {
-      
+
       className_ = getDefaultInstance().getClassName();
     }
     /**
@@ -9669,7 +9718,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       className_ = value.toStringUtf8();
-      
+
     }
 
     public static final int TEXT_FIELD_NUMBER = 2;
@@ -9705,7 +9754,7 @@ public final class Contracts {
      * <code>string text = 2;</code>
      */
     private void clearText() {
-      
+
       text_ = getDefaultInstance().getText();
     }
     /**
@@ -9716,7 +9765,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       text_ = value.toStringUtf8();
-      
+
     }
 
     public static final int CONTENTDESCRIPTION_FIELD_NUMBER = 3;
@@ -9752,7 +9801,7 @@ public final class Contracts {
      * <code>string contentDescription = 3;</code>
      */
     private void clearContentDescription() {
-      
+
       contentDescription_ = getDefaultInstance().getContentDescription();
     }
     /**
@@ -9763,7 +9812,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       contentDescription_ = value.toStringUtf8();
-      
+
     }
 
     public static final int FOCUSED_FIELD_NUMBER = 4;
@@ -9788,7 +9837,7 @@ public final class Contracts {
      * <code>bool focused = 4;</code>
      */
     private void clearFocused() {
-      
+
       focused_ = false;
     }
 
@@ -9814,7 +9863,7 @@ public final class Contracts {
      * <code>bool enabled = 5;</code>
      */
     private void clearEnabled() {
-      
+
       enabled_ = false;
     }
 
@@ -9840,7 +9889,7 @@ public final class Contracts {
      * <code>int32 childCount = 6;</code>
      */
     private void clearChildCount() {
-      
+
       childCount_ = 0;
     }
 
@@ -9877,7 +9926,7 @@ public final class Contracts {
      * <code>string resourceName = 7;</code>
      */
     private void clearResourceName() {
-      
+
       resourceName_ = getDefaultInstance().getResourceName();
     }
     /**
@@ -9888,7 +9937,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       resourceName_ = value.toStringUtf8();
-      
+
     }
 
     public static final int APPLICATIONPACKAGE_FIELD_NUMBER = 8;
@@ -9924,7 +9973,7 @@ public final class Contracts {
      * <code>string applicationPackage = 8;</code>
      */
     private void clearApplicationPackage() {
-      
+
       applicationPackage_ = getDefaultInstance().getApplicationPackage();
     }
     /**
@@ -9935,7 +9984,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       applicationPackage_ = value.toStringUtf8();
-      
+
     }
 
     public static final int CHILDREN_FIELD_NUMBER = 9;
@@ -10082,10 +10131,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.NativeView parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.NativeView parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -10116,6 +10167,7 @@ public final class Contracts {
     /**
      * <pre>
      * Represents a native UI control.
+     *
      * On Android, this is `android.view.View`.
      * </pre>
      *
@@ -10811,7 +10863,7 @@ public final class Contracts {
      * <code>string title = 2;</code>
      */
     private void clearTitle() {
-      
+
       title_ = getDefaultInstance().getTitle();
     }
     /**
@@ -10822,7 +10874,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       title_ = value.toStringUtf8();
-      
+
     }
 
     public static final int CONTENT_FIELD_NUMBER = 3;
@@ -10858,7 +10910,7 @@ public final class Contracts {
      * <code>string content = 3;</code>
      */
     private void clearContent() {
-      
+
       content_ = getDefaultInstance().getContent();
     }
     /**
@@ -10869,7 +10921,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       content_ = value.toStringUtf8();
-      
+
     }
 
     public static final int RAW_FIELD_NUMBER = 4;
@@ -10905,7 +10957,7 @@ public final class Contracts {
      * <code>string raw = 4;</code>
      */
     private void clearRaw() {
-      
+
       raw_ = getDefaultInstance().getRaw();
     }
     /**
@@ -10916,7 +10968,7 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       raw_ = value.toStringUtf8();
-      
+
     }
 
     public static pl.leancode.patrol.contracts.Contracts.Notification parseFrom(
@@ -10969,10 +11021,12 @@ public final class Contracts {
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.Notification parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.Notification parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11413,9 +11467,11 @@ java.lang.String defaultValue);
      */
     @java.lang.Override
 
-    public java.lang.String getResultsOrDefault(
+    public /* nullable */
+java.lang.String getResultsOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
+        /* nullable */
+java.lang.String defaultValue) {
       java.lang.Class<?> keyClass = key.getClass();
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetResults();
@@ -11494,10 +11550,12 @@ java.lang.String defaultValue);
       return com.google.protobuf.GeneratedMessageLite.parseFrom(
           DEFAULT_INSTANCE, input, extensionRegistry);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return parseDelimitedFrom(DEFAULT_INSTANCE, input);
     }
+
     public static pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11592,9 +11650,11 @@ java.lang.String defaultValue);
        */
       @java.lang.Override
 
-      public java.lang.String getResultsOrDefault(
+      public /* nullable */
+java.lang.String getResultsOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
+          /* nullable */
+java.lang.String defaultValue) {
         java.lang.Class<?> keyClass = key.getClass();
         java.util.Map<java.lang.String, java.lang.String> map =
             instance.getResultsMap();

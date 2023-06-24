@@ -64,6 +64,7 @@ Future<void> main() async {
   // The result of running the Dart test is the result of the native test case.
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  await nativeAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized();
   final testExplorationCompleter = Completer<DartTestGroup>();
 

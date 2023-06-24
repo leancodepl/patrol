@@ -17,6 +17,12 @@ import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 typealias Empty = Contracts.Empty
 
 class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
+
+    override suspend fun initialize(request: Empty): Empty {
+        automation.initialize()
+        return empty { }
+    }
+
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
         return empty { }
@@ -52,7 +58,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         return empty { }
     }
 
-    override suspend fun closeNotifications(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun closeNotifications(request: Empty): Empty {
         automation.closeNotifications()
         return empty { }
     }
@@ -202,7 +208,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         return empty { }
     }
 
-    override suspend fun markPatrolAppServiceReady(request: Contracts.Empty): Contracts.Empty {
+    override suspend fun markPatrolAppServiceReady(request: Empty): Empty {
         PatrolServer.appReady.set(true)
         return empty { }
     }
