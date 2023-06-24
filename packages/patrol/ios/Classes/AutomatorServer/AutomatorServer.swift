@@ -16,6 +16,13 @@
       self.onAppReady = onAppReady
     }
 
+    func initialize(
+      request: Empty,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> Empty {
+      return DefaultResponse()
+    }
+
     func configure(
       request: Patrol_ConfigureRequest,
       context: GRPCAsyncServerCallContext
