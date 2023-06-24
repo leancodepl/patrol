@@ -38,7 +38,6 @@ message RunDartTestResponse {
 }
 
 service NativeAutomator {
-  rpc initialize(Empty) returns (Empty) {}
   rpc configure(ConfigureRequest) returns (Empty) {}
 
   // general

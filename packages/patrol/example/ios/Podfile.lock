@@ -238,7 +238,7 @@ SPEC CHECKSUMS:
   flutter_native_timezone: 5f05b2de06c9776b4cc70e1839f03de178394d22
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
-  integration_test: 13825b8a9334a850581300559b8839134b124670
+  integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   patrol: a7622350c42b3a944962fbfe052d07e3691789e5
   permission_handler_apple: 8f116445eff3c0e7c65ad60f5fef5490aa94b4e4
