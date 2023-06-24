@@ -83,7 +83,6 @@ jobs:
 
           # kill -SIGINT $recordingpid
           # kill -SIGINT $logpid
-          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_ENV"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
@@ -91,9 +90,9 @@ jobs:
         id: status_step
         if: always()
         run: >
-          if [ -z ${{ env.TESTS_EXIT_CODE }} ]; then
+          if [ -z ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} ]; then 
             echo "ERROR_STATUS=error" >> "$GITHUB_OUTPUT";
-          elif [ ! ${{ env.TESTS_EXIT_CODE }} == 0 ]; then
+          elif [ ! ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} == 0 ]; then
             echo "FAILURE_STATUS=failure" >> "$GITHUB_OUTPUT";
           fi;
 

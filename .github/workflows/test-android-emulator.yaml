@@ -89,8 +89,8 @@ jobs:
             --outputs-dir test_artifacts \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video || TESTS_EXIT_CODE=$?
 
-          echo "TESTS_EXIT_CODE=1" >> "$GITHUB_OUTPUT"
-          exit 1
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
