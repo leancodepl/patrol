@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
@@ -53,14 +55,14 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  NativeAutomator? nativeAutomator;
+  NativeAutomator? automator;
 
   PatrolBinding? patrolBinding;
 
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
-        nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
+        automator = NativeAutomator(config: nativeAutomatorConfig);
 
         patrolBinding = PatrolBinding.ensureInitialized();
         patrolBinding.framePolicy = framePolicy;
@@ -73,6 +75,18 @@ void patrolTest(
       case BindingType.none:
         break;
     }
+  }
+
+  final automatorInitCompleter = Completer<void>();
+  if (constants.hotRestartEnabled) {
+    // By default, NativeAutomator is initialized by the code in
+    // test_bundle.dart. However, when hot restart is enabled, test_bundle.dart
+    // is not used. That's why it has to be initialized here.
+    automator?.initialize().then((value) {
+      automatorInitCompleter.complete();
+    });
+  } else {
+    automatorInitCompleter.complete();
   }
 
   testWidgets(
@@ -110,11 +124,12 @@ void patrolTest(
         }
       }
 
-      await nativeAutomator?.configure();
+      await automatorInitCompleter.future;
+      await automator?.configure();
 
       final patrolTester = PatrolTester(
         tester: widgetTester,
-        nativeAutomator: nativeAutomator,
+        nativeAutomator: automator,
         config: config,
       );
       await callback(patrolTester);
