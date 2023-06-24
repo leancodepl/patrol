@@ -112,7 +112,7 @@ jobs:
           exit $TESTS_EXIT_CODE
 
       - name: Get test outputs from Google Cloud Storage
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         run: |
           GSUTIL_PATH="gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/${{ matrix.device-model }}-${{ matrix.device-version }}-en_US-portrait"
           mkdir "test_outputs"
@@ -122,11 +122,11 @@ jobs:
           gsutil -m cp -r "$GSUTIL_PATH/*.txt" "test_outputs"
 
       - name: Find xcresult path
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         run: echo "XCRESULT_PATH=$(find ${{ github.workspace }}/packages/patrol/example/test_outputs -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
       - name: Publish test report to summary
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           title: Patrol tests on ${{ matrix.device-model }} iOS ${{ matrix.device-version }}
@@ -136,27 +136,27 @@ jobs:
 
       - name: Upload XML test report to artifacts
         uses: actions/upload-artifact@v3
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         with:
           name: XML test report
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
 
       - name: Upload XCRESULT test result to artifacts
         uses: actions/upload-artifact@v3
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         with:
           name: Test-Runner.xcresult
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xcresult
 
       - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         with:
           name: Captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.mp4
 
       - name: Upload device logs to artifacts
-        if: success() || failure()
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Device logs

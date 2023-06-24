@@ -60,13 +60,14 @@ jobs:
 
       - name: Run tests
         id: tests_step
-        shell: bash
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
-          recordingpid="$!"
+          # due to multiple errors with simulator caused by recoring it's temporary off
+          # xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          # recordingpid="$!"
 
-          xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
-          logpid="$!"
+          # due to multiple errors with simulator caused by collecting logs it's temporary off
+          # xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
+          # logpid="$!"
 
           TESTS_EXIT_CODE=0
           patrol test \
@@ -80,8 +81,8 @@ jobs:
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
-          kill -SIGINT $recordingpid
-          kill -SIGINT $logpid
+          # kill -SIGINT $recordingpid
+          # kill -SIGINT $logpid
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_ENV"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
@@ -97,11 +98,11 @@ jobs:
           fi;
 
       - name: Find xcresult path
-        if: ${{ !contains('["skipped","cancelled"]', steps.tests_step.conclusion) }}
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
       - name: Publish test report to summary
-        if: ${{ !contains('["skipped","cancelled"]', steps.tests_step.conclusion) }}
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           title: Patrol tests on ${{ matrix.device }}
@@ -110,14 +111,14 @@ jobs:
             ${{ env.XCRESULT_PATH }}
 
       - name: Upload XCRESULT test result to artifacts
-        if: ${{ !contains('["skipped","cancelled"]', steps.tests_step.conclusion) }}
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Test result from ${{ matrix.device }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
 
       - name: Upload simulator logs to artifacts
-        if: ${{ !contains('["skipped","cancelled"]', steps.tests_step.conclusion) }}
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Logs from ${{ matrix.device }}
@@ -125,7 +126,7 @@ jobs:
             ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
 
       - name: Upload captured video to artifacts
-        if: ${{ !contains('["skipped","cancelled"]', steps.tests_step.conclusion) }}
+        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Captured video from ${{ matrix.device }}.mp4
