@@ -66,8 +66,8 @@ jobs:
           # recordingpid="$!"
 
           # due to multiple errors with simulator caused by collecting logs it's temporary off
-          # xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
-          # logpid="$!"
+          xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
+          logpid="$!"
 
           TESTS_EXIT_CODE=0
           patrol test \
@@ -82,7 +82,7 @@ jobs:
             --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
           # kill -SIGINT $recordingpid
-          # kill -SIGINT $logpid
+          kill -SIGINT $logpid
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
