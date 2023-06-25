@@ -63,15 +63,15 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="
-            --exclude integration_test/android_app_test.dart
-            --exclude integration_test/service_airplane_mode_test.dart
-            --exclude integration_test/service_bluetooth_test.dart
-            --exclude integration_test/service_cellular_test.dart
-            --exclude integration_test/service_wifi_test.dart
-            --exclude integration_test/swipe_test.dart
-            --exclude integration_test/webview_leancode_test.dart
-            --exclude integration_test/webview_login_test.dart
-            --exclude integration_test/webview_stackoverflow_test.dart"
+          --exclude integration_test/android_app_test.dart \
+          --exclude integration_test/service_airplane_mode_test.dart \
+          --exclude integration_test/service_bluetooth_test.dart \
+          --exclude integration_test/service_cellular_test.dart \
+          --exclude integration_test/service_wifi_test.dart \
+          --exclude integration_test/swipe_test.dart \
+          --exclude integration_test/webview_leancode_test.dart \
+          --exclude integration_test/webview_login_test.dart \
+          --exclude integration_test/webview_stackoverflow_test.dart"
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
 
       - name: Run tests
