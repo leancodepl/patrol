@@ -61,11 +61,9 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
-          # due to multiple errors with simulator caused by recoring it's temporary off
-          # xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
-          # recordingpid="$!"
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
 
-          # due to multiple errors with simulator caused by collecting logs it's temporary off
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
 
@@ -81,7 +79,7 @@ jobs:
             --exclude integration_test/webview_login_test.dart \
             --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
 
-          # kill -SIGINT $recordingpid
+          kill -SIGINT $recordingpid
           kill -SIGINT $logpid
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
