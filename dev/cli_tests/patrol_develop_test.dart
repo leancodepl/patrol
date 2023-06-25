@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:path/path.dart';
 
-void main(List<String> args) async {
-  var isFirstTestPassed = false;
-  var isReloaded = false;
-  Timer? inactivityTimer;
-  final output = StringBuffer();
-
-  const failingTestString = r'''
+/// Exactly like example_test.dart but with expectation that fails.
+const exampleTestWithFailingContents = r'''
 import 'package:flutter/material.dart';
 
 import 'common.dart';
@@ -40,19 +35,42 @@ void main() {
 }
 ''';
 
-  final runningTestFilePath = join('integration_test', 'example_test.dart');
-  final runningTestFile = File(runningTestFilePath);
+void main(List<String> args) async {
+  _verifyWorkingDirectory();
 
-  final process = await Process.start(
-    'patrol',
-    ['develop', '--target', 'integration_test/example_test.dart', ...args],
-    runInShell: true,
+  var isFirstTestPassed = false;
+  var isReloaded = false;
+  Timer? inactivityTimer;
+  final output = StringBuffer();
+
+  final exampleAppDirectory = io.Directory(
+    join('..', '..', 'packages', 'patrol', 'example'),
+  );
+  final exampleTestFile = io.File(
+    join(exampleAppDirectory.path, 'integration_test', 'example_test.dart'),
   );
 
-  process.stderr.transform(utf8.decoder).listen(print);
+  final process = await io.Process.start(
+    'patrol',
+    [
+      'develop',
+      ...['--target', 'integration_test/example_test.dart'],
+      ...args
+    ],
+    runInShell: true,
+    workingDirectory: exampleAppDirectory.path,
+  );
 
-  process.stdout.transform(utf8.decoder).listen((data) async {
-    print(data);
+  process.stderr
+      .transform(utf8.decoder)
+      .transform(const LineSplitter())
+      .listen((msg) => print('[patrol develop] $msg'));
+
+  process.stdout
+      .transform(utf8.decoder)
+      .transform(const LineSplitter())
+      .listen((data) async {
+    print('[patrol develop] $data');
     output.write(data);
     final stringOutput = output.toString();
 
@@ -64,7 +82,7 @@ void main() {
     if (isFirstTestPassed &&
         isReloaded == false &&
         stringOutput.contains('press "r" to restart')) {
-      runningTestFile.writeAsStringSync(failingTestString);
+      exampleTestFile.writeAsStringSync(exampleTestWithFailingContents);
       process.stdin.add('R'.codeUnits);
       isReloaded = true;
     }
@@ -77,28 +95,35 @@ void main() {
       );
       print('Exiting with exit code 0');
       // TODO: kill `patrol develop` process and its children
-      exit(0);
+      io.exit(0);
     }
 
     inactivityTimer?.cancel();
 
     if (stringOutput.contains('Completed building')) {
-      inactivityTimer = Timer(Duration(minutes: 1), () {
+      inactivityTimer = Timer(const Duration(minutes: 1), () {
         print('One minute of inactivity, something went wrong...');
         print('isFirstTestPassed: $isFirstTestPassed');
         print('isReloaded: $isReloaded');
         print('Running file:');
-        print(runningTestFile.readAsStringSync());
+        print(exampleTestFile.readAsStringSync());
         print('End of the running file');
         print('Exiting with exit code 1');
-        exit(1);
+        io.exit(1);
       });
     } else {
-      inactivityTimer = Timer(Duration(minutes: 10), () {
+      inactivityTimer = Timer(const Duration(minutes: 10), () {
         print('Ten minutes of inactivity, something went wrong...');
         print('Exiting with exit code 1');
-        exit(1);
+        io.exit(1);
       });
     }
   });
+}
+
+void _verifyWorkingDirectory() {
+  if (!io.Directory.current.path.endsWith('cli_tests')) {
+    print('This test must be run from dev/cli_tests directory');
+    io.exit(1);
+  }
 }

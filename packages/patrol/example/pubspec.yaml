@@ -24,10 +24,8 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   leancode_lint: ^3.0.0
-  path: 1.8.3
   patrol:
     path: ../
-  
 
 flutter:
   uses-material-design: true

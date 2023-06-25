@@ -48,8 +48,9 @@ test_linux_task:
   wait_for_emulator_script:
     - android-wait-for-emulator
   patrol_develop_script: |
-    cd packages/patrol/example
-    dart run patrol_develop_test.dart
+    cd dev/cli_tests
+    dart pub get
+    dart patrol_develop_test.dart
 
 test_macos_task:
   name: Test `patrol develop` on macOS
@@ -58,7 +59,7 @@ test_macos_task:
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
   timeout_in: 30m
-  
+
   setup_simulator_script: |
     xcrun simctl boot "iPhone 14 Pro Max"
   setup_flutter_script: |
@@ -69,9 +70,9 @@ test_macos_task:
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   patrol_test_script: |
-    cd packages/patrol/example
-    flutter pub get
-    dart run patrol_develop_test.dart
+    cd dev/cli_tests
+    dart pub get
+    dart patrol_develop_test.dart
 
 test_windows_task:
   name: Test `patrol develop` on Windows
@@ -127,5 +128,5 @@ test_windows_task:
   wait_for_emulator_script:
     - android-wait-for-emulator
   patrol_develop_script: |
-    cd packages\patrol\example
-    dart run patrol_develop_test.dart
+    cd dev\cli_tests
+    dart patrol_develop_test.dart
