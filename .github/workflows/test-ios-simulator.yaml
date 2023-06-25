@@ -128,3 +128,15 @@ jobs:
         with:
           name: Captured video from ${{ matrix.device }}.mp4
           path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit
