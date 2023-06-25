@@ -2,8 +2,8 @@ test_linux_task:
   name: Test `patrol develop` on Linux
   container:
     image: ghcr.io/cirruslabs/flutter:stable
-    cpu: 8
-    memory: 32G
+    cpu: 4
+    memory: 6G
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
