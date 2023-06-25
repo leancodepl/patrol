@@ -11,10 +11,11 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      SLACK_MESSAGE_TITLE: iOS simulator
+      SLACK_MESSAGE_TITLE: ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
+      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
 
     strategy:
       fail-fast: false
@@ -58,6 +59,21 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
+      - name: Set tests to exclude
+        id: set_excluded_tests
+        run: |
+          TESTS_TO_EXCLUDE="
+            --exclude integration_test/android_app_test.dart
+            --exclude integration_test/service_airplane_mode_test.dart
+            --exclude integration_test/service_bluetooth_test.dart
+            --exclude integration_test/service_cellular_test.dart
+            --exclude integration_test/service_wifi_test.dart
+            --exclude integration_test/swipe_test.dart
+            --exclude integration_test/webview_leancode_test.dart
+            --exclude integration_test/webview_login_test.dart
+            --exclude integration_test/webview_stackoverflow_test.dart"
+          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
+
       - name: Run tests
         id: tests_step
         run: |
@@ -68,16 +84,7 @@ jobs:
           logpid="$!"
 
           TESTS_EXIT_CODE=0
-          patrol test \
-            --exclude integration_test/android_app_test.dart \
-            --exclude integration_test/service_airplane_mode_test.dart \
-            --exclude integration_test/service_bluetooth_test.dart \
-            --exclude integration_test/service_cellular_test.dart \
-            --exclude integration_test/service_wifi_test.dart \
-            --exclude integration_test/swipe_test.dart \
-            --exclude integration_test/webview_leancode_test.dart \
-            --exclude integration_test/webview_login_test.dart \
-            --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
+          patrol test ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
@@ -139,4 +146,5 @@ jobs:
       FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
     secrets: inherit

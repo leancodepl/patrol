@@ -15,6 +15,15 @@ on:
       ERROR_STATUS:
         required: false
         type: string
+      FLUTTER_VERSION:
+        required: false
+        type: string
+      OS:
+        required: false
+        type: string
+      EXCLUDED_TESTS:
+        required: false
+        type: string
 
 jobs:
   send_slack_message:
