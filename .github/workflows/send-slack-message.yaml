@@ -15,12 +15,6 @@ on:
       ERROR_STATUS:
         required: false
         type: string
-      FLUTTER_VERSION:
-        required: false
-        type: string
-      OS:
-        required: false
-        type: string
       EXCLUDED_TESTS:
         required: false
         type: string
@@ -67,14 +61,13 @@ jobs:
           echo "status=$status" >> $GITHUB_OUTPUT;
 
       - name: Add excluded tests to message
-        shell: bash
         env:
           EXCLUDED_TESTS: ${{ inputs.EXCLUDED_TESTS }}
         run: |
           if [ -n "$EXCLUDED_TESTS" ]; then
             EXCLUDED_TESTS="${EXCLUDED_TESTS//--exclude integration_test\//}" # Remove '--exclude integration_test/'
             EXCLUDED_TESTS="${EXCLUDED_TESTS//.dart/}" # Remove '.dart'
-            EXCLUDED_TESTS="$(printf '• %s\n' $EXCLUDED_TESTS)" # Add bullet point and new line
+            EXCLUDED_TESTS="$(printf ' • %s\n' $EXCLUDED_TESTS)" # Add bullet point and new line
             echo "excluded_tests<<EOF" >> $GITHUB_ENV
             echo "Excluded tests:" >> $GITHUB_ENV
             echo "$EXCLUDED_TESTS" >> $GITHUB_ENV
