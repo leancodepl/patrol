@@ -44,12 +44,12 @@ jobs:
       - name: Set Slack message
         id: slack_message
         run: >
-          if [ ! -z "$error_status" ]; then
+          if [ -n "$error_status" ]; then
             message="Something went wrong ⚠️ ";
             status="failure";
           fi;
-          if [ ! -z "$failure_status" ]; then
-            if [ ! -z "$message" ]; then
+          if [ -n "$failure_status" ]; then
+            if [ -n "$message" ]; then
               message+=" and there were failing tests 💥 ";
             else
               message+="There were failing tests 💥 ";
@@ -66,6 +66,17 @@ jobs:
           echo "url=$url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
 
+      - name: Add excluded tests to message
+        id: excluded_tests
+        env:
+          RAW: ${{ inputs.EXCLUDED_TESTS }}
+        run: |
+          if [ -n "$RAW" ]; then
+            message="tests";
+            echo "excluded_tests=$message" >> $GITHUB_OUTPUT;
+          fi;
+
+
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -77,5 +88,7 @@ jobs:
           SLACK_TITLE: ${{ inputs.SLACK_MESSAGE_TITLE }}
           SLACK_MESSAGE: |
             ${{ steps.slack_message.outputs.message }}
+
+            ${{ steps.excluded_tests.outputs.excluded_tests }}
 
             See workflow run <${{ steps.slack_message.outputs.url }}|here>
