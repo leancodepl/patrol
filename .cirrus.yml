@@ -15,7 +15,6 @@ test_linux_task:
   setup_flutter_script: |
     flutter precache
     flutter --version
-    flutter sdk-path
     where flutter
     flutter channel stable
   generate_gradlew_script: |
