@@ -72,7 +72,7 @@ jobs:
           RAW: ${{ inputs.EXCLUDED_TESTS }}
         run: |
           if [ -n "$RAW" ]; then
-            message="tests";
+            message="$RAW";
             echo "excluded_tests=$message" >> $GITHUB_OUTPUT;
           fi;
 
