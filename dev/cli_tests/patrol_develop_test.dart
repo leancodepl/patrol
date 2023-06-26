@@ -38,6 +38,9 @@ void main() {
 void main(List<String> args) async {
   _verifyWorkingDirectory();
 
+  const afterBuildCompletedTimeout = Duration(minutes: 1);
+  const inactivityTimeout = Duration(minutes: 10);
+
   var isFirstTestPassed = false;
   var isReloaded = false;
   Timer? inactivityTimer;
@@ -79,17 +82,21 @@ void main(List<String> args) async {
       isFirstTestPassed = true;
     }
 
-    if (isFirstTestPassed &&
+    final isReadyToRestart = isFirstTestPassed &&
         isReloaded == false &&
-        stringOutput.contains('press "r" to restart')) {
+        stringOutput.contains('press "r" to restart');
+
+    if (isReadyToRestart) {
       exampleTestFile.writeAsStringSync(exampleTestWithFailingContents);
       process.stdin.add('R'.codeUnits);
       isReloaded = true;
     }
 
-    if (isFirstTestPassed &&
+    final isRestartedTestFailed = isFirstTestPassed &&
         isReloaded &&
-        stringOutput.contains('Some tests failed')) {
+        stringOutput.contains('Some tests failed');
+
+    if (isRestartedTestFailed) {
       print(
         'exampleTestWithFailingContents was successfully restarted as example_test and it has failed as expected',
       );
@@ -101,7 +108,7 @@ void main(List<String> args) async {
     inactivityTimer?.cancel();
 
     if (stringOutput.contains('Completed building')) {
-      inactivityTimer = Timer(const Duration(minutes: 1), () {
+      inactivityTimer = Timer(afterBuildCompletedTimeout, () {
         print('One minute of inactivity, something went wrong...');
         print('isFirstTestPassed: $isFirstTestPassed');
         print('isReloaded: $isReloaded');
@@ -112,7 +119,7 @@ void main(List<String> args) async {
         io.exit(1);
       });
     } else {
-      inactivityTimer = Timer(const Duration(minutes: 10), () {
+      inactivityTimer = Timer(inactivityTimeout, () {
         print('Ten minutes of inactivity, something went wrong...');
         print('Exiting with exit code 1');
         io.exit(1);
