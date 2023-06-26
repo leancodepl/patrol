@@ -1,3 +1,5 @@
+import 'package:example/webview_screen.dart';
+
 import 'common.dart';
 
 void main() {
@@ -8,6 +10,8 @@ void main() {
 
     await $.native.openNotifications();
     await $.native.closeNotifications();
+
+    await webViewCompleter.future;
 
     await $.native.tap(Selector(text: 'login'));
     await $.native.enterTextByIndex('test@leancode.pl', index: 0);
