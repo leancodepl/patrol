@@ -6,17 +6,20 @@ test_linux_task:
     memory: 12G
     kvm: 'true'
   env:
-    PATH: $HOME/.pub-cache/bin:${PATH}
+    PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 30m
 
   setup_flutter_script: |
-    flutter precache
+    curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-linux-x64.tar.gz
+    tar -xf fvm-2.4.1-linux-x64.tar.gz
+    fvm install 3.7.12
+    fvm global 3.7.12
+    fvm doctor
     flutter --version
-    where flutter
-    flutter channel stable
+    flutter precache
   generate_gradlew_script: |
     cd packages/patrol/example
     flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
@@ -59,21 +62,21 @@ test_macos_task:
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
-    PATH: $HOME/.pub-cache/bin:/Users/admin/fvm/default/bin:${PATH}
+    PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
   timeout_in: 30m
 
-  setup_simulator_script: |
-    xcrun simctl boot "iPhone 14 Pro Max"
   setup_flutter_script: |
     curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-macos-arm64.tar.gz
     tar -xf fvm-2.4.1-macos-arm64.tar.gz
-    cd fvm
-    ./fvm install 3.7.12
-    ./fvm global 3.7.12
-    ./fvm doctor
+    fvm install 3.7.12
+    fvm global 3.7.12
+    fvm doctor
     flutter --version
+    flutter precache
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
+  setup_simulator_script: |
+    xcrun simctl boot "iPhone 14 Pro Max"
   patrol_test_script: |
     cd dev/cli_tests
     dart pub get
