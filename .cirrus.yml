@@ -65,9 +65,12 @@ test_macos_task:
   setup_simulator_script: |
     xcrun simctl boot "iPhone 14 Pro Max"
   setup_flutter_script: |
-    flutter channel stable
-    flutter upgrade
-    flutter precache
+    curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-macos-arm64.tar.gz
+    tar -xf fvm-2.4.1-macos-arm64.tar.gz
+    cd fvm
+    ./fvm install 3.7.12
+    ./fvm global 3.7.12
+    ./fvm doctor
     flutter --version
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
