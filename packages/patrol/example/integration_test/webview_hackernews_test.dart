@@ -1,5 +1,3 @@
-import 'package:example/webview_screen.dart';
-
 import 'common.dart';
 
 void main() {
@@ -11,7 +9,13 @@ void main() {
     await $.native.openNotifications();
     await $.native.closeNotifications();
 
-    await webViewCompleter.future;
+    final views = await $.native.getNativeViews(Selector(text: 'login'));
+    for (final view in views) {
+      print(
+        'Found view ${view.className}: text=${view.text}, contentDescription=${view.contentDescription}',
+      );
+    }
+    print('Found ${views.length} views');
 
     await $.native.tap(Selector(text: 'login'));
     await $.native.enterTextByIndex('test@leancode.pl', index: 0);

@@ -1,9 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-final webViewCompleter = Completer<void>();
 
 class WebViewScreen extends StatefulWidget {
   const WebViewScreen({super.key, required this.title, required this.url});
@@ -27,10 +23,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         NavigationDelegate(
           onProgress: (progress) => print('WebView progress: $progress'),
           onPageStarted: (url) => print('WebView started loading: $url'),
-          onPageFinished: (url) {
-            print('WebView finished loading: $url');
-            webViewCompleter.complete();
-          },
+          onPageFinished: (url) => print('WebView finished loading: $url'),
           onWebResourceError: (error) => print('WebView error: $error'),
         ),
       )
