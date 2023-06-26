@@ -87,7 +87,7 @@ jobs:
         run: |
           TESTS_EXIT_CODE=0
           ew-cli \
-            --device model=${{ matrix.device_model }},${{ matrix.os_version }}
+            --device model=${{ matrix.device_model }},version=${{ matrix.os_version }}
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --num-shards 3 \
