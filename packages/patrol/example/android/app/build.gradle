@@ -43,7 +43,7 @@ android {
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunner "pl.leancode.patrol.example.CustomPatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
