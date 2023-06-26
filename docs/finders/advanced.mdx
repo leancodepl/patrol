@@ -93,7 +93,7 @@ button and get redirected to another screen, but the data that will be shown
 there hasn't been loaded yet. In such a case, a human tester waits until a
 loader (or other animation) finishes. Pumping mechanism does exactly this - it
 renders consecutive frames on the screen. For how long, exactly? Usually, we
-want to pump frames as long as they come. That's what [`pumpAndSettle()`] does.
+want to pump frames as long as they come. That's what [pumpAndSettle()] does.
 
 `pumpAndSettle()` method is called by default inside all actions that can be
 performed while testing - tapping, scrolling, entering text, and so on. You can
