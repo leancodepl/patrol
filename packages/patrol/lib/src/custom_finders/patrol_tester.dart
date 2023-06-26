@@ -170,9 +170,7 @@ class PatrolTester {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
   ]) async {
-    await TestAsyncUtils.guard(
-      () => tester.pumpWidget(widget, duration, phase),
-    );
+    await tester.pumpWidget(widget, duration, phase);
   }
 
   /// See [WidgetTester.pump].
@@ -180,7 +178,7 @@ class PatrolTester {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
   ]) async {
-    await TestAsyncUtils.guard<void>(() => tester.pump(duration, phase));
+    await tester.pump(duration, phase);
   }
 
   /// See [WidgetTester.pumpAndSettle].
@@ -189,12 +187,10 @@ class PatrolTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
   }) async {
-    await TestAsyncUtils.guard<void>(
-      () => tester.pumpAndSettle(
-        duration,
-        phase,
-        timeout ?? config.settleTimeout,
-      ),
+    await tester.pumpAndSettle(
+      duration,
+      phase,
+      timeout ?? config.settleTimeout,
     );
   }
 
