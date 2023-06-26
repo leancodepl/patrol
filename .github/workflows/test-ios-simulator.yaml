@@ -83,6 +83,8 @@ jobs:
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
 
+          sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
+
           TESTS_EXIT_CODE=0
           patrol test ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} || TESTS_EXIT_CODE=$?
 
