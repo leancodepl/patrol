@@ -93,6 +93,6 @@ jobs:
           SLACK_MESSAGE: |
             ${{ steps.slack_message.outputs.message }}
 
-            See workflow run <${{ steps.slack_message.outputs.url }}|here>
+            <${{ steps.slack_message.outputs.url }}|See workflow run>
             
             ${{ env.excluded_tests }}
