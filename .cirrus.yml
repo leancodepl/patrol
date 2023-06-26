@@ -3,7 +3,7 @@ test_linux_task:
   container:
     image: ghcr.io/cirruslabs/flutter:stable
     cpu: 6
-    memory: 8G
+    memory: 12G
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:${PATH}
