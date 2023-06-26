@@ -15,6 +15,9 @@ test_linux_task:
   setup_flutter_script: |
     flutter precache
     flutter --version
+    flutter sdk-path
+    where flutter
+    flutter channel stable
   generate_gradlew_script: |
     cd packages/patrol/example
     flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
