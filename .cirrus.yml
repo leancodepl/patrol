@@ -59,7 +59,7 @@ test_macos_task:
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
-    PATH: $HOME/.pub-cache/bin:${PATH}
+    PATH: $HOME/.pub-cache/bin:/Users/admin/fvm/default/bin:${PATH}
   timeout_in: 30m
 
   setup_simulator_script: |
