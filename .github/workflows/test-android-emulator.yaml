@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
+    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }} emulator
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
