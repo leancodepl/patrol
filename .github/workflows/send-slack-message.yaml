@@ -77,7 +77,7 @@ jobs:
             EXCLUDED_TESTS="${EXCLUDED_TESTS//.dart/}" # Remove '.dart'
             EXCLUDED_TESTS="${EXCLUDED_TESTS// /$'\n'}" # Line up
             echo "$EXCLUDED_TESTS"
-            echo "excluded_tests=\"$EXCLUDED_TESTS\"" >> $GITHUB_ENV;
+            echo "excluded_tests=$(printf '%q' "$EXCLUDED_TESTS")" >> $GITHUB_ENV;
           fi;
 
       - name: Share test results on Slack
