@@ -68,14 +68,16 @@ jobs:
 
       - name: Add excluded tests to message
         id: excluded_tests
+        shell: bash
         env:
           EXCLUDED_TESTS: ${{ inputs.EXCLUDED_TESTS }}
         run: |
           if [ -n "$EXCLUDED_TESTS" ]; then
-            EXCLUDED_TESTS=${EXCLUDED_TESTS//--exclude integration_test\//} # Remove '--exclude integration_test/'
-            EXCLUDED_TESTS=${EXCLUDED_TESTS//.dart/} # Remove '.dart'
-            EXCLUDED_TESTS=${EXCLUDED_TESTS// /$'\n'} # Line up
-            echo "excluded_tests=$EXCLUDED_TESTS" >> $GITHUB_OUTPUT;
+            EXCLUDED_TESTS="${EXCLUDED_TESTS//--exclude integration_test\//}" # Remove '--exclude integration_test/'
+            EXCLUDED_TESTS="${EXCLUDED_TESTS//.dart/}" # Remove '.dart'
+            EXCLUDED_TESTS="${EXCLUDED_TESTS// /$'\n'}" # Line up
+            echo "$EXCLUDED_TESTS"
+            echo 'excluded_tests="$EXCLUDED_TESTS"' >> $GITHUB_OUTPUT;
           fi;
 
       - name: Share test results on Slack
