@@ -74,7 +74,7 @@ jobs:
           if [ -n "$EXCLUDED_TESTS" ]; then
             EXCLUDED_TESTS="${EXCLUDED_TESTS//--exclude integration_test\//}" # Remove '--exclude integration_test/'
             EXCLUDED_TESTS="${EXCLUDED_TESTS//.dart/}" # Remove '.dart'
-            EXCLUDED_TESTS="$(printf -- '- %s\n' $EXCLUDED_TESTS)" # Add bullet point and new line
+            EXCLUDED_TESTS="$(printf '• %s\n' $EXCLUDED_TESTS)" # Add bullet point and new line
             echo "excluded_tests<<EOF" >> $GITHUB_ENV
             echo "Excluded tests:" >> $GITHUB_ENV
             echo "$EXCLUDED_TESTS" >> $GITHUB_ENV
