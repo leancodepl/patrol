@@ -2,7 +2,7 @@ test_linux_task:
   name: Test `patrol develop` on Linux
   container:
     image: ghcr.io/cirruslabs/flutter:stable
-    cpu: 4
+    cpu: 6
     memory: 8G
     kvm: 'true'
   env:
