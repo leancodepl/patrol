@@ -55,22 +55,10 @@ public class MainActivityTest {
         @Override
         public void run() {
             listInterfaces();
-            int i = 0;
-            while (i < 10) {
-                try {
-                    CustomPatrolJUnitRunner instrumentation = (CustomPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-                    instrumentation.setUp(MainActivity.class);
-                    instrumentation.waitForPatrolAppService();
-                    result = instrumentation.listDartTests();
-                } catch (Exception e) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ex) {
-                    }
-                    Log.e("MATE", e.toString());
-                }
-                i++;
-            }
+            CustomPatrolJUnitRunner instrumentation = (CustomPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+            instrumentation.setUp(MainActivity.class);
+            instrumentation.waitForPatrolAppService();
+            result = instrumentation.listDartTests();
         }
 
         private static void doAHttpCall() {
