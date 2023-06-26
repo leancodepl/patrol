@@ -91,7 +91,7 @@ void main(List<String> args) async {
         isReloaded &&
         stringOutput.contains('Some tests failed')) {
       print(
-        'example_test_fake was successfully restarted as example_test and it has failed as expected',
+        'exampleTestWithFailingContents was successfully restarted as example_test and it has failed as expected',
       );
       print('Exiting with exit code 0');
       // TODO: kill `patrol develop` process and its children
