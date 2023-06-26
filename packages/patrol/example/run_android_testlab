@@ -1,30 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")"
 
-_usage() {
-	printf "usage: ./run_android_testlab <target>\n"
-	printf "\tfor example:\n"
-	printf "\t\$ ./run_android_testlab integration_test/app_test.dart\n"
-}
-
-target="${1:-}"
-
-if [ -z "$target" ]; then
-	_usage
-	exit 1
-fi
-
-target_path="$(realpath "$target")"
-
-flutter pub get
-patrol build --target "$target_path"
+# Set RESULTS_DIR_NAME variable before
 
 exec gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
 	--device model=oriole,version=33,locale=en,orientation=portrait \
-	--timeout 1m \
-	--results-bucket=patrol_runs
-	# --device model=oriole,version=31,locale=en,orientation=portrait \
+	--timeout 10m \
+	--results-bucket="patrol_runs" \
+	--results-dir="$RESULTS_DIR_NAME" \
+	--use-orchestrator \
+	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example"

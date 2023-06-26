@@ -1,7 +1,57 @@
 ## Unreleased
 
-- Pump frames during execution of native actions (i.e. methods from the
-  `NativeAutomator` class) (#1038)
+[Patrol 2.0 is released!](https://leancode.co/blog).
+
+- Test bundling
+- Improved pumping and settling
+- Improved scrolling
+
+## 1.1.5
+
+- Fix tests failing when using native automation on Android + Flutter 3.10
+  (#1352)
+
+## 1.1.4
+
+- Fix build with Android Gradle Plugin v8 (#1276)
+
+## 1.1.3
+
+- Fix `which()` not taking previous finder(s) into account (#1271)
+
+## 1.1.2
+
+- Fix crashing when using Gradle 8 (#1262)
+
+## 1.1.1
+
+- Add support for Flutter 3.10 (#1254)
+
+## 1.1.0
+
+This version marks the official release of Hot Restart. [Learn more
+here](https://leancode.co/blog/hot-restart-in-patrol-framework).
+
+## 1.0.9
+
+**This version requires version 1.1.4 of the `patrol_cli` package**
+
+- Rewrite native test reporting (#1178)
+
+## 1.0.8
+
+- Fix App Store warnings about non-public selectors from `patrol.framework`
+  (#1096)
+
+## 1.0.7
+
+- Fix `tap()` sometimes not being able to tap on a widget that was previously
+  found and scrolled to by `scrollTo()` (#1072)
+
+## 1.0.6
+
+- Add preliminary support for `patrol develop`. Requires version 1.0.6 of
+  `patrol_cli`.
 
 ## 1.0.5+1
 

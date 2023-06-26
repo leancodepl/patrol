@@ -1,9 +1,97 @@
+## Unreleased
+
+[Patrol 2.0 is released!](https://leancode.co/blog)
+
+## 1.1.11
+
+- Deprecate running test on many devices simultaneously (#1318)
+
+## 1.1.10
+
+- Fix `dart pub global activate patrol_cli` failing because of transitive
+  dependency not following semver (#1290)
+
+## 1.1.9
+
+- Add support for Flutter 3.10 (#1254)
+- Fix crashes on Windows (#1255)
+
+## 1.1.8
+
+- Fix analytics being always enabled (#1246)
+
+## 1.1.7
+
+- Fix `patrol develop` not attaching to the app on the other-than-first attached
+  device (#1210)
+
+## 1.1.6
+
+- Default to "Yes" when asking for telemetry (#1201)
+
+## 1.1.5
+
+- Don't ask to collect analytics if running on CI (#1197)
+
+## 1.1.4
+
+**This version requires version 1.0.9 of the `patrol` package**
+
+- Add optional telemetry (#1157), (#1182)
+- Rewrite native test reporting (#1178)
+
+## 1.1.3
+
+- Add `--exclude` flag to `patrol test` (#1137)
+
+## 1.1.2
+
+- Fix `patrol test`/`patrol develop` being stuck after tests finish if `adb`
+  executable is not in $PATH. Now an error is thrown (#1119)
+
+## 1.1.1
+
+- Fix bug when running on iOS (`.xctestrun` file couldn't be found) (#1111)
+- Make `patrol develop` command visible (#1104)
+
+## 1.1.0
+
+- Automatically infer iOS-specific build options: `scheme` and `configuration`
+  (#1090). The following options were removed from `patrol test` and `patrol
+develop` commands: `--scheme`, `--xcconfig`, `--configuration`
+- Add `patrol build android` and `patrol build ios` commands (#1097)
+
+## 1.0.10
+
+- Fix error when scheme name is not `Runner` (#1076)
+
+## 1.0.9
+
+- Fix "error while disposing" when SIGINT (CTRL+C) is received when waiting for
+  app to start on physical iOS device (#1073)
+- Fix `patrol build` crashing (#1074)
+
+## 1.0.8
+
+- Disable forwarding `q` from `patrol develop` to `flutter attach` because it's
+  broken (#1069)
+- Improve error when patrol develop is missing `--target` option (#1064)
+
+## 1.0.7
+
+- Fix disposing error when SIGINT (CTRL+C) is sent during `patrol develop`
+  (#1057)
+
+## 1.0.6
+
+- Add `patrol develop` command which supports **Hot Restart** (#1057). It's not
+  stable, but you can already try it out and report bugs.
+
 ## 1.0.5
 
 - Add `patrol build` command to make it easier to build app binaries for cloud
-  device farms (#1006)
-
-  It's hidden and Android-only for now. Stay tuned for more.
+  device farms (#1006). It's not stable, but you can already try it out and
+  report bugs. Also, for now it only builds Android APKs.
 
 ## 1.0.4
 

@@ -1,9 +1,13 @@
+---
+title: Finders - usage
+---
+
 # Usage
 
 This page introduces Patrol's custom finder system. Let's get our hands dirty
 and find some widgets!
 
-### Just finders
+### Finding widgets
 
 Let's say you want to find some `Text` widget – nothing easier than that!
 
@@ -41,7 +45,7 @@ For those wondering what is that `#` thing – it's a
 [Symbol](https://api.dart.dev/dart-core/Symbol-class.html)! Yes, we're Dart
 (ab)users.
 
-All the types that you can pass to `$` are [listed in the documentation][doc].
+<Info>All the types that can be passed to `$` are [listed here][doc].</Info>
 
 ### Making assertions
 
@@ -213,6 +217,41 @@ With the help of Patrol's custom finders, it's much easier:
 await $(ListTile).containing('Activated').$(#learnMore).tap();
 ```
 
+Sometimes, however, the logic required to find a widget cannot be expressed by
+the descendant/ancestor relationship like above. In situations like this,
+when all ways of finding widgets known to you fail, Patrol has an ace up its
+sleeve: the [which()] method. You can use it to find widgets by their
+properties. A few examples include:
+.
+
+- entering a text into a text field with no text entered:
+
+  ```dart
+  await $(#cityTextField)
+      .which<TextField>((widget) => widget.controller.text.isNotEmpty)
+      .enterText('Warsaw, Poland');
+  ```
+
+- asserting that the icon has the correct color:
+
+  ```dart
+  await $(Icons.error)
+      .which<Icon>((widget) => widget.color == Colors.red)
+      .waitUntilVisible();
+  ```
+
+- asserting that the button is disabled and has the correct color
+
+  ```dart
+  await $('Delete account')
+    .which<ElevatedButton>((button) => !button.enabled)
+    .which<ElevatedButton>(
+      (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
+    )
+    .waitUntilVisible();
+
+  ```
+
 ### Falling back
 
 What's cool about Patrol is that it builds on top of `flutter_test` instead of
@@ -230,6 +269,7 @@ patrolTest('adds comment', (PatrolTester $) async {
 ```
 
 [doc]: https://pub.dev/documentation/patrol/latest/patrol/createFinder.html
+[which()]: https://pub.dev/documentation/patrol/latest/patrol/PatrolFinder/which.html
 [findsnothing]: https://api.flutter.dev/flutter/flutter_test/findsNothing-constant.html
 [findsonewidget]: https://api.flutter.dev/flutter/flutter_test/findsOneWidget-constant.html
 [patroltesterconfig]: https://pub.dev/documentation/patrol/latest/patrol/PatrolTesterConfig-class.html

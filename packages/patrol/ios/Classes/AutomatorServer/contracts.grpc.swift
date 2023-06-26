@@ -25,6 +25,259 @@ import NIO
 import NIOConcurrencyHelpers
 import SwiftProtobuf
 
+/// Usage: instantiate `Patrol_PatrolAppServiceClient`, then call methods of this protocol to make API calls.
+internal protocol Patrol_PatrolAppServiceClientProtocol: GRPCClient {
+  var serviceName: String { get }
+  var interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? { get }
+
+  func listDartTests(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_Empty, Patrol_ListDartTestsResponse>
+
+  func runDartTest(
+    _ request: Patrol_RunDartTestRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse>
+}
+
+extension Patrol_PatrolAppServiceClientProtocol {
+  internal var serviceName: String {
+    return "patrol.PatrolAppService"
+  }
+
+  /// Unary call to listDartTests
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to listDartTests.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func listDartTests(
+    _ request: Patrol_Empty,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_Empty, Patrol_ListDartTestsResponse> {
+    return self.makeUnaryCall(
+      path: Patrol_PatrolAppServiceClientMetadata.Methods.listDartTests.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makelistDartTestsInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to runDartTest
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to runDartTest.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func runDartTest(
+    _ request: Patrol_RunDartTestRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse> {
+    return self.makeUnaryCall(
+      path: Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makerunDartTestInterceptors() ?? []
+    )
+  }
+}
+
+#if compiler(>=5.6)
+  @available(*, deprecated)
+  extension Patrol_PatrolAppServiceClient: @unchecked Sendable {}
+#endif  // compiler(>=5.6)
+
+@available(*, deprecated, renamed: "Patrol_PatrolAppServiceNIOClient")
+internal final class Patrol_PatrolAppServiceClient: Patrol_PatrolAppServiceClientProtocol {
+  private let lock = Lock()
+  private var _defaultCallOptions: CallOptions
+  private var _interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol?
+  internal let channel: GRPCChannel
+  internal var defaultCallOptions: CallOptions {
+    get { self.lock.withLock { return self._defaultCallOptions } }
+    set { self.lock.withLockVoid { self._defaultCallOptions = newValue } }
+  }
+  internal var interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? {
+    get { self.lock.withLock { return self._interceptors } }
+    set { self.lock.withLockVoid { self._interceptors = newValue } }
+  }
+
+  /// Creates a client for the patrol.PatrolAppService service.
+  ///
+  /// - Parameters:
+  ///   - channel: `GRPCChannel` to the service host.
+  ///   - defaultCallOptions: Options to use for each service call if the user doesn't provide them.
+  ///   - interceptors: A factory providing interceptors for each RPC.
+  internal init(
+    channel: GRPCChannel,
+    defaultCallOptions: CallOptions = CallOptions(),
+    interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? = nil
+  ) {
+    self.channel = channel
+    self._defaultCallOptions = defaultCallOptions
+    self._interceptors = interceptors
+  }
+}
+
+internal struct Patrol_PatrolAppServiceNIOClient: Patrol_PatrolAppServiceClientProtocol {
+  internal var channel: GRPCChannel
+  internal var defaultCallOptions: CallOptions
+  internal var interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol?
+
+  /// Creates a client for the patrol.PatrolAppService service.
+  ///
+  /// - Parameters:
+  ///   - channel: `GRPCChannel` to the service host.
+  ///   - defaultCallOptions: Options to use for each service call if the user doesn't provide them.
+  ///   - interceptors: A factory providing interceptors for each RPC.
+  internal init(
+    channel: GRPCChannel,
+    defaultCallOptions: CallOptions = CallOptions(),
+    interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? = nil
+  ) {
+    self.channel = channel
+    self.defaultCallOptions = defaultCallOptions
+    self.interceptors = interceptors
+  }
+}
+
+#if compiler(>=5.6)
+  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+  internal protocol Patrol_PatrolAppServiceAsyncClientProtocol: GRPCClient {
+    static var serviceDescriptor: GRPCServiceDescriptor { get }
+    var interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? { get }
+
+    func makeListDartTestsCall(
+      _ request: Patrol_Empty,
+      callOptions: CallOptions?
+    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_ListDartTestsResponse>
+
+    func makeRunDartTestCall(
+      _ request: Patrol_RunDartTestRequest,
+      callOptions: CallOptions?
+    ) -> GRPCAsyncUnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse>
+  }
+
+  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+  extension Patrol_PatrolAppServiceAsyncClientProtocol {
+    internal static var serviceDescriptor: GRPCServiceDescriptor {
+      return Patrol_PatrolAppServiceClientMetadata.serviceDescriptor
+    }
+
+    internal var interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? {
+      return nil
+    }
+
+    internal func makeListDartTestsCall(
+      _ request: Patrol_Empty,
+      callOptions: CallOptions? = nil
+    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_ListDartTestsResponse> {
+      return self.makeAsyncUnaryCall(
+        path: Patrol_PatrolAppServiceClientMetadata.Methods.listDartTests.path,
+        request: request,
+        callOptions: callOptions ?? self.defaultCallOptions,
+        interceptors: self.interceptors?.makelistDartTestsInterceptors() ?? []
+      )
+    }
+
+    internal func makeRunDartTestCall(
+      _ request: Patrol_RunDartTestRequest,
+      callOptions: CallOptions? = nil
+    ) -> GRPCAsyncUnaryCall<Patrol_RunDartTestRequest, Patrol_RunDartTestResponse> {
+      return self.makeAsyncUnaryCall(
+        path: Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest.path,
+        request: request,
+        callOptions: callOptions ?? self.defaultCallOptions,
+        interceptors: self.interceptors?.makerunDartTestInterceptors() ?? []
+      )
+    }
+  }
+
+  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+  extension Patrol_PatrolAppServiceAsyncClientProtocol {
+    internal func listDartTests(
+      _ request: Patrol_Empty,
+      callOptions: CallOptions? = nil
+    ) async throws -> Patrol_ListDartTestsResponse {
+      return try await self.performAsyncUnaryCall(
+        path: Patrol_PatrolAppServiceClientMetadata.Methods.listDartTests.path,
+        request: request,
+        callOptions: callOptions ?? self.defaultCallOptions,
+        interceptors: self.interceptors?.makelistDartTestsInterceptors() ?? []
+      )
+    }
+
+    internal func runDartTest(
+      _ request: Patrol_RunDartTestRequest,
+      callOptions: CallOptions? = nil
+    ) async throws -> Patrol_RunDartTestResponse {
+      return try await self.performAsyncUnaryCall(
+        path: Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest.path,
+        request: request,
+        callOptions: callOptions ?? self.defaultCallOptions,
+        interceptors: self.interceptors?.makerunDartTestInterceptors() ?? []
+      )
+    }
+  }
+
+  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+  internal struct Patrol_PatrolAppServiceAsyncClient: Patrol_PatrolAppServiceAsyncClientProtocol {
+    internal var channel: GRPCChannel
+    internal var defaultCallOptions: CallOptions
+    internal var interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol?
+
+    internal init(
+      channel: GRPCChannel,
+      defaultCallOptions: CallOptions = CallOptions(),
+      interceptors: Patrol_PatrolAppServiceClientInterceptorFactoryProtocol? = nil
+    ) {
+      self.channel = channel
+      self.defaultCallOptions = defaultCallOptions
+      self.interceptors = interceptors
+    }
+  }
+
+#endif  // compiler(>=5.6)
+
+internal protocol Patrol_PatrolAppServiceClientInterceptorFactoryProtocol: GRPCSendable {
+
+  /// - Returns: Interceptors to use when invoking 'listDartTests'.
+  func makelistDartTestsInterceptors() -> [ClientInterceptor<
+    Patrol_Empty, Patrol_ListDartTestsResponse
+  >]
+
+  /// - Returns: Interceptors to use when invoking 'runDartTest'.
+  func makerunDartTestInterceptors() -> [ClientInterceptor<
+    Patrol_RunDartTestRequest, Patrol_RunDartTestResponse
+  >]
+}
+
+internal enum Patrol_PatrolAppServiceClientMetadata {
+  internal static let serviceDescriptor = GRPCServiceDescriptor(
+    name: "PatrolAppService",
+    fullName: "patrol.PatrolAppService",
+    methods: [
+      Patrol_PatrolAppServiceClientMetadata.Methods.listDartTests,
+      Patrol_PatrolAppServiceClientMetadata.Methods.runDartTest,
+    ]
+  )
+
+  internal enum Methods {
+    internal static let listDartTests = GRPCMethodDescriptor(
+      name: "listDartTests",
+      path: "/patrol.PatrolAppService/listDartTests",
+      type: GRPCCallType.unary
+    )
+
+    internal static let runDartTest = GRPCMethodDescriptor(
+      name: "runDartTest",
+      path: "/patrol.PatrolAppService/runDartTest",
+      type: GRPCCallType.unary
+    )
+  }
+}
+
 /// Usage: instantiate `Patrol_NativeAutomatorClient`, then call methods of this protocol to make API calls.
 internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
   var serviceName: String { get }
@@ -185,10 +438,10 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 
-  func submitTestResults(
-    _ request: Patrol_SubmitTestResultsRequest,
+  func markPatrolAppServiceReady(
+    _ request: Patrol_Empty,
     callOptions: CallOptions?
-  ) -> UnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty>
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty>
 }
 
 extension Patrol_NativeAutomatorClientProtocol {
@@ -754,21 +1007,21 @@ extension Patrol_NativeAutomatorClientProtocol {
     )
   }
 
-  /// iOS
+  /// Unary call to markPatrolAppServiceReady
   ///
   /// - Parameters:
-  ///   - request: Request to send to submitTestResults.
+  ///   - request: Request to send to markPatrolAppServiceReady.
   ///   - callOptions: Call options.
   /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
-  internal func submitTestResults(
-    _ request: Patrol_SubmitTestResultsRequest,
+  internal func markPatrolAppServiceReady(
+    _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
-  ) -> UnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty> {
+  ) -> UnaryCall<Patrol_Empty, Patrol_Empty> {
     return self.makeUnaryCall(
-      path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
+      path: Patrol_NativeAutomatorClientMetadata.Methods.markPatrolAppServiceReady.path,
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
-      interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
+      interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? []
     )
   }
 }
@@ -995,10 +1248,10 @@ internal struct Patrol_NativeAutomatorNIOClient: Patrol_NativeAutomatorClientPro
       callOptions: CallOptions?
     ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
 
-    func makeSubmitTestResultsCall(
-      _ request: Patrol_SubmitTestResultsRequest,
+    func makeMarkPatrolAppServiceReadyCall(
+      _ request: Patrol_Empty,
       callOptions: CallOptions?
-    ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty>
+    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty>
   }
 
   @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
@@ -1385,15 +1638,15 @@ internal struct Patrol_NativeAutomatorNIOClient: Patrol_NativeAutomatorClientPro
       )
     }
 
-    internal func makeSubmitTestResultsCall(
-      _ request: Patrol_SubmitTestResultsRequest,
+    internal func makeMarkPatrolAppServiceReadyCall(
+      _ request: Patrol_Empty,
       callOptions: CallOptions? = nil
-    ) -> GRPCAsyncUnaryCall<Patrol_SubmitTestResultsRequest, Patrol_Empty> {
+    ) -> GRPCAsyncUnaryCall<Patrol_Empty, Patrol_Empty> {
       return self.makeAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
+        path: Patrol_NativeAutomatorClientMetadata.Methods.markPatrolAppServiceReady.path,
         request: request,
         callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
+        interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? []
       )
     }
   }
@@ -1772,15 +2025,15 @@ internal struct Patrol_NativeAutomatorNIOClient: Patrol_NativeAutomatorClientPro
       )
     }
 
-    internal func submitTestResults(
-      _ request: Patrol_SubmitTestResultsRequest,
+    internal func markPatrolAppServiceReady(
+      _ request: Patrol_Empty,
       callOptions: CallOptions? = nil
     ) async throws -> Patrol_Empty {
       return try await self.performAsyncUnaryCall(
-        path: Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults.path,
+        path: Patrol_NativeAutomatorClientMetadata.Methods.markPatrolAppServiceReady.path,
         request: request,
         callOptions: callOptions ?? self.defaultCallOptions,
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? []
+        interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? []
       )
     }
   }
@@ -1915,9 +2168,9 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: GRPCSe
   /// - Returns: Interceptors to use when invoking 'debug'.
   func makedebugInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when invoking 'submitTestResults'.
-  func makesubmitTestResultsInterceptors() -> [ClientInterceptor<
-    Patrol_SubmitTestResultsRequest, Patrol_Empty
+  /// - Returns: Interceptors to use when invoking 'markPatrolAppServiceReady'.
+  func makemarkPatrolAppServiceReadyInterceptors() -> [ClientInterceptor<
+    Patrol_Empty, Patrol_Empty
   >]
 }
 
@@ -1957,7 +2210,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorClientMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorClientMetadata.Methods.debug,
-      Patrol_NativeAutomatorClientMetadata.Methods.submitTestResults,
+      Patrol_NativeAutomatorClientMetadata.Methods.markPatrolAppServiceReady,
     ]
   )
 
@@ -2148,14 +2401,165 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let submitTestResults = GRPCMethodDescriptor(
-      name: "submitTestResults",
-      path: "/patrol.NativeAutomator/submitTestResults",
+    internal static let markPatrolAppServiceReady = GRPCMethodDescriptor(
+      name: "markPatrolAppServiceReady",
+      path: "/patrol.NativeAutomator/markPatrolAppServiceReady",
       type: GRPCCallType.unary
     )
   }
 }
 
+/// To build a server, implement a class that conforms to this protocol.
+internal protocol Patrol_PatrolAppServiceProvider: CallHandlerProvider {
+  var interceptors: Patrol_PatrolAppServiceServerInterceptorFactoryProtocol? { get }
+
+  func listDartTests(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<
+    Patrol_ListDartTestsResponse
+  >
+
+  func runDartTest(request: Patrol_RunDartTestRequest, context: StatusOnlyCallContext)
+    -> EventLoopFuture<Patrol_RunDartTestResponse>
+}
+
+extension Patrol_PatrolAppServiceProvider {
+  internal var serviceName: Substring {
+    return Patrol_PatrolAppServiceServerMetadata.serviceDescriptor.fullName[...]
+  }
+
+  /// Determines, calls and returns the appropriate request handler, depending on the request's method.
+  /// Returns nil for methods not handled by this service.
+  internal func handle(
+    method name: Substring,
+    context: CallHandlerContext
+  ) -> GRPCServerHandlerProtocol? {
+    switch name {
+    case "listDartTests":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+        responseSerializer: ProtobufSerializer<Patrol_ListDartTestsResponse>(),
+        interceptors: self.interceptors?.makelistDartTestsInterceptors() ?? [],
+        userFunction: self.listDartTests(request:context:)
+      )
+
+    case "runDartTest":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_RunDartTestRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_RunDartTestResponse>(),
+        interceptors: self.interceptors?.makerunDartTestInterceptors() ?? [],
+        userFunction: self.runDartTest(request:context:)
+      )
+
+    default:
+      return nil
+    }
+  }
+}
+
+#if compiler(>=5.6)
+
+  /// To implement a server, implement an object which conforms to this protocol.
+  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+  internal protocol Patrol_PatrolAppServiceAsyncProvider: CallHandlerProvider {
+    static var serviceDescriptor: GRPCServiceDescriptor { get }
+    var interceptors: Patrol_PatrolAppServiceServerInterceptorFactoryProtocol? { get }
+
+    @Sendable func listDartTests(
+      request: Patrol_Empty,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> Patrol_ListDartTestsResponse
+
+    @Sendable func runDartTest(
+      request: Patrol_RunDartTestRequest,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> Patrol_RunDartTestResponse
+  }
+
+  @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+  extension Patrol_PatrolAppServiceAsyncProvider {
+    internal static var serviceDescriptor: GRPCServiceDescriptor {
+      return Patrol_PatrolAppServiceServerMetadata.serviceDescriptor
+    }
+
+    internal var serviceName: Substring {
+      return Patrol_PatrolAppServiceServerMetadata.serviceDescriptor.fullName[...]
+    }
+
+    internal var interceptors: Patrol_PatrolAppServiceServerInterceptorFactoryProtocol? {
+      return nil
+    }
+
+    internal func handle(
+      method name: Substring,
+      context: CallHandlerContext
+    ) -> GRPCServerHandlerProtocol? {
+      switch name {
+      case "listDartTests":
+        return GRPCAsyncServerHandler(
+          context: context,
+          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
+          responseSerializer: ProtobufSerializer<Patrol_ListDartTestsResponse>(),
+          interceptors: self.interceptors?.makelistDartTestsInterceptors() ?? [],
+          wrapping: self.listDartTests(request:context:)
+        )
+
+      case "runDartTest":
+        return GRPCAsyncServerHandler(
+          context: context,
+          requestDeserializer: ProtobufDeserializer<Patrol_RunDartTestRequest>(),
+          responseSerializer: ProtobufSerializer<Patrol_RunDartTestResponse>(),
+          interceptors: self.interceptors?.makerunDartTestInterceptors() ?? [],
+          wrapping: self.runDartTest(request:context:)
+        )
+
+      default:
+        return nil
+      }
+    }
+  }
+
+#endif  // compiler(>=5.6)
+
+internal protocol Patrol_PatrolAppServiceServerInterceptorFactoryProtocol {
+
+  /// - Returns: Interceptors to use when handling 'listDartTests'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makelistDartTestsInterceptors() -> [ServerInterceptor<
+    Patrol_Empty, Patrol_ListDartTestsResponse
+  >]
+
+  /// - Returns: Interceptors to use when handling 'runDartTest'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makerunDartTestInterceptors() -> [ServerInterceptor<
+    Patrol_RunDartTestRequest, Patrol_RunDartTestResponse
+  >]
+}
+
+internal enum Patrol_PatrolAppServiceServerMetadata {
+  internal static let serviceDescriptor = GRPCServiceDescriptor(
+    name: "PatrolAppService",
+    fullName: "patrol.PatrolAppService",
+    methods: [
+      Patrol_PatrolAppServiceServerMetadata.Methods.listDartTests,
+      Patrol_PatrolAppServiceServerMetadata.Methods.runDartTest,
+    ]
+  )
+
+  internal enum Methods {
+    internal static let listDartTests = GRPCMethodDescriptor(
+      name: "listDartTests",
+      path: "/patrol.PatrolAppService/listDartTests",
+      type: GRPCCallType.unary
+    )
+
+    internal static let runDartTest = GRPCMethodDescriptor(
+      name: "runDartTest",
+      path: "/patrol.PatrolAppService/runDartTest",
+      type: GRPCCallType.unary
+    )
+  }
+}
 /// To build a server, implement a class that conforms to this protocol.
 internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   var interceptors: Patrol_NativeAutomatorServerInterceptorFactoryProtocol? { get }
@@ -2277,8 +2681,7 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
   /// other
   func debug(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
-  /// iOS
-  func submitTestResults(request: Patrol_SubmitTestResultsRequest, context: StatusOnlyCallContext)
+  func markPatrolAppServiceReady(request: Patrol_Empty, context: StatusOnlyCallContext)
     -> EventLoopFuture<Patrol_Empty>
 }
 
@@ -2573,13 +2976,13 @@ extension Patrol_NativeAutomatorProvider {
         userFunction: self.debug(request:context:)
       )
 
-    case "submitTestResults":
+    case "markPatrolAppServiceReady":
       return UnaryServerHandler(
         context: context,
-        requestDeserializer: ProtobufDeserializer<Patrol_SubmitTestResultsRequest>(),
+        requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-        interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? [],
-        userFunction: self.submitTestResults(request:context:)
+        interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? [],
+        userFunction: self.markPatrolAppServiceReady(request:context:)
       )
 
     default:
@@ -2757,9 +3160,8 @@ extension Patrol_NativeAutomatorProvider {
       context: GRPCAsyncServerCallContext
     ) async throws -> Patrol_Empty
 
-    /// iOS
-    @Sendable func submitTestResults(
-      request: Patrol_SubmitTestResultsRequest,
+    @Sendable func markPatrolAppServiceReady(
+      request: Patrol_Empty,
       context: GRPCAsyncServerCallContext
     ) async throws -> Patrol_Empty
   }
@@ -3062,13 +3464,13 @@ extension Patrol_NativeAutomatorProvider {
           wrapping: self.debug(request:context:)
         )
 
-      case "submitTestResults":
+      case "markPatrolAppServiceReady":
         return GRPCAsyncServerHandler(
           context: context,
-          requestDeserializer: ProtobufDeserializer<Patrol_SubmitTestResultsRequest>(),
+          requestDeserializer: ProtobufDeserializer<Patrol_Empty>(),
           responseSerializer: ProtobufSerializer<Patrol_Empty>(),
-          interceptors: self.interceptors?.makesubmitTestResultsInterceptors() ?? [],
-          wrapping: self.submitTestResults(request:context:)
+          interceptors: self.interceptors?.makemarkPatrolAppServiceReadyInterceptors() ?? [],
+          wrapping: self.markPatrolAppServiceReady(request:context:)
         )
 
       default:
@@ -3221,10 +3623,10 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol {
   ///   Defaults to calling `self.makeInterceptors()`.
   func makedebugInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
 
-  /// - Returns: Interceptors to use when handling 'submitTestResults'.
+  /// - Returns: Interceptors to use when handling 'markPatrolAppServiceReady'.
   ///   Defaults to calling `self.makeInterceptors()`.
-  func makesubmitTestResultsInterceptors() -> [ServerInterceptor<
-    Patrol_SubmitTestResultsRequest, Patrol_Empty
+  func makemarkPatrolAppServiceReadyInterceptors() -> [ServerInterceptor<
+    Patrol_Empty, Patrol_Empty
   >]
 }
 
@@ -3264,7 +3666,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.handlePermissionDialog,
       Patrol_NativeAutomatorServerMetadata.Methods.setLocationAccuracy,
       Patrol_NativeAutomatorServerMetadata.Methods.debug,
-      Patrol_NativeAutomatorServerMetadata.Methods.submitTestResults,
+      Patrol_NativeAutomatorServerMetadata.Methods.markPatrolAppServiceReady,
     ]
   )
 
@@ -3455,9 +3857,9 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       type: GRPCCallType.unary
     )
 
-    internal static let submitTestResults = GRPCMethodDescriptor(
-      name: "submitTestResults",
-      path: "/patrol.NativeAutomator/submitTestResults",
+    internal static let markPatrolAppServiceReady = GRPCMethodDescriptor(
+      name: "markPatrolAppServiceReady",
+      path: "/patrol.NativeAutomator/markPatrolAppServiceReady",
       type: GRPCCallType.unary
     )
   }

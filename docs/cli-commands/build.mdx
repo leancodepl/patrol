@@ -1,0 +1,93 @@
+---
+title: Commands - build
+---
+
+# build
+
+### Synopsis
+
+Build app binaries for integration testing.
+
+```
+patrol build android
+patrol build ios
+```
+
+To see all available options and flags, run `patrol build android --help` or
+`patrol build ios --help`.
+
+<Info>
+  For `patrol build` to work, you must complete [native setup](/native/setup).
+</Info>
+
+### Description
+
+`patrol build` is useful if you want to run test on CI, for example on Firebase
+Test Lab. It works the same as `patrol test`, except that it does run tests.
+
+`patrol build` builds apps in debug mode by default.
+
+<Info>
+  To run tests on a physical iOS device on a device farm, the apps have to be
+  built in release mode. To do so, pass the `--release` flag.
+</Info>
+
+### Examples
+
+**To build for Android in debug mode**
+
+```
+patrol build android --target integration_test/example_test.dart
+```
+
+or alternatively (but redundantly):
+
+```
+patrol build android --target integration_test/example_test.dart --debug
+```
+
+**To build for iOS device in release mode**
+
+```
+patrol build ios --target integration_test/example_test.dart --release
+```
+
+**To build for iOS simulator in debug mode**
+
+```
+patrol build ios --target integration_test/example_test.dart --debug
+```
+
+### Caveats
+
+Only a single test target file can be built. For example, consider the following
+`integration_test` directory containing 4 test targets:
+
+```
+integration_test/
+├── common.dart
+├── example_test.dart
+├── notifications_test.dart
+├── permissions_location_test.dart
+├── webview_login_test.dart
+```
+
+<Info>Dart file must end with `_test.dart` to be considered to be a test.</Info>
+
+To build the app for testing on Android, you have to run:
+
+```
+patrol build android --target <your file>
+```
+
+4 times, each time with a different `--target`, to get 4 different app binaries.
+
+These 4 different binaries are almost the same – the only difference is the
+entrypoint. This is needlessly inefficient for apps with many tests, but it's a
+design flaw in the way integration testing in Flutter works.
+
+[We know about this issue][bundling_issue] and we're aiming to fix it soon with
+an approach we call "test bundling". This will dramatically speed up testing
+apps with many integration tests.
+
+[bundling_issue]: https://github.com/leancodepl/patrol/issues/1004

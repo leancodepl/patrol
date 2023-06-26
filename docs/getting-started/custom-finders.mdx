@@ -1,0 +1,104 @@
+---
+title: Custom finders setup
+---
+
+# Custom finders setup
+
+### Install
+
+First, add the `patrol` package as a `dev_dependency` in your app's
+`pubspec.yaml`. You can do this by executing the following command in the app's
+directory:
+
+```console
+flutter pub add patrol --dev
+```
+
+### Use
+
+To use [patrol] in your test files, first import it:
+
+```dart
+import 'package:patrol/patrol.dart';
+```
+
+Once imported, you can write widget tests:
+
+```dart title="test/widget_test.dart"
+void main() {
+  patrolTest(
+    'counter is incremented when plus button is tapped',
+    (PatrolTester $) async {
+      await $.pumpWidget(const MyApp());
+
+      expect($('0'), findsOneWidget);
+      expect($('-1'), findsNothing);
+
+      await $(Icons.remove).tap();
+
+      expect($('0'), findsNothing);
+      expect($('-1'), findsOneWidget);
+    },
+  );
+}
+```
+
+To run the test, simply execute:
+
+```console
+flutter test
+```
+
+Below is the same test written using vanilla Flutter:
+
+```dart title="test/vanilla_widget_test.dart"
+void main() {
+  testWidgets(
+    'counter is incremented when plus button is tapped',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      expect(find.text('0'), findsOneWidget);
+      expect(find.text('-1'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      expect(find.text('0'), findsNothing);
+      expect(find.text('-1'), findsOneWidget);
+    },
+  );
+}
+```
+
+This is just a small demo: Patrol's got many more features that make writing
+tests easier and more fun.
+
+<Info>
+  There are 2 types of tests specific to Flutter: widget tests (living in the
+  `test` directory) and integration tests (living in the `integration_test`
+  directory). Use `flutter test` to run widget tests. To run integration tests
+  using Patrol's [native automation feature], use `patrol test` instead. Read on
+  to learn more!
+</Info>
+
+### Going from here
+
+Patrol has 2 main features that can be used independently of each other:
+**custom finders** and **native capabilities**. The choice if to use one or both
+belongs to you (yet most people use both!)
+
+[Here][custom_finders] you can learn more about custom finders. They make
+interacting with Flutter widgets in tests much easier and more concise – you've
+seen the tiny sample above! They are platform independent and work in widget
+tests and integration tests.
+
+[Here][native automation feature] you can learn more about our native
+automation. Native automation lets you do things that were previously impossible
+in Flutter integration tests - for example, you can go to the home screen, tap
+on notifications, change device settings, or toggle Wi-Fi.
+
+[patrol]: https://pub.dev/packages/patrol
+[patrol_cli]: https://pub.dev/packages/patrol_cli
+[custom_finders]: /finders/overview
+[native automation feature]: /native/overview

@@ -1,53 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd "$(dirname "$0")"
 
-_usage() {
-	printf "usage: ./run_ios_testlab <target>\n"
-	printf "\tfor example:\n"
-	printf "\t\$ ./run_ios_testlab integration_test/app_test.dart\n"
-}
+# This script requires following environment variables to be set:
+# * DEVICE_MODEL (for example: "iphone11pro")
+# * DEVICE_VERSION (for example: "16.3")
+# * RESULTS_DIR_NAME (for example: "$(date +"%Y-%m-%d_%H:%M:%S")" - it should be unique)
 
-target="${1:-}"
-
-if [ -z "$target" ]; then
-	_usage
-	exit 1
-fi
-
-product="build/ios_integ/Build/Products"
-rm -rf "$product"
-
-dev_target="16.2"
-
-flutter build ios --target "$target" --release --no-codesign
-
-
-pushd ios
-xcodebuild build-for-testing \
-	-workspace Runner.xcworkspace \
-	-scheme Runner \
-	-xcconfig Flutter/Release.xcconfig \
-	-configuration Release \
-	-sdk iphoneos \
-	-derivedDataPath ../build/ios_integ \
-	OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
-	# CODE_SIGN_IDENTITY="" \
-	# CODE_SIGNING_REQUIRED="NO" \
-	# CODE_SIGN_ENTITLEMENTS="" \
-	# CODE_SIGNING_ALLOWED="NO"
-popd
-
-
-pushd "$product"
-# mv Runner_iphoneos16.2-arm64.xctestrun Runner_iphoneos"$dev_target"-arm64.xctestrun
-zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
-popd
+# And ios_tests.zip containing the iOS app and XCTest files
 
 exec gcloud firebase test ios run \
 	--type xctest \
-	--test "$product/ios_tests.zip" \
-	--device model=iphone8,version="$dev_target",locale=en_US,orientation=portrait \
-	--timeout 1m \
-	--results-bucket=patrol_runs \
-	--results-dir=runs
+	--test "build/ios_integ/Build/Products/ios_tests.zip" \
+	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en_US,orientation=portrait \
+	--timeout 10m \
+	--results-bucket="patrol_runs" \
+	--results-dir="$RESULTS_DIR_NAME"

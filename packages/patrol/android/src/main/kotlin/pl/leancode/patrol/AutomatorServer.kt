@@ -16,9 +16,7 @@ import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
 
 typealias Empty = Contracts.Empty
 
-class AutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-    private val automation = Automator.instance
-
+class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
     override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
         return empty { }
@@ -201,6 +199,11 @@ class AutomatorServer : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase()
             Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(request.selector.toUiSelector())
             else -> throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
+        return empty { }
+    }
+
+    override suspend fun markPatrolAppServiceReady(request: Contracts.Empty): Contracts.Empty {
+        PatrolServer.appReady.set(true)
         return empty { }
     }
 }

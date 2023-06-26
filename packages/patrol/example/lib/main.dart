@@ -77,6 +77,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         title: Text(widget.title),
       ),
       body: ListView(
+        padding: EdgeInsets.all(8),
         key: const Key('listViewKey'),
         children: [
           const Text(
@@ -87,6 +88,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             key: const Key('counterText'),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
+          const TextField(
+            key: Key('textField'),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'You have entered this text',
+            ),
+          ),
+          SizedBox(height: 8),
           Container(
             key: const Key('box1'),
             color: Theme.of(context).colorScheme.background,
@@ -218,18 +227,6 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               ),
             ),
             child: const Text('Open webview (StackOverflow)'),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView (login form)',
-                  url:
-                      'https://joyful-noise-staging.joyful-noise.link/users/sign_in',
-                ),
-              ),
-            ),
-            child: const Text('Open webview (login form)'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(

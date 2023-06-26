@@ -15,12 +15,7 @@ class PatrolPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        if (call.method == "allTestsFinished") {
-            // On Android, we're using the default integration_test plugin
-            result.notImplemented()
-        } else {
-            result.notImplemented()
-        }
+        result.notImplemented()
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {

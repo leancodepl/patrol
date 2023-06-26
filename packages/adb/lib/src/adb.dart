@@ -6,8 +6,6 @@ import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 import 'package:adb/src/internals.dart';
 
-const _interval = Duration(milliseconds: 100);
-
 /// Provides Dart interface for common Android Debug Bridge features.
 ///
 /// See also:
@@ -20,7 +18,9 @@ class Adb {
   /// Initializes this [Adb] instance.
   ///
   /// If the ADB daemon is not running, it will be started.
-  Future<void> init() async => _ensureServerRunning();
+  Future<void> init() async {
+    await _adbInternals.ensureServerRunning();
+  }
 
   final AdbInternals _adbInternals;
 
@@ -37,9 +37,9 @@ class Adb {
     String path, {
     String? device,
   }) async {
-    await _ensureServerRunning();
-    await _ensurePackageServiceRunning(device: device);
-    await _ensureActivityServiceRunning(device: device);
+    await _adbInternals.ensureServerRunning();
+    await _adbInternals.ensurePackageServiceRunning(device: device);
+    await _adbInternals.ensureActivityServiceRunning(device: device);
 
     final result = await io.Process.run(
       'adb',
@@ -74,9 +74,9 @@ class Adb {
     String packageName, {
     String? device,
   }) async {
-    await _ensureServerRunning();
-    await _ensurePackageServiceRunning(device: device);
-    await _ensureActivityServiceRunning(device: device);
+    await _adbInternals.ensureServerRunning();
+    await _adbInternals.ensurePackageServiceRunning(device: device);
+    await _adbInternals.ensureActivityServiceRunning(device: device);
 
     final result = await io.Process.run(
       'adb',
@@ -116,7 +116,7 @@ class Adb {
     String? device,
     String protocol = 'tcp',
   }) async {
-    await _ensureServerRunning();
+    await _adbInternals.ensureServerRunning();
 
     final result = await io.Process.run(
       'adb',
@@ -177,9 +177,9 @@ class Adb {
     String? device,
     Map<String, String> arguments = const {},
   }) async {
-    await _ensureServerRunning();
-    await _ensurePackageServiceRunning(device: device);
-    await _ensureActivityServiceRunning(device: device);
+    await _adbInternals.ensureServerRunning();
+    await _adbInternals.ensurePackageServiceRunning(device: device);
+    await _adbInternals.ensureActivityServiceRunning(device: device);
 
     final process = await io.Process.start(
       'adb',
@@ -207,7 +207,7 @@ class Adb {
   /// See also:
   ///  * https://developer.android.com/studio/command-line/adb#devicestatus
   Future<List<String>> devices() async {
-    await _ensureServerRunning();
+    await _adbInternals.ensureServerRunning();
 
     final stdOut = await _adbInternals.devices();
 
@@ -227,65 +227,6 @@ class Adb {
     }
 
     return devices;
-  }
-
-  Future<void> _ensureServerRunning() async {
-    while (true) {
-      final result = await io.Process.run(
-        'adb',
-        ['start-server'],
-        runInShell: true,
-      );
-      if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
-        await Future<void>.delayed(_interval);
-      } else {
-        break;
-      }
-    }
-  }
-
-  Future<void> _ensureActivityServiceRunning({required String? device}) async {
-    while (true) {
-      final result = await io.Process.run(
-        'adb',
-        [
-          if (device != null) ...['-s', device],
-          'shell',
-          'service',
-          'list',
-        ],
-        runInShell: true,
-      );
-
-      const trigger = 'activity: [android.app.IActivityManager]';
-      if (result.stdOut.contains(trigger)) {
-        break;
-      } else {
-        await Future<void>.delayed(_interval);
-      }
-    }
-  }
-
-  Future<void> _ensurePackageServiceRunning({required String? device}) async {
-    while (true) {
-      final result = await io.Process.run(
-        'adb',
-        [
-          if (device != null) ...['-s', device],
-          'shell',
-          'service',
-          'list',
-        ],
-        runInShell: true,
-      );
-
-      const trigger = 'package: [android.content.pm.IPackageManager]';
-      if (result.stdOut.contains(trigger)) {
-        break;
-      } else {
-        await Future<void>.delayed(_interval);
-      }
-    }
   }
 
   void _handleAdbExceptions(String stdErr) {

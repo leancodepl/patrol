@@ -1,14 +1,18 @@
+---
+title: Commands - test
+---
+
 # test
 
 ### Synopsis
 
-Runs Flutter integration tests as native tests on devices.
+Run integration tests.
 
 ```
 patrol test
 ```
 
-To learn more about this command, run `patrol test --help`.
+To see all available options and flags, run `patrol test --help`.
 
 ### Description
 
@@ -18,7 +22,7 @@ This command is the one use you'll be using most often.
 
 1. Builds the app under test (AUT) and the instrumentation app
 2. Installs the AUT and the instrumentation on the selected device
-3. Runs the tests natively, and reports results back in native format. 4.
+3. Runs the tests natively, and reports results back in native format.
 
 Under the hood, it calls Gradle (when testing on Android) and `xcodebuild` (when
 testing on iOS).
@@ -58,3 +62,9 @@ To delay app uninstallation for 5 seconds after the test finishes:
 ```
 patrol test --target integration_test/app_test.dart --wait 5
 ```
+
+### Caveats
+
+See [caveats of the `patrol build` command][patrol_build].
+
+[patrol_build]: /cli-commands/build#caveats

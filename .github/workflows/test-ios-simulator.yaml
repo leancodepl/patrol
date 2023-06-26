@@ -7,16 +7,17 @@ on:
 
 jobs:
   run_tests:
-    name: Test on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device }}, ${{ matrix.os }} ${{ matrix.os_version }}
     runs-on: macos-latest
     timeout-minutes: 60
     outputs:
-      status: ${{ steps.set_status.outputs.status }}
+      SLACK_MESSAGE_TITLE: iOS simulator
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-channel: [stable]
+        flutter-version: ['3.7.x']
         device: [iPhone 14, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']
@@ -32,15 +33,18 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
 
       - name: Set up Patrol CLI
-        run: dart pub global activate patrol_cli
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
       - name: Start iOS simulator
+        id: start_simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: ${{ matrix.device }}
@@ -52,77 +56,73 @@ jobs:
       - name: Set simulator location
         run: xcrun simctl location booted set 52.17469,21.03193
 
-      - run: patrol test -t integration_test/example_test.dart
+      - name: Run tests
+        id: tests_step
+        run: |
+          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device }}.mp4" &
+          recordingpid="$!"
+
+          xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
+          logpid="$!"
+
+          TESTS_EXIT_CODE=0
+          patrol test \
+            --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/service_airplane_mode_test.dart \
+            --exclude integration_test/service_bluetooth_test.dart \
+            --exclude integration_test/service_cellular_test.dart \
+            --exclude integration_test/service_wifi_test.dart \
+            --exclude integration_test/swipe_test.dart \
+            --exclude integration_test/webview_leancode_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_stackoverflow_test.dart || TESTS_EXIT_CODE=$?
+
+          kill -SIGINT $recordingpid
+          kill -SIGINT $logpid
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      - name: Find xcresult path
         if: success() || failure()
+        run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
-      - run: patrol test -t integration_test/notifications_test.dart
+      - name: Publish test report to summary
         if: success() || failure()
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          title: Patrol tests on ${{ matrix.device }}
+          upload-bundles: never
+          path: |
+            ${{ env.XCRESULT_PATH }}
 
-      - run: patrol test -t integration_test/open_app_test.dart
+      - name: Upload XCRESULT test result to artifacts
         if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test result from ${{ matrix.device }}.xcresult
+          path: ${{ env.XCRESULT_PATH }}
 
-      - run: patrol test -t integration_test/open_quick_settings_test.dart
-        if: success() || failure() # should work, but is empty on Simulator
-
-      - run: patrol test -t integration_test/permissions_location_test.dart
+      - name: Upload simulator logs to artifacts
         if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Logs from ${{ matrix.device }}
+          path: |
+            ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
 
-      - run: patrol test -t integration_test/permissions_many_test.dart
+      - name: Upload captured video to artifacts
         if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Captured video from ${{ matrix.device }}.mp4
+          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device }}.mp4
 
-      - run: patrol test -t integration_test/service_cellular_test.dart
-        if: ${{ false }} # Not on Simulator
-
-      - run: patrol test -t integration_test/service_dark_mode_test.dart
-        if: success() || failure()
-
-      - run: patrol test -t integration_test/service_wifi_test.dart
-        if: ${{ false }} # Not on Simulator
-
-      - run: patrol test -t integration_test/webview_all_test.dart
-        if: ${{ false }} # Temporarily broken
-
-      - name: Set job status
-        id: set_status
-        if: success() || failure()
-        run: echo "status=${{ job.status }}" >> "$GITHUB_OUTPUT"
-
-  slack_notify:
+  call_send_slack_message:
     name: Notify on Slack
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
     if: always()
-
-    steps:
-      - name: Set Slack message
-        id: slack_message
-        env:
-          STATUS: ${{ needs.run_tests.outputs.status }}
-        run: >
-          status="${{ env.STATUS }}"
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
-          message="";
-          if [ "$STATUS" = "failure" ]; then
-            message="There were failing tests 💥 ";
-          elif [ "$STATUS" = "success" ]; then
-            message="All tests have passed ✅ ";
-          else
-            message="Something went wrong ⚠️";
-          fi;
-          echo "message=$message" >> $GITHUB_OUTPUT;
-          echo "url=$url" >> $GITHUB_OUTPUT;
-          echo "status=$status" >> $GITHUB_OUTPUT;
-
-      - name: Share test results on Slack
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: ${{ vars.SLACK_STATUS_CHANNEL }}
-          SLACK_USERNAME: Patrol CI on GitHub Actions
-          SLACK_COLOR: ${{ steps.slack_message.outputs.status }}
-          SLACK_ICON: ${{ vars.SLACK_ICON }}
-          SLACK_TITLE: Test status (iOS Simulator)
-          SLACK_MESSAGE: |
-            ${{ steps.slack_message.outputs.message }}
-
-            See workflow run <${{ steps.slack_message.outputs.url }}|here>
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit

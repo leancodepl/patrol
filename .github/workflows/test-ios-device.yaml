@@ -6,10 +6,20 @@ on:
     - cron: '30 21 * * *'
 
 jobs:
-  main:
-    name: Test on iOS device on Firebase Test Lab
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device-model }} iOS ${{ matrix.device-version }} on FTL
     runs-on: macos-latest
     timeout-minutes: 60
+    outputs:
+      SLACK_MESSAGE_TITLE: iOS device on Firebase Test Lab
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.10.x']
+        device-model: ['iphone11pro']
+        device-version: ['16.3']
 
     defaults:
       run:
@@ -18,6 +28,32 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
+
+      - name: Add current platform to Gemfile
+        working-directory: packages/patrol/example/ios
+        run: bundle lock --add-platform ruby
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: packages/patrol/example/ios
+
+      - name: Set up fastlane
+        working-directory: packages/patrol/example/ios
+        run: bundle install
+
+      - name: Run fastlane match
+        working-directory: packages/patrol/example/ios
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
+          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
+        run: bundle exec fastlane ios certificates
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
@@ -30,27 +66,108 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ matrix.flutter-channel }}
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
 
-      - name: Run example_test.dart
-        run: ./run_ios_testlab integration_test/example_test.dart
-        if: success() || failure()
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
 
-      - name: Run notifications_single_test.dart
-        run: ./run_ios_testlab integration_test/notifications_single_test.dart
-        if: success() || failure()
+      - name: Build tests
+        run: |
+          patrol build ios --release \
+            --exclude integration_test/notifications_test.dart \
+            --exclude integration_test/android_app_test.dart \
+            --exclude integration_test/open_app_test.dart \
+            --exclude integration_test/service_dark_mode_test.dart \
+            --exclude integration_test/service_wifi_test.dart \
+            --exclude integration_test/permissions_location_test.dart \
+            --exclude integration_test/swipe_test.dart \
+            --exclude integration_test/webview_login_test.dart \
+            --exclude integration_test/webview_leancode_test.dart
 
-      - name: Run notifications_many_test.dart
-        run: ./run_ios_testlab integration_test/notifications_many_test.dart
-        if: success() || failure()
+      - name: Compress test files to zip
+        run: |
+          cd build/ios_integ/Build/Products
+          zip -r ios_tests.zip \
+            Release-iphoneos/*.app \
+            *.xctestrun
 
-      - name: Run open_app_test.dart
-        run: ./run_ios_testlab integration_test/open_app_test.dart
-        if: success() || failure()
+      - name: Upload APKs to Firebase Test Lab and wait for tests to finish
+        id: tests_step
+        env:
+          DEVICE_MODEL: ${{ matrix.device-model }}
+          DEVICE_VERSION: ${{ matrix.device-version }}
+        run: |
+          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
+          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
 
-      - name: Run open_quick_settings_test.dart
-        run: ./run_ios_testlab integration_test/open_quick_settings_test.dart
+          TESTS_EXIT_CODE=0
+          ./run_ios_testlab || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      - name: Get test outputs from Google Cloud Storage
         if: success() || failure()
+        run: |
+          GSUTIL_PATH="gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/${{ matrix.device-model }}-${{ matrix.device-version }}-en_US-portrait"
+          mkdir "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/TestLogs/*" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/*.xml" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/*.mp4" "test_outputs"
+          gsutil -m cp -r "$GSUTIL_PATH/*.txt" "test_outputs"
+
+      - name: Find xcresult path
+        if: success() || failure()
+        run: echo "XCRESULT_PATH=$(find ${{ github.workspace }}/packages/patrol/example/test_outputs -name "*.xcresult" -type d)" >> $GITHUB_ENV
+
+      - name: Publish test report to summary
+        if: success() || failure()
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          title: Patrol tests on ${{ matrix.device-model }} iOS ${{ matrix.device-version }}
+          upload-bundles: never
+          path: |
+            ${{ env.XCRESULT_PATH }}
+
+      - name: Upload XML test report to artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: XML test report
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
+
+      - name: Upload XCRESULT test result to artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: Test-Runner.xcresult
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xcresult
+
+      - name: Upload captured video to artifacts
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: Captured video
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.mp4
+
+      - name: Upload device logs to artifacts
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Device logs
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.txt
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit

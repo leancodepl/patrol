@@ -1,0 +1,4 @@
+git_url("https://github.com/leancodepl/certificates")
+storage_mode("git")
+type("development")
+app_identifier(["pl.leancode.patrol.Example", "pl.leancode.patrol.Example.RunnerUITests"])

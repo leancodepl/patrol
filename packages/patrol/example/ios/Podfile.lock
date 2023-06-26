@@ -31,7 +31,7 @@ PODS:
   - patrol (0.0.1):
     - Flutter
     - gRPC-Swift (~> 1.8.0)
-  - permission_handler_apple (9.0.4):
+  - permission_handler_apple (9.1.0):
     - Flutter
   - SwiftNIO (2.40.0):
     - _NIODataStructures (= 2.40.0)
@@ -241,7 +241,7 @@ SPEC CHECKSUMS:
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   patrol: a7622350c42b3a944962fbfe052d07e3691789e5
-  permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
+  permission_handler_apple: 8f116445eff3c0e7c65ad60f5fef5490aa94b4e4
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
   SwiftNIOCore: 473fdfe746534d7aa25766916459eeaf6f92ef49
@@ -256,8 +256,8 @@ SPEC CHECKSUMS:
   SwiftNIOTLS: 598af547490133e9aac52aed0c23c4a90c31dcfc
   SwiftNIOTransportServices: 0b2b407819d82eb63af558c5396e33c945759503
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
-  webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
+  webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
 
 PODFILE CHECKSUM: 0976da911d4a3d1a369deaf59f82a1c7d01a40d5
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

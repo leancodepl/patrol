@@ -1,0 +1,125 @@
+---
+title: CI - Firebase Test Lab
+---
+
+# Firebase Test Lab
+
+There are many device lab providers. Below we're showing how to run Patrol tests
+on [Firebase Test Lab], because it's popular in the Flutter community, but the
+instructions should be similar for other device farms, such as [AWS Device
+Farm][aws_device_farm].
+
+<Info>
+  Before you proceed with the steps listed below, make sure that you've
+  completed the [native setup] guide.
+</Info>
+
+<Tabs
+  defaultValue="android"
+  values={[
+    { label: "Android", value: "android" },
+    { label: "iOS", value: "ios" },
+  ]}
+>
+  <TabItem value="android">
+    To run the integration tests on Android, you need 2 apps: the app itself
+    (often called the "app under test") and the test intrumentation app.
+
+    To build these apps, run:
+
+    ```
+    patrol build android --target integration_test/example_test.dart
+    ```
+
+    Once you have built the apks, use the [gcloud] tool to run them on Firebase
+    Test Lab:
+
+    ```
+    gcloud firebase test android run --type instrumentation \
+        --app build/app/outputs/apk/debug/app-debug.apk \
+        --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+        --timeout 1m \
+        --results-bucket=<RESULTS_BUCKET> \
+        --results-dir=<RESULTS_DIRECTORY>
+    ```
+
+    <Info>
+      You must [install the gcloud tool] first. [Here][gcloud_android] you can learn
+      more about all available options and flags.
+    </Info>
+
+    It's convenient to create a shell script to avoid typing that long command
+    every time. You might want to take a look at Patrol example app's
+    [run_android_testlab script][example_android_script].
+
+    <Info>
+      On Android, all permissions are granted by default. This behavior can be
+      changed using the [alpha version of the gcloud tool].
+    </Info>
+
+  </TabItem>
+  <TabItem value="ios">
+
+    To run the integration tests on iOS, you need 2 apps: the app itself
+    (often called the "app under test") and the test intrumentation app.
+
+    First, build your Flutter app, choosing the integration test file as target:
+
+    ```
+    patrol build ios --target integration_test/example_test.dart
+    ```
+
+    `patrol build ios` outputs paths to the built app binaries, for example:
+
+    ```
+    $ patrol build ios -t integration_test/example_test.dart --release
+    • Building app with entrypoint example_test.dart for iOS device (release)...
+    ✓ Completed building app with entrypoint example_test.dart for iOS device (31.5s)
+    build/ios_integ/Build/Products/Release-iphoneos/Runner.app (app under test)
+    build/ios_integ/Build/Products/Release-iphoneos/RunnerUITests-Runner.app (test instrumentation app)
+    build/ios_integ/Build/Products/Runner_iphoneos16.2-arm64.xctestrun (xctestrun file)
+    ```
+
+    Firebase Test Lab requires these files to be packaged together in a zip
+    archive. To create the archive:
+
+    ```
+    pushd build/ios_integ/Build/Products
+    zip -r ios_tests.zip Release-iphoneos Runner_iphoneos16.2-arm64.xctestrun
+    popd
+    ```
+
+    Finally, upload the `ios_tests.zip` to Firebase Test Lab for execution:
+
+    ```
+    gcloud firebase test ios run \
+      --test build/ios_integ/Build/Products/ios_tests.zip \
+      --device model=iphone8,version=16.2,locale=en_US,orientation=portrait
+    ```
+
+    <Info>
+      You must [install the gcloud tool] first. [Here][gcloud_ios] you can learn
+      more about all available options and flags.
+    </Info>
+
+    If your `.xctestrun` file has different iOS version in its name than the
+    device you're running on, simply rename the `.xctestrun` so that the version
+    matches.
+
+    It's convenient to create a shell script to avoid typing that long command
+    every time. You might want to take a look at Patrol example app's
+    [run_ios_testlab script][example_ios_script].
+
+  </TabItem>
+</Tabs>
+
+[native setup]: /native/setup
+[gcloud]: https://cloud.google.com/sdk/gcloud
+[example_android_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_android_testlab
+[example_ios_script]: https://github.com/leancodepl/patrol/blob/master/packages/patrol/example/run_ios_testlab
+[firebase test lab]: https://firebase.google.com/products/test-lab
+[aws_device_farm]: https://aws.amazon.com/device-farm
+[install the gcloud tool]: https://cloud.google.com/sdk/docs/install
+[gcloud_android]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run
+[gcloud_ios]: https://cloud.google.com/sdk/gcloud/reference/firebase/test/ios/run
+[alpha version of the gcloud tool]: https://cloud.google.com/sdk/gcloud/reference/alpha/firebase/test/android/run#--grant-permissions

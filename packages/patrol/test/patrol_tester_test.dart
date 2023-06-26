@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/custom_finders/exceptions.dart';
+import 'package:patrol/src/custom_finders/patrol_tester.dart';
 
 void main() {
   group('PatrolTester', () {
@@ -254,7 +255,7 @@ void main() {
               view: find.byType(Scrollable),
               moveStep: const Offset(0, 16),
             ),
-            throwsStateError,
+            throwsA(isA<WaitUntilExistsTimeoutException>()),
           );
         },
       );
@@ -295,14 +296,12 @@ void main() {
                         return const CircularProgressIndicator();
                       }
 
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const Text('top text'),
-                            SizedBox(height: constraints.maxHeight * 2),
-                            const Text('bottom text'),
-                          ],
-                        ),
+                      return ListView(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight * 2),
+                          const Text('bottom text'),
+                        ],
                       );
                     },
                   );
@@ -317,8 +316,11 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('top text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
+          expect(find.text('top text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsNothing);
+
           final initialScrollPosition = tester.tester
               .firstWidget<Scrollable>(find.byType(Scrollable))
               .controller
@@ -328,7 +330,7 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           final finalScrollPosition = tester.tester
@@ -338,7 +340,8 @@ void main() {
               .pixels;
 
           expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsOneWidget);
+          expect(find.text('bottom text').hitTestable(), findsNothing);
           expect(initialScrollPosition, isZero);
           expect(finalScrollPosition, isPositive);
         },
@@ -430,7 +433,7 @@ void main() {
               view: find.byType(Scrollable),
               moveStep: const Offset(0, 16),
             ),
-            throwsStateError,
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         },
       );
@@ -451,7 +454,7 @@ void main() {
         await tester.dragUntilVisible(
           finder: find.text('some text'),
           view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
+          moveStep: const Offset(0, -16),
         );
 
         expect(find.text('some text').hitTestable(), findsOneWidget);
@@ -493,7 +496,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('top text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
           final initialScrollPosition = tester.tester
               .firstWidget<Scrollable>(find.byType(Scrollable))
@@ -504,7 +507,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           final finalScrollPosition = tester.tester
@@ -528,7 +531,6 @@ void main() {
               home: Column(
                 children: [
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
                     child: Column(
                       children: const [
                         Text('text 1'),
@@ -537,7 +539,6 @@ void main() {
                     ),
                   ),
                   SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
                     child: Column(
                       children: const [Text('text 2')],
                     ),
@@ -553,7 +554,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -562,7 +563,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 2'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, -16),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -618,7 +619,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(-16, 0),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -631,7 +632,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 2'),
             view: find.byType(Scrollable).at(1),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(-16, 0),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -639,6 +640,54 @@ void main() {
         },
       );
     });
+
+    patrolTest(
+      'returns a finder matching the first widget that was dragged to',
+      (tester) async {
+        var count = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  return ListView(
+                    children: [
+                      Stack(
+                        children: [
+                          const Center(child: Text('Text')),
+                          Center(
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                      GestureDetector(
+                        onTap: () => setState(() => count++),
+                        child: const Text('Text'),
+                      ),
+                      const Text('Text'),
+                      Text('Count: $count'),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        final returnedFinder = await tester.dragUntilVisible(
+          finder: find.text('Text'),
+          view: find.byType(Scrollable),
+          moveStep: const Offset(0, 16),
+        );
+        await tester.tester.tap(returnedFinder); // tap without safety checks
+        await tester.pump();
+        expect(find.text('Count: 1'), findsOneWidget);
+      },
+    );
 
     group('scrollUntilExists()', () {
       patrolTest(
@@ -666,7 +715,7 @@ void main() {
 
           await expectLater(
             () => tester.scrollUntilExists(finder: find.text('three')),
-            throwsStateError,
+            throwsA(isA<WaitUntilExistsTimeoutException>()),
           );
         },
       );
@@ -802,14 +851,12 @@ void main() {
                         return const CircularProgressIndicator();
                       }
 
-                      return SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            const Text('top text'),
-                            SizedBox(height: constraints.maxHeight),
-                            const Text('bottom text'),
-                          ],
-                        ),
+                      return ListView(
+                        children: [
+                          const Text('top text'),
+                          SizedBox(height: constraints.maxHeight),
+                          const Text('bottom text'),
+                        ],
                       );
                     },
                   );
@@ -822,10 +869,13 @@ void main() {
           expect(find.text('bottom text').hitTestable(), findsNothing);
 
           await tester.scrollUntilExists(finder: find.text('top text'));
+          expect(find.text('top text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsNothing);
           await tester.scrollUntilExists(finder: find.text('bottom text'));
 
           expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsOneWidget);
+          expect(find.text('bottom text').hitTestable(), findsNothing);
         },
       );
 
@@ -836,16 +886,14 @@ void main() {
             MaterialApp(
               home: LayoutBuilder(
                 builder: (_, constraints) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const Text('top text'),
-                        SizedBox(height: constraints.maxHeight),
-                        const Text('bottom text'),
-                        SizedBox(height: constraints.maxHeight),
-                        const Text('bottom text'),
-                      ],
-                    ),
+                  return ListView(
+                    children: [
+                      const Text('top text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                    ],
                   );
                 },
               ),
@@ -853,12 +901,12 @@ void main() {
           );
 
           expect(find.text('top text').hitTestable(), findsOneWidget);
-          expect(find.text('bottom text').hitTestable(), findsNothing);
+          expect(find.text('bottom text'), findsNothing);
 
           await tester.scrollUntilExists(finder: find.text('bottom text'));
 
           expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text').hitTestable(), findsOneWidget);
+          expect(find.text('bottom text'), findsOneWidget);
         },
       );
 
@@ -886,6 +934,111 @@ void main() {
 
         expect($('top text').visible, false);
         expect($('bottom text').visible, true);
+      });
+    });
+
+    group('pumpAndTrySettle()', () {
+      late int count;
+      late int state;
+
+      setUp(() {
+        count = 0;
+        state = 0;
+      });
+
+      final appWithInfiniteAnimation = MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    CircularProgressIndicator(),
+                    Text('count: $count'),
+                    ElevatedButton(
+                      onPressed: () => setState(() => count++),
+                      style: ElevatedButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: const Text('Enabled button'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final appWithAnimationOnTap = MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    Text('count: $count'),
+                    ElevatedButton(
+                      onPressed: () => setState(() {
+                        state = 1;
+                        Timer(Duration(seconds: 5), () {
+                          setState(() {
+                            state = 0;
+                            count++;
+                          });
+                        });
+                      }),
+                      style: ElevatedButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                      ),
+                      child: state != 0
+                          ? CircularProgressIndicator()
+                          : const Text('Enabled button'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      patrolTest(
+        "doesn't throw an exception when trying to settle an infinite animation",
+        ($) async {
+          await $.pumpWidget(appWithInfiniteAnimation);
+
+          // 10 seconds is verbatim here to guard against changing the default
+          final end = $.tester.binding.clock.now().add(Duration(seconds: 10));
+
+          await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
+
+          // Verify that the default timeout has passed
+          final now = $.tester.binding.clock.now();
+          expect(now.isAfter(end), true);
+
+          expect($('count: 1'), findsOneWidget);
+        },
+      );
+
+      patrolTest('settles when there is short animation', ($) async {
+        await $.pumpWidgetAndSettle(appWithAnimationOnTap);
+
+        await $(ElevatedButton).tap(
+          settlePolicy: SettlePolicy.trySettle,
+          settleTimeout: Duration(seconds: 10),
+        );
+
+        expect($('count: 1'), findsOneWidget);
+      });
+
+      patrolTest('is not used by default', ($) async {
+        await $.pumpWidget(appWithInfiniteAnimation);
+
+        await expectLater(
+          () => $(ElevatedButton).tap(),
+          throwsFlutterError,
+        );
       });
     });
   });

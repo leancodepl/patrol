@@ -2,7 +2,7 @@ name: patrol
 description: >
   Powerful Flutter-native UI testing framework overcoming limitations of
   existing Flutter testing tools. Ready for action!
-version: 1.0.5+1
+version: 1.1.5
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
@@ -24,10 +24,11 @@ dependencies:
   meta: ^1.7.0
   path: ^1.8.2
   protobuf: ^2.1.0
+  test_api: '>=0.4.0 <0.7.0'
 
 dev_dependencies:
   build_runner: ^2.3.3
-  leancode_lint: ^2.1.0
+  leancode_lint: ^3.0.0
 
 flutter:
   plugin:

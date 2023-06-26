@@ -5,7 +5,7 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest('correctly handles non-hittestable widgets', ($) async {
     await $.pumpWidgetAndSettle(ExampleApp());
-    await $('Open overlay screen').tap();
+    await $('Open overlay screen').scrollTo().tap();
 
     expect($('non-visible text'), findsOneWidget);
     expect($('non-visible text').hitTestable(), findsNothing);
