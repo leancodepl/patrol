@@ -69,13 +69,14 @@ jobs:
       - name: Add excluded tests to message
         id: excluded_tests
         env:
-          RAW: ${{ inputs.EXCLUDED_TESTS }}
+          EXCLUDED_TESTS: ${{ inputs.EXCLUDED_TESTS }}
         run: |
-          if [ -n "$RAW" ]; then
-            message="$RAW";
-            echo "excluded_tests=$message" >> $GITHUB_OUTPUT;
+          if [ -n "$EXCLUDED_TESTS" ]; then
+            EXCLUDED_TESTS=${EXCLUDED_TESTS//--exclude integration_test\//} # Remove '--exclude integration_test/'
+            EXCLUDED_TESTS=${EXCLUDED_TESTS//.dart/} # Remove '.dart'
+            EXCLUDED_TESTS=${EXCLUDED_TESTS// /$'\n'} # Line up
+            echo "excluded_tests=$EXCLUDED_TESTS" >> $GITHUB_OUTPUT;
           fi;
-
 
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
@@ -88,7 +89,6 @@ jobs:
           SLACK_TITLE: ${{ inputs.SLACK_MESSAGE_TITLE }}
           SLACK_MESSAGE: |
             ${{ steps.slack_message.outputs.message }}
-
             ${{ steps.excluded_tests.outputs.excluded_tests }}
 
             See workflow run <${{ steps.slack_message.outputs.url }}|here>
