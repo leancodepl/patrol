@@ -8,17 +8,21 @@ description: The powerful Flutter-first UI testing framework. Ready for action!
 ![Patrol promotial graphics][promo_graphics]
 
 Patrol is a new testing framework for Flutter. It builds on top of Flutter's
-testing tools to let you do things which were previously impossible.
+existing test tooling to let you do things which were previously impossible.
 
-Patrol lets you [access features of the platform][native] that the Flutter app
-is running on. For example, you can go to the home screen, tap on notifications,
-change device settings, or toggle Wi-Fi – and you can code this very easily in
-Dart.
+Patrol lets you [access native features of the platform][native] that the
+Flutter app is running on. Finally, you can interact with permission dialogs,
+notifications, WebViews, change device settings, toggle Wi-Fi, and much more –
+and you can code this very easily in plain Dart.
 
 Patrol also provides a [new custom finder system][finders] that extends
-Flutter's default finders. Patrol's custom finders, coupled with [Hot Restart],
-make writing widget tests and integration tests _dramatically_ faster, easier,
-and more fun!
+Flutter's default finders, making them shorter and easier to understand.
+Patrol's custom finders, coupled with [Hot Restart], make writing widget tests
+and integration tests _dramatically_ faster, easier, and more fun!
+
+Patrol is also a revamped, production-quality version of Flutter's built-in
+`integration_test` plugin. It fixes its shortcomings and enables features such
+as full isolation between tests and sharding.
 
 Patrol is an open-source project which is being developed and maintained by us –
 [LeanCode][leancode]! We use it to test our clients' production-grade apps, and
