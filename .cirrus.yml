@@ -42,10 +42,10 @@ test_linux_task:
   create_emulator_script: |
     avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
     cat << EOF >> ~/.android/avd/MyAVD.avd/config.ini
-    hw.cpu.ncore=4
+    hw.cpu.ncore=2
     hw.gpu.enabled=yes
     hw.gpu.mode=swiftshader_indirect
-    hw.ramSize=4096
+    hw.ramSize=3072
     disk.dataPartition.size=6G
     vm.heapSize=576
     hw.lcd.density=440
