@@ -83,7 +83,6 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
-          exit 1
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device_model }}.mp4" &
           recordingpid="$!"
 
@@ -100,8 +99,6 @@ jobs:
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
-      - run: echo "${{ steps.tests_step.conclusion }}"
-
       - name: Check if something went wrong
         id: status_step
         if: always()
@@ -113,11 +110,11 @@ jobs:
           fi;
 
       - name: Find xcresult path
-        if: failure() && contains(fromJson('["success", "failure"]'), ${{ steps.tests_step.conclusion }})
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
 
       - name: Publish test report to summary
-        if: failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion)
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           title: Patrol tests on ${{ matrix.device_model }}
@@ -133,7 +130,7 @@ jobs:
           path: ${{ env.XCRESULT_PATH }}
 
       - name: Upload simulator logs to artifacts
-        if: ${{ contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Logs from ${{ matrix.device_model }}
@@ -141,7 +138,7 @@ jobs:
             ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
 
       - name: Upload captured video to artifacts
-        if: ${{ contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Captured video from ${{ matrix.device_model }}.mp4

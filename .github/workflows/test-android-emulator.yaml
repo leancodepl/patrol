@@ -110,7 +110,7 @@ jobs:
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
-        if: ${{ steps.tests_step.conclusion == 'success' || steps.tests_step.conclusion == 'failure' }}
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           check_name: Patrol tests
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
@@ -118,7 +118,7 @@ jobs:
           include_passed: true
 
       - name: Generate test report as check run
-        if: ${{ steps.tests_step.conclusion == 'success' || steps.tests_step.conclusion == 'failure' }}
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
@@ -127,14 +127,14 @@ jobs:
           fail-on-error: false
 
       - name: Upload XML test report to artifacts
-        if: ${{ steps.tests_step.conclusion == 'success' || steps.tests_step.conclusion == 'failure' }}
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: XML test report
           path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
 
       - name: Upload test outputs to artifacts
-        if: ${{ steps.tests_step.conclusion == 'success' || steps.tests_step.conclusion == 'failure' }}
+        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Test report, logs and captured videos
