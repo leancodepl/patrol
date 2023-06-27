@@ -38,7 +38,7 @@ void main() {
 void main(List<String> args) async {
   _verifyWorkingDirectory();
 
-  const afterBuildCompletedTimeout = Duration(minutes: 1);
+  const afterBuildCompletedTimeout = Duration(minutes: 2);
   const inactivityTimeout = Duration(minutes: 15);
 
   var isFirstTestPassed = false;
@@ -109,7 +109,7 @@ void main(List<String> args) async {
 
     if (stringOutput.contains('Completed building')) {
       inactivityTimer = Timer(afterBuildCompletedTimeout, () {
-        print('One minute of inactivity, something went wrong...');
+        print('Two minutes of inactivity, something went wrong...');
         print('isFirstTestPassed: $isFirstTestPassed');
         print('isReloaded: $isReloaded');
         print('Running file:');
