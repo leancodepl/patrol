@@ -66,6 +66,7 @@ test_macos_task:
   timeout_in: 30m
 
   setup_flutter_script: |
+    brew tap leoafarias/fvm
     brew install fvm
     fvm install 3.7.12
     fvm global 3.7.12
