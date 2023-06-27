@@ -144,15 +144,34 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       ```java title="MainActivityTest.java"
       package pl.leancode.patrol.example; // replace "pl.leancode.patrol.example" with your app's package
 
-      import org.junit.Rule;
+      import androidx.test.platform.app.InstrumentationRegistry;
+      import org.junit.Test;
       import org.junit.runner.RunWith;
-      import pl.leancode.patrol.PatrolTestRule;
-      import pl.leancode.patrol.PatrolTestRunner;
+      import org.junit.runners.Parameterized;
+      import org.junit.runners.Parameterized.Parameters;
+      import pl.leancode.patrol.PatrolJUnitRunner;
 
-      @RunWith(PatrolTestRunner.class)
+      @RunWith(Parameterized.class)
       public class MainActivityTest {
-          @Rule
-          public PatrolTestRule<MainActivity> rule = new PatrolTestRule<>(MainActivity.class);
+          @Parameters(name = "{0}")
+          public static Object[] testCases() {
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.setUp(MainActivity.class);
+              instrumentation.waitForPatrolAppService();
+              return instrumentation.listDartTests();
+          }
+
+          public MainActivityTest(String dartTestName) {
+              this.dartTestName = dartTestName;
+          }
+
+          private final String dartTestName;
+
+          @Test
+          public void runDartTest() {
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.runDartTest(dartTestName);
+          }
       }
       ```
 
@@ -163,14 +182,36 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
         // ...
         defaultConfig {
           //...
-          testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+          testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        }
+
+        // ...
+
+        testOptions {
+          execution "ANDROIDX_TEST_ORCHESTRATOR"
         }
       }
 
       dependencies {
-          testImplementation "junit:junit:4.13.2"
+          androidTestUtil "androidx.test:orchestrator:1.4.2"
       }
       ```
+
+      <Info>
+        To achieve full isolation between test runs, enable the `clearPackageOption`:
+
+        ```groovy title="android/app/build.gradle"
+        defaultConfig {
+          //...
+          testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+          testInstrumentationRunnerArguments clearPackageData: "true"
+        }
+        ```
+
+        This will clear the app's data and permissions before each test run.
+        Unfortunately, no equivalent feature is available on iOS.
+
+      </Info>
 
       To run `integration_test/example_test.dart` on a local Android device
       (emulated or physical):
@@ -225,6 +266,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
       @import XCTest;
       @import patrol;
+      @import ObjectiveC.runtime;
 
       PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
       ```
