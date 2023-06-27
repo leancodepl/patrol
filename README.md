@@ -138,7 +138,7 @@ See [packages/patrol][github_patrol].
 [docs_page_link]: https://docs.page
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
-[promo_graphics]: docs/assets/promo.png
+[promo_graphics]: docs/assets/promo.webp
 [article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
 [article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
 [article_2x]: https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing
