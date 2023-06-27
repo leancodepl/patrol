@@ -39,7 +39,7 @@ void main(List<String> args) async {
   _verifyWorkingDirectory();
 
   const afterBuildCompletedTimeout = Duration(minutes: 1);
-  const inactivityTimeout = Duration(minutes: 10);
+  const inactivityTimeout = Duration(minutes: 15);
 
   var isFirstTestPassed = false;
   var isReloaded = false;
@@ -120,7 +120,7 @@ void main(List<String> args) async {
       });
     } else {
       inactivityTimer = Timer(inactivityTimeout, () {
-        print('Ten minutes of inactivity, something went wrong...');
+        print('Fifteen minutes of inactivity, something went wrong...');
         print('Exiting with exit code 1');
         io.exit(1);
       });

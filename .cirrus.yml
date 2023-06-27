@@ -3,7 +3,7 @@ test_linux_task:
   container:
     image: ghcr.io/cirruslabs/flutter:stable
     cpu: 6
-    memory: 12G
+    memory: 10G
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
@@ -62,12 +62,11 @@ test_macos_task:
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
-    PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
+    PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
   timeout_in: 30m
 
   setup_flutter_script: |
-    curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-macos-arm64.tar.gz
-    tar -xf fvm-2.4.1-macos-arm64.tar.gz
+    brew install fvm
     fvm install 3.7.12
     fvm global 3.7.12
     fvm doctor
