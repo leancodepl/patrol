@@ -77,7 +77,8 @@ jobs:
               target_paths+="integration_test/${target}.dart,"
           done
 
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_OUTPUT"
+          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
+          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: Run tests
         id: tests_step
@@ -91,7 +92,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --exclude "${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}" --verbose || TESTS_EXIT_CODE=$?
+          patrol test --exclude "${{ env.EXCLUDED_TESTS }}" --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
