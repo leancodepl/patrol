@@ -1,6 +1,12 @@
-## Unreleased
+## 2.0.0
 
-[Patrol 2.0 is released!](https://leancode.co/blog)
+Patrol 2.0 is released!
+
+- Read the changelog and migration guide [here](https://patrol.leancode.co/v2)
+- Read the article about how Patrol 2.0 fixes the `integration_test` plugin
+  [here](https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing)
+
+This version requires version 2.0.0 of `patrol` package.
 
 ## 1.1.11
 
