@@ -104,14 +104,14 @@ jobs:
           exit $TESTS_EXIT_CODE
 
       - name: Get test outputs from Google Cloud Storage
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         run: |
           mkdir test_outputs
           gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" test_outputs
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           check_name: Patrol tests
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
@@ -119,7 +119,7 @@ jobs:
           include_passed: true
 
       - name: Generate test report as check run
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
@@ -129,27 +129,27 @@ jobs:
 
       - name: Upload XML test report to artifacts
         uses: actions/upload-artifact@v3
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: XML test report
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
 
       - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: Captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
 
       - name: Upload test cases to artifacts
         uses: actions/upload-artifact@v3
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: Test cases (logcat and captured video per test target)
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_cases
 
       - name: Upload device logs to artifacts
-        if: ${{ failure() && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Logs (logcat)
