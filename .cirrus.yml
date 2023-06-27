@@ -7,16 +7,22 @@ test_linux_task:
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
+    FLUTTER_VERSION: '3.10'
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 30m
 
-  setup_flutter_script: |
+  set_up_fvm_script: |
     curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-linux-x64.tar.gz
     tar -xf fvm-2.4.1-linux-x64.tar.gz
-    fvm install 3.7.12
-    fvm global 3.7.12
+  find_latest_matching_flutter_version_script: |
+    flutter_versions=$(fvm releases)
+    flutter_matching_versions=$(echo "$flutter_versions" | grep -v "pre" | grep -o " ${FLUTTER_VERSION}.[0-9]*")
+    latest_flutter_matching_version=$(echo "$flutter_matching_versions" | sort -rV | head -n 1)
+    echo "LATEST_MATCHING_FLUTTER_VERSION=$latest_flutter_matching_version" >> $CIRRUS_ENV
+  setup_flutter_script: |
+    echo "y" | fvm global $LATEST_MATCHING_FLUTTER_VERSION
     fvm doctor
     flutter --version
     flutter precache
@@ -38,10 +44,10 @@ test_linux_task:
   create_emulator_script: |
     avdmanager -s create avd -n MyAVD -k "$EMULATOR_IMAGE"
     cat << EOF >> ~/.android/avd/MyAVD.avd/config.ini
-    hw.cpu.ncore=4
+    hw.cpu.ncore=2
     hw.gpu.enabled=yes
     hw.gpu.mode=swiftshader_indirect
-    hw.ramSize=4096
+    hw.ramSize=3072
     disk.dataPartition.size=6G
     vm.heapSize=576
     hw.lcd.density=440
@@ -63,13 +69,19 @@ test_macos_task:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
+    FLUTTER_VERSION: '3.10'
   timeout_in: 30m
 
-  setup_flutter_script: |
+  set_up_fvm_script: |
     brew tap leoafarias/fvm
     brew install fvm
-    fvm install 3.7.12
-    fvm global 3.7.12
+  find_latest_matching_flutter_version_script: |
+    flutter_versions=$(fvm releases)
+    flutter_matching_versions=$(echo "$flutter_versions" | grep -v "pre" | grep -o " ${FLUTTER_VERSION}.[0-9]*")
+    latest_flutter_matching_version=$(echo "$flutter_matching_versions" | sort -rV | head -n 1)
+    echo "LATEST_MATCHING_FLUTTER_VERSION=$latest_flutter_matching_version" >> $CIRRUS_ENV
+  setup_flutter_script: |
+    echo "y" | fvm global $LATEST_MATCHING_FLUTTER_VERSION
     fvm doctor
     flutter --version
     flutter precache
