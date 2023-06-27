@@ -100,7 +100,7 @@ jobs:
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
       
       - name: Build tests
-        run: patrol build ios --release ${{ env.EXCLUDED_TESTS }} --verbose
+        run: patrol build ios --release --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Compress test files to zip
         working-directory: build/ios_integ/Build/Products
