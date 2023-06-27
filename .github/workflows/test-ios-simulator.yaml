@@ -83,6 +83,7 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
+          exit 1
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device_model }}.mp4" &
           recordingpid="$!"
 
