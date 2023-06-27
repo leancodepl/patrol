@@ -6,6 +6,8 @@ title: Patrol 2.0 is here
 
 Patrol 2.0 is the new major version of Patrol.
 
+## Changes
+
 - **Advanced test bundling** feature provides deep and seamless integration with
   existing Android and iOS testing tools. It also fixes some long-standing
   Flutter issues:
@@ -22,7 +24,7 @@ Patrol 2.0 is the new major version of Patrol.
   `enterText()`, and `scrollTo()` more reliable and easier to use. For example,
   they no longer throw an error if there's an infinite animation.
 
-# Migration guide
+## Migration guide
 
 Patrol 2.0 contains a few breaking changes.
 
@@ -30,7 +32,7 @@ Fortunately, they're small and mostly touch only boilerplate and configuration
 files. The code of tests written in Dart stays the same (with some minor
 exceptions - see the Caveats section below).
 
-## Common
+### Common
 
 - Update the dependency in `pubspec.yaml`:
 
@@ -56,92 +58,91 @@ exceptions - see the Caveats section below).
 
 - In your tests, rename `scrollTo()`'s argument `scrollable` to `view`.
 
-## Android
+### Android
 
-### MainActivityTest.java
+- **MainActivityTest.java**
 
-Contents of this file have to be replaced. It's located your application's
-**android/app/src/androidTest/java/com/example/myapp/** directory (replacing
-com, example, and myapp with values from your app's package name).
+  Contents of this file have to be replaced. It's located your application's
+  **android/app/src/androidTest/java/com/example/myapp/** directory (replacing
+  com, example, and myapp with values from your app's package name).
 
-```java title="MainActivityTest.java"
-package pl.leancode.patrol.example; // replace "pl.leancode.patrol.example" with your app's package
+  ```java title="MainActivityTest.java"
+  package pl.leancode.patrol.example; // replace "pl.leancode.patrol.example" with your app's package
 
-import androidx.test.platform.app.InstrumentationRegistry;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import pl.leancode.patrol.PatrolJUnitRunner;
+  import androidx.test.platform.app.InstrumentationRegistry;
+  import org.junit.Test;
+  import org.junit.runner.RunWith;
+  import org.junit.runners.Parameterized;
+  import org.junit.runners.Parameterized.Parameters;
+  import pl.leancode.patrol.PatrolJUnitRunner;
 
-@RunWith(Parameterized.class)
-public class MainActivityTest {
-    @Parameters(name = "{0}")
-    public static Object[] testCases() {
-        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-        instrumentation.setUp(MainActivity.class);
-        instrumentation.waitForPatrolAppService();
-        return instrumentation.listDartTests();
+  @RunWith(Parameterized.class)
+  public class MainActivityTest {
+      @Parameters(name = "{0}")
+      public static Object[] testCases() {
+          PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+          instrumentation.setUp(MainActivity.class);
+          instrumentation.waitForPatrolAppService();
+          return instrumentation.listDartTests();
+      }
+
+      public MainActivityTest(String dartTestName) {
+          this.dartTestName = dartTestName;
+      }
+
+      private final String dartTestName;
+
+      @Test
+      public void runDartTest() {
+          PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+          instrumentation.runDartTest(dartTestName);
+      }
+  }
+  ```
+
+- **build.gradle**
+
+  A few changes are also needed in **app-level build.gradle**:
+
+  ```groovy title="android/app/build.gradle"
+  android {
+    // ...
+    defaultConfig {
+      //...
+      testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
     }
 
-    public MainActivityTest(String dartTestName) {
-        this.dartTestName = dartTestName;
+    // ...
+
+    testOptions {
+      execution "ANDROIDX_TEST_ORCHESTRATOR"
     }
-
-    private final String dartTestName;
-
-    @Test
-    public void runDartTest() {
-        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-        instrumentation.runDartTest(dartTestName);
-    }
-}
-```
-
-### build.gradle
-
-A few changes are also needed in **app-level build.gradle**:
-
-```groovy title="android/app/build.gradle"
-android {
-  // ...
-  defaultConfig {
-    //...
-    testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
   }
 
-  // ...
-
-  testOptions {
-    execution "ANDROIDX_TEST_ORCHESTRATOR"
+  dependencies {
+    androidTestUtil "androidx.test:orchestrator:1.4.2"
   }
-}
+  ```
 
-dependencies {
-  androidTestUtil "androidx.test:orchestrator:1.4.2"
-}
-```
+  <Info>
+    To achieve full isolation between test runs, enable the `clearPackageData` option:
 
-<Info>
-To achieve full isolation between test runs, enable the `clearPackageData` option:
+    ```groovy title="android/app/build.gradle"
+    defaultConfig {
+      //...
+      testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+      testInstrumentationRunnerArguments clearPackageData: "true"
+    }
+    ```
 
-```groovy title="android/app/build.gradle"
-defaultConfig {
-  //...
-  testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-  testInstrumentationRunnerArguments clearPackageData: "true"
-}
-```
+    This will clear the app's data and permissions before each test run.
+    Unfortunately, no equivalent feature is available on iOS.
+  </Info>
 
-This will clear the app's data and permissions before each test run.
-Unfortunately, no equivalent feature is available on iOS.
+  If you had `testImplementation "junit:junit:4.13.2"` (or similar) in
+  `dependencies` block, it should be removed.
 
-</Info>
-
-If you had `testImplementation "junit:junit:4.13.2"` (or similar) in
-`dependencies` block, it should be removed.
-
-## iOS
+### iOS
 
 On iOS, only one line has to be added in the `RunnerUITests.m` file. Simply copy
 and paste these contents:
@@ -162,4 +163,4 @@ There are a few, and all are kept track of in [this issue]. We intent to fix all
 of them in future releases.
 
 [this issue]: https://github.com/leancodepl/patrol/issues/1341
-[patrol_v2_article]: https://leancode.pl/blog
+[patrol_v2_article]: https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing
