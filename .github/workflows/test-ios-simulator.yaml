@@ -62,15 +62,22 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="android_app_test,service_airplane_mode_test,service_bluetooth_test,service_cellular_test,service_wifi_test,swipe_test,webview_leancode_test,webview_login_test,webview_stackoverflow_test"
+          TESTS_TO_EXCLUDE="android_app_test,\
+          service_airplane_mode_test,\
+          service_bluetooth_test,\
+          service_cellular_test,\
+          service_wifi_test,\
+          swipe_test,\
+          webview_leancode_test,\
+          webview_login_test,\
+          webview_stackoverflow_test"
 
-          args=""
-          IFS=',' read -ra tests <<< "$EXCLUDED_TESTS"
-          for test in "${tests[@]}"; do
-              args+="integration_test/${test}.dart,"
+          target_paths=""
+          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
+              target_paths+="integration_test/${target}.dart,"
           done
 
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
+          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_OUTPUT"
 
       - name: Run tests
         id: tests_step
