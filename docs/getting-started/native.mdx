@@ -69,6 +69,17 @@ platform-specific tool.
    dart pub global activate patrol_cli
    ```
 
+   <Info>
+      You can install a specific version of Patrol CLI. For example:
+
+      ```
+      dart pub global activate patrol_cli ^1.0.0
+      ```
+
+      will install the latest `v1` version. We recommend to install a specific
+      version on CI systems to avoid unexpected breakages.
+   </Info>
+
 2. Verify that installation was successful:
 
    ```
