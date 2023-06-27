@@ -45,7 +45,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter_version: ${{ matrix.flutter_version }}
+          flutter-version: ${{ matrix.flutter_version }}
           cache: true
 
       - name: Preload Flutter artifacts
@@ -110,7 +110,7 @@ jobs:
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
-        if: ${{ contains('["success","failure"]', steps.tests_step.conclusion) }}
+        if: ${{ contains(['success', 'failure'], steps.tests_step.conclusion) }}
         with:
           check_name: Patrol tests
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
