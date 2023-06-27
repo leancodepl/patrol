@@ -86,12 +86,13 @@ jobs:
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
       
       - name: patrol build android
-        run: patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
+        run: |
+          exit 1
+          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
         run: |
-          exit 1
           TESTS_EXIT_CODE=0
           ew-cli \
             --device model=${{ matrix.device_model }},version=${{ matrix.os_version }} \
