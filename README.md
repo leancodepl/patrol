@@ -7,14 +7,15 @@
 
 ![Patrol promotial graphics][promo_graphics]
 
-Simple yet powerful Flutter-native UI testing framework overcoming limitations
+Simple yet powerful Flutter-first UI testing framework overcoming limitations
 of `flutter_test`, `integration_test`, and `flutter_driver`.
 
 Learn more about Patrol:
 
 - [Our extensive documentation][docs]
-- [The article about the first public release][article_0x]
+- [The article about the test bundling feature in Patrol 2.0][article_2x]
 - [The first stable 1.0 release article][article_1x]
+- [The article about the first public release][article_0x]
 
 ## Patrol custom finders
 
@@ -140,5 +141,6 @@ See [packages/patrol][github_patrol].
 [promo_graphics]: docs/assets/promo.png
 [article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
 [article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
+[article_2x]: https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
 [hot restart]: https://patrol.leancode.co/cli-commands/develop
