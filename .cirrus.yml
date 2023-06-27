@@ -13,14 +13,16 @@ test_linux_task:
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
   timeout_in: 30m
 
-  setup_flutter_script: |
+  set_up_fvm_script: |
     curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-linux-x64.tar.gz
     tar -xf fvm-2.4.1-linux-x64.tar.gz
+  find_latest_matching_flutter_version_script: |
     flutter_versions=$(fvm releases)
     flutter_matching_versions=$(echo "$flutter_versions" | grep -v "pre" | grep -o " ${FLUTTER_VERSION}.[0-9]*")
     latest_flutter_matching_version=$(echo "$flutter_matching_versions" | sort -rV | head -n 1)
-
-    echo "y" | fvm global $latest_flutter_matching_version
+    echo "LATEST_MATCHING_FLUTTER_VERSION=$latest_flutter_matching_version" >> $CIRRUS_ENV
+  setup_flutter_script: |
+    echo "y" | fvm global $LATEST_MATCHING_FLUTTER_VERSION
     fvm doctor
     flutter --version
     flutter precache
@@ -70,13 +72,16 @@ test_macos_task:
     FLUTTER_VERSION: '3.10'
   timeout_in: 30m
 
-  setup_flutter_script: |
-    brew tap leoafarias/fvm && brew install fvm
+  set_up_fvm_script: |
+    brew tap leoafarias/fvm
+    brew install fvm
+  find_latest_matching_flutter_version_script: |
     flutter_versions=$(fvm releases)
     flutter_matching_versions=$(echo "$flutter_versions" | grep -v "pre" | grep -o " ${FLUTTER_VERSION}.[0-9]*")
     latest_flutter_matching_version=$(echo "$flutter_matching_versions" | sort -rV | head -n 1)
-
-    echo "y" | fvm global $latest_flutter_matching_version
+    echo "LATEST_MATCHING_FLUTTER_VERSION=$latest_flutter_matching_version" >> $CIRRUS_ENV
+  setup_flutter_script: |
+    echo "y" | fvm global $LATEST_MATCHING_FLUTTER_VERSION
     fvm doctor
     flutter --version
     flutter precache
