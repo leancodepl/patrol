@@ -86,7 +86,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} || TESTS_EXIT_CODE=$?
+          patrol test ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid

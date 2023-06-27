@@ -80,7 +80,7 @@ jobs:
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
       
       - name: patrol build android
-        run: patrol build android ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
+        run: patrol build android ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
