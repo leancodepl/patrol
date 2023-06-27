@@ -1,0 +1,5 @@
+include: package:leancode_lint/analysis_options_package.yaml
+
+linter:
+  rules:
+    avoid_print: false

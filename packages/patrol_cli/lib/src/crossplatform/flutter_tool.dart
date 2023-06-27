@@ -36,7 +36,9 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
   }) async {
-    _enableInteractiveMode();
+    if (io.stdin.hasTerminal) {
+      _enableInteractiveMode();
+    }
 
     await Future.wait<void>([
       logs(deviceId),
