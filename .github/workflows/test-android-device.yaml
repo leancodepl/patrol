@@ -69,18 +69,24 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE=$(printf '%s' "\
-          --exclude integration_test/permissions_location_test.dart \
-          --exclude integration_test/service_airplane_mode_test.dart \
-          --exclude integration_test/service_bluetooth_test.dart \
-          --exclude integration_test/webview_hackernews_test.dart \
-          --exclude integration_test/webview_leancode_test.dart \
-          --exclude integration_test/webview_login_test.dart \
-          --exclude integration_test/webview_stackoverflow_test.dart")
+          TESTS_TO_EXCLUDE="permissions_location_test,\
+          service_airplane_mode_test,\
+          service_bluetooth_test,\
+          webview_stackoverflow_test,\
+          webview_hackernews_test,\
+          webview_login_test,\
+          webview_leancode_test"
+
+          target_paths=""
+          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
+              target_paths+="integration_test/${target}.dart,"
+          done
+
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
+          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
       
       - name: patrol build android
-        run: patrol build android ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} --verbose
+        run: patrol build android ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step

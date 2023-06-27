@@ -81,20 +81,26 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE=$(printf '%s' "\
-          --exclude integration_test/android_app_test.dart \
-          --exclude integration_test/notifications_test.dart \
-          --exclude integration_test/open_app_test.dart \
-          --exclude integration_test/service_dark_mode_test.dart \
-          --exclude integration_test/service_wifi_test.dart \
-          --exclude integration_test/permissions_location_test.dart \
-          --exclude integration_test/swipe_test.dart \
-          --exclude integration_test/webview_login_test.dart \
-          --exclude integration_test/webview_leancode_test.dart")
+          TESTS_TO_EXCLUDE="android_app_test,\
+          notifications_test,\
+          open_app_test,\
+          service_dark_mode_test,\
+          service_wifi_test,\
+          permissions_location_test,\
+          swipe_test,\
+          webview_login_test,\
+          webview_leancode_test"
+
+          target_paths=""
+          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
+              target_paths+="integration_test/${target}.dart,"
+          done
+
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
+          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
       
       - name: Build tests
-        run: patrol build ios --release ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }} --verbose
+        run: patrol build ios --release ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Compress test files to zip
         working-directory: build/ios_integ/Build/Products
