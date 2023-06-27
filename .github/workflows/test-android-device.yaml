@@ -7,17 +7,21 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on Firebase Test Lab
+    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      SLACK_MESSAGE_TITLE: Android device on Firebase Test Lab
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.10.x']
+        flutter_version: ['3.10.x']
+        device_model: ['oriole']
+        os: ['Android API']
+        os_version: ['33']
 
     defaults:
       run:
@@ -49,7 +53,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ matrix.flutter-version }}
+          flutter-version: ${{ matrix.flutter_version }}
           cache: true
 
       - name: Preload Flutter artifacts
@@ -62,19 +66,33 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --debug --flavor=does-not-exist || true
 
-      - name: patrol build android
+      - name: Set tests to exclude
+        id: set_excluded_tests
         run: |
-          patrol build android \
-            --exclude integration_test/permissions_location_test.dart \
-            --exclude integration_test/service_airplane_mode_test.dart \
-            --exclude integration_test/service_bluetooth_test.dart \
-            --exclude integration_test/webview_hackernews_test.dart \
-            --exclude integration_test/webview_leancode_test.dart \
-            --exclude integration_test/webview_login_test.dart \
-            --exclude integration_test/webview_stackoverflow_test.dart
+          TESTS_TO_EXCLUDE="permissions_location_test,\
+          service_airplane_mode_test,\
+          service_bluetooth_test,\
+          webview_stackoverflow_test,\
+          webview_hackernews_test,\
+          webview_login_test,\
+          webview_leancode_test"
+
+          target_paths=""
+          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
+              target_paths+="integration_test/${target}.dart,"
+          done
+
+          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
+          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
+      
+      - name: patrol build android
+        run: patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
+        env:
+          DEVICE_MODEL: ${{ matrix.device_model }}
+          DEVICE_VERSION: ${{ matrix.os_version }}
         run: |
           export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
           echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
@@ -86,14 +104,14 @@ jobs:
           exit $TESTS_EXIT_CODE
 
       - name: Get test outputs from Google Cloud Storage
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         run: |
           mkdir test_outputs
           gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" test_outputs
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           check_name: Patrol tests
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
@@ -101,7 +119,7 @@ jobs:
           include_passed: true
 
       - name: Generate test report as check run
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
@@ -111,27 +129,27 @@ jobs:
 
       - name: Upload XML test report to artifacts
         uses: actions/upload-artifact@v3
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: XML test report
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
 
       - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: Captured video
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
 
       - name: Upload test cases to artifacts
         uses: actions/upload-artifact@v3
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: Test cases (logcat and captured video per test target)
           path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_cases
 
       - name: Upload device logs to artifacts
-        if: success() || failure()
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Logs (logcat)
@@ -145,4 +163,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
     secrets: inherit
