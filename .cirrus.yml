@@ -1,5 +1,8 @@
 test_linux_task:
   name: Test `patrol develop` on Linux
+  required_pr_labels: 
+    - 'package: patrol_cli'
+    - 'package: patrol'
   container:
     image: ghcr.io/cirruslabs/flutter:stable
     cpu: 6
@@ -65,6 +68,9 @@ test_linux_task:
 
 test_macos_task:
   name: Test `patrol develop` on macOS
+  required_pr_labels: 
+    - 'package: patrol_cli'
+    - 'package: patrol'
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
