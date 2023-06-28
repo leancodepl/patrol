@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'common.dart';
 
 void main() {
@@ -17,7 +19,9 @@ void main() {
       await $.native.enterTextByIndex('test@leancode.pl', index: 0);
 
       // Got to hide keyboard on iOS
-      await $.native.tap(Selector(text: 'Done'));
+      if (io.Platform.isIOS) {
+        await $.native.tap(Selector(text: 'Done'));
+      }
 
       await $.native.enterTextByIndex('ny4ncat', index: 1);
       await $.native.tap(Selector(text: 'Log in'));
