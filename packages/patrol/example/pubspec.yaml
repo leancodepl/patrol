@@ -36,3 +36,6 @@ patrol:
     package_name: pl.leancode.patrol.example
   ios:
     bundle_id: pl.leancode.patrol.Example
+
+dependency_overrides:
+  webview_flutter_wkwebview: '3.5.0'
