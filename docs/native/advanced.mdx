@@ -34,40 +34,5 @@ Future<void> main() async {
 }
 ```
 
-### setUp() and tearDown() callbacks
-
-Sometimes, you might want to perform additional clean up after the test, no
-matter if it failed or passed.
-
-```dart title="integration_test/app_test.dart"
-Future<void> main() async {
-  tearDown(() async {
-    final automator = NativeAutomator(
-      config: NativeAutomatorConfig(
-        packageName: 'your.app.id.on.android',
-        bundleId: 'your.app.id.on.ios',
-      ),
-    );
-    await automator.configure();
-    await automator.disableCellular();
-  });
-
-  patrolTest(
-    'test description',
-    nativeAutomation: true,
-    ($) async {
-      await createApp($);
-
-      await $.native.enableCellular();
-      await $.pumpAndSettle(duration: Duration(seconds: 3));
-
-      // ...
-
-      throw Exception('test failed');
-    },
-  );
-}
-```
-
 [test_widgets]: https://api.flutter.dev/flutter/flutter_test/testWidgets.html
 [patrol_test]: https://pub.dev/documentation/patrol/latest/patrol/patrolTest.html
