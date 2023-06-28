@@ -36,7 +36,6 @@
       [
         ["Overview", "/native/overview"],
         ["Usage", "/native/usage"],
-        ["Advanced", "/native/advanced"],
         ["Feature parity", "/native/feature-parity"]
       ]
     ],
