@@ -24,7 +24,6 @@ void patrol(
     config: _patrolTesterConfig,
     nativeAutomatorConfig: _nativeAutomatorConfig,
     nativeAutomation: true,
-    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
     skip: skip,
     callback,
   );
