@@ -20,6 +20,8 @@ class DartDefinesReader {
       return {};
     }
 
+    print('Test');
+
     final lines = file.readAsLinesSync()
       ..removeWhere((line) => line.trim().isEmpty);
     return _parse(lines);
