@@ -6,9 +6,6 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await $.native.openNotifications();
-    await $.native.closeNotifications();
-
     final views = await $.native.getNativeViews(Selector(text: 'login'));
     for (final view in views) {
       print(
