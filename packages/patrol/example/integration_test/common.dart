@@ -27,4 +27,5 @@ void patrol(
     skip: skip,
     callback,
   );
+  print('Test');
 }
