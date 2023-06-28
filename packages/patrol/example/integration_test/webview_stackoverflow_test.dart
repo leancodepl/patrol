@@ -10,7 +10,11 @@ void main() {
 
       await $('Open webview (StackOverflow)').scrollTo().tap();
 
-      await $.native.tap(Selector(text: 'Accept all cookies'));
+      try {
+        await $.native.tap(Selector(text: 'Accept all cookies'));
+      } on PatrolActionException catch (_) {
+        // ignore
+      }
       await $.native.tap(Selector(text: 'Log in'));
 
       await $.pump(Duration(seconds: 2));
