@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'common.dart';
 
 void main() {
   patrol('interacts with the LeanCode website in a webview', ($) async {
     await createApp($);
 
+    exit(1);
     await $('Open webview (LeanCode)').scrollTo().tap();
 
     try {

@@ -143,7 +143,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testBundler: testBundler,
-        testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         flutterTool: FlutterTool(
@@ -154,7 +153,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
-        parentDisposeScope: _disposeScope,
         analytics: _analytics,
         logger: _logger,
       ),
@@ -169,7 +167,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
-        parentDisposeScope: _disposeScope,
         analytics: _analytics,
         logger: _logger,
       ),
