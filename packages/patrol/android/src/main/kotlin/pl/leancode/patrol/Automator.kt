@@ -58,10 +58,14 @@ class Automator private constructor() {
     private lateinit var targetContext: Context
 
     fun initialize() {
-        instrumentation = InstrumentationRegistry.getInstrumentation()
-        targetContext = instrumentation.targetContext
-        configurator = Configurator.getInstance()
-        uiDevice = UiDevice.getInstance(instrumentation)
+        if (!this::instrumentation.isInitialized)
+            instrumentation = InstrumentationRegistry.getInstrumentation()
+        if (!this::targetContext.isInitialized)
+            targetContext = instrumentation.targetContext
+        if (!this::configurator.isInitialized)
+            configurator = Configurator.getInstance()
+        if (!this::uiDevice.isInitialized)
+            uiDevice = UiDevice.getInstance(instrumentation)
     }
 
     fun configure(waitForSelectorTimeout: Long) {
