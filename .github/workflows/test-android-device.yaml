@@ -84,7 +84,7 @@ jobs:
 
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-      
+
       - name: patrol build android
         run: patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 
