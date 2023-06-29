@@ -213,16 +213,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        action = () =>
-            _androidTestBackend.execute(android, device, interruptible: true);
+        action = () => _androidTestBackend.execute(android, device);
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
         break;
       case TargetPlatform.iOS:
-        action = () async =>
-            _iosTestBackend.execute(ios, device, interruptible: true);
+        action = () async => _iosTestBackend.execute(ios, device);
         final bundle = ios.bundleId;
         if (bundle != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(bundle, device);
