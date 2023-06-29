@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
 
@@ -20,6 +21,7 @@ class DevelopCommand extends PatrolCommand {
   DevelopCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
+    required TestBundler testBundler,
     required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -31,6 +33,7 @@ class DevelopCommand extends PatrolCommand {
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
+        _testBundler = testBundler,
         _testRunner = testRunner,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
@@ -57,6 +60,7 @@ class DevelopCommand extends PatrolCommand {
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
+  final TestBundler _testBundler;
   final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
@@ -90,6 +94,9 @@ class DevelopCommand extends PatrolCommand {
     if (boolArg('release')) {
       throwToolExit('Cannot use release build mode with develop');
     }
+
+    final entrypoint = _testBundler.createDevelopTestBundle(target);
+    _logger.detail('Generated entrypoint ${entrypoint.path}');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -142,7 +149,7 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
-      target: target,
+      target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefines,

@@ -204,6 +204,22 @@ class NativeAutomator {
     }
   }
 
+  /// Initializes the native automator.
+  ///
+  /// It's used to initialize `android.app.UiAutomation` before Flutter tests
+  /// start running. It's idempotent.
+  ///
+  /// It's a no-op on iOS.
+  ///
+  /// See also:
+  ///  * https://github.com/flutter/flutter/issues/129231
+  Future<void> initialize() async {
+    await _wrapRequest(
+      'initialize',
+      () => _client.initialize(Empty()),
+    );
+  }
+
   /// Configures the native automator.
   ///
   /// Must be called before using any native features.

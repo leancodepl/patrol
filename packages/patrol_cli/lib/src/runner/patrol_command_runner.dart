@@ -143,6 +143,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       DevelopCommand(
         deviceFinder: deviceFinder,
         testFinder: testFinder,
+        testBundler: testBundler,
         testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),

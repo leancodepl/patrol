@@ -53,14 +53,14 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  NativeAutomator? nativeAutomator;
+  NativeAutomator? automator;
 
   PatrolBinding? patrolBinding;
 
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
-        nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
+        automator = NativeAutomator(config: nativeAutomatorConfig);
 
         patrolBinding = PatrolBinding.ensureInitialized();
         patrolBinding.framePolicy = framePolicy;
@@ -110,17 +110,11 @@ void patrolTest(
         }
       }
 
-      widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
-        // This callback is empty on purpose. It's a workaround for tests
-        // failing on Android since Flutter 3.10.
-        //
-        // See https://github.com/flutter/flutter/issues/129231
-      };
-      await nativeAutomator?.configure();
+      await automator?.configure();
 
       final patrolTester = PatrolTester(
         tester: widgetTester,
-        nativeAutomator: nativeAutomator,
+        nativeAutomator: automator,
         config: config,
       );
       await callback(patrolTester);
