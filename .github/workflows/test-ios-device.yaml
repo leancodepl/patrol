@@ -20,7 +20,7 @@ jobs:
       matrix:
         flutter_version: ['3.10.x']
         device_model: ['iphone11pro']
-        os_version: ['16.3']
+        os_version: ['16.5']
         os: [iOS]
 
     defaults:
