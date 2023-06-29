@@ -164,22 +164,34 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       simulator: !device.real,
     );
 
-    // Build
+    await _build(androidOpts, iosOpts, device: device);
+    final allPassed = await _execute(
+      flutterOpts,
+      androidOpts,
+      iosOpts,
+      uninstall: uninstall,
+      device: device,
+    );
+
+    return allPassed ? 0 : 1;
+  }
+
+  Future<void> _build(
+    AndroidAppOptions androidOpts,
+    IOSAppOptions iosOpts, {
+    required Device device,
+  }) async {
+    Future<void> Function() buildAction;
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        buildAction = () => _androidTestBackend.build(androidOpts);
+        break;
+      case TargetPlatform.iOS:
+        buildAction = () => _iosTestBackend.build(iosOpts);
+    }
+
     try {
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          final options = AndroidAppOptions(flutter: flutterOpts);
-          await _androidTestBackend.build(options);
-          break;
-        case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            flutter: flutterOpts,
-            scheme: flutterOpts.buildMode.createScheme(iosFlavor),
-            configuration: flutterOpts.buildMode.createConfiguration(iosFlavor),
-            simulator: !device.real,
-          );
-          await _iosTestBackend.build(options);
-      }
+      await buildAction();
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -187,29 +199,37 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         ..err(defaultFailureMessage);
       rethrow;
     }
+  }
 
-    // Run
-
+  Future<bool> _execute(
+    FlutterAppOptions flutterOpts,
+    AndroidAppOptions android,
+    IOSAppOptions ios, {
+    required bool uninstall,
+    required Device device,
+  }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        action = () => _androidTestBackend.execute(androidOpts, device);
-        final package = packageName;
+        action = () =>
+            _androidTestBackend.execute(android, device, interruptible: true);
+        final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
         break;
       case TargetPlatform.iOS:
-        action = () => _iosTestBackend.execute(iosOpts, device);
-        final bundle = bundleId;
+        action = () async =>
+            _iosTestBackend.execute(ios, device, interruptible: true);
+        final bundle = ios.bundleId;
         if (bundle != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(bundle, device);
         }
     }
 
-    var exitCode = 0;
+    var allPassed = true;
     try {
       await action();
     } catch (err, st) {
@@ -217,7 +237,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         ..err('$err')
         ..detail('$st')
         ..err(defaultFailureMessage);
-      exitCode = 1;
+      allPassed = false;
     } finally {
       try {
         await finalizer?.call();
@@ -227,6 +247,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       }
     }
 
-    return exitCode;
+    return allPassed;
   }
 }
