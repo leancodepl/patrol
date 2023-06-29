@@ -42,8 +42,6 @@ class DevelopCommand extends PatrolCommand {
         _flutterTool = flutterTool,
         _analytics = analytics,
         _logger = logger {
-    _testRunner.disposedBy(parentDisposeScope);
-
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();

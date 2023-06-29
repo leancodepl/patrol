@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:ansi_styles/extension.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -16,27 +15,6 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/test_runner.dart';
-
-// TODO(bartekpacia): Find and remove unnecessary code after #1004 is done.
-
-part 'test.freezed.dart';
-
-@freezed
-class TestCommandConfig with _$TestCommandConfig {
-  const factory TestCommandConfig({
-    required List<Device> devices,
-    required BuildMode buildMode,
-    required List<String> targets,
-    required Map<String, String> dartDefines,
-    required bool uninstall,
-    // Android-only options
-    required String? packageName,
-    required String? androidFlavor,
-    // iOS-only options
-    required String? bundleId,
-    required String? iosFlavor,
-  }) = _TestCommandConfig;
-}
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -205,13 +183,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
   Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
     return (target, device) async {
       Future<void> Function() action;
-
-      final flutterOpts = FlutterAppOptions(
-        target: target,
-        flavor: config.androidFlavor,
-        buildMode: config.buildMode,
-        dartDefines: config.dartDefines,
-      );
 
       switch (device.targetPlatform) {
         case TargetPlatform.android:
