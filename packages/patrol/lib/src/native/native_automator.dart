@@ -206,8 +206,8 @@ class NativeAutomator {
 
   /// Initializes the native automator.
   ///
-  /// It's used to initialize android.app.UiAutomation before Flutter tests
-  /// start running.
+  /// It's used to initialize `android.app.UiAutomation` before Flutter tests
+  /// start running. It's idempotent.
   ///
   /// It's a no-op on iOS.
   ///

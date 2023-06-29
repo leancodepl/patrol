@@ -9,6 +9,7 @@ class TestBundler {
   final Directory _projectRoot;
   final FileSystem _fs;
 
+  /// Creates an entrypoint for use with `patrol test` and `patrol build`.
   File createTestBundle(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
@@ -94,6 +95,40 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   await nativeAutomator.markPatrolAppServiceReady();
 
   await appService.testExecutionCompleted;
+}
+''';
+
+    // This file must not end with "_test.dart", otherwise it'll be picked up
+    // when finding tests to bundle.
+    final bundledTestFile = _projectRoot
+        .childDirectory('integration_test')
+        .childFile('test_bundle.dart')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(contents);
+
+    return bundledTestFile.absolute;
+  }
+
+  /// Creates an entrypoint for use with `patrol develop`.
+  File createDevelopTestBundle(String testFilePath) {
+    final contents = '''
+// ignore_for_file: type=lint, invalid_use_of_internal_member
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
+
+// START: GENERATED TEST IMPORTS
+${generateImports([testFilePath])}
+// END: GENERATED TEST IMPORTS
+
+Future<void> main() async {
+  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  await nativeAutomator.initialize();
+  PatrolBinding.ensureInitialized();
+
+  // START: GENERATED TEST GROUPS
+${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
+  // END: GENERATED TEST GROUPS
 }
 ''';
 
