@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -15,26 +14,22 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
-import 'package:patrol_cli/src/test_runner.dart';
 
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestBundler testBundler,
-    required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required FlutterTool flutterTool,
     required Analytics analytics,
-    required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testFinder = testFinder,
         _testBundler = testBundler,
-        _testRunner = testRunner,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
@@ -42,8 +37,6 @@ class DevelopCommand extends PatrolCommand {
         _flutterTool = flutterTool,
         _analytics = analytics,
         _logger = logger {
-    _testRunner.disposedBy(parentDisposeScope);
-
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -61,7 +54,6 @@ class DevelopCommand extends PatrolCommand {
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestBundler _testBundler;
-  final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;

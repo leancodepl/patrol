@@ -26,7 +26,6 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
-import 'package:patrol_cli/src/test_runner.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -144,7 +143,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testBundler: testBundler,
-        testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         flutterTool: FlutterTool(
@@ -155,7 +153,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
-        parentDisposeScope: _disposeScope,
         analytics: _analytics,
         logger: _logger,
       ),
@@ -166,12 +163,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testBundler: testBundler,
         testFinder: testFinder,
-        testRunner: TestRunner(),
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
-        parentDisposeScope: _disposeScope,
         analytics: _analytics,
         logger: _logger,
       ),

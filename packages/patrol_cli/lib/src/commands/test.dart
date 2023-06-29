@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:ansi_styles/extension.dart';
-import 'package:dispose_scope/dispose_scope.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -15,54 +12,27 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
-import 'package:patrol_cli/src/test_runner.dart';
-
-// TODO(bartekpacia): Find and remove unnecessary code after #1004 is done.
-
-part 'test.freezed.dart';
-
-@freezed
-class TestCommandConfig with _$TestCommandConfig {
-  const factory TestCommandConfig({
-    required List<Device> devices,
-    required BuildMode buildMode,
-    required List<String> targets,
-    required Map<String, String> dartDefines,
-    required bool uninstall,
-    // Android-only options
-    required String? packageName,
-    required String? androidFlavor,
-    // iOS-only options
-    required String? bundleId,
-    required String? iosFlavor,
-  }) = _TestCommandConfig;
-}
 
 class TestCommand extends PatrolCommand {
   TestCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestBundler testBundler,
-    required TestRunner testRunner,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
-    required DisposeScope parentDisposeScope,
     required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
         _testBundler = testBundler,
         _testFinder = testFinder,
-        _testRunner = testRunner,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _analytics = analytics,
         _logger = logger {
-    _testRunner.disposedBy(parentDisposeScope);
-
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -80,7 +50,6 @@ class TestCommand extends PatrolCommand {
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestBundler _testBundler;
-  final TestRunner _testRunner;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
@@ -137,6 +106,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 ''');
     }
 
+    final device = devices.single;
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
@@ -173,159 +144,107 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       );
     }
 
-    final testConfig = TestCommandConfig(
-      devices: devices,
-      targets: [entrypoint.path],
+    final flutterOpts = FlutterAppOptions(
+      target: entrypoint.path,
+      flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
-      uninstall: uninstall,
-      // Android-specific options
-      packageName: packageName,
-      androidFlavor: androidFlavor,
-      // iOS-specific options
-      bundleId: bundleId,
-      iosFlavor: iosFlavor,
     );
 
-    _testRunner.addTarget(entrypoint.path);
-    testConfig.devices.forEach(_testRunner.addDevice);
-    _testRunner
-      ..builder = _builderFor(testConfig)
-      ..executor = _executorFor(testConfig);
+    final androidOpts = AndroidAppOptions(
+      flutter: flutterOpts,
+      packageName: packageName,
+    );
 
-    final results = await _testRunner.run();
+    final iosOpts = IOSAppOptions(
+      flutter: flutterOpts,
+      bundleId: bundleId,
+      scheme: buildMode.createScheme(iosFlavor),
+      configuration: buildMode.createConfiguration(iosFlavor),
+      simulator: !device.real,
+    );
 
-    _TestResultsPresenter(_logger).printSummary(results);
+    await _build(androidOpts, iosOpts, device: device);
+    final allPassed = await _execute(
+      flutterOpts,
+      androidOpts,
+      iosOpts,
+      uninstall: uninstall,
+      device: device,
+    );
 
-    final exitCode = results.allSuccessful ? 0 : 1;
-
-    return exitCode;
+    return allPassed ? 0 : 1;
   }
 
-  Future<void> Function(String, Device) _builderFor(TestCommandConfig config) {
-    return (target, device) async {
-      Future<void> Function() action;
+  Future<void> _build(
+    AndroidAppOptions androidOpts,
+    IOSAppOptions iosOpts, {
+    required Device device,
+  }) async {
+    Future<void> Function() buildAction;
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        buildAction = () => _androidTestBackend.build(androidOpts);
+        break;
+      case TargetPlatform.iOS:
+        buildAction = () => _iosTestBackend.build(iosOpts);
+    }
 
-      final flutterOpts = FlutterAppOptions(
-        target: target,
-        flavor: config.androidFlavor,
-        buildMode: config.buildMode,
-        dartDefines: config.dartDefines,
-      );
-
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          final options = AndroidAppOptions(flutter: flutterOpts);
-          action = () => _androidTestBackend.build(options);
-          break;
-        case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            flutter: flutterOpts,
-            scheme: flutterOpts.buildMode.createScheme(config.iosFlavor),
-            configuration:
-                flutterOpts.buildMode.createConfiguration(config.iosFlavor),
-            simulator: !device.real,
-          );
-          action = () => _iosTestBackend.build(options);
-      }
-
-      try {
-        await action();
-      } catch (err, st) {
-        _logger
-          ..err('$err')
-          ..detail('$st')
-          ..err(defaultFailureMessage);
-        rethrow;
-      }
-    };
+    try {
+      await buildAction();
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      rethrow;
+    }
   }
 
-  Future<void> Function(String, Device) _executorFor(TestCommandConfig config) {
-    return (target, device) async {
-      Future<void> Function() action;
-      Future<void> Function()? finalizer;
+  Future<bool> _execute(
+    FlutterAppOptions flutterOpts,
+    AndroidAppOptions android,
+    IOSAppOptions ios, {
+    required bool uninstall,
+    required Device device,
+  }) async {
+    Future<void> Function() action;
+    Future<void> Function()? finalizer;
 
-      final flutterOpts = FlutterAppOptions(
-        target: target,
-        flavor: config.androidFlavor,
-        buildMode: config.buildMode,
-        dartDefines: config.dartDefines,
-      );
-
-      switch (device.targetPlatform) {
-        case TargetPlatform.android:
-          final options = AndroidAppOptions(flutter: flutterOpts);
-          action = () => _androidTestBackend.execute(options, device);
-          final package = config.packageName;
-          if (package != null && config.uninstall) {
-            finalizer = () => _androidTestBackend.uninstall(package, device);
-          }
-          break;
-        case TargetPlatform.iOS:
-          final options = IOSAppOptions(
-            flutter: flutterOpts,
-            scheme: flutterOpts.buildMode.createScheme(config.iosFlavor),
-            configuration:
-                flutterOpts.buildMode.createConfiguration(config.iosFlavor),
-            simulator: !device.real,
-          );
-          action = () async => _iosTestBackend.execute(options, device);
-          final bundle = config.bundleId;
-          if (bundle != null && config.uninstall) {
-            finalizer = () => _iosTestBackend.uninstall(bundle, device);
-          }
-      }
-
-      try {
-        await action();
-      } catch (err, st) {
-        _logger
-          ..err('$err')
-          ..detail('$st')
-          ..err(defaultFailureMessage);
-        rethrow;
-      } finally {
-        try {
-          await finalizer?.call();
-        } catch (err) {
-          _logger.err('Failed to call finalizer: $err');
-          rethrow;
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        action = () => _androidTestBackend.execute(android, device);
+        final package = android.packageName;
+        if (package != null && uninstall) {
+          finalizer = () => _androidTestBackend.uninstall(package, device);
         }
-      }
-    };
-  }
-}
-
-class _TestResultsPresenter {
-  _TestResultsPresenter(this._logger);
-
-  final Logger _logger;
-
-  void printSummary(RunResults results) {
-    if (results.targetRunResults.isEmpty) {
-      _logger.warn('No run results found');
+        break;
+      case TargetPlatform.iOS:
+        action = () async => _iosTestBackend.execute(ios, device);
+        final bundle = ios.bundleId;
+        if (bundle != null && uninstall) {
+          finalizer = () => _iosTestBackend.uninstall(bundle, device);
+        }
     }
 
-    for (final res in results.targetRunResults) {
-      final device = res.device.resolvedName;
-      if (res.allRunsPassed) {
-        _logger.write(
-          '${' PASS '.bgGreen.black.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.allRunsFailed) {
-        _logger.write(
-          '${' FAIL '.bgRed.white.bold} ${res.targetName} on $device\n',
-        );
-      } else if (res.canceled) {
-        _logger.write(
-          '${' CANC '.bgGray.white.bold} ${res.targetName} on $device\n',
-        );
-      } else {
-        _logger.write(
-          '${' FLAK '.bgYellow.black.bold} ${res.targetName} on $device\n',
-        );
+    var allPassed = true;
+    try {
+      await action();
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      allPassed = false;
+    } finally {
+      try {
+        await finalizer?.call();
+      } catch (err) {
+        _logger.err('Failed to call finalizer: $err');
+        rethrow;
       }
     }
+
+    return allPassed;
   }
 }

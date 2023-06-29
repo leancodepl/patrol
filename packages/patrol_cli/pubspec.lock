@@ -249,22 +249,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  freezed:
-    dependency: "direct dev"
-    description:
-      name: freezed
-      sha256: e819441678f1679b719008ff2ff0ef045d66eed9f9ec81166ca0d9b02a187454
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.2"
-  freezed_annotation:
-    dependency: "direct main"
-    description:
-      name: freezed_annotation
-      sha256: aeac15850ef1b38ee368d4c53ba9a847e900bb2c53a4db3f6881cbb3cb684338
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -505,14 +489,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
-  source_gen:
-    dependency: transitive
-    description:
-      name: source_gen
-      sha256: c2bea18c95cfa0276a366270afaa2850b09b4a76db95d546f3d003dcc7011298
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.7"
   source_map_stack_trace:
     dependency: transitive
     description:
