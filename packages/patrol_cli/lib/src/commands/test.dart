@@ -109,8 +109,10 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
-    final testBundle = _testBundler.createTestBundle(targets);
-    _logger.detail('Bundled ${targets.length} test(s) in ${testBundle.path}');
+    final entrypoint = _testBundler.createTestBundle(targets);
+    _logger.detail(
+      'Generated entrypoint ${entrypoint.path} with ${targets.length} bundled test(s)',
+    );
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -173,7 +175,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final testConfig = TestCommandConfig(
       devices: devices,
-      targets: [testBundle.path],
+      targets: [entrypoint.path],
       buildMode: buildMode,
       dartDefines: dartDefines,
       uninstall: uninstall,
@@ -185,7 +187,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       iosFlavor: iosFlavor,
     );
 
-    _testRunner.addTarget(testBundle.path);
+    _testRunner.addTarget(entrypoint.path);
     testConfig.devices.forEach(_testRunner.addDevice);
     _testRunner
       ..builder = _builderFor(testConfig)

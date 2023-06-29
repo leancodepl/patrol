@@ -96,7 +96,7 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final entrypoint = _testBundler.createDevelopTestBundle(target);
-    _logger.detail('Generated entrypoint at ${entrypoint.path}');
+    _logger.detail('Generated entrypoint ${entrypoint.path}');
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
