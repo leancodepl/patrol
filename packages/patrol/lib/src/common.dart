@@ -1,7 +1,5 @@
 // ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
@@ -77,18 +75,6 @@ void patrolTest(
     }
   }
 
-  final automatorInitCompleter = Completer<void>();
-  if (constants.hotRestartEnabled) {
-    // By default, NativeAutomator is initialized by the code in
-    // test_bundle.dart. However, when hot restart is enabled, test_bundle.dart
-    // is not used. That's why it has to be initialized here.
-    automator?.initialize().then((value) {
-      automatorInitCompleter.complete();
-    });
-  } else {
-    automatorInitCompleter.complete();
-  }
-
   testWidgets(
     description,
     skip: skip,
@@ -124,7 +110,6 @@ void patrolTest(
         }
       }
 
-      await automatorInitCompleter.future;
       await automator?.configure();
 
       final patrolTester = PatrolTester(
