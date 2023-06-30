@@ -19,9 +19,9 @@ jobs:
       fail-fast: false
       matrix:
         flutter_version: ['3.10.x']
-        device_model: ['Pixel7']
-        os: ['Android API']
-        os_version: ['33']
+        device_model: [Pixel7]
+        os: [Android API]
+        os_version: [31]
 
     defaults:
       run:
@@ -92,7 +92,7 @@ jobs:
         run: |
           TESTS_EXIT_CODE=0
           ew-cli \
-            --device model=${{ matrix.device_model }},version=${{ matrix.os_version }} \
+            --device model=${{ matrix.device_model }},version=${{ matrix.os_version }},gpu=auto \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --num-shards 3 \
