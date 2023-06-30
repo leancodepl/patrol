@@ -91,7 +91,7 @@ jobs:
           TESTS_EXIT_CODE=0
           ew-cli \
             --device model=${{ matrix.device_model }},version=${{ matrix.os_version }},gpu=auto \
-            --display-name "Patrol example app (${GITHUB_SHA::6} on ${{ matrix.device_model }}) API ${{ matrix.os_version }}" \
+            --display-name "Patrol example app (${GITHUB_SHA::6}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --num-shards 3 \
