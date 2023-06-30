@@ -16,7 +16,14 @@ void main() {
       await $.native.openNotifications();
 
       // wait for notification to show up
-      await Future<void>.delayed(const Duration(seconds: 5));
+      await Future<void>.delayed(const Duration(seconds: 7));
+
+      final views = await $.native.getNativeViews(
+        Selector(textContains: 'Someone liked'),
+      );
+      for (var i = 0; i < views.length; i++) {
+        print('Found view $i: ${views[i]}');
+      }
 
       await $.native.tapOnNotificationBySelector(
         Selector(textContains: 'Someone liked'),
