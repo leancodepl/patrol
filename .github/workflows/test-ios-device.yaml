@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         flutter_version: ['3.10.x']
-        device_model: ['iphone13pro']
-        os_version: ['15.7']
+        device_model: ['iphone11pro']
+        os_version: ['16.5']
         os: [iOS]
 
     defaults:
