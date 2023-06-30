@@ -165,6 +165,7 @@ class IOSAppOptions {
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
       ...['-configuration', configuration],
+      ...['-only-testing', 'RunnerUITests'],
       ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
       ...[
         '-destination',
