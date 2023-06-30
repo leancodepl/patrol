@@ -20,7 +20,7 @@ jobs:
       matrix:
         flutter_version: ['3.10.x']
         device_model: ['iphone11pro']
-        os_version: ['16.3']
+        os_version: ['16.5']
         os: [iOS]
 
     defaults:
@@ -103,7 +103,7 @@ jobs:
         run: patrol build ios --release --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Compress test files to zip
-        working-directory: build/ios_integ/Build/Products
+        working-directory: packages/patrol/example/build/ios_integ/Build/Products
         run: zip -r ios_tests.zip Release-iphoneos/*.app *.xctestrun
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
