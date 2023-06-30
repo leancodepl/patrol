@@ -7,11 +7,11 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }} emulator
+    name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }} emulator
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
 
@@ -20,8 +20,6 @@ jobs:
       matrix:
         flutter_version: ['3.10.x']
         device_model: [Pixel2, Pixel7]
-        os: [Android API]
-        os_version: [31]
 
     defaults:
       run:
@@ -91,7 +89,7 @@ jobs:
           TESTS_EXIT_CODE=0
           ew-cli \
             --device model=${{ matrix.device_model }},version=${{ matrix.os_version }},gpu=auto \
-            --display-name "Patrol example app (${GITHUB_SHA::6}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" \
+            --display-name "Patrol example app (${GITHUB_SHA::7}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --num-shards 3 \
@@ -99,7 +97,6 @@ jobs:
             --clear-package-data \
             --record-video \
             --timeout 10m \
-            --environment-variables packageName="pl.leancode.patrol.example" \
             --outputs-dir test_artifacts \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video || TESTS_EXIT_CODE=$?
 
