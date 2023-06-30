@@ -3,6 +3,7 @@ package pl.leancode.patrol
 import android.app.Instrumentation
 import android.app.UiAutomation
 import android.content.Context
+import android.os.Build
 import android.os.SystemClock
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -414,6 +415,11 @@ class Automator private constructor() {
     }
 
     fun selectFineLocation() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            Logger.i("Ignoring selectFineLocation() since it's not available on ${Build.VERSION.SDK_INT}")
+            return
+        }
+
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
 
         val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
@@ -423,6 +429,11 @@ class Automator private constructor() {
     }
 
     fun selectCoarseLocation() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            Logger.i("Ignoring selectFineLocation() since it's not available on ${Build.VERSION.SDK_INT}")
+            return
+        }
+
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
 
         val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
