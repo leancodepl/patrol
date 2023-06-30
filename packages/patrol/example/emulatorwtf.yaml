@@ -1,0 +1,37 @@
+devices:
+  device:
+    - model: Pixel7
+      version: 31
+      gpu: auto
+    - model: Pixel2
+      version: 31
+      gpu: auto
+    # Unstable, see https://github.com/leancodepl/patrol/issues/1445
+    # - model: Pixel2
+    #   version: 27
+    #   gpu: auto
+
+apps:
+  app: build/app/outputs/apk/debug/app-debug.apk
+  test: build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+
+config:
+  num-shards: 3
+  use-orchestrator: true
+  clear-package-data: true
+  record-video: true
+  timeout: 10m
+  output-dir: test_artifacts
+  outputs:
+    [
+      summary,
+      merged_results_xml,
+      coverage,
+      pulled_dirs,
+      results_xml,
+      logcat,
+      captured_video,
+    ]
+
+main:
+  include: [devices, apps, config]
