@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter_version: ['3.10.x']
-        device_model: [Pixel7]
+        device_model: [Pixel2, Pixel7]
         os: [Android API]
         os_version: [31]
 
