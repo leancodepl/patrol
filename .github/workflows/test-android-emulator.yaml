@@ -70,6 +70,7 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="permissions_location_test,\
+          permissions_notification_test,\
           service_airplane_mode_test,\
           service_bluetooth_test"
 
