@@ -67,10 +67,7 @@ jobs:
           service_bluetooth_test,\
           service_cellular_test,\
           service_wifi_test,\
-          swipe_test,\
-          webview_leancode_test,\
-          webview_login_test,\
-          webview_stackoverflow_test"
+          swipe_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do

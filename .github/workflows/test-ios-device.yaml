@@ -98,7 +98,7 @@ jobs:
 
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-      
+
       - name: Build tests
         run: patrol build ios --release --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 

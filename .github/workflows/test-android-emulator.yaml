@@ -70,11 +70,9 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="permissions_location_test,\
+          permissions_notification_test,\
           service_airplane_mode_test,\
-          service_bluetooth_test,\
-          webview_stackoverflow_test,\
-          webview_login_test,\
-          webview_leancode_test"
+          service_bluetooth_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
