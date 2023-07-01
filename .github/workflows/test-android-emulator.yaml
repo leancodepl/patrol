@@ -88,7 +88,7 @@ jobs:
         run: |
           TESTS_EXIT_CODE=0
           ew-cli \
-            emulatorwtf:main \
+            emulatorwtf.yaml:main \
             --display-name "Patrol example app (${GITHUB_SHA::7}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
