@@ -11,12 +11,12 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^13.0.0
-  flutter_native_timezone: ^2.0.0
+  flutter_local_notifications: ^14.1.1
+  flutter_timezone: ^1.0.7
   geolocator: ^9.0.2
-  permission_handler: ^10.2.0
-  timezone: ^0.9.1
-  webview_flutter: ^4.0.4
+  permission_handler: ^10.4.1
+  timezone: ^0.9.2
+  webview_flutter: ^4.2.2
 
 dev_dependencies:
   flutter_test:
