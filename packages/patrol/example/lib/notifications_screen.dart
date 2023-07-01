@@ -86,7 +86,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       ),
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.wallClockTime,
-      androidAllowWhileIdle: true,
     );
   }
 
