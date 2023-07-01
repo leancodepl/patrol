@@ -1,3 +1,12 @@
+## 2.0.01
+
+- Support for fix for WebViews on modern Android versions (#1398)
+- Implement a proper fix for tests failing when using native automation on
+  Android + Flutter 3.10 (#1398). This replaces a workaround implemented in
+  #1352.
+
+This version requires version 2.0.1 of `patrol` package.
+
 ## 2.0.0
 
 Patrol 2.0 is released!
