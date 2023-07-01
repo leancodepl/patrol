@@ -1,3 +1,11 @@
+## 2.0.1
+
+- Fix WebViews on modern Android versions (#1398)
+- Implement a proper fix for tests failing when using native automation on
+  Android + Flutter 3.10 (#1398). This replaces a workaround implemented in
+  #1352
+- Bump dependencies (#1446)
+
 ## 2.0.0
 
 Patrol 2.0 is released!
