@@ -35,7 +35,7 @@ version "1.0-SNAPSHOT"
 
 android {
     namespace "pl.leancode.patrol"
-    compileSdk 31
+    compileSdk 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -51,7 +51,7 @@ android {
     }
 
     defaultConfig {
-        minSdk 19
+        minSdk 21
     }
 
     dependencies {
