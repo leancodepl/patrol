@@ -132,7 +132,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         automation.tap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance,
+            index = request.selector.instance
         )
 
         return empty { }
@@ -142,7 +142,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         automation.doubleTap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance,
+            index = request.selector.instance
         )
 
         return empty { }
@@ -155,7 +155,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
                 text = request.data,
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
-                index = request.selector.instance,
+                index = request.selector.instance
             )
 
             else -> throw PatrolException("enterText(): neither index nor selector are set")

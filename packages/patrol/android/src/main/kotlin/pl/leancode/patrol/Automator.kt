@@ -59,14 +59,18 @@ class Automator private constructor() {
     private lateinit var targetContext: Context
 
     fun initialize() {
-        if (!this::instrumentation.isInitialized)
+        if (!this::instrumentation.isInitialized) {
             instrumentation = InstrumentationRegistry.getInstrumentation()
-        if (!this::targetContext.isInitialized)
+        }
+        if (!this::targetContext.isInitialized) {
             targetContext = instrumentation.targetContext
-        if (!this::configurator.isInitialized)
+        }
+        if (!this::configurator.isInitialized) {
             configurator = Configurator.getInstance()
-        if (!this::uiDevice.isInitialized)
+        }
+        if (!this::uiDevice.isInitialized) {
             uiDevice = UiDevice.getInstance(instrumentation)
+        }
     }
 
     fun configure(waitForSelectorTimeout: Long) {
@@ -285,7 +289,7 @@ class Automator private constructor() {
         val notificationContainers = mutableListOf<UiObject2>()
         val identifiers = listOf(
             "android:id/status_bar_latest_event_content", // notification not bundled
-            "com.android.systemui:id/expandableNotificationRow", // notifications bundled
+            "com.android.systemui:id/expandableNotificationRow" // notifications bundled
         )
 
         for (identifier in identifiers) {
@@ -303,7 +307,6 @@ class Automator private constructor() {
 
         val notifications = mutableListOf<Contracts.Notification>()
         for (notificationContainer in notificationContainers) {
-
             val notification = notification {
                 val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
                 if (appName != null) {
@@ -369,7 +372,7 @@ class Automator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
             // deny
             "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
@@ -380,7 +383,7 @@ class Automator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -393,7 +396,7 @@ class Automator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_one_time_button",
+            "com.android.permissioncontroller:id/permission_allow_one_time_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -405,7 +408,7 @@ class Automator private constructor() {
     fun denyPermission() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
