@@ -1,4 +1,4 @@
-## 2.0.01
+## 2.0.1
 
 - Support for fix for WebViews on modern Android versions (#1398)
 - Implement a proper fix for tests failing when using native automation on
