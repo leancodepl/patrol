@@ -18,7 +18,7 @@ void main() {
         await $.native.selectFineLocation();
         await $.native.selectCoarseLocation();
         await $.native.selectFineLocation();
-        await $.native.grantPermissionOnlyThisTime();
+        await $.native.grantPermissionWhenInUse();
       }
       await $.pump();
     }
