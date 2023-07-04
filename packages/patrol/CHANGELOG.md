@@ -1,3 +1,8 @@
+## 2.0.2
+
+- Fix `enterText()` not working when running with `flutter_driver` on the web
+  (#1459)
+
 ## 2.0.1
 
 - Fix WebViews on modern Android versions (#1398). See #244 for more details.
