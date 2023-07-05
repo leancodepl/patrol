@@ -21,6 +21,7 @@ void main() {
         await $.native.grantPermissionWhenInUse();
       }
       await $.pump();
+      await $.native.tap(Selector(text: "OK"));
     }
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
