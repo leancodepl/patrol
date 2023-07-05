@@ -20,9 +20,11 @@ void main() {
         await $.native.selectFineLocation();
         await $.native.grantPermissionWhenInUse();
       }
-      await $.pump();
+      await $.pump(Duration(seconds: 2));
       // Firebase Test Lab pops out another dialog we need to handle
-      if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
+      final listWithOkText =
+          await $.native.getNativeViews(Selector(textContains: "OK"));
+      if (listWithOkText.isNotEmpty) {
         await $.native.tap(Selector(text: "OK"));
       }
     }
