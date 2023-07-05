@@ -105,12 +105,29 @@ jobs:
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
+      - name: Merge XML reports
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        working-directory: test_artifacts
+        run: |
+          npm install -g junit-report-merger
+          jrm Pixel2_api31/pixel2api31.xml "Pixel2_api31/**/*.xml"
+          jrm Pixel7_api31/pixel7api31.xml "Pixel7_api31/**/*.xml"
+
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
-          check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+          check_name: Patrol tests on Pixel 2 API 31
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/Pixel2_api31/*.xml
+          detailed_summary: true
+          include_passed: true
+
+      - name: Publish test report to summary
+        uses: mikepenz/action-junit-report@v3
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        with:
+          check_name: Patrol tests on Pixel 7 API 31
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/Pixel7_api31/*.xml
           detailed_summary: true
           include_passed: true
 
@@ -119,7 +136,7 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/*.xml
           reporter: java-junit
           fail-on-error: false
 
@@ -128,7 +145,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/*.xml
 
       - name: Upload test outputs to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
