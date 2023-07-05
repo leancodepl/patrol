@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'common.dart';
@@ -20,13 +23,21 @@ void main() {
         await $.native.selectFineLocation();
         await $.native.grantPermissionWhenInUse();
       }
-      await $.pump(Duration(seconds: 2));
+      await $.pump();
       // Firebase Test Lab pops out another dialog we need to handle
-      final listWithOkText =
-          await $.native.getNativeViews(Selector(textContains: "OK"));
-      if (listWithOkText.isNotEmpty) {
-        await $.native.tap(Selector(text: "OK"));
+      var listWithOkText = <NativeView>[];
+      final inactivityTimer = Timer(Duration(seconds: 10), () async {});
+
+      while (listWithOkText.isNotEmpty) {
+        listWithOkText =
+            await $.native.getNativeViews(Selector(textContains: "OK"));
+        final timeoutReached = !inactivityTimer.isActive;
+        if (timeoutReached) {
+          inactivityTimer.cancel();
+          break;
+        }
       }
+      await $.native.tap(Selector(text: "OK"));
     }
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
