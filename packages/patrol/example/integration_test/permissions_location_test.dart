@@ -24,20 +24,23 @@ void main() {
         await $.native.grantPermissionWhenInUse();
       }
       await $.pump();
+
       // Firebase Test Lab pops out another dialog we need to handle
       var listWithOkText = <NativeView>[];
-      final inactivityTimer = Timer(Duration(seconds: 10), () async {});
+      final inactivityTimer = Timer(_timeout, () {});
 
       while (listWithOkText.isNotEmpty) {
         listWithOkText =
-            await $.native.getNativeViews(Selector(textContains: "OK"));
+            await $.native.getNativeViews(Selector(textContains: 'OK'));
         final timeoutReached = !inactivityTimer.isActive;
         if (timeoutReached) {
           inactivityTimer.cancel();
           break;
         }
       }
-      await $.native.tap(Selector(text: "OK"));
+      if (listWithOkText.isNotEmpty) {
+        await $.native.tap(Selector(text: 'OK'));
+      }
     }
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
