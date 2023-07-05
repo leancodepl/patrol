@@ -21,7 +21,10 @@ void main() {
         await $.native.grantPermissionWhenInUse();
       }
       await $.pump();
-      await $.native.tap(Selector(text: "OK"));
+      // Firebase Test Lab pops out another dialog we need to handle
+      if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
+        await $.native.tap(Selector(text: "OK"));
+      }
     }
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
