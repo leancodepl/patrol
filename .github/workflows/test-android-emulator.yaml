@@ -66,8 +66,7 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="permissions_location_test,\
-          notifications_test,\
+          TESTS_TO_EXCLUDE="notifications_test,\
           service_airplane_mode_test,\
           service_bluetooth_test"
 
@@ -86,8 +85,20 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
+          # TODO: Change to YAML file if outputs list is fixed
           ew-cli \
-            emulatorwtf.yaml:main \
+            --device model=${{ matrix.device_model }},version=${{ matrix.os_version }},gpu=auto \
+            --display-name "Patrol example app (${GITHUB_SHA::6}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --num-shards 3 \
+            --use-orchestrator \
+            --clear-package-data \
+            --record-video \
+            --timeout 10m \
+            --environment-variables packageName="pl.leancode.patrol.example" \
+            --outputs-dir test_artifacts \
+            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video
             --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
