@@ -95,7 +95,7 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesDartDefineFromFileOption() {
-    argParser.addMultiOption(
+    argParser.addOption(
       'dart-define-from-file',
       aliases: ['dart-define-from-file'],
       help:
