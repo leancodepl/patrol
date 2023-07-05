@@ -31,6 +31,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
 
@@ -105,6 +106,13 @@ class BuildAndroidCommand extends PatrolCommand {
     for (final dartDefine in internalDartDefines.entries) {
       _logger.detail(
         'Received internal --dart-define: ${dartDefine.key}=${dartDefine.value}',
+      );
+    }
+
+    final dartDefineFromFilePath = stringsArg('dart-define-from-file');
+    if (dartDefineFromFilePath.isNotEmpty) {
+      _logger.detail(
+        'Received path for --dart-define-from-file: $dartDefineFromFilePath',
       );
     }
 
