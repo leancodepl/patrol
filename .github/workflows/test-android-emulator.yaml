@@ -107,7 +107,7 @@ jobs:
 
       - name: Merge XML reports
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        working-directory: test_artifacts
+        working-directory: packages/patrol/example/test_artifacts
         run: |
           npm install -g junit-report-merger
           jrm Pixel2_api31/pixel2api31.xml "Pixel2_api31/**/*.xml"
