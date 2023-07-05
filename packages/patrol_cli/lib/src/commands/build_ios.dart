@@ -114,11 +114,19 @@ class BuildIOSCommand extends PatrolCommand {
       );
     }
 
+    final dartDefineFromFilePath = stringArg('dart-define-from-file') ?? '';
+    if (dartDefineFromFilePath.isNotEmpty) {
+      _logger.detail(
+        'Received path for --dart-define-from-file: $dartDefineFromFilePath',
+      );
+    }
+
     final flutterOpts = FlutterAppOptions(
       target: testBundle.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
+      dartDefinesPath: dartDefineFromFilePath,
     );
 
     final iosOpts = IOSAppOptions(

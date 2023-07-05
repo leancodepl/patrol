@@ -109,7 +109,7 @@ class BuildAndroidCommand extends PatrolCommand {
       );
     }
 
-    final dartDefineFromFilePath = stringsArg('dart-define-from-file');
+    final dartDefineFromFilePath = stringArg('dart-define-from-file') ?? '';
     if (dartDefineFromFilePath.isNotEmpty) {
       _logger.detail(
         'Received path for --dart-define-from-file: $dartDefineFromFilePath',
@@ -121,6 +121,7 @@ class BuildAndroidCommand extends PatrolCommand {
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
+      dartDefinesPath: dartDefineFromFilePath,
     );
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
