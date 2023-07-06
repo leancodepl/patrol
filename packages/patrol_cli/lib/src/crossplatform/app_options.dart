@@ -11,14 +11,14 @@ class FlutterAppOptions {
     required this.flavor,
     required this.buildMode,
     required this.dartDefines,
-    this.dartDefinesPath = '',
+    this.dartDefineFromFile = const {},
   });
 
   final String target;
   final String? flavor;
   final BuildMode buildMode;
   final Map<String, String> dartDefines;
-  final String dartDefinesPath;
+  final Map<String, dynamic> dartDefineFromFile;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -31,10 +31,6 @@ class FlutterAppOptions {
       for (final dartDefine in dartDefines.entries) ...[
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
-      ],
-      if (dartDefinesPath.isNotEmpty) ...[
-        '--dart-define-from-file',
-        dartDefinesPath
       ],
     ];
 
@@ -115,13 +111,20 @@ class AndroidAppOptions {
 
       cmd.add('-Pdart-defines=$dartDefinesString');
     }
-    if (flutter.dartDefinesPath.isNotEmpty) {
-      final dartDefinesFromFile =
-          '-Pdart-define-from-file=${flutter.dartDefinesPath}';
-      cmd.add(dartDefinesFromFile);
+    if (flutter.dartDefineFromFile.isNotEmpty) {
+      cmd.addAll(_parseJsonToGradleConfig(flutter.dartDefineFromFile));
     }
 
     return cmd;
+  }
+
+  List<String> _parseJsonToGradleConfig(Map<String, dynamic> json) {
+    final result = <String>[];
+    json.forEach((key, value) {
+      result.add('-P$key=$value');
+    });
+
+    return result;
   }
 }
 

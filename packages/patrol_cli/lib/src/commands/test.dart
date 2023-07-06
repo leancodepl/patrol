@@ -151,13 +151,15 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'Received path for --dart-define-from-file: $dartDefineFromFilePath',
       );
     }
+    final dartDefineFromFile =
+        _dartDefinesReader.fromConfigFile(path: dartDefineFromFilePath);
 
     final flutterOpts = FlutterAppOptions(
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
-      dartDefinesPath: dartDefineFromFilePath,
+      dartDefineFromFile: dartDefineFromFile,
     );
 
     final androidOpts = AndroidAppOptions(

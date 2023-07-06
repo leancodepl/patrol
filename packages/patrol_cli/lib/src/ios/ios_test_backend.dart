@@ -110,6 +110,7 @@ class IOSTestBackend {
         options.buildForTestingInvocation(),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
+        environment: Map.castFrom(options.flutter.dartDefineFromFile),
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -156,6 +157,7 @@ class IOSTestBackend {
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
+        environment: Map.castFrom(options.flutter.dartDefineFromFile),
       )
         ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);

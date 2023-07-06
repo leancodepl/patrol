@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 
@@ -23,6 +25,19 @@ class DartDefinesReader {
     final lines = file.readAsLinesSync()
       ..removeWhere((line) => line.trim().isEmpty);
     return _parse(lines);
+  }
+
+  Map<String, dynamic> fromConfigFile({required String path}) {
+    final filePath = _fs.path.join(_projectRoot.path, path);
+    final file = _fs.file(filePath);
+
+    if (!file.existsSync()) {
+      return {};
+    }
+
+    final jsonString = file.readAsStringSync();
+    final json = jsonDecode(jsonString) as Map<String, dynamic>;
+    return json;
   }
 
   Map<String, String> _parse(List<String> args) {

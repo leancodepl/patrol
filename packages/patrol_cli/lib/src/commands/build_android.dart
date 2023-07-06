@@ -115,13 +115,15 @@ class BuildAndroidCommand extends PatrolCommand {
         'Received path for --dart-define-from-file: $dartDefineFromFilePath',
       );
     }
+    final dartDefineFromFile =
+        _dartDefinesReader.fromConfigFile(path: dartDefineFromFilePath);
 
     final flutterOpts = FlutterAppOptions(
       target: testBundle.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
-      dartDefinesPath: dartDefineFromFilePath,
+      dartDefineFromFile: dartDefineFromFile,
     );
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,

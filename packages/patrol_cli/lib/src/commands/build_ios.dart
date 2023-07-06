@@ -92,6 +92,7 @@ class BuildIOSCommand extends PatrolCommand {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
+
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_BUNDLE_ID': bundleId,
@@ -115,18 +116,21 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     final dartDefineFromFilePath = stringArg('dart-define-from-file') ?? '';
+
     if (dartDefineFromFilePath.isNotEmpty) {
       _logger.detail(
         'Received path for --dart-define-from-file: $dartDefineFromFilePath',
       );
     }
+    final dartDefineFromFile =
+        _dartDefinesReader.fromConfigFile(path: dartDefineFromFilePath);
 
     final flutterOpts = FlutterAppOptions(
       target: testBundle.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
-      dartDefinesPath: dartDefineFromFilePath,
+      dartDefineFromFile: dartDefineFromFile,
     );
 
     final iosOpts = IOSAppOptions(
