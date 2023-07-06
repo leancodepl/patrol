@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -40,6 +41,9 @@ void main() {
       }
       if (listWithOkText.isNotEmpty) {
         await $.native.tap(Selector(text: 'OK'));
+      }
+      if (Platform.isIOS) {
+        await $('Grant permission').tap();
       }
     }
 
