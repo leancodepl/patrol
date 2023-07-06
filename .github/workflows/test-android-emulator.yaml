@@ -66,8 +66,7 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="notifications_test,\
-          service_airplane_mode_test,\
+          TESTS_TO_EXCLUDE="service_airplane_mode_test,\
           service_bluetooth_test"
 
           target_paths=""
