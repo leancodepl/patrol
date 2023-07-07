@@ -10,6 +10,11 @@ jobs:
     name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      DEVICE0: "Pixel7"
+      API0: 31
+      DEVICE1: "NexusLowRes"
+      API1: 33
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -83,15 +88,15 @@ jobs:
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
-        env:
-          DEVICE: "Pixel7"
-          API: 31
         run: |
-          envsubst < emulatorwtf-with-placeholders.yaml > emulatorwtf.yaml
+          # envsubst < emulatorwtf-with-placeholders.yaml > emulatorwtf.yaml
 
           TESTS_EXIT_CODE=0
           ew-cli \
-            emulatorwtf.yaml:main \
+            emulatorwtf-with-placeholders.yaml:main \
+            --device model=${DEVICE0},version={API0},gpu=auto \
+            --device model=${DEVICE1},version={API1},gpu=auto \
+            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
             --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
@@ -101,15 +106,15 @@ jobs:
         working-directory: packages/patrol/example/test_artifacts
         run: |
           npm install -g junit-report-merger
-          jrm Pixel2_api31/pixel2api31.xml "Pixel2_api31/**/*.xml"
-          jrm Pixel7_api31/pixel7api31.xml "Pixel7_api31/**/*.xml"
+          jrm ${DEVICE0}_api${API0}/${DEVICE0}api${API0}.xml "${DEVICE0}_api${API0}/**/*.xml"
+          jrm ${DEVICE1}_api${API1}/${DEVICE1}api${API1}.xml "${DEVICE1}_api${API1}/**/*.xml"
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
-          check_name: Patrol tests on Pixel 2 API 31
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/Pixel2_api31/*.xml
+          check_name: Patrol tests on ${DEVICE0} API ${API0}
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${DEVICE0}_api${API0}/*.xml
           detailed_summary: true
           include_passed: true
 
@@ -117,8 +122,8 @@ jobs:
         uses: mikepenz/action-junit-report@v3
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
-          check_name: Patrol tests on Pixel 7 API 31
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/Pixel7_api31/*.xml
+          check_name: Patrol tests on ${DEVICE1} API ${API1}
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${DEVICE1}_api${API0}/*.xml
           detailed_summary: true
           include_passed: true
 
