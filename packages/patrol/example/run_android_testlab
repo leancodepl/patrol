@@ -12,5 +12,4 @@ exec gcloud firebase test android run \
 	--results-bucket="patrol_runs" \
 	--results-dir="$RESULTS_DIR_NAME" \
 	--use-orchestrator \
-	--num-flaky-test-attempts 1 \
 	--environment-variables clearPackageData=true
