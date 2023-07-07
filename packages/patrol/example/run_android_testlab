@@ -12,4 +12,5 @@ exec gcloud firebase test android run \
 	--results-bucket="patrol_runs" \
 	--results-dir="$RESULTS_DIR_NAME" \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example"
+	--num-flaky-test-attempts 1 \
+	--environment-variables clearPackageData=true

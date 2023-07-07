@@ -28,7 +28,7 @@ void main() {
 
       // Firebase Test Lab pops out another dialog we need to handle
       var listWithOkText = <NativeView>[];
-      final inactivityTimer = Timer(_timeout, () {});
+      final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
       while (listWithOkText.isNotEmpty) {
         listWithOkText =
