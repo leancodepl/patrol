@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter_version: ['3.10.x']
-        device_model: ['iphone11pro']
+        device_model: ['iphone14pro']
         os_version: ['16.5']
         os: [iOS]
 
@@ -82,14 +82,7 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
-          notifications_test,\
-          open_app_test,\
-          service_dark_mode_test,\
-          service_wifi_test,\
-          permissions_location_test,\
-          swipe_test,\
-          webview_login_test,\
-          webview_leancode_test"
+          swipe_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do

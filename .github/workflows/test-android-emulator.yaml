@@ -86,8 +86,8 @@ jobs:
           TESTS_EXIT_CODE=0
           # TODO: Change to YAML file if outputs list is fixed
           ew-cli \
-            --device model=Pixel2,version=33,gpu=auto \
-            --device model=Pixel7,version=34,gpu=auto \
+            --device model=NexusLowRes,version=31,gpu=auto \
+            --device model=Pixel7,version=33,gpu=auto \
             --display-name "Patrol example app (${GITHUB_SHA::6}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
