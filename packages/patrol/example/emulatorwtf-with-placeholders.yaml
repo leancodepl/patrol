@@ -1,10 +1,11 @@
 devices:
   device:
     - model: Pixel7
-      version: 31
+      version: 33
       gpu: auto
     - model: Pixel2
       version: 31
+      gpu: auto
 
 apps:
   app: build/app/outputs/apk/debug/app-debug.apk
