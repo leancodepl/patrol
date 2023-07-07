@@ -17,7 +17,7 @@ config:
   clear-package-data: true
   record-video: true
   timeout: 10m
-  output-dir: test_artifacts
+  outputs-dir: test_artifacts
 
 main:
   include: [devices, apps, config]
