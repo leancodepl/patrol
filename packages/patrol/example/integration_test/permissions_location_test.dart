@@ -30,7 +30,7 @@ void main() {
       var listWithOkText = <NativeView>[];
       final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
-      while (listWithOkText.isEmpty) {
+      while (listWithOkText.isEmpty && io.Platform.isAndroid) {
         listWithOkText =
             await $.native.getNativeViews(Selector(textContains: 'OK'));
         final timeoutReached = !inactivityTimer.isActive;
