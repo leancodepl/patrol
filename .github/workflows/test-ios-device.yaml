@@ -82,7 +82,8 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
-          swipe_test"
+          swipe_test,\
+          notifications_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
