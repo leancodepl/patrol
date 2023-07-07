@@ -109,7 +109,7 @@ jobs:
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
           detailed_summary: true
           include_passed: true
 
@@ -118,7 +118,7 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
           reporter: java-junit
           fail-on-error: false
 
@@ -127,7 +127,7 @@ jobs:
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         with:
           name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_result_1.xml
+          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
 
       - name: Upload captured video to artifacts
         uses: actions/upload-artifact@v3
