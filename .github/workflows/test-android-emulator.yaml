@@ -96,6 +96,7 @@ jobs:
             emulatorwtf-with-placeholders.yaml:main \
             --device model=${DEVICE0},version=${API0},gpu=auto \
             --device model=${DEVICE1},version=${API1},gpu=auto \
+            --output-dir test_artifacts \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
             --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
