@@ -1,10 +1,7 @@
 devices:
   device:
-    - model: Pixel7
-      version: 31
-      gpu: auto
-    - model: Pixel2
-      version: 31
+    - model: ${DEVICE}
+      version: ${API}
       gpu: auto
     # Unstable, see https://github.com/leancodepl/patrol/issues/1445
     # - model: Pixel2

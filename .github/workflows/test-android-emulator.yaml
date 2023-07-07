@@ -83,25 +83,16 @@ jobs:
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
+        env:
+          DEVICE: "Pixel7"
+          API: 31
         run: |
-          TESTS_EXIT_CODE=0
-          # TODO: Change to YAML file if outputs list is fixed
-          ew-cli \
-            --device model=NexusLowRes,version=31,gpu=auto \
-            --device model=Pixel7,version=33,gpu=auto \
-            --display-name "Patrol example app (${GITHUB_SHA::6}) on ${{ matrix.device_model }} API ${{ matrix.os_version }}" \
-            --app build/app/outputs/apk/debug/app-debug.apk \
-            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --num-shards 3 \
-            --use-orchestrator \
-            --clear-package-data \
-            --record-video \
-            --timeout 10m \
-            --environment-variables packageName="pl.leancode.patrol.example" \
-            --outputs-dir test_artifacts \
-            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
-            --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
+          envsubst < emulatorwtf-with-placeholders.yaml > emulatorwtf.yaml
 
+          TESTS_EXIT_CODE=0
+          ew-cli \
+            emulatorwtf.yaml:main \
+            --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
