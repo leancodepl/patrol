@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -42,8 +42,14 @@ void main() {
       if (listWithOkText.isNotEmpty) {
         await $.native.tap(Selector(text: 'OK'));
       }
-      if (Platform.isIOS) {
-        await $('Grant permission').tap();
+
+      // We need to tap again on this button on real iOS device
+      try {
+        if (io.Platform.isIOS) {
+          await $('Grant permission').tap();
+        }
+      } catch (_) {
+        // Skip
       }
     }
 

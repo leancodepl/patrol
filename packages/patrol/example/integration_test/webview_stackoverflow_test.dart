@@ -1,5 +1,8 @@
 import 'dart:io' as io;
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'common.dart';
 
 void main() {
@@ -21,11 +24,6 @@ void main() {
 
       // bug: using `Email` and `Password` selectors doesn't work
       await $.native.enterTextByIndex('test@leancode.pl', index: 0);
-
-      // Got to hide keyboard on iOS
-      if (io.Platform.isIOS) {
-        await $.native.tap(Selector(text: 'Done'));
-      }
 
       await $.native.enterTextByIndex('ny4ncat', index: 1);
       await $.native.tap(Selector(text: 'Log in'));
