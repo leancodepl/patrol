@@ -12,9 +12,9 @@ jobs:
     timeout-minutes: 60
     env:
       # The devices in `DEVICES_LIST` are paired with the corresponding index in `APIS_LIST`
-      # If you're adding more elements remember about merging XML results from shards and adding a step for generating test report
-      DEVICES_LIST: "Pixel7,Pixel2,NexusLowRes,Tablet10,NexusLowRes"
-      APIS_LIST: "27,29,31,33,34"
+      # If you're adding/removing elements remember about adding/removing a step for generating test report
+      DEVICES_LIST: "Pixel7,Pixel2,NexusLowRes,Tablet10"
+      APIS_LIST: "27,31,33,33"
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -119,11 +119,13 @@ jobs:
         working-directory: packages/patrol/example/test_artifacts
         run: |
           npm install -g junit-report-merger
-          jrm ${DEVICE0}_api${API0}/${DEVICE0}api${API0}.xml "${DEVICE0}_api${API0}/**/*.xml"
-          jrm ${DEVICE1}_api${API1}/${DEVICE1}api${API1}.xml "${DEVICE1}_api${API1}/**/*.xml"
-          jrm ${DEVICE2}_api${API2}/${DEVICE1}api${API2}.xml "${DEVICE2}_api${API2}/**/*.xml"
-          jrm ${DEVICE3}_api${API3}/${DEVICE1}api${API3}.xml "${DEVICE3}_api${API3}/**/*.xml"
-          jrm ${DEVICE4}_api${API4}/${DEVICE1}api${API4}.xml "${DEVICE4}_api${API4}/**/*.xml"
+
+          IFS=',' read -ra DEVICE_ARRAY <<< "${{ env.DEVICES_LIST }}"
+          IFS=',' read -ra API_ARRAY <<< "${{ env.APIS_LIST }}"
+          
+          for i in "${!DEVICE_ARRAY[@]}"; do
+            jrm ${DEVICE_ARRAY[$i]}_api${API_ARRAY[$i]}/${DEVICE_ARRAY[$i]}api${API_ARRAY[$i]}.xml "${DEVICE_ARRAY[$i]}_api${API_ARRAY[$i]}/**/*.xml"
+          done
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
@@ -140,6 +142,24 @@ jobs:
         with:
           check_name: Patrol tests on ${{ env.DEVICE1 }} API ${{ env.API1 }}
           report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE1 }}_api${{ env.API1 }}/*.xml
+          detailed_summary: true
+          include_passed: true
+
+      - name: Publish test report to summary
+        uses: mikepenz/action-junit-report@v3
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        with:
+          check_name: Patrol tests on ${{ env.DEVICE2 }} API ${{ env.API2 }}
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE2 }}_api${{ env.API2 }}/*.xml
+          detailed_summary: true
+          include_passed: true
+
+      - name: Publish test report to summary
+        uses: mikepenz/action-junit-report@v3
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        with:
+          check_name: Patrol tests on ${{ env.DEVICE3 }} API ${{ env.API3 }}
+          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE3 }}_api${{ env.API3 }}/*.xml
           detailed_summary: true
           include_passed: true
 
