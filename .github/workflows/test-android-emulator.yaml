@@ -11,10 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DEVICE0: "Pixel7"
-      API0: 31
-      DEVICE1: "NexusLowRes"
-      API1: 33
+      DEVICES_LIST: "Pixel7,NexusLowRes"
+      APIS_LIST: "31,33"
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -68,6 +66,22 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
+      - name: Set devices
+        run: |
+          IFS=',' read -ra DEVICE_ARRAY <<< "${{ env.DEVICES_LIST }}"
+          IFS=',' read -ra API_ARRAY <<< "${{ env.APIS_LIST }}"
+          
+          DEVICES=""
+          
+          for i in "${!DEVICE_ARRAY[@]}"; do
+            DEVICES+="--device model=${DEVICE_ARRAY[$i]},version=${API_ARRAY[$i]},gpu=auto "
+            echo "DEVICE${i}=${DEVICE_ARRAY[$i]}" >> $GITHUB_ENV
+            echo "API${i}=${API_ARRAY[$i]}" >> $GITHUB_ENV
+          done
+          
+          echo $DEVICES
+          echo "DEVICES=$DEVICES" >> $GITHUB_ENV
+
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
@@ -89,11 +103,9 @@ jobs:
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
         run: |
-          # envsubst < emulatorwtf-with-placeholders.yaml > emulatorwtf.yaml
-
           TESTS_EXIT_CODE=0
           ew-cli \
-            emulatorwtf-with-placeholders.yaml:main \
+            emulatorwtf.yaml:main \
             --device model=${DEVICE0},version=${API0},gpu=auto \
             --device model=${DEVICE1},version=${API1},gpu=auto \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
@@ -154,7 +166,7 @@ jobs:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: always()
+    if: false
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
