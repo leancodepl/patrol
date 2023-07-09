@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DEVICES_LIST: "Pixel7,NexusLowRes"
-      APIS_LIST: "31,33"
+      # The devices in `DEVICES_LIST` are paired with the corresponding index in `APIS_LIST`
+      # If you're adding more elements remember about merging XML results from shards and adding a step for generating test report
+      DEVICES_LIST: "Pixel7,Pixel2,NexusLowRes,Tablet10,NexusLowRes"
+      APIS_LIST: "27,29,31,33,34"
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -119,6 +121,9 @@ jobs:
           npm install -g junit-report-merger
           jrm ${DEVICE0}_api${API0}/${DEVICE0}api${API0}.xml "${DEVICE0}_api${API0}/**/*.xml"
           jrm ${DEVICE1}_api${API1}/${DEVICE1}api${API1}.xml "${DEVICE1}_api${API1}/**/*.xml"
+          jrm ${DEVICE2}_api${API2}/${DEVICE1}api${API2}.xml "${DEVICE2}_api${API2}/**/*.xml"
+          jrm ${DEVICE3}_api${API3}/${DEVICE1}api${API3}.xml "${DEVICE3}_api${API3}/**/*.xml"
+          jrm ${DEVICE4}_api${API4}/${DEVICE1}api${API4}.xml "${DEVICE4}_api${API4}/**/*.xml"
 
       - name: Publish test report to summary
         uses: mikepenz/action-junit-report@v3
@@ -165,7 +170,7 @@ jobs:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: false
+    if: always()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
