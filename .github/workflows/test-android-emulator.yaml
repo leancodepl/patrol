@@ -9,7 +9,7 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     env:
       # The devices in `DEVICES_LIST` are paired with the corresponding index in `APIS_LIST`
       # If you're adding/removing elements remember about adding/removing a step for generating test report
@@ -104,6 +104,7 @@ jobs:
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
+        # FIXME remove `outputs` argument and paste it to yaml config file when bug is fixed in ew-cli
         run: |
           TESTS_EXIT_CODE=0
           ew-cli \

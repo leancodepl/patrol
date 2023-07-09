@@ -8,6 +8,25 @@ import 'common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
+// Firebase Test Lab pops out another dialog we need to handle
+Future<void> tapOkIfGoogleDialogAppears(PatrolTester $) async {
+  var listWithOkText = <NativeView>[];
+  final inactivityTimer = Timer(Duration(seconds: 10), () {});
+
+  while (listWithOkText.isEmpty && io.Platform.isAndroid) {
+    listWithOkText =
+        await $.native.getNativeViews(Selector(textContains: 'OK'));
+    final timeoutReached = !inactivityTimer.isActive;
+    if (timeoutReached) {
+      inactivityTimer.cancel();
+      break;
+    }
+  }
+  if (listWithOkText.isNotEmpty) {
+    await $.native.tap(Selector(text: 'OK'));
+  }
+}
+
 void main() {
   patrol('accepts location permission', ($) async {
     await createApp($);
@@ -26,22 +45,7 @@ void main() {
       }
       await $.pump();
 
-      // Firebase Test Lab pops out another dialog we need to handle
-      var listWithOkText = <NativeView>[];
-      final inactivityTimer = Timer(Duration(seconds: 10), () {});
-
-      while (listWithOkText.isEmpty && io.Platform.isAndroid) {
-        listWithOkText =
-            await $.native.getNativeViews(Selector(textContains: 'OK'));
-        final timeoutReached = !inactivityTimer.isActive;
-        if (timeoutReached) {
-          inactivityTimer.cancel();
-          break;
-        }
-      }
-      if (listWithOkText.isNotEmpty) {
-        await $.native.tap(Selector(text: 'OK'));
-      }
+      await tapOkIfGoogleDialogAppears($);
 
       // We need to tap again on this button on real iOS device
       try {
