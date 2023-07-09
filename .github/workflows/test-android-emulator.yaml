@@ -66,7 +66,7 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Set devices
+      - name: Set devices to run tests on
         run: |
           IFS=',' read -ra DEVICE_ARRAY <<< "${{ env.DEVICES_LIST }}"
           IFS=',' read -ra API_ARRAY <<< "${{ env.APIS_LIST }}"
@@ -106,8 +106,7 @@ jobs:
           TESTS_EXIT_CODE=0
           ew-cli \
             emulatorwtf.yaml:main \
-            --device model=${DEVICE0},version=${API0},gpu=auto \
-            --device model=${DEVICE1},version=${API1},gpu=auto \
+            ${{ env.DEVICES }} \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
             --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
