@@ -10,11 +10,6 @@ jobs:
     name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      # The devices in `DEVICES_LIST` are paired with the corresponding index in `APIS_LIST`
-      # If you're adding/removing elements remember about adding/removing a step for generating test report
-      DEVICES_LIST: "Pixel7,Pixel2,NexusLowRes,Tablet10"
-      APIS_LIST: "27,31,33,33"
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -68,22 +63,6 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Set devices to run tests on
-        run: |
-          IFS=',' read -ra DEVICE_ARRAY <<< "${{ env.DEVICES_LIST }}"
-          IFS=',' read -ra API_ARRAY <<< "${{ env.APIS_LIST }}"
-          
-          DEVICES=""
-          
-          for i in "${!DEVICE_ARRAY[@]}"; do
-            DEVICES+="--device model=${DEVICE_ARRAY[$i]},version=${API_ARRAY[$i]},gpu=auto "
-            echo "DEVICE${i}=${DEVICE_ARRAY[$i]}" >> $GITHUB_ENV
-            echo "API${i}=${API_ARRAY[$i]}" >> $GITHUB_ENV
-          done
-          
-          echo $DEVICES
-          echo "DEVICES=$DEVICES" >> $GITHUB_ENV
-
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
@@ -109,83 +88,10 @@ jobs:
           TESTS_EXIT_CODE=0
           ew-cli \
             emulatorwtf.yaml:main \
-            ${{ env.DEVICES }} \
             --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
             --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
-
-      - name: Merge XML reports
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        working-directory: packages/patrol/example/test_artifacts
-        run: |
-          npm install -g junit-report-merger
-
-          IFS=',' read -ra DEVICE_ARRAY <<< "${{ env.DEVICES_LIST }}"
-          IFS=',' read -ra API_ARRAY <<< "${{ env.APIS_LIST }}"
-          
-          for i in "${!DEVICE_ARRAY[@]}"; do
-            jrm ${DEVICE_ARRAY[$i]}_api${API_ARRAY[$i]}/${DEVICE_ARRAY[$i]}api${API_ARRAY[$i]}.xml "${DEVICE_ARRAY[$i]}_api${API_ARRAY[$i]}/**/*.xml"
-          done
-
-      - name: Publish test report to summary
-        uses: mikepenz/action-junit-report@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          check_name: Patrol tests on ${{ env.DEVICE0 }} API ${{ env.API0 }}
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE0 }}_api${{ env.API0 }}/*.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Publish test report to summary
-        uses: mikepenz/action-junit-report@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          check_name: Patrol tests on ${{ env.DEVICE1 }} API ${{ env.API1 }}
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE1 }}_api${{ env.API1 }}/*.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Publish test report to summary
-        uses: mikepenz/action-junit-report@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          check_name: Patrol tests on ${{ env.DEVICE2 }} API ${{ env.API2 }}
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE2 }}_api${{ env.API2 }}/*.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Publish test report to summary
-        uses: mikepenz/action-junit-report@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          check_name: Patrol tests on ${{ env.DEVICE3 }} API ${{ env.API3 }}
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/${{ env.DEVICE3 }}_api${{ env.API3 }}/*.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Generate test report as check run
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: dorny/test-reporter@v1
-        with:
-          name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/*.xml
-          reporter: java-junit
-          fail-on-error: false
-
-      - name: Upload XML test report to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/*.xml
-
-      - name: Upload test outputs to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: Test report, logs and captured videos
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
   call_send_slack_message:
     name: Notify on Slack
