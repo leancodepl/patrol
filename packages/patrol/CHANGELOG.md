@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Remove dependency on `package:http` (#1485)
+
 ## 2.0.2
 
 - Fix `enterText()` not working when running with `flutter_driver` on the web
