@@ -11,7 +11,7 @@ class FlutterAppOptions {
     required this.flavor,
     required this.buildMode,
     required this.dartDefines,
-    this.dartDefineFromFile = const {},
+    required this.dartDefineFromFile,
   });
 
   final String target;
