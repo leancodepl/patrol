@@ -48,25 +48,30 @@ class AndroidAppOptions {
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
   List<String> toGradleAssembleInvocation({required bool isWindows}) {
+    // for example: assembleDevDebug, assembleRelease
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'assemble${_effectiveFlavor}Debug',
+      task: 'assemble$_effectiveFlavor$_buildMode',
     );
   }
 
   List<String> toGradleAssembleTestInvocation({required bool isWindows}) {
+    // for example: assembleDevDebugAndroidTest, assembleReleaseAndroidTest
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'assemble${_effectiveFlavor}DebugAndroidTest',
+      task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
     );
   }
 
   List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
+    // for example: connectedDevDebugAndroidTest, connectedReleaseAndroidTest
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'connected${_effectiveFlavor}DebugAndroidTest',
+      task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
     );
   }
+
+  String get _buildMode => flutter.buildMode.androidName;
 
   String get _effectiveFlavor {
     var flavor = flutter.flavor ?? '';
