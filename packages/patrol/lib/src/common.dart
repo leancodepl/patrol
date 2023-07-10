@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
+import 'dart:io' as io;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
@@ -110,6 +111,14 @@ void patrolTest(
         }
       }
 
+      if (io.Platform.isIOS) {
+        widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
+          // This callback is empty on purpose. It's a workaround for tests
+          // failing on iOS.
+          //
+          // See https://github.com/leancodepl/patrol/issues/1474
+        };
+      }
       await automator?.configure();
 
       final patrolTester = PatrolTester(
