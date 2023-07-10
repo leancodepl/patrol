@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Fix `--release` not working when building/running on Android (#1484)
+
 ## 2.0.1
 
 - Support for fix for WebViews on modern Android versions (#1398)
