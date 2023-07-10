@@ -10,6 +10,6 @@ exec gcloud firebase test android run \
 	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en,orientation=portrait \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
-	--results-dir="$RESULTS_DIR_NAME" \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true
+	--environment-variables clearPackageData=true \
+	--format=json

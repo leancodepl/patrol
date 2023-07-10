@@ -89,66 +89,11 @@ jobs:
           DEVICE_MODEL: ${{ matrix.device_model }}
           DEVICE_VERSION: ${{ matrix.os_version }}
         run: |
-          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
-          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
-
           TESTS_EXIT_CODE=0
           ./run_android_testlab || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
-
-      - name: Get test outputs from Google Cloud Storage
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        run: |
-          mkdir test_outputs
-          gsutil -m cp -r "gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/oriole-33-en-portrait/*" test_outputs
-
-      - name: Publish test report to summary
-        uses: mikepenz/action-junit-report@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Generate test report as check run
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: dorny/test-reporter@v1
-        with:
-          name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
-          reporter: java-junit
-          fail-on-error: false
-
-      - name: Upload XML test report to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
-
-      - name: Upload captured video to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          name: Captured video
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/video.mp4
-
-      - name: Upload test cases to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          name: Test cases (logcat and captured video per test target)
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/test_cases
-
-      - name: Upload device logs to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: Logs (logcat)
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/logcat
 
   call_send_slack_message:
     name: Notify on Slack
