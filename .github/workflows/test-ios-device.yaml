@@ -103,20 +103,19 @@ jobs:
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
         env:
-          DEVICE_MODEL: ${{ matrix.device_model }}
-          DEVICE_VERSION: ${{ matrix.os_version }}
+          IOS_DEVICE_MODEL: ${{ matrix.device_model }}
+          IOS_DEVICE_VERSION: ${{ matrix.os_version }}
         run: |
           set +e
-          exec 3>&1
-          output="$(./run_ios_testlab 2>&1 | tee >(cat - >&3))"
+          output="$(./run_ios_testlab 2>&1)"
+          TESTS_EXIT_CODE=$?
           set -e
 
-          # Capture the exit code of the run_ios_testlab command
-          TESTS_EXIT_CODE=${PIPESTATUS[0]}
+          echo "$output"
 
           # Extract the last link using grep, tail, and sed, and write it to Github Summmary
           link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
-          echo "[Check out run details here]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Test details on Firebase Test Lab]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
