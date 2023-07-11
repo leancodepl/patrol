@@ -1,3 +1,8 @@
+## Unreleased
+
+- Uninstall the app before `patrol test` and `patrol develop`, in addition to
+  uninstalling them after tests finish (#1500)
+
 ## 2.0.2
 
 - Fix `--release` not working when building/running on Android (#1484)
