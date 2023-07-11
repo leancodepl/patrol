@@ -11,13 +11,13 @@ output="$(gcloud firebase test android run \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true 2>&1)"
+	--environment-variables clearPackageData=true 2>&1 | tee /dev/tty)"
 set -e
 
 TESTS_EXIT_CODE=$?
 
 # Extract the last link using grep, tail, and sed, and write it to Github Summmary
 link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
-echo "## [Check out run artifacts here (Leancode members only)]($link)" >> "$GITHUB_STEP_SUMMARY"
+echo "[Check out run details here (LeanCode members only)]($link)" >> "$GITHUB_STEP_SUMMARY" || true
 
 exit $TESTS_EXIT_CODE
