@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix tests occasionally failing on iOS because of dangling `SemanticsHandle`s
+  (#1491)
+
 ## 2.0.3
 
 - Remove dependency on `package:http` (#1485)
