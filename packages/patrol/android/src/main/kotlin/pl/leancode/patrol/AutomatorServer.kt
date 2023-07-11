@@ -150,12 +150,18 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
 
     override suspend fun enterText(request: Contracts.EnterTextRequest): Empty {
         when (request.findByCase) {
-            INDEX -> automation.enterText(text = request.data, index = request.index)
+            INDEX -> automation.enterText(
+                text = request.data,
+                index = request.index,
+                showKeyboard = request.showKeyboard,
+            )
+
             SELECTOR -> automation.enterText(
                 text = request.data,
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
-                index = request.selector.instance
+                index = request.selector.instance,
+                showKeyboard = request.showKeyboard,
             )
 
             else -> throw PatrolException("enterText(): neither index nor selector are set")
