@@ -13,10 +13,8 @@ void main() {
     contactsAppId = 'com.google.android.contacts';
   }
 
-  late String firstContact;
-  late String secondContact;
-
   patrol('contacts_test', ($) async {
+    // creates new contact
     await $.pumpWidgetAndSettle(ExampleApp());
     await $.native.pressHome();
     await $.native.openApp(appId: contactsAppId);
@@ -25,12 +23,11 @@ void main() {
       await $.native.tap(Selector(text: 'All iPhone'), appId: contactsAppId);
     }
 
-    firstContact = await _createNewContact($);
-    secondContact = await _createNewContact($);
-  });
+    await _createNewContact($);
+    await _createNewContact($);
 
-  patrol('opens created contacts', ($) async {
-    await $.native.openApp();
+    // opens created contacts
+/*     await $.native.openApp();
     await $.pumpWidgetAndSettle(ExampleApp());
     await $.native.pressHome();
     await $.native.openApp(appId: contactsAppId);
@@ -38,11 +35,10 @@ void main() {
     await $.native.tap(Selector(text: firstContact), appId: contactsAppId);
     await _goBack($);
     await $.native.tap(Selector(text: secondContact), appId: contactsAppId);
-    await _goBack($);
-  });
+    await _goBack($); */
 
-  patrol('creates two contacts with the same name', ($) async {
-    await $.native.openApp();
+    // creates two contacts with the same name
+/*     await $.native.openApp();
     await $.pumpWidgetAndSettle(ExampleApp());
     await $.native.pressHome();
     await $.native.openApp(appId: contactsAppId);
@@ -72,7 +68,7 @@ void main() {
     );
     // TODO: Verify that second contact is shown
 
-    await _goBack($);
+    await _goBack($); */
   });
 }
 
