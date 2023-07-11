@@ -160,7 +160,8 @@ class DevelopCommand extends PatrolCommand {
       simulator: !device.real,
     );
 
-    await _build(androidOpts, iosOpts, device: device);
+    await _build(androidOpts, iosOpts, device);
+    await _preExecute(androidOpts, iosOpts, device, uninstall);
     await _execute(
       flutterOpts,
       androidOpts,
@@ -174,9 +175,9 @@ class DevelopCommand extends PatrolCommand {
 
   Future<void> _build(
     AndroidAppOptions androidOpts,
-    IOSAppOptions iosOpts, {
-    required Device device,
-  }) async {
+    IOSAppOptions iosOpts,
+    Device device,
+  ) async {
     Future<void> Function() buildAction;
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -194,6 +195,35 @@ class DevelopCommand extends PatrolCommand {
         ..detail('$st')
         ..err(defaultFailureMessage);
       rethrow;
+    }
+  }
+
+  /// Uninstall the apps before running the tests.
+  Future<void> _preExecute(
+    AndroidAppOptions androidOpts,
+    IOSAppOptions iosOpts,
+    Device device,
+    bool uninstall,
+  ) async {
+    if (!uninstall) {
+      return;
+    }
+
+    _logger.detail('Will uninstall apps before running tests');
+
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        final packageName = androidOpts.packageName;
+        if (packageName != null) {
+          await _androidTestBackend.uninstall(packageName, device);
+        }
+        break;
+      case TargetPlatform.iOS:
+        final bundleId = iosOpts.bundleId;
+        if (bundleId != null) {
+          await _iosTestBackend.uninstall(bundleId, device);
+        }
+        break;
     }
   }
 
