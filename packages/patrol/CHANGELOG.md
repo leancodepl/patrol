@@ -1,4 +1,4 @@
-## Unreleased
+## 2.0.4
 
 - Fix tests occasionally failing on iOS because of dangling `SemanticsHandle`s
   (#1491)
