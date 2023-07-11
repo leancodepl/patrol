@@ -366,6 +366,8 @@ public struct Patrol_EnterTextRequest {
     set {findBy = .selector(newValue)}
   }
 
+  public var showKeyboard: Bool = false
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_FindBy: Equatable {
@@ -1350,6 +1352,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     2: .same(proto: "appId"),
     3: .same(proto: "index"),
     4: .same(proto: "selector"),
+    5: .same(proto: "showKeyboard"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1381,6 +1384,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.findBy = .selector(v)
         }
       }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.showKeyboard) }()
       default: break
       }
     }
@@ -1408,6 +1412,9 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     }()
     case nil: break
     }
+    if self.showKeyboard != false {
+      try visitor.visitSingularBoolField(value: self.showKeyboard, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1415,6 +1422,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     if lhs.data != rhs.data {return false}
     if lhs.appID != rhs.appID {return false}
     if lhs.findBy != rhs.findBy {return false}
+    if lhs.showKeyboard != rhs.showKeyboard {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

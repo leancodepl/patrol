@@ -108,6 +108,23 @@ public object EnterTextRequestKt {
     public fun hasSelector(): kotlin.Boolean {
       return _builder.hasSelector()
     }
+
+    /**
+     * <code>bool showKeyboard = 5;</code>
+     */
+    public var showKeyboard: kotlin.Boolean
+      @JvmName("getShowKeyboard")
+      get() = _builder.getShowKeyboard()
+      @JvmName("setShowKeyboard")
+      set(value) {
+        _builder.setShowKeyboard(value)
+      }
+    /**
+     * `bool showKeyboard = 5;`
+     */
+    public fun clearShowKeyboard() {
+      _builder.clearShowKeyboard()
+    }
     public val findByCase: pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase
       @JvmName("getFindByCase")
       get() = _builder.getFindByCase()
