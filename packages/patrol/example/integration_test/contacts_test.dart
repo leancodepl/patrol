@@ -10,34 +10,35 @@ void main() {
   if (Platform.isIOS) {
     contactsAppId = 'com.apple.MobileAddressBook';
   } else if (Platform.isAndroid) {
+    // Only for API 33. API 32 and below use 'com.android.contacts'.
     contactsAppId = 'com.google.android.contacts';
   }
 
-  patrol('contacts_test', ($) async {
-    // creates new contact
-    await $.pumpWidgetAndSettle(ExampleApp());
-    await $.native.pressHome();
-    await $.native.openApp(appId: contactsAppId);
+  patrol(
+    'contacts_test',
+    nativeAutomatorConfig: NativeAutomatorConfig(
+      showKeyboard: false,
+    ),
+    ($) async {
+      // creates new contact
+      await $.pumpWidgetAndSettle(ExampleApp());
+      await $.native.pressHome();
+      await $.native.openApp(appId: contactsAppId);
 
-    if (Platform.isIOS) {
-      await $.native.tap(Selector(text: 'All iPhone'), appId: contactsAppId);
-    }
+      if (Platform.isIOS) {
+        await $.native.tap(Selector(text: 'All iPhone'), appId: contactsAppId);
+      }
 
-    await _createNewContact($);
-    await _createNewContact($);
+      // opens created contacts
+      final firstContact = await _createNewContact($);
+      final secondContact = await _createNewContact($);
 
-    // opens created contacts
-/*     await $.native.openApp();
-    await $.pumpWidgetAndSettle(ExampleApp());
-    await $.native.pressHome();
-    await $.native.openApp(appId: contactsAppId);
+      await $.native.tap(Selector(text: firstContact), appId: contactsAppId);
+      await _goBack($);
+      await $.native.tap(Selector(text: secondContact), appId: contactsAppId);
+      await _goBack($);
 
-    await $.native.tap(Selector(text: firstContact), appId: contactsAppId);
-    await _goBack($);
-    await $.native.tap(Selector(text: secondContact), appId: contactsAppId);
-    await _goBack($); */
-
-    // creates two contacts with the same name
+      // creates two contacts with the same name
 /*     await $.native.openApp();
     await $.pumpWidgetAndSettle(ExampleApp());
     await $.native.pressHome();
@@ -69,7 +70,8 @@ void main() {
     // TODO: Verify that second contact is shown
 
     await _goBack($); */
-  });
+    },
+  );
 }
 
 /// Creates a new contact with random data.
