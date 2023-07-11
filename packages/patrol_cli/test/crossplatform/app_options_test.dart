@@ -111,6 +111,75 @@ void main() {
         );
       });
     });
+
+    group('correctly overrides dart defines from file values with dart defines',
+        () {
+      const dartDefines = {
+        'EMAIL': 'user@example.com',
+        'PASSWORD': 'ny4ncat',
+        'foo': 'bar',
+      };
+
+      const dartDefinesFromFile = {
+        'EMAIL': 'banana@example.com',
+        'PASSWORD': 'hello',
+        'FLAVOR': 'dev'
+      };
+
+      test('on Windows', () {
+        final flutterOpts = FlutterAppOptions(
+          target: r'C:\Users\john\app\integration_test\app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: 'dev',
+          dartDefines: dartDefines,
+          dartDefineFromFile: dartDefinesFromFile,
+          dartDefineFromFilePath: '',
+        );
+        options = AndroidAppOptions(flutter: flutterOpts);
+
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: true);
+        expect(
+          invocation,
+          equals([
+            r'.\gradlew.bat',
+            ':app:assembleDevDebugAndroidTest',
+            r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-PEMAIL=user@example.com',
+            '-PPASSWORD=ny4ncat',
+            '-PFLAVOR=dev',
+          ]),
+        );
+      });
+
+      test('on macOS', () {
+        final flutterOpts = FlutterAppOptions(
+          target: '/Users/john/app/integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: 'dev',
+          dartDefines: dartDefines,
+          dartDefineFromFile: dartDefinesFromFile,
+          dartDefineFromFilePath: '',
+        );
+        options = AndroidAppOptions(flutter: flutterOpts);
+
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: false);
+        expect(
+          invocation,
+          equals([
+            './gradlew',
+            ':app:assembleDevDebugAndroidTest',
+            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-PEMAIL=user@example.com',
+            '-PPASSWORD=ny4ncat',
+            '-PFLAVOR=dev',
+          ]),
+        );
+      });
+    });
   });
 
   group('IOSAppOptions', () {

@@ -118,7 +118,11 @@ class AndroidAppOptions {
       cmd.add('-Pdart-defines=$dartDefinesString');
     }
     if (flutter.dartDefineFromFile.isNotEmpty) {
-      cmd.addAll(_parseJsonToGradleConfig(flutter.dartDefineFromFile));
+      final dartDefinesFromFile = _overrideKeys(
+        json: flutter.dartDefineFromFile,
+        dartDefines: flutter.dartDefines,
+      );
+      cmd.addAll(_parseJsonToGradleConfig(dartDefinesFromFile));
     }
 
     return cmd;
@@ -131,6 +135,21 @@ class AndroidAppOptions {
     });
 
     return result;
+  }
+
+  Map<String, dynamic> _overrideKeys({
+    required Map<String, dynamic> json,
+    required Map<String, String> dartDefines,
+  }) {
+    final modified = Map<String, dynamic>.from(json);
+    if (dartDefines.isNotEmpty) {
+      modified.forEach((key, value) {
+        if (dartDefines.containsKey(key)) {
+          modified[key] = dartDefines[key];
+        }
+      });
+    }
+    return modified;
   }
 }
 

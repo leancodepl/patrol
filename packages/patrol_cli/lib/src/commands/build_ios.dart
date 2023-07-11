@@ -122,8 +122,10 @@ class BuildIOSCommand extends PatrolCommand {
         'Received path for --dart-define-from-file: $dartDefineFromFilePath',
       );
     }
-    final dartDefineFromFile =
-        _dartDefinesReader.fromConfigFile(path: dartDefineFromFilePath);
+    final dartDefineFromFile = _overrideKeys(
+      json: _dartDefinesReader.fromConfigFile(path: dartDefineFromFilePath),
+      dartDefines: dartDefines,
+    );
 
     final flutterOpts = FlutterAppOptions(
       target: testBundle.path,
@@ -191,5 +193,20 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     _logger.info('$xcTestRunPath (xctestrun file)');
+  }
+
+  Map<String, dynamic> _overrideKeys({
+    required Map<String, dynamic> json,
+    required Map<String, String> dartDefines,
+  }) {
+    final modified = Map<String, dynamic>.from(json);
+    if (dartDefines.isNotEmpty) {
+      modified.forEach((key, value) {
+        if (dartDefines.containsKey(key)) {
+          modified[key] = dartDefines[key];
+        }
+      });
+    }
+    return modified;
   }
 }
