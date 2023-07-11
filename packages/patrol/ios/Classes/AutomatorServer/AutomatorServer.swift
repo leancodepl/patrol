@@ -137,13 +137,15 @@
           try await automator.enterText(
             request.data,
             byIndex: Int(index),
-            inApp: request.appID
+            inApp: request.appID,
+            showKeyboard: request.showKeyboard
           )
         case .selector(let selector):
           try await automator.enterText(
             request.data,
             byText: selector.text,
-            inApp: request.appID
+            inApp: request.appID,
+            showKeyboard: request.showKeyboard
           )
         default:
           throw PatrolError.internal("enterText(): neither index nor selector are set")

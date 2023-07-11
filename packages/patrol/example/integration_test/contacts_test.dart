@@ -16,9 +16,7 @@ void main() {
 
   patrol(
     'contacts_test',
-    nativeAutomatorConfig: NativeAutomatorConfig(
-      showKeyboard: false,
-    ),
+    nativeAutomatorConfig: NativeAutomatorConfig(showKeyboard: false),
     ($) async {
       // creates new contact
       await $.pumpWidgetAndSettle(ExampleApp());
