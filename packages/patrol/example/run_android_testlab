@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# This script requires following environment variables to be set:
+# * DEVICE_MODEL (for example: "iphone11pro")
+# * DEVICE_VERSION (for example: "16.3")
+
 # Run your command and store the output in a variable
 set +e
 output="$(gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-	--device model=oriole,version=33,locale=en,orientation=portrait \
+	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en,orientation=portrait \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
 	--use-orchestrator \
@@ -18,6 +22,6 @@ TESTS_EXIT_CODE=$?
 
 # Extract the last link using grep, tail, and sed, and write it to Github Summmary
 link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
-echo "[Check out run details here (LeanCode members only)]($link)" >> "$GITHUB_STEP_SUMMARY" || true
+echo "[Check out run details here]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY" || true
 
 exit $TESTS_EXIT_CODE

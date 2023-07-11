@@ -4,7 +4,6 @@ set -euo pipefail
 # This script requires following environment variables to be set:
 # * DEVICE_MODEL (for example: "iphone11pro")
 # * DEVICE_VERSION (for example: "16.3")
-# * RESULTS_DIR_NAME (for example: "$(date +"%Y-%m-%d_%H:%M:%S")" - it should be unique)
 
 # And ios_tests.zip containing the iOS app and XCTest files
 
@@ -13,5 +12,4 @@ exec gcloud firebase test ios run \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en_US,orientation=portrait \
 	--timeout 10m \
-	--results-bucket="patrol_runs" \
-	--results-dir="$RESULTS_DIR_NAME"
+	--results-bucket="patrol_runs"
