@@ -11,10 +11,10 @@ dependencies:
   cupertino_icons: ^1.0.5
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^14.1.1
+  flutter_local_notifications: ^15.1.0+1
   flutter_timezone: ^1.0.7
   geolocator: ^9.0.2
-  permission_handler: ^10.4.1
+  permission_handler: ^10.4.2
   timezone: ^0.9.2
   webview_flutter: ^4.2.2
 
@@ -36,7 +36,3 @@ patrol:
     package_name: pl.leancode.patrol.example
   ios:
     bundle_id: pl.leancode.patrol.Example
-
-# See https://github.com/flutter/flutter/issues/129587
-dependency_overrides:
-  webview_flutter_wkwebview: '3.5.0'
