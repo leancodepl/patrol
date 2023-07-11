@@ -19,6 +19,7 @@ dependencies:
   webview_flutter: ^4.2.2
 
 dev_dependencies:
+  faker: ^2.1.0
   flutter_test:
     sdk: flutter
   integration_test:
