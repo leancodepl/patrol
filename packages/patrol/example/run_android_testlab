@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TESTS_EXIT_CODE=0
 # Run your command and store the output in a variable
-output=$(gcloud firebase test android run \
+set +e
+output="$(gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en,orientation=portrait \
+	--device model=oriole,version=33,locale=en,orientation=portrait \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true)
+	--environment-variables clearPackageData=true 2>&1)"
+set -e
 
-# Extract the last link using grep, tail, and sed, and store it in a variable
-link=$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')
+TESTS_EXIT_CODE=$?
 
-# Print the extracted link
-echo "### $link 🚀" >> "$GITHUB_STEP_SUMMARY"
+# Extract the last link using grep, tail, and sed, and write it to Github Summmary
+link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
+echo "## [Check out run artifacts here (Leancode members only)]($link)" >> "$GITHUB_STEP_SUMMARY"
+
+exit $TESTS_EXIT_CODE
