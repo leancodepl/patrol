@@ -56,6 +56,7 @@ class NativeAutomatorConfig {
     this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
+    this.showKeyboard = true,
     this.logger = _defaultPrintLogger,
   });
 
@@ -72,6 +73,22 @@ class NativeAutomatorConfig {
 
   /// Time to wait for native views to appear.
   final Duration findTimeout;
+
+  /// Whether to show the keyboard when entering text.
+  ///
+  /// The default is to always show the keyboard when entering text, and only
+  /// dismiss it after tapping on another UI element. However, that "another UI
+  /// element" might be obscured by the keyboard, which opens up an uncanny
+  /// valley of non-deteministic and hard-to-debug behavior.
+  ///
+  /// That's why you might want to set this to `false`, which:
+  ///  * on Android: will disable showing the keyboard at all
+  ///  * on iOS: will show the keyboard, but dismiss it immediately after
+  ///    entering text
+  ///
+  /// Settings this to `false` makes it possible to avoid a whole class of
+  /// problems related to keyboard handling.
+  final bool showKeyboard;
 
   /// Package name of the application under test.
   ///
@@ -537,24 +554,25 @@ class NativeAutomator {
   /// If the text field isn't found within the timeout, an exception is thrown.
   ///
   /// The native view specified by [selector] must be:
-  /// - EditText on Android
-  /// - TextField or SecureTextField on iOS
+  ///  * EditText on Android
+  ///  * TextField or SecureTextField on iOS
   ///
   /// See also:
-  ///
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
     Selector selector, {
     required String text,
     String? appId,
+    bool? showKeyboard,
   }) async {
     await _wrapRequest(
       'enterText',
       () => _client.enterText(
         EnterTextRequest(
           data: text,
-          selector: selector,
           appId: appId ?? resolvedAppId,
+          selector: selector,
+          showKeyboard: showKeyboard ?? _config.showKeyboard,
         ),
       ),
     );
@@ -567,26 +585,27 @@ class NativeAutomator {
   /// passes. If the text field isn't found within the timeout, an exception is
   /// thrown.
   ///
-  /// Native views considered as texts fields are:
-  /// - EditText on Android
-  /// - TextField or SecureTextField on iOS
+  /// Native views considered to be texts fields are:
+  ///  * EditText on Android
+  ///  * TextField or SecureTextField on iOS
   ///
   /// See also:
-  ///
   ///  * [enterText], which allows for more precise specification of the text
   ///    field to enter text into
   Future<void> enterTextByIndex(
     String text, {
     required int index,
     String? appId,
+    bool? ignoreKeyboard,
   }) async {
     await _wrapRequest(
       'enterTextByIndex',
       () => _client.enterText(
         EnterTextRequest(
           data: text,
-          index: index,
           appId: appId ?? resolvedAppId,
+          index: index,
+          showKeyboard: ignoreKeyboard ?? _config.showKeyboard,
         ),
       ),
     );
