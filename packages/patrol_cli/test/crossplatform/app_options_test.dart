@@ -16,6 +16,7 @@ void main() {
           flavor: null,
           dartDefines: {},
           dartDefineFromFile: {},
+          dartDefineFromFilePath: '',
         );
         options = AndroidAppOptions(flutter: flutterOptions);
 
@@ -38,6 +39,7 @@ void main() {
           flavor: null,
           dartDefines: {},
           dartDefineFromFile: {},
+          dartDefineFromFilePath: '',
         );
         options = AndroidAppOptions(flutter: flutterOpts);
 
@@ -68,6 +70,7 @@ void main() {
           flavor: 'dev',
           dartDefines: dartDefines,
           dartDefineFromFile: {},
+          dartDefineFromFilePath: '',
         );
         options = AndroidAppOptions(flutter: flutterOpts);
 
@@ -91,6 +94,7 @@ void main() {
           flavor: 'dev',
           dartDefines: dartDefines,
           dartDefineFromFile: {},
+          dartDefineFromFilePath: '',
         );
         options = AndroidAppOptions(flutter: flutterOpts);
 
@@ -119,6 +123,7 @@ void main() {
         flavor: null,
         dartDefines: {},
         dartDefineFromFile: {},
+        dartDefineFromFilePath: '',
       );
 
       setUp(() {
@@ -198,6 +203,7 @@ void main() {
             'foo': 'bar',
           },
           dartDefineFromFile: {},
+          dartDefineFromFilePath: '',
         );
 
         setUp(() {

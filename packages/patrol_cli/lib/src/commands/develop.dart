@@ -156,6 +156,7 @@ class DevelopCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFile: dartDefineFromFile,
+      dartDefineFromFilePath: dartDefineFromFilePath,
     );
 
     final androidOpts = AndroidAppOptions(

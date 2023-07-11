@@ -131,6 +131,7 @@ class BuildIOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFile: dartDefineFromFile,
+      dartDefineFromFilePath: dartDefineFromFilePath,
     );
 
     final iosOpts = IOSAppOptions(

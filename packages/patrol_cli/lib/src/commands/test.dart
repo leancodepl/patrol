@@ -160,6 +160,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFile: dartDefineFromFile,
+      dartDefineFromFilePath: dartDefineFromFilePath,
     );
 
     final androidOpts = AndroidAppOptions(

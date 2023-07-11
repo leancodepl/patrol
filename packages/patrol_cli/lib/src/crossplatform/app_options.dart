@@ -12,6 +12,7 @@ class FlutterAppOptions {
     required this.buildMode,
     required this.dartDefines,
     required this.dartDefineFromFile,
+    required this.dartDefineFromFilePath,
   });
 
   final String target;
@@ -19,6 +20,7 @@ class FlutterAppOptions {
   final BuildMode buildMode;
   final Map<String, String> dartDefines;
   final Map<String, dynamic> dartDefineFromFile;
+  final String dartDefineFromFilePath;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -32,6 +34,10 @@ class FlutterAppOptions {
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],
+      if (dartDefineFromFilePath.isNotEmpty) ...[
+        '--dart-define-from-file',
+        dartDefineFromFilePath,
+      ]
     ];
 
     return cmd;
@@ -166,6 +172,10 @@ class IOSAppOptions {
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],
+      if (flutter.dartDefineFromFilePath.isNotEmpty) ...[
+        '--dart-define-from-file',
+        flutter.dartDefineFromFilePath,
+      ]
     ];
 
     return cmd;
