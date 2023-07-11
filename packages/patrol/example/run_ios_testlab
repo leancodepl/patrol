@@ -7,7 +7,7 @@ set -euo pipefail
 
 # And ios_tests.zip containing the iOS app and XCTest files
 
-exec gcloud firebase test ios run \
+gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en_US,orientation=portrait \

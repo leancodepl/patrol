@@ -107,10 +107,12 @@ jobs:
           DEVICE_VERSION: ${{ matrix.os_version }}
         run: |
           set +e
-          output="$(./run_ios_testlab 2>&1 | tee /dev/tty)"
+          exec 3>&1
+          output="$(./run_ios_testlab 2>&1 | tee >(cat - >&3))"
           set -e
 
-          TESTS_EXIT_CODE=$?
+          # Capture the exit code of the run_ios_testlab command
+          TESTS_EXIT_CODE=${PIPESTATUS[0]}
 
           # Extract the last link using grep, tail, and sed, and write it to Github Summmary
           link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
