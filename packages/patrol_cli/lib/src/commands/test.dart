@@ -164,7 +164,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       simulator: !device.real,
     );
 
-    await _build(androidOpts, iosOpts, device: device);
+    await _build(androidOpts, iosOpts, device);
+    await _preExecute(androidOpts, iosOpts, device, uninstall);
     final allPassed = await _execute(
       flutterOpts,
       androidOpts,
@@ -176,11 +177,40 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     return allPassed ? 0 : 1;
   }
 
+  /// Uninstall the apps before running the tests.
+  Future<void> _preExecute(
+    AndroidAppOptions androidOpts,
+    IOSAppOptions iosOpts,
+    Device device,
+    bool uninstall,
+  ) async {
+    if (!uninstall) {
+      return;
+    }
+
+    _logger.detail('Will uninstall apps before running tests');
+
+    switch (device.targetPlatform) {
+      case TargetPlatform.android:
+        final packageName = androidOpts.packageName;
+        if (packageName != null) {
+          await _androidTestBackend.uninstall(packageName, device);
+        }
+        break;
+      case TargetPlatform.iOS:
+        final bundleId = iosOpts.bundleId;
+        if (bundleId != null) {
+          await _iosTestBackend.uninstall(bundleId, device);
+        }
+        break;
+    }
+  }
+
   Future<void> _build(
     AndroidAppOptions androidOpts,
-    IOSAppOptions iosOpts, {
-    required Device device,
-  }) async {
+    IOSAppOptions iosOpts,
+    Device device,
+  ) async {
     Future<void> Function() buildAction;
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -225,6 +255,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (bundle != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(bundle, device);
         }
+        break;
     }
 
     var allPassed = true;
