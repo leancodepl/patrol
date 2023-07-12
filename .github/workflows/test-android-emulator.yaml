@@ -91,11 +91,9 @@ jobs:
           TESTS_EXIT_CODE=$?
           set -e
 
-          echo "$output"
-
           # Extract the results URL and write it to Github Summmary
           link="$(echo "$output" | jq -r ".resultsUrl")"
-          echo "[Test details on Firebase Test Lab]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
