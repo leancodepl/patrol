@@ -7,11 +7,16 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
@@ -90,7 +95,7 @@ public class MainActivityTest {
 
         private static void listInterfaces() {
             try {
-                java.util.Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
                 while (interfaces.hasMoreElements()) {
                     NetworkInterface i = interfaces.nextElement();
                     Log.i("APPINET", "Interface: " + i.getDisplayName());
