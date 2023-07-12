@@ -46,15 +46,6 @@ void main() {
       await $.pump();
 
       await tapOkIfGoogleDialogAppears($);
-
-      // We need to tap again on this button on real iOS device
-      try {
-        if (io.Platform.isIOS) {
-          await $('Grant permission').tap();
-        }
-      } catch (_) {
-        // Skip
-      }
     }
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
