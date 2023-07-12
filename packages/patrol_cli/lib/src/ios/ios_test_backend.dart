@@ -24,9 +24,13 @@ enum BuildMode {
   /// Flutter build mode name starts with with a lowercase letter, for example
   /// `debug` or `release`.
   ///
-  /// XCode Build Configuration name starts with an uppercase letter, for
+  /// Xcode Build Configuration names starts with an uppercase letter, for
   /// example 'Debug' or 'Release'.
   String get xcodeName => name.replaceFirst(name[0], name[0].toUpperCase());
+
+  // It's the same as xcodeName, but let's keep it for clarity.
+  /// Name of this build mode as a part of Gradle task name.
+  String get androidName => xcodeName;
 
   String createScheme(String? flavor) {
     if (flavor == null) {

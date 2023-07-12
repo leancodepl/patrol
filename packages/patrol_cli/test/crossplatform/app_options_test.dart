@@ -33,7 +33,7 @@ void main() {
       test('on macOS', () {
         final flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
-          buildMode: BuildMode.debug,
+          buildMode: BuildMode.release,
           flavor: null,
           dartDefines: {},
         );
@@ -45,7 +45,7 @@ void main() {
           invocation,
           equals([
             './gradlew',
-            ':app:assembleDebugAndroidTest',
+            ':app:assembleReleaseAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
           ]),
         );
@@ -62,7 +62,7 @@ void main() {
       test('on Windows', () {
         final flutterOpts = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
-          buildMode: BuildMode.debug,
+          buildMode: BuildMode.release,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
@@ -74,7 +74,7 @@ void main() {
           invocation,
           equals([
             r'.\gradlew.bat',
-            ':app:assembleDevDebugAndroidTest',
+            ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg=='
           ]),

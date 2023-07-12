@@ -1,3 +1,20 @@
+## 2.0.6
+
+- Implement `$.native.openQuickSettings()` for iPhones without notch (#1510)
+
+## 2.0.5
+
+- Fix occasional cryptic failures of Gradle builds (#1509)
+
+## 2.0.4
+
+- Fix tests occasionally failing on iOS because of dangling `SemanticsHandle`s
+  (#1491)
+
+## 2.0.3
+
+- Remove dependency on `package:http` (#1485)
+
 ## 2.0.2
 
 - Fix `enterText()` not working when running with `flutter_driver` on the web

@@ -131,7 +131,9 @@ It does only 2 things:
 - first, it finds a widget with the `app` key
 - then, it then exits to home screen
 
-This is enough to verify if the setup is done correctly.
+It's a very simple test, but it's enough to verify that Patrol is correctly set
+up – **but not just yet**. You still have to integrate the native part of your
+app with the respective platform's test framework. That's the last thing to do.
 
 ### Integrate with native side
 
@@ -266,7 +268,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       Select `Finish`.
 
       2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
-      Delete `RunnerUITestsLaunchTests.m`.
+      Delete `RunnerUITestsLaunchTests.m` **through Xcode**.
 
       Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
       **Build Settings** section is the same as `Runner`.
@@ -308,7 +310,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       $ pod install --repo-update
       ```
 
-      Open your Xcode project and select make every target have correct base
+      Open your Xcode project and make sure every target has correct base
       Build Configurations:
 
       ```

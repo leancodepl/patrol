@@ -1,3 +1,12 @@
+## 2.0.3
+
+- Uninstall the app before `patrol test` and `patrol develop`, in addition to
+  uninstalling them after tests finish (#1500)
+
+## 2.0.2
+
+- Fix `--release` not working when building/running on Android (#1484)
+
 ## 2.0.1
 
 - Support for fix for WebViews on modern Android versions (#1398)
