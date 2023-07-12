@@ -1,10 +1,7 @@
-package pl.leancode.patrol.example;
+package pl.leancode.patrol;
 
 import android.util.Log;
 import io.grpc.StatusRuntimeException;
-import pl.leancode.patrol.Logger;
-import pl.leancode.patrol.PatrolAppServiceClient;
-import pl.leancode.patrol.PatrolJUnitRunner;
 
 import java.net.Inet4Address;
 import java.net.NetworkInterface;
@@ -12,7 +9,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Objects;
 
-public class CustomPatrolJUnitRunner extends PatrolJUnitRunner {
+public class BrowserstackPatrolJUnitRunner extends PatrolJUnitRunner {
     @Override
     public PatrolAppServiceClient createAppServiceClient() {
         // Create client with a default constructor (localhost:8082) by default.

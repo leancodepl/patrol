@@ -43,7 +43,7 @@ android {
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "pl.leancode.patrol.example.CustomPatrolJUnitRunner"
+        testInstrumentationRunner "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
@@ -66,5 +66,4 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     androidTestUtil "androidx.test:orchestrator:1.4.2"
-    implementation "io.grpc:grpc-api:1.49.2"
 }
