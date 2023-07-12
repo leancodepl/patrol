@@ -1,3 +1,7 @@
+## 2.0.6
+
+- Implement `$.native.openQuickSettings()` for iPhones without notch (#1510)
+
 ## 2.0.5
 
 - Fix occasional cryptic failures of Gradle builds (#1509)
