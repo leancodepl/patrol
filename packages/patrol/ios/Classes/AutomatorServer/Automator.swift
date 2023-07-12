@@ -532,21 +532,21 @@
       let model = String(cString: machine)
 
       return
-        model == "iPhone7,1" ||  // iPhone 6 Plus
-        model == "iPhone7,2" ||  // iPhone 6
-        model == "iPhone8,1" ||  // iPhone 6s
-        model == "iPhone8,2" ||  // iPhone 6s Plus
-        model == "iPhone8,4" ||  // iPhone SE (GSM)
-        model == "iPhone9,1" ||  // iPhone 7
-        model == "iPhone9,2" ||  // iPhone 7 Plus
-        model == "iPhone9,3" ||  // iPhone 7
-        model == "iPhone9,4" ||  // iPhone 7 Plus
-        model == "iPhone10,1" || // iPhone 8
-        model == "iPhone10,2" || // iPhone 8 Plus
-        model == "iPhone10,4" || // iPhone 8
-        model == "iPhone10,5" || // iPhone 8 Plus
-        model == "iPhone12,8" || // iPhone SE 2nd Gen
-        model == "iPhone14,6"    // iPhone SE 3rd Gen
+        model == "iPhone7,1"  // iPhone 6 Plus
+        || model == "iPhone7,2"  // iPhone 6
+        || model == "iPhone8,1"  // iPhone 6s
+        || model == "iPhone8,2"  // iPhone 6s Plus
+        || model == "iPhone8,4"  // iPhone SE (GSM)
+        || model == "iPhone9,1"  // iPhone 7
+        || model == "iPhone9,2"  // iPhone 7 Plus
+        || model == "iPhone9,3"  // iPhone 7
+        || model == "iPhone9,4"  // iPhone 7 Plus
+        || model == "iPhone10,1"  // iPhone 8
+        || model == "iPhone10,2"  // iPhone 8 Plus
+        || model == "iPhone10,4"  // iPhone 8
+        || model == "iPhone10,5"  // iPhone 8 Plus
+        || model == "iPhone12,8"  // iPhone SE 2nd Gen
+        || model == "iPhone14,6"  // iPhone SE 3rd Gen
     }
 
     /// Adapted from https://stackoverflow.com/q/47880395/7009800
@@ -617,12 +617,12 @@
       let labels = ["OK"]
 
       if let button = self.waitForAnyElement(
-          elements: labels.map { systemAlerts.buttons[$0] },
-          timeout: self.timeout
-        ) {
-          button.tap()
-        }
+        elements: labels.map { systemAlerts.buttons[$0] },
+        timeout: self.timeout
+      ) {
+        button.tap()
       }
+    }
 
     private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void)
       async throws
