@@ -46,8 +46,6 @@
     }
 
     func openControlCenter() async throws {
-      // TODO: Implement for iPhones without notch
-
       await runAction("opening control center") {
         self.swipeToOpenControlCenter()
       }
@@ -191,6 +189,8 @@
         let toggle = self.springboard.switches["airplane-mode-button"]
         if toggle.value! as! String == "1" {
           toggle.tap()
+          // If SIM card is not available, a dialog appears after disabling airplane mode
+          try self.acceptSystemAlertIfVisible()
         } else {
           Logger.shared.i("airplane mode is already disabled")
         }
@@ -523,6 +523,32 @@
       return UIDevice.current.userInterfaceIdiom == .phone
     }
 
+    /// Based on the list from https://gist.github.com/adamawolf/3048717
+    private func isIphone8OrLower() -> Bool {
+      var size = 0
+      sysctlbyname("hw.machine", nil, &size, nil, 0)
+      var machine = [CChar](repeating: 0, count: size)
+      sysctlbyname("hw.machine", &machine, &size, nil, 0)
+      let model = String(cString: machine)
+
+      return
+        model == "iPhone7,1"  // iPhone 6 Plus
+        || model == "iPhone7,2"  // iPhone 6
+        || model == "iPhone8,1"  // iPhone 6s
+        || model == "iPhone8,2"  // iPhone 6s Plus
+        || model == "iPhone8,4"  // iPhone SE (GSM)
+        || model == "iPhone9,1"  // iPhone 7
+        || model == "iPhone9,2"  // iPhone 7 Plus
+        || model == "iPhone9,3"  // iPhone 7
+        || model == "iPhone9,4"  // iPhone 7 Plus
+        || model == "iPhone10,1"  // iPhone 8
+        || model == "iPhone10,2"  // iPhone 8 Plus
+        || model == "iPhone10,4"  // iPhone 8
+        || model == "iPhone10,5"  // iPhone 8 Plus
+        || model == "iPhone12,8"  // iPhone SE 2nd Gen
+        || model == "iPhone14,6"  // iPhone SE 3rd Gen
+    }
+
     /// Adapted from https://stackoverflow.com/q/47880395/7009800
     @discardableResult
     func waitForAnyElement(elements: [XCUIElement], timeout: TimeInterval) -> XCUIElement? {
@@ -570,9 +596,32 @@
     }
 
     private func swipeToOpenControlCenter() {
-      let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.01))
-      let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.2))
-      start.press(forDuration: 0.1, thenDragTo: end)
+      let start: CGVector
+      let end: CGVector
+
+      if self.isIphone8OrLower() {
+        start = CGVector(dx: 0.5, dy: 0.99)
+        end = CGVector(dx: 0.5, dy: 0.8)
+      } else {
+        start = CGVector(dx: 0.9, dy: 0.01)
+        end = CGVector(dx: 0.9, dy: 0.2)
+      }
+
+      let startPoint = self.springboard.coordinate(withNormalizedOffset: start)
+      let endPoint = self.springboard.coordinate(withNormalizedOffset: end)
+      startPoint.press(forDuration: 0.1, thenDragTo: endPoint)
+    }
+
+    private func acceptSystemAlertIfVisible() throws {
+      let systemAlerts = self.springboard.alerts
+      let labels = ["OK"]
+
+      if let button = self.waitForAnyElement(
+        elements: labels.map { systemAlerts.buttons[$0] },
+        timeout: self.timeout
+      ) {
+        button.tap()
+      }
     }
 
     private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void)
