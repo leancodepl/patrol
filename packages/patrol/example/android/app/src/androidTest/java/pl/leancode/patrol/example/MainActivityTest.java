@@ -7,17 +7,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URL;
 import java.util.Enumeration;
-import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
@@ -64,33 +56,6 @@ public class MainActivityTest {
             instrumentation.setUp(MainActivity.class);
             instrumentation.waitForPatrolAppService();
             result = instrumentation.listDartTests();
-        }
-
-        private static void doAHttpCall() {
-            CustomPatrolJUnitRunner instrumentation = (CustomPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-
-            try {
-                URL address = new URL("http://" + instrumentation.getLoopback());
-                HttpURLConnection conn = (HttpURLConnection) address.openConnection();
-                try {
-                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
-                    conn.setRequestProperty("Accept", "*/*");
-                    conn.setRequestMethod("GET");
-                    conn.setDoInput(true);
-
-                    Log.e("MATHTTP", "Status: " + conn.getResponseCode());
-
-                    try (InputStream in = new BufferedInputStream(conn.getErrorStream())) {
-                        String res = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-                        Log.e("MATHTTP", res);
-                    }
-                    conn.getHeaderFields().forEach((k, v) -> Log.e("MATHTTP", k + "=" + v));
-                } finally {
-                    conn.disconnect();
-                }
-            } catch (IOException e) {
-                Log.e("MATHTTP", e.toString());
-            }
         }
 
         private static void listInterfaces() {
