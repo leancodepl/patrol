@@ -45,7 +45,7 @@ void main() {
           invocation,
           equals([
             './gradlew',
-            ':app:assembleReleaseAndroidTest',
+            ':app:assembleDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
           ]),
         );
@@ -74,7 +74,7 @@ void main() {
           invocation,
           equals([
             r'.\gradlew.bat',
-            ':app:assembleDevReleaseAndroidTest',
+            ':app:assembleDevDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg=='
           ]),

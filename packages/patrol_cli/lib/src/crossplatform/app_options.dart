@@ -59,7 +59,7 @@ class AndroidAppOptions {
     // for example: assembleDevDebugAndroidTest, assembleReleaseAndroidTest
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
+      task: 'assemble${_effectiveFlavor}DebugAndroidTest',
     );
   }
 
@@ -67,7 +67,7 @@ class AndroidAppOptions {
     // for example: connectedDevDebugAndroidTest, connectedReleaseAndroidTest
     return _toGradleInvocation(
       isWindows: isWindows,
-      task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
+      task: 'connected${_effectiveFlavor}DebugAndroidTest',
     );
   }
 
