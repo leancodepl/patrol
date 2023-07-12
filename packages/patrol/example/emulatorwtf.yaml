@@ -3,9 +3,6 @@ devices:
     - model: Pixel7
       version: 33
       gpu: auto
-    - model: Pixel2
-      version: 27
-      gpu: auto
     - model: NexusLowRes
       version: 31
       gpu: auto
