@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ "$(patrol --version)" != *"v2.0.0"* ]]; then
+if [[ "$(patrol --version)" != *"v2"* ]]; then
 	echo "Error: patrol_cli v2 is required"
 	exit 1
 fi
