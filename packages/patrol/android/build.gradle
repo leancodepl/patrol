@@ -1,8 +1,24 @@
-plugins {
-    id "com.android.library"
-    id "org.jetbrains.kotlin.android"
-    id "org.jlleitschuh.gradle.ktlint" version "11.4.2"
+group "pl.leancode.patrol"
+version "1.0-SNAPSHOT"
+
+buildscript {
+    ext.kotlin_version = "1.8.22"
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.4.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:11.5.0"
+    }
 }
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 ktlint {
     filter {
@@ -16,9 +32,6 @@ allprojects {
         mavenCentral()
     }
 }
-
-group "pl.leancode.patrol"
-version "1.0-SNAPSHOT"
 
 android {
     namespace "pl.leancode.patrol"
