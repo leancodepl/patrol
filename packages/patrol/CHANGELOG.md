@@ -1,3 +1,7 @@
+## 2.0.5
+
+- Fix occasional cryptic failures of Gradle builds (#1509)
+
 ## 2.0.4
 
 - Fix tests occasionally failing on iOS because of dangling `SemanticsHandle`s
