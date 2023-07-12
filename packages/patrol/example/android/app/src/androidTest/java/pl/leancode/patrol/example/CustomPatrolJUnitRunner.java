@@ -1,6 +1,7 @@
 package pl.leancode.patrol.example;
 
 import android.util.Log;
+import io.grpc.StatusRuntimeException;
 import pl.leancode.patrol.Logger;
 import pl.leancode.patrol.PatrolAppServiceClient;
 import pl.leancode.patrol.PatrolJUnitRunner;
@@ -14,8 +15,21 @@ import java.util.Objects;
 public class CustomPatrolJUnitRunner extends PatrolJUnitRunner {
     @Override
     public PatrolAppServiceClient createAppServiceClient() {
-        Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
-        return new PatrolAppServiceClient(getLoopback());
+        // Create client with a default constructor (localhost:8082) by default.
+        PatrolAppServiceClient client = new PatrolAppServiceClient();
+        waitForPatrolAppService();
+
+        try {
+            client.listDartTests();
+        } catch (StatusRuntimeException ex) {
+            ex.printStackTrace();
+            // If the client on localhost:8082 fails, let's apply the wokraround
+            Logger.INSTANCE.i("StatusRuntimeException in createAppServiceClient " + ex.getMessage());
+            Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
+            client = new PatrolAppServiceClient(getLoopback());
+        }
+
+        return client;
     }
 
     public String getLoopback() {

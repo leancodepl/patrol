@@ -15,7 +15,6 @@ import java.util.Enumeration;
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
-        listInterfaces();
         CustomPatrolJUnitRunner instrumentation = (CustomPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
@@ -32,19 +31,5 @@ public class MainActivityTest {
     public void runDartTest() {
         CustomPatrolJUnitRunner instrumentation = (CustomPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.runDartTest(dartTestName);
-    }
-
-    private static void listInterfaces() {
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-                NetworkInterface i = interfaces.nextElement();
-                Log.i("APPINET", "Interface: " + i.getDisplayName());
-                i.getInterfaceAddresses().forEach(a -> Log.i("APPINET", "    Address: " + a.toString() + "; " + a.getAddress().toString()));
-
-            }
-        } catch (SocketException e) {
-            Log.e("APPINET", "Cannot list interfaces: " + e.getMessage());
-        }
     }
 }

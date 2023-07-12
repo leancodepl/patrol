@@ -66,4 +66,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     androidTestUtil "androidx.test:orchestrator:1.4.2"
+    implementation "io.grpc:grpc-api:1.49.2"
 }
