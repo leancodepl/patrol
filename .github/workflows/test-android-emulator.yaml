@@ -83,12 +83,10 @@ jobs:
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
-        # FIXME remove `outputs` argument and paste it to yaml config file when bug is fixed in ew-cli
         run: |
           TESTS_EXIT_CODE=0
           ew-cli \
-            emulatorwtf.yaml:main \
-            --outputs summary,merged_results_xml,coverage,pulled_dirs,results_xml,logcat,captured_video \
+            emulatorwtf.yaml:main --json \
             --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
