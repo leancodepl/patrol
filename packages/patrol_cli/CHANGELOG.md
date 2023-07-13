@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix crashes on some older Android versions when speculative `adb uninstall` is
+  called (#1529)
+
 ## 2.0.3
 
 - Uninstall the app before `patrol test` and `patrol develop`, in addition to
