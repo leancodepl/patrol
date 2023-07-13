@@ -5,13 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import pl.leancode.patrol.BrowserstackPatrolJUnitRunner;
+import pl.leancode.patrol.PatrolJUnitRunner;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
     @Parameters(name = "{0}")
     public static Object[] testCases() {
-        BrowserstackPatrolJUnitRunner instrumentation = (BrowserstackPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
         return instrumentation.listDartTests();
@@ -25,7 +25,7 @@ public class MainActivityTest {
 
     @Test
     public void runDartTest() {
-        BrowserstackPatrolJUnitRunner instrumentation = (BrowserstackPatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.runDartTest(dartTestName);
     }
 }
