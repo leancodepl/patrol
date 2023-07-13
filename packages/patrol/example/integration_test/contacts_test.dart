@@ -94,7 +94,11 @@ Future<String> _createContactOnIOS(
   String? firstName,
   String? lastName,
 }) async {
+  // TODO: Remove after support for Flutter 3.3 is dropped.
+  // ignore: parameter_assignments
   firstName = firstName ?? faker.person.firstName();
+  // TODO: Remove after support for Flutter 3.3 is dropped.
+  // ignore: parameter_assignments
   lastName = lastName ?? faker.person.lastName();
   final company = faker.company.name();
   final phoneNumber = faker.phoneNumber.us();
@@ -131,7 +135,11 @@ Future<String> _createContactOnAndroid(
   String? firstName,
   String? lastName,
 }) async {
+  // TODO: Remove after support for Flutter 3.3 is dropped.
+  // ignore: parameter_assignments
   firstName = firstName ?? faker.person.firstName();
+  // TODO: Remove after support for Flutter 3.3 is dropped.
+  // ignore: parameter_assignments
   lastName = lastName ?? faker.person.lastName();
   final company = faker.company.name();
   final phoneNumber = faker.phoneNumber.us();
