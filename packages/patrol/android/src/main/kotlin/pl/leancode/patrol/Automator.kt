@@ -213,7 +213,6 @@ class Automator private constructor() {
 
         if (showKeyboard) {
             pressBack() // Hide keyboard.
-            // uiDevice.pressEnter() // TODO: Investigate whether we could pressEnter() instead of pressBack()
         }
     }
 
@@ -234,7 +233,6 @@ class Automator private constructor() {
 
         if (showKeyboard) {
             pressBack() // Hide keyboard.
-            // uiDevice.pressEnter() // TODO: Investigate whether we could pressEnter() instead of pressBack()
         }
     }
 
