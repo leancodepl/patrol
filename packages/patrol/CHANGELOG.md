@@ -1,7 +1,7 @@
-## Unreleased
+## 2.0.7
 
-- Add `BrowserstackPatrolJUnitRunner`, which implements a fix to make tests run
-  on BrowserStack (#1402)
+- Added an alternative `BrowserstackPatrolJUnitRunner`, which implements a fix
+  to make tests run on BrowserStack (#1402)
 
 ## 2.0.6
 

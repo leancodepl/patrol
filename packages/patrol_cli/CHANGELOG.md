@@ -1,4 +1,4 @@
-## Unreleased
+## 2.0.4
 
 - Fix crashes on some older Android versions when speculative `adb uninstall` is
   called (#1529)
