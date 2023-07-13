@@ -153,7 +153,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
             INDEX -> automation.enterText(
                 text = request.data,
                 index = request.index,
-                showKeyboard = request.showKeyboard,
+                showKeyboard = request.showKeyboard
             )
 
             SELECTOR -> automation.enterText(
@@ -161,7 +161,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance,
-                showKeyboard = request.showKeyboard,
+                showKeyboard = request.showKeyboard
             )
 
             else -> throw PatrolException("enterText(): neither index nor selector are set")
