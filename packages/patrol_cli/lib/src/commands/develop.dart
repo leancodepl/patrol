@@ -208,22 +208,28 @@ class DevelopCommand extends PatrolCommand {
     if (!uninstall) {
       return;
     }
-
     _logger.detail('Will uninstall apps before running tests');
 
+    late Future<void> Function()? action;
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         final packageName = androidOpts.packageName;
         if (packageName != null) {
-          await _androidTestBackend.uninstall(packageName, device);
+          action = () => _androidTestBackend.uninstall(packageName, device);
         }
         break;
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
-          await _iosTestBackend.uninstall(bundleId, device);
+          action = () => _iosTestBackend.uninstall(bundleId, device);
         }
         break;
+    }
+
+    try {
+      await action?.call();
+    } catch (_) {
+      // ignore any failures, we don't care
     }
   }
 
