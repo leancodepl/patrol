@@ -32,6 +32,36 @@ enum BindingType {
   none,
 }
 
+/// Specifies how the OS keyboard should behave when using
+/// [NativeAutomator.enterText] and [NativeAutomator.enterTextByIndex].
+enum KeyboardBehavior {
+  /// The default keyboard behavior.
+  ///
+  /// Keyboard will be shown when entering text starts, and will be
+  /// automatically dismissed afterwards.
+  showAndDismiss,
+
+  /// The alternative keyboard behavior.
+  ///
+  /// On Android, no keyboard will be shown at all. The text will simply appear
+  /// inside the TextField.
+  ///
+  /// On iOS, the behavior is currently the same as [showAndDismiss], but that
+  /// might change in the future.
+  alternative,
+}
+
+extension on KeyboardBehavior {
+  bool get toShowKeyboardBool {
+    switch (this) {
+      case KeyboardBehavior.showAndDismiss:
+        return true;
+      case KeyboardBehavior.alternative:
+        return false;
+    }
+  }
+}
+
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
   print('Patrol (native): $message');
@@ -56,7 +86,7 @@ class NativeAutomatorConfig {
     this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
-    this.showKeyboard = true,
+    this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
     this.logger = _defaultPrintLogger,
   });
 
@@ -74,21 +104,10 @@ class NativeAutomatorConfig {
   /// Time to wait for native views to appear.
   final Duration findTimeout;
 
-  /// Whether to show the keyboard when entering text.
+  /// How the keyboard should behave when entering text.
   ///
-  /// The default is to always show the keyboard when entering text, and only
-  /// dismiss it after tapping on another UI element. However, that "another UI
-  /// element" might be obscured by the keyboard, which opens up an uncanny
-  /// valley of non-deteministic and hard-to-debug behavior.
-  ///
-  /// That's why you might want to set this to `false`, which:
-  ///  * on Android: will disable showing the keyboard at all
-  ///  * on iOS: will show the keyboard, but dismiss it immediately after
-  ///    entering text
-  ///
-  /// Settings this to `false` makes it possible to avoid a whole class of
-  /// problems related to keyboard handling.
-  final bool showKeyboard;
+  /// See [KeyboardBehavior] to learn more.
+  final KeyboardBehavior keyboardBehavior;
 
   /// Package name of the application under test.
   ///
@@ -563,7 +582,7 @@ class NativeAutomator {
     Selector selector, {
     required String text,
     String? appId,
-    bool? showKeyboard,
+    KeyboardBehavior? keyboardBehavior,
   }) async {
     await _wrapRequest(
       'enterText',
@@ -572,7 +591,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
-          showKeyboard: showKeyboard ?? _config.showKeyboard,
+          showKeyboard:
+              (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
         ),
       ),
     );
@@ -596,7 +616,7 @@ class NativeAutomator {
     String text, {
     required int index,
     String? appId,
-    bool? ignoreKeyboard,
+    KeyboardBehavior? keyboardBehavior,
   }) async {
     await _wrapRequest(
       'enterTextByIndex',
@@ -605,7 +625,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
-          showKeyboard: ignoreKeyboard ?? _config.showKeyboard,
+          showKeyboard:
+              (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
         ),
       ),
     );
