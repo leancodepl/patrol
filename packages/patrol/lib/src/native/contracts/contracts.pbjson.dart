@@ -295,6 +295,7 @@ const EnterTextRequest$json = const {
       '9': 0,
       '10': 'selector'
     },
+    const {'1': 'showKeyboard', '3': 5, '4': 1, '5': 8, '10': 'showKeyboard'},
   ],
   '8': const [
     const {'1': 'findBy'},
@@ -303,7 +304,7 @@ const EnterTextRequest$json = const {
 
 /// Descriptor for `EnterTextRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List enterTextRequestDescriptor = $convert.base64Decode(
-    'ChBFbnRlclRleHRSZXF1ZXN0EhIKBGRhdGEYASABKAlSBGRhdGESFAoFYXBwSWQYAiABKAlSBWFwcElkEhYKBWluZGV4GAMgASgNSABSBWluZGV4Ei4KCHNlbGVjdG9yGAQgASgLMhAucGF0cm9sLlNlbGVjdG9ySABSCHNlbGVjdG9yQggKBmZpbmRCeQ==');
+    'ChBFbnRlclRleHRSZXF1ZXN0EhIKBGRhdGEYASABKAlSBGRhdGESFAoFYXBwSWQYAiABKAlSBWFwcElkEhYKBWluZGV4GAMgASgNSABSBWluZGV4Ei4KCHNlbGVjdG9yGAQgASgLMhAucGF0cm9sLlNlbGVjdG9ySABSCHNlbGVjdG9yEiIKDHNob3dLZXlib2FyZBgFIAEoCFIMc2hvd0tleWJvYXJkQggKBmZpbmRCeQ==');
 @$core.Deprecated('Use swipeRequestDescriptor instead')
 const SwipeRequest$json = const {
   '1': 'SwipeRequest',

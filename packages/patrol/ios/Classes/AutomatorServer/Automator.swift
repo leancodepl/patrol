@@ -85,7 +85,12 @@
       }
     }
 
-    func enterText(_ data: String, byText text: String, inApp bundleId: String) async throws {
+    func enterText(
+      _ data: String,
+      byText text: String,
+      inApp bundleId: String
+    ) async throws {
+      var data = "\(data)\n"
       try await runAction(
         "entering text \(format: data) into text field with text \(text) in app \(bundleId)"
       ) {
@@ -105,7 +110,13 @@
       }
     }
 
-    func enterText(_ data: String, byIndex index: Int, inApp bundleId: String) async throws {
+    func enterText(
+      _ data: String,
+      byIndex index: Int,
+      inApp bundleId: String
+    ) async throws {
+      var data = "\(data)\n"
+
       try await runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
 

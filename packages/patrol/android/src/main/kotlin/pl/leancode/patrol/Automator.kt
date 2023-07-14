@@ -192,7 +192,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int) {
+    fun enterText(text: String, index: Int, showKeyboard: Boolean) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -204,13 +204,19 @@ class Automator private constructor() {
 
         val uiSelector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = uiDevice.findObject(uiSelector)
-        uiObject.click()
+
+        if (showKeyboard) {
+            uiObject.click()
+        }
+
         uiObject.text = text
 
-        pressBack() // Hide keyboard.
+        if (showKeyboard) {
+            pressBack() // Hide keyboard.
+        }
     }
 
-    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int) {
+    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int, showKeyboard: Boolean) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
         if (waitForView(bySelector, index) == null) {
@@ -218,10 +224,16 @@ class Automator private constructor() {
         }
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
-        uiObject.click()
+
+        if (showKeyboard) {
+            uiObject.click()
+        }
+
         uiObject.text = text
 
-        pressBack() // Hide keyboard.
+        if (showKeyboard) {
+            pressBack() // Hide keyboard.
+        }
     }
 
     fun swipe(startX: Float, startY: Float, endX: Float, endY: Float, steps: Int) {
