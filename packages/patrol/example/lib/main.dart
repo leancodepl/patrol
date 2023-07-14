@@ -236,7 +236,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
             child: const Text('Open permissions screen'),
           ),
-          Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
+          Text('FIRST_KEY: ${const String.fromEnvironment('FIRST_KEY')}'),
+          Text('SECOND_KEY: ${const String.fromEnvironment('SECOND_KEY')}'),
+          Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
