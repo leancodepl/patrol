@@ -21,8 +21,6 @@ flutter pub add patrol --dev
 
 ### Configure Patrol in pubspec.yaml
 
-<Warning>This step is not necessary, but it's recommended.</Warning>
-
 Create `patrol` section in your **pubspec.yaml**:
 
 ```yaml title="pubspec.yaml"
@@ -273,6 +271,10 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
       **Build Settings** section is the same as `Runner`.
       The minimum supported **iOS Deployment Target** is `13.0`.
+
+      ![Xcode iOS deployment target](/assets/ios_deployment_target.png)
+
+      ![Xcode iOS deployment target 2](/assets/ios_deployment_target_2.png)
 
       Replace contents of `RunnerUITests.m` file with the following:
 
