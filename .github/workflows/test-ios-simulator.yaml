@@ -67,6 +67,7 @@ jobs:
           service_bluetooth_test,\
           service_cellular_test,\
           service_wifi_test,\
+          webview_stackoverflow_test,\ # To investigate https://github.com/leancodepl/patrol/actions/runs/5568537037
           swipe_test"
 
           target_paths=""
