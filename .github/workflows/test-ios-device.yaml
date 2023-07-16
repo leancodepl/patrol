@@ -14,6 +14,7 @@ jobs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ steps.set_excluded_tests.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
@@ -83,6 +84,7 @@ jobs:
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
           swipe_test,\
+          # permissions_location_test,\ # Getting location lasts forever on FTL 
           notifications_test"
 
           target_paths=""
@@ -117,6 +119,7 @@ jobs:
           link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
           echo "[Test details on Firebase Test Lab]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 
+          echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
@@ -129,4 +132,5 @@ jobs:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
       EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

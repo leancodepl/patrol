@@ -11,7 +11,7 @@ const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 // Firebase Test Lab pops out another dialog we need to handle
 Future<void> tapOkIfGoogleDialogAppears(PatrolTester $) async {
   var listWithOkText = <NativeView>[];
-  final inactivityTimer = Timer(Duration(seconds: 20), () {});
+  final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
   while (listWithOkText.isEmpty && io.Platform.isAndroid) {
     listWithOkText =
@@ -47,6 +47,8 @@ void main() {
 
       await tapOkIfGoogleDialogAppears($);
     }
+
+    await $.pumpAndSettle(duration: Duration(seconds: 10));
 
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
     expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);

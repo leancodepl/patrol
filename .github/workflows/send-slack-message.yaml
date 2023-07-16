@@ -18,6 +18,9 @@ on:
       EXCLUDED_TESTS:
         required: false
         type: string
+      URL_TO_DETAILS:
+        required: false
+        type: string
 
 jobs:
   send_slack_message:
@@ -55,9 +58,9 @@ jobs:
               status="success";
           fi;
 
-          url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
           echo "message=$message" >> $GITHUB_OUTPUT;
-          echo "url=$url" >> $GITHUB_OUTPUT;
+          echo "run_url=$run_url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
 
       - name: Add excluded tests to message
@@ -85,6 +88,8 @@ jobs:
           SLACK_MESSAGE: |
             ${{ steps.slack_message.outputs.message }}
 
-            <${{ steps.slack_message.outputs.url }}|See workflow run>
+            <${{ steps.slack_message.outputs.run_url }}|See workflow run>
+
+            <${{ inputs.URL_TO_DETAILS }}|See tests details>
             
             ${{ env.excluded_tests }}
