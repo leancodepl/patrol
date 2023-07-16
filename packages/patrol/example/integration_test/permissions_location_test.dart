@@ -48,8 +48,6 @@ void main() {
       await tapOkIfGoogleDialogAppears($);
     }
 
-    await $.pumpAndSettle(duration: Duration(seconds: 10));
-
     expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
     expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
   });
