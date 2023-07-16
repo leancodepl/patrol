@@ -23,11 +23,13 @@ void main() {
         index: 0,
         keyboardBehavior: KeyboardBehavior.showAndDismiss,
       );
+      await $.native.tap(Selector(text: 'go'));
       await $.native.enterTextByIndex(
         'ny4ncat',
         index: 1,
         keyboardBehavior: KeyboardBehavior.showAndDismiss,
       );
+      await $.native.tap(Selector(text: 'go'));
       await $.native.tap(Selector(text: 'Log in'));
     },
   );
