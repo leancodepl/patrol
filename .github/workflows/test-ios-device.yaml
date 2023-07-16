@@ -84,7 +84,6 @@ jobs:
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
           swipe_test,\
-          # permissions_location_test,\ # Getting location lasts forever on FTL 
           notifications_test"
 
           target_paths=""
