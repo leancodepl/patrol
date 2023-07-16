@@ -12,7 +12,11 @@ void main() {
       // ignore
     }
 
-    await $.native.enterTextByIndex('test@leancode.pl', index: 0);
+    await $.native.enterTextByIndex(
+      'test@leancode.pl',
+      index: 0,
+      keyboardBehavior: KeyboardBehavior.showAndDismiss,
+    );
     await $.native.tap(Selector(text: 'Subscribe'));
   });
 }
