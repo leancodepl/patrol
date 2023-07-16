@@ -7,7 +7,7 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }} ${{ matrix.device_model }} simulator
+    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
     runs-on: macos-latest
     timeout-minutes: 40
     outputs:
@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         flutter_version: ['3.10.x']
-        device_model: [iPhone 14, iPad (9th generation)]
+        device_model: [iPhone 8, iPhone 14, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']
 

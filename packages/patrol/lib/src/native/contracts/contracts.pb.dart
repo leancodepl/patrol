@@ -1179,6 +1179,12 @@ class EnterTextRequest extends $pb.GeneratedMessage {
             ? ''
             : 'selector',
         subBuilder: Selector.create)
+    ..aOB(
+        5,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'showKeyboard',
+        protoName: 'showKeyboard')
     ..hasRequiredFields = false;
 
   EnterTextRequest._() : super();
@@ -1187,6 +1193,7 @@ class EnterTextRequest extends $pb.GeneratedMessage {
     $core.String? appId,
     $core.int? index,
     Selector? selector,
+    $core.bool? showKeyboard,
   }) {
     final _result = create();
     if (data != null) {
@@ -1200,6 +1207,9 @@ class EnterTextRequest extends $pb.GeneratedMessage {
     }
     if (selector != null) {
       _result.selector = selector;
+    }
+    if (showKeyboard != null) {
+      _result.showKeyboard = showKeyboard;
     }
     return _result;
   }
@@ -1283,6 +1293,18 @@ class EnterTextRequest extends $pb.GeneratedMessage {
   void clearSelector() => clearField(4);
   @$pb.TagNumber(4)
   Selector ensureSelector() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  $core.bool get showKeyboard => $_getBF(4);
+  @$pb.TagNumber(5)
+  set showKeyboard($core.bool v) {
+    $_setBool(4, v);
+  }
+
+  @$pb.TagNumber(5)
+  $core.bool hasShowKeyboard() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearShowKeyboard() => clearField(5);
 }
 
 class SwipeRequest extends $pb.GeneratedMessage {

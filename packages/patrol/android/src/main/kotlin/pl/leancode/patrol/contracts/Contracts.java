@@ -5489,6 +5489,12 @@ public final class Contracts {
      */
     pl.leancode.patrol.contracts.Contracts.Selector getSelector();
 
+    /**
+     * <code>bool showKeyboard = 5;</code>
+     * @return The showKeyboard.
+     */
+    boolean getShowKeyboard();
+
     public pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase getFindByCase();
   }
   /**
@@ -5726,6 +5732,32 @@ public final class Contracts {
         findByCase_ = 0;
         findBy_ = null;
       }
+    }
+
+    public static final int SHOWKEYBOARD_FIELD_NUMBER = 5;
+    private boolean showKeyboard_;
+    /**
+     * <code>bool showKeyboard = 5;</code>
+     * @return The showKeyboard.
+     */
+    @java.lang.Override
+    public boolean getShowKeyboard() {
+      return showKeyboard_;
+    }
+    /**
+     * <code>bool showKeyboard = 5;</code>
+     * @param value The showKeyboard to set.
+     */
+    private void setShowKeyboard(boolean value) {
+      
+      showKeyboard_ = value;
+    }
+    /**
+     * <code>bool showKeyboard = 5;</code>
+     */
+    private void clearShowKeyboard() {
+
+      showKeyboard_ = false;
     }
 
     public static pl.leancode.patrol.contracts.Contracts.EnterTextRequest parseFrom(
@@ -6019,6 +6051,34 @@ public final class Contracts {
         return this;
       }
 
+      /**
+       * <code>bool showKeyboard = 5;</code>
+       * @return The showKeyboard.
+       */
+      @java.lang.Override
+      public boolean getShowKeyboard() {
+        return instance.getShowKeyboard();
+      }
+      /**
+       * <code>bool showKeyboard = 5;</code>
+       * @param value The showKeyboard to set.
+       * @return This builder for chaining.
+       */
+      public Builder setShowKeyboard(boolean value) {
+        copyOnWrite();
+        instance.setShowKeyboard(value);
+        return this;
+      }
+      /**
+       * <code>bool showKeyboard = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearShowKeyboard() {
+        copyOnWrite();
+        instance.clearShowKeyboard();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:patrol.EnterTextRequest)
     }
     @java.lang.Override
@@ -6040,10 +6100,11 @@ public final class Contracts {
               "data_",
               "appId_",
               pl.leancode.patrol.contracts.Contracts.Selector.class,
+              "showKeyboard_",
             };
             java.lang.String info =
-                "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
-                "\u0003>\u0000\u0004<\u0000";
+                "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
+                "\u0003>\u0000\u0004<\u0000\u0005\u0007";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

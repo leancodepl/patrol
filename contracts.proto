@@ -125,11 +125,12 @@ message TapRequest {
 message EnterTextRequest {
   string data = 1;
   string appId = 2;
-
   oneof findBy {
     uint32 index = 3;
     Selector selector = 4;
   }
+
+  bool showKeyboard = 5;
 }
 
 message SwipeRequest {

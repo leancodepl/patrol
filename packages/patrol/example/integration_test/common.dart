@@ -20,11 +20,12 @@ void patrol(
   String description,
   Future<void> Function(PatrolTester) callback, {
   bool? skip,
+  NativeAutomatorConfig? nativeAutomatorConfig,
 }) {
   patrolTest(
     description,
     config: _patrolTesterConfig,
-    nativeAutomatorConfig: _nativeAutomatorConfig,
+    nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
     nativeAutomation: true,
     skip: skip,
     callback,
