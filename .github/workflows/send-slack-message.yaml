@@ -57,6 +57,8 @@ jobs:
               message="All tests have passed ✅ ";
               status="success";
           fi;
+          
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
 
           if [ -z "${{ inputs.URL_TO_DETAILS }}" ]; then
             echo "url_to_details=$run_url" >> $GITHUB_OUTPUT;
@@ -64,7 +66,6 @@ jobs:
             echo "url_to_details=${{ inputs.URL_TO_DETAILS }}" >> $GITHUB_OUTPUT;
           fi;
 
-          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
           echo "message=$message" >> $GITHUB_OUTPUT;
           echo "run_url=$run_url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
