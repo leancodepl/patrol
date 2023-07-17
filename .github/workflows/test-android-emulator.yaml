@@ -88,7 +88,6 @@ jobs:
           set +e
           output="$(ew-cli \
             emulatorwtf.yaml:main --json \
-            --num-flaky-test-attempts 3 \
             --display-name "Patrol example app (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
