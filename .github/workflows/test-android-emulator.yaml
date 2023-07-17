@@ -9,11 +9,12 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
@@ -66,10 +67,9 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="permissions_location_test,\
-          notifications_test,\
-          service_airplane_mode_test,\
-          service_bluetooth_test"
+          TESTS_TO_EXCLUDE="service_airplane_mode_test,\
+          service_bluetooth_test,\
+          notifications_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
@@ -85,45 +85,20 @@ jobs:
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
         run: |
-          TESTS_EXIT_CODE=0
-          ew-cli \
-            emulatorwtf.yaml:main \
-            --display-name "Patrol example app (${GITHUB_SHA::7})" || TESTS_EXIT_CODE=$?
+          set +e
+          output="$(ew-cli \
+            emulatorwtf.yaml:main --json \
+            --display-name "Patrol example app (${GITHUB_SHA::7})")"
+          TESTS_EXIT_CODE=$?
+          set -e
 
+          # Extract the results URL and write it to Github Summmary
+          link="$(echo "$output" | jq -r ".resultsUrl")"
+          echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
-
-      - name: Publish test report to summary
-        uses: mikepenz/action-junit-report@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          check_name: Patrol tests
-          report_paths: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
-          detailed_summary: true
-          include_passed: true
-
-      - name: Generate test report as check run
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: dorny/test-reporter@v1
-        with:
-          name: Patrol Tests
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
-          reporter: java-junit
-          fail-on-error: false
-
-      - name: Upload XML test report to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts/results.xml
-
-      - name: Upload test outputs to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: Test report, logs and captured videos
-          path: ${{ github.workspace }}/packages/patrol/example/test_artifacts
 
   call_send_slack_message:
     name: Notify on Slack
@@ -134,4 +109,5 @@ jobs:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
       EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

@@ -9,17 +9,18 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.device_model }} ${{ matrix.os }} ${{ matrix.os_version }} on FTL
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
       matrix:
         flutter_version: ['3.10.x']
-        device_model: ['iphone11pro']
+        device_model: ['iphone14pro']
         os_version: ['16.5']
         os: [iOS]
 
@@ -82,14 +83,10 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
-          notifications_test,\
-          open_app_test,\
-          service_dark_mode_test,\
-          service_wifi_test,\
-          permissions_location_test,\
           swipe_test,\
-          webview_login_test,\
-          webview_leancode_test"
+          permissions_location_test,\
+          service_dark_mode_test,\
+          notifications_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
@@ -109,68 +106,23 @@ jobs:
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
         env:
-          DEVICE_MODEL: ${{ matrix.device_model }}
-          DEVICE_VERSION: ${{ matrix.os_version }}
+          IOS_DEVICE_MODEL: ${{ matrix.device_model }}
+          IOS_DEVICE_VERSION: ${{ matrix.os_version }}
         run: |
-          export RESULTS_DIR_NAME="$(date +"%Y-%m-%d_%H:%M:%S")"
-          echo "RESULTS_DIR_NAME=$RESULTS_DIR_NAME" >> "$GITHUB_ENV"
+          set +e
+          output="$(./run_ios_testlab 2>&1)"
+          TESTS_EXIT_CODE=$?
+          set -e
 
-          TESTS_EXIT_CODE=0
-          ./run_ios_testlab || TESTS_EXIT_CODE=$?
+          echo "$output"
 
+          # Extract the last link using grep, tail, and sed, and write it to Github Summmary
+          link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
+          echo "[Test details on Firebase Test Lab]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
-
-      - name: Get test outputs from Google Cloud Storage
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        run: |
-          GSUTIL_PATH="gs://patrol_runs/${{ env.RESULTS_DIR_NAME }}/${{ matrix.device_model }}-${{ matrix.os_version }}-en_US-portrait"
-          mkdir "test_outputs"
-          gsutil -m cp -r "$GSUTIL_PATH/TestLogs/*" "test_outputs"
-          gsutil -m cp -r "$GSUTIL_PATH/*.xml" "test_outputs"
-          gsutil -m cp -r "$GSUTIL_PATH/*.mp4" "test_outputs"
-          gsutil -m cp -r "$GSUTIL_PATH/*.txt" "test_outputs"
-
-      - name: Find xcresult path
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        run: echo "XCRESULT_PATH=$(find ${{ github.workspace }}/packages/patrol/example/test_outputs -name "*.xcresult" -type d)" >> $GITHUB_ENV
-
-      - name: Publish test report to summary
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: kishikawakatsumi/xcresulttool@v1
-        with:
-          title: Patrol tests on ${{ matrix.device_model }} ${{ matrix.os }} ${{ matrix.os_version }}
-          upload-bundles: never
-          path: |
-            ${{ env.XCRESULT_PATH }}
-
-      - name: Upload XML test report to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          name: XML test report
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xml
-
-      - name: Upload XCRESULT test result to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          name: Test-Runner.xcresult
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.xcresult
-
-      - name: Upload captured video to artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        with:
-          name: Captured video
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.mp4
-
-      - name: Upload device logs to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: Device logs
-          path: ${{ github.workspace }}/packages/patrol/example/test_outputs/*.txt
 
   call_send_slack_message:
     name: Notify on Slack
@@ -181,4 +133,5 @@ jobs:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
       EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

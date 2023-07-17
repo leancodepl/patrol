@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Set RESULTS_DIR_NAME variable before
+# This script requires following environment variables to be set:
+# * ANDROID_DEVICE_MODEL (for example: "oriole")
+# * ANDROID_DEVICE_VERSION (for example: "33")
 
-exec gcloud firebase test android run \
+gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-	--device model="$DEVICE_MODEL",version="$DEVICE_VERSION",locale=en,orientation=portrait \
+	--device model="$ANDROID_DEVICE_MODEL",version="$ANDROID_DEVICE_VERSION",locale=en,orientation=portrait \
 	--timeout 10m \
 	--results-bucket="patrol_runs" \
-	--results-dir="$RESULTS_DIR_NAME" \
 	--use-orchestrator \
-	--environment-variables clearPackageData=true,packageName="pl.leancode.patrol.example"
+	--environment-variables clearPackageData=true
