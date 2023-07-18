@@ -859,6 +859,7 @@ void main() {
                         children: [
                           const Text('top text'),
                           SizedBox(height: constraints.maxHeight),
+                          SizedBox(height: constraints.maxHeight),
                           const Text('bottom text'),
                         ],
                       );
@@ -880,6 +881,7 @@ void main() {
           expect(find.text('bottom text'), findsNothing);
           await tester.scrollUntilExists(
             finder: find.text('bottom text'),
+            delta: 16,
             maxScrolls: 100,
           );
 
