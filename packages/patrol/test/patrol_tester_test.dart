@@ -230,7 +230,7 @@ void main() {
             () => tester.dragUntilExists(
               finder: find.text('text'),
               view: find.byType(Scrollable),
-              moveStep: const Offset(0, 16),
+              moveStep: const Offset(0, defaultScrollDelta),
             ),
             // because it was waiting for a Scrollable to appear
             throwsA(isA<WaitUntilVisibleTimeoutException>()),
@@ -253,7 +253,7 @@ void main() {
             () => tester.dragUntilExists(
               finder: find.text('three'),
               view: find.byType(Scrollable),
-              moveStep: const Offset(0, 16),
+              moveStep: const Offset(0, defaultScrollDelta),
             ),
             throwsA(isA<WaitUntilExistsTimeoutException>()),
           );
@@ -276,7 +276,7 @@ void main() {
         await tester.dragUntilExists(
           finder: find.text('some text'),
           view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
+          moveStep: const Offset(0, defaultScrollDelta),
         );
 
         expect(find.text('some text').hitTestable(), findsOneWidget);
@@ -316,8 +316,7 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('top text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, -16),
-            maxIteration: 100,
+            moveStep: const Offset(0, -defaultScrollDelta),
           );
           expect(find.text('top text').hitTestable(), findsOneWidget);
           expect(find.text('bottom text'), findsNothing);
@@ -331,6 +330,9 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
+            // defaultScrollDelta can't be used, because it not possible
+            // to achieve a state, in which 'bottom text' exists, but
+            //is not visible
             moveStep: const Offset(0, -16),
             maxIteration: 100,
           );
@@ -382,7 +384,7 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, defaultScrollDelta),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -391,7 +393,7 @@ void main() {
           await tester.dragUntilExists(
             finder: find.text('text 2'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, 16),
+            moveStep: const Offset(0, defaultScrollDelta),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -410,7 +412,7 @@ void main() {
             () => tester.dragUntilVisible(
               finder: find.text('text'),
               view: find.byType(Scrollable),
-              moveStep: const Offset(0, 16),
+              moveStep: const Offset(0, defaultScrollDelta),
             ),
             // because it was waiting for a Scrollable to appear
             throwsA(isA<WaitUntilVisibleTimeoutException>()),
@@ -433,7 +435,7 @@ void main() {
             () => tester.dragUntilVisible(
               finder: find.text('three'),
               view: find.byType(Scrollable),
-              moveStep: const Offset(0, 16),
+              moveStep: const Offset(0, defaultScrollDelta),
             ),
             throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
@@ -456,7 +458,7 @@ void main() {
         await tester.dragUntilVisible(
           finder: find.text('some text'),
           view: find.byType(Scrollable),
-          moveStep: const Offset(0, -16),
+          moveStep: const Offset(0, -defaultScrollDelta),
         );
 
         expect(find.text('some text').hitTestable(), findsOneWidget);
@@ -498,8 +500,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('top text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, -16),
-            maxIteration: 100,
+            moveStep: const Offset(0, -defaultScrollDelta),
           );
           final initialScrollPosition = tester.tester
               .firstWidget<Scrollable>(find.byType(Scrollable))
@@ -510,8 +511,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, -16),
-            maxIteration: 100,
+            moveStep: const Offset(0, -defaultScrollDelta),
           );
 
           final finalScrollPosition = tester.tester
@@ -558,7 +558,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, -16),
+            moveStep: const Offset(0, -defaultScrollDelta),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -567,7 +567,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 2'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(0, -16),
+            moveStep: const Offset(0, -defaultScrollDelta),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -623,7 +623,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 1'),
             view: find.byType(Scrollable),
-            moveStep: const Offset(-16, 0),
+            moveStep: const Offset(-defaultScrollDelta, 0),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -636,7 +636,7 @@ void main() {
           await tester.dragUntilVisible(
             finder: find.text('text 2'),
             view: find.byType(Scrollable).at(1),
-            moveStep: const Offset(-16, 0),
+            moveStep: const Offset(-defaultScrollDelta, 0),
           );
 
           expect(find.text('text 1').hitTestable(), findsNWidgets(2));
@@ -685,7 +685,7 @@ void main() {
         final returnedFinder = await tester.dragUntilVisible(
           finder: find.text('Text'),
           view: find.byType(Scrollable),
-          moveStep: const Offset(0, 16),
+          moveStep: const Offset(0, defaultScrollDelta),
         );
         await tester.tester.tap(returnedFinder); // tap without safety checks
         await tester.pump();
@@ -858,8 +858,7 @@ void main() {
                       return ListView(
                         children: [
                           const Text('top text'),
-                          SizedBox(height: constraints.maxHeight),
-                          SizedBox(height: constraints.maxHeight),
+                          SizedBox(height: constraints.maxHeight * 2),
                           const Text('bottom text'),
                         ],
                       );
@@ -875,12 +874,14 @@ void main() {
 
           await tester.scrollUntilExists(
             finder: find.text('top text'),
-            maxScrolls: 100,
           );
           expect(find.text('top text').hitTestable(), findsOneWidget);
           expect(find.text('bottom text'), findsNothing);
           await tester.scrollUntilExists(
             finder: find.text('bottom text'),
+            // defaultScrollDelta can't be used, because it not possible
+            // to achieve a state, in which 'bottom text' exists, but
+            //is not visible
             delta: 16,
             maxScrolls: 100,
           );
