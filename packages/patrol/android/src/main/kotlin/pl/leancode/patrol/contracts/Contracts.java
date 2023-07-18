@@ -6759,6 +6759,406 @@ public final class Contracts {
     }
   }
 
+  public interface WaitUntilVisibleRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:patrol.WaitUntilVisibleRequest)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     * @return Whether the selector field is set.
+     */
+    boolean hasSelector();
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     * @return The selector.
+     */
+    pl.leancode.patrol.contracts.Contracts.Selector getSelector();
+
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
+  }
+  /**
+   * Protobuf type {@code patrol.WaitUntilVisibleRequest}
+   */
+  public  static final class WaitUntilVisibleRequest extends
+      com.google.protobuf.GeneratedMessageLite<
+          WaitUntilVisibleRequest, WaitUntilVisibleRequest.Builder> implements
+      // @@protoc_insertion_point(message_implements:patrol.WaitUntilVisibleRequest)
+      WaitUntilVisibleRequestOrBuilder {
+    private WaitUntilVisibleRequest() {
+      appId_ = "";
+    }
+    public static final int SELECTOR_FIELD_NUMBER = 1;
+    private pl.leancode.patrol.contracts.Contracts.Selector selector_;
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     */
+    @java.lang.Override
+    public boolean hasSelector() {
+      return selector_ != null;
+    }
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     */
+    @java.lang.Override
+    public pl.leancode.patrol.contracts.Contracts.Selector getSelector() {
+      return selector_ == null ? pl.leancode.patrol.contracts.Contracts.Selector.getDefaultInstance() : selector_;
+    }
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     */
+    private void setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
+      value.getClass();
+  selector_ = value;
+
+      }
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
+      value.getClass();
+  if (selector_ != null &&
+          selector_ != pl.leancode.patrol.contracts.Contracts.Selector.getDefaultInstance()) {
+        selector_ =
+          pl.leancode.patrol.contracts.Contracts.Selector.newBuilder(selector_).mergeFrom(value).buildPartial();
+      } else {
+        selector_ = value;
+      }
+
+    }
+    /**
+     * <code>.patrol.Selector selector = 1;</code>
+     */
+    private void clearSelector() {  selector_ = null;
+
+    }
+
+    public static final int APPID_FIELD_NUMBER = 2;
+    private java.lang.String appId_;
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      return appId_;
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(appId_);
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @param value The appId to set.
+     */
+    private void setAppId(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      appId_ = value;
+    }
+    /**
+     * <code>string appId = 2;</code>
+     */
+    private void clearAppId() {
+
+      appId_ = getDefaultInstance().getAppId();
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @param value The bytes for appId to set.
+     */
+    private void setAppIdBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      appId_ = value.toStringUtf8();
+
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code patrol.WaitUntilVisibleRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest, Builder> implements
+        // @@protoc_insertion_point(builder_implements:patrol.WaitUntilVisibleRequest)
+        pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequestOrBuilder {
+      // Construct using pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>.patrol.Selector selector = 1;</code>
+       */
+      @java.lang.Override
+      public boolean hasSelector() {
+        return instance.hasSelector();
+      }
+      /**
+       * <code>.patrol.Selector selector = 1;</code>
+       */
+      @java.lang.Override
+      public pl.leancode.patrol.contracts.Contracts.Selector getSelector() {
+        return instance.getSelector();
+      }
+      /**
+       * <code>.patrol.Selector selector = 1;</code>
+       */
+      public Builder setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
+        copyOnWrite();
+        instance.setSelector(value);
+        return this;
+        }
+      /**
+       * <code>.patrol.Selector selector = 1;</code>
+       */
+      public Builder setSelector(
+          pl.leancode.patrol.contracts.Contracts.Selector.Builder builderForValue) {
+        copyOnWrite();
+        instance.setSelector(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 1;</code>
+       */
+      public Builder mergeSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
+        copyOnWrite();
+        instance.mergeSelector(value);
+        return this;
+      }
+      /**
+       * <code>.patrol.Selector selector = 1;</code>
+       */
+      public Builder clearSelector() {  copyOnWrite();
+        instance.clearSelector();
+        return this;
+      }
+
+      /**
+       * <code>string appId = 2;</code>
+       * @return The appId.
+       */
+      @java.lang.Override
+      public java.lang.String getAppId() {
+        return instance.getAppId();
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return The bytes for appId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        return instance.getAppIdBytes();
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setAppId(value);
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        copyOnWrite();
+        instance.clearAppId();
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setAppIdBytes(value);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:patrol.WaitUntilVisibleRequest)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "selector_",
+              "appId_",
+            };
+            java.lang.String info =
+                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\t\u0002\u0208" +
+                "";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest> parser = PARSER;
+          if (parser == null) {
+            synchronized (pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:patrol.WaitUntilVisibleRequest)
+    private static final pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest DEFAULT_INSTANCE;
+    static {
+      WaitUntilVisibleRequest defaultInstance = new WaitUntilVisibleRequest();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        WaitUntilVisibleRequest.class, defaultInstance);
+    }
+
+    public static pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<WaitUntilVisibleRequest> PARSER;
+
+    public static com.google.protobuf.Parser<WaitUntilVisibleRequest> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
   public interface HandlePermissionRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:patrol.HandlePermissionRequest)
       com.google.protobuf.MessageLiteOrBuilder {
