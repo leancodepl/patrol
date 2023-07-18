@@ -162,6 +162,19 @@
       }
     }
 
+    func waitUntilVisible(
+      request: Patrol_WaitUntilVisibleRequest,
+      context: GRPCAsyncServerCallContext
+    ) async throws -> DefaultResponse {
+      return try await runCatching {
+        try await automator.waitUntilVisible(
+          onText: request.selector.text,
+          inApp: request.appID
+        )
+        return DefaultResponse()
+      }
+    }
+
     // MARK: Services
 
     func enableAirplaneMode(

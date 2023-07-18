@@ -146,6 +146,20 @@
       }
     }
 
+    func waitUntilVisible(onText text: String, inApp bundleId: String) async throws {
+      try await runAction(
+        "waiting until view with text \(format: text) in app \(bundleId) becomes visible"
+      ) {
+        let app = try self.getApp(withBundleId: bundleId)
+        let element = app.descendants(matching: .any)[text]
+        let exists = element.waitForExistence(timeout: self.timeout)
+        guard exists else {
+          throw PatrolError.viewNotExists(
+            "view with text \(format: text) in app \(format: bundleId)")
+        }
+      }
+    }
+
     // MARK: Services
 
     func enableDarkMode(_ bundleId: String) async throws {
