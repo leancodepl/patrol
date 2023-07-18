@@ -15,7 +15,7 @@ class PatrolTesterConfig {
     @Deprecated('Use settleBehavior argument instead') this.andSettle = true,
     // TODO: change default to trySettle, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
     this.settlePolicy = SettlePolicy.settle,
-    this.dragDuration = const Duration(milliseconds: 500),
+    this.dragDuration = const Duration(milliseconds: 100),
     this.settleBetweenScrollsTimeout = const Duration(seconds: 2),
   });
 
@@ -53,10 +53,13 @@ class PatrolTesterConfig {
   /// See [SettlePolicy] for more information.
   final SettlePolicy settlePolicy;
 
-  ///
+  /// Time that it takes to perform drag gesture in scrolling methods,
+  /// such as [PatrolTester.scrollUntilVisible].
   final Duration dragDuration;
 
-  ///
+  /// Timeout used to settle in between drag gestures in scrolling methods,
+  /// such as [PatrolTester.scrollUntilVisible] (unless disabled by
+  /// [settlePolicy]).
   final Duration settleBetweenScrollsTimeout;
 
   /// Creates a copy of this config but with the given fields replaced with the
@@ -437,11 +440,14 @@ class PatrolTester {
   ///    gesture, half a second by default)
   ///
   ///  * you can configure, which version of pumping is performed between
-  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]).
+  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]),
+  ///
+  ///  * timeouts and durations, if null, are controlled by values in
+  ///    [PatrolTester.config].
   ///
   /// See also:
   ///  * [PatrolTester.config.andSettle], which controls the default behavior if
-  ///    [andSettle] is null //dopisac o domyslnych wartościach z configu
+  ///    [andSettle] is null
   ///  * [PatrolTester.dragUntilVisible], which scrolls to visible widget,
   ///    not only existing one.
   Future<PatrolFinder> dragUntilExists({
@@ -514,7 +520,10 @@ class PatrolTester {
   ///    gesture, half a second by default)
   ///
   ///  * you can configure, which version of pumping is performed between
-  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]).
+  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle])
+  ///
+  ///  * timeouts and durations, if null, are controlled by values in
+  ///    [PatrolTester.config].
   ///
   /// See also:
   ///  * [PatrolTester.dragUntilExists], which scrolls to existing widget,
