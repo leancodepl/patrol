@@ -652,6 +652,19 @@ class NativeAutomator {
     );
   }
 
+  /// Waits until the native view specified by [selector] becomes visible.
+  Future<void> waitUntilVisible(Selector selector) async {
+    await _wrapRequest(
+      'waitUntilVisible',
+      () => _client.waitUntilVisible(
+        WaitUntilVisibleRequest(
+          selector: selector,
+          appId: resolvedAppId,
+        ),
+      ),
+    );
+  }
+
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   Future<List<NativeView>> getNativeViews(Selector selector) async {
