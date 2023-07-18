@@ -591,10 +591,20 @@ class PatrolTester {
       finder: view,
       tester: this,
     ).waitUntilVisible();
+    AxisDirection direction;
+    if (scrollDirection == null) {
+      if (view.evaluate().first.widget is Scrollable) {
+        direction = tester.firstWidget<Scrollable>(view).axisDirection;
+      } else {
+        direction = AxisDirection.down;
+      }
+    } else {
+      direction = scrollDirection;
+    }
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
       Offset moveStep;
-      switch (tester.firstWidget<Scrollable>(view!).axisDirection) {
+      switch (direction) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;
