@@ -317,6 +317,7 @@ void main() {
             finder: find.text('top text'),
             view: find.byType(Scrollable),
             moveStep: const Offset(0, -16),
+            maxIteration: 100,
           );
           expect(find.text('top text').hitTestable(), findsOneWidget);
           expect(find.text('bottom text'), findsNothing);
@@ -331,6 +332,7 @@ void main() {
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
             moveStep: const Offset(0, -16),
+            maxIteration: 100,
           );
 
           final finalScrollPosition = tester.tester
@@ -497,6 +499,7 @@ void main() {
             finder: find.text('top text'),
             view: find.byType(Scrollable),
             moveStep: const Offset(0, -16),
+            maxIteration: 100,
           );
           final initialScrollPosition = tester.tester
               .firstWidget<Scrollable>(find.byType(Scrollable))
@@ -508,6 +511,7 @@ void main() {
             finder: find.text('bottom text'),
             view: find.byType(Scrollable),
             moveStep: const Offset(0, -16),
+            maxIteration: 100,
           );
 
           final finalScrollPosition = tester.tester
@@ -868,10 +872,16 @@ void main() {
           expect(find.text('top text').hitTestable(), findsNothing);
           expect(find.text('bottom text').hitTestable(), findsNothing);
 
-          await tester.scrollUntilExists(finder: find.text('top text'));
+          await tester.scrollUntilExists(
+            finder: find.text('top text'),
+            maxScrolls: 100,
+          );
           expect(find.text('top text').hitTestable(), findsOneWidget);
           expect(find.text('bottom text'), findsNothing);
-          await tester.scrollUntilExists(finder: find.text('bottom text'));
+          await tester.scrollUntilExists(
+            finder: find.text('bottom text'),
+            maxScrolls: 100,
+          );
 
           expect(find.text('top text').hitTestable(), findsNothing);
           expect(find.text('bottom text'), findsOneWidget);
