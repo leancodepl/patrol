@@ -268,6 +268,15 @@ class Automator private constructor() {
         delay()
     }
 
+
+    fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
+        Logger.d("waitUntilVisible(): $uiSelector, $bySelector")
+
+        if (waitForView(bySelector, index) == null) {
+            throw UiObjectNotFoundException("$uiSelector")
+        }
+    }
+
     fun openNotifications() {
         Logger.d("openNotifications()")
         val success = uiDevice.openNotification()

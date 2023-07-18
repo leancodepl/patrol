@@ -13,8 +13,6 @@ void main() {
       await $.native.tap(Selector(contentDescription: 'Open loading screen'));
 
       await $.native.waitUntilVisible(Selector(contentDescription: 'Hello'));
-
-      // expect(helloText, findsOneWidget);
     },
   );
 }
