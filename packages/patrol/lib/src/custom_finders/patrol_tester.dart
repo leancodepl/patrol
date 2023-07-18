@@ -488,7 +488,7 @@ class PatrolTester {
       if (iterationsLeft <= 0) {
         throw WaitUntilExistsTimeoutException(
           finder: finder,
-          // TODO: set reasonable duration or make new exception for this case
+          // TODO: set reasonable duration or create new exception for this case
           duration: settleBetweenScrollsTimeout!,
         );
       }
@@ -566,7 +566,7 @@ class PatrolTester {
       if (iterationsLeft <= 0) {
         throw WaitUntilVisibleTimeoutException(
           finder: finder.hitTestable(),
-          // TODO: set reasonable duration or make new exception for this case
+          // TODO: set reasonable duration or create new exception for this case
           duration: settleBetweenScrollsTimeout!,
         );
       }
