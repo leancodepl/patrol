@@ -21,12 +21,15 @@ void patrol(
   Future<void> Function(PatrolTester) callback, {
   bool? skip,
   NativeAutomatorConfig? nativeAutomatorConfig,
+  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
+      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   patrolTest(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
     nativeAutomation: true,
+    framePolicy: framePolicy,
     skip: skip,
     callback,
   );
