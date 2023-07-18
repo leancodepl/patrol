@@ -185,7 +185,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         automation.waitUntilVisible(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance,
+            index = request.selector.instance
         )
         return empty { }
     }

@@ -268,7 +268,6 @@ class Automator private constructor() {
         delay()
     }
 
-
     fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
         Logger.d("waitUntilVisible(): $uiSelector, $bySelector")
 
