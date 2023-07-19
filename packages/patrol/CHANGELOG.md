@@ -1,11 +1,12 @@
-## Unreleased
+## 2.1.0
 
-- Added `$.native.waitUntilVisible()` (#1543)
+- Add `$.native.waitUntilVisible()` (#1543)
+- Add `KeyboardBehavior` enum to native enterText() methods (#1511)
 
 ## 2.0.7
 
-- Added an alternative `BrowserstackPatrolJUnitRunner`, which implements a fix
-  to make tests run on BrowserStack (#1402)
+- Add an alternative `BrowserstackPatrolJUnitRunner`, which implements a fix to
+  make tests run on BrowserStack (#1402)
 
 ## 2.0.6
 
