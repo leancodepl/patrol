@@ -1,13 +1,16 @@
 devices:
   device:
     - model: Pixel7
-      version: 33
+      version: 29
       gpu: auto
     - model: NexusLowRes
       version: 31
       gpu: auto
+    - model: Pixel2Atd
+      version: 31
+      gpu: auto
     - model: Tablet10
-      version: 33
+      version: 31
       gpu: auto
 
 apps:
@@ -20,6 +23,15 @@ config:
   clear-package-data: true
   record-video: true
   timeout: 10m
+  outputs-dir: ew-test_outputs
+  outputs:
+    - summary
+    - merged_results_xml
+    - coverage
+    - pulled_dirs
+    - results_xml
+    - logcat
+    - captured_video
 
 main:
   include: [devices, apps, config]
