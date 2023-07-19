@@ -1,3 +1,7 @@
+## Unreleased
+
+- Added `$.native.waitUntilVisible()` (#1543)
+
 ## 2.0.7
 
 - Added an alternative `BrowserstackPatrolJUnitRunner`, which implements a fix

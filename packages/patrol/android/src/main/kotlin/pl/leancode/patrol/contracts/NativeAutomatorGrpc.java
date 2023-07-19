@@ -405,6 +405,36 @@ public final class NativeAutomatorGrpc {
     return getSwipeMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest,
+      pl.leancode.patrol.contracts.Contracts.Empty> getWaitUntilVisibleMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "waitUntilVisible",
+      requestType = pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest.class,
+      responseType = pl.leancode.patrol.contracts.Contracts.Empty.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest,
+      pl.leancode.patrol.contracts.Contracts.Empty> getWaitUntilVisibleMethod() {
+    io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest, pl.leancode.patrol.contracts.Contracts.Empty> getWaitUntilVisibleMethod;
+    if ((getWaitUntilVisibleMethod = NativeAutomatorGrpc.getWaitUntilVisibleMethod) == null) {
+      synchronized (NativeAutomatorGrpc.class) {
+        if ((getWaitUntilVisibleMethod = NativeAutomatorGrpc.getWaitUntilVisibleMethod) == null) {
+          NativeAutomatorGrpc.getWaitUntilVisibleMethod = getWaitUntilVisibleMethod =
+              io.grpc.MethodDescriptor.<pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest, pl.leancode.patrol.contracts.Contracts.Empty>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "waitUntilVisible"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
+                  pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
+                  pl.leancode.patrol.contracts.Contracts.Empty.getDefaultInstance()))
+              .build();
+        }
+      }
+    }
+    return getWaitUntilVisibleMethod;
+  }
+
   private static volatile io.grpc.MethodDescriptor<pl.leancode.patrol.contracts.Contracts.Empty,
       pl.leancode.patrol.contracts.Contracts.Empty> getEnableAirplaneModeMethod;
 
@@ -1151,6 +1181,13 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     */
+    public void waitUntilVisible(pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getWaitUntilVisibleMethod(), responseObserver);
+    }
+
+    /**
      * <pre>
      * services
      * </pre>
@@ -1398,6 +1435,13 @@ public final class NativeAutomatorGrpc {
                 pl.leancode.patrol.contracts.Contracts.SwipeRequest,
                 pl.leancode.patrol.contracts.Contracts.Empty>(
                   this, METHODID_SWIPE)))
+          .addMethod(
+            getWaitUntilVisibleMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest,
+                pl.leancode.patrol.contracts.Contracts.Empty>(
+                  this, METHODID_WAIT_UNTIL_VISIBLE)))
           .addMethod(
             getEnableAirplaneModeMethod(),
             io.grpc.stub.ServerCalls.asyncUnaryCall(
@@ -1664,6 +1708,14 @@ public final class NativeAutomatorGrpc {
         io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSwipeMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void waitUntilVisible(pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest request,
+        io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getWaitUntilVisibleMethod(), getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -1954,6 +2006,13 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     */
+    public pl.leancode.patrol.contracts.Contracts.Empty waitUntilVisible(pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getWaitUntilVisibleMethod(), getCallOptions(), request);
+    }
+
+    /**
      * <pre>
      * services
      * </pre>
@@ -2234,6 +2293,14 @@ public final class NativeAutomatorGrpc {
     }
 
     /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<pl.leancode.patrol.contracts.Contracts.Empty> waitUntilVisible(
+        pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getWaitUntilVisibleMethod(), getCallOptions()), request);
+    }
+
+    /**
      * <pre>
      * services
      * </pre>
@@ -2422,26 +2489,27 @@ public final class NativeAutomatorGrpc {
   private static final int METHODID_DOUBLE_TAP = 10;
   private static final int METHODID_ENTER_TEXT = 11;
   private static final int METHODID_SWIPE = 12;
-  private static final int METHODID_ENABLE_AIRPLANE_MODE = 13;
-  private static final int METHODID_DISABLE_AIRPLANE_MODE = 14;
-  private static final int METHODID_ENABLE_WI_FI = 15;
-  private static final int METHODID_DISABLE_WI_FI = 16;
-  private static final int METHODID_ENABLE_CELLULAR = 17;
-  private static final int METHODID_DISABLE_CELLULAR = 18;
-  private static final int METHODID_ENABLE_BLUETOOTH = 19;
-  private static final int METHODID_DISABLE_BLUETOOTH = 20;
-  private static final int METHODID_ENABLE_DARK_MODE = 21;
-  private static final int METHODID_DISABLE_DARK_MODE = 22;
-  private static final int METHODID_OPEN_NOTIFICATIONS = 23;
-  private static final int METHODID_CLOSE_NOTIFICATIONS = 24;
-  private static final int METHODID_CLOSE_HEADS_UP_NOTIFICATION = 25;
-  private static final int METHODID_GET_NOTIFICATIONS = 26;
-  private static final int METHODID_TAP_ON_NOTIFICATION = 27;
-  private static final int METHODID_IS_PERMISSION_DIALOG_VISIBLE = 28;
-  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 29;
-  private static final int METHODID_SET_LOCATION_ACCURACY = 30;
-  private static final int METHODID_DEBUG = 31;
-  private static final int METHODID_MARK_PATROL_APP_SERVICE_READY = 32;
+  private static final int METHODID_WAIT_UNTIL_VISIBLE = 13;
+  private static final int METHODID_ENABLE_AIRPLANE_MODE = 14;
+  private static final int METHODID_DISABLE_AIRPLANE_MODE = 15;
+  private static final int METHODID_ENABLE_WI_FI = 16;
+  private static final int METHODID_DISABLE_WI_FI = 17;
+  private static final int METHODID_ENABLE_CELLULAR = 18;
+  private static final int METHODID_DISABLE_CELLULAR = 19;
+  private static final int METHODID_ENABLE_BLUETOOTH = 20;
+  private static final int METHODID_DISABLE_BLUETOOTH = 21;
+  private static final int METHODID_ENABLE_DARK_MODE = 22;
+  private static final int METHODID_DISABLE_DARK_MODE = 23;
+  private static final int METHODID_OPEN_NOTIFICATIONS = 24;
+  private static final int METHODID_CLOSE_NOTIFICATIONS = 25;
+  private static final int METHODID_CLOSE_HEADS_UP_NOTIFICATION = 26;
+  private static final int METHODID_GET_NOTIFICATIONS = 27;
+  private static final int METHODID_TAP_ON_NOTIFICATION = 28;
+  private static final int METHODID_IS_PERMISSION_DIALOG_VISIBLE = 29;
+  private static final int METHODID_HANDLE_PERMISSION_DIALOG = 30;
+  private static final int METHODID_SET_LOCATION_ACCURACY = 31;
+  private static final int METHODID_DEBUG = 32;
+  private static final int METHODID_MARK_PATROL_APP_SERVICE_READY = 33;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -2510,6 +2578,10 @@ public final class NativeAutomatorGrpc {
           break;
         case METHODID_SWIPE:
           serviceImpl.swipe((pl.leancode.patrol.contracts.Contracts.SwipeRequest) request,
+              (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
+          break;
+        case METHODID_WAIT_UNTIL_VISIBLE:
+          serviceImpl.waitUntilVisible((pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest) request,
               (io.grpc.stub.StreamObserver<pl.leancode.patrol.contracts.Contracts.Empty>) responseObserver);
           break;
         case METHODID_ENABLE_AIRPLANE_MODE:
@@ -2630,6 +2702,7 @@ public final class NativeAutomatorGrpc {
               .addMethod(getDoubleTapMethod())
               .addMethod(getEnterTextMethod())
               .addMethod(getSwipeMethod())
+              .addMethod(getWaitUntilVisibleMethod())
               .addMethod(getEnableAirplaneModeMethod())
               .addMethod(getDisableAirplaneModeMethod())
               .addMethod(getEnableWiFiMethod())

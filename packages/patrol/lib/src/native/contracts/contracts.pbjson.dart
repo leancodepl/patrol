@@ -321,6 +321,26 @@ const SwipeRequest$json = const {
 /// Descriptor for `SwipeRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List swipeRequestDescriptor = $convert.base64Decode(
     'CgxTd2lwZVJlcXVlc3QSFgoGc3RhcnRYGAEgASgCUgZzdGFydFgSFgoGc3RhcnRZGAIgASgCUgZzdGFydFkSEgoEZW5kWBgDIAEoAlIEZW5kWBISCgRlbmRZGAQgASgCUgRlbmRZEhQKBXN0ZXBzGAUgASgNUgVzdGVwcxIUCgVhcHBJZBgGIAEoCVIFYXBwSWQ=');
+@$core.Deprecated('Use waitUntilVisibleRequestDescriptor instead')
+const WaitUntilVisibleRequest$json = const {
+  '1': 'WaitUntilVisibleRequest',
+  '2': const [
+    const {
+      '1': 'selector',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.patrol.Selector',
+      '10': 'selector'
+    },
+    const {'1': 'appId', '3': 2, '4': 1, '5': 9, '10': 'appId'},
+  ],
+};
+
+/// Descriptor for `WaitUntilVisibleRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List waitUntilVisibleRequestDescriptor =
+    $convert.base64Decode(
+        'ChdXYWl0VW50aWxWaXNpYmxlUmVxdWVzdBIsCghzZWxlY3RvchgBIAEoCzIQLnBhdHJvbC5TZWxlY3RvclIIc2VsZWN0b3ISFAoFYXBwSWQYAiABKAlSBWFwcElk');
 @$core.Deprecated('Use handlePermissionRequestDescriptor instead')
 const HandlePermissionRequest$json = const {
   '1': 'HandlePermissionRequest',

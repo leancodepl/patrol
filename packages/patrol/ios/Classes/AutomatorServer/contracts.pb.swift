@@ -419,6 +419,29 @@ public struct Patrol_SwipeRequest {
   public init() {}
 }
 
+public struct Patrol_WaitUntilVisibleRequest {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var selector: Patrol_Selector {
+    get {return _selector ?? Patrol_Selector()}
+    set {_selector = newValue}
+  }
+  /// Returns true if `selector` has been explicitly set.
+  public var hasSelector: Bool {return self._selector != nil}
+  /// Clears the value of `selector`. Subsequent reads from it will return its default value.
+  public mutating func clearSelector() {self._selector = nil}
+
+  public var appID: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _selector: Patrol_Selector? = nil
+}
+
 public struct Patrol_HandlePermissionRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -775,6 +798,7 @@ extension Patrol_TapRequest: @unchecked Sendable {}
 extension Patrol_EnterTextRequest: @unchecked Sendable {}
 extension Patrol_EnterTextRequest.OneOf_FindBy: @unchecked Sendable {}
 extension Patrol_SwipeRequest: @unchecked Sendable {}
+extension Patrol_WaitUntilVisibleRequest: @unchecked Sendable {}
 extension Patrol_HandlePermissionRequest: @unchecked Sendable {}
 extension Patrol_HandlePermissionRequest.Code: @unchecked Sendable {}
 extension Patrol_SetLocationAccuracyRequest: @unchecked Sendable {}
@@ -1484,6 +1508,48 @@ extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs.endX != rhs.endX {return false}
     if lhs.endY != rhs.endY {return false}
     if lhs.steps != rhs.steps {return false}
+    if lhs.appID != rhs.appID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Patrol_WaitUntilVisibleRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WaitUntilVisibleRequest"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "selector"),
+    2: .same(proto: "appId"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.appID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._selector {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Patrol_WaitUntilVisibleRequest, rhs: Patrol_WaitUntilVisibleRequest) -> Bool {
+    if lhs._selector != rhs._selector {return false}
     if lhs.appID != rhs.appID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

@@ -181,6 +181,15 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
         return empty { }
     }
 
+    override suspend fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest): Empty {
+        automation.waitUntilVisible(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance
+        )
+        return empty { }
+    }
+
     override suspend fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
         val visible = automation.isPermissionDialogVisible(timeout = request.timeoutMillis)
         return permissionDialogVisibleResponse { this.visible = visible }

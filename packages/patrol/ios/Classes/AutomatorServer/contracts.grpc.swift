@@ -325,6 +325,11 @@ internal protocol Patrol_NativeAutomatorClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> UnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
+  func waitUntilVisible(
+    _ request: Patrol_WaitUntilVisibleRequest,
+    callOptions: CallOptions?
+  ) -> UnaryCall<Patrol_WaitUntilVisibleRequest, Patrol_Empty>
+
   func enableAirplaneMode(
     _ request: Patrol_Empty,
     callOptions: CallOptions?
@@ -662,6 +667,24 @@ extension Patrol_NativeAutomatorClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeswipeInterceptors() ?? []
+    )
+  }
+
+  /// Unary call to waitUntilVisible
+  ///
+  /// - Parameters:
+  ///   - request: Request to send to waitUntilVisible.
+  ///   - callOptions: Call options.
+  /// - Returns: A `UnaryCall` with futures for the metadata, status and response.
+  internal func waitUntilVisible(
+    _ request: Patrol_WaitUntilVisibleRequest,
+    callOptions: CallOptions? = nil
+  ) -> UnaryCall<Patrol_WaitUntilVisibleRequest, Patrol_Empty> {
+    return self.makeUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.waitUntilVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makewaitUntilVisibleInterceptors() ?? []
     )
   }
 
@@ -1153,6 +1176,11 @@ internal protocol Patrol_NativeAutomatorAsyncClientProtocol: GRPCClient {
     callOptions: CallOptions?
   ) -> GRPCAsyncUnaryCall<Patrol_SwipeRequest, Patrol_Empty>
 
+  func makeWaitUntilVisibleCall(
+    _ request: Patrol_WaitUntilVisibleRequest,
+    callOptions: CallOptions?
+  ) -> GRPCAsyncUnaryCall<Patrol_WaitUntilVisibleRequest, Patrol_Empty>
+
   func makeEnableAirplaneModeCall(
     _ request: Patrol_Empty,
     callOptions: CallOptions?
@@ -1417,6 +1445,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
       request: request,
       callOptions: callOptions ?? self.defaultCallOptions,
       interceptors: self.interceptors?.makeswipeInterceptors() ?? []
+    )
+  }
+
+  internal func makeWaitUntilVisibleCall(
+    _ request: Patrol_WaitUntilVisibleRequest,
+    callOptions: CallOptions? = nil
+  ) -> GRPCAsyncUnaryCall<Patrol_WaitUntilVisibleRequest, Patrol_Empty> {
+    return self.makeAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.waitUntilVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makewaitUntilVisibleInterceptors() ?? []
     )
   }
 
@@ -1819,6 +1859,18 @@ extension Patrol_NativeAutomatorAsyncClientProtocol {
     )
   }
 
+  internal func waitUntilVisible(
+    _ request: Patrol_WaitUntilVisibleRequest,
+    callOptions: CallOptions? = nil
+  ) async throws -> Patrol_Empty {
+    return try await self.performAsyncUnaryCall(
+      path: Patrol_NativeAutomatorClientMetadata.Methods.waitUntilVisible.path,
+      request: request,
+      callOptions: callOptions ?? self.defaultCallOptions,
+      interceptors: self.interceptors?.makewaitUntilVisibleInterceptors() ?? []
+    )
+  }
+
   internal func enableAirplaneMode(
     _ request: Patrol_Empty,
     callOptions: CallOptions? = nil
@@ -2118,6 +2170,9 @@ internal protocol Patrol_NativeAutomatorClientInterceptorFactoryProtocol: Sendab
   /// - Returns: Interceptors to use when invoking 'swipe'.
   func makeswipeInterceptors() -> [ClientInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when invoking 'waitUntilVisible'.
+  func makewaitUntilVisibleInterceptors() -> [ClientInterceptor<Patrol_WaitUntilVisibleRequest, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when invoking 'enableAirplaneMode'.
   func makeenableAirplaneModeInterceptors() -> [ClientInterceptor<Patrol_Empty, Patrol_Empty>]
 
@@ -2197,6 +2252,7 @@ internal enum Patrol_NativeAutomatorClientMetadata {
       Patrol_NativeAutomatorClientMetadata.Methods.doubleTap,
       Patrol_NativeAutomatorClientMetadata.Methods.enterText,
       Patrol_NativeAutomatorClientMetadata.Methods.swipe,
+      Patrol_NativeAutomatorClientMetadata.Methods.waitUntilVisible,
       Patrol_NativeAutomatorClientMetadata.Methods.enableAirplaneMode,
       Patrol_NativeAutomatorClientMetadata.Methods.disableAirplaneMode,
       Patrol_NativeAutomatorClientMetadata.Methods.enableWiFi,
@@ -2296,6 +2352,12 @@ internal enum Patrol_NativeAutomatorClientMetadata {
     internal static let swipe = GRPCMethodDescriptor(
       name: "swipe",
       path: "/patrol.NativeAutomator/swipe",
+      type: GRPCCallType.unary
+    )
+
+    internal static let waitUntilVisible = GRPCMethodDescriptor(
+      name: "waitUntilVisible",
+      path: "/patrol.NativeAutomator/waitUntilVisible",
       type: GRPCCallType.unary
     )
 
@@ -2593,6 +2655,8 @@ internal protocol Patrol_NativeAutomatorProvider: CallHandlerProvider {
 
   func swipe(request: Patrol_SwipeRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
+  func waitUntilVisible(request: Patrol_WaitUntilVisibleRequest, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
+
   /// services
   func enableAirplaneMode(request: Patrol_Empty, context: StatusOnlyCallContext) -> EventLoopFuture<Patrol_Empty>
 
@@ -2766,6 +2830,15 @@ extension Patrol_NativeAutomatorProvider {
         responseSerializer: ProtobufSerializer<Patrol_Empty>(),
         interceptors: self.interceptors?.makeswipeInterceptors() ?? [],
         userFunction: self.swipe(request:context:)
+      )
+
+    case "waitUntilVisible":
+      return UnaryServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_WaitUntilVisibleRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makewaitUntilVisibleInterceptors() ?? [],
+        userFunction: self.waitUntilVisible(request:context:)
       )
 
     case "enableAirplaneMode":
@@ -3027,6 +3100,11 @@ internal protocol Patrol_NativeAutomatorAsyncProvider: CallHandlerProvider, Send
     context: GRPCAsyncServerCallContext
   ) async throws -> Patrol_Empty
 
+  func waitUntilVisible(
+    request: Patrol_WaitUntilVisibleRequest,
+    context: GRPCAsyncServerCallContext
+  ) async throws -> Patrol_Empty
+
   /// services
   func enableAirplaneMode(
     request: Patrol_Empty,
@@ -3269,6 +3347,15 @@ extension Patrol_NativeAutomatorAsyncProvider {
         wrapping: { try await self.swipe(request: $0, context: $1) }
       )
 
+    case "waitUntilVisible":
+      return GRPCAsyncServerHandler(
+        context: context,
+        requestDeserializer: ProtobufDeserializer<Patrol_WaitUntilVisibleRequest>(),
+        responseSerializer: ProtobufSerializer<Patrol_Empty>(),
+        interceptors: self.interceptors?.makewaitUntilVisibleInterceptors() ?? [],
+        wrapping: { try await self.waitUntilVisible(request: $0, context: $1) }
+      )
+
     case "enableAirplaneMode":
       return GRPCAsyncServerHandler(
         context: context,
@@ -3509,6 +3596,10 @@ internal protocol Patrol_NativeAutomatorServerInterceptorFactoryProtocol: Sendab
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeswipeInterceptors() -> [ServerInterceptor<Patrol_SwipeRequest, Patrol_Empty>]
 
+  /// - Returns: Interceptors to use when handling 'waitUntilVisible'.
+  ///   Defaults to calling `self.makeInterceptors()`.
+  func makewaitUntilVisibleInterceptors() -> [ServerInterceptor<Patrol_WaitUntilVisibleRequest, Patrol_Empty>]
+
   /// - Returns: Interceptors to use when handling 'enableAirplaneMode'.
   ///   Defaults to calling `self.makeInterceptors()`.
   func makeenableAirplaneModeInterceptors() -> [ServerInterceptor<Patrol_Empty, Patrol_Empty>]
@@ -3608,6 +3699,7 @@ internal enum Patrol_NativeAutomatorServerMetadata {
       Patrol_NativeAutomatorServerMetadata.Methods.doubleTap,
       Patrol_NativeAutomatorServerMetadata.Methods.enterText,
       Patrol_NativeAutomatorServerMetadata.Methods.swipe,
+      Patrol_NativeAutomatorServerMetadata.Methods.waitUntilVisible,
       Patrol_NativeAutomatorServerMetadata.Methods.enableAirplaneMode,
       Patrol_NativeAutomatorServerMetadata.Methods.disableAirplaneMode,
       Patrol_NativeAutomatorServerMetadata.Methods.enableWiFi,
@@ -3707,6 +3799,12 @@ internal enum Patrol_NativeAutomatorServerMetadata {
     internal static let swipe = GRPCMethodDescriptor(
       name: "swipe",
       path: "/patrol.NativeAutomator/swipe",
+      type: GRPCCallType.unary
+    )
+
+    internal static let waitUntilVisible = GRPCMethodDescriptor(
+      name: "waitUntilVisible",
+      path: "/patrol.NativeAutomator/waitUntilVisible",
       type: GRPCCallType.unary
     )
 

@@ -55,6 +55,7 @@ service NativeAutomator {
   rpc doubleTap(TapRequest) returns (Empty) {}
   rpc enterText(EnterTextRequest) returns (Empty) {}
   rpc swipe(SwipeRequest) returns (Empty) {}
+  rpc waitUntilVisible(WaitUntilVisibleRequest) returns (Empty) {}
 
   // services
   rpc enableAirplaneMode(Empty) returns (Empty) {}
@@ -140,6 +141,11 @@ message SwipeRequest {
   float endY = 4;
   uint32 steps = 5;
   string appId = 6;
+}
+
+message WaitUntilVisibleRequest {
+  Selector selector = 1;
+  string appId = 2;
 }
 
 message HandlePermissionRequest {

@@ -1489,6 +1489,100 @@ class SwipeRequest extends $pb.GeneratedMessage {
   void clearAppId() => clearField(6);
 }
 
+class WaitUntilVisibleRequest extends $pb.GeneratedMessage {
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      const $core.bool.fromEnvironment('protobuf.omit_message_names')
+          ? ''
+          : 'WaitUntilVisibleRequest',
+      package: const $pb.PackageName(
+          const $core.bool.fromEnvironment('protobuf.omit_message_names')
+              ? ''
+              : 'patrol'),
+      createEmptyInstance: create)
+    ..aOM<Selector>(
+        1,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'selector',
+        subBuilder: Selector.create)
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'appId',
+        protoName: 'appId')
+    ..hasRequiredFields = false;
+
+  WaitUntilVisibleRequest._() : super();
+  factory WaitUntilVisibleRequest({
+    Selector? selector,
+    $core.String? appId,
+  }) {
+    final _result = create();
+    if (selector != null) {
+      _result.selector = selector;
+    }
+    if (appId != null) {
+      _result.appId = appId;
+    }
+    return _result;
+  }
+  factory WaitUntilVisibleRequest.fromBuffer($core.List<$core.int> i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(i, r);
+  factory WaitUntilVisibleRequest.fromJson($core.String i,
+          [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(i, r);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+      'Will be removed in next major version')
+  WaitUntilVisibleRequest clone() =>
+      WaitUntilVisibleRequest()..mergeFromMessage(this);
+  @$core.Deprecated('Using this can add significant overhead to your binary. '
+      'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+      'Will be removed in next major version')
+  WaitUntilVisibleRequest copyWith(
+          void Function(WaitUntilVisibleRequest) updates) =>
+      super.copyWith((message) => updates(message as WaitUntilVisibleRequest))
+          as WaitUntilVisibleRequest; // ignore: deprecated_member_use
+  $pb.BuilderInfo get info_ => _i;
+  @$core.pragma('dart2js:noInline')
+  static WaitUntilVisibleRequest create() => WaitUntilVisibleRequest._();
+  WaitUntilVisibleRequest createEmptyInstance() => create();
+  static $pb.PbList<WaitUntilVisibleRequest> createRepeated() =>
+      $pb.PbList<WaitUntilVisibleRequest>();
+  @$core.pragma('dart2js:noInline')
+  static WaitUntilVisibleRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<WaitUntilVisibleRequest>(create);
+  static WaitUntilVisibleRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  Selector get selector => $_getN(0);
+  @$pb.TagNumber(1)
+  set selector(Selector v) {
+    setField(1, v);
+  }
+
+  @$pb.TagNumber(1)
+  $core.bool hasSelector() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearSelector() => clearField(1);
+  @$pb.TagNumber(1)
+  Selector ensureSelector() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  $core.String get appId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set appId($core.String v) {
+    $_setString(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasAppId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAppId() => clearField(2);
+}
+
 class HandlePermissionRequest extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
       const $core.bool.fromEnvironment('protobuf.omit_message_names')

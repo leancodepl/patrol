@@ -138,6 +138,11 @@ class NativeAutomatorClient extends $grpc.Client {
       '/patrol.NativeAutomator/swipe',
       ($0.SwipeRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
+  static final _$waitUntilVisible =
+      $grpc.ClientMethod<$0.WaitUntilVisibleRequest, $0.Empty>(
+          '/patrol.NativeAutomator/waitUntilVisible',
+          ($0.WaitUntilVisibleRequest value) => value.writeToBuffer(),
+          ($core.List<$core.int> value) => $0.Empty.fromBuffer(value));
   static final _$enableAirplaneMode = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/patrol.NativeAutomator/enableAirplaneMode',
       ($0.Empty value) => value.writeToBuffer(),
@@ -301,6 +306,12 @@ class NativeAutomatorClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.Empty> swipe($0.SwipeRequest request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$swipe, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.Empty> waitUntilVisible(
+      $0.WaitUntilVisibleRequest request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$waitUntilVisible, request, options: options);
   }
 
   $grpc.ResponseFuture<$0.Empty> enableAirplaneMode($0.Empty request,
@@ -510,6 +521,14 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
         false,
         false,
         ($core.List<$core.int> value) => $0.SwipeRequest.fromBuffer(value),
+        ($0.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.WaitUntilVisibleRequest, $0.Empty>(
+        'waitUntilVisible',
+        waitUntilVisible_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.WaitUntilVisibleRequest.fromBuffer(value),
         ($0.Empty value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.Empty, $0.Empty>(
         'enableAirplaneMode',
@@ -726,6 +745,11 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
     return swipe(call, await request);
   }
 
+  $async.Future<$0.Empty> waitUntilVisible_Pre($grpc.ServiceCall call,
+      $async.Future<$0.WaitUntilVisibleRequest> request) async {
+    return waitUntilVisible(call, await request);
+  }
+
   $async.Future<$0.Empty> enableAirplaneMode_Pre(
       $grpc.ServiceCall call, $async.Future<$0.Empty> request) async {
     return enableAirplaneMode(call, await request);
@@ -850,6 +874,8 @@ abstract class NativeAutomatorServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.EnterTextRequest request);
   $async.Future<$0.Empty> swipe(
       $grpc.ServiceCall call, $0.SwipeRequest request);
+  $async.Future<$0.Empty> waitUntilVisible(
+      $grpc.ServiceCall call, $0.WaitUntilVisibleRequest request);
   $async.Future<$0.Empty> enableAirplaneMode(
       $grpc.ServiceCall call, $0.Empty request);
   $async.Future<$0.Empty> disableAirplaneMode(
