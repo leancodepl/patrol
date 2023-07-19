@@ -332,7 +332,7 @@ void main() {
             view: find.byType(Scrollable),
             // defaultScrollDelta can't be used, because it not possible
             // to achieve a state, in which 'bottom text' exists, but
-            //is not visible
+            // is not visible
             moveStep: const Offset(0, -16),
             maxIteration: 100,
           );
@@ -881,7 +881,7 @@ void main() {
             finder: find.text('bottom text'),
             // defaultScrollDelta can't be used, because it not possible
             // to achieve a state, in which 'bottom text' exists, but
-            //is not visible
+            // is not visible
             delta: 16,
             maxScrolls: 100,
           );
