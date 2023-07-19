@@ -274,8 +274,8 @@ class PatrolFinder extends MatchFinder {
     double step = defaultScrollDelta,
     AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
-    Duration duration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 500),
+    Duration? settleBetweenScrollsTimeout,
+    Duration? dragDuration,
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
@@ -285,7 +285,7 @@ class PatrolFinder extends MatchFinder {
       delta: step,
       scrollDirection: scrollDirection,
       maxScrolls: maxScrolls,
-      duration: duration,
+      settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
       settlePolicy: chooseSettlePolicy(
         andSettle: andSettle,
         settlePolicy: settlePolicy,

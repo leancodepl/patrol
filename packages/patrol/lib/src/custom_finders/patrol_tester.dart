@@ -15,6 +15,8 @@ class PatrolTesterConfig {
     @Deprecated('Use settleBehavior argument instead') this.andSettle = true,
     // TODO: change default to trySettle, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
     this.settlePolicy = SettlePolicy.settle,
+    this.dragDuration = const Duration(milliseconds: 100),
+    this.settleBetweenScrollsTimeout = const Duration(seconds: 5),
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't find
@@ -51,6 +53,15 @@ class PatrolTesterConfig {
   /// See [SettlePolicy] for more information.
   final SettlePolicy settlePolicy;
 
+  /// Time that it takes to perform drag gesture in scrolling methods,
+  /// such as [PatrolTester.scrollUntilVisible].
+  final Duration dragDuration;
+
+  /// Timeout used to settle in between drag gestures in scrolling methods,
+  /// such as [PatrolTester.scrollUntilVisible] (unless disabled by
+  /// [settlePolicy]).
+  final Duration settleBetweenScrollsTimeout;
+
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   PatrolTesterConfig copyWith({
@@ -59,6 +70,7 @@ class PatrolTesterConfig {
     Duration? settleTimeout,
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
+    Duration? dragDuration,
     String? appName,
     String? packageName,
     String? bundleId,
@@ -71,6 +83,7 @@ class PatrolTesterConfig {
       // ignore: deprecated_member_use_from_same_package
       andSettle: andSettle ?? this.andSettle,
       settlePolicy: settlePolicy ?? this.settlePolicy,
+      dragDuration: dragDuration ?? this.dragDuration,
     );
   }
 }
@@ -79,7 +92,7 @@ class PatrolTesterConfig {
 const defaultScrollDelta = 64.0;
 
 /// Default maximum number of drags during scrolling.
-const defaultScrollMaxIteration = 100;
+const defaultScrollMaxIteration = 15;
 
 /// [PatrolTester] wraps a [WidgetTester]. It provides support for _Patrol
 /// custom finder_, a.k.a `$`.
@@ -202,10 +215,14 @@ class PatrolTester {
   Future<void> pumpAndTrySettle({
     Duration duration = const Duration(milliseconds: 100),
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
-    Duration timeout = const Duration(seconds: 10),
+    Duration? timeout,
   }) async {
     try {
-      await tester.pumpAndSettle(duration, phase, timeout);
+      await tester.pumpAndSettle(
+        duration,
+        phase,
+        timeout ?? config.settleTimeout,
+      );
       // ignore: avoid_catching_errors
     } on FlutterError catch (err) {
       if (err.message == 'pumpAndSettle timed out') {
@@ -423,7 +440,10 @@ class PatrolTester {
   ///    gesture, half a second by default)
   ///
   ///  * you can configure, which version of pumping is performed between
-  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]).
+  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]),
+  ///
+  ///  * timeouts and durations, if null, are controlled by values in
+  ///    [PatrolTester.config].
   ///
   /// See also:
   ///  * [PatrolTester.config.andSettle], which controls the default behavior if
@@ -435,8 +455,8 @@ class PatrolTester {
     required Finder view,
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
-    Duration pumpDuration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 500),
+    Duration? settleBetweenScrollsTimeout,
+    Duration? dragDuration,
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
@@ -444,6 +464,8 @@ class PatrolTester {
       var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
       viewPatrolFinder = viewPatrolFinder.hitTestable().first;
+      dragDuration ??= config.dragDuration;
+      settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
       final settle = chooseSettlePolicy(
         andSettle: andSettle,
         settlePolicy: settlePolicy,
@@ -451,10 +473,14 @@ class PatrolTester {
 
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-        await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration);
+        await tester.timedDrag(
+          viewPatrolFinder,
+          moveStep,
+          dragDuration!,
+        );
         await _performPump(
           settlePolicy: settle,
-          settleTimeout: config.settleTimeout,
+          settleTimeout: settleBetweenScrollsTimeout,
         );
         iterationsLeft -= 1;
       }
@@ -462,8 +488,8 @@ class PatrolTester {
       if (iterationsLeft <= 0) {
         throw WaitUntilExistsTimeoutException(
           finder: finder,
-          // TODO: set reasonable duration
-          duration: pumpDuration,
+          // TODO: set reasonable duration or create new exception for this case
+          duration: settleBetweenScrollsTimeout!,
         );
       }
 
@@ -494,7 +520,10 @@ class PatrolTester {
   ///    gesture, half a second by default)
   ///
   ///  * you can configure, which version of pumping is performed between
-  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle]).
+  ///    each drag gesture ([pump], [pumpAndSettle] or [pumpAndTrySettle])
+  ///
+  ///  * timeouts and durations, if null, are controlled by values in
+  ///    [PatrolTester.config].
   ///
   /// See also:
   ///  * [PatrolTester.dragUntilExists], which scrolls to existing widget,
@@ -504,8 +533,8 @@ class PatrolTester {
     required Finder view,
     required Offset moveStep,
     int maxIteration = defaultScrollMaxIteration,
-    Duration pumpDuration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 500),
+    Duration? settleBetweenScrollsTimeout,
+    Duration? dragDuration,
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
@@ -513,6 +542,8 @@ class PatrolTester {
       var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
       await viewPatrolFinder.waitUntilVisible();
       viewPatrolFinder = viewPatrolFinder.hitTestable().first;
+      dragDuration ??= config.dragDuration;
+      settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
       final settle = chooseSettlePolicy(
         andSettle: andSettle,
         settlePolicy: settlePolicy,
@@ -520,10 +551,14 @@ class PatrolTester {
 
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-        await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration);
+        await tester.timedDrag(
+          viewPatrolFinder,
+          moveStep,
+          dragDuration!,
+        );
         await _performPump(
           settlePolicy: settle,
-          settleTimeout: config.settleTimeout,
+          settleTimeout: settleBetweenScrollsTimeout,
         );
         iterationsLeft -= 1;
       }
@@ -531,8 +566,8 @@ class PatrolTester {
       if (iterationsLeft <= 0) {
         throw WaitUntilVisibleTimeoutException(
           finder: finder.hitTestable(),
-          // TODO: set reasonable duration
-          duration: pumpDuration,
+          // TODO: set reasonable duration or create new exception for this case
+          duration: settleBetweenScrollsTimeout!,
         );
       }
 
@@ -551,10 +586,10 @@ class PatrolTester {
     required Finder finder,
     Finder? view,
     double delta = defaultScrollDelta,
-    AxisDirection scrollDirection = AxisDirection.down,
+    AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
-    Duration duration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 500),
+    Duration? settleBetweenScrollsTimeout,
+    Duration? dragDuration,
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
@@ -565,10 +600,20 @@ class PatrolTester {
       finder: view,
       tester: this,
     ).waitUntilVisible();
+    AxisDirection direction;
+    if (scrollDirection == null) {
+      if (view.evaluate().first.widget is Scrollable) {
+        direction = tester.firstWidget<Scrollable>(view).axisDirection;
+      } else {
+        direction = AxisDirection.down;
+      }
+    } else {
+      direction = scrollDirection;
+    }
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
       Offset moveStep;
-      switch (tester.firstWidget<Scrollable>(view!).axisDirection) {
+      switch (direction) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
           break;
@@ -592,7 +637,7 @@ class PatrolTester {
         view: scrollablePatrolFinder.first,
         moveStep: moveStep,
         maxIteration: maxScrolls,
-        pumpDuration: duration,
+        settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
         dragDuration: dragDuration,
         settlePolicy: settle,
       );
@@ -617,8 +662,8 @@ class PatrolTester {
     double delta = defaultScrollDelta,
     AxisDirection? scrollDirection,
     int maxScrolls = defaultScrollMaxIteration,
-    Duration duration = const Duration(milliseconds: 50),
-    Duration dragDuration = const Duration(milliseconds: 500),
+    Duration? settleBetweenScrollsTimeout,
+    Duration? dragDuration,
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
@@ -666,7 +711,7 @@ class PatrolTester {
         view: scrollablePatrolFinder.first,
         moveStep: moveStep,
         maxIteration: maxScrolls,
-        pumpDuration: duration,
+        settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
         dragDuration: dragDuration,
         settlePolicy: settle,
       );
