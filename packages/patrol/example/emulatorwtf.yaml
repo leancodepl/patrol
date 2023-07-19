@@ -1,12 +1,9 @@
 devices:
   device:
     - model: Pixel7
-      version: 29
-      gpu: auto
-    - model: NexusLowRes
       version: 31
       gpu: auto
-    - model: Pixel2Atd
+    - model: NexusLowRes
       version: 31
       gpu: auto
     - model: Tablet10
