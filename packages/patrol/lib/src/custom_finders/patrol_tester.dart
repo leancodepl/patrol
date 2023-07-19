@@ -16,7 +16,7 @@ class PatrolTesterConfig {
     // TODO: change default to trySettle, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
     this.settlePolicy = SettlePolicy.settle,
     this.dragDuration = const Duration(milliseconds: 100),
-    this.settleBetweenScrollsTimeout = const Duration(seconds: 2),
+    this.settleBetweenScrollsTimeout = const Duration(seconds: 5),
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't find
