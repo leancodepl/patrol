@@ -19,8 +19,19 @@ void main() {
       await $.native.openApp(appId: settingsAppId);
 
       // assert that a few texts are visible
-      final view = await $.native.getNativeViews(Selector(text: 'Screen time'));
-      expect(view.length, equals(1));
+      final views1 = await $.native.getNativeViews(
+        Selector(text: 'Screen Time'),
+        appId: settingsAppId,
+      );
+      print('Found views matching "Screen Time": ${views1.length}');
+      expect(views1.length, equals(2));
+
+      final views2 = await $.native.getNativeViews(
+        Selector(text: 'General'),
+        appId: settingsAppId,
+      );
+      print('Found views matching "General": ${views2.length}');
+      expect(views2.length, equals(2));
 
       await $.native.openApp();
     },

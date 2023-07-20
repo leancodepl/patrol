@@ -318,21 +318,22 @@
       }
     }
 
-    func getNativeViews(byText text: String, inApp bundleId: String) async throws
-      -> [Patrol_NativeView]
-    {
-      try await runAction("getting native views") {
+    func getNativeViews(
+      byText text: String,
+      inApp bundleId: String
+    ) async throws -> [Patrol_NativeView] {
+      try await runAction("getting native views matching \(text)") {
         let app = try self.getApp(withBundleId: bundleId)
-        let elements = app.descendants(matching: .any)[text].otherElements.allElementsBoundByIndex
+
+        let format = """
+          label == %@
+          """
+        let predicate = NSPredicate(format: format, text)
+        let elements = app.descendants(matching: .any).matching(predicate).allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
-          Patrol_NativeView.with {
-            let label = xcuielement.label
-            let accLabel = xcuielement.accessibilityLabel
-            let ident = xcuielement.identifier
-
-            // TODO: Which one to choose? See #1554
-
+          return Patrol_NativeView.with {
+            // TODO: We should also consider title, identifier, etc. See #1554
             $0.text = xcuielement.label
           }
         }

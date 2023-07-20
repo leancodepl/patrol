@@ -99,8 +99,9 @@
       return try await runCatching {
         let nativeViews = try await automator.getNativeViews(
           byText: request.selector.text,
-          appId: request.appID,
+          inApp: request.appID
         )
+
         return Patrol_GetNativeViewsResponse.with {
           $0.nativeViews = nativeViews
         }
