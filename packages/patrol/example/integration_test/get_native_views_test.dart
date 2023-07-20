@@ -24,6 +24,7 @@ void main() {
         appId: settingsAppId,
       );
       print('Found views matching "Screen Time": ${views1.length}');
+
       expect(views1.length, equals(2));
 
       final views2 = await $.native.getNativeViews(

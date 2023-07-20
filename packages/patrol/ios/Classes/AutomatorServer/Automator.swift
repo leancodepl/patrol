@@ -334,17 +334,7 @@
         let elements = app.descendants(matching: .any).matching(predicate).allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
-          return Patrol_NativeView.with {
-            $0.text = xcuielement.label
-            if xcuielement.accessibilityLabel != nil {
-              $0.contentDescription = xcuielement.accessibilityLabel!
-            }
-            $0.resourceName = xcuielement.identifier
-            $0.enabled = xcuielement.isEnabled
-            $0.focused = xcuielement.hasFocus
-            $0.className = String(xcuielement.elementType.rawValue)  // TODO: Provide mapping for names
-            $0.applicationPackage = bundleId
-          }
+          return Patrol_NativeView.fromXCUIElement(xcuielement, bundleId)
         }
 
         return views
@@ -742,6 +732,26 @@
       } else {
         let coordinate = self.coordinate(withNormalizedOffset: CGVector(dx: 0.0, dy: 0.0))
         coordinate.tap()
+      }
+    }
+  }
+
+  extension Patrol_NativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> Patrol_NativeView
+    {
+      return Patrol_NativeView.with {
+        $0.text = xcuielement.label
+        if xcuielement.accessibilityLabel != nil {
+          $0.contentDescription = xcuielement.accessibilityLabel!
+        }
+        $0.resourceName = xcuielement.identifier
+        $0.enabled = xcuielement.isEnabled
+        $0.focused = xcuielement.hasFocus
+        $0.className = String(xcuielement.elementType.rawValue)  // TODO: Provide mapping for names
+        $0.applicationPackage = bundleId
+        $0.children = xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return Patrol_NativeView.fromXCUIElement(child, bundleId)
+        }
       }
     }
   }
