@@ -1,13 +1,18 @@
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 
 class TestBundler {
-  TestBundler({required Directory projectRoot})
-      : _projectRoot = projectRoot,
-        _fs = projectRoot.fileSystem;
+  TestBundler({
+    required Directory projectRoot,
+    required Logger logger,
+  })  : _projectRoot = projectRoot,
+        _fs = projectRoot.fileSystem,
+        _logger = logger;
 
   final Directory _projectRoot;
   final FileSystem _fs;
+  final Logger _logger;
 
   /// Creates an entrypoint for use with `patrol test` and `patrol build`.
   void createTestBundle(List<String> testFilePaths) {
@@ -102,6 +107,10 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
     bundledTestFile
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
+
+    _logger.detail(
+      'Generated entrypoint ${bundledTestFile.path} with ${testFilePaths.length} bundled test(s)',
+    );
   }
 
   // This file must not end with "_test.dart", otherwise it'll be picked up
@@ -136,6 +145,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
     bundledTestFile
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
+
+    _logger
+        .detail('Generated entrypoint ${bundledTestFile.path} for development');
   }
 
   /// Input:

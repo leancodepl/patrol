@@ -81,9 +81,6 @@ class TestCommand extends PatrolCommand {
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
       _testBundler.createTestBundle(targets);
-      _logger.detail(
-        'Generated entrypoint ${entrypoint.path} with ${targets.length} bundled test(s)',
-      );
     }
 
     final config = _pubspecReader.read();

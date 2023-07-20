@@ -90,7 +90,6 @@ class DevelopCommand extends PatrolCommand {
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
       _testBundler.createDevelopTestBundle(target);
-      _logger.detail('Generated entrypoint ${entrypoint.path}');
     }
 
     final config = _pubspecReader.read();

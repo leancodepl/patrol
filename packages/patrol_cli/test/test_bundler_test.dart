@@ -6,6 +6,7 @@ import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'src/common.dart';
+import 'src/mocks.dart';
 
 Directory _initFakeFs(FileSystem fs, Platform platform) {
   // Create home directory
@@ -32,7 +33,10 @@ void _test(Platform platform) {
     setUp(() {
       fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
       final projectRootDir = _initFakeFs(fs, platform);
-      testBundler = TestBundler(projectRoot: projectRootDir);
+      testBundler = TestBundler(
+        projectRoot: projectRootDir,
+        logger: MockLogger(),
+      );
     });
 
     test('throws ArgumentError when no tests are given', () {

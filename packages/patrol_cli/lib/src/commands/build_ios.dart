@@ -77,7 +77,6 @@ class BuildIOSCommand extends PatrolCommand {
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
       _testBundler.createTestBundle(targets);
-      _logger.detail('Bundled ${targets.length} test(s) in ${entrypoint.path}');
     }
 
     final config = _pubspecReader.read();
