@@ -3,6 +3,7 @@ import 'dart:io' show ProcessSignal, stdin;
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -344,6 +345,11 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   }
 
   bool _wantsUpdateCheck(String? commandName) {
+    if (ci.isCI) {
+      // We don't want to check for updates on CI because of #1282
+      return false;
+    }
+
     if (commandName == 'update' || commandName == 'doctor') {
       return false;
     }
