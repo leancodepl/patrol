@@ -1,33 +1,25 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: contracts.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
 
-// ignore_for_file: UNDEFINED_SHOWN_NAME
+// ignore_for_file: annotate_overrides, camel_case_types
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
+
 import 'dart:core' as $core;
+
 import 'package:protobuf/protobuf.dart' as $pb;
 
 class RunDartTestResponse_Result extends $pb.ProtobufEnum {
   static const RunDartTestResponse_Result SUCCESS =
-      RunDartTestResponse_Result._(
-          0,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'SUCCESS');
+      RunDartTestResponse_Result._(0, _omitEnumNames ? '' : 'SUCCESS');
   static const RunDartTestResponse_Result SKIPPED =
-      RunDartTestResponse_Result._(
-          1,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'SKIPPED');
+      RunDartTestResponse_Result._(1, _omitEnumNames ? '' : 'SKIPPED');
   static const RunDartTestResponse_Result FAILURE =
-      RunDartTestResponse_Result._(
-          2,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'FAILURE');
+      RunDartTestResponse_Result._(2, _omitEnumNames ? '' : 'FAILURE');
 
   static const $core.List<RunDartTestResponse_Result> values =
       <RunDartTestResponse_Result>[
@@ -46,23 +38,11 @@ class RunDartTestResponse_Result extends $pb.ProtobufEnum {
 
 class HandlePermissionRequest_Code extends $pb.ProtobufEnum {
   static const HandlePermissionRequest_Code WHILE_USING =
-      HandlePermissionRequest_Code._(
-          0,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'WHILE_USING');
+      HandlePermissionRequest_Code._(0, _omitEnumNames ? '' : 'WHILE_USING');
   static const HandlePermissionRequest_Code ONLY_THIS_TIME =
-      HandlePermissionRequest_Code._(
-          1,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'ONLY_THIS_TIME');
+      HandlePermissionRequest_Code._(1, _omitEnumNames ? '' : 'ONLY_THIS_TIME');
   static const HandlePermissionRequest_Code DENIED =
-      HandlePermissionRequest_Code._(
-          2,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'DENIED');
+      HandlePermissionRequest_Code._(2, _omitEnumNames ? '' : 'DENIED');
 
   static const $core.List<HandlePermissionRequest_Code> values =
       <HandlePermissionRequest_Code>[
@@ -83,16 +63,10 @@ class HandlePermissionRequest_Code extends $pb.ProtobufEnum {
 class SetLocationAccuracyRequest_LocationAccuracy extends $pb.ProtobufEnum {
   static const SetLocationAccuracyRequest_LocationAccuracy COARSE =
       SetLocationAccuracyRequest_LocationAccuracy._(
-          0,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'COARSE');
+          0, _omitEnumNames ? '' : 'COARSE');
   static const SetLocationAccuracyRequest_LocationAccuracy FINE =
       SetLocationAccuracyRequest_LocationAccuracy._(
-          1,
-          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
-              ? ''
-              : 'FINE');
+          1, _omitEnumNames ? '' : 'FINE');
 
   static const $core.List<SetLocationAccuracyRequest_LocationAccuracy> values =
       <SetLocationAccuracyRequest_LocationAccuracy>[
@@ -110,3 +84,5 @@ class SetLocationAccuracyRequest_LocationAccuracy extends $pb.ProtobufEnum {
       $core.int v, $core.String n)
       : super(v, n);
 }
+
+const _omitEnumNames = $core.bool.fromEnvironment('protobuf.omit_enum_names');

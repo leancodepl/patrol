@@ -1,18 +1,25 @@
-///
+//
 //  Generated code. Do not modify.
 //  source: contracts.proto
 //
 // @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,constant_identifier_names,directives_ordering,library_prefixes,non_constant_identifier_names,prefer_final_fields,return_of_invalid_type,unnecessary_const,unnecessary_import,unnecessary_this,unused_import,unused_shown_name
+
+// ignore_for_file: annotate_overrides, camel_case_types
+// ignore_for_file: constant_identifier_names, library_prefixes
+// ignore_for_file: non_constant_identifier_names, prefer_final_fields
+// ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 import 'dart:async' as $async;
-
 import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
+import 'package:protobuf/protobuf.dart' as $pb;
+
 import 'contracts.pb.dart' as $0;
+
 export 'contracts.pb.dart';
 
+@$pb.GrpcServiceName('patrol.PatrolAppService')
 class PatrolAppServiceClient extends $grpc.Client {
   static final _$listDartTests =
       $grpc.ClientMethod<$0.Empty, $0.ListDartTestsResponse>(
@@ -44,6 +51,7 @@ class PatrolAppServiceClient extends $grpc.Client {
   }
 }
 
+@$pb.GrpcServiceName('patrol.PatrolAppService')
 abstract class PatrolAppServiceBase extends $grpc.Service {
   $core.String get $name => 'patrol.PatrolAppService';
 
@@ -82,6 +90,7 @@ abstract class PatrolAppServiceBase extends $grpc.Service {
       $grpc.ServiceCall call, $0.RunDartTestRequest request);
 }
 
+@$pb.GrpcServiceName('patrol.NativeAutomator')
 class NativeAutomatorClient extends $grpc.Client {
   static final _$initialize = $grpc.ClientMethod<$0.Empty, $0.Empty>(
       '/patrol.NativeAutomator/initialize',
@@ -424,6 +433,7 @@ class NativeAutomatorClient extends $grpc.Client {
   }
 }
 
+@$pb.GrpcServiceName('patrol.NativeAutomator')
 abstract class NativeAutomatorServiceBase extends $grpc.Service {
   $core.String get $name => 'patrol.NativeAutomator';
 

@@ -14,7 +14,7 @@ Future<void> tapOkIfGoogleDialogAppears(PatrolTester $) async {
 
   while (listWithOkText.isEmpty && io.Platform.isAndroid) {
     listWithOkText =
-        await $.native.getNativeViews(Selector(textContains: 'OK'));
+        await $.native.getNativeViews(Selector.create()..textContains = 'OK');
     final timeoutReached = !inactivityTimer.isActive;
     if (timeoutReached) {
       inactivityTimer.cancel();
@@ -22,7 +22,7 @@ Future<void> tapOkIfGoogleDialogAppears(PatrolTester $) async {
     }
   }
   if (listWithOkText.isNotEmpty) {
-    await $.native.tap(Selector(text: 'OK'));
+    await $.native.tap(Selector.create()..text = 'OK');
   }
 }
 

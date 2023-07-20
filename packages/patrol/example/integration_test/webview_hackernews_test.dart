@@ -6,7 +6,7 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await $.native.tap(Selector(text: 'login'));
+    await $.native.tap(Selector.create()..text = 'login');
     await $.native.enterTextByIndex(
       'test@leancode.pl',
       index: 0,

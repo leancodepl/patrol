@@ -59,14 +59,15 @@ void main() {
       // then
       expect(
         dartTestGroup,
-        DartTestGroup(
-          name: '',
-          groups: [
-            DartTestGroup(name: 'permissions.permissions_location_test'),
-            DartTestGroup(name: 'permissions.permissions_many_test'),
-            DartTestGroup(name: 'example_test'),
-          ],
-        ),
+        DartTestGroup.create()
+          ..name = ''
+          ..groups.addAll([
+            DartTestGroup.create()
+              ..name = 'permissions.permissions_location_test'
+              ..groups,
+            DartTestGroup.create()..name = 'permissions.permissions_many_test',
+            DartTestGroup.create()..name = 'example_test',
+          ]),
       );
     });
   });

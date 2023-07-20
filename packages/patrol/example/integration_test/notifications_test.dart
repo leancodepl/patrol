@@ -19,7 +19,7 @@ void main() {
       await Future<void>.delayed(const Duration(seconds: 5));
 
       await $.native.tapOnNotificationBySelector(
-        Selector(textContains: 'Someone liked'),
+        Selector.create()..textContains = 'Someone liked',
       );
 
       await $('Tapped notification with ID: 1').waitUntilVisible();

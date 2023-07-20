@@ -155,11 +155,11 @@ DartTestGroup createDartTestGroup(
   String prefix = '',
 }) {
   final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  final group = DartTestGroup(name: groupName);
+  final group = DartTestGroup.create()..name = groupName;
 
   for (final entry in topLevelGroup.entries) {
     if (entry is Group) {
-      group.groups.add(DartTestGroup(name: entry.name));
+      group.groups.add(DartTestGroup.create()..name = entry.name);
     }
 
     if (entry is Test && entry.name != 'patrol_test_explorer') {

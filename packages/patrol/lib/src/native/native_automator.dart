@@ -268,9 +268,8 @@ class NativeAutomator {
         await _wrapRequest(
           'configure',
           () => _client.configure(
-            ConfigureRequest(
-              findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
-            ),
+            ConfigureRequest.create()
+              ..findTimeoutMillis = Int64(_config.findTimeout.inMilliseconds),
           ),
         );
         exception = null;
@@ -321,7 +320,8 @@ class NativeAutomator {
   Future<void> openApp({String? appId}) async {
     await _wrapRequest(
       'openApp',
-      () => _client.openApp(OpenAppRequest(appId: appId ?? resolvedAppId)),
+      () => _client
+          .openApp(OpenAppRequest.create()..appId = appId ?? resolvedAppId),
     );
   }
 
@@ -431,7 +431,8 @@ class NativeAutomator {
   Future<void> tapOnNotificationByIndex(int index) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
-      () => _client.tapOnNotification(TapOnNotificationRequest(index: index)),
+      () => _client
+          .tapOnNotification(TapOnNotificationRequest.create()..index = index),
     );
   }
 
@@ -448,7 +449,7 @@ class NativeAutomator {
     await _wrapRequest(
       'tapOnNotificationBySelector',
       () => _client.tapOnNotification(
-        TapOnNotificationRequest(selector: selector),
+        TapOnNotificationRequest.create()..selector = selector,
       ),
     );
   }
@@ -458,7 +459,7 @@ class NativeAutomator {
     await _wrapRequest(
       'enableDarkMode',
       () => _client.enableDarkMode(
-        DarkModeRequest(appId: appId ?? resolvedAppId),
+        DarkModeRequest.create()..appId = appId ?? resolvedAppId,
       ),
     );
   }
@@ -468,7 +469,7 @@ class NativeAutomator {
     await _wrapRequest(
       'disableDarkMode',
       () => _client.disableDarkMode(
-        DarkModeRequest(appId: appId ?? resolvedAppId),
+        DarkModeRequest.create()..appId = appId ?? resolvedAppId,
       ),
     );
   }
@@ -543,10 +544,9 @@ class NativeAutomator {
   Future<void> tap(Selector selector, {String? appId}) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
-        TapRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
-        ),
+        TapRequest.create()
+          ..selector = selector
+          ..appId = appId ?? resolvedAppId,
       );
     });
   }
@@ -558,10 +558,9 @@ class NativeAutomator {
     await _wrapRequest(
       'doubleTap',
       () => _client.doubleTap(
-        TapRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
-        ),
+        TapRequest.create()
+          ..selector = selector
+          ..appId = appId ?? resolvedAppId,
       ),
     );
   }
@@ -587,13 +586,12 @@ class NativeAutomator {
     await _wrapRequest(
       'enterText',
       () => _client.enterText(
-        EnterTextRequest(
-          data: text,
-          appId: appId ?? resolvedAppId,
-          selector: selector,
-          showKeyboard:
+        EnterTextRequest.create()
+          ..data = text
+          ..appId = appId ?? resolvedAppId
+          ..selector = selector
+          ..showKeyboard =
               (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
-        ),
       ),
     );
   }
@@ -621,13 +619,12 @@ class NativeAutomator {
     await _wrapRequest(
       'enterTextByIndex',
       () => _client.enterText(
-        EnterTextRequest(
-          data: text,
-          appId: appId ?? resolvedAppId,
-          index: index,
-          showKeyboard:
+        EnterTextRequest.create()
+          ..data = text
+          ..appId = appId ?? resolvedAppId
+          ..index = index
+          ..showKeyboard =
               (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
-        ),
       ),
     );
   }
@@ -641,13 +638,12 @@ class NativeAutomator {
     await _wrapRequest(
       'swipe',
       () => _client.swipe(
-        SwipeRequest(
-          startX: from.dx,
-          startY: from.dy,
-          endX: to.dx,
-          endY: to.dy,
-          steps: steps,
-        ),
+        SwipeRequest.create()
+          ..startX = from.dx
+          ..startY = from.dy
+          ..endX = to.dx
+          ..endY = to.dy
+          ..steps = steps,
       ),
     );
   }
@@ -657,10 +653,9 @@ class NativeAutomator {
     await _wrapRequest(
       'waitUntilVisible',
       () => _client.waitUntilVisible(
-        WaitUntilVisibleRequest(
-          selector: selector,
-          appId: resolvedAppId,
-        ),
+        WaitUntilVisibleRequest.create()
+          ..selector = selector
+          ..appId = resolvedAppId,
       ),
     );
   }
@@ -674,10 +669,9 @@ class NativeAutomator {
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
-        GetNativeViewsRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
-        ),
+        GetNativeViewsRequest.create()
+          ..selector = selector
+          ..appId = appId ?? resolvedAppId,
       ),
     );
 
@@ -694,9 +688,8 @@ class NativeAutomator {
     final response = await _wrapRequest(
       'isPermissionDialogVisible',
       () => _client.isPermissionDialogVisible(
-        PermissionDialogVisibleRequest(
-          timeoutMillis: Int64(timeout.inMilliseconds),
-        ),
+        PermissionDialogVisibleRequest.create()
+          ..timeoutMillis = Int64(timeout.inMilliseconds),
       ),
     );
 
@@ -720,7 +713,8 @@ class NativeAutomator {
     await _wrapRequest(
       'grantPermissionWhenInUse',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequest_Code.WHILE_USING),
+        HandlePermissionRequest.create()
+          ..code = HandlePermissionRequest_Code.WHILE_USING,
       ),
     );
   }
@@ -745,9 +739,8 @@ class NativeAutomator {
     await _wrapRequest(
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(
-          code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
-        ),
+        HandlePermissionRequest.create()
+          ..code = HandlePermissionRequest_Code.ONLY_THIS_TIME,
       ),
     );
   }
@@ -769,7 +762,8 @@ class NativeAutomator {
     await _wrapRequest(
       'denyPermission',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
+        HandlePermissionRequest.create()
+          ..code = HandlePermissionRequest_Code.DENIED,
       ),
     );
   }
@@ -782,9 +776,9 @@ class NativeAutomator {
     await _wrapRequest(
       'selectCoarseLocation',
       () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.COARSE,
-        ),
+        SetLocationAccuracyRequest.create()
+          ..locationAccuracy =
+              SetLocationAccuracyRequest_LocationAccuracy.COARSE,
       ),
     );
   }
@@ -797,9 +791,8 @@ class NativeAutomator {
     await _wrapRequest(
       'selectFineLocation',
       () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
-        ),
+        SetLocationAccuracyRequest.create()
+          ..locationAccuracy = SetLocationAccuracyRequest_LocationAccuracy.FINE,
       ),
     );
   }

@@ -9,11 +9,11 @@ void main() {
       await $('Open webview (StackOverflow)').scrollTo().tap();
 
       try {
-        await $.native.tap(Selector(text: 'Accept all cookies'));
+        await $.native.tap(Selector.create()..text = 'Accept all cookies');
       } on PatrolActionException catch (_) {
         // ignore
       }
-      await $.native.tap(Selector(text: 'Log in'));
+      await $.native.tap(Selector.create()..text = 'Log in');
 
       await $.pump(Duration(seconds: 2));
 
@@ -28,7 +28,7 @@ void main() {
         index: 1,
         keyboardBehavior: KeyboardBehavior.showAndDismiss,
       );
-      await $.native.tap(Selector(text: 'Log in'));
+      await $.native.tap(Selector.create()..text = 'Log in');
     },
   );
 }

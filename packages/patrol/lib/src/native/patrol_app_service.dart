@@ -118,7 +118,7 @@ class PatrolAppService extends PatrolAppServiceBase {
     Empty request,
   ) async {
     print('PatrolAppService.listDartTests() called');
-    return ListDartTestsResponse(group: topLevelDartTestGroup);
+    return ListDartTestsResponse.create()..group = topLevelDartTestGroup;
   }
 
   @override
@@ -133,11 +133,13 @@ class PatrolAppService extends PatrolAppServiceBase {
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;
-    return RunDartTestResponse(
-      result: testExecutionResult.passed
+    final response = RunDartTestResponse.create()
+      ..result = testExecutionResult.passed
           ? RunDartTestResponse_Result.SUCCESS
-          : RunDartTestResponse_Result.FAILURE,
-      details: testExecutionResult.details,
-    );
+          : RunDartTestResponse_Result.FAILURE;
+    if (testExecutionResult.details != null) {
+      response.details = testExecutionResult.details!;
+    }
+    return response;
   }
 }
