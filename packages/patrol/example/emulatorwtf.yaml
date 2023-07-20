@@ -1,4 +1,41 @@
-devices:
+# Useful during debugging, when you want to run tests on all supported versions
+all_devices:
+  - model: Pixel7
+    version: 33
+    gpu: auto
+  - model: Pixel7
+    version: 31
+    gpu: auto
+  - model: Pixel7
+    version: 29
+    gpu: auto
+  - model: Pixel7
+    version: 28
+    gpu: auto
+  - model: Pixel7
+    version: 27
+    gpu: auto
+  - model: Pixel7
+    version: 26
+    gpu: auto
+  - model: Pixel7
+    version: 25
+    gpu: auto
+  - model: Pixel7
+    version: 24
+    gpu: auto
+  - model: Pixel7
+    version: 23
+    gpu: auto
+  - model: Pixel7
+    version: 22
+    gpu: auto
+  - model: Pixel7
+    version: 21
+    gpu: auto
+
+# Default set of devices we continuously run tests on
+default_devices:
   device:
     - model: Pixel7
       version: 31
@@ -26,4 +63,4 @@ config:
   timeout: 10m
 
 main:
-  include: [devices, apps, config]
+  include: [default_devices, apps, config]
