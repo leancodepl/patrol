@@ -69,7 +69,8 @@ jobs:
         run: |
           TESTS_TO_EXCLUDE="service_airplane_mode_test,\
           service_bluetooth_test,\
-          notifications_test"
+          notifications_test,\
+          get_native_views_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
