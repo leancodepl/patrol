@@ -482,6 +482,11 @@
     }
 
     func selectFineLocation() async throws {
+      if iOS13orOlder() {
+        Logger.shared.i("Ignored call to selectFineLocation() (iOS < 14)")
+        return
+      }
+
       try await runAction("selecting fine location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: Off"]
@@ -496,6 +501,11 @@
     }
 
     func selectCoarseLocation() async throws {
+      if iOS13orOlder() {
+        Logger.shared.i("Ignored call to selectCoarseLocation() (iOS < 14)")
+        return
+      }
+
       try await runAction("selecting coarse location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: On"]
@@ -572,6 +582,11 @@
         || model == "iPhone10,5"  // iPhone 8 Plus
         || model == "iPhone12,8"  // iPhone SE 2nd Gen
         || model == "iPhone14,6"  // iPhone SE 3rd Gen
+    }
+
+    private func iOS13orOlder() -> Bool {
+      let floatVersion = (UIDevice.current.systemVersion as NSString).floatValue
+      return floatVersion < 14
     }
 
     /// Adapted from https://stackoverflow.com/q/47880395/7009800
