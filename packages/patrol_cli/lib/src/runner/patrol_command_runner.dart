@@ -122,7 +122,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    final testBundler = TestBundler(projectRoot: _fs.currentDirectory);
+    final testBundler = TestBundler(
+      projectRoot: _fs.currentDirectory,
+      logger: _logger,
+    );
     final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
 
     final deviceFinder = DeviceFinder(
