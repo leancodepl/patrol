@@ -97,7 +97,13 @@
       context: GRPCAsyncServerCallContext
     ) async throws -> Patrol_GetNativeViewsResponse {
       return try await runCatching {
-        throw PatrolError.internal("getNativeViews() is not supported on iOS")
+        let nativeViews = try await automator.getNativeViews(
+          byText: request.selector.text,
+          appId: request.appID,
+        )
+        return Patrol_GetNativeViewsResponse.with {
+          $0.nativeViews = nativeViews
+        }
       }
     }
 
