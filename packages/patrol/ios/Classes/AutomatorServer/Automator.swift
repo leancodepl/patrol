@@ -317,24 +317,26 @@
         }
       }
     }
-    
-    func getNativeViews(byText text: String, inApp bundleId: String) async throws -> [Patrol_NativeView] {
+
+    func getNativeViews(byText text: String, inApp bundleId: String) async throws
+      -> [Patrol_NativeView]
+    {
       try await runAction("getting native views") {
         let app = try self.getApp(withBundleId: bundleId)
         let elements = app.descendants(matching: .any)[text].otherElements.allElementsBoundByIndex
-        
+
         let views = elements.map { xcuielement in
           Patrol_NativeView.with {
             let label = xcuielement.label
             let accLabel = xcuielement.accessibilityLabel
             let ident = xcuielement.identifier
-            
+
             // TODO: Which one to choose? See #1554
-            
+
             $0.text = xcuielement.label
           }
         }
-        
+
         return views
       }
     }

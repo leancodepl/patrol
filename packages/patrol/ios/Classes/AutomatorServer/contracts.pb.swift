@@ -275,6 +275,8 @@ public struct Patrol_GetNativeViewsRequest {
   /// Clears the value of `selector`. Subsequent reads from it will return its default value.
   public mutating func clearSelector() {self._selector = nil}
 
+  public var appID: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1212,6 +1214,7 @@ extension Patrol_GetNativeViewsRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
   public static let protoMessageName: String = _protobuf_package + ".GetNativeViewsRequest"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "selector"),
+    2: .same(proto: "appId"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1221,6 +1224,7 @@ extension Patrol_GetNativeViewsRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._selector) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.appID) }()
       default: break
       }
     }
@@ -1234,11 +1238,15 @@ extension Patrol_GetNativeViewsRequest: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._selector {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
     } }()
+    if !self.appID.isEmpty {
+      try visitor.visitSingularStringField(value: self.appID, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Patrol_GetNativeViewsRequest, rhs: Patrol_GetNativeViewsRequest) -> Bool {
     if lhs._selector != rhs._selector {return false}
+    if lhs.appID != rhs.appID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

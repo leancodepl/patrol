@@ -112,7 +112,10 @@ message OpenQuickSettingsRequest {}
 
 message DarkModeRequest { string appId = 1; }
 
-message GetNativeViewsRequest { Selector selector = 1; }
+message GetNativeViewsRequest { 
+  Selector selector = 1;
+  string appId = 2;
+}
 message GetNativeViewsResponse { repeated NativeView nativeViews = 2;}
 
 message GetNotificationsRequest {}

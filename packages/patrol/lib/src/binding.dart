@@ -151,7 +151,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     @Deprecated(
         'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
         'This feature was deprecated after v2.6.0-1.0.pre.')
-        Duration? timeout,
+    Duration? timeout,
   }) async {
     await super.runTest(
       testBody,
