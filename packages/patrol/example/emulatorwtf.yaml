@@ -42,12 +42,14 @@ ci_devices:
     #   version: 27
     #   gpu: auto
 
-ci_config:
-  num-shards: 3
+config:
   use-orchestrator: true
   clear-package-data: true
   record-video: true
   timeout: 10m
+
+config_ci:
+  num-shards: 3
   outputs-dir: ew-test_outputs
   outputs:
     - summary
@@ -58,14 +60,8 @@ ci_config:
     - logcat
     - captured_video
 
-debug_config:
-  use-orchestrator: true
-  clear-package-data: true
-  record-video: true
-  timeout: 10m
-
 ci:
-  include: [apps, ci_devices, ci_config]
+  include: [apps, ci_devices, config, config_ci]
 
 debug:
-  include: [apps, all_devices, debug_config]
+  include: [apps, all_devices, config]
