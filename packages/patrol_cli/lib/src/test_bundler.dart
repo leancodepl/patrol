@@ -10,7 +10,7 @@ class TestBundler {
   final FileSystem _fs;
 
   /// Creates an entrypoint for use with `patrol test` and `patrol build`.
-  File createTestBundle(List<String> testFilePaths) {
+  void createTestBundle(List<String> testFilePaths) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
     }
@@ -59,9 +59,8 @@ Future<void> main() async {
   //
   // Execution of these dynamically created native test cases is then fully
   // managed by the underlying native test framework (JUnit on Android, XCTest
-  // on iOS).
-  // The native test cases do only one thing - request execution of the Dart
-  // test (out of which they had been created) and wait for it to complete.
+  // on iOS). The native test cases do only one thing - request execution of the
+  // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
@@ -69,8 +68,8 @@ Future<void> main() async {
   final binding = PatrolBinding.ensureInitialized();
   final testExplorationCompleter = Completer<DartTestGroup>();
 
-  // A special test to expore the hierarchy of groups and tests. This is a 
-  // hack around https://github.com/dart-lang/test/issues/1998.
+  // A special test to expore the hierarchy of groups and tests. This is a hack
+  // around https://github.com/dart-lang/test/issues/1998.
   //
   // This test must be the first to run. If not, the native side likely won't
   // receive any tests, and everything will fall apart.
@@ -100,17 +99,19 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 
     // This file must not end with "_test.dart", otherwise it'll be picked up
     // when finding tests to bundle.
-    final bundledTestFile = _projectRoot
-        .childDirectory('integration_test')
-        .childFile('test_bundle.dart')
+    bundledTestFile
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
-
-    return bundledTestFile.absolute;
   }
 
+  // This file must not end with "_test.dart", otherwise it'll be picked up
+  // when finding tests to bundle.
+  File get bundledTestFile => _projectRoot
+      .childDirectory('integration_test')
+      .childFile('test_bundle.dart');
+
   /// Creates an entrypoint for use with `patrol develop`.
-  File createDevelopTestBundle(String testFilePath) {
+  void createDevelopTestBundle(String testFilePath) {
     final contents = '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
@@ -132,15 +133,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
 }
 ''';
 
-    // This file must not end with "_test.dart", otherwise it'll be picked up
-    // when finding tests to bundle.
-    final bundledTestFile = _projectRoot
-        .childDirectory('integration_test')
-        .childFile('test_bundle.dart')
+    bundledTestFile
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
-
-    return bundledTestFile.absolute;
   }
 
   /// Input:

@@ -74,8 +74,11 @@ class BuildIOSCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
-    final testBundle = _testBundler.createTestBundle(targets);
-    _logger.detail('Bundled ${targets.length} test(s) in ${testBundle.path}');
+    final entrypoint = _testBundler.bundledTestFile;
+    if (boolArg('generate-bundle')) {
+      _testBundler.createTestBundle(targets);
+      _logger.detail('Bundled ${targets.length} test(s) in ${entrypoint.path}');
+    }
 
     final config = _pubspecReader.read();
     final flavor = stringArg('flavor') ?? config.ios.flavor;
@@ -114,7 +117,7 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
-      target: testBundle.path,
+      target: entrypoint.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,

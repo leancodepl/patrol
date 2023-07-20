@@ -15,6 +15,8 @@ abstract class PatrolCommand extends Command<int> {
 
   // Common options
 
+  /// Defines common inputs for commands that build.
+  ///
   /// A command that expects only one target but got more should throw.
   void usesTargetOption() {
     argParser
@@ -30,6 +32,11 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
         valueHelp: 'integration_test/flaky_test.dart',
+      )
+      ..addFlag(
+        'generate-bundle',
+        defaultsTo: true,
+        help: 'Whether to generate a bundled Dart test file.',
       );
   }
 

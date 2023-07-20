@@ -78,10 +78,13 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
-    final entrypoint = _testBundler.createTestBundle(targets);
-    _logger.detail(
-      'Generated entrypoint ${entrypoint.path} with ${targets.length} bundled test(s)',
-    );
+    final entrypoint = _testBundler.bundledTestFile;
+    if (boolArg('generate-bundle')) {
+      _testBundler.createTestBundle(targets);
+      _logger.detail(
+        'Generated entrypoint ${entrypoint.path} with ${targets.length} bundled test(s)',
+      );
+    }
 
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
