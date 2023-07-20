@@ -40,6 +40,7 @@ void main() {
         fs: MemoryFileSystem.test(),
         analytics: MockAnalytics(),
         logger: logger,
+        isCI: false,
       );
     });
 
