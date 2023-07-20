@@ -34,7 +34,7 @@ Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.grantPermissionWhenInUse();
+      await $.native.grantPermissionOnlyThisTime();
       await $.pump();
     }
   }
