@@ -87,7 +87,7 @@ jobs:
         run: |
           set +e
           output="$(ew-cli \
-            emulatorwtf.yaml:main --json \
+            emulatorwtf.yaml:ci --json \
             --display-name "Patrol example app (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
