@@ -3,6 +3,7 @@ import 'dart:io' show ProcessSignal, stdin;
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
+import 'package:ci/ci.dart' as ci;
 import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -36,6 +37,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   const fs = LocalFileSystem();
   const platform = LocalPlatform();
   final processManager = LoggingLocalProcessManager(logger: logger);
+  final isCI = ci.isCI;
 
   final runner = PatrolCommandRunner(
     pubUpdater: pubUpdater,
@@ -47,8 +49,10 @@ Future<int> patrolCommandRunner(List<String> args) async {
       apiSecret: _gaApiSecret,
       fs: fs,
       platform: platform,
+      isCI: isCI,
     ),
     processManager: processManager,
+    isCI: isCI,
   );
 
   if (!platform.environment.containsKey('PATROL_MIGRATED')) {
@@ -89,6 +93,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required ProcessManager processManager,
     required Analytics analytics,
     required Logger logger,
+    required bool isCI,
   })  : _platform = platform,
         _pubUpdater = pubUpdater,
         _fs = fs,
@@ -96,6 +101,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         _processManager = processManager,
         _disposeScope = DisposeScope(),
         _logger = logger,
+        _isCI = isCI,
         super(
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
@@ -217,6 +223,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
   final DisposeScope _disposeScope;
   final Logger _logger;
+  final bool _isCI;
 
   Future<void> dispose() async {
     try {
@@ -317,7 +324,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   void printUsage() => _logger.info(usage);
 
   void _handleAnalytics() {
-    if (_analytics.firstRun && !_analytics.isCI) {
+    if (_analytics.firstRun && !_isCI) {
       _logger.info(
         '''
 \n
@@ -344,6 +351,11 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   }
 
   bool _wantsUpdateCheck(String? commandName) {
+    if (_isCI) {
+      // We don't want to check for updates on CI because of #1282
+      return false;
+    }
+
     if (commandName == 'update' || commandName == 'doctor') {
       return false;
     }
