@@ -9,6 +9,10 @@ devices:
     - model: Tablet10
       version: 31
       gpu: auto
+    # Unstable, see https://github.com/leancodepl/patrol/issues/1445
+    # - model: Pixel2
+    #   version: 27
+    #   gpu: auto
 
 apps:
   app: build/app/outputs/apk/debug/app-debug.apk

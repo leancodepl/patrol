@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:ci/ci.dart' as ci;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart';
@@ -43,11 +42,13 @@ class Analytics {
     required Platform platform,
     http.Client? httpClient,
     FlutterVersionGetter getFlutterVersion = _getFlutterVersion,
+    required bool isCI,
   })  : _fs = fs,
         _platform = platform,
         _httpClient = httpClient ?? http.Client(),
         _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-        _flutterVersion = getFlutterVersion();
+        _flutterVersion = getFlutterVersion(),
+        _isCI = isCI;
 
   final FileSystem _fs;
   final Platform _platform;
@@ -56,6 +57,7 @@ class Analytics {
   final String _postUrl;
 
   final FlutterVersion _flutterVersion;
+  final bool _isCI;
 
   /// Sends an event to Google Analytics that command [name] run.
   ///
@@ -97,10 +99,8 @@ class Analytics {
     );
   }
 
-  bool get isCI => ci.isCI;
-
   bool get enabled {
-    if (isCI) {
+    if (_isCI) {
       return false;
     }
 

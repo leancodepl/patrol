@@ -36,6 +36,7 @@ void main() {
         platform: fakePlatform('/Users/john'),
         httpClient: httpClient,
         getFlutterVersion: FlutterVersion.test,
+        isCI: false,
       );
     });
 
