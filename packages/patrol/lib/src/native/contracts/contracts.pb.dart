@@ -821,15 +821,25 @@ class GetNativeViewsRequest extends $pb.GeneratedMessage {
             ? ''
             : 'selector',
         subBuilder: Selector.create)
+    ..aOS(
+        2,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'appId',
+        protoName: 'appId')
     ..hasRequiredFields = false;
 
   GetNativeViewsRequest._() : super();
   factory GetNativeViewsRequest({
     Selector? selector,
+    $core.String? appId,
   }) {
     final _result = create();
     if (selector != null) {
       _result.selector = selector;
+    }
+    if (appId != null) {
+      _result.appId = appId;
     }
     return _result;
   }
@@ -875,6 +885,18 @@ class GetNativeViewsRequest extends $pb.GeneratedMessage {
   void clearSelector() => clearField(1);
   @$pb.TagNumber(1)
   Selector ensureSelector() => $_ensure(0);
+
+  @$pb.TagNumber(2)
+  $core.String get appId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set appId($core.String v) {
+    $_setString(1, v);
+  }
+
+  @$pb.TagNumber(2)
+  $core.bool hasAppId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAppId() => clearField(2);
 }
 
 class GetNativeViewsResponse extends $pb.GeneratedMessage {

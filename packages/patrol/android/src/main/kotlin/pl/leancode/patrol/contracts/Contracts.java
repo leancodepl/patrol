@@ -3788,6 +3788,18 @@ public final class Contracts {
      * @return The selector.
      */
     pl.leancode.patrol.contracts.Contracts.Selector getSelector();
+
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    java.lang.String getAppId();
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    com.google.protobuf.ByteString
+        getAppIdBytes();
   }
   /**
    * Protobuf type {@code patrol.GetNativeViewsRequest}
@@ -3798,6 +3810,7 @@ public final class Contracts {
       // @@protoc_insertion_point(message_implements:patrol.GetNativeViewsRequest)
       GetNativeViewsRequestOrBuilder {
     private GetNativeViewsRequest() {
+      appId_ = "";
     }
     public static final int SELECTOR_FIELD_NUMBER = 1;
     private pl.leancode.patrol.contracts.Contracts.Selector selector_;
@@ -3842,6 +3855,53 @@ public final class Contracts {
      * <code>.patrol.Selector selector = 1;</code>
      */
     private void clearSelector() {  selector_ = null;
+
+    }
+
+    public static final int APPID_FIELD_NUMBER = 2;
+    private java.lang.String appId_;
+    /**
+     * <code>string appId = 2;</code>
+     * @return The appId.
+     */
+    @java.lang.Override
+    public java.lang.String getAppId() {
+      return appId_;
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @return The bytes for appId.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getAppIdBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(appId_);
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @param value The appId to set.
+     */
+    private void setAppId(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      appId_ = value;
+    }
+    /**
+     * <code>string appId = 2;</code>
+     */
+    private void clearAppId() {
+
+      appId_ = getDefaultInstance().getAppId();
+    }
+    /**
+     * <code>string appId = 2;</code>
+     * @param value The bytes for appId to set.
+     */
+    private void setAppIdBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      appId_ = value.toStringUtf8();
 
     }
 
@@ -3989,6 +4049,55 @@ public final class Contracts {
         return this;
       }
 
+      /**
+       * <code>string appId = 2;</code>
+       * @return The appId.
+       */
+      @java.lang.Override
+      public java.lang.String getAppId() {
+        return instance.getAppId();
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return The bytes for appId.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getAppIdBytes() {
+        return instance.getAppIdBytes();
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppId(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setAppId(value);
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearAppId() {
+        copyOnWrite();
+        instance.clearAppId();
+        return this;
+      }
+      /**
+       * <code>string appId = 2;</code>
+       * @param value The bytes for appId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setAppIdBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setAppIdBytes(value);
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:patrol.GetNativeViewsRequest)
     }
     @java.lang.Override
@@ -4006,9 +4115,11 @@ public final class Contracts {
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
               "selector_",
+              "appId_",
             };
             java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\t\u0002\u0208" +
+                "";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

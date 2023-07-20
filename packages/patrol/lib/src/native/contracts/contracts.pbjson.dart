@@ -208,12 +208,13 @@ const GetNativeViewsRequest$json = const {
       '6': '.patrol.Selector',
       '10': 'selector'
     },
+    const {'1': 'appId', '3': 2, '4': 1, '5': 9, '10': 'appId'},
   ],
 };
 
 /// Descriptor for `GetNativeViewsRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getNativeViewsRequestDescriptor = $convert.base64Decode(
-    'ChVHZXROYXRpdmVWaWV3c1JlcXVlc3QSLAoIc2VsZWN0b3IYASABKAsyEC5wYXRyb2wuU2VsZWN0b3JSCHNlbGVjdG9y');
+    'ChVHZXROYXRpdmVWaWV3c1JlcXVlc3QSLAoIc2VsZWN0b3IYASABKAsyEC5wYXRyb2wuU2VsZWN0b3JSCHNlbGVjdG9yEhQKBWFwcElkGAIgASgJUgVhcHBJZA==');
 @$core.Deprecated('Use getNativeViewsResponseDescriptor instead')
 const GetNativeViewsResponse$json = const {
   '1': 'GetNativeViewsResponse',

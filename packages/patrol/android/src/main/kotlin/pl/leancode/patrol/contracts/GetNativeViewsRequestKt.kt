@@ -50,6 +50,23 @@ public object GetNativeViewsRequestKt {
     public fun hasSelector(): kotlin.Boolean {
       return _builder.hasSelector()
     }
+
+    /**
+     * `string appId = 2;`
+     */
+    public var appId: kotlin.String
+      @JvmName("getAppId")
+      get() = _builder.getAppId()
+      @JvmName("setAppId")
+      set(value) {
+        _builder.setAppId(value)
+      }
+    /**
+     * `string appId = 2;`
+     */
+    public fun clearAppId() {
+      _builder.clearAppId()
+    }
   }
 }
 public inline fun pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest.copy(block: pl.leancode.patrol.contracts.GetNativeViewsRequestKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest =
