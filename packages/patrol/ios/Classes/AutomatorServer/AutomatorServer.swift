@@ -115,7 +115,8 @@
       return try await runCatching {
         try await automator.tap(
           onText: request.selector.text,
-          inApp: request.appID
+          inApp: request.appID,
+          atIndex: Int(request.selector.instance)
         )
         return DefaultResponse()
       }
@@ -150,6 +151,7 @@
           try await automator.enterText(
             request.data,
             byText: selector.text,
+            atIndex: Int(selector.instance),
             inApp: request.appID
           )
         default:

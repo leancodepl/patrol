@@ -53,20 +53,28 @@
 
     // MARK: General UI interaction
 
-    func tap(onText text: String, inApp bundleId: String) async throws {
-      try await runAction("tapping on view with text \(format: text) in app \(bundleId)") {
+    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+      let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
+
+      try await runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
-        let element = app.descendants(matching: .any)[text]
 
-        Logger.shared.i("waiting for existence of view with text \(format: text)")
-        let exists = element.waitForExistence(timeout: self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists(
-            "view with text \(format: text) in app \(format: bundleId)")
+        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
+        // TODO: We should consider more view properties. See #1554
+        let format = """
+          label == %@ OR \
+          title == %@ OR \
+          identifier == %@
+          """
+        let predicate = NSPredicate(format: format, text, text, text)
+        let query = app.descendants(matching: .any).matching(predicate)
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard let element = self.waitFor(query: query, index: index, timeout: self.timeout) else {
+          throw PatrolError.viewNotExists(view)
         }
-        Logger.shared.i("found view with text \(format: text), will tap on it")
 
-        element.firstMatch.forceTap()
+        element.forceTap()
       }
     }
 
@@ -88,26 +96,57 @@
     func enterText(
       _ data: String,
       byText text: String,
+      atIndex index: Int,
       inApp bundleId: String
     ) async throws {
+      let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
       var data = "\(data)\n"
-      try await runAction(
-        "entering text \(format: data) into text field with text \(text) in app \(bundleId)"
-      ) {
+
+      try await runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
+        // elementType must be specified as integer
+        // See:
+        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
+        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
+        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
+        // TODO: We should consider more view properties. See #1554
+        let format = """
+          label == %@ OR \
+          title == %@ OR \
+          identifier == %@ OR \
+          value == %@ OR \
+          placeholderValue == %@
+          """
+        let contentPredicate = NSPredicate(format: format, text, text, text, text, text)
+        let textFieldPredicate = NSPredicate(format: "elementType == 49")
+        let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
+
+        let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+          contentPredicate,
+          NSCompoundPredicate(orPredicateWithSubpredicates: [
+            textFieldPredicate, secureTextFieldPredicate,
+          ]
+          ),
+        ])
+
+        let query = app.descendants(matching: .any).matching(finalPredicate)
         guard
-          let element = self.waitForAnyElement(
-            elements: [app.textFields[text], app.secureTextFields[text]],
+          let element = self.waitFor(
+            query: query,
+            index: index,
             timeout: self.timeout
           )
         else {
-          throw PatrolError.viewNotExists(
-            "text field with text \(format: text) in app \(format: bundleId)")
+          throw PatrolError.viewNotExists(view)
         }
 
-        element.firstMatch.typeText(data)
+        element.forceTap()
+        element.typeText(data)
       }
+
+      // Prevent keyboard dismissal from happening too fast
+      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
     }
 
     func enterText(
@@ -134,7 +173,7 @@
         guard
           let element = self.waitFor(
             query: textFieldsQuery,
-            byIndex: index,
+            index: index,
             timeout: self.timeout
           )
         else {
@@ -144,6 +183,9 @@
         element.forceTap()
         element.typeText(data)
       }
+
+      // Prevent keyboard dismissal from happening too fast
+      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
     }
 
     func waitUntilVisible(onText text: String, inApp bundleId: String) async throws {
@@ -325,13 +367,16 @@
       try await runAction("getting native views matching \(text)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // TODO: We should also consider title, identifier, etc. See #1554
+        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
+        // TODO: We should consider more view properties. See #1554
         let format = """
-          label == %@
+          label == %@ OR \
+          title == %@ OR \
+          identifier == %@
           """
-
-        let predicate = NSPredicate(format: format, text)
-        let elements = app.descendants(matching: .any).matching(predicate).allElementsBoundByIndex
+        let predicate = NSPredicate(format: format, text, text, text)
+        let query = app.descendants(matching: .any).matching(predicate)
+        let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
           return Patrol_NativeView.fromXCUIElement(xcuielement, bundleId)
@@ -630,8 +675,7 @@
     }
 
     @discardableResult
-    func waitFor(query: XCUIElementQuery, byIndex index: Int, timeout: TimeInterval) -> XCUIElement?
-    {
+    func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval) -> XCUIElement? {
       var foundElement: XCUIElement?
       let startTime = Date()
 
