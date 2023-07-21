@@ -17,17 +17,9 @@ void main() {
 
       await $.pump(Duration(seconds: 2));
 
-      // bug: using `Email` and `Password` selectors doesn't work
-      await $.native.enterTextByIndex(
-        'test@leancode.pl',
-        index: 0,
-        keyboardBehavior: KeyboardBehavior.showAndDismiss,
-      );
-      await $.native.enterTextByIndex(
-        'ny4ncat',
-        index: 1,
-        keyboardBehavior: KeyboardBehavior.showAndDismiss,
-      );
+      // bug: using `Email` and `Password` selectors doesn't work (#1554)
+      await $.native.enterTextByIndex('test@leancode.pl', index: 0);
+      await $.native.enterTextByIndex('ny4ncat', index: 1);
       await $.native.tap(Selector(text: 'Log in'));
     },
   );

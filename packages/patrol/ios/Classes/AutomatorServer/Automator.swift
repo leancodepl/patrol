@@ -97,25 +97,53 @@
     func enterText(
       _ data: String,
       byText text: String,
+      atIndex index: Int,
       inApp bundleId: String
     ) async throws {
+      let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
       var data = "\(data)\n"
-      try await runAction(
-        "entering text \(format: data) into text field with text \(text) in app \(bundleId)"
-      ) {
+
+      try await runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
+        // elementType must be specified as integer
+        // See:
+        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
+        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
+        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
+        // TODO: We should consider more view properties. See #1554
+        let format = """
+          label == %@ OR \
+          title == %@ OR \
+          identifier == %@ OR \
+          value == %@ OR \
+          placeholderValue == %@
+          """
+        let contentPredicate = NSPredicate(format: format, text, text, text, text, text)
+        let textFieldPredicate = NSPredicate(format: "elementType == 49")
+        let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
+
+        let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+          contentPredicate,
+          NSCompoundPredicate(orPredicateWithSubpredicates: [
+            textFieldPredicate, secureTextFieldPredicate,
+          ]
+          ),
+        ])
+
+        let query = app.descendants(matching: .any).matching(finalPredicate)
         guard
-          let element = self.waitForAnyElement(
-            elements: [app.textFields[text], app.secureTextFields[text]],
+          let element = self.waitFor(
+            query: query,
+            index: index,
             timeout: self.timeout
           )
         else {
-          throw PatrolError.viewNotExists(
-            "text field with text \(format: text) in app \(format: bundleId)")
+          throw PatrolError.viewNotExists(view)
         }
 
-        element.firstMatch.typeText(data)
+        element.forceTap()
+        element.typeText(data)
       }
     }
 

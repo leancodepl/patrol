@@ -151,6 +151,7 @@
           try await automator.enterText(
             request.data,
             byText: selector.text,
+            atIndex: Int(selector.instance),
             inApp: request.appID
           )
         default:
