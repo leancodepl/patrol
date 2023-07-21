@@ -74,7 +74,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()  // firstMatch here is probably redundant
+        element.forceTap()
       }
     }
 
