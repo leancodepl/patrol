@@ -53,10 +53,10 @@
 
     // MARK: General UI interaction
 
-    func tap(text: String, bundleId: String, index: Int) async throws {
-      try await runAction(
-        "tapping on view with text \(format: text) at index \(index) in app \(bundleId)"
-      ) {
+    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+      let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
+
+      try await runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
         // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
@@ -69,10 +69,9 @@
         let predicate = NSPredicate(format: format, text, text, text)
         let query = app.descendants(matching: .any).matching(predicate)
 
-        Logger.shared.i("waiting for existence of view with text \(format: text)")
+        Logger.shared.i("waiting for existence of \(view)")
         guard let element = self.waitFor(query: query, index: index, timeout: self.timeout) else {
-          throw PatrolError.viewNotExists(
-            "view with text \(format: text) at index \(index) in app \(bundleId)")
+          throw PatrolError.viewNotExists(view)
         }
 
         element.forceTap()  // firstMatch here is probably redundant

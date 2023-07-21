@@ -114,9 +114,9 @@
     ) async throws -> DefaultResponse {
       return try await runCatching {
         try await automator.tap(
-          text: request.selector.text,
-          bundleId: request.appID,
-          index: Int(request.selector.instance)
+          onText: request.selector.text,
+          inApp: request.appID,
+          atIndex: Int(request.selector.instance)
         )
         return DefaultResponse()
       }
