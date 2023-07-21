@@ -1,13 +1,9 @@
 name: patrol_cli prepare
 
 on:
-  push:
-    branches: [master, develop]
-    tags-ignore: ['*']
-    paths:
-      - 'packages/patrol_cli/**'
+  workflow_dispatch:
   pull_request:
-    branches: [master, develop]
+    branches: [master]
     paths:
       - 'packages/patrol_cli/**'
 
