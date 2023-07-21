@@ -144,6 +144,9 @@
         element.forceTap()
         element.typeText(data)
       }
+
+      // Prevent keyboard dismissal from happening too fast
+      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
     }
 
     func enterText(
@@ -180,6 +183,9 @@
         element.forceTap()
         element.typeText(data)
       }
+
+      // Prevent keyboard dismissal from happening too fast
+      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
     }
 
     func waitUntilVisible(onText text: String, inApp bundleId: String) async throws {
