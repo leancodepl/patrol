@@ -2,6 +2,7 @@
 
 import 'dart:io' as io;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/foundation.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
@@ -110,8 +111,7 @@ void patrolTest(
           return;
         }
       }
-
-      if (io.Platform.isIOS) {
+      if (!kIsWeb && io.Platform.isIOS) {
         widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
           // This callback is empty on purpose. It's a workaround for tests
           // failing on iOS.
