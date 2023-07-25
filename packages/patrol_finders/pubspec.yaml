@@ -1,0 +1,23 @@
+name: patrol_finders
+description: >
+  Powerful Flutter-native UI testing framework overcoming limitations of
+  existing Flutter testing tools. Ready for action!
+version: 2.1.0
+homepage: https://patrol.leancode.co
+repository: https://github.com/leancodepl/patrol
+issue_tracker: https://github.com/leancodepl/patrol/issues
+
+environment:
+  sdk: '>=2.18.0 <4.0.0'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  meta: ^1.7.0
+
+dev_dependencies:
+  leancode_lint: ^3.0.0
+
