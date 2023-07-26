@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_finders/patrol_finders.dart';
-import 'package:patrol_finders/src/extensions.dart';
+import 'package:patrol_finders/src/custom_finders/utils.dart';
 
 /// Thrown when some [PatrolFinder]'s method fails.
 class PatrolFinderException implements Exception {

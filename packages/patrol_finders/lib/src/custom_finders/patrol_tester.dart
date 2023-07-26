@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders/src/custom_finders/utils.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
 class PatrolTesterConfig {
@@ -71,9 +72,6 @@ class PatrolTesterConfig {
     @Deprecated('Use settleBehavior argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? dragDuration,
-    String? appName,
-    String? packageName,
-    String? bundleId,
   }) {
     return PatrolTesterConfig(
       existsTimeout: existsTimeout ?? this.existsTimeout,

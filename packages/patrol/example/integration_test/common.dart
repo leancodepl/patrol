@@ -18,18 +18,14 @@ Future<void> createApp(PatrolTester $) async {
 
 void patrol(
   String description,
-  Future<void> Function(PatrolTester) callback, {
+  NativePatrolTesterCallback callback, {
   bool? skip,
   NativeAutomatorConfig? nativeAutomatorConfig,
-  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  patrolTest(
+  patrolIntegrationTest(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
-    nativeAutomation: true,
-    framePolicy: framePolicy,
     skip: skip,
     callback,
   );

@@ -16,7 +16,7 @@ void main() {
   });
 }
 
-Future<void> _requestAndGrantCameraPermission(PatrolTester $) async {
+Future<void> _requestAndGrantCameraPermission(NativePatrolTester $) async {
   if (!await Permission.camera.isGranted) {
     expect($(#camera).$(#statusText).text, 'Not granted');
     await $('Request camera permission').tap();
@@ -29,7 +29,7 @@ Future<void> _requestAndGrantCameraPermission(PatrolTester $) async {
   expect($(#camera).$(#statusText).text, 'Granted');
 }
 
-Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
+Future<void> _requestAndGrantMicrophonePermission(NativePatrolTester $) async {
   if (!await Permission.microphone.isGranted) {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
@@ -42,7 +42,7 @@ Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
   expect($(#microphone).$(#statusText).text, 'Granted');
 }
 
-Future<void> _requestAndDenyContactsPermission(PatrolTester $) async {
+Future<void> _requestAndDenyContactsPermission(NativePatrolTester $) async {
   if (!await Permission.contacts.isGranted) {
     expect($(#contacts).$(#statusText).text, 'Not granted');
     await $('Request contacts permission').tap();

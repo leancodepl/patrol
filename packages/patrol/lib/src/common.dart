@@ -2,21 +2,23 @@
 
 import 'dart:io' as io;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/custom_finders/patrol_tester.dart';
+import 'package:patrol/src/custom_finders/native_patrol_tester.dart';
 import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
+import 'package:patrol_finders/patrol_finders.dart';
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
 
-/// Signature for callback to [patrolTest].
-typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
+/// Signature for callback to [patrolIntegrationTest].
+typedef NativePatrolTesterCallback = Future<void> Function(
+  NativePatrolTester $,
+);
 
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
@@ -35,13 +37,10 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 ///    },
 /// );
 /// ```
-///
-/// [bindingType] specifies the binding to use. [bindingType] is ignored if
-/// [nativeAutomation] is false.
-@isTest
-void patrolTest(
+
+void patrolIntegrationTest(
   String description,
-  PatrolTesterCallback callback, {
+  NativePatrolTesterCallback callback, {
   bool? skip,
   Timeout? timeout,
   bool semanticsEnabled = true,
@@ -49,32 +48,9 @@ void patrolTest(
   dynamic tags,
   PatrolTesterConfig config = const PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
-  bool nativeAutomation = false,
-  BindingType bindingType = BindingType.patrol,
-  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  NativeAutomator? automator;
-
-  PatrolBinding? patrolBinding;
-
-  if (nativeAutomation) {
-    switch (bindingType) {
-      case BindingType.patrol:
-        automator = NativeAutomator(config: nativeAutomatorConfig);
-
-        patrolBinding = PatrolBinding.ensureInitialized();
-        patrolBinding.framePolicy = framePolicy;
-        break;
-      case BindingType.integrationTest:
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
-            framePolicy;
-
-        break;
-      case BindingType.none:
-        break;
-    }
-  }
+  final nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
+  final patrolBinding = PatrolBinding.ensureInitialized();
 
   testWidgets(
     description,
@@ -84,11 +60,7 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      if (patrolBinding != null && !constants.hotRestartEnabled) {
-        // If Patrol's native automation feature is enabled, then this test will
-        // be executed only if the native side requested it to be executed.
-        // Otherwise, it returns early.
-        //
+      if (!constants.hotRestartEnabled) {
         // The assumption here is that this test doesn't have any extra parent
         // groups. Every Dart test suite has an implict, unnamed, top-level
         // group. An additional group is present in the bundled_test.dart, and
@@ -119,13 +91,15 @@ void patrolTest(
           // See https://github.com/leancodepl/patrol/issues/1474
         };
       }
-      await automator?.configure();
 
-      final patrolTester = PatrolTester(
+      await nativeAutomator.configure();
+
+      final patrolTester = NativePatrolTester(
         tester: widgetTester,
-        nativeAutomator: automator,
+        native: nativeAutomator,
         config: config,
       );
+
       await callback(patrolTester);
 
       // ignore: prefer_const_declarations
@@ -168,23 +142,4 @@ DartTestGroup createDartTestGroup(
   }
 
   return group;
-}
-
-/// Returns correct [settlePolicy], regardless which settling argument was set
-@internal
-SettlePolicy? chooseSettlePolicy({
-  bool? andSettle,
-  SettlePolicy? settlePolicy,
-}) {
-  SettlePolicy? settle;
-  if (andSettle == null) {
-    settle = settlePolicy;
-  } else {
-    if (andSettle) {
-      settle = SettlePolicy.settle;
-    } else {
-      settle = SettlePolicy.noSettle;
-    }
-  }
-  return settle;
 }

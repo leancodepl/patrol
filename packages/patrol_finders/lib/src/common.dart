@@ -69,22 +69,3 @@ void patrolWidgetTest(
     },
   );
 }
-
-/// Returns correct [settlePolicy], regardless which settling argument was set
-@internal
-SettlePolicy? chooseSettlePolicy({
-  bool? andSettle,
-  SettlePolicy? settlePolicy,
-}) {
-  SettlePolicy? settle;
-  if (andSettle == null) {
-    settle = settlePolicy;
-  } else {
-    if (andSettle) {
-      settle = SettlePolicy.settle;
-    } else {
-      settle = SettlePolicy.noSettle;
-    }
-  }
-  return settle;
-}

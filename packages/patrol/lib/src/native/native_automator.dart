@@ -3,9 +3,7 @@ import 'dart:io' as io;
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grpc/grpc.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 
 /// Thrown when a native action fails.
@@ -18,18 +16,6 @@ class PatrolActionException implements Exception {
 
   @override
   String toString() => 'Patrol action failed: $message';
-}
-
-/// Bindings available to use with [NativeAutomator].
-enum BindingType {
-  /// Initialize [PatrolBinding].
-  patrol,
-
-  /// Initializes [IntegrationTestWidgetsFlutterBinding]
-  integrationTest,
-
-  /// Doesn't initialize any binding.
-  none,
 }
 
 /// Specifies how the OS keyboard should behave when using

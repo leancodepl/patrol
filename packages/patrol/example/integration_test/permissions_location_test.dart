@@ -8,7 +8,7 @@ import 'common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 // Firebase Test Lab pops out another dialog we need to handle
-Future<void> tapOkIfGoogleDialogAppears(PatrolTester $) async {
+Future<void> tapOkIfGoogleDialogAppears(NativePatrolTester $) async {
   var listWithOkText = <NativeView>[];
   final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
