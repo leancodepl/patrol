@@ -105,22 +105,7 @@ void patrolIntegrationTest(
 
       await callback(patrolTester);
 
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
-
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
-          await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
-          }
-
-          return true;
-        });
-      }
+      await consumePatrolWait(widgetTester);
     },
   );
 }
