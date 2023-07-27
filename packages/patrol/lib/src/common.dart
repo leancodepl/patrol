@@ -48,9 +48,12 @@ void patrolIntegrationTest(
   dynamic tags,
   PatrolTesterConfig config = const PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
+  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
+      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   final nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
-  final patrolBinding = PatrolBinding.ensureInitialized();
+  final patrolBinding = PatrolBinding.ensureInitialized()
+    ..framePolicy = framePolicy;
 
   testWidgets(
     description,
