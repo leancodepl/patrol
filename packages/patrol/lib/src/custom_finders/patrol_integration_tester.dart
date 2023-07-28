@@ -1,6 +1,13 @@
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 
+// TODO: write proper deprecation message
+@Deprecated(
+  '''
+    PatrolTester will be accessible only in patrol_finders package.
+    Use PatrolIntegrationTester in patrolTest callback
+  ''',
+)
 typedef PatrolTester = PatrolIntegrationTester;
 
 class PatrolIntegrationTester extends finders.PatrolTester {
