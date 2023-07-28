@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:patrol_finders/src/custom_finders/patrol_tester.dart';
 
 /// Signature for callback to [patrolWidgetTest].
-typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
+typedef PatrolWidgetTestCallback = Future<void> Function(PatrolTester $);
 
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
@@ -28,7 +28,7 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 @isTest
 void patrolWidgetTest(
   String description,
-  PatrolTesterCallback callback, {
+  PatrolWidgetTestCallback callback, {
   bool? skip,
   Timeout? timeout,
   bool semanticsEnabled = true,
@@ -50,27 +50,6 @@ void patrolWidgetTest(
       );
 
       await callback(patrolTester);
-
-      await consumePatrolWait(widgetTester);
     },
   );
-}
-
-Future<void> consumePatrolWait(WidgetTester widgetTester) async {
-// ignore: prefer_const_declarations
-  final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-  final waitDuration = Duration(seconds: waitSeconds);
-
-  if (waitDuration > Duration.zero) {
-    final stopwatch = Stopwatch()..start();
-    await Future.doWhile(() async {
-      await widgetTester.pump();
-      if (stopwatch.elapsed > waitDuration) {
-        stopwatch.stop();
-        return false;
-      }
-
-      return true;
-    });
-  }
 }

@@ -1,24 +1,24 @@
 // ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
 import 'dart:io' as io;
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/custom_finders/native_patrol_tester.dart';
 import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
-import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
+import 'custom_finders/patrol_integration_test.dart';
 
-/// Signature for callback to [patrolIntegrationTest].
-typedef NativePatrolTesterCallback = Future<void> Function(
-  NativePatrolTester $,
-);
+/// Signature for callback to [patrolTest].
+typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
@@ -37,23 +37,46 @@ typedef NativePatrolTesterCallback = Future<void> Function(
 ///    },
 /// );
 /// ```
-
-void patrolIntegrationTest(
+///
+/// [bindingType] specifies the binding to use. [bindingType] is ignored if
+/// [nativeAutomation] is false.
+@isTest
+void patrolTest(
   String description,
-  NativePatrolTesterCallback callback, {
+  PatrolTesterCallback callback, {
   bool? skip,
   Timeout? timeout,
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
-  PatrolTesterConfig config = const PatrolTesterConfig(),
+  finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
+  @Deprecated('TODO') bool nativeAutomation = false,
+  BindingType bindingType = BindingType.patrol,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  final nativeAutomator = NativeAutomator(config: nativeAutomatorConfig);
-  final patrolBinding = PatrolBinding.ensureInitialized()
-    ..framePolicy = framePolicy;
+  NativeAutomator? automator;
+
+  PatrolBinding? patrolBinding;
+
+  if (nativeAutomation) {
+    switch (bindingType) {
+      case BindingType.patrol:
+        automator = NativeAutomator(config: nativeAutomatorConfig);
+
+        patrolBinding = PatrolBinding.ensureInitialized();
+        patrolBinding.framePolicy = framePolicy;
+        break;
+      case BindingType.integrationTest:
+        IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
+            framePolicy;
+
+        break;
+      case BindingType.none:
+        break;
+    }
+  }
 
   testWidgets(
     description,
@@ -63,7 +86,11 @@ void patrolIntegrationTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      if (!constants.hotRestartEnabled) {
+      if (patrolBinding != null && !constants.hotRestartEnabled) {
+        // If Patrol's native automation feature is enabled, then this test will
+        // be executed only if the native side requested it to be executed.
+        // Otherwise, it returns early.
+        //
         // The assumption here is that this test doesn't have any extra parent
         // groups. Every Dart test suite has an implict, unnamed, top-level
         // group. An additional group is present in the bundled_test.dart, and
@@ -94,18 +121,31 @@ void patrolIntegrationTest(
           // See https://github.com/leancodepl/patrol/issues/1474
         };
       }
+      await automator?.configure();
 
-      await nativeAutomator.configure();
-
-      final patrolTester = NativePatrolTester(
+      final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
-        native: nativeAutomator,
+        nativeAutomator: automator,
         config: config,
       );
-
       await callback(patrolTester);
 
-      await consumePatrolWait(widgetTester);
+      // ignore: prefer_const_declarations
+      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
+      final waitDuration = Duration(seconds: waitSeconds);
+
+      if (waitDuration > Duration.zero) {
+        final stopwatch = Stopwatch()..start();
+        await Future.doWhile(() async {
+          await widgetTester.pump();
+          if (stopwatch.elapsed > waitDuration) {
+            stopwatch.stop();
+            return false;
+          }
+
+          return true;
+        });
+      }
     },
   );
 }
