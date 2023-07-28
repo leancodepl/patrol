@@ -15,7 +15,7 @@ import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
-import 'custom_finders/patrol_integration_test.dart';
+import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
