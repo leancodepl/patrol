@@ -1,0 +1,8 @@
+workers:
+  - transport:
+      type: local
+    devices:
+      - type: simulatorProfile
+        deviceType: com.apple.CoreSimulator.SimDeviceType.iPhone-13-mini
+      - type: simulatorProfile
+        deviceType: com.apple.CoreSimulator.SimDeviceType.iPhone-14

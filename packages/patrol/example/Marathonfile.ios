@@ -1,0 +1,7 @@
+name: "Patrol example app iOS"
+outputDir: "build/reports/marathon/ios"
+vendorConfiguration:
+  type: "iOS"
+  bundle:
+    application: "build/ios_integ/Build/Products/Debug-iphonesimulator/Runner.app"
+    testApplication: "build/ios_integ/Build/Products/Debug-iphonesimulator/RunnerUITests.xctest"
