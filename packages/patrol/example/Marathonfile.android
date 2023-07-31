@@ -1,0 +1,8 @@
+name: "Patrol example app Android"
+outputDir: "build/reports/marathon/android"
+vendorConfiguration:
+  type: "Android"
+  applicationApk: "build/app/outputs/apk/debug/app-debug.apk"
+  testApplicationApk: "build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+  testParserConfiguration:
+    type: "remote"
