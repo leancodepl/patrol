@@ -1,3 +1,9 @@
+## 2.2.0
+- Use proper context in `PatrolJUnitRunner` (#1591)
+- Make `Selector.instance` work on iOS (#1569)
+- Ignore calls to `select[Fine|Coarse]Location()` on iOS < 14 (#1564)
+- Add support for `getNativeViews` on iOS (#1553)
+
 ## 2.1.0
 
 - Add `$.native.waitUntilVisible()` (#1543)

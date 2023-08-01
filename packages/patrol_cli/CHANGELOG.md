@@ -1,3 +1,7 @@
+## 2.1.0
+- Add `--no-generate-bundle` flag (#1565)
+- Don't check for `patrol_cli` updates on CI (#1557)
+
 ## 2.0.4
 
 - Fix crashes on some older Android versions when speculative `adb uninstall` is
