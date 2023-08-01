@@ -66,7 +66,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        instrumentation.getContext().startActivity(intent);
+        instrumentation.getTargetContext().startActivity(intent);
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
