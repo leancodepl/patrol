@@ -8,7 +8,7 @@
 PRODUCT_NAME = example
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.example
+PRODUCT_BUNDLE_IDENTIFIER = pl.leancode.patrol.macos.example
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2023 pl.leancode.patrol. All rights reserved.

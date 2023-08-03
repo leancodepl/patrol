@@ -36,3 +36,5 @@ patrol:
     package_name: pl.leancode.patrol.example
   ios:
     bundle_id: pl.leancode.patrol.Example
+  macos:
+    bundle_id: pl.leancode.patrol.macos.example

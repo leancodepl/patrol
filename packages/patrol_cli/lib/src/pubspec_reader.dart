@@ -3,19 +3,25 @@ import 'package:file/file.dart';
 import 'package:yaml/yaml.dart';
 
 class PatrolPubspecConfig with EquatableMixin {
-  PatrolPubspecConfig({required this.android, required this.ios});
+  PatrolPubspecConfig({
+    required this.android,
+    required this.ios,
+    required this.macos,
+  });
 
   PatrolPubspecConfig.empty()
       : this(
           android: AndroidPubspecConfig.empty(),
           ios: IOSPubspecConfig.empty(),
+          macos: MacOSPubspecConfig.empty(),
         );
 
   AndroidPubspecConfig android;
   IOSPubspecConfig ios;
+  MacOSPubspecConfig macos;
 
   @override
-  List<Object?> get props => [android, ios];
+  List<Object?> get props => [android, ios, macos];
 }
 
 class AndroidPubspecConfig with EquatableMixin {
@@ -54,6 +60,24 @@ class IOSPubspecConfig with EquatableMixin {
   List<Object?> get props => [bundleId, appName, flavor];
 }
 
+class MacOSPubspecConfig with EquatableMixin {
+  MacOSPubspecConfig({this.bundleId, this.appName, this.flavor});
+
+  MacOSPubspecConfig.empty()
+      : this(
+          bundleId: null,
+          appName: null,
+          flavor: null,
+        );
+
+  String? bundleId;
+  String? appName;
+  String? flavor;
+
+  @override
+  List<Object?> get props => [bundleId, appName, flavor];
+}
+
 /// Reads Patrol CLI configuration block from pubspec.yaml.
 class PubspecReader {
   PubspecReader({
@@ -77,7 +101,12 @@ class PubspecReader {
 
     final androidConfig = AndroidPubspecConfig();
     final iosConfig = IOSPubspecConfig();
-    final config = PatrolPubspecConfig(android: androidConfig, ios: iosConfig);
+    final macosConfig = MacOSPubspecConfig();
+    final config = PatrolPubspecConfig(
+      android: androidConfig,
+      ios: iosConfig,
+      macos: macosConfig,
+    );
 
     final patrol = yaml['patrol'] as Map?;
     if (patrol == null) {
@@ -88,6 +117,7 @@ class PubspecReader {
     if (appName != null && appName is String?) {
       androidConfig.appName = appName;
       iosConfig.appName = appName;
+      macosConfig.appName = appName;
     }
     final dynamic flavor = patrol['flavor'];
     if (flavor != null && flavor is String?) {
@@ -128,6 +158,24 @@ class PubspecReader {
       final dynamic flavor = ios['flavor'];
       if (flavor != null && flavor is String?) {
         iosConfig.flavor = flavor;
+      }
+    }
+
+    final macos = patrol['macos'] as Map?;
+    if (macos != null) {
+      config.macos = macosConfig;
+
+      final dynamic bundleId = macos['bundle_id'];
+      if (bundleId != null && bundleId is String?) {
+        macosConfig.bundleId = bundleId;
+      }
+      final dynamic appName = macos['app_name'];
+      if (appName != null && appName is String?) {
+        macosConfig.appName = appName;
+      }
+      final dynamic flavor = macos['flavor'];
+      if (flavor != null && flavor is String?) {
+        macosConfig.flavor = flavor;
       }
     }
 
