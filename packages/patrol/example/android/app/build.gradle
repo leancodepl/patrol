@@ -43,7 +43,7 @@ android {
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunner "pl.leancode.patrol.example.PatrolAllureJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
@@ -66,4 +66,9 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     androidTestUtil "androidx.test:orchestrator:1.4.2"
+
+    androidTestImplementation "io.qameta.allure:allure-kotlin-model:$allure_version"
+    androidTestImplementation "io.qameta.allure:allure-kotlin-commons:$allure_version"
+    androidTestImplementation "io.qameta.allure:allure-kotlin-junit4:$allure_version"
+    androidTestImplementation "io.qameta.allure:allure-kotlin-android:$allure_version"
 }
