@@ -118,6 +118,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+    final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
     final wait = intArg('wait') ?? defaultWait;
     final displayLabel = boolArg('label');
@@ -131,6 +132,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_WAIT': wait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
+      'PATROL_MACOS_APP_BUNDLE_ID': macosBundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
