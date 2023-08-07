@@ -22,7 +22,7 @@ Runs tests that use flutter_test and patrol APIs as macos integration tests.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
   
-  s.dependency 'gRPC-ProtoRPC', '~> 1.56.2'
+  s.dependency 'gRPC-ProtoRPC', '1.49.0'
   s.pod_target_xcconfig = {
     # This is needed by all pods that depend on Protobuf:
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=1',
