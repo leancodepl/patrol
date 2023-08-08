@@ -659,13 +659,13 @@ class NativeAutomator {
   }
 
   /// Waits until the native view specified by [selector] becomes visible.
-  Future<void> waitUntilVisible(Selector selector) async {
+  Future<void> waitUntilVisible(Selector selector, {String? appId}) async {
     await _wrapRequest(
       'waitUntilVisible',
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
           selector: selector,
-          appId: resolvedAppId,
+          appId: appId ?? resolvedAppId,
         ),
       ),
     );
