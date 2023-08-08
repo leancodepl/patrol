@@ -1,4 +1,4 @@
-## Unreleased
+## 2.2.1
 
 - Fix `appId` parameter missing from `NativeAutomator.waitUntilVisible()`
   (#1611)
