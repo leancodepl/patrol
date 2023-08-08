@@ -8,13 +8,34 @@ set -euo pipefail
 #
 #  * protoc
 #
-#  * Dart plugin (https://pub.dev/packages/protoc_plugin)
+#  * Dart plugin
+#	dart pub global activate protoc_plugin 20.0.1
+#	
+#	More details:
+#	- https://pub.dev/packages/protoc_plugin
 #
-#  * Swift plugin (https://github.com/apple/swift-protobuf)
+#  * Swift plugin: 
+#	brew install grpc-swift@1.18.0
+#	brew install swift-protobuf@1.22.1
+#	
+# 	More details:
+#	- https://github.com/apple/swift-protobuf
+#	- https://github.com/grpc/grpc-swift
+#    
+#  * Java plugin
+#	https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/1.49.1/
+#	mv protoc-gen-grpc-java-1.49.1-osx-x86_64.exe protoc-gen-grpc-java
+#	chmod 755 protoc-gen-grpc-java
 #
-#  * Java plugin (https://github.com/grpc/grpc-java)
+#	More details:
+#	- https://github.com/grpc/grpc-java
+#	- https://github.com/grpc/grpc-java/blob/master/compiler/README.md
 #
-#  * Kotlin plugin (https://github.com/grpc/grpc-kotlin/tree/master/compiler)
+#  * Kotlin plugin
+#	https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-kotlin/1.3.0/
+#	
+#	More details:
+#	- https://github.com/grpc/grpc-kotlin/tree/master/compiler
 
 cd "$(dirname "$0")" || exit
 
@@ -46,3 +67,7 @@ protoc \
 	--grpc-swift_out="$swift_out" \
 	--swift_opt=Visibility=Public \
 	"$PROTO_PATH"
+
+dart format "$dart_out/contracts.pb.dart"
+dart format "$dart_out/contracts.pbenum.dart"
+dart format "$dart_out/contracts.pbjson.dart"
