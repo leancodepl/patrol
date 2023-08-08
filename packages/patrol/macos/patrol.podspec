@@ -18,11 +18,12 @@ Runs tests that use flutter_test and patrol APIs as macos integration tests.
   s.dependency 'FlutterMacOS'
   s.weak_framework = 'XCTest'
   s.osx.framework  = 'AppKit'
-  s.platform = :osx, '10.11'
+  s.platform = :osx, '10.15'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
   
   s.dependency 'gRPC-ProtoRPC', '1.49.0'
+  s.dependency 'SwiftNIOPosix', '2.40.0'
   s.pod_target_xcconfig = {
     # This is needed by all pods that depend on Protobuf:
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS=1',

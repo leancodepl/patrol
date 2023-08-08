@@ -150,7 +150,7 @@ class MacOSTestBackend {
           ),
         ),
         runInShell: true,
-        workingDirectory: _fs.currentDirectory.childDirectory('maocs').path,
+        workingDirectory: _fs.currentDirectory.childDirectory('macos').path,
       )
         ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
