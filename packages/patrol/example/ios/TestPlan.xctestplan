@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "5E3F42B3-5E5C-49D6-A726-58BDD6610C2E",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Runner.xcodeproj",
+      "identifier" : "97C146ED1CF9000F007C117D",
+      "name" : "Runner"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Runner.xcodeproj",
+        "identifier" : "983964D82978A956007EB76F",
+        "name" : "RunnerUITests"
+      }
+    },
+    {
+      "enabled" : false,
+      "target" : {
+        "containerPath" : "container:Runner.xcodeproj",
+        "identifier" : "9862560129F9A72100B267FA",
+        "name" : "RunnerTests"
+      }
+    }
+  ],
+  "version" : 1
+}
