@@ -30,4 +30,25 @@ Runs tests that use flutter_test and patrol APIs as macos integration tests.
     # This is needed by all pods that depend on gRPC-RxLibrary:
     'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
   }
+
+  src = '/Users/cudzik/Documents/Leancode/patrol/patrol/'
+  pods_root = '/Users/cudzik/Documents/Leancode/patrol/patrol/packages/patrol/example/macos/Pods'
+  dir = "/Users/cudzik/Documents/Leancode/patrol/patrol/packages/patrol/macos/Classes/AutomatorServer"
+
+  protoc_dir = "#{pods_root}/!ProtoCompiler"
+  protoc = "#{protoc_dir}/protoc"
+  plugin = "#{pods_root}/!ProtoCompiler-gRPCPlugin/grpc_objective_c_plugin"
+
+  s.dependency '!ProtoCompiler-gRPCPlugin', '~> 1.0'
+
+  # s.prepare_command = <<-CMD
+  #   mkdir -p #{dir}
+  #   #{protoc} \
+  #       --plugin=protoc-gen-grpc=#{plugin} \
+  #       --objc_out=#{dir} \
+  #       --grpc_out=#{dir} \
+  #       -I #{src} \
+  #       -I #{protoc_dir} \
+  #       #{src}/*.proto
+  # CMD
 end

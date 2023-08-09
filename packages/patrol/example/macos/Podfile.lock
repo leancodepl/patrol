@@ -1,4 +1,9 @@
 PODS:
+  - "!ProtoCompiler (3.21.5)":
+    - Protobuf (~> 3.0)
+  - "!ProtoCompiler-gRPCPlugin (1.49.0)":
+    - "!ProtoCompiler (= 3.21.5)"
+    - gRPC-ProtoRPC (= 1.49.0)
   - _NIODataStructures (2.40.0)
   - abseil/algorithm/algorithm (1.20220623.0):
     - abseil/base/config
@@ -639,6 +644,7 @@ PODS:
   - gRPC/Interface-Legacy (1.49.0):
     - gRPC-RxLibrary/Interface (= 1.49.0)
   - patrol (0.0.1):
+    - "!ProtoCompiler-gRPCPlugin (~> 1.0)"
     - FlutterMacOS
     - gRPC-ProtoRPC (= 1.49.0)
     - SwiftNIOPosix (= 2.40.0)
@@ -667,6 +673,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - "!ProtoCompiler"
+    - "!ProtoCompiler-gRPCPlugin"
     - _NIODataStructures
     - abseil
     - BoringSSL-GRPC
@@ -696,6 +704,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/patrol/macos
 
 SPEC CHECKSUMS:
+  "!ProtoCompiler": e9c09244955a8565817aa59a4787b6bb849a63c6
+  "!ProtoCompiler-gRPCPlugin": 755f0ee414a0d5f0028e0dcfe98c23bdbc3e6fa3
   _NIODataStructures: 3d45d8e70a1d17a15b1dc59d102c63dbc0525ffd
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
@@ -711,7 +721,7 @@ SPEC CHECKSUMS:
   gRPC-Core: 3a9fdb5967d42211e875826f3f6fc163ea02c2a1
   gRPC-ProtoRPC: 1c223e0f1732bb8d0b9e9e0ea60cc0fe995b8e2d
   gRPC-RxLibrary: 92327f150e11cf3b1c0f52e083944fd9f5cb5d1e
-  patrol: 9ecd5f90e2b948d46e04e503dda3e82a067e3522
+  patrol: 6bcf4d2caaee1eb4bcccf090e07451e482d3af0a
   Protobuf: c6bc59bbab3d38a71c67f62d7cb7ca8f8ea4eca1
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
   SwiftNIOCore: 473fdfe746534d7aa25766916459eeaf6f92ef49
