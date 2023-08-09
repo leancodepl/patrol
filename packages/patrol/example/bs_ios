@@ -70,11 +70,6 @@ curl -u "$BROWSERSTACK_CREDS" \
     "project": "Patrol example app",
     "devices": ["iPhone 14-16"],
     "deviceLogs": "true",
-    "only-testing": [
-        "RunnerUITests/RunnerUITests/exampleTest",
-        "RunnerUITests/RunnerUITests/openAppTest",
-        "RunnerUITests/RunnerUITests/nonExistingTest"
-    ],
     "dynamicTests": "true"
 }
 EOF
