@@ -10,8 +10,8 @@ if [[ "$(patrol --version)" != *"v2"* ]]; then
 	exit 1
 fi
 
-if [ -z "${CREDS:-}" ]; then
-    echo "Error: missing CREDS env var"
+if [ -z "${BROWSERSTACK_CREDS:-}" ]; then
+    echo "Error: missing BROWSERSTACK_CREDS env var"
     exit 1
 fi
 
@@ -32,7 +32,7 @@ cd -
 
 # https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
 app_upload_response="$(
-	curl -u "$CREDS" \
+	curl -u "$BROWSERSTACK_CREDS" \
 		-X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/app" \
 		-F "file=@$PWD/build/ios_integ/Build/Products/Runner.ipa"
 )"
@@ -49,7 +49,7 @@ cd -
 
 # https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
 test_upload_response="$(
-	curl -u "$CREDS" \
+	curl -u "$BROWSERSTACK_CREDS" \
 		-X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/test-suite" \
 		-F "file=@$PWD/build/ios_integ/Build/Products/Release-iphoneos/ios_tests.zip"
 )"
@@ -60,7 +60,7 @@ echo "Uploaded test, url: $test_url"
 echo "Will schedule test execution now"
 
 # https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
-curl -u "$CREDS" \
+curl -u "$BROWSERSTACK_CREDS" \
   -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build" \
   -H "Content-Type: application/json" \
   --data-binary @- <<EOF
