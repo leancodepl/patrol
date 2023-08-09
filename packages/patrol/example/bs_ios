@@ -15,9 +15,10 @@ if [ -z "${BROWSERSTACK_CREDS:-}" ]; then
     exit 1
 fi
 
-patrol build ios --release \
-    --target integration_test/example_test.dart \
-    --target integration_test/open_app_test.dart
+# Commented out, the file is in build/ios_integ/Build/Products/Runner_TestPlan_iphoneos16.4-arm64.xctestrun
+# patrol build ios --release \
+#     --target integration_test/example_test.dart \
+#     --target integration_test/open_app_test.dart
 
 # BrowserStack says it requires .ipa, but actually we can simply zip the .app
 # and rename it.
@@ -40,11 +41,11 @@ app_upload_response="$(
 app_url="$(echo "$app_upload_response" | jq --raw-output .app_url)"
 echo "Uploaded app, url: $app_url"
 
+echo "Will zip tests now"
 cd build/ios_integ/Build/Products/Release-iphoneos
-
-rm -f ios_tests.zip
-zip -q -r ios_tests.zip RunnerUITests-Runner.app
-
+rm -rf ios_tests.zip
+cp ../Runner_TestPlan_iphoneos*.xctestrun .
+zip -r ios_tests.zip Runner_TestPlan_iphoneos*.xctestrun RunnerUITests-Runner.app
 cd -
 
 # https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
