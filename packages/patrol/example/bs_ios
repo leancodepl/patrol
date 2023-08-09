@@ -41,9 +41,14 @@ app_upload_response="$(
 app_url="$(echo "$app_upload_response" | jq --raw-output .app_url)"
 echo "Uploaded app, url: $app_url"
 
+
 echo "Will zip tests now"
 cd build/ios_integ/Build/Products/Release-iphoneos
 rm -rf ios_tests.zip
+
+# BrowserStack fails if DiagnosticCollectionPolicy is present
+plutil -remove 'TestConfigurations.TestTargets.DiagnosticCollectionPolicy' ../Runner_TestPlan_iphoneos*.xctestrun
+
 cp ../Runner_TestPlan_iphoneos*.xctestrun .
 zip -r ios_tests.zip Runner_TestPlan_iphoneos*.xctestrun RunnerUITests-Runner.app
 cd -
