@@ -61,7 +61,7 @@ echo "Will schedule test execution now"
 
 # https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
 curl -u "$BROWSERSTACK_CREDS" \
-  -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/build" \
+  -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/xctestrun-build" \
   -H "Content-Type: application/json" \
   --data-binary @- <<EOF
 {
@@ -69,7 +69,6 @@ curl -u "$BROWSERSTACK_CREDS" \
     "testSuite": "$test_url",
     "project": "Patrol example app",
     "devices": ["iPhone 14-16"],
-    "deviceLogs": "true",
-    "dynamicTests": "true"
+    "deviceLogs": "true"
 }
 EOF
