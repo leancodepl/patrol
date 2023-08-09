@@ -51,4 +51,13 @@ Runs tests that use flutter_test and patrol APIs as macos integration tests.
   #       -I #{protoc_dir} \
   #       #{src}/*.proto
   # CMD
+
+  s.subspec 'Messages' do |ms|
+    ms.source_files = "Classes/AutomatorServer/*.pbobjc.{h,m}"
+    ms.header_mappings_dir = "Classes/AutomatorServer/"
+    ms.requires_arc = false
+    
+    # The generated files depend on the protobuf runtime.
+    ms.dependency 'Protobuf'
+  end
 end

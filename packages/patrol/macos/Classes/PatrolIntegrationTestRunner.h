@@ -73,9 +73,9 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                             \
         [[[XCUIApplication alloc] init] launch];                                                                 \
                                                                                                                  \
-        __block RunDartTestResponse *response = NULL;                                                            \
+        __block RunDartTestResponse2 *response = NULL;                                                            \
         [appServiceClient runDartTestWithName:dartTestFile                                                       \
-                            completionHandler:^(RunDartTestResponse *_Nullable r, NSError *_Nullable err) {      \
+                            completionHandler:^(RunDartTestResponse2 *_Nullable r, NSError *_Nullable err) {      \
                               if (err != NULL) {                                                                 \
                                 NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTestFile, err);           \
                               }                                                                                  \

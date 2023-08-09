@@ -647,8 +647,15 @@ PODS:
     - "!ProtoCompiler-gRPCPlugin (~> 1.0)"
     - FlutterMacOS
     - gRPC-ProtoRPC (= 1.49.0)
+    - patrol/Messages (= 0.0.1)
     - SwiftNIOPosix (= 2.40.0)
-  - Protobuf (3.23.4)
+  - patrol/Messages (0.0.1):
+    - "!ProtoCompiler-gRPCPlugin (~> 1.0)"
+    - FlutterMacOS
+    - gRPC-ProtoRPC (= 1.49.0)
+    - Protobuf
+    - SwiftNIOPosix (= 2.40.0)
+  - Protobuf (3.24.0)
   - SwiftNIOConcurrencyHelpers (2.40.0):
     - CNIOAtomics (= 2.40.0)
   - SwiftNIOCore (2.40.0):
@@ -721,12 +728,12 @@ SPEC CHECKSUMS:
   gRPC-Core: 3a9fdb5967d42211e875826f3f6fc163ea02c2a1
   gRPC-ProtoRPC: 1c223e0f1732bb8d0b9e9e0ea60cc0fe995b8e2d
   gRPC-RxLibrary: 92327f150e11cf3b1c0f52e083944fd9f5cb5d1e
-  patrol: 6bcf4d2caaee1eb4bcccf090e07451e482d3af0a
-  Protobuf: c6bc59bbab3d38a71c67f62d7cb7ca8f8ea4eca1
+  patrol: 030fac5456aad1ffd0ecd84f8173321500eee97e
+  Protobuf: 74a8b46ebe3001096a6f4b624e9efbae8adb2edd
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
   SwiftNIOCore: 473fdfe746534d7aa25766916459eeaf6f92ef49
   SwiftNIOPosix: b49af4bdbecaadfadd5c93dfe28594d6722b75e4
 
-PODFILE CHECKSUM: 2be270fbb1c71db3a051b2daeb237cb389fd4319
+PODFILE CHECKSUM: 3e2aed3d26f000bb49b265cf8ffdb9a47fb12f78
 
 COCOAPODS: 1.12.1
