@@ -25,8 +25,10 @@ First, you have to modify the **app-level build.gradle**:
 android {
   // ...
   defaultConfig {
-    //...
-    testInstrumentationRunner "your.package.name.AllurePatrolJUnitRunner"
+    // ...
+
+    // Replace the existing "testInstrumentationRunner" line with:
+    testInstrumentationRunner "pl.leancode.patrol.example.AllurePatrolJUnitRunner"
   }
   // ...
 }
@@ -38,6 +40,10 @@ dependencies {
   androidTestImplementation "io.qameta.allure:allure-kotlin-android:2.4.0"
 }
 ```
+
+<Warning>
+  Replace `pl.leancode.patrol.example` with your app's package name.
+</Warning>
 
 See also:
 
@@ -162,7 +168,7 @@ public class MainActivityTest {
 
 ### Retrieve the report
 
-Run the test with `patrol test` as usual.
+Run the tests with `patrol test` as usual.
 
 After the test is complete, retrieve the results from the device:
 

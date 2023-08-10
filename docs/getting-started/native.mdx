@@ -68,14 +68,15 @@ platform-specific tool.
    ```
 
    <Info>
-      You can install a specific version of Patrol CLI. For example:
+You can install a specific version of Patrol CLI. For example:
 
-      ```
-      dart pub global activate patrol_cli ^1.0.0
-      ```
+   ```
+   dart pub global activate patrol_cli ^1.0.0
+   ```
 
-      will install the latest `v1` version. We recommend to install a specific
-      version on CI systems to avoid unexpected breakages.
+   will install the latest `v1` version. We recommend to install a specific
+   version on CI systems to avoid unexpected breakages.
+
    </Info>
 
 2. Verify that installation was successful:
@@ -185,6 +186,12 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
           }
       }
       ```
+
+      <Warning>
+        In the snippet above, remember to replace the
+        `package pl.leancode.patrol.example` line with your app's package name!
+      </Warning>
+
 
       Next, update your **app-level build.gradle**:
 
