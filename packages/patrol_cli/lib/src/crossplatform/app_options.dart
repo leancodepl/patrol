@@ -189,6 +189,7 @@ class IOSAppOptions {
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
+    required String resultBundlePath,
   }) {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
@@ -198,6 +199,7 @@ class IOSAppOptions {
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
+      ...['-resultBundlePath', resultBundlePath],
     ];
 
     return cmd;

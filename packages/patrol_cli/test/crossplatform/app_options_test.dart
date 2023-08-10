@@ -166,6 +166,7 @@ void main() {
         final xcodebuildInvocation = options.testWithoutBuildingInvocation(
           iosDevice,
           xcTestRunPath: xcTestRunPath,
+          resultBundlePath: '',
         );
 
         expect(
@@ -175,6 +176,7 @@ void main() {
             ...['-xctestrun', xcTestRunPath],
             ...['-only-testing', 'RunnerUITests'],
             ...['-destination', 'platform=iOS,name=iPhone 13'],
+            ...['-resultBundlePath', ''],
           ]),
         );
       });
