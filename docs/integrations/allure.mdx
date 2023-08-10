@@ -188,11 +188,28 @@ public class MainActivityTest {
 
 Run the tests with `patrol test` as usual.
 
-After the tests are complete, retrieve the results from the device:
+After the tests are complete, create a directory for them, for example:
+
+```bash
+mkdir -p ./build/reports
+```
+
+and then retrieve the results from the device:
 
 ```bash
 adb exec-out sh -c 'cd /sdcard/googletest/test_outputfiles && tar cf - allure-results' | tar xvf - -C build/reports
 ```
+
+Finally, serve the results with Allure:
+
+```bash
+allure serve ./build/reports/allure-results
+```
+
+<Info>
+  If you're using Homebrew, `brew install allure` is the quickest way to get
+  Allure.
+</Info>
 
 [native setup]: /getting-started/native
 [allure]: https://qameta.io/allure-report
