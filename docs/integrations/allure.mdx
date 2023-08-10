@@ -162,6 +162,14 @@ public class MainActivityTest {
 
 ### Retrieve the report
 
+Run the test with `patrol test` as usual.
+
+After the test is complete, retrieve the results from the device:
+
+```bash
+adb exec-out sh -c 'cd /sdcard/googletest/test_outputfiles && tar cf - allure-results' | tar xvf - -C build/reports
+```
+
 [native setup]: /getting-started/native
 [allure]: https://qameta.io/allure-report
 [allure_kotlin]: https://github.com/allure-framework/allure-kotlin/blob/master/README.md
