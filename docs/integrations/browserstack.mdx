@@ -1,0 +1,90 @@
+---
+title: Integrations - Browserstack
+---
+
+# Browserstack overview
+
+[Browserstack App Automate] is a popular cloud device farm.
+
+<Warning>This integration is currently Android-only.</Warning>
+
+### Change runner
+
+Modify the **app-level build.gradle**:
+
+```groovy title="android/app/build.gradle"
+android {
+  // ...
+  defaultConfig {
+    //...
+    testInstrumentationRunner "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
+  }
+  // ...
+}
+
+// ...
+```
+
+That's all!
+
+### Upload to Browserstack
+
+To run Android UI tests on BrowserStack:
+
+1. Build the app under test and the instrumentation app ([see docs][patrol build])
+1. Upload the app under test APK to Browserstack ([see docs][bs_app_docs])
+1. Upload the instrumentation app APK to Browserstack ([see docs][bs_test_docs])
+1. Start test execution on Browserstack ([see docs][bs_execute_docs])
+
+You can do it all manually, but we recommend using the [bs_android] script to
+speed up this process. `bs_android` is part of LeanCode's [mobile-tools]. If
+you're using Homebrew, you can install it with:
+
+```bash
+brew tap leancodepl/tools
+brew install mobile-tools
+```
+
+The `bs_android` script requires the `BROWSERSTACK_CREDS` environment variable
+to be set so it can authenticate with Browserstack:
+
+```bash
+export YOUR_USERNAME:YOUR_ACCESS_KEY
+```
+
+Get your username and access on [Browserstack's account page][bs_account].
+
+Now reload your shell (e.g. `exec zsh`) and run `bs_android`:
+
+```
+$ export BROWSERSTACK_PROJECT=AwesomeApp # optional
+$ export BROWSERSTACK_DEVICES="[\"Google Pixel 4-10.0\"]" # optional
+$ bs_android
+• Building apk with entrypoint test_bundle.dart...
+✓ Completed building apk with entrypoint test_bundle.dart (11.0s)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 87.4M  100   235  100 87.4M      7  2857k  0:00:33  0:00:31  0:00:02 2052k
+Uploaded app, url: bs://fb61a714e1a0c60e2578d940dad52b74da244d54
+Uploaded test, url: bs://a715b1231d41ac627bd683f1b16c28476babd72e
+{"message":"Success","build_id":"a30440db559fcab65554ab0273437f3bd45d761b"}
+Scheduled test execution
+```
+
+`bs_android` forwards all its options and flags to `patrol build`:
+
+```bash
+bs_android \
+  --target integration_test/example_test.dart,integration_test/another_test.dart \
+  --release \
+  --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
+```
+
+[Browserstack App Automate]: https://www.browserstack.com/app-automate
+[patrol build]: /cli-commands/build
+[bs_android]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_android
+[bs_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/apps
+[bs_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/tests
+[bs_execute_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/builds#execute-a-build
+[bs_account]: https://www.browserstack.com/accounts/profile
+[mobile-tools]: https://github.com/leancodepl/mobile-tools

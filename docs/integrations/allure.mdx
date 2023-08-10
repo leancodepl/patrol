@@ -1,0 +1,219 @@
+---
+title: Integrations - allure
+---
+
+# Allure overview
+
+If you're using [Allure] to report your test results, you can use the
+alternative test runner to get more detailed test report.
+
+We decided not to package this alternative runner together with Patrol because
+it'd make Patrol depend on Allure, which is not desirable. Instead, you can
+easily do it yourself.
+
+This guide assumes basic familiarity with Allure. To get started, see:
+
+- [official Allure documentation](https://docs.qameta.io/allure-report)
+- [allure-framework/allure2 repository](https://github.com/allure-framework/allure2)
+
+<Warning>This integration is currently Android-only.</Warning>
+
+<Info>
+  Before you proceed with the steps listed below, make sure that you've
+  completed the [native setup] guide.
+</Info>
+
+### Add dependencies and change runner
+
+First, you have to modify the **app-level build.gradle**:
+
+```groovy title="android/app/build.gradle"
+android {
+  // ...
+  defaultConfig {
+    // ...
+
+    // Replace the existing "testInstrumentationRunner" line with:
+    testInstrumentationRunner "pl.leancode.patrol.example.AllurePatrolJUnitRunner"
+  }
+  // ...
+}
+
+dependencies {
+  androidTestImplementation "io.qameta.allure:allure-kotlin-model:2.4.0"
+  androidTestImplementation "io.qameta.allure:allure-kotlin-commons:2.4.0"
+  androidTestImplementation "io.qameta.allure:allure-kotlin-junit4:2.4.0"
+  androidTestImplementation "io.qameta.allure:allure-kotlin-android:2.4.0"
+}
+```
+
+<Warning>
+  Replace `pl.leancode.patrol.example` with your app's package name.
+</Warning>
+
+See also:
+
+- [the README of allure-kotlin library][allure_kotlin]
+
+### Create alternative runner
+
+Create a new Kotlin file in the same directory as **MainActivityTest.java** and
+paste the following code, replacing the package:
+
+```kotlin title="AllurePatrolJUnitRunner.kt"
+package pl.leancode.patrol.example // replace "pl.leancode.patrol.example" with your app's package
+
+import android.os.Bundle
+import io.qameta.allure.android.AllureAndroidLifecycle
+import io.qameta.allure.android.listeners.ExternalStoragePermissionsListener
+import io.qameta.allure.android.writer.TestStorageResultsWriter
+import io.qameta.allure.kotlin.Allure
+import io.qameta.allure.kotlin.junit4.AllureJunit4
+import io.qameta.allure.kotlin.util.PropertiesUtils
+import pl.leancode.patrol.PatrolJUnitRunner
+
+class AllurePatrolJUnitRunner : PatrolJUnitRunner() {
+    override fun onCreate(arguments: Bundle) {
+        Allure.lifecycle = createAllureAndroidLifecycle()
+        val listenerArg = listOfNotNull(
+            arguments.getCharSequence("listener"),
+            AllureJunit4::class.java.name,
+            ExternalStoragePermissionsListener::class.java.name.takeIf { useTestStorage }
+        ).joinToString(separator = ",")
+        arguments.putCharSequence("listener", listenerArg)
+        super.onCreate(arguments)
+    }
+
+    private fun createAllureAndroidLifecycle() : AllureAndroidLifecycle {
+      return createDefaultAllureAndroidLifecycle()
+    }
+
+    private fun createDefaultAllureAndroidLifecycle() : AllureAndroidLifecycle {
+        if (useTestStorage) {
+            return AllureAndroidLifecycle(TestStorageResultsWriter())
+        }
+
+        return AllureAndroidLifecycle()
+    }
+
+    private val useTestStorage: Boolean
+        get() = PropertiesUtils.loadAllureProperties()
+            .getProperty("allure.results.useTestStorage", "true")
+            .toBoolean()
+}
+```
+
+<Warning>
+  In the snippet above, remember to replace the `package
+  pl.leancode.patrol.example` line at the top of the file with your app's
+  package name!
+</Warning>
+
+### Create allure.properties
+
+This is required if you enabled the `clearPackageData` option for Android Test
+Orchestrator. If you enabled that option but don't create the
+`allure.properties` file as below, your tests reports will be cleared after each
+test.
+
+```txt title="android/app/src/main/res/allure.properties"
+allure.results.useTestStorage=true
+```
+
+### Add rules to MainActivityTest
+
+Finally, modify the **MainActivityTest.java**. You'll add a 3 rules, which add
+the following features:
+
+- automatically take a screenshot at the end of each test
+- automatically dump the window hierarchy at the end of each test
+- automatically embed the logcat into the report
+
+You can simply copy-paste the following code (remember to replace the package
+name):
+
+```java title="MainActivityTest.java"
+package pl.leancode.patrol.example; // replace "pl.leancode.patrol.example" with your app's package
+
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+
+import io.qameta.allure.android.rules.LogcatRule;
+import io.qameta.allure.android.rules.ScreenshotRule;
+import io.qameta.allure.android.rules.WindowHierarchyRule;
+import pl.leancode.patrol.PatrolJUnitRunner;
+
+@RunWith(Parameterized.class)
+public class MainActivityTest {
+    @Rule
+    public ScreenshotRule screenshotRule = new ScreenshotRule(ScreenshotRule.Mode.END, "ss_end");
+
+    @Rule
+    public WindowHierarchyRule windowHierarchyRule = new WindowHierarchyRule();
+
+    @Rule
+    public LogcatRule logcatRule = new LogcatRule();
+
+    @Parameters(name = "{0}")
+    public static Object[] testCases() {
+        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        instrumentation.setUp(MainActivity.class);
+        instrumentation.waitForPatrolAppService();
+        return instrumentation.listDartTests();
+    }
+
+    public MainActivityTest(String dartTestName) {
+        this.dartTestName = dartTestName;
+    }
+
+    private final String dartTestName;
+
+    @Test
+    public void runDartTest() {
+        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        instrumentation.runDartTest(dartTestName);
+    }
+}
+```
+
+<Warning>
+  In the snippet above, remember to replace the `package
+  pl.leancode.patrol.example` line at the top of the file with your app's
+  package name!
+</Warning>
+
+### Retrieve the report
+
+Run the tests with `patrol test` as usual.
+
+After the tests are complete, create a directory for them, for example:
+
+```bash
+mkdir -p ./build/reports
+```
+
+and then retrieve the results from the device:
+
+```bash
+adb exec-out sh -c 'cd /sdcard/googletest/test_outputfiles && tar cf - allure-results' | tar xvf - -C build/reports
+```
+
+Finally, serve the results with Allure:
+
+```bash
+allure serve ./build/reports/allure-results
+```
+
+<Info>
+  If you're using Homebrew, `brew install allure` is the quickest way to get
+  Allure.
+</Info>
+
+[native setup]: /getting-started/native
+[allure]: https://qameta.io/allure-report
+[allure_kotlin]: https://github.com/allure-framework/allure-kotlin/blob/master/README.md
