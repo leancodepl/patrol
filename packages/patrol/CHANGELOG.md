@@ -1,3 +1,8 @@
+## 2.2.2
+
+- Fix deprecation message for `andSettle` (settleBehavior -> settlePolicy)
+  (#1622)
+
 ## 2.2.1
 
 - Fix `appId` parameter missing from `NativeAutomator.waitUntilVisible()`
