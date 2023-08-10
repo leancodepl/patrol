@@ -1,14 +1,15 @@
 # Patrol
 
 [![patrol on pub.dev][patrol_badge]][patrol_link]
+[![patrol_finders on pub.dev][patrol_finders_badge]][patrol_finders_link]
 [![patrol_cli on pub.dev][patrol_cli_badge]][patrol_cli_link]
 [![code style][leancode_lint_badge]][leancode_lint_link]
 [![powered by][docs_page_badge]][docs_page_link]
 
 ![Patrol promotial graphics][promo_graphics]
 
-Simple yet powerful Flutter-first UI testing framework overcoming limitations
-of `flutter_test`, `integration_test`, and `flutter_driver`.
+Simple yet powerful Flutter-first UI testing framework overcoming limitations of
+`flutter_test`, `integration_test`, and `flutter_driver`.
 
 Learn more about Patrol:
 
@@ -76,6 +77,9 @@ patrolTest('signs up', (PatrolTester $) async {
 
 [Learn more about custom finders in the docs][docs_finders]!
 
+Patrol's custom finders are also available standalone in [the patrol_finders
+package][patrol_finders_link].
+
 ## Patrol native automation
 
 Flutter's default [integration_test] package can't interact with the OS your
@@ -126,16 +130,19 @@ To run widget tests, you can continue to use `flutter test`.
 
 See [packages/patrol][github_patrol].
 
-[github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
-[github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
-[patrol_link]: https://pub.dev/packages/patrol
+[patrol_finders_badge]: https://img.shields.io/pub/v/patrol?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
-[patrol_cli_link]: https://pub.dev/packages/patrol_cli
 [leancode_lint_badge]: https://img.shields.io/badge/code%20style-leancode__lint-black
-[leancode_lint_link]: https://pub.dev/packages/leancode_lint
 [docs_page_badge]: https://img.shields.io/badge/documentation-docs.page-34C4AC.svg?style
+[patrol_link]: https://pub.dev/packages/patrol
+[patrol_finders_link]: https://pub.dev/packages/patrol_finders
+[patrol_cli_link]: https://pub.dev/packages/patrol_cli
+[leancode_lint_link]: https://pub.dev/packages/leancode_lint
 [docs_page_link]: https://docs.page
+[github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
+[github_patrol_finders]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_finders
+[github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: docs/assets/promo.png
