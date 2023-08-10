@@ -164,7 +164,10 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild build-for-testing`
   /// invocation.
-  List<String> buildForTestingInvocation() {
+  ///
+  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
+  /// of unique path for the results bundle.
+  List<String> buildForTestingInvocation({required int timestamp}) {
     final cmd = [
       ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
@@ -178,6 +181,7 @@ class IOSAppOptions {
       ],
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
+      ...['-resultBundlePath', '../build/ios_results_$timestamp'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
 

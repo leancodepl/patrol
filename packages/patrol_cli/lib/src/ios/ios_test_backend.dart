@@ -111,7 +111,9 @@ class IOSTestBackend {
       // xcodebuild build-for-testing
 
       process = await _processManager.start(
-        options.buildForTestingInvocation(),
+        options.buildForTestingInvocation(
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+        ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
       )
