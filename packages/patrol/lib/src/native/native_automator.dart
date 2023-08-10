@@ -633,10 +633,16 @@ class NativeAutomator {
   }
 
   /// Swipes from [from] to [to].
+  ///
+  /// On Android, [steps] controls speed and smoothness.
+  /// One unit of [steps] is equivalent to 5 ms.
+  /// If you want to slow down the swipe time, increase [steps].
+  /// If [swipe] doesn't work, try increasing [steps].
+  ///
   Future<void> swipe({
     required Offset from,
     required Offset to,
-    int steps = 2,
+    int steps = 12,
   }) async {
     await _wrapRequest(
       'swipe',
@@ -653,13 +659,13 @@ class NativeAutomator {
   }
 
   /// Waits until the native view specified by [selector] becomes visible.
-  Future<void> waitUntilVisible(Selector selector) async {
+  Future<void> waitUntilVisible(Selector selector, {String? appId}) async {
     await _wrapRequest(
       'waitUntilVisible',
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
           selector: selector,
-          appId: resolvedAppId,
+          appId: appId ?? resolvedAppId,
         ),
       ),
     );

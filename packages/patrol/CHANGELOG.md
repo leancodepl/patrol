@@ -1,3 +1,22 @@
+## 2.2.2
+
+- Fix deprecation message for `andSettle` (settleBehavior -> settlePolicy)
+  (#1622)
+
+## 2.2.1
+
+- Fix `appId` parameter missing from `NativeAutomator.waitUntilVisible()`
+  (#1611)
+- Fix tests crashing by stopping depending on `dart:io` when running with
+  `flutter_driver` on the Web (#1578)
+
+## 2.2.0
+
+- Use proper context in `PatrolJUnitRunner` (#1591)
+- Make `Selector.instance` work on iOS (#1569)
+- Ignore calls to `select[Fine|Coarse]Location()` on iOS < 14 (#1564)
+- Add support for `getNativeViews` on iOS (#1553)
+
 ## 2.1.0
 
 - Add `$.native.waitUntilVisible()` (#1543)

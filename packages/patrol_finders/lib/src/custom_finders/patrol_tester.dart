@@ -13,7 +13,7 @@ class PatrolTesterConfig {
     this.existsTimeout = const Duration(seconds: 10),
     this.visibleTimeout = const Duration(seconds: 10),
     this.settleTimeout = const Duration(seconds: 10),
-    @Deprecated('Use settleBehavior argument instead') this.andSettle = true,
+    @Deprecated('Use settlePolicy argument instead') this.andSettle = true,
     // TODO: change default to trySettle, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
     this.settlePolicy = SettlePolicy.settle,
     this.dragDuration = const Duration(milliseconds: 100),
@@ -69,7 +69,7 @@ class PatrolTesterConfig {
     Duration? existsTimeout,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? dragDuration,
   }) {
@@ -253,7 +253,7 @@ class PatrolTester {
   ///  - [WidgetController.tap]
   Future<void> tap(
     Finder finder, {
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -303,7 +303,7 @@ class PatrolTester {
   Future<void> enterText(
     Finder finder,
     String text, {
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -434,7 +434,7 @@ class PatrolTester {
     int maxIteration = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -512,7 +512,7 @@ class PatrolTester {
     int maxIteration = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -567,7 +567,7 @@ class PatrolTester {
     int maxScrolls = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -641,7 +641,7 @@ class PatrolTester {
     int maxScrolls = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');

@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
 import 'dart:io' as io;
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
@@ -115,8 +114,7 @@ if you use nativeAutomation with false, we recommend using patrolWidgetTest()'''
           return;
         }
       }
-
-      if (io.Platform.isIOS) {
+      if (!kIsWeb && io.Platform.isIOS) {
         widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
           // This callback is empty on purpose. It's a workaround for tests
           // failing on iOS.

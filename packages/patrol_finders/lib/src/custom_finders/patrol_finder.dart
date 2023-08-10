@@ -199,7 +199,7 @@ class PatrolFinder extends MatchFinder {
   ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap({
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -276,7 +276,7 @@ class PatrolFinder extends MatchFinder {
     int maxScrolls = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return tester.scrollUntilVisible(
@@ -475,7 +475,7 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// Same as [PatrolFinder.tap], but on a [PatrolFinder] which is not yet
   /// visible.
   Future<void> tap({
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
@@ -494,7 +494,7 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// visible.
   Future<void> enterText(
     String text, {
-    @Deprecated('Use settleBehavior argument instead') bool? andSettle,
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
