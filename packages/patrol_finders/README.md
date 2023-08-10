@@ -1,60 +1,22 @@
 # patrol
 
-[![patrol on pub.dev][pub_badge]][pub_link]
+[![patrol_finders on pub.dev][pub_badge]][pub_link]
 [![codestyle][pub_badge_style]][pub_badge_link]
 
-`patrol` package builds on top of `flutter_test` and `integration_test` to make
-it easy to control the native UI from Dart test code.
+`patrol_finders` is a streamlined, high-level API on top of `flutter_test`.
 
-It also provides a new custom finder system to make Flutter widget tests more
-concise and understandable, and writing them – faster and more fun.
-
-It can be used on its own or with [patrol_cli].
+It provides a [new custom finder system][custom finders] to make Flutter widget
+tests more concise and understandable, and writing them – faster and more fun.
 
 ## Installation
 
 ```console
-$ dart pub add patrol --dev
+$ dart pub add patrol_finders --dev
 ```
 
-## Usage
+## Documentation
 
-Patrol has 2 main features – [native automation] and [custom finders].
-
-[Read our docs](https://patrol.leancode.co) to learn more about them!
-
-### Accessing native platform features
-
-```dart
-// example/integration_test/example_test.dart
-import 'package:example/main.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-void main() {
-  patrolTest(
-    'counter state is the same after going to home and going back',
-    nativeAutomation: true,
-    ($) async {
-      await $.pumpWidgetAndSettle(const MyApp());
-
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
-
-      await $.native.pressHome();
-      await $.native.pressDoubleRecentApps();
-
-      expect($(#counterText).text, '1');
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '2');
-
-      await $.native.openNotifications();
-      await $.native.pressBack();
-    },
-  );
-}
-```
+[Read our docs](https://patrol.leancode.co) to learn more.
 
 ### Custom finders
 
@@ -90,10 +52,8 @@ void main() {
 }
 ```
 
-[patrol_cli]: https://pub.dev/packages/patrol_cli
-[pub_badge]: https://img.shields.io/pub/v/patrol.svg
-[pub_link]: https://pub.dartlang.org/packages/patrol
+[pub_badge]: https://img.shields.io/pub/v/patrol_finders.svg
+[pub_link]: https://pub.dartlang.org/packages/patrol_finders
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
 [pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
-[native automation]: https://patrol.leancode.co/native/overview
 [custom finders]: https://patrol.leancode.co/finders/overview
