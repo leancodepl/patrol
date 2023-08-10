@@ -136,7 +136,7 @@ class PatrolFinder extends MatchFinder {
   /// Creates a new [PatrolFinder] with the given [finder] and [tester].
   ///
   /// Usually, you won't use this constructor directly. Instead, you'll use the
-  /// [PatrolTester] (which is provided by [PatrolTesterCallback] in
+  /// [PatrolTester] (which is provided by [PatrolWidgetTestCallback] in
   /// [patrolWidgetTest]) and [PatrolFinder.$].
   @internal
   PatrolFinder({required this.finder, required this.tester});

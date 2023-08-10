@@ -99,15 +99,11 @@ const defaultScrollMaxIteration = 15;
 /// does not, you can access the underlying [WidgetTester] via [tester] field of
 /// [PatrolTester].
 ///
-/// Usually, you won't create a [PatrolTester] instance directly. Instead,
-/// you'll use the [PatrolTester] which is provided by [PatrolTesterCallback] in
-/// [patrolWidgetTest], like this:
-///
 /// ```dart
 /// import 'package:patrol/patrol.dart';
 ///
 /// void main() {
-///   patrolTest('Counter increments smoke test', (patrolTester) async {
+///   patrolWidgetTest('Counter increments smoke test', (patrolTester) async {
 ///     await patrolTester.pumpWidgetAndSettle(const MyApp());
 ///     await patrolTester(#startAppButton).tap();
 ///   });
@@ -120,7 +116,7 @@ const defaultScrollMaxIteration = 15;
 /// ```dart
 /// import 'package:patrol/patrol.dart';
 /// void main() {
-///   patrolTest('Counter increments smoke test', ($) async {
+///   patrolWidgetTest('Counter increments smoke test', ($) async {
 ///     await $.pumpWidgetAndSettle(const MyApp());
 ///     await $(#startAppButton).tap();
 ///   });
