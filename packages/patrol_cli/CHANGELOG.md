@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Change the location of iOS test reports to `build/ios_results` with timestamp
-  appended (#1623)
+  appended. The path to the report is printed after `patrol test` exits (#1623)
 
 ## 2.1.0
 
