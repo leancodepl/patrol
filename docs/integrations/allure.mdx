@@ -4,16 +4,18 @@ title: Integrations - allure
 
 # Allure overview
 
-If you're using Allure to report your test results, you can use the alternative
+If you're using [Allure] to report your test results, you can use the
+alternative test runner to get more detailed test report.
 
-We decided not to package this runner together with Patrol because it'd make
-Patrol depend on Allure.
+We decided not to package this alternative runner together with Patrol because
+it'd make Patrol depend on Allure.
 
 <Warning>This integration is currently Android-only.</Warning>
 
 <Info>
-  Before you proceed with the steps listed below, make sure that you've
-  completed the [native setup] guide.
+  {' '}
+  Before you proceed with the steps listed below, make sure that you've completed
+  the [native setup] guide.{' '}
 </Info>
 
 ### Add dependencies and change runner
@@ -88,6 +90,8 @@ class AllurePatrolJUnitRunner : PatrolJUnitRunner() {
 
 ### Create allure.properties
 
+This is optional. Do it only if you want to use test storage:
+
 ```title="android/app/src/main/res/allure.properties"
 allure.results.useTestStorage=true
 ```
@@ -153,3 +157,5 @@ public class MainActivityTest {
 [native setup]: /getting-started/native
 
 ### Retrieve the report
+
+[allure]: https://qameta.io/allure-report
