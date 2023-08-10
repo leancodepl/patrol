@@ -1,20 +1,20 @@
 // ignore_for_file: invalid_use_of_internal_member, implementation_imports
 
 import 'dart:io' as io;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/custom_finders/patrol_tester.dart';
 import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
+import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
+import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
@@ -48,8 +48,11 @@ void patrolTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
-  PatrolTesterConfig config = const PatrolTesterConfig(),
+  finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
+  @Deprecated('''
+This variable will be removed in the future, 
+if you use nativeAutomation with false, we recommend using patrolWidgetTest()''')
   bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
@@ -121,7 +124,7 @@ void patrolTest(
       }
       await automator?.configure();
 
-      final patrolTester = PatrolTester(
+      final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
         nativeAutomator: automator,
         config: config,
@@ -168,23 +171,4 @@ DartTestGroup createDartTestGroup(
   }
 
   return group;
-}
-
-/// Returns correct [settlePolicy], regardless which settling argument was set
-@internal
-SettlePolicy? chooseSettlePolicy({
-  bool? andSettle,
-  SettlePolicy? settlePolicy,
-}) {
-  SettlePolicy? settle;
-  if (andSettle == null) {
-    settle = settlePolicy;
-  } else {
-    if (andSettle) {
-      settle = SettlePolicy.settle;
-    } else {
-      settle = SettlePolicy.noSettle;
-    }
-  }
-  return settle;
 }
