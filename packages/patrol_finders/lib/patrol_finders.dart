@@ -1,5 +1,4 @@
-/// Flutter-native UI testing framework eliminating limitations of
-/// flutter_driver.
+/// Streamlined, high-level API on top of `flutter_test`.
 library patrol_finders;
 
 // ignore: invalid_export_of_internal_element

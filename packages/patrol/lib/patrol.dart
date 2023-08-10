@@ -1,5 +1,5 @@
-/// Flutter-native UI testing framework eliminating limitations of
-/// flutter_driver.
+/// Powerful Flutter-native UI testing framework overcoming limitations of
+/// existing Flutter testing tools. Ready for action!
 library patrol;
 
 export 'package:patrol_finders/patrol_finders.dart' hide PatrolTester;

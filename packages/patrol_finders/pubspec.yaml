@@ -1,5 +1,5 @@
 name: patrol_finders
-description: Streamlined, high-level API on top of `flutter_test`..
+description: Streamlined, high-level API on top of `flutter_test`.
 version: 1.0.0
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol
