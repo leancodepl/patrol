@@ -1,3 +1,3 @@
-## 0.0.1
+## 1.0.0
 
-- Initial version
+- Initial release as a standalone package (#1606)
