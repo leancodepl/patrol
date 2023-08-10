@@ -41,15 +41,15 @@ speed up this process. `bs_android` is part of LeanCode's [mobile-tools]. If
 you're using Homebrew, you can install it with:
 
 ```bash
-$ brew tap leancodepl/tools
-$ brew install mobile-tools
+brew tap leancodepl/tools
+brew install mobile-tools
 ```
 
 The `bs_android` script requires the `BROWSERSTACK_CREDS` environment variable
 to be set so it can authenticate with Browserstack:
 
 ```bash
-$ export YOUR_USERNAME:YOUR_ACCESS_KEY
+export YOUR_USERNAME:YOUR_ACCESS_KEY
 ```
 
 Get your username and access on [Browserstack's account page][bs_account].
@@ -74,7 +74,7 @@ Scheduled test execution
 `bs_android` forwards all its options and flags to `patrol build`:
 
 ```bash
-$ bs_android \
+bs_android \
   --target integration_test/example_test.dart,integration_test/another_test.dart \
   --release \
   --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
