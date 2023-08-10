@@ -148,6 +148,10 @@ class IOSTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
 
+      final resultsPath = resultBundlePath(
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      );
+
       final sdkVersion = await getSdkVersion(real: device.real);
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(
@@ -157,7 +161,7 @@ class IOSTestBackend {
             scheme: options.scheme,
             sdkVersion: sdkVersion,
           ),
-          timestamp: DateTime.now().millisecondsSinceEpoch,
+          resultBundlePath: resultsPath,
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
@@ -170,7 +174,7 @@ class IOSTestBackend {
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
-        _logger.info('See the report at ');
+        _logger.info('See the native Xcode report at $resultsPath');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');
       } else if (exitCode == _xcodebuildInterrupted) {
@@ -255,6 +259,21 @@ class IOSTestBackend {
       return files.first.absolute.path;
     }
     return files.first.path;
+  }
+
+  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
+  /// of unique path for the results bundle.
+  String resultBundlePath({required int timestamp}) {
+    return _fs
+        .file(
+          join(
+            _fs.currentDirectory.path,
+            'build',
+            'ios_results_$timestamp.xcresult',
+          ),
+        )
+        .absolute
+        .path;
   }
 
   Future<String> getSdkVersion({required bool real}) async {

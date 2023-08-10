@@ -186,13 +186,10 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild test-without-building`
   /// invocation.
-  ///
-  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
-  /// of unique path for the results bundle.
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
-    required int timestamp,
+    required String resultBundlePath,
   }) {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
@@ -202,7 +199,7 @@ class IOSAppOptions {
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
-      ...['-resultBundlePath', '../build/ios_results_$timestamp.xcresult'],
+      ...['-resultBundlePath', resultBundlePath],
     ];
 
     return cmd;
