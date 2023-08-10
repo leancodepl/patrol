@@ -111,9 +111,7 @@ class IOSTestBackend {
       // xcodebuild build-for-testing
 
       process = await _processManager.start(
-        options.buildForTestingInvocation(
-          timestamp: DateTime.now().millisecondsSinceEpoch,
-        ),
+        options.buildForTestingInvocation(),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
       )
@@ -159,6 +157,7 @@ class IOSTestBackend {
             scheme: options.scheme,
             sdkVersion: sdkVersion,
           ),
+          timestamp: DateTime.now().millisecondsSinceEpoch,
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
@@ -171,6 +170,7 @@ class IOSTestBackend {
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
+        _logger.info('See the report at ');
       } else if (exitCode != 0 && interruptible) {
         task.complete('App shut down on request');
       } else if (exitCode == _xcodebuildInterrupted) {

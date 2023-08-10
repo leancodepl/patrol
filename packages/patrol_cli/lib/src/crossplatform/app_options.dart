@@ -164,10 +164,7 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild build-for-testing`
   /// invocation.
-  ///
-  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
-  /// of unique path for the results bundle.
-  List<String> buildForTestingInvocation({required int timestamp}) {
+  List<String> buildForTestingInvocation() {
     final cmd = [
       ...['xcodebuild', 'build-for-testing'],
       ...['-workspace', 'Runner.xcworkspace'],
@@ -181,7 +178,6 @@ class IOSAppOptions {
       ],
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
-      ...['-resultBundlePath', '../build/ios_results_$timestamp'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
     ];
 
@@ -190,9 +186,13 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild test-without-building`
   /// invocation.
+  ///
+  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
+  /// of unique path for the results bundle.
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
+    required int timestamp,
   }) {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
@@ -202,6 +202,7 @@ class IOSAppOptions {
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
+      ...['-resultBundlePath', '../build/ios_results_$timestamp.xcresult'],
     ];
 
     return cmd;

@@ -140,9 +140,7 @@ void main() {
           ]),
         );
 
-        final xcodebuildInvocation = options.buildForTestingInvocation(
-          timestamp: 0,
-        );
+        final xcodebuildInvocation = options.buildForTestingInvocation();
 
         expect(
           xcodebuildInvocation,
@@ -156,7 +154,6 @@ void main() {
             ...['-destination', 'generic/platform=iOS Simulator'],
             '-quiet',
             ...['-derivedDataPath', '../build/ios_integ'],
-            ...['-resultBundlePath', '../build/ios_results_0'],
             r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
           ]),
         );
@@ -169,6 +166,7 @@ void main() {
         final xcodebuildInvocation = options.testWithoutBuildingInvocation(
           iosDevice,
           xcTestRunPath: xcTestRunPath,
+          timestamp: 0,
         );
 
         expect(
@@ -178,6 +176,7 @@ void main() {
             ...['-xctestrun', xcTestRunPath],
             ...['-only-testing', 'RunnerUITests'],
             ...['-destination', 'platform=iOS,name=iPhone 13'],
+            ...['-resultBundlePath', '../build/ios_results_0.xcresult'],
           ]),
         );
       });
@@ -225,9 +224,7 @@ void main() {
             ]),
           );
 
-          final xcodebuildInvocation = options.buildForTestingInvocation(
-            timestamp: 0,
-          );
+          final xcodebuildInvocation = options.buildForTestingInvocation();
 
           expect(
             xcodebuildInvocation,
@@ -241,7 +238,6 @@ void main() {
               ...['-destination', 'generic/platform=iOS'],
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
-              ...['-resultBundlePath', '../build/ios_results_0'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
             ]),
           );
