@@ -160,7 +160,11 @@ if you use nativeAutomation with false, we recommend using patrolWidgetTest()'''
 /// The initial [parentGroup] is the implicit, unnamed top-level [Group] present
 /// in every test case.
 @internal
-DartTestGroup createDartTestGroup(Group parentGroup, {String name = ''}) {
+DartTestGroup createDartTestGroup(
+  Group parentGroup, {
+  String name = '',
+  int level = 0,
+}) {
   final groupDTO = DartTestGroup(name: name);
 
   for (final entry in parentGroup.entries) {
@@ -172,13 +176,23 @@ DartTestGroup createDartTestGroup(Group parentGroup, {String name = ''}) {
     }
 
     if (entry is Group) {
-      groupDTO.groups.add(createDartTestGroup(entry, name: name));
+      groupDTO.groups.add(
+        createDartTestGroup(
+          entry,
+          name: name,
+          level: level + 1,
+        ),
+      );
       print('PATROL_DEBUG: Added group: $name');
     } else if (entry is Test) {
       if (entry.name == 'patrol_test_explorer') {
         // throw StateError('Expected group, got test: ${entry.name}');
         // Ignore the bogus test that is used to discover the test structure.
         continue;
+      }
+
+      if (level < 1) {
+        throw StateError('Test is not allowed to be defined at level $level');
       }
 
       groupDTO.tests.add(DartTestCase(name: name));
