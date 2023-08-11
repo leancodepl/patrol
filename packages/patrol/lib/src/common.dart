@@ -155,24 +155,47 @@ if you use nativeAutomation with false, we recommend using patrolWidgetTest()'''
   );
 }
 
-/// Creates a DartTestGroup by visiting the subgroups of [topLevelGroup].
+/// Creates a DartTestGroup by visiting the subgroups of [parentGroup].
+///
+/// The initial [parentGroup] is the implicit, unnamed top-level [Group] present
+/// in every test case.
 @internal
 DartTestGroup createDartTestGroup(
-  Group topLevelGroup, {
+  Group parentGroup, {
   String prefix = '',
 }) {
-  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  final group = DartTestGroup(name: groupName);
+  final groupName = parentGroup.name.replaceFirst(prefix, '').trim();
+  final groupDTO = DartTestGroup(name: groupName);
 
-  for (final entry in topLevelGroup.entries) {
+  print('PATROL_DEBUG: Added top-level group: ${groupDTO.name}');
+
+  for (final entry in parentGroup.entries) {
     if (entry is Group) {
-      group.groups.add(DartTestGroup(name: entry.name));
-    }
-
-    if (entry is Test && entry.name != 'patrol_test_explorer') {
-      throw StateError('Expected group, got test: ${entry.name}');
+      // print('PATROL_DEBUG: Added group: ${entry.name}');
+      groupDTO.groups.add(createDartTestGroup(entry));
+    } else if (entry is Test && entry.name != 'patrol_test_explorer') {
+      // throw StateError('Expected group, got test: ${entry.name}');
+      // Ignore the bogus test that is used to discover the test structure.
+      continue;
+    } else if (entry is Test) {
+      groupDTO.tests.add(DartTestCase(name: entry.name));
+    } else {
+      throw StateError('invalid state');
     }
   }
 
-  return group;
+  return groupDTO;
+}
+
+void printGroupStructure(DartTestGroup group, int indentation) {
+  final indent = ' ' * indentation;
+  print("$indent-- group: '${group.name}'");
+
+  for (final testCase in group.tests) {
+    print("$indent     -- test: '${testCase.name}'");
+  }
+
+  for (final subgroup in group.groups) {
+    printGroupStructure(subgroup, indentation + 5);
+  }
 }
