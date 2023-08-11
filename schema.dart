@@ -27,7 +27,7 @@ class RunDartTestResponse {
   String? details;
 }
 
-abstract class PatrolAppService {
+abstract class PatrolAppService<SwiftClient, DartServer> {
   ListDartTestsResponse listDartTests();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }

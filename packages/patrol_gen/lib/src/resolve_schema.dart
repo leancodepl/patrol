@@ -32,35 +32,52 @@ Future<Schema> resolveSchema(String schemaPath) async {
 }
 
 Service _createService(ClassDeclaration declaration, List<Message> messages) {
+  final genericTypes = declaration.typeParameters?.typeParameters
+          .map((e) => e.name.lexeme)
+          .toSet() ??
+      {};
+
+  final swiftGenConfig = ServiceGenConfig(
+    genericTypes.contains('SwiftClient'),
+    genericTypes.contains('SwiftServer'),
+  );
+
+  final dartGenConfig = ServiceGenConfig(
+    genericTypes.contains('DartClient'),
+    genericTypes.contains('DartServer'),
+  );
+
   return Service(
-      declaration.name.lexeme,
-      declaration.members.whereType<MethodDeclaration>().map((method) {
-        final returnType = method.returnType;
-        if (returnType is NamedType) {
-          final responseMessage = returnType.name2.lexeme == 'void'
-              ? null
-              : messages
-                  .firstWhere((msg) => msg.name == returnType.name2.lexeme);
+    declaration.name.lexeme,
+    swiftGenConfig,
+    dartGenConfig,
+    declaration.members.whereType<MethodDeclaration>().map((method) {
+      final returnType = method.returnType;
+      if (returnType is NamedType) {
+        final responseMessage = returnType.name2.lexeme == 'void'
+            ? null
+            : messages.firstWhere((msg) => msg.name == returnType.name2.lexeme);
 
-          Message? requestMessage;
-          if (method.parameters!.parameters.isNotEmpty) {
-            final parameter = method.parameters!.parameters.first;
-            if (parameter is SimpleFormalParameter) {
-              final parameterTypeName =
-                  (parameter.type as NamedType).name2.lexeme;
+        Message? requestMessage;
+        if (method.parameters!.parameters.isNotEmpty) {
+          final parameter = method.parameters!.parameters.first;
+          if (parameter is SimpleFormalParameter) {
+            final parameterTypeName =
+                (parameter.type as NamedType).name2.lexeme;
 
-              requestMessage =
-                  messages.firstWhere((msg) => msg.name == parameterTypeName);
-            } else {
-              throw 'unsupported parameter $parameter';
-            }
+            requestMessage =
+                messages.firstWhere((msg) => msg.name == parameterTypeName);
+          } else {
+            throw 'unsupported parameter $parameter';
           }
-
-          return Endpoint(responseMessage, requestMessage, method.name.lexeme);
-        } else {
-          throw 'unsupported return type $returnType';
         }
-      }).toList());
+
+        return Endpoint(responseMessage, requestMessage, method.name.lexeme);
+      } else {
+        throw 'unsupported return type $returnType';
+      }
+    }).toList(),
+  );
 }
 
 Message _createMessage(ClassDeclaration declaration) {

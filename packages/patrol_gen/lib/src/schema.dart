@@ -28,11 +28,20 @@ class Endpoint {
   final String name;
 }
 
+class ServiceGenConfig {
+  const ServiceGenConfig(this.needsClient, this.needsServer);
+
+  final bool needsClient;
+  final bool needsServer;
+}
+
 class Service {
-  const Service(this.name, this.endpoints);
+  const Service(this.name, this.swift, this.dart, this.endpoints);
 
   final List<Endpoint> endpoints;
   final String name;
+  final ServiceGenConfig swift;
+  final ServiceGenConfig dart;
 }
 
 class Schema {
