@@ -5,3 +5,8 @@
 .flutter-plugins
 .flutter-plugins-dependencies
 .dart_tool
+
+# Melos
+/pubspec.lock
+!pubspec.lock
+pubspec_overrides.yaml
