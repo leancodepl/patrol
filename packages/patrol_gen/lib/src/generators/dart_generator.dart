@@ -50,14 +50,17 @@ enum ${enumDefinition.name} {
         .map((f) => 'final ${f.type}${f.optional ? '?' : ''} ${f.name};')
         .join('\n');
 
-    final constructorParameters = message.fields
+    var constructorParameters = message.fields
         .map((e) => '${e.optional ? '' : 'required'} this.${e.name}')
         .join(',');
+
+    constructorParameters =
+        message.fields.isEmpty ? '' : '{$constructorParameters}';
 
     return '''
 @JsonSerializable()
 class ${message.name} {
-  ${message.name}({${constructorParameters}});
+  ${message.name}(${constructorParameters});
 
   $fieldsContent
 

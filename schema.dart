@@ -131,6 +131,29 @@ class PermissionDialogVisibleResponse {
   bool? visible;
 }
 
+class PermissionDialogVisibleRequest {
+  int? timeoutMillis;
+}
+
+enum HandlePermissionRequestCode {
+  whileUsing,
+  onlyThisTime,
+  denied,
+}
+
+class HandlePermissionRequest {
+  HandlePermissionRequestCode? code;
+}
+
+enum SetLocationAccuracyRequestLocationAccuracy {
+  coarse,
+  fine,
+}
+
+class SetLocationAccuracyRequest {
+  SetLocationAccuracyRequestLocationAccuracy? locationAccuracy;
+}
+
 abstract class NativeAutomator<SwiftServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -172,9 +195,9 @@ abstract class NativeAutomator<SwiftServer, DartClient> {
 
 // permissions
   PermissionDialogVisibleResponse isPermissionDialogVisible(
-      PermissionDialogVisibleRequest);
-  void handlePermissionDialog(HandlePermissionRequest);
-  void setLocationAccuracy(SetLocationAccuracyRequest);
+      PermissionDialogVisibleRequest request);
+  void handlePermissionDialog(HandlePermissionRequest request);
+  void setLocationAccuracy(SetLocationAccuracyRequest request);
 
 // other
   void debug();
