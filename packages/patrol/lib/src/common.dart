@@ -56,9 +56,11 @@ void patrolTest(
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
   @Deprecated('''
 This variable will be removed in the future, 
-if you use nativeAutomation with false, we recommend using patrolWidgetTest()''') bool nativeAutomation = false,
+if you use nativeAutomation with false, we recommend using patrolWidgetTest()''')
+  bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
-  LiveTestWidgetsFlutterBindingFramePolicy framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
+  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
+      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   NativeAutomator? automator;
 
